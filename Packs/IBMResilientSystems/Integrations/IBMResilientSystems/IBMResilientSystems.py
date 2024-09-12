@@ -180,7 +180,6 @@ IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME = "IBM QRadar SOAR Incident Schema"
 DEFAULT_SEVERITY_CODE = 5
 """ ENDPOINTS """
 SEARCH_INCIDENTS_ENDPOINT = "/incidents/query_paged"
-EXECUTE_SCRIPT_ENDPOINT = "/scripts/executions"
 ''' HELPER FUNCTIONS '''
 
 
@@ -799,6 +798,39 @@ def list_open_incidents(client):
     return response
 
 
+def handle_incoming_incident_resolution(incident_id: str, resolution_id: int, resolution_summary: str) -> dict:
+    """
+    Resolves XSOAR close reason and creates a closing entry to be posted in the incident's War Room.
+    """
+    resolution_status = RESOLUTION_DICT.get(resolution_id, "Resolved")
+    demisto.debug(
+        f"handle_incoming_incident_resolution {incident_id=} | {resolution_status=} | {resolution_summary=}"
+    )
+    closing_entry = {
+        "Type": EntryType.NOTE,
+        "Contents": {
+            "dbotIncidentClose": True,
+            "closeReason": MIRROR_STATUS_DICT.get(resolution_status, "Resolved"),
+            "closeNotes": f"{resolution_summary}\nClosed on IBM QRadar SOAR".strip(),
+        },
+        "ContentsFormat": EntryFormat.JSON,
+    }
+    return closing_entry
+
+
+def handle_incoming_incident_reopening(incident_id: str) -> dict:
+    """
+    Post a reopening entry to the incident's War Room.
+    """
+    demisto.debug(f"handle_incident_reopening {incident_id=}")
+    reopening_entry = {
+        "Type": EntryType.NOTE,
+        "Contents": {"dbotIncidentReopen": True},
+        "ContentsFormat": EntryFormat.JSON,
+    }
+    return reopening_entry
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -1411,30 +1443,6 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
     demisto.incidents(demisto_incidents)
 
 
-def execute_script(client: SimpleClient, script_id: str, object_id: str, object_type_id: int) -> dict:
-    """
-    Executes a script by the given script_id and returns the script execution result.
-    Args:
-        client (SimpleClient): The SimpleClient instance.
-        object_id (str): The ID of the object to run the script against.
-        script_id (str): ID of script to be executed.
-        object_type_id (int): ID of object type to execute the script against.
-
-    Returns:
-        dict: The script execution result.
-    """
-    script_data = get_scripts(client, script_id)
-
-    payload = {
-        "script_text": script_data.get('script_text'),
-        "script_language": script_data.get('language'),
-        "object_type_id": object_type_id,
-        "object_id": object_id
-    }
-    demisto.debug(f'execute_script {payload=}')
-    return client.post(EXECUTE_SCRIPT_ENDPOINT, payload)
-
-
 def add_note(client: SimpleClient, incident_id: str, note_content: str) -> dict:
     """
     Adds a note to the specified incident.
@@ -1619,41 +1627,19 @@ def update_incident_note_command(client: SimpleClient, args: dict) -> CommandRes
     demisto.debug(
         f"update_incident_note_command {incident_id=}, {note_id=}, {note_text=}"
     )
-    body = {"text": {"format": "text", "content": note_text}}
-    try:
-        response = client.put(
-            f"/incidents/{incident_id}/comments/{note_id}", payload=body
-        )
-        demisto.debug(f"{response=}")
-        return CommandResults(
-            readable_output=f"Successfully updated note ID {note_id} for incident ID {incident_id}"
-        )
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not update note ID {note_id} for incident ID: {incident_id}. Got error {e.response.text}",
-        )
-
-
-def add_custom_incident_task_command(client: SimpleClient, args: dict):
-    """
-    Creates a new task for the given incident.
-    """
-    incident_id, task_instructions = args.get("incident_id"), args.get("instructions")
-    demisto.debug(f"add_custom_incident_task_command {incident_id=}")
-    body = {"text": {"format": "text", "content": task_instructions}}
-    try:
-        response = client.post(f"/incidents/{incident_id}/tasks", payload=body)
-        demisto.debug(f"{response=}")
-        return CommandResults(
-            readable_output=f"Successfully created task for incident ID {incident_id}"
-        )
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not create a task for incident ID: {incident_id}. Got error {e.response.text}",
-        )
-
+    body = {
+        "text": {
+            "format": "text",
+            "content": note_text
+        }
+    }
+    response = client.put(
+        f"/incidents/{incident_id}/comments/{note_id}", payload=body
+    )
+    demisto.debug(f"{response=}")
+    return CommandResults(
+        readable_output=f"Successfully updated note ID {note_id} for incident ID {incident_id}"
+    )
 
 def list_tasks_command(client: SimpleClient) -> CommandResults:
     """
@@ -1748,27 +1734,6 @@ def list_task_instructions_command(client: SimpleClient, args: dict) -> CommandR
     )
 
 
-def execute_remote_script_command(client: SimpleClient, args: dict) -> CommandResults:
-    """
-    Given a remote script id, executes it on the remote IBM QRadar SOAR platform.
-    """
-    script_id = args.pop('script_id')
-    object_id = args.pop('object_id')
-    object_type = args.pop('object_type')
-    object_type_id = OBJECT_ACTION_TYPE_TO_ID.get(object_type, None)
-    demisto.debug(f'execute_remote_script_command {object_type=} | {object_type_id=} | {OBJECT_ACTION_TYPE_TO_ID=}')
-    if object_type_id is None:
-        raise DemistoException('Could not resolve object type.')
-
-    execute_script_response = execute_script(client, script_id, object_id, object_type_id)
-
-    return CommandResults(
-        readable_output=f"Successfully executed remote script with ID {script_id}.",
-        outputs_prefix="Resilient.RemoteScriptExecution",
-        outputs=execute_script_response,
-    )
-
-
 def add_custom_task_command(client: SimpleClient, args: dict) -> CommandResults:
     """
     Adds a custom task to the specified incident.
@@ -1801,39 +1766,6 @@ def get_modified_remote_data_command(client: SimpleClient, args: dict) -> GetMod
     modified_incident_ids = [str(incident.get("id")) for incident in incidents]
     demisto.debug(f"get-modified-remote-data command {modified_incident_ids=}")
     return GetModifiedRemoteDataResponse(modified_incident_ids)
-
-
-def handle_incoming_incident_resolution(incident_id: str, resolution_id: int, resolution_summary: str) -> dict:
-    """
-    Resolves XSOAR close reason and creates a closing entry to be posted in the incident's War Room.
-    """
-    resolution_status = RESOLUTION_DICT.get(resolution_id, "Resolved")
-    demisto.debug(
-        f"handle_incoming_incident_resolution {incident_id=} | {resolution_status=} | {resolution_summary=}"
-    )
-    closing_entry = {
-        "Type": EntryType.NOTE,
-        "Contents": {
-            "dbotIncidentClose": True,
-            "closeReason": MIRROR_STATUS_DICT.get(resolution_status, "Resolved"),
-            "closeNotes": f"{resolution_summary}\nClosed on IBM QRadar SOAR".strip(),
-        },
-        "ContentsFormat": EntryFormat.JSON,
-    }
-    return closing_entry
-
-
-def handle_incoming_incident_reopening(incident_id: str) -> dict:
-    """
-    Post a reopening entry to the incident's War Room.
-    """
-    demisto.debug(f"handle_incident_reopening {incident_id=}")
-    reopening_entry = {
-        "Type": EntryType.NOTE,
-        "Contents": {"dbotIncidentReopen": True},
-        "ContentsFormat": EntryFormat.JSON,
-    }
-    return reopening_entry
 
 
 def get_remote_data_command(client: SimpleClient,
@@ -2080,8 +2012,6 @@ def main():  # pragma: no cover
             return_results(list_incident_notes_command(client, args))
         elif command == "rs-update-incident-note":
             return_results(update_incident_note_command(client, args))
-        elif command == "rs-add-custom-incident-task":
-            return_results(add_custom_incident_task_command(client, args))
         elif command == "rs-list-tasks":
             return_results(list_tasks_command(client))
         elif command == "rs-update-task":

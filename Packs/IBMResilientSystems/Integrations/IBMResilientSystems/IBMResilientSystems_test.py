@@ -593,11 +593,147 @@ def test_list_incident_notes_command(mocker):
     client = SimpleClient()
     client.org_id = 0
     
-    get_incident_notes_request = mocker.patch.object(SimpleClient, 'get', return_value=load_test_data('./test_data/test_get_incident_notes_reponse.json'))
+    get_incident_notes_request = mocker.patch.object(
+        SimpleClient,
+        'get',
+        return_value=load_test_data('./test_data/test_get_incident_notes_reponse.json')
+    )
     list_incident_notes_command(client, {"incident_id": "2000"})
 
-    get_incident_notes_request.assert_called_once_with(f"/incidents/2000/comments?text_content_output_format=objects_convert_text")
+    get_incident_notes_request.assert_called_once_with(
+        f"/incidents/2000/comments?text_content_output_format=objects_convert_text"
+    )
 
+
+def test_update_incident_note(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, update_incident_note_command
+
+    client = SimpleClient()
+    client.org_id = 0
+
+    update_incident_note_request = mocker.patch.object(
+        SimpleClient,
+        'put',
+        return_value={}
+    )
+    update_incident_note_command(client, args={
+        'incident_id': 2000,
+        'note_id': 1,
+        'note': "NOTE_BODY"
+    })
+
+    update_incident_note_request.assert_called_once_with(f"/incidents/2000/comments/1", payload={
+        'text': {
+            'format': 'text',
+            'content': 'NOTE_BODY'
+        }
+    })
+
+
+@pytest.mark.parametrize("args, expected_task_dto", [
+    (
+        {
+            'incident_id': '2000',
+            'name': 'TASK-1',
+            'owner_id': '0',
+            'description': 'TASK',
+            'instructions': 'INSTRUCTIONS',
+            'phase': 'Initial',
+            'due_date': '2023-04-01T12:00:00.000Z'
+        },
+        {
+            "name": 'TASK-1',
+            "phase_id": {"name": 'Initial'},
+            "description": 'TASK',
+            "due_date": 1680339600000,
+            "instructions": 'INSTRUCTIONS',
+            "owner_id": 0
+        }
+    ),
+    (   # Task without Instructions
+        {
+            'incident_id': '2001',
+            'name': 'TASK-2',
+            'owner_id': '1',
+            'description': 'TASK 2',
+            'instructions': '',
+            'phase': 'Custom',
+            'due_date': '2023-05-01T12:00:00.000Z'
+        },
+        {
+            "name": 'TASK-2',
+            "phase_id": {"name": 'Custom'},
+            "description": 'TASK 2',
+            "due_date": 1682931600000,
+            "owner_id": 1
+        }
+    ),
+    (   # Invalid Owner ID
+        {
+            'incident_id': '2003',
+            'name': 'TASK-3',
+            'owner_id': 'abcd',
+            'description': 'TASK 3',
+            'instructions': 'TASK 3 Instructions',
+            'phase': 'Initial',
+            'due_date': '2023-07-01T12:00:00.000Z'
+        },
+        DemistoException("Owner ID must be an integer number.")
+    ),
+    (   # Task without Due Date
+        {
+            'incident_id': '2004',
+            'name': 'TASK-4',
+            'owner_id': '3',
+            'description': 'TASK 4',
+            'instructions': 'TASK 4 Instructions',
+            'phase': 'Initial',
+            'due_date': ''
+        },
+        {
+            "name": 'TASK-4',
+            "phase_id": {"name": 'Initial'},
+            "description": 'TASK 4',
+            "instructions": 'TASK 4 Instructions',
+            "owner_id": 3
+        }
+    ),
+])
+def test_add_custom_task_command(mocker, args, expected_task_dto):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, add_custom_task_command
+    client = SimpleClient()
+    client.org_id = 0
+
+    def post_side_effect(uri, payload):
+        if isinstance(expected_task_dto, Exception):
+            raise expected_task_dto
+        assert uri == f"/incidents/{args['incident_id']}/tasks"
+        assert payload == expected_task_dto
+        return {"id": "1234"}
+
+    add_custom_task_request = mocker.patch.object(
+        SimpleClient,
+        'post',
+        side_effect=post_side_effect
+    )
+
+    if isinstance(expected_task_dto, Exception):
+        with pytest.raises(DemistoException, match="Owner ID must be an integer number."):
+            add_custom_task_command(client, args=args)
+    else:
+        result = add_custom_task_command(client, args=args)
+        add_custom_task_request.assert_called_once_with(uri=f"/incidents/{args['incident_id']}/tasks", payload=expected_task_dto)
+        assert result.readable_output == f"Successfully created new task for incident with ID {args['incident_id']}. Task ID: 1234"
+
+def test_validate_iso_time_format():
+    # TODO
+    pass
 def test_fetch_incidents(mocker):
     # TODO
     pass

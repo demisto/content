@@ -881,24 +881,6 @@ Add an artifact to an incident.
 #### Human Readable Output
 
 >The artifact was added successfully to incident 1234
-### rs-delete-tasks
-
-***
-Deletes a specified list of tasks. Note that only custom tasks can be deleted.
-
-#### Base Command
-
-`rs-delete-tasks`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_ids | A comma-separated list of task IDs to be deleted. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
 ### rs-delete-incidents
 
 ***
@@ -913,206 +895,6 @@ Delete multiple incidents.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_ids | A comma-separated list of incident IDs to be deleted. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-list-scripts
-
-***
-Retrieves the specified script's information or a list of all organization's scripts.
-
-#### Base Command
-
-`rs-list-scripts`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| script_id | Internal ID/name of the script. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Scripts | Dictionary | Retrieved script or list of scripts with metadata. | 
-
-### rs-list-tasks
-
-***
-Gets an array of open tasks to which the current user is assigned.
-
-#### Base Command
-
-`rs-list-tasks`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Tasks | Dictionary | List of open tasks. | 
-
-### rs-update-task
-
-***
-Update an incident's task fields.
-
-#### Base Command
-
-`rs-update-task`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | ID of task to update. | Required | 
-| name | Task name. Technically required, copy original task name if no changes are desired. | Required | 
-| owner_id | User ID of the new owner. | Optional | 
-| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Optional | 
-| phase | The phase to which this task belongs. Possible values are: Initial, Engage, Detect/Analyze, Respond, Post-Incident, Custom, Complete. | Optional | 
-| status | Changing the status field, completes or re-openes the task. Possible values are: Open, Completed. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-get-task-members
-
-***
-Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
-
-#### Base Command
-
-`rs-get-task-members`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | A comma-separated list of task IDs to be deleted. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Task | Dictionary | Task members. | 
-
-### rs-upload-incident-attachment
-
-***
-Upload an attachment for an incident.
-
-#### Base Command
-
-`rs-upload-incident-attachment`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to update. | Required | 
-| entry_id | EntryID of the file to upload. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-update-incident-note
-
-***
-Updates an incident's comment (“notes” in the UI).
-
-#### Base Command
-
-`rs-update-incident-note`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to update its note. | Required | 
-| note_id | Note ID to update. | Required | 
-| note | Text of the note. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-get-attachment
-
-***
-Gets incident attachment's name and contents as a file by its ID.
-
-#### Base Command
-
-`rs-get-attachment`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to get attachments from. | Required | 
-| attachment_id | Attachment ID to get. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-delete-task-members
-
-***
-Delete a task's member. This effectively changes the task from a "private" task to a non-private task (to one where any incident member can operate on it).
-
-#### Base Command
-
-`rs-delete-task-members`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | ID of the task to delete its members. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-list-task-instructions
-
-***
-Get the task's instructions.
-
-#### Base Command
-
-`rs-list-task-instructions`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | ID of the task to list its instructions. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Task | Dictionary | Task instructions. | 
-
-### rs-add-custom-incident-task
-
-***
-Add a custom task to the incident.
-
-#### Base Command
-
-`rs-add-custom-incident-task`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to add a custom task to. | Required | 
-| Instructions | Task instructions text. | Required | 
 
 #### Context Output
 
@@ -1138,3 +920,226 @@ Gets all of the top-level comments for an incident.
 | --- | --- | --- |
 | Resilient.IncidentNotes | Dictionary | Top-level comments for incident. | 
 
+### rs-update-task
+
+***
+Update an incident's task fields.
+
+#### Base Command
+
+`rs-update-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | ID of task to update. | Required | 
+| name | Task name. Technically required, copy original task name if no changes are desired. | Required | 
+| owner_id | User ID of the new owner. | Optional | 
+| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Optional | 
+| phase | The phase to which this task belongs. Possible values are: Initial, Engage, Detect/Analyze, Respond, Post-Incident, Custom, Complete. | Optional | 
+| status | Changing the status field, completes or re-openes the task. Possible values are: Open, Completed. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-add-custom-task
+
+***
+Adds a custom task to the specified incident.
+
+#### Base Command
+
+`rs-add-custom-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | ID of incident to add a task to. | Required | 
+| name | Task name. | Required | 
+| description | Task description. | Required | 
+| instructions | Textual instructions for the task. This will override the default instructions for the task. | Required | 
+| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Required | 
+| owner_id | The owner of the task (ID or name as appears in IBM QRadar SOAR). Leave empty if the task has no owner. | Optional | 
+| phase | Task to be added to the IBM QRadar incident. Possible values are: Initial, Engage, Detect/Analyze, Respond, Post-Incident, Custom, Complete. Default is task. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-delete-task-members
+
+***
+Delete a task's member. This effectively changes the task from a "private" task to a non-private task (to one where any incident member can operate on it).
+
+#### Base Command
+
+`rs-delete-task-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | ID of the task to delete its members. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-list-tasks
+
+***
+Gets an array of open tasks to which the current user is assigned.
+
+#### Base Command
+
+`rs-list-tasks`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Tasks | Dictionary | List of open tasks. | 
+
+### rs-list-scripts
+
+***
+Retrieves the specified script's information or a list of all organization's scripts.
+
+#### Base Command
+
+`rs-list-scripts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_id | Internal ID/name of the script. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Scripts | Dictionary | Retrieved script or list of scripts with metadata. | 
+
+### rs-delete-tasks
+
+***
+Deletes a specified list of tasks. Note that only custom tasks can be deleted.
+
+#### Base Command
+
+`rs-delete-tasks`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_ids | A comma-separated list of task IDs to be deleted. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-list-task-instructions
+
+***
+Get the task's instructions.
+
+#### Base Command
+
+`rs-list-task-instructions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | ID of the task to list its instructions. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Task | Dictionary | Task instructions. | 
+
+### rs-update-incident-note
+
+***
+Updates an incident's note.
+
+#### Base Command
+
+`rs-update-incident-note`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to update its note. | Required | 
+| note_id | Note ID to update. | Required | 
+| note | Text of the note. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-upload-incident-attachment
+
+***
+Upload an attachment for an incident.
+
+#### Base Command
+
+`rs-upload-incident-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to update. | Required | 
+| entry_id | EntryID of the file to upload. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-get-task-members
+
+***
+Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
+
+#### Base Command
+
+`rs-get-task-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | A comma-separated list of task IDs to be deleted. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Task | Dictionary | Task members. | 
+
+### rs-get-attachment
+
+***
+Gets incident attachment's name and contents as a file by its ID.
+
+#### Base Command
+
+`rs-get-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to get attachments from. | Required | 
+| attachment_id | Attachment ID to get. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

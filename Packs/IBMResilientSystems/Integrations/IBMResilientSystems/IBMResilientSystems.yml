@@ -979,7 +979,7 @@ script:
       type: Dictionary
 
   - name: rs-update-incident-note
-    description: Updates an incident's comment (“notes” in the UI).
+    description: Updates an incident's note.
     arguments:
     - name: incident_id
       description: Incident ID to update its note.
@@ -991,15 +991,49 @@ script:
       description: Text of the note.
       required: true
 
-  - name: rs-add-custom-incident-task
-    description: Add a custom task to the incident.
+  - name: rs-add-custom-task
+    description: Adds a custom task to the specified incident.
     arguments:
     - name: incident_id
-      description: Incident ID to add a custom task to.
+      description: ID of incident to add a task to.
       required: true
-    - name: Instructions
-      description: Task instructions text.
+
+    - description: Task name.
+      name: name
       required: true
+      type: shortText
+
+    - description: Task description.
+      name: description
+      required: true
+      type: longText
+
+    - description: Textual instructions for the task. This will override the default instructions for the task.
+      name: instructions
+      type: longText
+      required: true
+
+    - name: due_date
+      description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
+      required: true
+
+    - name: owner_id
+      description: The owner of the task (ID or name as appears in IBM QRadar SOAR). Leave empty if the task has no owner.
+
+    - name: phase
+      auto: PREDEFINED
+      defaultValue: task
+      description: Task to be added to the IBM QRadar incident.
+      required: true
+      predefined:
+      - Initial
+      - Engage
+      - Detect/Analyze
+      - Respond
+      - Post-Incident
+      - Custom
+      - Complete
+
 
   - name: rs-list-tasks
     description: Gets an array of open tasks to which the current user is assigned.
