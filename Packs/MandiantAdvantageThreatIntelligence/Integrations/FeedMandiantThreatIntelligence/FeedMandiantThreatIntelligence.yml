@@ -27,7 +27,7 @@ configuration:
   display: Page Size
   required: true
   defaultvalue: 1000
-  additionalinfo: 'The number of indicators to request in each page'
+  additionalinfo: 'The number of indicators to request in each page.'
 - additionalinfo: API calls timeout.
   defaultvalue: '60'
   display: Timeout
