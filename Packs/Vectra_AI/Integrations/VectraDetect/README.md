@@ -4,17 +4,17 @@ This integration was integrated and tested with version 7.1 of Vectra Detect
 ## Use cases
 
 1. Fetch accounts, hosts and detections from Vectra Detect.
-2. Bi-Directional Mirroring for accounts and hosts.
-3. List and Describe accounts, hosts, detections and users.
-4. List, Describe, Create and Resolve assignment for account and host.
-5. List, Describe and Create assignment outcomes.
-6. List, Create, Update and Delete notes for account, host and detection.
-7. List, Create and Remove tags for account, host and detection.
-8. List, Assign and Unassign members in group.
-9. Mark and Unmark detection as fixed.
-10. Mark all detections as fixed for account and host. 
+2. Bi-Directional mirroring for accounts and hosts.
+3. List and describe accounts, hosts, detections, and users.
+4. List, describe, create, and resolve assignments for accounts and hosts.
+5. List, describe, and create assignment outcomes.
+6. List, create, update, and delete notes for accounts, hosts, and detections.
+7. List, create, and remove tags for accounts, hosts, and detections.
+8. List, assign, and unassign members in group.
+9. Mark and unmark detection as fixed.
+10. Mark all detections as fixed for accounts and hosts. 
 11. Get detection's PCAP file.
-12. Cleanup all incidents in XSOAR by closing duplicate incidents from Vectra Detect.
+12. Clean up all incidents in Cortex XSOAR by closing duplicate incidents from Vectra Detect.
 
 ## Configure Vectra Detect on Cortex XSOAR
 
@@ -32,25 +32,25 @@ This integration was integrated and tested with version 7.1 of Vectra Detect
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | First fetch timestamp | The date or relative timestamp from which to begin fetching entities.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2024, 01 Aug 2024 04:45:33, 2024-07-17T14:05:44Z. \(default - 7 days\) | False |
-    | Mirroring Direction | The mirroring direction in which to mirror the account and host. You can mirror "Incoming" \(from Vectra to XSOAR\), "Outgoing" \(from XSOAR to Vectra\), or in both directions. | False |
+    | Mirroring Direction | The mirroring direction in which to mirror the account and host. You can mirror "Incoming" \(from Vectra to Cortex XSOAR\), "Outgoing" \(from Cortex XSOAR to Vectra\), or in both directions. | False |
     | Mirror tag for notes | The tag value should be used to mirror the account and host note by adding the same tag in the notes. | False |
     | Entity types to fetch | Choose what to fetch - Accounts and/or Hosts and/or Detections. \(Default - Accounts,Hosts\) | False |
-    | Tags | Only Accounts or Hosts that contain any of the tags specified will be fetched.<br/><br/>Note: For the partial match of the tag, use '\*' at the start and end of word \(Only Single word is allowed\). Ex. \*MDR\*. | False |
+    | Tags | Only Accounts or Hosts that contain any of the tags specified will be fetched.<br/><br/>Note: For the partial match of the tag, use '\*' at the start and end of word \(Only a single word is allowed\). Ex. \*MDR\*. | False |
     | Detection Category | Filter the detections belonging to a specified category displayed as part of layout.<br/><br/>Note: This filter applies on the 'Vectra Account' and 'Vectra Host' incident type. | False |
-    | Detection Type | Filter the detections belonging to a specified type displayed as part of layout.<br/><br/>Note: This filter applies on the 'Vectra Account' and 'Vectra Host' incident type. | False |
-    | Hosts fetch query | Only "active" Hosts matching this fetch query will be fetched. Will be used only if "Hosts" is selected in the "Entity types to fetch". \(default - host.threat:&amp;gt;=50\) | False |
-    | Accounts fetch query | Only "active" Accounts matching this fetch query will be fetched. Will be used only if "Accounts" is selected in the "Entity types to fetch". \(default - account.threat:&amp;gt;=50\) | False |
-    | Detections fetch query | Only "active" Detections matching this fetch query will be fetched. Will be used only if "Detections" is selected in the "Entity types to fetch". \(default - detection.threat:&amp;gt;=50 AND detection.certainty:&amp;gt;=50\) | False |
-    | Max created incidents per fetch | How many new incidents do you want to create at max per fetch. This value would be split between selected "Entity types to fetch". If the value is greater than 200, it will be considered as 200. The maximum is 200. \(Default - 50\) | False |
+    | Detection Type | Filter the detections belonging to a specified type displayed as part of layout.<br/><br/>Note: This filter applies on the 'Vectra Account' and 'Vectra Host' incident type. |  |
+    | Hosts fetch query | Only "active" Hosts matching this fetch query will be fetched. Will be used only if "Hosts" is selected in the "Entity types to fetch". \(default - host.threat:&gt;=50\) | False |
+    | Accounts fetch query | Only "active" Accounts matching this fetch query will be fetched. Will be used only if "Accounts" is selected in the "Entity types to fetch". \(default - account.threat:&gt;=50\) | False |
+    | Detections fetch query | Only "active" Detections matching this fetch query will be fetched. Will be used only if "Detections" is selected in the "Entity types to fetch". \(default - detection.threat:&gt;=50 AND detection.certainty:&gt;=50\) | False |
+    | Max created incidents per fetch | The maximum number of new incidents to create per fetch. This value would be split between selected "Entity types to fetch". If the value is greater than 200, it will be considered as 200. The maximum is 200. \(Default - 50\) | False |
     | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-## Configuration for fetching Vectra Account or Vectra Host as an XSOAR Incident
+## Configuration for fetching Vectra Account or Vectra Host as a Cortex XSOAR incident
 
-To fetch Vectra Account or Vectra Host follow the next steps:
+To fetch Vectra Account or Vectra Host as a Cortex XSOAR incident:
 
-1. Select Fetches incidents.
+1. Select **Fetches incidents**.
 2. Under Classifier, select "Vectra Detect".
 3. Under Incident type, select "N/A".
 4. Under Mapper (incoming), select "Vectra Detect - Incoming Mapper" for default mapping.
@@ -70,23 +70,23 @@ To fetch Vectra Account or Vectra Host follow the next steps:
 
 - The mirroring is strictly tied to incident types "Vectra Account" and "Vectra Host", as well as the incoming mapper "Vectra Detect - Incoming Mapper". If you want to change or use a custom incident type/mapper, ensure that related changes are also present.
 - The mirroring settings apply only for incidents that are fetched after applying the settings.
-- Any tags removed from the Vectra Account or Vectra Host will not be removed in the XSOAR incident, as XSOAR doesn't allow the removal of the tags field via the backend. However, tags removed from the XSOAR incident UI will be removed from the Vectra Account or Vectra Host.
-- New notes from the XSOAR incident will be created as notes in the Vectra Account or Vectra Host. Updates to existing notes in the XSOAR incident will not be reflected in the Vectra Account or Vectra Host.
-- New notes from the Vectra Account or Vectra Host will be created as notes in the XSOAR incident. Updates to existing notes in the Vectra Account or Vectra Host will create new notes in the XSOAR incident.
-- If a closed XSOAR incident is tied to a specific Account or Vectra Host and new detections for that Account or Vectra Host arise or existing detections become active again, the incident will be automatically reopened.
-- When a XSOAR incident is closed but there are still active detections on the Vectra side, and the Account or Vectra Host is subsequently updated, the corresponding XSOAR incident for that entity will be reopened.
-- If a XSOAR incident is reopened and the corresponding entity has an assignment in Vectra, the assignment will be removed from Vectra.
+- Any tags removed from the Vectra Account or Vectra Host will not be removed in the Cortex XSOAR incident, as Cortex XSOAR doesn't allow the removal of the tags field via the backend. However, tags removed from the Cortex XSOAR incident UI will be removed from the Vectra Account or Vectra Host.
+- New notes from the Cortex XSOAR incident will be created as notes in the Vectra Account or Vectra Host. Updates to existing notes in the Cortex XSOAR incident will not be reflected in the Vectra Account or Vectra Host.
+- New notes from the Vectra Account or Vectra Host will be created as notes in the Cortex XSOAR incident. Updates to existing notes in the Vectra Account or Vectra Host will create new notes in the Cortex XSOAR incident.
+- If a closed Cortex XSOAR incident is tied to a specific Account or Vectra Host and new detections for that Account or Vectra Host arise or existing detections become active again, the incident will be automatically reopened.
+- When a Cortex XSOAR incident is closed but there are still active detections on the Vectra side, and the Account or Vectra Host is subsequently updated, the corresponding Cortex XSOAR incident for that entity will be reopened.
+- If a Cortex XSOAR incident is reopened and the corresponding entity has an assignment in Vectra, the assignment will be removed from Vectra.
 - If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, and dbotMirrorTags.
 - To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. (Refer to the "Create a custom mapper consisting of the default Vectra Detect - Incoming Mapper" section for more information.)
 - Following new fields are introduced in the response of the incident to enable the mirroring:
-  - **mirror_direction:** This field determines the mirroring direction for the incident. It is a required field for XSOAR to enable mirroring support.
-  - **mirror_tags:** This field determines what would be the tag needed to mirror the XSOAR entry out to Vectra. It is a required field for XSOAR to enable mirroring support.
-  - **mirror_instance:** This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
+  - **mirror_direction:** This field determines the mirroring direction for the incident. It is a required field for Cortex XSOAR to enable mirroring support.
+  - **mirror_tags:** This field determines what would be the tag needed to mirror the Cortex XSOAR entry out to Vectra. It is a required field for XSOAR to enable mirroring support.
+  - **mirror_instance:** This field determines from which instance the Cortex XSOAR incident was created. It is a required field for Cortex XSOAR to enable mirroring support.
 
 #### Cleanup Duplicate Incidents
 
-- Use the ***Close All Duplicate XSOAR Incidents - Vectra Detect*** playbook to clean up duplicate incidents. You can use ***VectraDetectCloseDuplicateIncidents*** script individually to clean up duplicate incidents.
-- You can also schedule a job with ***Close All Duplicate XSOAR Incidents - Vectra Detect*** playbook in XSOAR to clean up incidents periodically. Refer to [this XSOAR documentation](https://xsoar.pan.dev/docs/incidents/incident-jobs) for more information.
+- Use the **Close All Duplicate XSOAR Incidents - Vectra Detect** playbook to clean up duplicate incidents. You can use **VectraDetectCloseDuplicateIncidents** script individually to clean up duplicate incidents.
+- You can also schedule a job with **Close All Duplicate XSOAR Incidents - Vectra Detect** playbook in Cortex XSOAR to clean up incidents periodically. Refer to [this Cortex XSOAR documentation](https://xsoar.pan.dev/docs/incidents/incident-jobs) for more information.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -226,7 +226,7 @@ Returns a list of Detection objects. All search attributes will be cumulative un
 | Vectra.Detection.Name | String | The name of the detection. Would be a user defined name if this detection is triaged or the default type name instead | 
 | Vectra.Detection.Severity | String | Detection severity according to scores \('Low', 'Medium', 'High', 'Critical'\) | 
 | Vectra.Detection.SensorLUID | String | Sensor LUID that saw this detection | 
-| Vectra.Detection.SensorName | String | Sensor Name that saw this Detection | 
+| Vectra.Detection.SensorName | String | Sensor name that saw this detection. | 
 | Vectra.Detection.SourceAccountID | String | Account ID relating to this detection | 
 | Vectra.Detection.SourceHostID | String | Host ID relating to this detection | 
 | Vectra.Detection.SourceIP | String | Source IP relating to this detection | 
@@ -409,7 +409,7 @@ Returns a list of tags for a specified account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id |  Specify the ID of the account. | Required | 
+| id | Specify the ID of the account. | Required | 
 
 #### Context Output
 
@@ -503,7 +503,7 @@ Update a note in the account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | Specify the ID of the account. | Required | 
-| note_id | Specify the ID of the note. <br/><br/>Note: Use vectra-account-note-list command to get note_id. | Required | 
+| note_id | Specify the ID of the note.<br/><br/>Note: Use the vectra-account-note-list command to get note_id. | Required | 
 | note | Note to be updated for the specified note_id. | Required | 
 
 #### Context Output
@@ -555,7 +555,7 @@ Remove a note from the account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | Specify the ID of the account. | Required | 
-| note_id | Specify the ID of the note. <br/><br/>Note: Use vectra-account-note-list command to get note_id. | Required | 
+| note_id | Specify the ID of the note.<br/><br/>Note: Use the vectra-account-note-list command to get note_id. | Required | 
 
 #### Context Output
 
@@ -632,8 +632,9 @@ List all notes of the specific account.
 
 
 ### vectra-account-markall-detections-asfixed
+
 ***
-Mark active detections as fixed by providing ID of account in the argument.
+Mark active detections as fixed by providing the ID of the account in the argument.
 
 #### Base Command
 
@@ -646,6 +647,7 @@ Mark active detections as fixed by providing ID of account in the argument.
 | account_id | Provide an account ID. | Required | 
 
 #### Context Output
+
 There is no context output for this command.
 
 #### Command example
@@ -839,7 +841,7 @@ Update a note in the host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | Specify the ID of the host. | Required | 
-| note_id | Specify the ID of the note.<br/><br/>Note: Use vectra-account-note-list command to get note_id | Required | 
+| note_id | Specify the ID of the note.<br/><br/>Note: Use the vectra-host-note-list command to get note_id. | Required | 
 | note | Note to be updated for the specified note_id. | Required | 
 
 #### Context Output
@@ -891,7 +893,7 @@ Remove a note from the host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | Specify the ID of the host. | Required | 
-| note_id | Specify the ID of the note. <br/><br/>Note: Use vectra-host-note-list command to get note_id. | Required | 
+| note_id | Specify the ID of the note.<br/><br/>Note: Use the vectra-host-note-list command to get note_id. | Required | 
 
 #### Context Output
 
@@ -966,8 +968,9 @@ List all notes of the specific host.
 
 
 ### vectra-host-markall-detections-asfixed
+
 ***
-Mark active detections as fixed by providing ID of host in the argument.
+Mark active detections as fixed by providing ID of the host in the argument.
 
 #### Base Command
 
@@ -980,6 +983,7 @@ Mark active detections as fixed by providing ID of host in the argument.
 | host_id | Provide a host ID. | Required | 
 
 #### Context Output
+
 There is no context output for this command.
 
 #### Command example
@@ -1022,7 +1026,7 @@ Returns a single detection details
 | Vectra.Detection.Name | String | The name of the detection. Would be a user defined name if this detection is triaged or the default type name instead | 
 | Vectra.Detection.Severity | String | Detection severity according to scores \('Low', 'Medium', 'High', 'Critical'\) | 
 | Vectra.Detection.SensorLUID | String | Sensor LUID that saw this detection | 
-| Vectra.Detection.SensorName | String | Sensor Name that saw this Detection | 
+| Vectra.Detection.SensorName | String | Sensor name that saw this detection. | 
 | Vectra.Detection.SourceAccountID | String | Account ID relating to this detection | 
 | Vectra.Detection.SourceHostID | String | Host ID relating to this detection | 
 | Vectra.Detection.SourceIP | String | Source IP relating to this detection | 
@@ -1215,7 +1219,7 @@ Update a note in the detection.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | detection_id | Specify the ID of the detection. | Required | 
-| note_id | Specify the ID of the note. <br/><br/>Note: Use vectra-detection-note-list command to get note_id. | Required | 
+| note_id | Specify the ID of the note.<br/><br/>Note: Use the vectra-detection-note-list command to get note_id. | Required | 
 | note | Note to be updated for the specified note_id. | Required | 
 
 #### Context Output
@@ -1267,7 +1271,7 @@ Remove a note from the detection.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | detection_id | Specify the ID of the detection. | Required | 
-| note_id | Specify the ID of the note. <br/><br/>Note: Use vectra-detection-note-list command to get note_id. | Required | 
+| note_id | Specify the ID of the note.<br/><br/>Note: Use the vectra-detection-note-list command to get note_id. | Required | 
 
 #### Context Output
 
@@ -1526,6 +1530,7 @@ Returns a single Vectra User details
 | Vectra.User.LastLoginDate | String | User's last login datetime | 
 
 ### vectra-group-list
+
 ***
 Returns a list of all groups.
 
@@ -1635,8 +1640,8 @@ Assign members to the specified group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | Specify Group ID to assign members.<br/><br/>Note: User can get the group_id by executing the \"vectra-group-list\" command. | Required | 
-| members | Member values based on the group type. Supports comma-separated values.<br/><br/>Note:<br/>User can get the members by executing the \"vectra-group-list\" command.<br/>If the group type is host, then the "Host IDs".<br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains". | Required | 
+| group_id | Specify Group ID to assign members.<br/><br/>Note: You can get the group_id by executing the \"vectra-group-list\" command. | Required | 
+| members | A comma-separated list of member values based on the group type.<br/><br/>Note:<br/>You can get the members by executing the \"vectra-group-list\" command.<br/>If the group type is host, then the "Host IDs".<br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains". | Required | 
 
 #### Context Output
 
@@ -1711,8 +1716,8 @@ Unassign members from the specified group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | Specify Group ID to unassign members.<br/><br/>Note: User can get the group_id by executing the \"vectra-group-list\" command. | Required | 
-| members | Member values based on the group type. Supports comma-separated values.<br/><br/>Note:<br/>User can get the members by executing the \"vectra-group-list\" command.<br/>If the group type is host, then the "Host IDs".<br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains". | Required | 
+| group_id | Specify Group ID to unassign members.<br/><br/>Note: You can get the group_id by executing the \"vectra-group-list\" command. | Required | 
+| members | A comma-separated list of member values based on the group type.<br/><br/>Note:<br/>You can get the members by executing the \"vectra-group-list\" command.<br/>If the group type is host, then the "Host IDs".<br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains". | Required | 
 
 #### Context Output
 
@@ -1764,7 +1769,7 @@ Unassign members from the specified group.
 
 ### Receive Notification on an Incident Fetch Error
 
-The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [this XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) for more information.
+The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [this Cortex XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) for more information.
 
 ##### The following are tips for handling issues with mirroring incidents between Vectra and Cortex XSOAR
 
@@ -1772,13 +1777,13 @@ The administrator and Cortex XSOAR users on the recipient's list receive a notif
 | --- | --- |
 | Mirroring is not working. | Open Context Data and search for dbot. Confirm the dbot fields are configured correctly either through the mapper for that specific incident type or using setIncident. Specifically, make sure the integration instance is configured correctly for the mirroring direction (incoming, outgoing, both) - dbotMirrorId, dbotMirrorDirection, dbotMirrorInstance, dbotMirrorTags.|
 | Required fields are not getting sent or not visible in UI. | This may be a mapping issue, specifically if you have used a custom mapper make sure you've covered all the out of box mapper fields. |
-| Notes from XSOAR have not been mirrored in Vectra | Tag is required for mirroring notes from Cortex XSOAR to Vectra. There might be a reason the note is not tagged as the tag needs to be added manually in XSOAR.<br>Click Actions > Tags and add the "note" tag (OR the specific tag name which was set up on Instance Configuration).|
+| Notes from Cortex XSOAR have not been mirrored in Vectra | Tag is required for mirroring notes from Cortex XSOAR to Vectra. There might be a reason the note is not tagged as the tag needs to be added manually in Cortex XSOAR.<br>Click **Actions** > **Tags** and add the "note" tag (OR the specific tag name which was set up in the Instance Configuration).|
 
 ### Docker timeout issue for Fetch Incidents
 
 - If you encounter a timeout error while fetching incidents, you can try adjusting the value of the `max_fetch` parameter in the instance configuration. Setting it to a lower value, such as 50 can help prevent the timeout issue. 
 
-- Another way to address this issue is to increase the timeout of the Docker container. By default, Docker containers have a timeout of 5 minutes. You can increase this timeout to a higher value, such as 10 minutes, to allow more time for the fetch command to complete. Refer to [this XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Integration-Server-Configurations) for more information.
+- Another way to address this issue is to increase the timeout of the Docker container. By default, Docker containers have a timeout of 5 minutes. You can increase this timeout to a higher value, such as 10 minutes, to allow more time for the fetch command to complete. Refer to [this XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Integration-Server-Configurations) for more information.
 
 ### Handling HTTP 429 and 5xx Errors
 

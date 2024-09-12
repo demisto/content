@@ -48,7 +48,7 @@ configuration:
   additionalinfo: "The date or relative timestamp from which to begin fetching entities.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2024, 01 Aug 2024 04:45:33, 2024-07-17T14:05:44Z. (default - 7 days)"
   defaultvalue: 7 days
   required: false
-- additionalinfo: The mirroring direction in which to mirror the account and host. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions.
+- additionalinfo: The mirroring direction in which to mirror the account and host. You can mirror "Incoming" (from Vectra to Cortex XSOAR), "Outgoing" (from Cortex XSOAR to Vectra), or in both directions.
   display: Mirroring Direction
   hidden: false
   name: mirror_direction
@@ -75,7 +75,7 @@ configuration:
   - Detections
   defaultvalue: Accounts,Hosts
   required: false
-- additionalinfo: "Only Accounts or Hosts that contain any of the tags specified will be fetched.\n\nNote: For the partial match of the tag, use '*' at the start and end of word (Only Single word is allowed). Ex. *MDR*."
+- additionalinfo: "Only Accounts or Hosts that contain any of the tags specified will be fetched.\n\nNote: For the partial match of the tag, use '*' at the start and end of word (Only a single word is allowed). Ex. *MDR*."
   display: Tags
   name: tags
   type: 16
@@ -115,7 +115,7 @@ configuration:
 - display: Max created incidents per fetch
   name: max_fetch
   type: 0    # Short Text
-  additionalinfo: How many new incidents do you want to create at max per fetch. This value would be split between selected "Entity types to fetch". If the value is greater than 200, it will be considered as 200. The maximum is 200. (Default - 50)
+  additionalinfo: The maximum number of new incidents to create per fetch. This value would be split between selected "Entity types to fetch". If the value is greater than 200, it will be considered as 200. The maximum is 200. (Default - 50)
   defaultvalue: 50
   required: false
 - defaultvalue: 60
@@ -128,7 +128,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.9.110419
+  dockerimage: demisto/python3:3.11.10.111039
   isfetch: true
   commands:
     # Search Accounts / Hosts / Detections / Users / Outcomes (Assignment outcomes) / Assignments
@@ -373,7 +373,7 @@ script:
       description: Sensor LUID that saw this detection.
     - contextPath: Vectra.Detection.SensorName
       type: String
-      description: Sensor Name that saw this Detection.
+      description: Sensor name that saw this detection.
     - contextPath: Vectra.Detection.SourceAccountID
       type: String
       description: Account ID relating to this detection.
@@ -598,7 +598,7 @@ script:
     - description: Specify the ID of the account.
       name: account_id
       required: true
-    - description: "Specify the ID of the note. \n\nNote: Use vectra-account-note-list command to get note_id."
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-account-note-list command to get note_id."
       name: note_id
       required: true
     - description: Note to be updated for the specified note_id.
@@ -633,7 +633,7 @@ script:
     - description: Specify the ID of the account.
       name: account_id
       required: true
-    - description: "Specify the ID of the note. \n\nNote: Use vectra-account-note-list command to get note_id."
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-account-note-list command to get note_id."
       name: note_id
       required: true
     description: Remove a note from the account.
@@ -668,7 +668,7 @@ script:
       type: String
 
   - name: vectra-account-markall-detections-asfixed
-    description: Mark active detections as fixed by providing ID of account in the argument.
+    description: Mark active detections as fixed by providing the ID of the account in the argument.
     execution: true   # This command affects the Vectra system
     arguments:
     - name: account_id
@@ -766,7 +766,7 @@ script:
     - description: Specify the ID of the host.
       name: host_id
       required: true
-    - description: "Specify the ID of the note. \n\nNote: Use vectra-host-note-list command to get note_id."
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-host-note-list command to get note_id."
       name: note_id
       required: true
     - description: Note to be updated for the specified note_id.
@@ -801,7 +801,7 @@ script:
     - description: Specify the ID of the host.
       name: host_id
       required: true
-    - description: "Specify the ID of the note. \n\nNote: Use vectra-host-note-list command to get note_id."
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-host-note-list command to get note_id."
       name: note_id
       required: true
     description: Remove a note from the host.
@@ -836,7 +836,7 @@ script:
       type: String
 
   - name: vectra-host-markall-detections-asfixed
-    description: Mark active detections as fixed by providing ID of host in the argument.
+    description: Mark active detections as fixed by providing ID of the host in the argument.
     execution: true   # This command affects the Vectra system
     arguments:
     - name: host_id
@@ -953,7 +953,7 @@ script:
     - description: Specify the ID of the detection.
       name: detection_id
       required: true
-    - description: "Specify the ID of the note. \n\nNote: Use vectra-detection-note-list command to get note_id."
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-detection-note-list command to get note_id."
       name: note_id
       required: true
     - description: Note to be updated for the specified note_id.
@@ -988,7 +988,7 @@ script:
     - description: Specify the ID of the detection.
       name: detection_id
       required: true
-    - description: "Specify the ID of the note. \n\nNote: Use vectra-detection-note-list command to get note_id."
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-detection-note-list command to get note_id."
       name: note_id
       required: true
     description: Remove a note from the detection.
@@ -1222,10 +1222,10 @@ script:
       description: Whether the group is managed by Cognito or not.
       type: Boolean
   - arguments:
-    - description: "Specify Group ID to assign members.\n\nNote: User can get the group_id by executing the \"vectra-group-list\" command."
+    - description: "Specify Group ID to assign members.\n\nNote: You can get the group_id by executing the \"vectra-group-list\" command."
       name: group_id
       required: true
-    - description: "Member values based on the group type. Supports comma-separated values.\n\nNote:\nUser can get the members by executing the \"vectra-group-list\" command.\nIf the group type is host, then the \"Host IDs\".\nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
+    - description: "A comma-separated list of member values based on the group type.\n\nNote:\nYou can get the members by executing the \"vectra-group-list\" command.\nIf the group type is host, then the \"Host IDs\".\nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
       isArray: true
       name: members
       required: true
@@ -1275,10 +1275,10 @@ script:
       description: Description of the rule.
       type: String
   - arguments:
-    - description: "Specify Group ID to unassign members.\n\nNote: User can get the group_id by executing the \"vectra-group-list\" command."
+    - description: "Specify Group ID to unassign members.\n\nNote: You can get the group_id by executing the \"vectra-group-list\" command."
       name: group_id
       required: true
-    - description: "Member values based on the group type. Supports comma-separated values.\n\nNote:\nUser can get the members by executing the \"vectra-group-list\" command.\nIf the group type is host, then the \"Host IDs\".\nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
+    - description: "A comma-separated list of member values based on the group type.\n\nNote:\nYou can get the members by executing the \"vectra-group-list\" command.\nIf the group type is host, then the \"Host IDs\".\nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
       isArray: true
       name: members
       required: true
