@@ -621,9 +621,9 @@ def main():  # pragma: no cover
                 except Exception as e:
                     demisto.error(f'RF: Exception in long-running-execution: {str(e)}')
                 finally:
-                    sleep_time_in_minutes = interval * MINUTES
-                    demisto.debug(f"Sleeping for {sleep_time_in_minutes}")
-                    sleep(sleep_time_in_minutes)
+                    sleep_time_in_seconds = interval * MINUTES
+                    demisto.debug(f"Sleeping for {sleep_time_in_seconds}")
+                    sleep(sleep_time_in_seconds)
         elif demisto.command() == 'fetch-indicators':
             if not is_long_running:
                 run_fetch_indicator(client)
