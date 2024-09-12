@@ -1824,13 +1824,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 6171569a-753b-4669-840f-1929e5f5ad53
+    taskid: 7a26785e-f5dd-4561-896a-19bd45b9c190
     type: playbook
     task:
-      id: 6171569a-753b-4669-840f-1929e5f5ad53
+      id: 7a26785e-f5dd-4561-896a-19bd45b9c190
       version: -1
       name: Cortex XDR - Isolate Endpoint
-      description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+      description: This playbook accepts an XDR endpoint ID and isolates it using
+        the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
       playbookName: Cortex XDR - Isolate Endpoint
       type: playbook
       iscommand: false
@@ -1856,12 +1857,20 @@ tasks:
                 iscontext: true
       hostname:
         complex:
-          root: inputs.SrcHostname
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: host_name
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
+                iscontext: true
           - operator: uniq
       ip_list:
         complex:
-          root: inputs.SrcIPAddress
+          root: PaloAltoNetworksXDR.OriginalAlert._all_events
+          accessor: action_local_ip
           transformers:
           - operator: uniq
     separatecontext: true
