@@ -22,8 +22,8 @@ filter source_log_type = "audit"
 filter source_log_type = "network_activities"
 | alter
         protocol_string = to_string(protocol),
-        src_assetType = json_extract_scalar(src, "$.assetType"),
-        dst_assetType = json_extract_scalar(dst, "$.assetType"),
+        src_assetType = to_integer(json_extract_scalar(src, "$.assetType")),
+        dst_assetType = to_integer(json_extract_scalar(dst, "$.assetType")),
         inbound_rules_ids = arraymap(inboundRuleMatches -> [], json_extract_scalar("@element", "$.ruleId")),
         outbound_rules_ids = arraymap(outboundRuleMatches -> [], json_extract_scalar("@element", "$.ruleId"))
 | alter
@@ -35,8 +35,8 @@ filter source_log_type = "network_activities"
         xdm.source.host.fqdn = json_extract_scalar(src, "$.fqnd"),
         xdm.source.ipv4 = if(json_extract_scalar(src, "$.ip") ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", json_extract_scalar(src, "$.ip"), null),
         xdm.source.ipv6 = if(json_extract_scalar(src, "$.ip") ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", json_extract_scalar(src, "$.ip"), null),
-        xdm.source.port = json_extract_scalar(src, "$.port"),
-        xdm.source.process.pid = json_extract_scalar(src, "$.processId"),
+        xdm.source.port = to_integer(json_extract_scalar(src, "$.port")),
+        xdm.source.process.pid = to_integer(json_extract_scalar(src, "$.processId")),
         xdm.source.process.name = json_extract_scalar(src, "$.processName"),
         xdm.source.process.executable.path = json_extract_scalar(src, "$.processPath"),
         xdm.source.user.identifier = json_extract_scalar(src, "$.userId"),
@@ -47,8 +47,8 @@ filter source_log_type = "network_activities"
         xdm.target.host.fqdn = json_extract_scalar(dst, "$.fqnd"),
         xdm.target.ipv4 = if(json_extract_scalar(dst, "$.ip") ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", json_extract_scalar(dst, "$.ip"), null),
         xdm.target.ipv6 = if(json_extract_scalar(dst, "$.ip") ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", json_extract_scalar(dst, "$.ip"), null),
-        xdm.target.port = json_extract_scalar(dst, "$.port"),
-        xdm.target.process.pid = json_extract_scalar(dst, "$.processId"),
+        xdm.target.port = to_integer(json_extract_scalar(dst, "$.port")),
+        xdm.target.process.pid = to_integer(json_extract_scalar(dst, "$.processId")),
         xdm.target.process.name = json_extract_scalar(dst, "$.processName"),
         xdm.target.process.executable.path = json_extract_scalar(dst, "$.processPath"),
         xdm.target.user.identifier = json_extract_scalar(dst, "$.userId"),
