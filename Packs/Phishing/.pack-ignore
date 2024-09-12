@@ -57,6 +57,10 @@ ignore=RM106
 [file:Entity_Enrichment_-_Phishing_v2.yml]
 ignore=PB118
 
+[file:layoutscontainer-Phishing_Layout_XSIAM.json]
+ignore=LO107
+
+
 [known_words]
 CheckEmailAuthenticity
 DeleteReportedEmail
