@@ -1,7 +1,7 @@
 ## Mandiant Threat Intelligence Feed
 
 ### Prerequisites
-- A Mandiant Advantage Threat Intelligence account
+A Mandiant Advantage Threat Intelligence account.
 
 ### Get Credentials
 - Log into `advantage.mandiant.com`
