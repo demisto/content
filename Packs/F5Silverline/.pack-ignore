@@ -7,8 +7,10 @@ ignore=IF100
 [file:incident_f5silverlineipintelligenceevent.json]
 ignore=IF100
 
+# GR103 is temporary, see CIAC-11705
 [file:classifier-F5Silverline_mapper.json]
-ignore=BA101
+ignore=BA101,GR103
+
 
 [file:incident_f5silverlineactionreason.json]
 ignore=BA113
