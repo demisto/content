@@ -1,10 +1,11 @@
-from typing import Any
-from collections.abc import Callable
-
-import uuid
 import urllib3
+import uuid
+from collections.abc import Callable
+from typing import Any
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Office 365 Feed, pack version = 1.2.13')
 
-from CommonServerPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
