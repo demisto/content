@@ -394,6 +394,7 @@ async def check_and_handle_entitlement(answer_text: str, root_id: str, user_name
         reply = message.get('reply')
         guid, incident_id, task_id = extract_entitlement(entitlement)
         demisto.handleEntitlementForUser(incident_id, guid, user_name, answer_text, task_id)
+        demisto.debug(f"MM: Handled entitlement for {incident_id=}, {task_id=} with {answer_text=}")
         message['remove'] = True
         set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
     return reply
@@ -477,7 +478,6 @@ def long_running_loop():  # pragma: no cover
 
 
 def check_for_unanswered_messages():
-    demisto.debug('MM: checking for unanswered messages')
     integration_context = fetch_context()
     messages = integration_context.get('messages')
     if messages:
@@ -1149,7 +1149,7 @@ def test_module(client: HTTPClient) -> str:  # pragma: no cover
         if 'Unable to find the existing team' in str(e):
             raise DemistoException('Could not find the team, make sure it is valid and/or exists.')
         elif 'Channel does not exist' in str(e):
-            raise DemistoException('Channel does not exist.')
+            raise DemistoException('Channel does not exist or archived, choose a different channel to send notifications to')
         else:
             raise e
 
