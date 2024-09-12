@@ -108,7 +108,7 @@ configuration:
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  additionalinfo: 'How frequently the Feed should check Mandiant for new indicators'
+  additionalinfo: 'How frequently the feed should check Mandiant for new indicators.'
   type: 19
   required: true
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
