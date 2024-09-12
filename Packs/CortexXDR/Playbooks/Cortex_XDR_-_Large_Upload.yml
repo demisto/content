@@ -3002,10 +3002,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 2e32afa9-757a-4aa0-83b1-2736da8d3bc0
+    taskid: 95e865d5-ec80-49d2-8982-b1db90c547a6
     type: condition
     task:
-      id: 2e32afa9-757a-4aa0-83b1-2736da8d3bc0
+      id: 95e865d5-ec80-49d2-8982-b1db90c547a6
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the 'large upload HTTPS' Cortex XDR alerts.
@@ -3208,7 +3208,17 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: inputs.SrcHostname
+                        simple: PaloAltoNetworksXDR.Incident.alerts.host_name
+                      iscontext: true
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.RiskyHost.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
                       iscontext: true
                     ignorecase: true
                 accessor: 'risk_level '
