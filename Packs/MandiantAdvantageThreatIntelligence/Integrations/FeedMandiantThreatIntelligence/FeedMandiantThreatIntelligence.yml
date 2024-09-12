@@ -12,7 +12,7 @@ configuration:
   name: feed
   type: 8
   required: false
-- additionalinfo: Your API Key from Mandiant Advantage Threat Intelligence
+- additionalinfo: Your API Key from Mandiant Advantage Threat Intelligence.
   display: API Key
   name: api_key
   required: true
