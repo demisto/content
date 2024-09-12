@@ -1219,6 +1219,28 @@ Creates a service.
 | Panorama.Services.DeviceGroup | string | The device group for the service \(Panorama instances\). | 
 | Panorama.Services.Tags | String | The service tags. | 
 
+
+#### Command Example
+```!pan-os-create-service name=guy_ser3 protocol=udp destination_port=36 description=bfds```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Services": {
+            "Description": "bfds",
+            "DestinationPort": "36",
+            "Name": "guy_ser3",
+            "Protocol": "udp"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Service was created successfully.
+
 ### pan-os-delete-service
 ***
 Deletes a service.
@@ -8817,6 +8839,41 @@ Returns a list of tags from Panorama.
 | Panorama.Tag.comment | String | The comment in the tag. | 
 | Panorama.Tag.disable-override | String | Whether overriding the tag is disabled. | 
 | Panorama.Tag.location | String | The tag's device group location. | 
+
+#### Command example
+```!pan-os-list-tag include_shared_tags=No```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Tag": [
+            {
+                "name": "tag1",
+                "color": "color13"
+            },
+            {
+                "name": "tag2",
+                "color": "color39"
+            },
+            {
+                "name": "tag3",
+                "color": "color39",
+                "disable-override": "no",
+                "comments": "text text text"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tags:
+>|Name|Color|Comment|
+>|---|---|---|
+>| tag1 | color13 |  |
+>| tag2 | color39 |  |
+>| tag3 | color39 | text text text |
 
 ### pan-os-create-tag
 
