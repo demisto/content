@@ -36,6 +36,7 @@ configuration:
   required: false
   type: 0
   section: Connect - Advanced
+  defaultvalue: incidentNotificationChannel
   additionalinfo: If Notifications Channel name is not specified, will send notification to incidentNotificationChannel channel.
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
@@ -68,7 +69,7 @@ configuration:
   - mentionOld
   advanced: true
   required: false
-  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
+  additionalinfo: Notifications of type 'externalAskSubmit' or 'externalFormSubmit' are not configurable because they are required to allow Ask tasks to be sent correctly.
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning

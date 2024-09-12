@@ -694,7 +694,7 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
             except Exception as e:
                 if channel_name == INCIDENT_NOTIFICATION_CHANNEL:
                     try:
-                        demisto.debug(f'MM: Creating a {INCIDENT_NOTIFICATION_CHANNEL} channel to send notification to')
+                        demisto.debug(f'MM: Creating a {INCIDENT_NOTIFICATION_CHANNEL} channel to send notification to.')
                         params = {'team_id': get_team_id_from_team_name(client, client.team_name),
                                   'name': INCIDENT_NOTIFICATION_CHANNEL,
                                   'display_name': INCIDENT_NOTIFICATION_CHANNEL,
@@ -704,12 +704,12 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
                     except Exception as sec_e:
                         if 'Channel does not exist.' in str(sec_e):
                             hr = 'Could not create a new channel. An archived channel with the same name may exist' \
-                                'in the provided team. Please choose a different name.'
+                                'in the provided team, choose a different name.'
                             raise DemistoException(hr)
                         else:
                             raise sec_e
                 else:
-                    raise DemistoException(f"Did not find channel with name {channel_name}. Make sure it exists. Error: {e}")
+                    raise DemistoException(f"Did not find channel with name {channel_name}. Make sure it exists or choose a different one. Error: {e}")
 
     return channel_id
 
@@ -1641,9 +1641,9 @@ def handle_global_parameters(params: dict):  # pragma: no cover
     PROXY_URL = PROXIES.get('http', '')  # aiohttp only supports http proxy
     ALLOW_INCIDENTS = params.get('allow_incidents', True)
     INCIDENT_TYPE = params.get('incidentType', 'Unclassified')
-    DEFAULT_PERMITTED_NOTIFICATION_TYPES = ['externalAskSubmit', 'externalFormSubmit']
-    CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
-    PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
+    default_permitted_notification_types = ['externalAskSubmit', 'externalFormSubmit']
+    custom_permitted_notification_types = demisto.params().get('permitted_notifications', [])
+    PERMITTED_NOTIFICATION_TYPES = default_permitted_notification_types + custom_permitted_notification_types
     VERIFY_CERT = not params.get('insecure', False)
     if not VERIFY_CERT:
         SSL_CONTEXT = ssl.create_default_context()
