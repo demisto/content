@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from copy import copy
-from functools import lru_cache
-from urllib3 import disable_warnings
-from requests.exceptions import HTTPError
-from requests import Response
-from collections.abc import Callable, Iterable, Iterator
 from collections import deque
+from collections.abc import Callable, Iterable, Iterator
+from requests import Response
+from requests.exceptions import HTTPError
+from urllib3 import disable_warnings
+from functools import lru_cache
+from copy import copy
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Zendesk, pack version = 2.1.3')
 
 
 STR_OR_STR_LIST = str | list[str]
@@ -655,7 +656,7 @@ class ZendeskClient(BaseClient):
             if followers:
                 self._data['followers'] = list(map(self.follower_and_email_cc_parse, argToList(followers)))
             if email_ccs:
-                self._data['email_ccs'] = list(map(self.follower_and_email_cc_parse, argToList(followers)))
+                self._data['email_ccs'] = list(map(self.follower_and_email_cc_parse, argToList(email_ccs)))
 
             self._data.update(prepare_kwargs(
                 kwargs=kwargs,

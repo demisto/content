@@ -5,7 +5,6 @@ name: Zendesk v2
 display: Zendesk v2
 category: Case Management
 description: IT service management.
-detaileddescription: Zendesk integration requires the API key and a username.
 configuration:
 - display: Server URL (e.g., https://demisto.zendesk.com)
   name: base_url
@@ -152,7 +151,7 @@ configuration:
   advanced: true
   required: false
 script:
-  script: '-'
+  script: ''
   type: python
   commands:
   - name: zendesk-user-list
@@ -725,7 +724,7 @@ script:
       description: |-
         The ID of a specific group.
     - name: limit
-      defaultValue: 50
+      defaultValue: '50'
       description: Maximum number of results to return.
     - name: page_size
       description: The page size (used for pagination).
@@ -1579,6 +1578,7 @@ script:
     description: Get remote data from a remote incident. Note that this method will not update the current incident. It's used for debugging purposes.
   - description: Returns the list of fields for an incident type.
     name: get-mapping-fields
+    arguments: []
   - arguments:
     - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
@@ -1586,14 +1586,15 @@ script:
     name: get-modified-remote-data
   - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.14.99474
+    arguments: []
+  dockerimage: demisto/python3:3.11.10.111039
   isfetch: true
   subtype: python3
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   isFetchSamples: true
-defaultmapperin: Zendesk - Incoming Mapper
+  runonce: false
 fromversion: 6.6.0
 tests:
 - Zendesk V2 TEST
