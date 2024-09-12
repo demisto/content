@@ -1,3 +1,5 @@
+from time import sleep
+
 import demistomock as demisto
 from CommonServerPython import *
 import zlib
@@ -19,7 +21,7 @@ DEFAULT_MALICIOUS_THRESHOLD_VALUE: int = 65
 DEFAULT_SUSPICIOUS_THRESHOLD_VALUE: int = 25
 DEFAULT_RISK_SCORE_THRESHOLD_VALUE: int = 0
 INTEGRATION_NAME = 'Recorded Future'
-
+MINUTES = 60
 # taken from recorded future docs
 RF_CRITICALITY_LABELS = {
     'Very_Malicious': 90,
@@ -578,9 +580,22 @@ def get_risk_rules_command(client: Client, args) -> tuple[str, dict, dict]:
     return hr, {'RecordedFutureFeed.RiskRule(val.Name == obj.Name)': entry_result}, result
 
 
+def run_fetch_indicator(client: Client) -> None:
+    if client.risk_rule:
+        for risk_rule in client.risk_rule:
+            demisto.debug(f'RF: Fetching indicators for {risk_rule=}')
+            fetch_and_create_indicators(client, risk_rule)
+    else:  # there are no risk rules
+        demisto.debug('RF: Fetching indicators without risk rules')
+        fetch_and_create_indicators(client)
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
+    interval = arg_to_number(params.get('feedFetchInterval')) or 60
+    is_long_running = argToBoolean(params.get("longRunning")) or False
+
     if not api_token:
         raise DemistoException('API Token must be provided.')
     demisto.debug('RF: Initializing client')
@@ -599,15 +614,21 @@ def main():  # pragma: no cover
         'rf-feed-get-risk-rules': get_risk_rules_command
     }
     try:
-        if demisto.command() == 'fetch-indicators':
-            if client.risk_rule:
-                for risk_rule in client.risk_rule:
-                    demisto.debug(f'RF: Fetching indicators for {risk_rule=}')
-                    fetch_and_create_indicators(client, risk_rule)
-            else:  # there are no risk rules
-                demisto.debug('RF: Fetching indicators without risk rules')
-                fetch_and_create_indicators(client)
-
+        if demisto.command() == "long-running-execution":
+            while True:
+                try:
+                    run_fetch_indicator(client)
+                except Exception as e:
+                    demisto.error(f'RF: Exception in long-running-execution: {str(e)}')
+                finally:
+                    sleep_time_in_minutes = interval * MINUTES
+                    demisto.debug(f"Sleeping for {sleep_time_in_minutes}")
+                    sleep(sleep_time_in_minutes)
+        elif demisto.command() == 'fetch-indicators':
+            if not is_long_running:
+                run_fetch_indicator(client)
+            else:
+                demisto.debug("The integration is in the long-running mode. Skipping command execution.")
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)

@@ -3,6 +3,13 @@ commonfields:
   id: Recorded Future Feed
   version: -1
 configuration:
+- defaultvalue: 'true'
+  display: Long Running Instance
+  name: longRunning
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Enable the instance to run for an extended period of time without timing out.
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
@@ -214,6 +221,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  longRunning: true
 tests:
 - RecordedFutureFeed - Test
 fromversion: 5.5.0
