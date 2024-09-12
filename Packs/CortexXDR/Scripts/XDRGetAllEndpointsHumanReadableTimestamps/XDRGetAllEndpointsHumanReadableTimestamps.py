@@ -6,7 +6,6 @@ def convert_unix_to_human_readable(timestamp):
     hr_timestamp = demisto.executeCommand("TimeStampToDate", {"value": timestamp})[0]['Contents']
     return hr_timestamp
 
-
 def get_all_endpoints(xdr_query_args):
     # Get all XDR endpoints
     endpoints = []
@@ -41,7 +40,6 @@ def get_all_endpoints(xdr_query_args):
         conv_endpoints.append(endpoint)
     return conv_endpoints
 
-
 def main():
     try:
         args = demisto.args()
@@ -75,7 +73,6 @@ def main():
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute XDRGetAllEndpointsHumanReadableTimestamps. Error: {str(ex)}')
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

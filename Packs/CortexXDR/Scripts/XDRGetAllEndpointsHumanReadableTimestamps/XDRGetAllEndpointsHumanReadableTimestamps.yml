@@ -1,10 +1,10 @@
 args:
-- description: 'All the agents that were last seen before {last_seen_gte}. Supported values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00" (date).'
+- description: 'All the agents that were last seen before {last_seen_gte}. Supported values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00" (date)'
   name: last_seen_gte
-- description: 'All the agents that were last seen before {last_seen_lte}. Supported values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00" (date).'
+- description: 'All the agents that were last seen before {last_seen_lte}. Supported values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00" (date)'
   name: last_seen_lte
 - auto: PREDEFINED
-  description: Endpoint status value to filter on.
+  description: Endpoint status value to filter on
   name: endpoint_status
   predefined:
   - connected
@@ -12,22 +12,23 @@ args:
   - lost
   - uninstalled
 - auto: PREDEFINED
-  description: Endpoint platform value to filter on.
+  description: Endpoint platform value to filter on
   name: platform
   predefined:
   - windows
   - linux
   - macos
   - android
-- description: Endpoint group name to filter for.
+- description: Endpoint group name to filter for
   name: group_name
 comment: Iterate through all pages of results to get all XDR endpoints. Convert endpoint timestamp attributes from Unix epoch time to human-readable timestamps. Optionally, filter endpoints by timestamp, status, platform, or group name.
 commonfields:
   id: 'XDRGetAllEndpointsHumanReadableTimestamps'
   version: -1
-dockerimage: demisto/python3:3.11.10.111039
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 engineinfo: {}
+mainengineinfo: {}
 name: XDRGetAllEndpointsHumanReadableTimestamps
 outputs:
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
@@ -82,6 +83,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Endpoint.group_name
   description: The name of the group to which the endpoint belongs.
   type: string
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -89,6 +91,4 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.10.0
-tests:
-- No tests (auto formatted)
+fromversion: 5.5.0
