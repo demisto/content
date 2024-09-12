@@ -899,7 +899,7 @@ script:
     - contextPath: Panorama.Services.Protocol
       description: The service protocol.
       type: string
-    - contextPath: Panorama.Services.Descritpion
+    - contextPath: Panorama.Services.Description
       description: The service description.
       type: string
     - contextPath: Panorama.Services.DestinationPort
