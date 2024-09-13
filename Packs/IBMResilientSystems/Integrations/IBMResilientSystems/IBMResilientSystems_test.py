@@ -862,8 +862,57 @@ def test_get_modified_remote_data_command(mocker):
 
     mock_search_incidents.assert_called_once_with(client, args={'last-modified-after': last_update})
     assert result.modified_incident_ids == expected_output.modified_incident_ids
+
+
 def test_get_remote_data_command(mocker):
-    pass
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, get_remote_data_command
+
+    # Mock client and its methods
+    client = SimpleClient()
+    client.org_id = 0
+
+    incident_id = "1000"
+    last_update = "2024-01-01T00:00:00Z"
+
+    # Mock incoming arguments
+    args = {
+        'id': incident_id,
+        'lastUpdate': last_update
+    }
+
+    # Mock the get_incident and process_raw_incident function behavior
+    mock_incident_data = {
+        'plan_status': 'A',  # 'A' stands for Active
+        'end_date': None,
+        'notes': [{
+            'modify_date': 1725880565507,
+            'text': {'content': 'Note content'},
+            'created_by': 'User 1'
+        }],
+        'attachments': [{
+            'ID': '1',
+            'Create Time': 1725880565507,
+            'Name': 'Attachment1'
+        }]
+    }
+
+    mocker.patch('IBMResilientSystems.get_incident', return_value=mock_incident_data)
+    mocker.patch('IBMResilientSystems.process_raw_incident', return_value=mock_incident_data)
+
+    # Mock get_attachment and handle_incoming_incident_resolution
+    mocker.patch('IBMResilientSystems.get_attachment', return_value=("filename.txt", b"file content"))
+    mocker.patch('IBMResilientSystems.handle_incoming_incident_resolution', return_value={'Contents': 'Incident resolved'})
+    # Call the command and capture the result
+    result = get_remote_data_command(client, args, tag_to_ibm="FROM ", tag_from_ibm="TO ")
+
+    # Check if the result contains the expected mirrored data and entries
+    assert len(result.entries) == 3  # A note, a file, and a reopen entry.
+    assert "Note content" in result.entries[0].get('Contents')
+    assert "filename.txt" in result.entries[1].get('File')
+    assert result.mirrored_object
 
 
 def test_update_remote_system(mocker):
