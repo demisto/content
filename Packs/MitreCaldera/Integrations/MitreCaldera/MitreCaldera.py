@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
@@ -1323,6 +1325,133 @@ def get_objectives_command(client: Client, args: Dict[str, Any]) -> CommandResul
     return command_results
 
 
+def normalize_date_str(date_str: str) -> str:
+    """
+    Normalizes a date string to the target DATE_FORMAT.
+    """
+    # Remove the trailing 'Z' if it exists
+    if date_str[-1].lower() == "z":
+        date_str = date_str[:-1]
+
+    # Try parsing the date string with and without fractional seconds
+    try:
+        date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+    except ValueError:
+        date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+
+    # Format the datetime object back to a string in the target format
+    return date_obj.strftime(DATE_FORMAT)
+
+
+def get_last_fetch_time(last_run, params):
+    last_fetch = last_run.get("latest_operation_found")
+    if not last_fetch:
+        demisto.debug("[Caldera] First run")
+        # handle first time fetch
+        first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
+        default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
+        assert default_fetch_datetime is not None, f"failed parsing {first_fetch}"
+        last_fetch = str(default_fetch_datetime.isoformat(timespec="milliseconds")) + "Z"
+
+    demisto.debug(f"[Caldera] last_fetch: {last_fetch}")
+    return last_fetch
+
+
+def filter_operations(operations: list, client_name: str) -> list:
+    """
+    Filters a list of operations to include only those that contain the specified client name.
+
+    Args:
+        operations (list): A list of dictionaries, where each dictionary represents an operation.
+        client_name (str): The name of the client to filter the operations by.
+
+    Returns:
+        list: A list of dictionaries containing only the operations where the client's name is present in the "name" field.
+    """
+    return [operation for operation in operations if client_name in operation.get("name")]
+
+
+def operation_to_incident(operation: dict, operation_date: str) -> dict:
+    """
+    Converts an operation dictionary into an incident dictionary.
+
+    Args:
+        operation (dict): A dictionary containing details of the operation.
+        operation_date (str): The date when the operation occurred.
+
+    Returns:
+        dict: A dictionary representing the incident, including the operation's ID, name, and the date it occurred.
+    """
+    operation_id = operation.get("id")
+    operation_name = operation.get("name")
+    incident = {
+        "name": f"Caldera: {operation_id} {operation_name}",
+        "occured": f"{operation_date}",
+        "rawJSON": json.dumps(operation),
+    }
+    return incident
+
+
+def operations_to_incidents(operations: list, last_fetch_datetime: str) -> tuple[list, str]:
+    """
+    Converts a list of operations into a list of incidents and updates the latest incident time.
+
+    Args:
+        operations (list): A list of dictionaries, where each dictionary represents an operation.
+        last_fetch_datetime (str): The datetime string representing the last time incidents were fetched.
+
+    Returns:
+        tuple: A tuple containing:
+            - A list of dictionaries, each representing an incident.
+            - A string representing the latest incident time.
+    """
+    incidents: List[Dict[str, str]] = []
+    latest_incident_time = last_fetch_datetime
+
+    for operation in operations:
+        operation_datetime = operation.get("start", "")
+        incident = operation_to_incident(operation, operation_datetime)
+        incidents.append(incident)
+
+        if datetime.strptime(normalize_date_str(operation_datetime), DATE_FORMAT) > datetime.strptime(
+            normalize_date_str(latest_incident_time), DATE_FORMAT
+        ):
+            latest_incident_time = operation_datetime
+
+    return incidents, latest_incident_time
+
+
+def fetch_incidents(client: Client, params: Dict[str, str]):
+    last_run: Dict[str, str] = demisto.getLastRun()
+    demisto.debug(f"[Caldera] last run: {last_run}")
+
+    last_fetch = get_last_fetch_time(last_run, params)
+    demisto.debug(f"[Caldera] last fetch is: {last_fetch}")
+
+    operations = client.get_operations(None, [], [])
+
+    # Fetch only operations after last fetch time
+    operations = [
+        operation for operation in operations if datetime.strptime(
+            normalize_date_str(operation.get("start")), DATE_FORMAT) > datetime.strptime(
+            normalize_date_str(last_fetch), DATE_FORMAT)
+    ]
+
+    if client_name := params.get("client_name"):
+        operations = filter_operations(operations, client_name)
+
+    incidents, latest_operation_time = operations_to_incidents(operations, last_fetch_datetime=last_fetch)
+
+    demisto.debug(f"[Caldera] Fetched {len(incidents)} incidents")
+
+    demisto.debug(f"[Caldera] next run latest_operation_found: {latest_operation_time}")
+    last_run = {
+        "latest_operation_found": latest_operation_time,
+    }
+
+    return incidents, last_run
+
+
 def get_operations_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     operation_id = args.get('id')
     sort = args.get('sort')
@@ -1980,6 +2109,10 @@ def main() -> None:
             test_module(client)
         elif command in commands:
             return_results(commands[command](client, args))
+        elif command == "fetch-incidents":
+            incidents, last_run = fetch_incidents(client, params)
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
