@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 import json
-from datetime import datetime
 
 import urllib3
 from typing import Any
@@ -23,17 +22,18 @@ GET_ASSET_FILES = "/v1/classification/asset-files/id"
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
 GET_CURRENT_JIRA_USER_ENDPOINT: str = "/rest/api/2/myself"
+GET_RISK_FINDING_BY_ID: str = "/v1/risk-findings/id/"
 INCIDENT_STATUS = {"OPEN": 1, "INVESTIGATING": 2, "HANDLED": 2, "CLOSED": 2}
 RISK_STATUS = {"Active": "OPEN", "Closed": "INVESTIGATING", "Pending": "INVESTIGATING"}
-MIRROR_DIRECTION = {
-    "None": None,
-    "Incoming": "In",
-    "Outgoing": "Out",
-    "Incoming And Outgoing": "Both",
-}
+# MIRROR_DIRECTION = {
+#     "None": None,
+#     "Incoming": "In",
+#     "Outgoing": "Out",
+#     "Incoming And Outgoing": "Both",
+# }
 
 SUPPORTED_CLOUD_PROVIDERS = ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]
-SUPPORTED_AFFECTS = [
+SUPPORTED_CATEGORIES = [
     "SECURITY",
     "COMPLIANCE",
     "GOVERNANCE",
@@ -42,7 +42,7 @@ SUPPORTED_AFFECTS = [
     "COMPLIANCE_AND_GOVERNANCE",
     "SECURITY_AND_COMPLIANCE_AND_GOVERNANCE",
 ]
-SUPPORTED_STATUS = [
+SUPPORTED_STATUSES = [
     "OPEN",
     "CLOSED",
     "UNIMPORTANT",
@@ -50,7 +50,7 @@ SUPPORTED_STATUS = [
     "HANDLED",
     "INVESTIGATING",
 ]
-SUPPORTED_SERVICES_TYPE = [
+SUPPORTED_SERVICE_TYPES = [
     "ATHENA",
     "AURORA",
     "AWS_BACKUP",
@@ -137,7 +137,7 @@ SUPPORTED_SERVICES_TYPE = [
 ]
 SUPPORTED_LIFECYCLE = ["RUNNING", "STOPPED", "DELETED"]
 SORTING_ORDER = ["ASC", "DESC"]
-SUPPORTED_STATUS = [
+SUPPORTED_STATUSES = [
     "OPEN",
     "CLOSED",
     "UNIMPORTANT",
@@ -228,7 +228,7 @@ class Client(BaseClient):
         :return: The incident data as a dictionary.
         """
         return self._http_request(
-            method="GET", url_suffix=f"/v1/risk-findings/id/{risk_id}"
+            method="GET", url_suffix=f"{GET_RISK_FINDING_BY_ID}{risk_id}"
         )
 
     def update_risk_status(self, risk_id: str, updated_status: str):
@@ -289,17 +289,17 @@ def create_gcp_access_token(gcp_service_account_json):
     return access_token
 
 
-def validate_parameter_list_and_equal(
+def validate_parameter(
     param_name: str, param_in: str, param_equal: str, supported_list: list[str]
 ):
     if param_in:
         param_list = [item.strip() for item in param_in.split(",") if item.strip()]
         for param in param_list:
             if param not in supported_list:
-                raise ValueError(f'This "{param}" {param_name} does not supported')
+                raise ValueError(f'This "{param}" {param_name} is not supported')
 
     if param_equal and param_equal not in supported_list:
-        raise ValueError(f'This "{param_equal}" {param_name} does not supported')
+        raise ValueError(f'This "{param_equal}" {param_name} is not supported')
 
 
 """ COMMAND FUNCTIONS """
@@ -322,27 +322,28 @@ def test_module(client: Client) -> str:
             return "Error"
 
 
-def get_risk_findings_command(
+def dspm_get_risk_findings(
     client: Client, args: dict[str, Any], page: int
 ) -> list[dict]:
+    """Fetch list of DSPM Risk findings"""
     # Validate and process cloudProvider parameters
     cloudProviderIn = args.get("cloudProviderIn", "")
     cloudProviderEqual = args.get("cloudProviderEqual", "")
-    validate_parameter_list_and_equal(
+    validate_parameter(
         "cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS
     )
 
     # Check supported affects
     affectsIn = args.get("affectsIn", "")
     affectsEqual = args.get("affectsEqual", "")
-    validate_parameter_list_and_equal(
-        "affects", affectsIn, affectsEqual, SUPPORTED_AFFECTS
+    validate_parameter(
+        "affects", affectsIn, affectsEqual, SUPPORTED_CATEGORIES
     )
 
     # Check supported Status
     statusIn = args.get("statusIn", "")
     statusEqual = args.get("statusEqual", "")
-    validate_parameter_list_and_equal("status", statusIn, statusEqual, SUPPORTED_STATUS)
+    validate_parameter("status", statusIn, statusEqual, SUPPORTED_STATUSES)
 
     # Check supported sorting order
     sort_order = args.get("sort")
@@ -400,7 +401,7 @@ def get_risk_findings_command(
     return parsed_findings
 
 
-def get_risk_finding_by_id_command(
+def get_risk_finding_by_id(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
     risk_id = args.get("finding_id")
@@ -411,7 +412,7 @@ def get_risk_finding_by_id_command(
     response = client.get_risk_information(risk_id)
 
     if not response:
-        raise ValueError(f"No finding found with id {risk_id}")
+        raise ValueError(f"No risk found with id {risk_id}")
 
     finding = response if isinstance(response, dict) else response[0]
 
@@ -440,21 +441,21 @@ def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> list[
     # Validate and process cloudProvider parameters
     cloudProviderIn = args.get("cloudProviderIn", "")
     cloudProviderEqual = args.get("cloudProviderEqual", "")
-    validate_parameter_list_and_equal(
+    validate_parameter(
         "cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS
     )
 
     # Validate and process serviceType parameters
     service_Type_In = args.get("serviceTypeIn", "")
     service_Type_Equal = args.get("serviceTypeEqual", "")
-    validate_parameter_list_and_equal(
-        "serviceType", service_Type_In, service_Type_Equal, SUPPORTED_SERVICES_TYPE
+    validate_parameter(
+        "serviceType", service_Type_In, service_Type_Equal, SUPPORTED_SERVICE_TYPES
     )
 
     # Validate and process lifecycle parameters
     lifecycle_In = args.get("lifecycleIn", "")
     lifecycle_Equal = args.get("lifecycleEqual", "")
-    validate_parameter_list_and_equal(
+    validate_parameter(
         "lifecycle", lifecycle_In, lifecycle_Equal, SUPPORTED_LIFECYCLE
     )
 
@@ -514,7 +515,7 @@ def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> list[
     return parsed_assets
 
 
-def get_asset_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_asset_details(client: Client, args: dict[str, Any]) -> CommandResults:
     asset_id = args.get("asset_id", None)
     if not asset_id:
         raise ValueError("asset_id not specified")
@@ -535,7 +536,7 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
         raise ValueError("Asset ID not specified")
 
     page_number = 1
-    page_size = 50  # You can adjust the page size as needed
+    page_size = MAX_PAGE_SIZE  # You can adjust the page size as needed
     all_files = []
 
     while True:
@@ -569,7 +570,7 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
     )
 
 
-def get_data_types_command(client: Client) -> CommandResults:
+def get_data_types(client: Client) -> CommandResults:
     """Command to fetch data types."""
     data_types = client.get_data_types()
     data_types_formatted = [
@@ -600,21 +601,21 @@ def get_data_type_findings(
     # check supported cloud providers
     cloudProviderIn = args.get("cloudProviderIn", "")
     cloudProviderEqual = args.get("cloudProviderEqual", "")
-    validate_parameter_list_and_equal(
+    validate_parameter(
         "cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS
     )
 
     # check supported service type
     serviceTypeIn = args.get("serviceTypeIn", "")
     serviceTypeEqual = args.get("serviceTypeEqual", "")
-    validate_parameter_list_and_equal(
-        "serviceType", serviceTypeIn, serviceTypeEqual, SUPPORTED_SERVICES_TYPE
+    validate_parameter(
+        "serviceType", serviceTypeIn, serviceTypeEqual, SUPPORTED_SERVICE_TYPES
     )
 
     # check supported lifecycle
     lifecycleIn = args.get("lifecycleIn", "")
     lifecycleEqual = args.get("lifecycleEqual", "")
-    validate_parameter_list_and_equal(
+    validate_parameter(
         "lifecycle", lifecycleIn, lifecycleEqual, SUPPORTED_LIFECYCLE
     )
 
@@ -646,11 +647,11 @@ def get_data_type_findings(
     return data_type_findings
 
 
-def update_risk_finding_status_command(client, args):
+def update_risk_finding_status(client, args):
     finding_id = args.get("riskFindingId")
     status = args.get("status")
-    if status and status not in SUPPORTED_STATUS:
-        raise ValueError(f'This "{status}" cloud provider does not supported')
+    if status and status not in SUPPORTED_STATUSES:
+        raise ValueError(f'This "{status}" cloud provider is not supported')
 
     try:
         response = client.update_risk_status(finding_id, status)
@@ -679,107 +680,107 @@ def update_risk_finding_status_command(client, args):
 """ FETCH INCIDENTS FUNCTION"""
 
 
-def fetch_incidents(client: Client, mirror_direction):
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get("last_fetch")
-    processed_ids = last_run.get("processed_ids", [])
+# def fetch_incidents(client: Client, mirror_direction):
+#     last_run = demisto.getLastRun()
+#     last_fetch = last_run.get("last_fetch")
+#     processed_ids = last_run.get("processed_ids", [])
 
-    if last_fetch is None:
-        last_fetch = "1970-01-01T00:00:00Z"
+#     if last_fetch is None:
+#         last_fetch = "1970-01-01T00:00:00Z"
 
-    incidents = []
-    page = 0
-    size = 1  # 50 is max size we can provide.
-    findings = []
+#     incidents = []
+#     page = 0
+#     size = 1  # 50 is max size we can provide.
+#     findings = []
 
-    while True:
-        response = client.fetch_risk_findings(
-            {
-                "page": page,
-                "size": size,
-                "ruleName.equals": "Sensitive asset open to world",
-            }
-        )
-        new_findings = response
-        if not new_findings or page == 1:
-            break
-        findings.extend(new_findings)
-        page += 1
+#     while True:
+#         response = client.fetch_risk_findings(
+#             {
+#                 "page": page,
+#                 "size": size,
+#                 "ruleName.equals": "Sensitive asset open to world",
+#             }
+#         )
+#         new_findings = response
+#         if not new_findings or page == 1:
+#             break
+#         findings.extend(new_findings)
+#         page += 1
 
-    demisto.debug(f"Total number of findings fetched: {len(findings)}")
+#     demisto.debug(f"Total number of findings fetched: {len(findings)}")
 
-    for finding in findings:
-        finding_id = finding.get("id")
-        occurred_time = datetime.utcnow().strftime(DATE_FORMAT)
-        # finding.update(get_mirroring_fields(mirror_direction))
+#     for finding in findings:
+#         finding_id = finding.get("id")
+#         occurred_time = datetime.utcnow().strftime(DATE_FORMAT)
+#         # finding.update(get_mirroring_fields(mirror_direction))
 
-        if finding_id not in processed_ids:
-            asset_id = finding.get("asset", {}).get("assetId", "")
-            asset_details = {}
-            if asset_id:
-                try:
-                    asset_details = client.get_asset_details(asset_id)
-                    demisto.debug("asset details :", asset_details)
-                    finding["asset"]["details"] = asset_details
-                except Exception as e:
-                    demisto.error(
-                        f"Failed to fetch asset details for asset ID {asset_id}: {str(e)}"
-                    )
-                # Define custom fields for the incident
-                custom_fields = {
-                    "assetdetails": asset_details,
-                    "remediationDescription": ASSET_REMEDIATION_DESCRIPTION.get(
-                        finding.get("ruleName"), "N/A"
-                    ),
-                    "remediateSteps": ASSET_REMEDIATION_STEPS.get(
-                        finding.get("ruleName"), "N/A"
-                    ),
-                    "riskFindingId": finding.get("id"),
-                }
-                incident = {
-                    "name": finding.get("ruleName"),
-                    "type": "DSPM Risk Findings",
-                    "occurred": occurred_time,
-                    "details": finding.get("asset", {}).get("name", ""),
-                    "severity": severity_to_dbot_score(finding.get("severity")),
-                    "status": map_status(finding.get("status")),
-                    "assetDetails": json.dumps(asset_details),
-                    "CustomFields": custom_fields,
-                    "rawJSON": json.dumps(finding),
-                }
-                demisto.debug(f"incident details : {incident}")
-                incidents.append(incident)
-            processed_ids.append(finding_id)  # type: ignore
+#         if finding_id not in processed_ids:
+#             asset_id = finding.get("asset", {}).get("assetId", "")
+#             asset_details = {}
+#             if asset_id:
+#                 try:
+#                     asset_details = client.get_asset_details(asset_id)
+#                     demisto.debug("asset details :", asset_details)
+#                     finding["asset"]["details"] = asset_details
+#                 except Exception as e:
+#                     demisto.error(
+#                         f"Failed to fetch asset details for asset ID {asset_id}: {str(e)}"
+#                     )
+#                 # Define custom fields for the incident
+#                 custom_fields = {
+#                     "assetdetails": asset_details,
+#                     "remediationDescription": ASSET_REMEDIATION_DESCRIPTION.get(
+#                         finding.get("ruleName"), "N/A"
+#                     ),
+#                     "remediateSteps": ASSET_REMEDIATION_STEPS.get(
+#                         finding.get("ruleName"), "N/A"
+#                     ),
+#                     "riskFindingId": finding.get("id"),
+#                 }
+#                 incident = {
+#                     "name": finding.get("ruleName"),
+#                     "type": "DSPM Risk Findings",
+#                     "occurred": occurred_time,
+#                     "details": finding.get("asset", {}).get("name", ""),
+#                     "severity": severity_to_dbot_score(finding.get("severity")),
+#                     "status": map_status(finding.get("status")),
+#                     "assetDetails": json.dumps(asset_details),
+#                     "CustomFields": custom_fields,
+#                     "rawJSON": json.dumps(finding),
+#                 }
+#                 demisto.debug(f"incident details : {incident}")
+#                 incidents.append(incident)
+#             processed_ids.append(finding_id)  # type: ignore
 
-    demisto.debug(f"Number of incidents created: {len(incidents)}")
-    demisto.debug(f"Incident details: {incidents}")
+#     demisto.debug(f"Number of incidents created: {len(incidents)}")
+#     demisto.debug(f"Incident details: {incidents}")
 
-    try:
-        demisto.incidents(incidents)
-        demisto.debug("Incidents successfully sent to demisto.incidents()")
-    except Exception as e:
-        demisto.error(f"Failed to create incidents: {str(e)}")
+#     try:
+#         demisto.incidents(incidents)
+#         demisto.debug("Incidents successfully sent to demisto.incidents()")
+#     except Exception as e:
+#         demisto.error(f"Failed to create incidents: {str(e)}")
 
-    if incidents:
-        last_finding_time = incidents[-1]["occurred"]
-        demisto.setLastRun(
-            {"last_fetch": last_finding_time, "processed_ids": processed_ids}
-        )
-        demisto.debug(f"New last fetch time set: {last_finding_time}")
-    else:
-        demisto.setLastRun({"last_fetch": last_fetch, "processed_ids": processed_ids})
-        demisto.debug("No new incidents created")
+#     if incidents:
+#         last_finding_time = incidents[-1]["occurred"]
+#         demisto.setLastRun(
+#             {"last_fetch": last_finding_time, "processed_ids": processed_ids}
+#         )
+#         demisto.debug(f"New last fetch time set: {last_finding_time}")
+#     else:
+#         demisto.setLastRun({"last_fetch": last_fetch, "processed_ids": processed_ids})
+#         demisto.debug("No new incidents created")
 
 
-def get_integration_config_command():
+def get_integration_config():
     # create GCP access token
     gcp_service_account_json = demisto.params().get("serviceAccountJson")
     gcp_access_token = create_gcp_access_token(gcp_service_account_json)
 
     integration_config = {
-        "jiraEmail": demisto.params().get("jiraEmail"),
-        "jiraServerUrl": demisto.params().get("jiraServerUrl"),
-        "jiraApiToken": demisto.params().get("jiraApiToken", {}).get("password"),
+        # "jiraEmail": demisto.params().get("jiraEmail"),
+        # "jiraServerUrl": demisto.params().get("jiraServerUrl"),
+        # "jiraApiToken": demisto.params().get("jiraApiToken", {}).get("password"),
         "azureStorageName": demisto.params().get("azureStorageName"),
         "azureSharedKey": demisto.params().get("azureSharedKey", {}).get("password"),
         "dspmApiKey": demisto.params().get("dspmApiKey", {}).get("password"),
@@ -822,7 +823,7 @@ def main() -> None:
     api_key = demisto.params().get("dspmApiKey", {}).get("password")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
-    mirror_direction = demisto.params().get("mirror_direction", None)
+    # mirror_direction = demisto.params().get("mirror_direction", None)
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -834,15 +835,16 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif demisto.command() == "dspm-get-integration-config":
-            return_results(get_integration_config_command())
-        elif demisto.command() == "fetch-incidents":
-            fetch_incidents(client, mirror_direction)
+            return_results(get_integration_config())
+        # elif demisto.command() == "fetch-incidents":
+        #     fetch_incidents(client, mirror_direction)
         elif demisto.command() == "dspm-get-risk-findings":
             page = 0
             while True:
-                findings = get_risk_findings_command(client, demisto.args(), page)
+                findings = dspm_get_risk_findings(client, demisto.args(), page)
                 if not findings:
                     if page == 0:
+                        demisto.info("No risks were fetched")
                         readable_output = "### Risk Findings\n **No entries.**\n"
                         return_results(
                             CommandResults(
@@ -862,7 +864,7 @@ def main() -> None:
                 )
                 page += 1
         elif demisto.command() == "dspm-get-risk-finding-by-id":
-            return_results(get_risk_finding_by_id_command(client, demisto.args()))
+            return_results(get_risk_finding_by_id(client, demisto.args()))
         elif demisto.command() == "dspm-get-list-of-assets":
             page = 0
             while True:
@@ -889,11 +891,11 @@ def main() -> None:
                 )
                 page += 1
         elif demisto.command() == "dspm-get-asset-details":
-            return_results(get_asset_details_command(client, demisto.args()))
+            return_results(get_asset_details(client, demisto.args()))
         elif demisto.command() == "dspm-get-asset-files-by-id":
             return_results(get_asset_files_by_id(client, demisto.args()))
         elif demisto.command() == "dspm-get-data-types":
-            return_results(get_data_types_command(client))
+            return_results(get_data_types(client))
         elif demisto.command() == "dspm-get-data-types-findings":
             page = 0
             all_data_type_findings = []
@@ -945,7 +947,7 @@ def main() -> None:
 
                 page += 1
         elif demisto.command() == "dspm-update-risk-finding-status":
-            return_results(update_risk_finding_status_command(client, demisto.args()))
+            return_results(update_risk_finding_status(client, demisto.args()))
 
     except Exception as e:
         return_error(

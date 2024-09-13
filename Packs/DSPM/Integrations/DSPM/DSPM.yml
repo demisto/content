@@ -323,9 +323,9 @@ script:
     - contextPath: DSPM.DataTypeFindings
       description: List of data type findings for the company.
       type: String
-  - arguments: []
-    description: for testing the fetch-handle method.
-    name: fetch-incidents
+  # - arguments: []
+  #   description: for testing the fetch-handle method.
+  #   name: fetch-incidents
   - arguments: []
     description: Retrieves integration configuration.
     name: dspm-get-integration-config
