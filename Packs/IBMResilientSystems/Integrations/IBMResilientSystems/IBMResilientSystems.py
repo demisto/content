@@ -1645,23 +1645,17 @@ def list_tasks_command(client: SimpleClient) -> CommandResults:
     """
     Lists an array of open tasks to which the current user is assigned.
     """
-    try:
-        response: list = client.get("/tasks")
-        demisto.debug(f"{response=}")
-        tasks_list = []
-        for incident_tasks_obj in response:
-            tasks_list.extend(incident_tasks_obj.get("tasks"))
-        human_readable: str = tableToMarkdown(name="Open Tasks", t=tasks_list)
-        return CommandResults(
-            outputs_prefix="Resilient.Tasks",
-            outputs=response,
-            readable_output=human_readable,
-        )
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not retrieve tasks. Got error {e.response.text}",
-        )
+    response: list = client.get("/tasks")
+    demisto.debug(f"{response=}")
+    tasks_list = []
+    for incident_tasks_obj in response:
+        tasks_list.extend(incident_tasks_obj.get("tasks"))
+    human_readable: str = tableToMarkdown(name="Open Tasks", t=tasks_list)
+    return CommandResults(
+        outputs_prefix="Resilient.Tasks",
+        outputs=response,
+        readable_output=human_readable,
+    )
 
 
 def get_task_members_command(client: SimpleClient, args: dict) -> CommandResults:
@@ -1669,16 +1663,9 @@ def get_task_members_command(client: SimpleClient, args: dict) -> CommandResults
     Gets the members of a given task by its ID.
     """
     task_id = args.get("task_id")
-    try:
-        response = client.get(f'/tasks/{task_id}/members')
-        demisto.debug(f'{response=}')
-        response = client.get(f"/tasks/{task_id}/members")
-        demisto.debug(f"{response=}")
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not retrieve members of task ID: {task_id}. Got error {e.response.text}",
-        )
+    response = client.get(f'/tasks/{task_id}/members')
+    demisto.debug(f'{response=}')
+
     return CommandResults(
         outputs_prefix="Resilient.Task",
         outputs=response,
@@ -1690,7 +1677,9 @@ def delete_tasks_command(client: SimpleClient, args: dict) -> CommandResults:
     """
     Deletes a single or multiple tasks.
     """
-    task_ids: list = argToList(args.get("task_id"))
+    task_ids: list = argToList(args.get("task_ids"))
+    if not task_ids:
+        raise DemistoException('No task IDs provided.')
     response: dict = client.put("/tasks/delete", payload=task_ids)
     demisto.debug(f"delete_tasks_command {response=}")
     human_readable = (
@@ -1717,16 +1706,8 @@ def list_task_instructions_command(client: SimpleClient, args: dict) -> CommandR
     Gets the instructions for a specific task.
     """
     task_id = args.get("task_id")
-    try:
-        response = client.get(
-            f"/tasks/{task_id}/instructions_ex?text_content_output_format=objects_convert_text"
-        )
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not retrieve instructions for task ID: {task_id}. Got error {e.response.text}",
-        )
-    demisto.debug(f"{response=}")
+    response = client.get(f"/tasks/{task_id}/instructions_ex?text_content_output_format=objects_convert_text")
+    
     return CommandResults(
         outputs_prefix="Resilient.Task",
         outputs=response,

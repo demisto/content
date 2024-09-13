@@ -49,66 +49,6 @@ class MockClient:
         return url, body
 
 
-def test_update_incident_command(mocker):
-    """
-    Given:
-     - An incident should be updated.
-
-    When:
-     - Running update_incident_command function with other-fields argument.
-
-    Then:
-     - Ensure the parsing before the request works well and json data is in IBM format.
-    """
-    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
-    args = {
-        "incident-id": "1234",
-        "other-fields": '{"description": {"textarea": {"format": "html", "content": "The new description"}},'
-                        '"name": {"text": "The new name"}, "owner_id": {"id": 2},'
-                        '"discovered_date": {"date": 1624782898010}, "confirmed": {"boolean": "false"}}'
-    }
-    mock_result = mocker.patch('IBMResilientSystems.update_incident')
-    expected_result = {
-        'changes': [
-            {
-                'field': {'name': 'confirmed'},
-                'old_value': {'boolean': 'true'},
-                'new_value': {'boolean': 'false'}
-            },
-            {
-                'field': {'name': 'discovered_date'},
-                'old_value': {'date': 1624782898000},
-                'new_value': {'date': 1624782898010}
-            },
-            {
-                'field': {'name': 'owner_id'},
-                'old_value': {'id': 1},
-                'new_value': {'id': 2}
-            },
-            {
-                'field': {'name': 'description'},
-                'old_value': {'textarea': {'format': 'html', 'content': 'The old description'}},
-                'new_value': {'textarea': {'format': 'html', 'content': 'The new description'}}
-            },
-            {
-                'field': {'name': 'name'},
-                'old_value': {'text': 'The old name'},
-                'new_value': {'text': 'The new name'}
-            }
-        ]
-    }
-    from IBMResilientSystems import update_incident_command
-
-    update_incident_command(MockClient, args)
-
-    no_order_list_equals(mock_result.call_args.args[2]['changes'], expected_result['changes'])
-
-
-def no_order_list_equals(l1: list, l2: list):
-    assert len(l1) == len(l2)
-    assert all(item in l2 for item in l1)
-
-
 def test_update_incident_command_with_invalid_json(mocker):
     """
     Given:
@@ -249,13 +189,14 @@ def test_test_module_fetch_time(fetch_time, expected_result, mocker):
         'length': 10
     })
 ], ids=['no-filters-query', 'args-1-query', 'args-2-query', 'pagination-params-query']
-)
+                         )
 def test_prepare_search_query_data(mocker, args, expected):
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
     })
     from IBMResilientSystems import prepare_search_query_data
     assert prepare_search_query_data(args) == expected
+
 
 @pytest.mark.parametrize(
     "input_notes, expected_output",
@@ -366,47 +307,48 @@ def test_search_incidents(mocker, args):
         f"/rest/orgs/0/incidents/query_paged?text_content_output_format=objects_convert_text&return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}"
     )
     assert request_headers['content-type'] == 'application/json'
-    assert request_data == ('{"filters": [{"conditions": [{"field_name": "create_date", "method": "gte", "value": 1577865600000}]}], "sorts": [{"field_name": "create_date", "type": "asc"}], "length": 10, "start": 0}')
+    assert request_data == (
+        '{"filters": [{"conditions": [{"field_name": "create_date", "method": "gte", "value": 1577865600000}]}], "sorts": [{"field_name": "create_date", "type": "asc"}], "length": 10, "start": 0}')
 
 
 @pytest.mark.parametrize('args, processed_payload', [
     ({
-        'incident-id': 0000,
-        'severity': 'Low',
-        'incident-type': "Malware",
-        'nist': "Attrition",
-        "resolution": "NotAnIssue",
-        "resolution-summary": "This is a test incident.",
-        "description": "Test incident",
-        "name": "incident-0000",
-    },
-        {"changes": [{"field": "severity_code", "old_value": {"id": 6}, "new_value": {"id": 4}},
-                     {"field": "incident_type_ids", "old_value": {"ids": [21, 19, 17, 6]},
-                      "new_value": {"ids": [21, 19, 17, 6, 19]}},
-                     {"field": "nist_attack_vectors", "old_value": {"ids": [4, 2]}, "new_value": {"ids": [4, 2, 2]}},
-                     {"field": "resolution_id", "old_value": {"id": 9}, "new_value": {"id": 9}},
-                     {"field": "resolution_summary",
-                      "old_value": {
-                          "textarea": {
-                              "format": "html",
-                              "content": "This is a test incident."
-                          }},
-                      "new_value": {
-                          "textarea": {
-                              "format": "html",
-                              "content": "This is a test incident."
-                          }}
-                      },
-                     {"field": "description",
-                      "old_value": {
-                          "textarea": {
-                              "format": "html",
-                              "content": "1111 2222 3333"
-                          }
-                      },
-                      "new_value": {
-                          "textarea": {"format": "html", "content": "Test incident"}}},
-                     {"field": "name", "old_value": {"text": "incident_name"}, "new_value": {"text": "incident-0000"}}]}
+         'incident-id': 0000,
+         'severity': 'Low',
+         'incident-type': "Malware",
+         'nist': "Attrition",
+         "resolution": "NotAnIssue",
+         "resolution-summary": "This is a test incident.",
+         "description": "Test incident",
+         "name": "incident-0000",
+     },
+     {"changes": [{"field": "severity_code", "old_value": {"id": 6}, "new_value": {"id": 4}},
+                  {"field": "incident_type_ids", "old_value": {"ids": [21, 19, 17, 6]},
+                   "new_value": {"ids": [21, 19, 17, 6, 19]}},
+                  {"field": "nist_attack_vectors", "old_value": {"ids": [4, 2]}, "new_value": {"ids": [4, 2, 2]}},
+                  {"field": "resolution_id", "old_value": {"id": 9}, "new_value": {"id": 9}},
+                  {"field": "resolution_summary",
+                   "old_value": {
+                       "textarea": {
+                           "format": "html",
+                           "content": "This is a test incident."
+                       }},
+                   "new_value": {
+                       "textarea": {
+                           "format": "html",
+                           "content": "This is a test incident."
+                       }}
+                   },
+                  {"field": "description",
+                   "old_value": {
+                       "textarea": {
+                           "format": "html",
+                           "content": "1111 2222 3333"
+                       }
+                   },
+                   "new_value": {
+                       "textarea": {"format": "html", "content": "Test incident"}}},
+                  {"field": "name", "old_value": {"text": "incident_name"}, "new_value": {"text": "incident-0000"}}]}
     ),
 ])
 def test_update_incident_command(mocker, args, processed_payload):
@@ -538,7 +480,6 @@ def test_list_scripts_command(mocker, script_id: str, expected_outputs: list, ex
 
 @pytest.mark.parametrize('file_entry_id', ['ENTRY_ID'])
 def test_upload_incident_attachment(mocker, file_entry_id: str):
-
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True
     })
@@ -592,7 +533,7 @@ def test_list_incident_notes_command(mocker):
 
     client = SimpleClient()
     client.org_id = 0
-    
+
     get_incident_notes_request = mocker.patch.object(
         SimpleClient,
         'get',
@@ -653,7 +594,7 @@ def test_update_incident_note(mocker):
             "owner_id": 0
         }
     ),
-    (   # Task without Instructions
+    (  # Task without Instructions
         {
             'incident_id': '2001',
             'name': 'TASK-2',
@@ -671,7 +612,7 @@ def test_update_incident_note(mocker):
             "owner_id": 1
         }
     ),
-    (   # Invalid Owner ID
+    (  # Invalid Owner ID
         {
             'incident_id': '2003',
             'name': 'TASK-3',
@@ -683,7 +624,7 @@ def test_update_incident_note(mocker):
         },
         DemistoException("Owner ID must be an integer number.")
     ),
-    (   # Task without Due Date
+    (  # Task without Due Date
         {
             'incident_id': '2004',
             'name': 'TASK-4',
@@ -731,9 +672,213 @@ def test_add_custom_task_command(mocker, args, expected_task_dto):
         add_custom_task_request.assert_called_once_with(uri=f"/incidents/{args['incident_id']}/tasks", payload=expected_task_dto)
         assert result.readable_output == f"Successfully created new task for incident with ID {args['incident_id']}. Task ID: 1234"
 
+
+def test_list_tasks_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, list_tasks_command
+    client = SimpleClient()
+    client.org_id = 0
+
+    get_tasks_request = mocker.patch.object(
+        SimpleClient,
+        'get',
+        return_value={}
+    )
+    list_tasks_command(client)
+    get_tasks_request.assert_called_with(f"/tasks")
+
+
+def test_get_task_members_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, get_task_members_command
+    client = SimpleClient()
+    client.org_id = 0
+    task_id = "1234"
+    get_task_members_request = mocker.patch.object(
+        SimpleClient,
+        'get',
+        return_value={}
+    )
+    get_task_members_command(client, args={'task_id': task_id})
+
+    get_task_members_request.assert_called_with(f"/tasks/{task_id}/members")
+
+
+@pytest.mark.parametrize("task_ids, should_raise_exception", [
+    ("1000", False),
+    ("2000,3000", False),
+    ("", True)
+])
+def test_delete_tasks_command(mocker, task_ids, should_raise_exception):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, delete_tasks_command
+    client = SimpleClient()
+    client.org_id = 0
+
+    delete_tasks_request = mocker.patch.object(SimpleClient, 'put', return_value={
+        "success": True, "title": None, "message": None, "hints": []
+    })
+
+    if should_raise_exception:
+        with pytest.raises(DemistoException):
+            delete_tasks_command(client, args={"task_ids": task_ids})
+    else:
+        result = delete_tasks_command(client, args={"task_ids": task_ids})
+        task_id_list = task_ids.split(',')
+        delete_tasks_request.assert_called_once_with("/tasks/delete", payload=task_id_list)
+        assert result.readable_output == f"Tasks with IDs {task_id_list} were deleted successfully."
+
+
+def test_delete_task_members_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, delete_task_members_command
+    client = SimpleClient()
+    client.org_id = 0
+
+    task_id = '1234'
+    mock_response = {"content": "Members deleted successfully"}
+
+    delete_task_members_request = mocker.patch.object(
+        SimpleClient,
+        'delete',
+        return_value=mock_response
+    )
+    delete_task_members_command(client, args={'task_id': task_id})
+
+    delete_task_members_request.assert_called_once_with(f"/tasks/{task_id}/members")
+
+
+def test_list_task_instructions_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, list_task_instructions_command
+    client = SimpleClient()
+    client.org_id = 0
+
+    task_id = "5678"
+    mock_response = {
+        "text": {
+            "content": "These are the instructions for the task.",
+            "format": "text"
+        }
+    }
+
+    get_task_instructions_request = mocker.patch.object(
+        SimpleClient,
+        'get',
+        return_value=mock_response
+    )
+
+    list_task_instructions_command(client, args={'task_id': task_id})
+
+    get_task_instructions_request.assert_called_once_with(
+        f"/tasks/{task_id}/instructions_ex?text_content_output_format=objects_convert_text"
+    )
+
+
+def test_get_attachment_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, get_attachment_command
+    from requests import Response
+    client = SimpleClient()
+    client.org_id = 0
+
+    def side_effect(url: str, get_response_object=False):
+        if url.endswith('/contents'):  # File content request
+            response = Response()
+            response.__setattr__('_content', b"test file content")  # Note: Bytes for content
+            response.status_code = 200
+            return response
+        # File metadata response
+        else:
+            return {
+                "type": "incident",
+                "id": 1,
+                "uuid": "0000-0000-0000-0000",
+                "name": "test-test-test.txt",
+                "content_type": "text/plain",
+                "created": 1725880565507,
+                "creator_id": 1,
+                "size": 6,
+                "actions": [],
+                "playbooks": [],
+                "task_id": None,
+                "task_name": None,
+                "task_custom": None,
+                "task_members": None,
+                "task_at_id": None,
+                "reconciliation_status": "matched",
+                "vers": 8,
+                "inc_id": 2000,
+                "inc_name": "INCIDENT-1",
+                "inc_owner": 0
+            }
+
+    get_attachment_request = mocker.patch.object(SimpleClient, 'get', side_effect=side_effect)
+
+    args = {'incident_id': '1000', 'attachment_id': '1'}
+    get_attachment_command(client, args)
+
+    get_attachment_endpoint = f'/incidents/{args.get("incident_id")}/attachments/{args.get("attachment_id")}'
+    get_attachment_contents_endpoint = get_attachment_endpoint + '/contents'
+
+    # Check the calls made to the mock
+    get_attachment_request.assert_has_calls([
+        mocker.call(get_attachment_endpoint),
+        mocker.call(get_attachment_contents_endpoint, get_response_object=True)
+    ])
+
+
+def test_get_modified_remote_data_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, get_modified_remote_data_command
+    from CommonServerPython import GetModifiedRemoteDataResponse
+
+    client = SimpleClient()
+    client.org_id = 0
+
+    mock_search_incidents = mocker.patch('IBMResilientSystems.search_incidents', return_value=[
+        {'id': 1000, 'last_modified_time': '2023-09-01T12:01:00Z'},
+        {'id': 1001, 'last_modified_time': '2023-09-01T12:02:00Z'}
+    ])
+    expected_output = GetModifiedRemoteDataResponse(['1000', '1001'])
+
+    last_update = '2023-09-01T12:00:00Z'
+    args = {'lastUpdate': last_update}
+    result = get_modified_remote_data_command(client, args)
+
+    mock_search_incidents.assert_called_once_with(client, args={'last-modified-after': last_update})
+    assert result.modified_incident_ids == expected_output.modified_incident_ids
+def test_get_remote_data_command(mocker):
+    pass
+
+
+def test_update_remote_system(mocker):
+    pass
+
+
+def test_get_mapping_fields_command(mocker):
+    pass
+
+
 def test_validate_iso_time_format():
     # TODO
     pass
+
+
 def test_fetch_incidents(mocker):
     # TODO
     pass

@@ -967,6 +967,8 @@ Adds a custom task to the specified incident.
 #### Context Output
 
 There is no context output for this command.
+
+
 ### rs-delete-task-members
 
 ***
@@ -1046,7 +1048,7 @@ There is no context output for this command.
 ### rs-list-task-instructions
 
 ***
-Get the task's instructions.
+Lists the task's instructions.
 
 #### Base Command
 
@@ -1114,9 +1116,9 @@ Get the members of a task. Private tasks will have the returned "members" proper
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | A comma-separated list of task IDs to be deleted. | Required | 
+| **Argument Name** | **Description**                | **Required** |
+| --- |--------------------------------| --- |
+| task_id | ID of task to get its members. | Required | 
 
 #### Context Output
 
