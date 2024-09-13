@@ -1,3 +1,6 @@
+import pytest
+
+
 def create_client():
     import os
     from RecordedFuturePlaybookAlerts import Client, __version__
@@ -310,7 +313,7 @@ class TestRFClient:
             "alert_ids": mock_alert_ids,
             "detail_sections": mock_detail_sections,
         }
-        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
+        # mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
 
         mock_params = {"param1": "param1 value"}
         mock_last_run_dict = {"lastRun": "2022-08-31T12:12:20+00:00"}
@@ -343,7 +346,7 @@ class TestRFClient:
         mock_alert_ids = "input1,input2"
 
         mock_command_args = {"alert_ids": mock_alert_ids}
-        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
+        # mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
 
         mock_params = {"param1": "param1 value"}
         mock_last_run_dict = {"lastRun": "2022-08-31T12:12:20+00:00"}
@@ -379,7 +382,7 @@ class TestRFClient:
             "category": mock_alert_ids,
             "playbook_alert_status": mock_detail_sections,
         }
-        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
+        # mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
 
         mock_params = {"param1": "param1 value"}
         mock_last_run_dict = {"lastRun": "2022-08-31T12:12:20+00:00"}
@@ -463,6 +466,67 @@ class TestRFClient:
         mock_call.assert_called_once_with(url_suffix="/v2/playbook_alert/update")
 
         assert response == mock_call_response
+
+    def test_call_DemistoException_res_json_error(self, mocker):
+        """Test _call when err.res.json() raises an exception."""
+        import demistomock as demisto
+        from CommonServerPython import DemistoException
+        import json
+
+        client = create_client()
+
+        mock_command_name = "command_name"
+        mock_command_args = {}
+        mock_params = {}
+        mock_last_run_dict = {}
+
+        mocker.patch.object(demisto, "command", return_value=mock_command_name)
+        mocker.patch.object(demisto, "args", return_value=mock_command_args)
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "getLastRun", return_value=mock_last_run_dict)
+
+        class MockResponse:
+            def json(self):
+                raise json.JSONDecodeError("Expecting value", "doc", 0)
+
+        def mock_http_request(*args, **kwargs):
+            err = DemistoException("Error with response")
+            err.res = MockResponse()
+            raise err
+
+        mocker.patch.object(client, "_http_request", side_effect=mock_http_request)
+
+        with pytest.raises(DemistoException):
+            client._call(url_suffix="mock_url_suffix")
+
+    def test_call_DemistoException_res_None(self, mocker):
+        """Test _call when DemistoException has no response."""
+        import demistomock as demisto
+        from CommonServerPython import DemistoException
+
+        client = create_client()
+
+        mock_command_name = "command_name"
+        mock_command_args = {}
+        mock_params = {}
+        mock_last_run_dict = {}
+
+        mocker.patch.object(demisto, "command", return_value=mock_command_name)
+        mocker.patch.object(demisto, "args", return_value=mock_command_args)
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "getLastRun", return_value=mock_last_run_dict)
+
+        def mock_http_request(*args, **kwargs):
+            err = DemistoException("Some error without response")
+            err.res = None
+            raise err
+
+        mocker.patch.object(client, "_http_request", side_effect=mock_http_request)
+
+        with pytest.raises(DemistoException) as excinfo:
+            client._call(url_suffix="mock_url_suffix")
+
+        assert str(excinfo.value) == "Some error without response"
 
 
 class TestActions:
@@ -811,6 +875,114 @@ class TestActions:
                 f"Failed to execute {demisto.command()} command. Error: Failed due to - "
                 "Unknown error. Please verify that the API URL and Token are correctly configured. "
                 "RAW Error: Side effect triggered"
+            ),
+            error=mocker.ANY,
+        )
+
+    def test_transform_incidents_attachments_without_screenshots(self, mocker):
+        """Test transforming incidents without screenshots."""
+        from RecordedFuturePlaybookAlerts import Actions
+        import json
+
+        incidents = [{"rawJSON": json.dumps({"panel_evidence_summary": {}})}]
+
+        mock_fileResult = mocker.patch("RecordedFuturePlaybookAlerts.fileResult")
+
+        Actions._transform_incidents_attachments(incidents)
+
+        assert "attachment" not in incidents[0]
+        mock_fileResult.assert_not_called()
+
+    def test_process_result_actions_with_invalid_actions(self, mocker):
+        """Test processing result actions with invalid keys."""
+        from RecordedFuturePlaybookAlerts import Actions
+        from CommonServerPython import CommandResults
+
+        actions = Actions(rf_client=None)
+
+        response = {
+            "result_actions": [
+                {"InvalidKey": {}},
+                {
+                    "CommandResults": {
+                        "outputs_prefix": "mock_prefix",
+                        "outputs": "mock_outputs",
+                    }
+                },
+                {
+                    "CommandResults": {
+                        "outputs_prefix": "another_prefix",
+                        "outputs": "another_outputs",
+                    }
+                },
+            ]
+        }
+
+        result = actions._process_result_actions(response)
+
+        assert len(result) == 2
+        assert isinstance(result[0], CommandResults)
+        assert result[0].outputs_prefix == "mock_prefix"
+        assert result[0].outputs == "mock_outputs"
+        assert isinstance(result[1], CommandResults)
+        assert result[1].outputs_prefix == "another_prefix"
+        assert result[1].outputs == "another_outputs"
+
+
+class TestMain:
+    def test_main_with_unknown_command(self, mocker):
+        """Test main function with an unknown command."""
+        import RecordedFuturePlaybookAlerts
+        import demistomock as demisto
+
+        mocker.patch.object(demisto, "command", return_value="unknown-command")
+        mock_return_error = mocker.patch("RecordedFuturePlaybookAlerts.return_error")
+        mock_get_client = mocker.patch("RecordedFuturePlaybookAlerts.get_client")
+
+        RecordedFuturePlaybookAlerts.main()
+
+        mock_get_client.assert_called_once()
+        mock_return_error.assert_called_once_with(
+            message="Unknown command: unknown-command"
+        )
+
+    def test_get_client_no_api_token(self, mocker):
+        """Test get_client when no API token is provided."""
+        import RecordedFuturePlaybookAlerts
+        import demistomock as demisto
+
+        mock_params = {
+            "server_url": "https://api.recordedfuture.com/gw/xsoar/",
+            "unsecure": False,
+            "token": {"password": None},
+        }
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mock_return_error = mocker.patch("RecordedFuturePlaybookAlerts.return_error")
+
+        RecordedFuturePlaybookAlerts.get_client()
+
+        mock_return_error.assert_called_once_with(
+            message="Please provide a valid API token"
+        )
+
+    def test_main_exception_handling(self, mocker):
+        """Test main function's exception handling."""
+        import RecordedFuturePlaybookAlerts
+        import demistomock as demisto
+
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mock_get_client = mocker.patch("RecordedFuturePlaybookAlerts.get_client")
+        mock_get_client.return_value.whoami.side_effect = Exception("Test exception")
+        mock_return_error = mocker.patch("RecordedFuturePlaybookAlerts.return_error")
+
+        RecordedFuturePlaybookAlerts.main()
+
+        mock_get_client.assert_called_once()
+        mock_return_error.assert_called_once_with(
+            message=(
+                f"Failed to execute {demisto.command()} command. Error: Failed due to - "
+                "Unknown error. Please verify that the API URL and Token are correctly configured. "
+                "RAW Error: Test exception"
             ),
             error=mocker.ANY,
         )
