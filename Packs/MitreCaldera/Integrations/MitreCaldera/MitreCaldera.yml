@@ -45,7 +45,7 @@ configuration:
   name: client_name
   type: 0
   required: false
-  additionalinfo: Fetch operations which contain this name
+  additionalinfo: Fetch operations which contain this name.
 script:
   script: ''
   type: python
