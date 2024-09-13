@@ -22,6 +22,7 @@ GET_ASSET_FILES = "/v1/classification/asset-files/id"
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
 GET_CURRENT_JIRA_USER_ENDPOINT: str = "/rest/api/2/myself"
+GET_ALERTS_LIST: str = "/v1/alerts"
 GET_RISK_FINDING_BY_ID: str = "/v1/risk-findings/id/"
 INCIDENT_STATUS = {"OPEN": 1, "INVESTIGATING": 2, "HANDLED": 2, "CLOSED": 2}
 RISK_STATUS = {"Active": "OPEN", "Closed": "INVESTIGATING", "Pending": "INVESTIGATING"}
@@ -235,6 +236,13 @@ class Client(BaseClient):
         return self._http_request(
             method="PATCH",
             url_suffix=f"/v1/risk-findings/id/{risk_id}/status/{updated_status}",
+        )
+
+    def get_alerts_list(self, params: dict[str, Any]):
+        return self._http_request(
+            method="GET",
+            url_suffix=f"{GET_ALERTS_LIST}",
+            params=params
         )
 
 
@@ -677,6 +685,45 @@ def update_risk_finding_status(client, args):
         )
 
 
+def get_list_of_alerts(
+    client: Client, args: dict[str, Any], page: int
+) -> list[dict]:
+    """fetch list of dspm alerts"""
+
+    params = {
+        "detectionTime.equals": args.get("detectionTimeEquals"),
+        "detectionTime.greaterThanOrEqual": args.get("detectionTimeGreaterThanOrEqual"),
+        "detectionTime.greaterThan": args.get("detectionTimeGreaterThan"),
+        "detectionTime.lessThanOrEqual": args.get("detectionTimeLessThanOrEqual"),
+        "detectionTime.lessThan": args.get("detectionTimeLessThan"),
+        "policyName.in": args.get("policyNameIn"),
+        "policyName.equals": args.get("policyNameEquals"),
+        "assetName.in": args.get("assetNameIn"),
+        "assetName.equals": args.get("assetNameEquals"),
+        "cloudProvider.in": args.get("cloudProviderIn"),
+        "cloudProvider.equals": args.get("cloudProviderEquals"),
+        "destinationProjectVendorName.in": args.get("destinationProjectVendorNameIn"),
+        "destinationProjectVendorName.equals": args.get("destinationProjectVendorNameEquals"),
+        "cloudEnvironment.in": args.get("cloudEnvironmentIn"),
+        "cloudEnvironment.equals": args.get("cloudEnvironmentEquals"),
+        "policySeverity.in": args.get("policySeverityIn"),
+        "policySeverity.equals": args.get("policySeverityEquals"),
+        "categoryType.in": args.get("categoryTypeIn"),
+        "categoryType.equals": args.get("categoryTypeEquals"),
+        "status.in": args.get("statusIn"),
+        "status.equals": args.get("statusEquals"),
+        "sort": args.get("sort"),
+        "page": page,
+        "size": MAX_PAGE_SIZE
+    }
+
+    # Remove None values from params
+    params = {k: v for k, v in params.items() if v is not None}
+
+    alerts_list = client.get_alerts_list(params)
+    return alerts_list
+
+
 """ FETCH INCIDENTS FUNCTION"""
 
 
@@ -948,6 +995,16 @@ def main() -> None:
                 page += 1
         elif demisto.command() == "dspm-update-risk-finding-status":
             return_results(update_risk_finding_status(client, demisto.args()))
+        elif demisto.command() == "dspm-get-list-of-alerts":
+            page = 0
+            alerts = get_list_of_alerts(client, demisto.args(), page)
+            return_results(
+                CommandResults(
+                    outputs_prefix="DSPM.Alerts",
+                    outputs_key_field="id",
+                    outputs=alerts,
+                )
+            )
 
     except Exception as e:
         return_error(

@@ -350,6 +350,158 @@ script:
       - contextPath: DSPM.RiskFindingStatusUpdate
         description: The updated risk finding.
         type: String
+  - arguments:
+    - description: 'Exact detection time (equals)'
+      isArray: false
+      isOptional: true
+      name: detectionTimeEquals
+      required: false
+      secret: false
+    - description: 'Detection time (greater than or equal)'
+      isArray: false
+      isOptional: true
+      name: detectionTimeGreaterThanOrEqual
+      required: false
+      secret: false
+    - description: 'Detection time (greater than)'
+      isArray: false
+      isOptional: true
+      name: detectionTimeGreaterThan
+      required: false
+      secret: false
+    - description: 'Detection time (less than or equal)'
+      isArray: false
+      isOptional: true
+      name: detectionTimeLessThanOrEqual
+      required: false
+      secret: false
+    - description: 'Detection time (less than)'
+      isArray: false
+      isOptional: true
+      name: detectionTimeLessThan
+      required: false
+      secret: false
+    - description: 'List of policy names'
+      isArray: true
+      isOptional: true
+      name: policyNameIn
+      required: false
+      secret: false
+    - description: 'Exact policy name'
+      isArray: false
+      isOptional: true
+      name: policyNameEquals
+      required: false
+      secret: false
+    - description: 'List of asset names'
+      isArray: true
+      isOptional: true
+      name: assetNameIn
+      required: false
+      secret: false
+    - description: 'Exact asset name'
+      isArray: false
+      isOptional: true
+      name: assetNameEquals
+      required: false
+      secret: false
+    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]'
+      isArray: true
+      isOptional: true
+      name: cloudProviderIn
+      required: false
+      secret: false
+    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]'
+      isArray: false
+      isOptional: true
+      name: cloudProviderEquals
+      required: false
+      secret: false
+    - description: 'List of destination project vendor names'
+      isArray: true
+      isOptional: true
+      name: destinationProjectVendorNameIn
+      required: false
+      secret: false
+    - description: 'Exact destination project vendor name'
+      isArray: false
+      isOptional: true
+      name: destinationProjectVendorNameEquals
+      required: false
+      secret: false
+    - description: 'List of cloud environments ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"]'
+      isArray: true
+      isOptional: true
+      name: cloudEnvironmentIn
+      required: false
+      secret: false
+    - description: 'Exact cloud environment ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"]'
+      isArray: false
+      isOptional: true
+      name: cloudEnvironmentEquals
+      required: false
+      secret: false
+    - description: 'List of policy severities ["HIGH", "MEDIUM", "LOW"]'
+      isArray: true
+      isOptional: true
+      name: policySeverityIn
+      required: false
+      secret: false
+    - description: 'Exact policy severity ["HIGH", "MEDIUM", "LOW"]'
+      isArray: false
+      isOptional: true
+      name: policySeverityEquals
+      required: false
+      secret: false
+    - description: 'List of category types ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]'
+      isArray: true
+      isOptional: true
+      name: categoryTypeIn
+      required: false
+      secret: false
+    - description: 'Exact category type ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]'
+      isArray: false
+      isOptional: true
+      name: categoryTypeEquals
+      required: false
+      secret: false
+    - description: 'List of statuses ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]'
+      isArray: true
+      isOptional: true
+      name: statusIn
+      required: false
+      secret: false
+    - description: 'Exact status ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]'
+      isArray: false
+      isOptional: true
+      name: statusEquals
+      required: false
+      secret: false
+    - description: 'Sort order (property,asc|desc)'
+      isArray: false
+      isOptional: true
+      name: sort
+      required: false
+      secret: false
+    - description: 'Page number, default is "0"'
+      isArray: false
+      isOptional: true
+      name: page
+      required: false
+      secret: false
+    - description: 'Number of results per page'
+      isArray: false
+      isOptional: true
+      name: size
+      required: false
+      secret: false
+    description: Fetch list of alerts.
+    name: dspm-get-list-of-alerts
+    outputs:
+    - contextPath: DSPM.Alerts
+      description: List of DSPM alerts.
+      type: String
+
   runonce: false
   script: '-'
   type: python
