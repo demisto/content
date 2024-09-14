@@ -172,7 +172,7 @@ def test_test_module_fetch_time(fetch_time, expected_result, mocker):
 
     ({'date-created-before': '2022-01-01T10:00:00Z'}, {
         'filters': [{
-            'conditions': [{'field_name': 'create_date', 'method': 'lte', 'value': 1641024000000}]
+            'conditions': [{'field_name': 'create_date', 'method': 'lte', 'value': 1641031200000}]
         }],
         'sorts': [{'field_name': 'create_date', 'type': 'asc'}],
         'length': DEFAULT_MAX_FETCH
@@ -182,7 +182,7 @@ def test_test_module_fetch_time(fetch_time, expected_result, mocker):
         'filters': [{'conditions': [{
             'field_name': 'inc_last_modified_date',
             'method': 'gte',
-            'value': 1641024000000
+            'value': 1641031200000
         }]}],
         'sorts': [{'field_name': 'create_date', 'type': 'asc'}],
         'start': 0,
@@ -589,7 +589,7 @@ def test_update_incident_note(mocker):
             "name": 'TASK-1',
             "phase_id": {"name": 'Initial'},
             "description": 'TASK',
-            "due_date": 1680339600000,
+            "due_date": 1680350400000,
             "instructions": 'INSTRUCTIONS',
             "owner_id": 0
         }
@@ -608,7 +608,7 @@ def test_update_incident_note(mocker):
             "name": 'TASK-2',
             "phase_id": {"name": 'Custom'},
             "description": 'TASK 2',
-            "due_date": 1682931600000,
+            "due_date": 1682942400000,
             "owner_id": 1
         }
     ),
@@ -915,12 +915,194 @@ def test_get_remote_data_command(mocker):
     assert result.mirrored_object
 
 
-def test_update_remote_system(mocker):
-    pass
+def test_update_remote_system_command_no_changes(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, update_remote_system_command
+
+    client = SimpleClient()
+    args = {
+        'remoteId': '1000',
+        'incidentChanged': False,
+        'entries': [],
+        'delta': None,
+        'data': {},
+        'incStatus': 'Active'
+    }
+
+    debug_mock = mocker.patch.object(demisto, 'debug')
+    result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
+
+    assert result == '1000'
+    debug_mock.assert_called_with(
+        "Skipping updating remote incident fields [1000] as it is not new nor changed"
+    )
+
+
+def test_update_remote_system_command_with_changes(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, update_remote_system_command
+
+    client = SimpleClient()
+    args = {
+        'remoteId': '1001',
+        'incidentChanged': True,
+        'entries': [],
+        'delta': {'name': 'Updated Incident Name'},
+        'data': {},
+        'incStatus': 'Active'
+    }
+
+    prepare_mock = mocker.patch('IBMResilientSystems.prepare_incident_update_dto_for_mirror', return_value={'name': 'Updated Incident Name'})
+    update_mock = mocker.patch('IBMResilientSystems.update_incident')
+
+    result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
+
+    assert result == '1001'
+    prepare_mock.assert_called_once_with(client, '1001', {'name': 'Updated Incident Name'})
+    update_mock.assert_called_once_with(client, '1001', {'name': 'Updated Incident Name'})
+
+
+def test_update_remote_system_command_with_note(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, update_remote_system_command
+    from CommonServerPython import EntryType
+
+    client = SimpleClient()
+    args = {
+        'remoteId': '1002',
+        'incidentChanged': False,
+        'entries': [{'id': '1', 'type': EntryType.NOTE, 'tags': ['FROM XSOAR'], 'Contents': 'Test note'}],
+        'delta': None,
+        'data': {},
+        'incStatus': 'Active'
+    }
+
+    add_note_mock = mocker.patch('IBMResilientSystems.add_note')
+
+    result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
+
+    assert result == '1002'
+    add_note_mock.assert_called_once_with(client, '1002', 'Test note')
+
+
+def test_update_remote_system_command_with_file(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, update_remote_system_command
+    from CommonServerPython import EntryType
+
+    client = SimpleClient()
+    args = {
+        'remoteId': '1003',
+        'incidentChanged': False,
+        'entries': [{'id': '2', 'type': EntryType.FILE, 'tags': ['FROM XSOAR'], 'Contents': 'file content'}],
+        'delta': None,
+        'data': {},
+        'incStatus': 'Active'
+    }
+
+    upload_mock = mocker.patch('IBMResilientSystems.upload_incident_attachment')
+
+    result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
+
+    assert result == '1003'
+    upload_mock.assert_called_once_with(client, '1003', '2', "FROM XSOAR")
+
+
+def test_update_remote_system_command_with_multiple_entries(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, update_remote_system_command
+    from CommonServerPython import EntryType
+
+    client = SimpleClient()
+    args = {
+        'remoteId': '1004',
+        'incidentChanged': True,
+        'entries': [
+            {'id': '3', 'type': EntryType.NOTE, 'tags': ['FROM XSOAR'], 'Contents': 'Test note 1'},
+            {'id': '4', 'type': EntryType.FILE, 'tags': ['FROM XSOAR'], 'Contents': 'file content'},
+            {'id': '5', 'type': EntryType.NOTE, 'tags': ['FROM XSOAR'], 'Contents': 'Test note 2'}
+        ],
+        'delta': {'description': 'Updated description'},
+        'data': {},
+        'incStatus': 'Active'
+    }
+
+    prepare_mock = mocker.patch('IBMResilientSystems.prepare_incident_update_dto_for_mirror', return_value={'description': 'Updated description'})
+    update_mock = mocker.patch('IBMResilientSystems.update_incident')
+    add_note_mock = mocker.patch('IBMResilientSystems.add_note')
+    upload_mock = mocker.patch('IBMResilientSystems.upload_incident_attachment')
+
+    result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
+
+    assert result == '1004'
+    prepare_mock.assert_called_once_with(client, '1004', {'description': 'Updated description'})
+    update_mock.assert_called_once_with(client, '1004', {'description': 'Updated description'})
+    assert add_note_mock.call_count == 2
+    add_note_mock.assert_any_call(client, '1004', 'Test note 1')
+    add_note_mock.assert_any_call(client, '1004', 'Test note 2')
+    upload_mock.assert_called_once_with(client, '1004', '4', "FROM XSOAR")
+
+
+def test_update_remote_system_command_with_untagged_entries(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, update_remote_system_command
+    from CommonServerPython import EntryType
+
+    client = SimpleClient()
+    args = {
+        'remoteId': '1005',
+        'incidentChanged': False,
+        'entries': [
+            {'id': '6', 'type': EntryType.NOTE, 'tags': [], 'Contents': 'Untagged note'},
+            {'id': '7', 'type': EntryType.FILE, 'tags': [], 'Contents': 'Untagged file'}
+        ],
+        'delta': None,
+        'data': {},
+        'incStatus': 'Active'
+    }
+
+    add_note_mock = mocker.patch('IBMResilientSystems.add_note')
+    upload_mock = mocker.patch('IBMResilientSystems.upload_incident_attachment')
+
+    result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
+
+    assert result == '1005'
+    add_note_mock.assert_not_called()
+    upload_mock.assert_not_called()
 
 
 def test_get_mapping_fields_command(mocker):
-    pass
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import (
+        get_mapping_fields_command, IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME, IBM_QRADAR_INCIDENT_FIELDS
+    )
+    from CommonServerPython import GetMappingFieldsResponse
+
+    response = get_mapping_fields_command()
+    assert isinstance(response, GetMappingFieldsResponse)
+
+    # Get the mapping scheme from the response
+    scheme = response.scheme_types_mappings[0]
+    # Assert that the scheme has the correct incident schema name
+    assert scheme.type_name == IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME
+
+    # Assert that the scheme contains the correct fields
+    for field_name, field_data in IBM_QRADAR_INCIDENT_FIELDS.items():
+        assert field_name in scheme.fields
 
 
 def test_validate_iso_time_format():
@@ -928,6 +1110,56 @@ def test_validate_iso_time_format():
     pass
 
 
-def test_fetch_incidents(mocker):
-    # TODO
-    pass
+@pytest.mark.parametrize('last_run, first_fetch_time, expected_args, expected_last_run', [
+    (None, '2023-01-01T00:00:00Z', {'date-created-after': 1672531200000}, 1672531200001),
+    ({'time': 1672531200000}, '2023-01-01T00:00:00Z', {'date-created-after': 1672531200000}, 1672531200001),
+])
+def test_fetch_incidents(mocker, last_run, first_fetch_time, expected_args, expected_last_run):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, fetch_incidents
+    
+    mock_search_incidents = mocker.patch('IBMResilientSystems.search_incidents', return_value=[])
+    mock_set_last_run = mocker.patch.object(demisto, 'setLastRun', return_value=None)
+    
+    client = SimpleClient()
+    client.org_id = 0
+    fetch_incidents(client, first_fetch_time, fetch_closed=True)
+    
+    mock_search_incidents.assert_called_once_with(client, {'date-created-after': expected_args['date-created-after']})
+    mock_set_last_run.assert_called_once_with({'time': expected_last_run})
+
+
+def test_to_timestamp_with_integer(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+
+    from IBMResilientSystems import to_timestamp
+    assert to_timestamp(1641024000000) == 1641024000000
+
+def test_to_timestamp_with_string_timestamp(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+
+    from IBMResilientSystems import to_timestamp
+    assert to_timestamp("1641024000000") == 1641024000000
+def test_to_timestamp_with_string_date(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+
+    from IBMResilientSystems import to_timestamp
+    assert to_timestamp("2022-01-01T12:00:00Z") == 1641038400000
+
+def test_to_timestamp_with_invalid_string(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+
+    from IBMResilientSystems import to_timestamp
+    import pytest
+    with pytest.raises(ValueError):
+        to_timestamp("INVALID_DATE_STRING")

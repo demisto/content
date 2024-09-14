@@ -1,3 +1,4 @@
+import copy
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -167,7 +168,7 @@ IBM_QRADAR_INCIDENT_FIELDS = {
     "creator.display_name": {
         "xsoar_name": "displayname",
         "description": "The display name of the incident creator.",
-    },
+    }
 }
 
 """ CONSTANTS """
@@ -647,43 +648,65 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
     return dto
 
 
-def to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
-    """
-    Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%SZ) to milliseconds.
-    If the input is already a timestamp, it returns it as is.
+# def to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
+#     """
+#     Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%SZ) to milliseconds.
+#     If the input is already a timestamp, it returns it as is.
+#
+#     :type date_str_or_dt: ``str``, ``datetime.datetime``, or ``int``
+#     :param date_str_or_dt: The date to be parsed. (required)
+#
+#     :type date_format: ``str``
+#     :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
+#         datetime.datetime or int). (optional)
+#
+#     :return: The parsed timestamp.
+#     :rtype: ``int``
+#     """
+#     # Check if the input is already an integer, assuming it's a timestamp in milliseconds
+#     if isinstance(date_str_or_dt, int):
+#         return date_str_or_dt
+#
+#     # Check if the input is a string that could be a timestamp
+#     if isinstance(date_str_or_dt, str):
+#         try:
+#             # Try converting the string directly to an integer (e.g., Unix timestamp)
+#             timestamp = int(date_str_or_dt)
+#             return timestamp
+#         except ValueError:
+#             # If it can't be converted, assume it's a date string and parse it
+#             parsed_time = time.strptime(date_str_or_dt, date_format)
+#             return int(time.mktime(parsed_time) * 1000)
+#
+#     # If the input is a datetime object, convert it to a timestamp
+#     if isinstance(date_str_or_dt, datetime):
+#         return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
+#
+#     raise TypeError("Unsupported type for date_str_or_dt")
 
-    :type date_str_or_dt: ``str``, ``datetime.datetime``, or ``int``
-    :param date_str_or_dt: The date to be parsed. (required)
+from datetime import datetime, timezone
 
-    :type date_format: ``str``
-    :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
-        datetime.datetime or int). (optional)
-
-    :return: The parsed timestamp.
-    :rtype: ``int``
-    """
-    # Check if the input is already an integer, assuming it's a timestamp in milliseconds
-    if isinstance(date_str_or_dt, int):
-        return date_str_or_dt
-
-    # Check if the input is a string that could be a timestamp
-    if isinstance(date_str_or_dt, str):
+def to_timestamp(time_input, date_format='%Y-%m-%dT%H:%M:%SZ'):
+    if isinstance(time_input, int):
+        # Input is already a timestamp in milliseconds
+        return time_input
+    elif isinstance(time_input, str):
+        # Try to parse the string as an integer timestamp
         try:
-            # Try converting the string directly to an integer (e.g., Unix timestamp)
-            timestamp = int(date_str_or_dt)
-            return timestamp
+            timestamp_ms = int(time_input)
+            return timestamp_ms
         except ValueError:
-            # If it can't be converted, assume it's a date string and parse it
-            parsed_time = time.strptime(date_str_or_dt, date_format)
-            return int(time.mktime(parsed_time) * 1000)
-
-    # If the input is a datetime object, convert it to a timestamp
-    if isinstance(date_str_or_dt, datetime):
-        return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
-
-    raise TypeError("Unsupported type for date_str_or_dt")
-
-
+            # Not an integer, try to parse as ISO time string
+            try:
+                dt = datetime.strptime(time_input, '%Y-%m-%dT%H:%M:%SZ')
+                dt = dt.replace(tzinfo=timezone.utc)
+                timestamp_ms = int(dt.timestamp() * 1000)
+                return timestamp_ms
+            except ValueError:
+                raise ValueError(
+                    f"Invalid time input: '{time_input}' is neither a valid integer timestamp nor a valid ISO time string.")
+    else:
+        raise TypeError(f"Invalid type for time_input: expected str or int, got {type(time_input).__name__}.")
 def extract_data_form_other_fields_argument(other_fields, incident, changes):
     """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
 
@@ -1756,7 +1779,8 @@ def get_remote_data_command(client: SimpleClient,
                             ) -> GetRemoteDataResponse:
     """
     Args:
-        client (SimpleClient): The IBM Resillient client.
+        client (SimpleClient): The IBM Resilient client.
+        args (dict): The command arguments.
         tag_to_ibm (str): Mirror in tag.
         tag_from_ibm (str): Mirror out tag.
     Returns:
@@ -1863,10 +1887,13 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         fields=IBM_QRADAR_INCIDENT_FIELDS,
     )
 
+    fields_copy = []
     for field in IBM_QRADAR_INCIDENT_FIELDS:
+        fields_copy.append(field)
+    for field in fields_copy:
         ibm_qradar_incident_type_scheme.add_field(
             name=field,
-            description=IBM_QRADAR_INCIDENT_FIELDS[field].get("description"),
+            description=IBM_QRADAR_INCIDENT_FIELDS[field].get("description")
         )
     return GetMappingFieldsResponse([ibm_qradar_incident_type_scheme])
 
@@ -1924,7 +1951,6 @@ def main():  # pragma: no cover
     # Disable SDK logging warning messages
     integration_logger = logging.getLogger("resilient")  # type: logging.Logger
     integration_logger.propagate = False
-
 
     tag_to_ibm = params.get('tag_to_ibm')
     tag_from_ibm = params.get('tag_from_ibm')
