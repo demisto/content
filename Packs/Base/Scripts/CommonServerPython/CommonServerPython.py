@@ -4984,11 +4984,11 @@ class Common(object):
             if self.creation_date:
                 account_context['CreationDate'] = self.creation_date
 
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id', 'create_context_table']
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
 
             for detail in details:
-                if self.__getattribute__(detail):
+                if self.__getattribute__(detail) is not None:
                     if detail == 'email_address':
                         account_context['Email'] = {
                             'Address': self.email_address
