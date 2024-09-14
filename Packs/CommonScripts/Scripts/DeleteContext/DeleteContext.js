@@ -13,7 +13,7 @@ function errorEntry(text) {
  * @param {Array<string>} keysToDelete - An array of keys to delete.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete = []) {
+function deleteKeys(keysToDelete = [], _keysToKeep = []) {
     var deletedKeys = []
     var errors = []
     var message = '';
@@ -24,7 +24,10 @@ function deleteKeys(keysToDelete = []) {
         if (!result || result.type === entryTypes.error ) {
             errors.push(result.Contents);
         } else {
-            deletedKeys.push(key);
+            // Do not state deletion of _keysToKeep since they are re-created.
+            if (_keysToKeep.indexOf(keyToDelete) === -1) {
+                deletedKeys.push(key);
+            }
         }
     }
     if (deletedKeys.length > 0) {
@@ -56,12 +59,8 @@ if (!shouldDeleteAll && !args.key) {
 if (shouldDeleteAll) {
     var keysToKeepObj = {};
     var KeepDBotScoreKey = false;
-    index = keysToKeep.indexOf("DBotScore");
-    if (index > -1) {
-      keysToKeep.splice(index, 1);
-      KeepDBotScoreKey = true;
-    }
     var value;
+    // Collect all the keys to keep.
     for (var i = 0; i < keysToKeep.length; i++) {
         value = dq(invContext, keysToKeep[i]);
         if (value !== null && value !== undefined) {
@@ -80,7 +79,8 @@ if (shouldDeleteAll) {
         }
     }
     var keysToDelete = Object.keys(invContext);
-    var message = deleteKeys(keysToDelete);
+    // Delete all the keys, do not state deletion of keysToKeep since they are re-created.
+    var message = deleteKeys(keysToDelete, keysToKeep);
 
     return {
         Type: entryTypes.note,
@@ -88,6 +88,7 @@ if (shouldDeleteAll) {
         ContentsFormat: formats.text,
         HumanReadable: message,
         ReadableContentsFormat: formats.markdown,
+        // Re-create keysToKeep with collected object.
         EntryContext: keysToKeepObj
     };
 
