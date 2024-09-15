@@ -70,6 +70,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: The maximum number of events per fetch
+  name: max_fetch
+  defaultvalue: "50_000" # TODO: check after the design is finished
+  advanced: true
+  type: 0
+  required: true
+  section: Collect
 description: A search engine used for searching Internet-connected devices.
 display: Shodan v2
 name: Shodan_v2
@@ -362,6 +369,9 @@ script:
     - name: start_date
       description: 'Fetch events created after this date. You can also use relative terms like "3 days ago".'
       defaultValue: "3 days ago"
+    - name: max_fetch
+      description: The maximum amount of events to return.
+      defaultValue: 50_000
   dockerimage: demisto/python3:3.10.14.99865
   runonce: false
   script: '-'
