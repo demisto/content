@@ -1,0 +1,294 @@
+id: 5095c6bd-0769-48a3-818a-74569b5aca78
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: Rasterize Test URL to PNG and OCR
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 288c85f5-2c97-491d-895b-02c16e3a63a8
+    type: start
+    task:
+      id: 288c85f5-2c97-491d-895b-02c16e3a63a8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 174b196d-ade2-4551-878e-74a6ee8d149e
+    type: regular
+    task:
+      id: 174b196d-ade2-4551-878e-74a6ee8d149e
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d9fe2b15-4218-47b3-8902-3fed9f1d92bd
+    type: regular
+    task:
+      id: d9fe2b15-4218-47b3-8902-3fed9f1d92bd
+      version: -1
+      name: Rasterize URL to PNG (Google)
+      description: Rasterize a URL into image or PDF
+      script: Rasterize|||rasterize
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      type:
+        simple: png
+      url:
+        simple: https://google.com
+      wait_time:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b2b02eed-1090-4e06-803e-8197f4f1fbe9
+    type: regular
+    task:
+      id: b2b02eed-1090-4e06-803e-8197f4f1fbe9
+      version: -1
+      name: Test Image (ImageOCR)
+      description: Extracts text from an image.
+      script: Image OCR|||image-ocr-extract-text
+      type: regular
+      iscommand: true
+      brand: Image OCR
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entryid:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: png
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+              right:
+                value:
+                  simple: url.png
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+          - operator: FirstArrayElement
+      execution-timeout:
+        simple: "600"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 47aa7dac-29f9-4376-8485-454f5c167254
+    type: condition
+    task:
+      id: 47aa7dac-29f9-4376-8485-454f5c167254
+      version: -1
+      name: Check Text
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "Yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Text
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: google
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 1db787d2-4463-4803-8a45-89beb963e7d0
+    type: regular
+    task:
+      id: 1db787d2-4463-4803-8a45-89beb963e7d0
+      version: -1
+      name: Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Github url image not verified
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 0f7642d9-3821-40cb-82e4-7120298c34e4
+    type: title
+    task:
+      id: 0f7642d9-3821-40cb-82e4-7120298c34e4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 825,
+        "x": 250,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Rasterize Test
+dirtyInputs: true

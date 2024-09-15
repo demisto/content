@@ -341,5 +341,8 @@ script:
   type: python
 defaultEnabled: true
 tests:
-- Rasterize Test
+- Rasterize Test HTML
+- Rasterize Test Process Email
+- Rasterize Test URL to PNG and OCR
+- Rasterize Test URL
 fromversion: 5.0.0
