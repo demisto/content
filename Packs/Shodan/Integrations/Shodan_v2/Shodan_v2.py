@@ -164,7 +164,7 @@ def test_module():
 
     params = demisto.params()
     if argToBoolean(params.get('isFetchEvents')):
-        get_events_command()
+        get_events_command({'max_fetch': 1, 'start_date': 'now'})
 
 
 def search_command():
@@ -520,7 +520,9 @@ def fetch_events(last_run: dict[str, str], params) -> tuple[Dict, List[Dict]]:
         tuple[Dict, List[Dict]]: A tuple where the first item is the updated last_run data,
         and the second item is a list of fetched events.
     """
-    if not (start_date := last_run.get("start_date")):  # If this is a first run
+    start_date = last_run.get("start_date")
+
+    if not start_date:  # If this is a first run
         start_date = arg_to_datetime("now").strftime(DATE_FORMAT)
         demisto.debug('Last run data is missing. Fetching initial last_run and setting start_date to now')
 
@@ -533,8 +535,9 @@ def fetch_events(last_run: dict[str, str], params) -> tuple[Dict, List[Dict]]:
 
     if events:
         latest_event = max(events, key=parse_event_date)
-        last_run["start_date"] = latest_event['created']
+        start_date = latest_event['created']
 
+    last_run["start_date"] = start_date
     demisto.debug(f'Got {len(events)} events from api')
     return last_run, events
 
