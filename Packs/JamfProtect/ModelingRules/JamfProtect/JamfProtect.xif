@@ -90,10 +90,11 @@ config case_sensitive = true
         host_ipv4_addresses = arrayfilter(json_extract_scalar_array(json, "$.host.ips"), "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
         host_ipv6_addresses = arrayfilter(json_extract_scalar_array(json, "$.host.ips"), "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),
         os = lowercase(json -> host.os),
-        blocked = if(json -> match.event.blocked = "true", "blocked", "not blocked"),
+        blocked = if(json -> match.event.blocked = "true", "blocked", json -> match.event.blocked = "false", "not blocked", null),
         facts_human = arraystring(arraymap(facts, "@element" -> human), ", "),
         actions_parameters_title = arraystring(arraymap(actions, "@element" -> parameters.title), ", "),
-        actions_parameters_message = arraystring(arraymap(actions, "@element" -> parameters.message), ", ")
+        actions_parameters_message = arraystring(arraymap(actions, "@element" -> parameters.message), ", "),
+        action_by_alertname = if(lowercase(arraystring(arraymap(facts, "@element" -> name), ", ")) contains "block", "blocked", null)
 | alter
         human_title = if(actions_parameters_title != null, concat(facts_human, ", ", actions_parameters_title), facts_human)
 | alter
@@ -103,7 +104,7 @@ config case_sensitive = true
         xdm.event.type = source_log_type,
         xdm.event.original_event_type = json -> eventType,
         xdm.event.description = to_string(json),
-        xdm.observer.action = coalesce(blocked, arraystring(arraymap(actions, "@element" -> name), ", ")),
+        xdm.observer.action = coalesce(blocked, action_by_alertname, arraystring(arraymap(actions, "@element" -> name), ", ")),
         xdm.alert.severity = severity,
         xdm.source.host.hostname = computer -> hostName,
         xdm.source.host.os = json -> host.os,

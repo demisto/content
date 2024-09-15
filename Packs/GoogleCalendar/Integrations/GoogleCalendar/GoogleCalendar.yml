@@ -20,7 +20,6 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-
   required: false
 description: Google Calendar is a time-management and scheduling calendar service developed by Google. This integration helps you to perform various tasks on the access control list (ACL).
 display: Google Calendar
@@ -34,19 +33,24 @@ script:
     - description: The user's primary email address.
       name: user_id
     - auto: PREDEFINED
-      description: |-
-        The role assigned to the scope.
+      description: 'The role assigned to the scope.
+
 
         Available Options:
+
         "none" - Provides no access.
+
 
         "freeBusyReader" - Provides read access to free/busy information.
 
+
         "reader" - Provides read access to the calendar. Private events will appear to users with reader access, but event details will be hidden.
+
 
         "writer" - Provides read and write access to the calendar. Private events will appear to users with write access, and event details will be visible.
 
-        "owner" - Provides ownership of the calendar. This role has all of the permissions of the writer role with the additional ability to see and manipulate ACLs.
+
+        "owner" - Provides ownership of the calendar. This role has all of the permissions of the writer role with the additional ability to see and manipulate ACLs.'
       name: role
       predefined:
       - none
@@ -56,19 +60,24 @@ script:
       - owner
       required: true
     - auto: PREDEFINED
-      description: |-
-        The type of the scope.
+      description: 'The type of the scope.
+
 
         Available Options:
+
         "default" - The public scope. This is the default value.
+
 
         "user" - Limits the scope to a single user.
 
+
         "group" - Limits the scope to a group.
+
 
         "domain" - Limits the scope to a domain.
 
-        Note: The permissions granted to the "default", or public scope, apply to any user, authenticated or not.
+
+        Note: The permissions granted to the "default", or public scope, apply to any user, authenticated or not.'
       name: scope_type
       predefined:
       - default
@@ -92,7 +101,7 @@ script:
       description: Calendar identifier.
       type: String
     - contextPath: GoogleCalendar.Acl.userId
-      description: User’s email address.
+      description: "User\u2019s email address."
       type: String
     - contextPath: GoogleCalendar.Acl.id
       description: Identifier of the ACL rule.
@@ -130,9 +139,11 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: |
-        Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. The result of this list request contains only entries that have changed since then. All entries deleted since the previous list request will always be in the result set and it is not allowed to set showDeleted to false.
+    - description: 'Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. The result of this list request contains only entries that have changed since then. All entries deleted since the previous list request will always be in the result set and it is not allowed to set showDeleted to false.
+
         If the syncToken expires, the server will respond with a 410 GONE response code and the client should clear its storage and perform a full synchronization without any syncToken.
+
+        '
       name: sync_token
     description: Returns the rules in the access control list for the calendar.
     name: google-calendar-acl-list
@@ -141,7 +152,7 @@ script:
       description: Calendar identifier.
       type: String
     - contextPath: GoogleCalendar.Acl.userId
-      description: User’s email address.
+      description: "User\u2019s email address."
       type: String
     - contextPath: GoogleCalendar.Acl.id
       description: Identifier of the ACL rule.
@@ -165,7 +176,7 @@ script:
       description: Calendar identifier.
       type: String
     - contextPath: GoogleCalendar.PageToken.Acl.userId
-      description: User’s email address.
+      description: "User\u2019s email address."
       type: String
     - contextPath: GoogleCalendar.PageToken.Acl.nextPageToken
       description: Token used to access the next page of this result.
@@ -173,7 +184,7 @@ script:
     - contextPath: GoogleCalendar.PageToken.Acl.nextSyncToken
       description: Token used at a later point in time to retrieve only the entries that have changed since this result was returned.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.89487
+  dockerimage: demisto/googleapi-python3:1.0.0.110187
   runonce: false
   script: '-'
   subtype: python3

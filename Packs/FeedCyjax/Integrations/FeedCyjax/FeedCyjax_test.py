@@ -23,17 +23,17 @@ def test_constants():
 
 
 def test_map_reputation_to_score():
-    assert 0 == map_reputation_to_score('Unknown')
-    assert 0 == map_reputation_to_score('None')
-    assert 1 == map_reputation_to_score('Good')
-    assert 2 == map_reputation_to_score('Suspicious')
-    assert 3 == map_reputation_to_score('Bad')
+    assert map_reputation_to_score('Unknown') == 0
+    assert map_reputation_to_score('None') == 0
+    assert map_reputation_to_score('Good') == 1
+    assert map_reputation_to_score('Suspicious') == 2
+    assert map_reputation_to_score('Bad') == 3
 
 
 def test_map_indicator_type():
-    assert FeedIndicatorType.IP == map_indicator_type('IPv4')
+    assert map_indicator_type('IPv4') == FeedIndicatorType.IP
     assert FeedIndicatorType.IPv6 == map_indicator_type('IPv6')
-    assert FeedIndicatorType.URL == map_indicator_type('URL')
+    assert map_indicator_type('URL') == FeedIndicatorType.URL
     assert FeedIndicatorType.Email == map_indicator_type('Email')
     assert FeedIndicatorType.Domain == map_indicator_type('Domain')
     assert FeedIndicatorType.Domain == map_indicator_type('Hostname')
@@ -46,7 +46,7 @@ def test_map_indicator_type():
 
 
 def test_get_incidents_last_fetch_date(mocker):
-    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
+    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)  # noqa: UP017
     timestamp = int(date.timestamp())
 
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={
@@ -76,7 +76,7 @@ def test_set_indicators_last_fetch_date(mocker):
 
     assert demisto.getIntegrationContext() == {}
 
-    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
+    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)  # noqa: UP017
     timestamp = int(date.timestamp())
 
     set_indicators_last_fetch_date(timestamp)
@@ -89,7 +89,7 @@ def test_set_indicators_last_fetch_date_does_not_break_existing_context(mocker):
 
     assert demisto.getIntegrationContext() == {'Test': True, 'Value': 12345}
 
-    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
+    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)  # noqa: UP017
     timestamp = int(date.timestamp())
 
     set_indicators_last_fetch_date(timestamp)
@@ -108,12 +108,12 @@ def test_convert_cyjax_indicator_with_default_score():
 
     assert xsoar_indicator.get('value') == cyjax_indicator.get('value')
     assert xsoar_indicator.get('rawJSON') == cyjax_indicator
-    assert FeedIndicatorType.URL == xsoar_indicator.get('type')
-    assert 2 == xsoar_indicator.get('score')
+    assert xsoar_indicator.get('type') == FeedIndicatorType.URL
+    assert xsoar_indicator.get('score') == 2
     assert indicator_date.strftime(DATE_FORMAT) == xsoar_indicator['fields']['firstseenbysource']
     assert cyjax_indicator['geoip']['country_name'] == xsoar_indicator['fields']['geocountry']
     assert cyjax_indicator['geoip']['city_name'] == xsoar_indicator['fields']['city']
-    assert "Lon: 37.7759, Lat: 47.9917" == xsoar_indicator['fields']['geolocation']
+    assert xsoar_indicator['fields']['geolocation'] == "Lon: 37.7759, Lat: 47.9917"
     assert cyjax_indicator['ttp'] == xsoar_indicator['fields']['cyjaxtechniquestacticsprocedures']
     assert cyjax_indicator['industry_type'] == xsoar_indicator['fields']['cyjaxindustrytypes']
     assert cyjax_indicator['source'] == xsoar_indicator['fields']['source']
@@ -129,7 +129,7 @@ def test_convert_cyjax_indicator_with_set_score():
     assert xsoar_indicator.get('value') == cyjax_indicator.get('value')
     assert xsoar_indicator.get('rawJSON') == cyjax_indicator
     assert FeedIndicatorType.File == xsoar_indicator.get('type')
-    assert 3 == xsoar_indicator.get('score')
+    assert xsoar_indicator.get('score') == 3
 
 
 def test_test_module(mocker):
@@ -137,9 +137,9 @@ def test_test_module(mocker):
     ioc_mock.list.return_value = []
 
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise', return_value=ioc_mock)
-    assert 'ok' == module_test(client_for_testing)
+    assert module_test(client_for_testing) == 'ok'
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise', side_effect=Exception('Invalid Api Key'))
-    assert 'Could not connect to Cyjax API (Invalid Api Key)' == module_test(client_for_testing)
+    assert module_test(client_for_testing) == 'Could not connect to Cyjax API (Invalid Api Key)'
 
 
 def test_fetch_indicators_command(mocker):
@@ -153,8 +153,8 @@ def test_fetch_indicators_command(mocker):
     assert isinstance(result, tuple)
     next_run, incidents = result
     assert last_fetch_timestamp != next_run
-    assert '1640988032' != next_run
-    assert 1640988032 == next_run
+    assert next_run != '1640988032'
+    assert next_run == 1640988032
 
     expected_indicators = [
         convert_cyjax_indicator(cyjax_indicator[0]),
@@ -164,7 +164,7 @@ def test_fetch_indicators_command(mocker):
     ]
     assert isinstance(incidents, list)
     assert expected_indicators == incidents
-    assert 4 == len(incidents)
+    assert len(incidents) == 4
 
 
 def test_fetch_indicators_no_new_indicators(mocker):
@@ -180,7 +180,7 @@ def test_fetch_indicators_no_new_indicators(mocker):
 
     assert isinstance(incidents, list)
     assert [] == incidents
-    assert 0 == len(incidents)
+    assert len(incidents) == 0
 
 
 def test_fetch_indicators_when_skd_throws_error(mocker):
@@ -196,7 +196,7 @@ def test_fetch_indicators_when_skd_throws_error(mocker):
 
     assert isinstance(incidents, list)
     assert [] == incidents
-    assert 0 == len(incidents)
+    assert len(incidents) == 0
 
 
 def test_get_indicators_command_arguments_specified(mocker):
@@ -259,9 +259,9 @@ def test_get_indicators_command_response(mocker):
     assert 'ReadableContentsFormat' in result
     assert 'HumanReadable' in result
     assert 'EntryContext' in result
-    assert EntryType.NOTE == result.get('Type')
-    assert EntryFormat.JSON == result.get('ContentsFormat')
-    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+    assert result.get('Type') == EntryType.NOTE
+    assert result.get('ContentsFormat') == EntryFormat.JSON
+    assert result.get('ReadableContentsFormat') == EntryFormat.MARKDOWN
 
     expected_indicators = [
         convert_cyjax_indicator(cyjax_indicator[0]),
@@ -289,9 +289,9 @@ def test_indicator_sighting_command_response(mocker):
     assert 'ReadableContentsFormat' in result
     assert 'HumanReadable' in result
     assert 'EntryContext' in result
-    assert EntryType.NOTE == result.get('Type')
-    assert EntryFormat.JSON == result.get('ContentsFormat')
-    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+    assert result.get('Type') == EntryType.NOTE
+    assert result.get('ContentsFormat') == EntryFormat.JSON
+    assert result.get('ReadableContentsFormat') == EntryFormat.MARKDOWN
 
     expected_contents = mocked_response.get('sightings')
     assert expected_contents == result.get('Contents')
@@ -313,9 +313,9 @@ def test_indicator_sighting_command_response_not_found(mocker):
     assert 'ReadableContentsFormat' in result
     assert 'HumanReadable' in result
     assert 'EntryContext' not in result
-    assert EntryType.NOTE == result.get('Type')
-    assert EntryFormat.JSON == result.get('ContentsFormat')
-    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+    assert result.get('Type') == EntryType.NOTE
+    assert result.get('ContentsFormat') == EntryFormat.JSON
+    assert result.get('ReadableContentsFormat') == EntryFormat.MARKDOWN
     assert result.get('Contents') == []
 
 
@@ -416,7 +416,7 @@ def test_fetch_indicators_main_command_call_use_cyjax_tlp(mocker):
     assert demisto.setIntegrationContext.call_count == 1
 
     demisto.createIndicators.assert_called_with(expected_indicators)
-    assert 'GREEN' == expected_indicators[0]['fields']['trafficlightprotocol']
+    assert expected_indicators[0]['fields']['trafficlightprotocol'] == 'GREEN'
 
 
 def test_fetch_indicators_main_command_call_use_set_tlp(mocker):
@@ -450,7 +450,7 @@ def test_fetch_indicators_main_command_call_use_set_tlp(mocker):
     assert demisto.setIntegrationContext.call_count == 1
 
     demisto.createIndicators.assert_called_with(expected_indicators)
-    assert 'AMBER' == expected_indicators[0]['fields']['trafficlightprotocol']
+    assert expected_indicators[0]['fields']['trafficlightprotocol'] == 'AMBER'
 
 
 def test_fetch_indicators_main_command_call_use_tags(mocker):
@@ -484,7 +484,7 @@ def test_fetch_indicators_main_command_call_use_tags(mocker):
     assert demisto.setIntegrationContext.call_count == 1
 
     demisto.createIndicators.assert_called_with(expected_indicators)
-    assert 'TestTag, YellowTag' == expected_indicators[0]['fields']['tags']
+    assert expected_indicators[0]['fields']['tags'] == 'TestTag, YellowTag'
 
 
 def test_get_indicators_main_command_call_with_one_new_indicator(mocker):
@@ -517,9 +517,9 @@ def test_get_indicators_main_command_call_with_one_new_indicator(mocker):
     assert 'ReadableContentsFormat' in result
     assert 'HumanReadable' in result
     assert 'EntryContext' in result
-    assert EntryType.NOTE == result.get('Type')
-    assert EntryFormat.JSON == result.get('ContentsFormat')
-    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+    assert result.get('Type') == EntryType.NOTE
+    assert result.get('ContentsFormat') == EntryFormat.JSON
+    assert result.get('ReadableContentsFormat') == EntryFormat.MARKDOWN
     assert expected_indicators == result.get('Contents')
 
 
@@ -554,7 +554,7 @@ def test_since_date_in_get_indicators_command_new_indicators_found(mocker):
     next_run, indicators = fetch_indicators_command(client_for_testing, last_fetch, 'good')
 
     fetch_indicators_spy.assert_called_with(since=expected_since.isoformat())
-    assert 1640988032 == next_run
+    assert next_run == 1640988032
 
 
 def test_get_indicators_main_command_call_no_new_indicators(mocker):
@@ -590,9 +590,9 @@ def test_get_indicators_main_command_call_no_new_indicators(mocker):
     assert 'ReadableContentsFormat' in result
     assert 'HumanReadable' in result
     assert 'EntryContext' in result
-    assert EntryType.NOTE == result.get('Type')
-    assert EntryFormat.JSON == result.get('ContentsFormat')
-    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+    assert result.get('Type') == EntryType.NOTE
+    assert result.get('ContentsFormat') == EntryFormat.JSON
+    assert result.get('ReadableContentsFormat') == EntryFormat.MARKDOWN
     assert expected_indicators == result.get('Contents')
 
 
@@ -673,9 +673,9 @@ def test_indicators_sigthing_main_command_call(mocker):
     assert 'ReadableContentsFormat' in result
     assert 'HumanReadable' in result
     assert 'EntryContext' in result
-    assert EntryType.NOTE == result.get('Type')
-    assert EntryFormat.JSON == result.get('ContentsFormat')
-    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+    assert result.get('Type') == EntryType.NOTE
+    assert result.get('ContentsFormat') == EntryFormat.JSON
+    assert result.get('ReadableContentsFormat') == EntryFormat.MARKDOWN
 
     expected_sightings = mocked_response.get('sightings')
 

@@ -1,3 +1,4 @@
+from CommonServerPython import DemistoException, demisto
 import pytest
 from FeedRSS import *
 from requests.models import Response
@@ -68,6 +69,24 @@ def test_get_url_content(mocker):
     assert client.get_url_content('test-link.com') == \
         "This is a dumped content of the article. Use the link under Publications field to read the full article. " \
         "\n\n p in div p li inside ul li inside ul Coffee Tea Milk Month Savings January $100 This is h1"
+
+
+def test_get_url_content_invalid_link(mocker):
+    """
+    Given:
+    - Invalid URL link to get the content from
+
+    When:
+    - when creating Report indicators from each item on the rss feed, we want to extract the article content.
+
+    Then:
+    - Ensure it returns an empty value
+    """
+    client = mock_client(mocker=mocker, dict_to_parse={})
+    article_content_res = Response()
+    article_content_res.status_code = 403
+    mocker.patch.object(Client, '_http_request', side_effect=DemistoException(article_content_res))
+    assert client.get_url_content('test-link.com') == ""
 
 
 @pytest.mark.parametrize("article_content, expected_output", TEST_DATA_MAX_SIZE)

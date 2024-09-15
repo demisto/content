@@ -65,7 +65,7 @@ script:
     - description: An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance.
       name: externalNatIP
     - auto: PREDEFINED
-      description: Specifies whether a public DNS ‘PTR’ record should be created to map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be created to map the external IP address of the instance to a DNS domain name."
       name: setPublicPtr
       predefined:
       - 'true'
@@ -572,7 +572,7 @@ script:
       description: An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance.
       type: string
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.setPublicPtr
-      description: Specifies whether a public DNS ‘PTR’ record should be created to map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be created to map the external IP address of the instance to a DNS domain name."
       type: boolean
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName
       description: The DNS domain name for the public PTR record. This field can only be set when the setPublicPtr field is enabled.
@@ -858,7 +858,7 @@ script:
       description: An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance.
       type: string
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.setPublicPtr
-      description: Specifies whether a public DNS ‘PTR’ record should be created to map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be created to map the external IP address of the instance to a DNS domain name."
       type: boolean
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName
       description: The DNS domain name for the public PTR record. This field can only be set when the setPublicPtr field is enabled.
@@ -1464,7 +1464,7 @@ script:
       description: An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance.
       type: string
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.setPublicPtr
-      description: Specifies whether a public DNS ‘PTR’ record should be created to map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be created to map the external IP address of the instance to a DNS domain name."
       type: boolean
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName
       description: The DNS domain name for the public PTR record. This field can only be set when the setPublicPtr field is enabled.
@@ -8209,7 +8209,7 @@ script:
       description: An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance.
       type: string
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.setPublicPtr
-      description: Specifies whether a public DNS ‘PTR’ record should be created to map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be created to map the external IP address of the instance to a DNS domain name."
       type: boolean
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName
       description: The DNS domain name for the public PTR record. This field can only be set when the setPublicPtr field is enabled.
@@ -8418,7 +8418,7 @@ script:
     - contextPath: GoogleCloudCompute.Instances.kind
       description: '] Type of the resource. Always compute#instance for instances.'
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.86653
+  dockerimage: demisto/googleapi-python3:1.0.0.110187
   script: ''
   subtype: python3
   type: python

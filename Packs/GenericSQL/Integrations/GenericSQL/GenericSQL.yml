@@ -164,7 +164,7 @@ script:
       name: bind_variables_values
     description: Running a sql query.
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.96566
+  dockerimage: demisto/genericsql:1.1.0.108424
   isfetch: true
   runonce: false
   script: '-'
@@ -173,4 +173,5 @@ script:
 fromversion: 5.0.0
 tests:
 - generic-sql
+- generic-sql-oracle
 defaultclassifier: GenericSQL Classifier
