@@ -119,18 +119,18 @@ script:
   commands:
   - arguments:
     - name: page
-      description: Page number to return. first page is 0.
+      description: Page number to return. First page is 0.
       type: integer
     - name: page_size
       description: Number of results in a page. Maximum is 1000.
       type: integer
-    - description: Names of git users. Supports comma separated values.
+    - description: Comma-separated list of names of Git users.
       isArray: true
       name: git_users
     - description: A branch name.
       isArray: false
       name: branch
-    - description: Filters by code issue category. Is also available as a search criteria (search_scopes). Supports comma separated values.
+    - description: Comma-separated list of code issue categories. Is also available as a search criteria (search_scopes).
       isArray: true
       name: code_categories
       auto: PREDEFINED
@@ -142,7 +142,7 @@ script:
       - Vulnerabilities
       - Licenses
       - Secrets
-    - description: Different categories related to Infrastructure-as-Code (IaC) issues to filter by. Supports comma separated values.
+    - description: Comma-separated list of categories related to Infrastructure-as-Code (IaC) issues.
       isArray: true
       name: iac_categories
       auto: PREDEFINED
@@ -156,14 +156,14 @@ script:
       - Public
       - Drift
       - Compute
-    - description: list of labels associated with Infrastructure-as-Code (IaC). Supports comma separated values.
+    - description: Comma-separated list of labels associated with Infrastructure-as-Code (IaC).
       name: iac_labels
       isArray: true
       auto: PREDEFINED
       predefined:
       - CustomPolicy
       - HasFix
-    - description: File types to filter by. Supports comma separated values.
+    - description: Comma-separated list of file types.
       name: file_types
       isArray: true
       auto: PREDEFINED
@@ -233,10 +233,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Specifies the repository names to filter results from. Supports comma separated values.
+    - description: Comma-separated list of repository names.
       name: repositories
       isArray: true
-    - description: Filters based on risk factors related to secrets. Supports comma separated values.
+    - description: Comma-separated list of risk factors related to secrets.
       name: secrets_risk_factors
       isArray: true
       auto: PREDEFINED
@@ -249,7 +249,7 @@ script:
       - Invalid
       - Unknown
       - FoundInHistory
-    - description: Defines specific areas or categories within which to search. Supports comma separated values. When specifying `search_scopes`, `search_term` argument is required.
+    - description: Comma-separated list of specific areas or categories within which to search. When specifying `search_scopes`, `search_term` argument is required.
       name: search_scopes
       isArray: true
       auto: PREDEFINED
@@ -261,7 +261,7 @@ script:
       - Vulnerabilities
       - Licenses
       - Secrets
-    - description: The criticality of issues. Supports comma separated values.
+    - description: Comma-separated list of criticality of issues.
       name: severities
       isArray: true
       auto: PREDEFINED
@@ -271,7 +271,7 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-    - description: Filters results based on risk factors for vulnerabilities. Supports comma separated values.
+    - description: Comma-separated list of risk factors for vulnerabilities.
       name: vulnerability_risk_factors
       isArray: true
       auto: PREDEFINED
@@ -284,14 +284,14 @@ script:
       - ExploitInTheWild
       - ExploitPOC
       - IsUsed
-    - description: A keyword or phrase used to narrow down results within specific scopes (like a particular vulnerability). this argument is require when filtering results by search_scopes.
+    - description: A keyword or phrase used to narrow down results within specific scopes (like a particular vulnerability). This argument is require when filtering results by search_scopes.
       name: search_term
-    - description: An infrastructure-as-code (IaC) resource to filter by. Relevant only to- IacMisconfiguration, Vulnerabilities.
+    - description: An infrastructure-as-code (IaC) resource. Relevant only to IacMisconfiguration, Vulnerabilities.
       name: iac_tags
-    - description: List of license types to filter by. Supports comma separated values.
+    - description: Comma-separated list of license types.
       name: license_type
       isArray: true
-    - description: Filters by the status of checks.
+    - description: Status of checks.
       name: check_status
       auto: PREDEFINED
       predefined:
@@ -299,7 +299,7 @@ script:
       - Passed
       - Suppressed
       - FixPending
-    - description: The limit of issues to retrieve. If `page` and `page_size` arguments are provided than the limit argument is ignored.
+    - description: The limit of issues to retrieve. If `page` and `page_size` arguments are provided, then the limit argument is ignored.
       name: limit
       defaultValue: 50
     description: Retrieves the code errors detected by Application Security during periodic scans. At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, `fixable_only` or 'branch`.

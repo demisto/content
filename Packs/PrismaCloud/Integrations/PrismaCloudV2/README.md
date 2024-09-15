@@ -1631,7 +1631,7 @@ Search networks inventory on the Prisma Cloud platform using RQL language. Use t
 ### prisma-cloud-error-file-list
 
 ***
-Deprecated, use *prisma-cloud-code-issues-list* command instead.
+Deprecated, use the ***prisma-cloud-code-issues-list*** command instead.
 
 
 
@@ -2950,22 +2950,22 @@ Retrieves the code errors detected by Application Security during periodic scans
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| git_users | Names of git users. Supports comma separated values. | Optional | 
+| git_users | Comma-separated list of names of Git users. | Optional | 
 | branch | A branch name. | Optional | 
-| code_categories | Filters by code issue category. Is also available as a search criteria (search_scopes). Supports comma separated values. Possible values are: IacMisconfiguration, IacExternalModule, ImageReferencerVul, ImageReferencerLicenses, Vulnerabilities, Licenses, Secrets. | Optional | 
-| iac_categories | Different categories related to Infrastructure-as-Code (IaC) issues to filter by. Supports comma separated values. Possible values are: IAM, Monitoring, Networking, Kubernetes, General, Storage, Public, Drift, Compute. | Optional | 
-| iac_labels | labels associated with Infrastructure-as-Code (IaC). Supports comma separated values. Possible values are: CustomPolicy, HasFix. | Optional | 
-| file_types | File types to filter by. Supports comma separated values. Possible values are: yml, yaml, json, template, py, js, properties, pem, php, xml, ts, env, Dockerfile, java, rb, sum, mod, cs, txt, bicep, hcl, gradle, kts, lock, config, csproj, dependencies. | Optional | 
+| code_categories | Comma-separated list of code issue categories. Is also available as a search criteria (search_scopes). Possible values are: IacMisconfiguration, IacExternalModule, ImageReferencerVul, ImageReferencerLicenses, Vulnerabilities, Licenses, Secrets. | Optional | 
+| iac_categories | Comma-separated list of categories related to Infrastructure-as-Code (IaC) issues. Possible values are: IAM, Monitoring, Networking, Kubernetes, General, Storage, Public, Drift, Compute. | Optional | 
+| iac_labels | Comma-separated list of labels associated with Infrastructure-as-Code (IaC). Possible values are: CustomPolicy, HasFix. | Optional | 
+| file_types | Comma-separated list of file types. Possible values are: yml, yaml, json, template, py, js, properties, pem, php, xml, ts, env, Dockerfile, java, rb, sum, mod, cs, txt, bicep, hcl, gradle, kts, lock, config, csproj, dependencies. | Optional | 
 | fixable_only | Whether to retrieve only fixable issues. Recommended to use this argument with another argument code_categories ,for example. Possible values are: true, false. | Optional | 
-| repositories | Specifies the repository names to filter results from. Supports comma separated values. | Optional | 
-| secrets_risk_factors | Filters based on risk factors related to secrets. Supports comma separated values. Possible values are: PublicRepository, PrivateRepository, User, Privileged, Valid, Invalid, Unknown, FoundInHistory. | Optional | 
-| search_scopes | Defines specific areas or categories within which to search. Supports comma separated values. When specifying `search_scopes`, `search_term` argument is required. Possible values are: IacMisconfiguration, IacExternalModule, ImageReferencerVul, ImageReferencerLicenses, Vulnerabilities, Licenses, Secrets. | Optional | 
-| severities | The criticality of issues. Supports comma separated values. Possible values are: INFO, LOW, MEDIUM, HIGH, CRITICAL. | Optional | 
-| vulnerability_risk_factors | Filters results based on risk factors for vulnerabilities. Supports comma separated values. Possible values are: AttackComplexity, AttackVector, DoS, HasFix, RemoteExecution, ExploitInTheWild, ExploitPOC, IsUsed. | Optional | 
+| repositories | Comma-separated list of repository names. | Optional | 
+| secrets_risk_factors | Comma-separated list of risk factors related to secrets. Possible values are: PublicRepository, PrivateRepository, User, Privileged, Valid, Invalid, Unknown, FoundInHistory. | Optional | 
+| search_scopes | Comma-separated list of specific areas or categories within which to search. When specifying `search_scopes`, `search_term` argument is required. Possible values are: IacMisconfiguration, IacExternalModule, ImageReferencerVul, ImageReferencerLicenses, Vulnerabilities, Licenses, Secrets. | Optional | 
+| severities | Comma-separated list of the criticality of issues. Possible values are: INFO, LOW, MEDIUM, HIGH, CRITICAL. | Optional | 
+| vulnerability_risk_factors | Comma-separated list of risk factors for vulnerabilities. Possible values are: AttackComplexity, AttackVector, DoS, HasFix, RemoteExecution, ExploitInTheWild, ExploitPOC, IsUsed. | Optional | 
 | search_term | A keyword or phrase used to narrow down results within specific scopes (like a particular vulnerability). It's needed if you are filtering results by search_scopes. | Optional | 
-| iac_tags | Relevant only to- IacMisconfiguration,Vulnerabilities. | Optional | 
-| license_type | License types to filter by. Supports comma separated values. | Optional | 
-| check_status | Filters by the status of checks. Possible values are: Error, Passed, Suppressed, FixPendin. | Optional | 
+| iac_tags | An infrastructure-as-code (IaC) resource. Relevant only to- IacMisconfiguration,Vulnerabilities. | Optional | 
+| license_type | Comma-separated list of license types. | Optional | 
+| check_status | Status of checks. Possible values are: Error, Passed, Suppressed, FixPendin. | Optional | 
 | limit | The limit of issues to retrieve. Default is 50. | Optional | 
 
 #### Context Output
