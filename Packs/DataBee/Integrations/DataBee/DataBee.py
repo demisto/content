@@ -150,7 +150,7 @@ class Client(BaseClient):
                 proxy=proxy,
             )
 
-    def _http_request(self, *args, **kwargs) -> requests.Response:
+    def _http_request(self, *args, **kwargs) -> requests.Response | dict[str, Any]:
         """
         Warp to _http_request command, for adding error handler.
 
