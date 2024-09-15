@@ -283,14 +283,21 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
     return None
 
 
-def read_file(filename):
+def read_file(file_path) -> dict | str | None:
     try:
-        with open(filename) as file:
-            ret_value = file.read()
-            demisto.info(f"File '{filename}' contents: {ret_value}.")
-            return ret_value
+        if os.path.exists(file_path):
+            with open(file_path) as file:
+                ret_value = json.load(file) if file_path == CHROME_INSTANCES_FILE_PATH else file.read()
+                demisto.info(f"File '{file_path}' contents: {ret_value}.")
+                return ret_value
+        else:
+            demisto.debug('If the file does not exist, create an empty JSON file')
+            data = {}
+            with open(file_path, 'w') as file:
+                json.dump(data, file)
+            return data
     except FileNotFoundError:
-        demisto.info(f"File '{filename}' does not exist")
+        demisto.info(f"File '{file_path}' does not exist")
         return None
 
 
@@ -303,6 +310,75 @@ def write_file(filename, contents, overwrite=False, ):
             demisto.info(f"File '{filename}' saved successfully with {contents}.")
     except Exception as e:
         demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
+
+
+def read_chrome_instances_file() -> dict| None:
+    """
+    Read the content from a JSON file and return it as a Python dictionary or list.
+    
+    :param file_path: Path to the JSON file.
+    :return: The JSON content as a Python dictionary or list, or None if the file does not exist or is empty.
+    """
+    if not os.path.exists(CHROME_INSTANCES_FILE_PATH):
+        demisto.info(f"File '{CHROME_INSTANCES_FILE_PATH}' does not exist.")
+        return None
+
+    try:
+        with open(CHROME_INSTANCES_FILE_PATH) as file:
+            # Read and parse the JSON data
+            data = json.load(file)
+            return data
+    except json.JSONDecodeError:
+        demisto.debug(f"Error decoding JSON from the file '{CHROME_INSTANCES_FILE_PATH}'.")
+        return None
+    except Exception as e:
+        demisto.debug(f"An error occurred: {e}")
+        return None
+
+
+def write_chrome_instances_file(content=None, overwrite=True):
+    """
+    Write to a JSON file with an option to overwrite or create an empty file.
+    
+    :param file_path: Path to the JSON file.
+    :param content: Data to write to the file. If None, an empty file is created.
+    :param overwrite: If True, the file is overwritten. If False, data is appended.
+    """
+    try:
+        if content is not None and overwrite:
+            # Overwrite the file with the new content
+            with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+                json.dump(content, file, indent=4)
+        
+        elif content is not None and not overwrite:
+            # Append to the file (requires reading existing content)
+            if os.path.exists(CHROME_INSTANCES_FILE_PATH):
+                with open(CHROME_INSTANCES_FILE_PATH, 'r+') as file:
+                    try:
+                        existing_data = json.load(file)
+                        if isinstance(existing_data, list):
+                            existing_data.append(content)
+                        else:
+                            raise ValueError("JSON data is not a list and cannot be appended.")
+                        file.seek(0)  # Move file pointer to the beginning
+                        json.dump(existing_data, file, indent=4)
+                        file.truncate()  # Remove remaining part of the file if new content is shorter
+                    except json.JSONDecodeError:
+                        # File is empty or invalid JSON; initialize with content
+                        file.seek(0)
+                        json.dump([content], file, indent=4)
+            else:
+                # Create a new file with the content as a list
+                with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+                    json.dump([content], file, indent=4)
+        
+        elif content is None:
+            # Create an empty file
+            with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+                json.dump({}, file, indent=4)
+    
+    except Exception as e:
+        demisto.debug(f"An error occurred: {e}")
 
 
 def opt_name(opt):
@@ -365,7 +441,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
                         'chrome_rasterize_connections': '1'
                     }
                 }
-                read_write_chrome_port_file_configurations(content=new_port)
+                edit_chrome_port_file_configurations(content=new_port)
             else:
                 process.kill()
                 return None, None
@@ -447,22 +523,31 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         tuple[Any | None, int | None]: A tuple containing:
             - The Browser or None if an error occurred.
             - The chrome port or None if an error occurred.
+    chrome_port: {
+                        'instance_id': instance_id,
+                        'chrome_options': chrome_options,
+                        'chrome_rasterize_connections': '1'
+                    }
+    '''
     """
     # If instance_id or chrome_options are not set, assign 'None' to these variables.
     # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
     # it can compare between the fetched 'None' string and the 'None' that assigned.
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options') or 'None'
-    chrome_instances_contents = read_write_chrome_port_file_configurations(action_write=False)
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        json.loads(chrome_instances_contents)
-
+    demisto.debug(f'MAI MORAG TEST {chrome_options}')
+    chrome_instances_contents =  read_file(CHROME_INSTANCES_FILE_PATH) or {}
+    instances_id = []
+    for chrome_port_data in chrome_instances_contents.values():
+        instances_id.append(chrome_port_data['instance_id'])
     if not chrome_instances_contents or instance_id not in instances_id:
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_to_chrome_options.get(instance_id):
         chrome_port = instance_id_to_port.get(instance_id, '')
-        delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents, instance_id, chrome_port)
+        edit_chrome_port_file_configurations(chrome_port=chrome_port,
+                                             key_to_update='instance_id',
+                                             value_to_update=instance_id)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
@@ -565,48 +650,33 @@ def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_
         write_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
 
 
-def read_write_chrome_port_file_configurations(action_write: bool = True,
-                                               chrome_port: str= '',
-                                               if_increase_counter: bool = False,
-                                               content: dict = {},
-                                               rewrite: bool=False):
-    # Check if the file exists
-    if not os.path.isfile(CHROME_INSTANCES_FILE_PATH):
-        raise FileNotFoundError(f'{CHROME_INSTANCES_FILE_PATH} does not exist')
-    
-    # Load and update the JSON file
-    try:
-        with open(CHROME_INSTANCES_FILE_PATH, 'r+') as file:
-            if rewrite:
-                data =content
-            else:
-                # Read the file content
-                data = json.load(file) or {}
-                if not action_write:
-                    return data
-                if content:
-                    data.update(content)
-                elif chrome_port in data:
-                    if if_increase_counter:
-                       data[chrome_port]['chrome_rasterize_connections']+=1
-                    # Remove the specified port if it exists
-                    else:
-                        del data[chrome_port]
-            # Move the file pointer to the beginning of the file
-            file.seek(0)
-            # Write the updated JSON data to the file
-            json.dump(data, file, indent=4)
-            # Truncate the file to the current size
-            file.truncate()
-
-    except json.JSONDecodeError:
-        raise ValueError(f'File {CHROME_INSTANCES_FILE_PATH} is not a valid JSON')
-    except Exception as e:
-        raise RuntimeError(f'An error occurred: {str(e)}')
+def edit_chrome_port_file_configurations(chrome_port: str= '',
+                                         key_to_update: str = '',
+                                         value_to_update:str = '',
+                                         if_increase_counter: bool = False,
+                                         content: dict = {}):
+    '''
+    chrome_port: {
+                        'instance_id': instance_id,
+                        'chrome_options': chrome_options,
+                        'chrome_rasterize_connections': '1'
+                    }
+    '''
+    data: dict = read_chrome_instances_file() or {}
+    if content or not data:
+        data.update(content)
+        write_chrome_instances_file(content, False)
+    elif chrome_port in data:
+        if if_increase_counter:
+            data[chrome_port]['chrome_rasterize_connections']+=1
+        if key_to_update:
+            data[chrome_port][key_to_update] = value_to_update
+        # Remove the specified port if it exists
+        else:
+            del data[chrome_port]
+        write_file(CHROME_INSTANCES_FILE_PATH, data, True)
         
         
-        
-
 def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:
     tab_ready_event = Event()
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
@@ -842,6 +912,7 @@ def perform_rasterize(path: str | list[str],
     """
     demisto.debug(f"perform_rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
+    
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
@@ -881,11 +952,11 @@ def perform_rasterize(path: str | list[str],
             elif total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
                 demisto.info(f"Terminating Chrome after {total_rasterizations_count=} rasterizations")
                 terminate_chrome(chrome_port=chrome_port)
-                read_write_chrome_port_file_configurations(chrome_port=chrome_port)
+                edit_chrome_port_file_configurations(chrome_port=chrome_port)
                 write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count-1), overwrite=True)
             else:
                 write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
-                read_write_chrome_port_file_configurations(chrome_port=chrome_port, if_increase_counter=True)
+                edit_chrome_port_file_configurations(chrome_port=chrome_port, if_increase_counter=True)
 
             # Get the results
             for current_thread in rasterization_threads:
