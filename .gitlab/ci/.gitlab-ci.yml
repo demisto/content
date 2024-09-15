@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "upload-flow-after-nightly"
+  CURRENT_BRANCH_NAME: "new_bucket_upload"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml" 
-    ref: "upload-flow-after-nightly"
+    ref: "new_bucket_upload"
     project: "${CI_PROJECT_NAMESPACE}/infra"
