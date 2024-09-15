@@ -2433,10 +2433,10 @@ def validate_code_issues_list_args(args):
 
     if page and not page_size or page_size and not page:
         raise DemistoException(
-            "Both `page` and `page_size` must be specified together. If one is provided, the other must be as well.")
+            "Please provide both `page` and `page_size` arguments.")
 
     if page_size and page_size > MAX_LIMIT_FOR_CODE_ISSUES:
-        raise DemistoException("`Page_size` argument can't be more than 1000")
+        raise DemistoException("`Page_size` argument can't be more than 1000.")
 
     if license_type and license_type not in LICENSE_TYPES:
         raise DemistoException(
@@ -2448,7 +2448,7 @@ def validate_code_issues_list_args(args):
     # Create a copy of the dictionary excluding `limit`, `scopes`, and `term`
     filtered_args = {
         key: value for key, value in args.items()
-        if key not in ['limit', 'search_scopes', 'search_term']
+        if key not in ['limit', 'search_scopes', 'search_term', 'page', 'page_size']
     }
 
     # Ensure there is at least one valid filtering argument
@@ -2467,7 +2467,7 @@ def get_labels(labels) -> Optional[List]:
     if labels:
         res = []
         for label in labels:
-            if type(label) is str:
+            if isinstance(label, str):
                 res.append(label)
             else:
                 res.append(label.get('label'))

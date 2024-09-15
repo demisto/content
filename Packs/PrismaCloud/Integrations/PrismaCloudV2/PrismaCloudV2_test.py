@@ -1711,11 +1711,11 @@ labels_data = [
 def test_get_labels(labels, expected):
     """
         Given
-            labels from raw response
+            list of labels as found in a raw response
         When
-            Running get_labels func.
+            Converting the labels from a code issue into a list of strings in get_labels function.
         Then
-            The func returns a list of correct labels
+            Verify the list of labels.
     """
     from PrismaCloudV2 import get_labels
     res = get_labels(labels)
@@ -1740,11 +1740,11 @@ invalid_args = [
     ({'search_scopes': 'scope1', 'some_filter': 'value1'}, DemistoException,
      'The `search_term` argument is required when specifying `search_scopes`.'),
     ({'page': 40, 'some_filter': 'value1'}, DemistoException,
-     "Both `page` and `page_size` must be specified together. If one is provided, the other must be as well."),
+     "Please provide both `page` and `page_size` arguments."),
     ({'page_size': 50, 'some_filter': 'value1'}, DemistoException,
-     "Both `page` and `page_size` must be specified together. If one is provided, the other must be as well."),
+     "Please provide both `page` and `page_size` arguments."),
     ({'page_size': 1001, 'page': 40, 'some_filter': 'value1'}, DemistoException,
-     "`Page_size` argument can't be more than 1000")
+     "`Page_size` argument can't be more than 1000.")
 ]
 
 
