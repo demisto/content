@@ -7,7 +7,7 @@ import time
 import urllib3
 import resilient
 from resilient.co3 import SimpleClient
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -220,7 +220,7 @@ def normalize_timestamp(timestamp_ms: int | None):
         timestamp_s = timestamp_ms / 1000.0
 
         # Create a datetime object in UTC
-        dt = datetime.fromtimestamp(timestamp_s, tz=timezone.utc)
+        dt = datetime.fromtimestamp(timestamp_s, tz=UTC)
 
         # Format the datetime without microseconds and append 'Z'
         iso_str = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -679,7 +679,7 @@ def to_timestamp(time_input):
             # Not an integer, try to parse as ISO time string
             try:
                 dt = datetime.strptime(time_input, '%Y-%m-%dT%H:%M:%SZ')
-                dt = dt.replace(tzinfo=timezone.utc)
+                dt = dt.replace(tzinfo=UTC)
                 timestamp_ms = int(dt.timestamp() * 1000)
                 return timestamp_ms
             except ValueError:
