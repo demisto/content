@@ -41,6 +41,7 @@ AUTH0_PREFIX = [
     "auth0.test"
 ]
 URL_SUFFIX = 'wiz.io/oauth/token'
+URL_SUFFIX_FED = 'wiz.us/oauth/token'
 
 # Pull Issues
 PULL_ISSUES_QUERY = ("""
@@ -1608,6 +1609,12 @@ def generate_auth_urls(prefix):
     return auth_url, http_auth_url
 
 
+def generate_auth_urls_fed(prefix):
+    auth_url = f"{prefix}.{URL_SUFFIX_FED}"
+    http_auth_url = f"https://{auth_url}"
+    return auth_url, http_auth_url
+
+
 def get_token():
     """
     Retrieve the token using the credentials
@@ -1616,6 +1623,7 @@ def get_token():
     cognito_list = []
     for cognito_prefix in COGNITO_PREFIX:
         cognito_list.extend(generate_auth_urls(cognito_prefix))
+        cognito_list.extend(generate_auth_urls_fed(cognito_prefix))
 
     auth0_list = []
     for auth0_prefix in AUTH0_PREFIX:

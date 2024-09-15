@@ -937,6 +937,30 @@ def test_bad_get_token(capfd):
         assert res == test_bad_token_response
 
 
+def test_generate_auth_urls_fed():
+    from Wiz import generate_auth_urls_fed
+    prefix = "auth"
+    expected_auth_url = "auth.wiz.us/oauth/token"
+    expected_http_auth_url = "https://auth.wiz.us/oauth/token"
+    auth_url, http_auth_url = generate_auth_urls_fed(prefix)
+    assert auth_url == expected_auth_url
+    assert http_auth_url == expected_http_auth_url
+
+    prefix = ""
+    expected_auth_url = ".wiz.us/oauth/token"
+    expected_http_auth_url = "https://.wiz.us/oauth/token"
+    auth_url, http_auth_url = generate_auth_urls_fed(prefix)
+    assert auth_url == expected_auth_url
+    assert http_auth_url == expected_http_auth_url
+
+    prefix = "auth!@#"
+    expected_auth_url = "auth!@#.wiz.us/oauth/token"
+    expected_http_auth_url = "https://auth!@#.wiz.us/oauth/token"
+    auth_url, http_auth_url = generate_auth_urls_fed(prefix)
+    assert auth_url == expected_auth_url
+    assert http_auth_url == expected_http_auth_url
+
+
 def test_token_url():
     from Wiz import COGNITO_PREFIX, AUTH0_PREFIX, generate_auth_urls
 
