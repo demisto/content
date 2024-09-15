@@ -1,4 +1,4 @@
-This script is used to convert Splunk comments to a table.
+This script is used to format IBM QRadar SOAR notes into a mark-down table.
 
 ## Script Data
 

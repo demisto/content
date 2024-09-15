@@ -26,7 +26,7 @@ def convert_to_table():
             # Extract mirror tags from message content
             for tag in mirror_tags:
                 if tag in comment_entry['Comment']:
-                    comment_entry['Comment'] = comment_entry['Comment'].replace(tag, '')
+                    comment_entry['Comment'] = comment_entry['Comment'].replace(tag, '').strip()
                     comment_entry['tags'].append(tag)
 
             comments.append(comment_entry)
