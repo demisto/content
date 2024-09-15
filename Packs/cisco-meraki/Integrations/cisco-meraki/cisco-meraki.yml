@@ -2,10 +2,11 @@ commonfields:
   id: Cisco Meraki
   version: -1
 name: Cisco Meraki
-display: Cisco Meraki
+display: Cisco Meraki (Deprecated)
+deprecated: true
 category: IT Services
 image: data:image/png;base64,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
-description: Cloud controlled WiFi, routing, and security.
+description: Cloud controlled WiFi, routing, and security. Deprecated. Use CiscoMerakiv2 instead.
 detaileddescription: Get the API key from the Meraki dashboard.
 configuration:
 - display: API Key
@@ -614,6 +615,7 @@ script:
   type: javascript
   commands:
   - name: meraki-fetch-organizations
+    deprecated: true
     arguments: []
     outputs:
     - contextPath: Organization
@@ -621,6 +623,7 @@ script:
       type: list
     description: List the organizations that the api-key has privileges on.
   - name: meraki-get-organization-license-state
+    deprecated: true
     arguments:
     - name: organizationId
       required: true
@@ -636,6 +639,7 @@ script:
       type: String
     description: License state for an organization.
   - name: meraki-fetch-organization-inventory
+    deprecated: true
     arguments:
     - name: organizationId
       required: true
@@ -648,6 +652,7 @@ script:
       type: list
     description: List of inventories for an organization.
   - name: meraki-fetch-networks
+    deprecated: true
     arguments:
     - name: organizationId
       required: true
@@ -660,6 +665,7 @@ script:
       type: list
     description: List the networks in an organization.
   - name: meraki-fetch-devices
+    deprecated: true
     arguments:
     - name: networkId
       required: true
@@ -672,6 +678,7 @@ script:
       type: list
     description: List the devices in a network.
   - name: meraki-fetch-device-uplink
+    deprecated: true
     arguments:
     - name: networkId
       required: true
@@ -687,6 +694,7 @@ script:
       type: list
     description: List of uplink information for a device.
   - name: meraki-fetch-ssids
+    deprecated: true
     arguments:
     - name: networkId
       required: true
@@ -699,6 +707,7 @@ script:
       type: list
     description: List the SSIDs in a network.
   - name: meraki-fetch-clients
+    deprecated: true
     arguments:
     - name: serial
       required: true
@@ -714,6 +723,7 @@ script:
       type: list
     description: List the clients of a device, up to a maximum of a month ago.
   - name: meraki-fetch-firewall-rules
+    deprecated: true
     arguments:
     - name: networkId
       required: true
@@ -729,6 +739,7 @@ script:
       type: list
     description: List of L3 firewall rules for an SSID.
   - name: meraki-remove-device
+    deprecated: true
     arguments:
     - name: networkId
       required: true
@@ -738,6 +749,7 @@ script:
       description: Serial number of the device to remove.
     description: Remove a single device.
   - name: meraki-get-device
+    deprecated: true
     arguments:
     - name: networkId
       required: true
@@ -752,6 +764,7 @@ script:
       description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address.
     description: Get a single device.
   - name: meraki-update-device
+    deprecated: true
     arguments:
     - name: networkId
       required: true
@@ -774,6 +787,7 @@ script:
       description: Updated device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address.
     description: Update the attributes of a device.
   - name: meraki-claim-device
+    deprecated: true
     arguments:
     - name: networkId
       required: true
@@ -783,6 +797,7 @@ script:
       description: Serial number of the device to claim.
     description: Claim a device into a network.
   - name: meraki-update-firewall-rules
+    deprecated: true
     arguments:
     - name: networkId
       required: true

@@ -139,7 +139,7 @@ function merge_array(dst, src, kmap, out_key, appendable, conflict_strategy, ove
             });
         }
         if (!merged && appendable) {
-            dst.push(sval);
+            dst.push(out_key ? {[out_key]: sval} : sval);
         }
     });
     return dst;

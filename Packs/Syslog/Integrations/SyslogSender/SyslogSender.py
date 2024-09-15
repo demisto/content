@@ -9,7 +9,7 @@ from logging.handlers import SysLogHandler
 from distutils.util import strtobool
 from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
-from typing import Generator
+from collections.abc import Generator
 from tempfile import NamedTemporaryFile
 from rfc5424logging import Rfc5424SysLogHandler
 import socket
@@ -237,7 +237,7 @@ def init_manager(params: dict) -> SyslogManager:
     self_signed_certificate = params.get('self_signed_certificate', False)
     if not address:
         raise DemistoException('A address must be provided.')
-    if port and (port < 0 or MAX_PORT < port):
+    if port and (port < 0 or port > MAX_PORT):
         raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
     if protocol == 'tls' and not certificate:
         raise DemistoException('A certificate must be provided in TLS protocol.')

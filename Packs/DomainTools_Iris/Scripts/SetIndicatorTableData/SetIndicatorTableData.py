@@ -59,7 +59,7 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
 
     domaintools_data = args["domaintools_data"]
     if isinstance(domaintools_data, dict) and all(
-        k in domaintools_data.keys() for k in required_keys
+        k in domaintools_data for k in required_keys
     ):
         domain_name = domaintools_data.get("Name")
         domaintools_hosting_data = domaintools_data.get("Hosting", {})
@@ -88,8 +88,7 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
             "MalwareRiskScore": domaintools_analytics_data.get("MalwareRiskScore") or "",
             "PhishingRiskScore": domaintools_analytics_data.get("PhishingRiskScore") or "",
             "SpamRiskScore": domaintools_analytics_data.get("SpamRiskScore") or "",
-            "ThreatProfileRiskScore": {"Evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get(
-                "Evidence")} or ""
+            "ThreatProfileRiskScore": {"Evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get("Evidence")}
         }
 
         domaintools_iris_indicator = {
