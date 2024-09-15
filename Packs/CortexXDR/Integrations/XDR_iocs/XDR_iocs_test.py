@@ -1,6 +1,8 @@
 import tempfile
 from unittest.mock import patch
 
+from unittest.mock import MagicMock
+
 from XDR_iocs import *
 import pytest
 from freezegun import freeze_time
@@ -1141,7 +1143,7 @@ def test_xdr_iocs_sync_command_sync_for_fetch(mock_update_integration_context,
                                               mock_get_iocs_generator,
                                               mock_get_integration_context):
     """
-    Given   xdr_iocs_sync_command function is called with a valid IOC example,
+    Given   xdr_iocs_sync_command function is called with is_first_stage_sync=true, called_from_fetch=true
     When   the http_request is successful,
     Then   the update_integration_context function should be called with update_is_first_sync_phase='false'
     """
@@ -1160,14 +1162,15 @@ def test_xdr_iocs_sync_command_sync_for_fetch_fails(mock_update_integration_cont
                                                     mock_get_iocs_generator,
                                                     mock_get_integration_context):
     """
-    Given   that the xdr_iocs_sync_command function is called with a valid IOC example
+    Given   that the xdr_iocs_sync_command function is called with is_first_stage_sync=true, called_from_fetch=true
     When    the http_request fails
     Then    Raises DemistoException
     """
     with pytest.raises(DemistoException) as e:
         xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
     mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
-    assert e.value.message == 'Failed to sync indicators with error Response status was not success.'
+    assert e.value.message == ("Failed to sync indicators with error Response status was not success, "
+                               "response={'reply': {'success': False}}.")
 
 
 @patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z'})
@@ -1186,7 +1189,7 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
         mock_get_iocs_generator,
         mock_get_integration_context):
     """
-    Given that the xdr_iocs_sync_command function is called with a valid IOC example
+    Given the xdr_iocs_sync_command function is called with is_first_stage_sync=true, called_from_fetch=true
     When  There are validation errors in the response
     Then update_integration_context should be called with update_is_first_sync_phase='false',
         and a debug message should be logged indicating the validation errors.
@@ -1216,3 +1219,45 @@ def test_update_integration_context(mock_set_integration_context, mock_get_integ
                                                      'ts': 1725969600000,
                                                      'is_first_sync_phase': False,
                                                      'search_after': ['765', '000']})
+
+@patch('XDR_iocs.get_integration_context')
+@patch('XDR_iocs.sync')
+def test_xdr_iocs_sync_command(mock_sync, mock_integration_context):
+    """
+    Given:
+    - first_time is true - as this is the first sync phase
+    - integration context is empty
+    When:
+    - xdr_iocs_sync_command is called not from a fetch_indicators command
+    Then:
+    - The sync command is being called
+    """
+    client = MagicMock()
+    # Test case 1: first_time is true
+    xdr_iocs_sync_command(client, first_time=True)
+    mock_sync.assert_called_with(client, batch_size=4000)
+    mock_sync.reset_mock()
+    # Test case 2: integration context is empty
+    mock_integration_context.return_value = {}
+    xdr_iocs_sync_command(client)
+    mock_sync.assert_called_with(client, batch_size=4000)
+
+@patch('XDR_iocs.get_integration_context')
+@patch('XDR_iocs.sync_for_fetch')
+def test_xdr_iocs_sync_command_from_fetch(mock_sync_for_fetch, mock_integration_context):
+    """
+    Given:
+    - first_time is true- as this is the first sync phase
+    - integration context is empty
+    When:
+    - xdr_iocs_sync_command is called from a fetch_indicators command
+    Then:
+    - The sync_for_fetch command is being called
+    """
+    client = MagicMock()
+    xdr_iocs_sync_command(client, called_from_fetch=True, is_first_stage_sync=True)
+    mock_sync_for_fetch.assert_called_with(client, batch_size=4000, is_first_stage_sync=True)
+    mock_sync_for_fetch.reset_mock()
+    mock_integration_context.return_value = {}
+    xdr_iocs_sync_command(client, called_from_fetch=True)
+    mock_sync_for_fetch.assert_called_with(client, batch_size=4000, is_first_stage_sync=True)
