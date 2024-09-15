@@ -1643,6 +1643,6 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+- Test Playbook - Identity Analytics - Alert Handling
 marketplaces: ["marketplacev2"]
 fromversion: 6.10.0

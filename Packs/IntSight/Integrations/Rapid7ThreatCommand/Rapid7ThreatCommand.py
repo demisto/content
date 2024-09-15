@@ -1,8 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from enum import Enum
-from typing import Any, Callable, cast
+from enum import Enum, StrEnum
+from typing import Any, cast
+from collections.abc import Callable
 import copy
 from requests import Response
 import pathlib
@@ -15,10 +16,10 @@ ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 INTEGRATION_ENTRY_CONTEXT = "ThreatCommand"
 BACKOFF_FACTOR = 15  # Consider its double.
 RETRIES = 3  # One retry is completed right away, so it should be viewed as a minor attempt.
-STATUS_LIST_TO_RETRY = [429] + [i for i in range(500, 600)]
+STATUS_LIST_TO_RETRY = [429] + list(range(500, 600))
 
 
-class Headers(list, Enum):
+class Headers(list, Enum):  # type: ignore[misc]
     GET_ALERT = [
         "id",
         "type",
@@ -43,15 +44,6 @@ class Headers(list, Enum):
         "related_campaigns",
     ]
     GET_IOC = [
-        "value",
-        "type",
-        "status",
-        "is_whitelisted",
-        "score",
-        "severity",
-        "last_update_date",
-    ]
-    LIST_IOC = [
         "value",
         "type",
         "status",
@@ -256,8 +248,7 @@ WHITELIST_ADD = "Add to the user whitelist"
 WHITELIST_DO_NOT = "Do not whitelist"
 
 
-class ArgumentValues(list, Enum):
-    DOCUMENT_SEVERITY = ["High", "Medium", "Low"]
+class ArgumentValues(list, Enum):  # type: ignore[misc]
     WHITELIST_STATUS = [WHITELIST_ADD, WHITELIST_DO_NOT]
     BOOLEAN = ["true", "false"]
     ALERT_TYPE = [
@@ -268,7 +259,7 @@ class ArgumentValues(list, Enum):
         "Exploitable Data",
         "vip",
     ]
-    ALERT_IOC_SEVERITY = ["High", "Medium", "Low"]
+    ALERT_IOC_AND_DOCUMENT_SEVERITY = ["High", "Medium", "Low"]
     ALERT_SOURCE_NETWORK = ["Clear Web", "Dark Web"]
     ALERT_CLOSE_REASON = [
         "Problem Solved",
@@ -318,7 +309,7 @@ ALERT_WHITELIST = {
 }
 
 
-class UrlPrefix(str, Enum):
+class UrlPrefix(StrEnum):
     CYBER_TERM = "threat-library/cyber-terms"
     IOC_SOURCE = "iocs"
     ACCOUNT = "account"
@@ -3733,7 +3724,7 @@ def list_ioc_handler(client: Client, args: dict[str, Any]) -> CommandResults:
     return command_result_generate(
         readable_message=ReadableOutputs.IOC_LIST.value,
         outputs=mapped_response,
-        headers=Headers.LIST_IOC.value,
+        headers=Headers.GET_IOC.value,
         prefix="IOC",
         key_field="id",
         raw_response=paginated_response,
@@ -4697,7 +4688,7 @@ def validate_create_source_document(args: dict[str, Any]) -> dict[str, Any]:
         dict[str, Any]: Updated args.
     """
     validate_argument(
-        args=args, key_="severity", values=ArgumentValues.DOCUMENT_SEVERITY.value
+        args=args, key_="severity", values=ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
     )
     validate_argument(args=args, key_="share", values=ArgumentValues.BOOLEAN.value)
     confidence_level = arg_to_number(args["confidence_level"])
@@ -4734,7 +4725,7 @@ def multi_status_handler(
         for obj in failure:
             reason = obj["failReason"]
             obj_id = obj[object_key]
-            succeeded = list(set(succeeded) - set([obj_id]))
+            succeeded = list(set(succeeded) - {obj_id})
             failed.append(f"{obj_id} ({reason})")
     if not succeeded:
         raise ValueError(fail_readable.format((",").join(failed)))
@@ -4781,7 +4772,7 @@ def validate_create_alert(args: dict[str, Any]):
 
     validate_argument(args=args, key_="type", values=ArgumentValues.ALERT_TYPE.value)
     validate_argument(
-        args=args, key_="severity", values=ArgumentValues.ALERT_IOC_SEVERITY.value
+        args=args, key_="severity", values=ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
     )
     validate_argument(
         args=args,
@@ -4876,13 +4867,13 @@ def validate_list_cve(args: dict[str, Any]):
     Raises:
         ValueError: In case of wrong arguments.
     """
-    if severity_list := argToList(args.get("severity_list")):
-        if not set(severity_list).issubset(ArgumentValues.CVE_SEVERITY.value):
-            raise ValueError(
-                ReadableErrors.ARGUMENT.value.format(
-                    "severity_list", ArgumentValues.CVE_SEVERITY.value
-                )
+    severity_list = argToList(args.get("severity_list"))
+    if severity_list and not set(severity_list).issubset(ArgumentValues.CVE_SEVERITY.value):
+        raise ValueError(
+            ReadableErrors.ARGUMENT.value.format(
+                "severity_list", ArgumentValues.CVE_SEVERITY.value
             )
+        )
 
 
 def validate_list_account_user(args: dict[str, Any]):
@@ -4911,7 +4902,7 @@ def validate_alert_ioc_severity(args: dict[str, Any]):
         ValueError: In case of wrong arguments.
     """
     validate_argument(
-        args=args, key_="severity", values=ArgumentValues.ALERT_IOC_SEVERITY.value
+        args=args, key_="severity", values=ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
     )
 
 
@@ -4993,7 +4984,7 @@ def dict_to_lowercase(dict_: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: Dictionary with lowercase keys.
     """
-    return dict((k.lower(), v) for k, v in dict_.items())
+    return {k.lower(): v for k, v in dict_.items()}
 
 
 def alert_readable_outputs_handler(response: dict[str, Any]) -> dict[str, Any]:
@@ -5036,10 +5027,10 @@ def response_obj_parser(dict_: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: Parsed dictionary.
     """
-    return dict(
-        (camel_case_to_underscore(k if k != "_id" else "id"), v)
+    return {
+        camel_case_to_underscore(k if k != "_id" else "id"): v
         for k, v in dict_.items()
-    )
+    }
 
 
 def minimum_severity_handler(severity: str | None) -> List[str]:

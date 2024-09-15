@@ -2,21 +2,21 @@
   "DBotScore": [
     {
       "Type": "file",
-      "Indicator": "1.pdf",
+      "Indicator": "1111111111111111111111111111111111111111111111111111111111111111",
       "Reliability": "C - Fairly reliable",
       "Score": 1,
       "Vendor": "JoeSecurityV2"
     },
     {
       "Type": "file",
-      "Indicator": "2.png",
+      "Indicator": "2222222222222222222222222222222222222222222222222222222222222222",
       "Reliability": "C - Fairly reliable",
       "Score": 2,
       "Vendor": "JoeSecurityV2"
     },
     {
       "Type": "file",
-      "Indicator": "3.pdf",
+      "Indicator": "3333333333333333333333333333333333333333333333333333333333333333",
       "Reliability": "C - Fairly reliable",
       "Score": 3,
       "Vendor": "JoeSecurityV2"

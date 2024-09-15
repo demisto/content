@@ -105,7 +105,7 @@ class AWSClient:
         elif self.aws_role_policy is not None:
             kwargs.update({'Policy': self.aws_role_policy})
 
-        demisto.debug('{kwargs}='.format(kwargs=kwargs))
+        demisto.debug(f'{kwargs=}')
 
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
             if not self.aws_access_key_id:
@@ -126,6 +126,7 @@ class AWSClient:
         elif self.aws_access_key_id and (role_arn or self.aws_role_arn):  # login with Access Key ID and Role ARN
             sts_client = boto3.client(
                 service_name='sts',
+                region_name=region if region else self.aws_default_region,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,

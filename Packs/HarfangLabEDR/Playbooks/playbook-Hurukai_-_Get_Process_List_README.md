@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Process List](./doc_files/Hurukai_-_Get_Process_List.png)
+![Hurukai - Get Process List](../doc_files/Hurukai_-_Get_Process_List.png)

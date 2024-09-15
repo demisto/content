@@ -1,0 +1,232 @@
+{
+    "count": 870,
+    "next": "secret",
+    "previous": null,
+    "results": [
+        {
+            "domain": "applications.youngltd.com",
+            "hire_datetime": "results[0]_hire_datetime",
+            "modified_time": "results[0]_modified_time",
+            "type_id": 1,
+            "account": {
+                "name": "Domain Admin",
+                "type": "AWS IAM Role",
+                "type_id": 4,
+                "uid": "d53455865"
+            },
+            "email_addr": "results[0]_email_addr",
+            "id": 1,
+            "name": "teresa949",
+            "uid": "secret",
+            "hid": 8201,
+            "email_addresses": [],
+            "job_title": "CEO",
+            "uid_alt": "TV",
+            "backtrace": {
+                "email_addr": {
+                    "feed": "azure",
+                    "provider": "azure_ad",
+                    "source": "results[0]_backtrace_email_addr_source"
+                },
+                "name": {
+                    "feed": "azure",
+                    "provider": "azure_ad",
+                    "source": "results[0]_backtrace_name_source"
+                }
+            },
+            "employee_uid": "29704",
+            "labels": [
+                "already",
+                "wide"
+            ],
+            "office_location": "nearly",
+            "cost_center": "game",
+            "end_time": null,
+            "last_login_time": "results[0]_last_login_time",
+            "org": {
+                "name": "Young Ltd"
+            },
+            "created_time": "results[0]_created_time",
+            "full_name": "Teresa Jackson",
+            "leave_datetime": "results[0]_leave_datetime",
+            "start_time": "results[0]_start_time",
+            "credential_uid": "results[0]_credential_uid",
+            "given_name": "Teresa",
+            "location": {
+                "city": "Camarillo",
+                "continent": "na",
+                "coordinates": [
+                    34.21639,
+                    -119.0376
+                ],
+                "country": "us",
+                "desc": "simply",
+                "is_on_premises": true,
+                "isp": "investment",
+                "postal_code": "66426",
+                "provider": "determine",
+                "region": "hxp"
+            },
+            "surname": "Jackson",
+            "deleted_time": "results[0]_deleted_time",
+            "groups": [
+                {
+                    "name": "Marketing",
+                    "type": "Fulltime",
+                    "uid": "v5JmQnU1"
+                },
+                {
+                    "name": "Sales",
+                    "type": "Fulltime",
+                    "uid": "d9PmRyV4"
+                }
+            ],
+            "manager": null,
+            "type": "User"
+        },
+        {
+            "domain": "secret",
+            "hire_datetime": "results[1]_hire_datetime",
+            "modified_time": "results[1]_modified_time",
+            "type_id": 1,
+            "account": {
+                "name": "Administrator",
+                "type": "Windows Account",
+                "type_id": 2,
+                "uid": "a9876543"
+            },
+            "email_addr": "results[1]_email_addr",
+            "id": 2,
+            "name": "erik703",
+            "uid": "secret",
+            "hid": 8202,
+            "email_addresses": [],
+            "job_title": "Director-3 Media planner",
+            "uid_alt": "picture",
+            "backtrace": {
+                "email_addr": {
+                    "feed": "azure",
+                    "provider": "azure_ad",
+                    "source": "results[1]_backtrace_email_addr_source"
+                },
+                "name": {
+                    "feed": "azure",
+                    "provider": "azure_ad",
+                    "source": "results[1]_backtrace_name_source"
+                }
+            },
+            "employee_uid": "53991",
+            "labels": [
+                "ready",
+                "save"
+            ],
+            "office_location": "detail",
+            "cost_center": "growth",
+            "end_time": null,
+            "last_login_time": "results[1]_last_login_time",
+            "org": {
+                "name": "Young Ltd"
+            },
+            "created_time": "results[1]_created_time",
+            "full_name": "Erik Flores",
+            "leave_datetime": "results[1]_leave_datetime",
+            "start_time": "results[1]_start_time",
+            "credential_uid": "results[1]_credential_uid",
+            "given_name": "Erik",
+            "location": {
+                "city": "Granger",
+                "continent": "na",
+                "coordinates": [
+                    41.75338,
+                    -86.11084
+                ],
+                "country": "us",
+                "desc": "trip",
+                "is_on_premises": true,
+                "isp": "whose",
+                "postal_code": "70697",
+                "provider": "blue",
+                "region": "kj4"
+            },
+            "surname": "Flores",
+            "deleted_time": "results[1]_deleted_time",
+            "groups": [
+                {
+                    "name": "Accounting",
+                    "type": "Parttime",
+                    "uid": "F4EeDpX9"
+                },
+                {
+                    "name": "HR",
+                    "type": "Intern",
+                    "uid": "X3tPwGzR"
+                }
+            ],
+            "manager": {
+                "account": {
+                    "name": "Domain Admin",
+                    "type": "AWS IAM Role",
+                    "type_id": 4,
+                    "uid": "d53455865"
+                },
+                "backtrace": {
+                    "email_addr": {
+                        "feed": "azure",
+                        "provider": "azure_ad",
+                        "source": "results[1]_manager_backtrace_email_addr_source"
+                    },
+                    "name": {
+                        "feed": "azure",
+                        "provider": "azure_ad",
+                        "source": "results[1]_manager_backtrace_name_source"
+                    }
+                },
+                "credential_uid": "results[1]_manager_credential_uid",
+                "domain": "applications.youngltd.com",
+                "email_addr": "results[1]_manager_email_addr",
+                "employee_uid": "29704",
+                "full_name": "Teresa Jackson",
+                "given_name": "Teresa",
+                "groups": [
+                    {
+                        "name": "Marketing",
+                        "type": "Fulltime",
+                        "uid": "v5JmQnU1"
+                    },
+                    {
+                        "name": "Sales",
+                        "type": "Fulltime",
+                        "uid": "d9PmRyV4"
+                    }
+                ],
+                "id": 1,
+                "job_title": "CEO",
+                "location": {
+                    "city": "Camarillo",
+                    "continent": "na",
+                    "coordinates": [
+                        34.21639,
+                        -119.0376
+                    ],
+                    "country": "us",
+                    "desc": "simply",
+                    "is_on_premises": true,
+                    "isp": "investment",
+                    "postal_code": "66426",
+                    "provider": "determine",
+                    "region": "hxp"
+                },
+                "manager": null,
+                "name": "teresa949",
+                "org": {
+                    "name": "Young Ltd"
+                },
+                "sur_name": "Jackson",
+                "type": "User",
+                "type_id": 1,
+                "uid": "0e12e400e207094557a64e2915d3e6e719f92ef46669ad59a2b0d853b5935828"
+            },
+            "type": "User"
+        }
+    ]
+}

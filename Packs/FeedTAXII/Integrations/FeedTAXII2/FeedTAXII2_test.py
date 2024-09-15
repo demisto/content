@@ -397,3 +397,25 @@ class TestHelperFunctions:
 
         assert result == new_indicators
         assert last_run.get("latest_indicators") == next_latest_indicators
+
+
+@pytest.mark.parametrize("url, expected_result",
+                         [("https://test.com/taxii/", True),
+                          ("https://test.com/taxii2/", True),
+                          ("https://test.com/test/", False),
+                          ("domain.com/taxii2/bad_path/", False)])
+def test_is_valid_url(url, expected_result):
+    """
+    Scenario: Test validation of the is_valid_url method.
+
+    Given:
+    - A url
+
+    When:
+    - running is_valid_url command.
+
+    Then:
+    - Ensure the function evaluates correctly the correctness of the URL.
+    """
+    from FeedTAXII2 import is_valid_taxii_url
+    assert is_valid_taxii_url(url) == expected_result

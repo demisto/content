@@ -22,7 +22,7 @@ jobs:
         uses: Gr1N/setup-poetry@v9
       - name: Install Python Dependencies
         run: |
-          poetry install --with ci
+          poetry install --with github-actions
       - name: Check if contribution form needs to be filled
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}

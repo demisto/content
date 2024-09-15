@@ -1,0 +1,5 @@
+# GR103 is temporary, see CIAC-11656
+[file:incidentfield-Social_Engineering_Domain_Summary.json]
+ignore=GR103
+[file:layoutscontainer-Social_Engineering_Domain_Investigation_Layout.json]
+ignore=GR103

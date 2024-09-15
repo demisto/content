@@ -3,7 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Expanse Find Cloud IP Address Region and Service
-description: 'Subplaybook for Expanse Enrich Cloud Assets subplaybook. This playbook
+deprecated: true
+description: 'Deprecated. No available replacement. >
+  Sub-playbook for Expanse Enrich Cloud Assets sub-playbook. This playbook
   is used to find the corresponding Public Cloud Region (i.e. AWS us-east-1) and Service
   (i.e. AWS EC2) for a provided IP Address. It works by correlating the provided IP
   address with the IP Range Indicators (CIDRs) that can be collected from Public Cloud

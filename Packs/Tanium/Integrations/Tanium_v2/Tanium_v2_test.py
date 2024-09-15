@@ -325,7 +325,7 @@ data_test_parse_action_parameters = [
 ]
 
 
-@ pytest.mark.parametrize('parameters, accepted_result', data_test_parse_action_parameters)
+@pytest.mark.parametrize('parameters, accepted_result', data_test_parse_action_parameters)
 def test_parse_action_parameters(parameters, accepted_result):
     """Tests parse_action_parameters function
     Given

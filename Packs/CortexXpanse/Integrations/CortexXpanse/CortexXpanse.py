@@ -2,7 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Any, cast
+from typing import Any
+from datetime import datetime, timedelta
+from dateutil import parser
+import ipaddress
 
 import urllib3
 
@@ -12,8 +15,11 @@ urllib3.disable_warnings()
 DEFAULT_SEARCH_LIMIT = int(demisto.params().get('search_limit', 100))
 MAX_ALERTS = 100  # max alerts per fetch
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+TIME_FORMAT_Z = "%Y-%m-%dT%H:%M:%SZ"
 V1_URL_SUFFIX = "/public_api/v1"
 V2_URL_SUFFIX = "/public_api/v2"
+PACK_VERSION = get_pack_version()
+DEMISTO_VERSION = demisto.demistoVersion()
 SEVERITY_DICT = {
     'informational': IncidentSeverity.INFO,
     'low': IncidentSeverity.LOW,
@@ -288,8 +294,64 @@ class Client(BaseClient):
 
         return response
 
+    def add_note_to_asset(self, asm_asset_id: str, entity_type: str, annotation_note: str, should_append: bool) -> dict[str, Any]:
+        """Adds an annotation (also called a note) to an asset or IP range
+        using the /assets/assets_internet_exposure/annotation endpoint.
+
+        Args:
+            asm_asset_id (str): The Xpanse asset ID.
+            entity_type (str): The type of Xpanse asset, Allowed values: 'asset' or 'ip_range'.
+            annotation_note (str): The custom note to be added to the notes section of the asset in Xpanse
+
+        Returns:
+            dict[str, Any]: a response that indicates if adding the note succeeded.
+        """
+        data = {
+            "request_data":
+                {"assets":
+                    [{"entity_id": asm_asset_id,
+                        "entity_type": entity_type,
+                        "annotation": annotation_note
+                      }],
+                    "should_append": should_append
+                 }
+        }
+
+        response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/assets_internet_exposure/annotation', json_data=data)
+
+        return response
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def is_timestamp_within_days(timestamp, days: int):
+    """_summary_
+
+    Args:
+        timestamp (_type_): _description_
+        days (int): _description_
+        debug_msg (str): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    timestamp = timestamp.replace(" ", "").replace("Z", "")
+    date_part, time_part = timestamp.split('T')
+    main_time, fractional_seconds = time_part.split('.')
+    fractional_seconds = fractional_seconds[:6]
+    timestamp = f"{date_part}T{main_time}.{fractional_seconds}"
+    target_time = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+
+    current_time = datetime.now()
+    time_difference = current_time - target_time
+
+    if time_difference >= timedelta(days=days):
+        demisto.debug(f"The timestamp was not within the last {days} days.")
+        return False
+    else:
+        demisto.debug(f"The timestamp was within the last {days} days.")
+        return True
 
 
 def append_search_param(search_params, field, operator, value):
@@ -666,7 +728,7 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
         append_search_param(search_params, "business_units_list", "in", str(business_units_list).split(","))
 
     if has_bu_overrides:
-        append_search_param(search_params, "has_bu_overrides", "eq", False if has_bu_overrides.lower() == 'false' else True)
+        append_search_param(search_params, "has_bu_overrides", "eq", has_bu_overrides.lower() != 'false')
 
     if mac_addresses:
         append_search_param(search_params, "mac_addresses", "contains", mac_addresses)
@@ -952,6 +1014,8 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
     incident_id_list = argToList(args.get('incident_id_list'))
     description = args.get('description')
     status = args.get('status')
+    starred = args.get('starred')
+    cloud_management_status = args.get('cloud_management_status')
     lte_creation_time = args.get('lte_creation_time')
     gte_creation_time = args.get('gte_creation_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
@@ -976,6 +1040,10 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
         search_params.append({"field": "description", "operator": "contains", "value": description})
     if status:
         search_params.append({"field": "status", "operator": "eq", "value": status})
+    if starred:
+        search_params.append({"field": "starred", "operator": "eq", "value": starred})
+    if cloud_management_status:
+        search_params.append({"field": "cloud_management_status", "operator": "eq", "value": cloud_management_status})
     if lte_creation_time:
         search_params.append({
             'field': 'creation_time',
@@ -1181,6 +1249,7 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     alert_id_list = argToList(args.get('alert_id_list'))
     severity = args.get('severity')
     status = args.get('status')
+    comment = str(args.get('comment'))
 
     update_params = {"update_data": {}}  # type: ignore
     if alert_id_list:
@@ -1195,6 +1264,8 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
             update_params["update_data"]["status"] = status
         else:
             raise ValueError(f'status must be one of {ALERT_STATUSES}')
+    if comment:
+        update_params["update_data"]["comment"] = comment
 
     response = client.update_alert_request(request_data=update_params)
 
@@ -1204,6 +1275,46 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
         raw_response=response,
         readable_output=f"Updated alerts: {formatted_response}",
         outputs_prefix='ASM.UpdatedAlerts'
+    )
+
+    return command_results
+
+
+def add_note_to_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Adds an annotation (also called a note) to an asset or IP range
+       using the /assets/assets_internet_exposure/annotation endpoint.
+
+    Args:
+        client (Client): CortexXpanse client to use.
+        args (dict): all command arguments, usually passed from demisto.args().
+            args['asset_id'] (str): The Xpanse asset ID.
+            args['entity_type'] (str): The type of Xpanse asset, Allowed values: 'asset' or 'ip_range'.
+            args['annotation_note'] (str): The custom note to be added to the notes section of the asset in Xpanse
+
+    Returns:
+        CommandResults: A CommandResults demisto object that is then passed to return_results
+    """
+    asset_id = str(args.get('asset_id'))
+    entity_type = str(args.get('entity_type'))
+    note_to_add = str(args.get('note_to_add'))
+    should_append = argToBoolean(args.get('should_append'))
+
+    response = client.add_note_to_asset(asm_asset_id=asset_id,
+                                        entity_type=entity_type,
+                                        annotation_note=note_to_add,
+                                        should_append=should_append)
+    response_message = {"status": response.get('reply', {})}
+    response_message['asset'] = asset_id
+    markdown = tableToMarkdown('Add Note to Asset Command Results:',
+                               response_message.get('status'),
+                               headers=['Status'],
+                               removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='ASM.AssetAnnotation',
+        outputs_key_field='',
+        outputs=response_message,
+        raw_response=response,
+        readable_output=markdown
     )
 
     return command_results
@@ -1225,50 +1336,137 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     if len(ips) == 0:
         raise ValueError('ip(s) not specified')
 
-    # trim down the list to the max number of supported results
     if len(ips) > DEFAULT_SEARCH_LIMIT:
         ips = ips[:DEFAULT_SEARCH_LIMIT]
 
-    ip_data_list: list[dict[str, Any]] = []
+    xpanse_ip_list_command_output: list[dict[str, Any]] = []
+    xsoar_xpanse_indicator_list_command_output: list[dict[str, Any]] = []
+    xsoar_indicator_list_command_output: list[dict[str, Any]] = []
     command_results = []
+    ips_not_found = []
+
     for ip in ips:
-        search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
-        ip_data = client.list_asset_internet_exposure_request(search_params=search_params)
-        formatted_response = ip_data.get("reply", {}).get("assets_internet_exposure", {})
-        if len(formatted_response) > 0:
-            formatted_response = formatted_response[0]
+        is_xsoar_timestamp_within_three_days = None
+        xsoar_ips_of_indicators = []
+        xsoar_indicators = []
+
+        ip_version_type = ipaddress.ip_address(ip).version
+
+        if ip_version_type == 4:
+            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IP")
+            search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
+        elif ip_version_type == 6:
+            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IPv6")
+            search_params = [{"field": "ipv6_address", "operator": "eq", "value": ip}]
         else:
+            ips_not_found.append(ip)
             continue
 
-        formatted_response['ip'] = ip
-        ip_standard_context = Common.IP(
-            ip=ip,
-            dbot_score=Common.DBotScore(
-                indicator=ip,
-                indicator_type=DBotScoreType.IP,
-                integration_name="CortexXpanse",
-                score=Common.DBotScore.NONE,
-                reliability=demisto.params().get('integration_reliability')
-            ),
-            hostname=formatted_response.get("domain", "N/A")
-        )
+        if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
+            xsoar_indicators = search_xsoar_indicator_results.get('iocs')
+            if not isinstance(xsoar_indicators, list):
+                xsoar_indicators = [xsoar_indicators]
+            xsoar_ips_of_indicators = [entry['value'] for entry in xsoar_indicators if 'value' in entry]
+
+        if ip in xsoar_ips_of_indicators:
+            xsoar_indicators = [entry for entry in xsoar_indicators if entry.get('value') == ip]
+            if len(xsoar_indicators) == 1 and "insightCache" in xsoar_indicators[0]:
+                indicator_timestamp = xsoar_indicators[0].get('insightCache').get('modified')
+                is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
+
+        if xsoar_indicators and is_xsoar_timestamp_within_three_days and "insightCache" in xsoar_indicators[0]:
+            insight_cache = xsoar_indicators[0].get('insightCache')
+            score_data = insight_cache.get('scores')
+            if score_data:
+                cortex_xpanse_score = score_data.get('Cortex Xpanse')
+                if cortex_xpanse_score:
+                    xpanse_indicator_data_subset = {
+                        'name': xsoar_indicators[0].get('value'),
+                        'indicator_type': xsoar_indicators[0].get('indicator_type'),
+                        'score': xsoar_indicators[0].get('score'),
+                        'reliability': cortex_xpanse_score.get('reliability'),
+                        'id': xsoar_indicators[0].get('id')
+                    }
+                    xsoar_xpanse_indicator_list_command_output.append(xpanse_indicator_data_subset)
+                elif insight_cache and not cortex_xpanse_score:
+                    indicator_sources: list = xsoar_indicators[0].get('sourceBrands')
+                    non_xpanse_indicator_data_subset = {
+                        'name': xsoar_indicators[0].get('value'),
+                        'integrations': indicator_sources
+                    }
+                    xsoar_indicator_list_command_output.append(non_xpanse_indicator_data_subset)
+        elif not is_xsoar_timestamp_within_three_days:
+            ip_data = client.list_asset_internet_exposure_request(search_params=search_params)
+            formatted_response = ip_data.get("reply", {}).get("assets_internet_exposure", {})
+            if len(formatted_response) > 0:
+                formatted_response = formatted_response[0]
+            else:
+                ips_not_found.append(ip)
+                continue
+            formatted_response['ip'] = ip
+
+            xpanse_ip_list_command_output.append({
+                k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
+            })
+        else:
+            ips_not_found.append(ip)
+
+        xpanse_api_response_ip_list = [entry['ip'] for entry in xpanse_ip_list_command_output if 'ip' in entry]
+
+        if ip in xpanse_api_response_ip_list:
+            ip_standard_context = Common.IP(
+                ip=ip,
+                dbot_score=Common.DBotScore(
+                    indicator=ip,
+                    indicator_type=DBotScoreType.IP,
+                    integration_name="CortexXpanse",
+                    score=Common.DBotScore.NONE,
+                    reliability=demisto.params().get('integration_reliability')
+                )
+            )
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown("IP indicator was found from Xpanse API", {"IP": ip}),
+                indicator=ip_standard_context
+            ))
+
+    if len(xpanse_ip_list_command_output) > 0:
+        readable_output = tableToMarkdown('Xpanse Discovered IP List', xpanse_ip_list_command_output)
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown("New IP indicator was found", {"IP": ip}),
-            indicator=ip_standard_context
+            readable_output=readable_output,
+            outputs_prefix='ASM.IP',
+            outputs_key_field=['name', 'asset_type'],
+            outputs=xpanse_ip_list_command_output,
+            raw_response=xpanse_ip_list_command_output
         ))
 
-        ip_data_list.append({
-            k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
-        })
+    if len(xsoar_indicator_list_command_output) > 0:
+        markdown_body = ("This IP list is from existing records found in XSOAR within the last 3 days.\n"
+                         "These IPs have not been found to be attributed to Xpanse`.")
+        readable_output = tableToMarkdown("XSOAR Indicator Discovered IP List (Not Related to Xpanse)\n" + markdown_body,
+                                          xsoar_indicator_list_command_output)
+        command_results.append(CommandResults(
+            readable_output=readable_output
+        ))
 
-    readable_output = tableToMarkdown(
-        'Xpanse IP List', ip_data_list) if len(ip_data_list) > 0 else "## No IPs found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='ASM.IP',
-        outputs_key_field=['ip', 'asset_type'],
-        outputs=ip_data_list if len(ip_data_list) > 0 else None,
-    ))
+    if len(xsoar_xpanse_indicator_list_command_output) > 0:
+        markdown_body = ("This IP list is from existing records found in XSOAR within the last 3 days.\n"
+                         "If you would additional Xpanse specific information about these please use "
+                         "`asm-list-asset-internet-exposure`.")
+        readable_output = tableToMarkdown(name="Xpanse Discovered IP List (Existing Indicators)\n" + markdown_body,
+                                          t=xsoar_xpanse_indicator_list_command_output)
+        command_results.append(CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='ASM.TIM.IP',
+            outputs_key_field='name',
+            outputs=xsoar_xpanse_indicator_list_command_output,
+            raw_response=xsoar_xpanse_indicator_list_command_output
+        ))
+
+    if ips_not_found:
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(name="IPs Not Found", t={"ip": ips_not_found})
+        ))
+
     return command_results
 
 
@@ -1288,62 +1486,163 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
     if len(domains) == 0:
         raise ValueError('domains(s) not specified')
 
-    # trim down the list to the max number of supported results
     if len(domains) > DEFAULT_SEARCH_LIMIT:
         domains = domains[:DEFAULT_SEARCH_LIMIT]
 
-    domain_data_list: list[dict[str, Any]] = []
+    xpanse_domain_list_command_output: list[dict[str, Any]] = []
+    xsoar_xpanse_indicator_list_command_output: list[dict[str, Any]] = []
+    xsoar_indicator_list_command_output: list[dict[str, Any]] = []
     command_results = []
-    for domain in domains:
-        search_params = [{"field": "name", "operator": "eq", "value": domain}]
-        domain_data = client.list_asset_internet_exposure_request(search_params=search_params)
-        formatted_response = domain_data.get("reply", {}).get("assets_internet_exposure", {})
-        if len(formatted_response) > 0:
-            formatted_response = formatted_response[0]
-        else:
-            continue
+    is_xsoar_timestamp_within_three_days = None
+    domains_not_found = []
 
-        formatted_response['domain'] = domain
+    for domain in domains:
+        xsoar_indicators = []
+        xsoar_domains_of_indicators = []
+        is_xsoar_timestamp_within_three_days = False
 
         if domain.startswith('*.'):
-            indicator_type = DBotScoreType.DOMAINGLOB
+            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:DomainGlob")
         else:
-            indicator_type = DBotScoreType.DOMAIN
+            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:Domain")
 
-        domain_standard_context = Common.Domain(
-            domain=domain,
-            dbot_score=Common.DBotScore(
-                indicator=domain,
-                indicator_type=indicator_type,
-                integration_name="CortexXpanse",
-                score=Common.DBotScore.NONE,
-                reliability=demisto.params().get('integration_reliability')
+        if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
+            xsoar_indicators = search_xsoar_indicator_results.get('iocs')
+            if not isinstance(xsoar_indicators, list):
+                xsoar_indicators = [xsoar_indicators]
+            xsoar_domains_of_indicators = [entry['value'] for entry in xsoar_indicators if 'value' in entry]
+
+        if domain in xsoar_domains_of_indicators:
+            xsoar_indicators = [entry for entry in xsoar_indicators if entry.get('value') == domain]
+            if len(xsoar_indicators) == 1 and "insightCache" in xsoar_indicators[0]:
+                indicator_timestamp = xsoar_indicators[0].get('insightCache').get('modified')
+                is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
+
+        if xsoar_indicators and is_xsoar_timestamp_within_three_days and "insightCache" in xsoar_indicators[0]:
+            insight_cache = xsoar_indicators[0].get('insightCache')
+            score_data = insight_cache.get('scores')
+            if score_data:
+                cortex_xpanse_score = score_data.get('Cortex Xpanse')
+                if cortex_xpanse_score:
+                    indicator_data_subset = {
+                        'name': xsoar_indicators[0].get('value'),
+                        'indicator_type': xsoar_indicators[0].get('indicator_type'),
+                        'score': xsoar_indicators[0].get('score'),
+                        'reliability': cortex_xpanse_score.get('reliability'),
+                        'id': xsoar_indicators[0].get('id')
+                    }
+                    xpanse_indicator_data = indicator_data_subset
+                    xsoar_xpanse_indicator_list_command_output.append(xpanse_indicator_data)
+                elif insight_cache and not cortex_xpanse_score:
+                    indicator_sources: list = xsoar_indicators[0].get('sourceBrands')
+                    indicator_data_subset = {
+                        'name': xsoar_indicators[0].get('value'),
+                        'integrations': indicator_sources
+                    }
+                    non_xpanse_indicator_data = indicator_data_subset
+                    xsoar_indicator_list_command_output.append(non_xpanse_indicator_data)
+        elif not is_xsoar_timestamp_within_three_days:
+            search_params = [
+                {"field": "name", "operator": "eq", "value": domain},
+                {"field": "type", "operator": "in", "value": ['domain']}
+            ]
+            domain_data = client.list_asset_internet_exposure_request(search_params=search_params)
+            formatted_response = domain_data.get("reply", {}).get("assets_internet_exposure", {})
+            if len(formatted_response) > 0:
+                formatted_response = formatted_response[0]
+            else:
+                domains_not_found.append(domain)
+                continue
+            formatted_response['domain'] = domain
+
+            xpanse_domain_list_command_output.append({
+                k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
+            })
+        else:
+            domains_not_found.append(domain)
+
+        xpanse_api_response_domain_list = [entry['domain'] for entry in xpanse_domain_list_command_output if 'domain' in entry]
+
+        if domain in xpanse_api_response_domain_list:
+            if domain.startswith('*.'):
+                indicator_type = DBotScoreType.DOMAINGLOB
+            else:
+                indicator_type = DBotScoreType.DOMAIN
+
+            domain_standard_context = Common.Domain(
+                domain=domain,
+                dbot_score=Common.DBotScore(
+                    indicator=domain,
+                    indicator_type=indicator_type,
+                    integration_name="CortexXpanse",
+                    score=Common.DBotScore.NONE,
+                    reliability=demisto.params().get('integration_reliability')
+                )
             )
-        )
+
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown("Domain indicator was found from Xpanse API", {"domain": domain}),
+                indicator=domain_standard_context
+            ))
+
+    if len(xpanse_domain_list_command_output) > 0:
+        readable_output = tableToMarkdown('Xpanse Discovered Domain List', xpanse_domain_list_command_output)
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown("New Domain indicator was found", {"Domain": domain}),
-            indicator=domain_standard_context
+            readable_output=readable_output,
+            outputs_prefix='ASM.Domain',
+            outputs_key_field=['name', 'asset_type'],
+            outputs=xpanse_domain_list_command_output,
+            raw_response=xpanse_domain_list_command_output
         ))
 
-        domain_data_list.append({
-            k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
-        })
+    if len(xsoar_indicator_list_command_output) > 0:
+        markdown_body = ("This domain list is from existing records found in XSOAR within the last 3 days.\n"
+                         "These domains have not been found to be attributed to Xpanse`.")
+        readable_output = tableToMarkdown("XSOAR Indicator Discovered Domain List (Not Related to Xpanse)\n" + markdown_body,
+                                          xsoar_indicator_list_command_output)
+        command_results.append(CommandResults(
+            readable_output=readable_output
+        ))
 
-    readable_output = tableToMarkdown(
-        'Xpanse Domain List', domain_data_list) if len(domain_data_list) > 0 else "## No Domains found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='ASM.Domain',
-        outputs_key_field=['name', 'asset_type'],
-        outputs=domain_data_list if len(domain_data_list) > 0 else None,
-    ))
+    if len(xsoar_xpanse_indicator_list_command_output) > 0:
+        markdown_body = ("This domain list is from existing records found in XSOAR within the last 3 days.\n"
+                         "If you would additional Xpanse specific information about these please use"
+                         "  `asm-list-asset-internet-exposure`.")
+        readable_output = tableToMarkdown(name="Xpanse Discovered Domain List (Existing Indicators)\n" + markdown_body,
+                                          t=xsoar_xpanse_indicator_list_command_output)
+        command_results.append(CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='ASM.TIM.Domain',
+            outputs_key_field='name',
+            outputs=xsoar_xpanse_indicator_list_command_output,
+            raw_response=xsoar_xpanse_indicator_list_command_output
+        ))
+
+    if domains_not_found:
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(name="Domains Not Found", t={"domain": domains_not_found})
+        ))
+
     return command_results
+
+
+def reset_last_run_command() -> str:
+    """
+    Puts the reset flag inside integration context.
+    Returns:
+        (str): 'fetch-incidents was reset successfully'.
+    """
+    try:
+        demisto.setLastRun([])
+        return 'fetch-incidents was reset successfully.'
+    except DemistoException as e:
+        raise DemistoException(f'Error: fetch-incidents was not reset. Reason: {e}')
 
 
 def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
                     first_fetch_time: Optional[int], severity: Optional[list],
-                    status: Optional[list], tags: Optional[str]
-                    ) -> tuple[dict[str, int], list[dict]]:
+                    status: Optional[list], tags: Optional[str], look_back: int = 0
+                    ) -> List[Any]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -1358,53 +1657,95 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Cortex XSOAR
     """
+    next_page_token = last_run.get('next_page_token')
+    xsoar_incidents = []
 
-    last_time_fetched = last_run.get('last_fetch', None)
+    start_xpanse_fetch_time, end_xpanse_fetch_time = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=str(first_fetch_time), look_back=look_back, date_format=TIME_FORMAT_Z
+    )
 
-    last_time_fetched = first_fetch_time if last_time_fetched is None else int(last_time_fetched)
-    latest_created_time = cast(int, last_time_fetched)
+    # Create epoch timestamp for list_alerts_request()
+    parsed_time = parser.isoparse(start_xpanse_fetch_time)
+    look_back_epoch_time = int(parsed_time.timestamp() * 1000)
+    demisto.debug(f"CortexXpanse - last fetched alert timestamp with look back: {look_back_epoch_time}")
 
-    demisto.debug(f"CortexXpanse - last fetched alert timestamp: {str(last_time_fetched)}")
+    request_data: dict = {"request_data": {}}
+    # `server_creation_time` is used to reflect the most accurate timestamp of the creation of Xpanse alerts
+    filters = [
+        {'field': 'alert_source', 'operator': 'in', 'value': ['ASM']},
+        {'field': 'server_creation_time', 'operator': 'gte', 'value': look_back_epoch_time}
+    ]
 
-    incidents = []
+    optional_filters = {
+        "severity": severity,
+        "status": status,
+        "tags": tags.split(',') if tags else None
+    }
 
-    # server_creation_time is used to reflect the creation time of Xpanse alerts
-    filters = [{'field': 'alert_source', 'operator': 'in', 'value': ['ASM']}, {
-        'field': 'server_creation_time', 'operator': 'gte', 'value': latest_created_time + 1}]
-    if severity:
-        filters.append({"field": "severity", "operator": "in", "value": severity})
-    if status:
-        filters.append({"field": "status", "operator": "in", "value": status})
-    if tags:
-        filters.append({"field": "tags", "operator": "in", "value": tags.split(',')})
+    for field, value in optional_filters.items():
+        if value:
+            filters.append({"field": field, "operator": "in", "value": value})
 
-    request_data = {'request_data': {'filters': filters, 'search_from': 0,
-                                     'search_to': max_fetch, 'sort': {'field': 'server_creation_time', 'keyword': 'asc'}}}
+    if next_page_token:
+        request_data["request_data"].update({"next_page_token": next_page_token})
+
+    request_data["request_data"].update({
+        'filters': filters,
+        'search_from': 0,
+        'search_to': max_fetch + 1,  # Alerts indexed higher than this value are not returned in the final results set.
+        'use_page_token': True,
+        'sort': {'field': 'server_creation_time', 'keyword': 'asc'}
+    })
+
+    demisto.debug(f"CortexXpanse - Logger - request data: {request_data}")
 
     raw = client.list_alerts_request(request_data)
 
-    items = raw.get('reply', {}).get('alerts')
-    for item in items:
-        incident_created_time = item['local_insert_ts']  # local_insert_ts is the closest time to alert creation time in Xpanse.
-        incident = {
-            'name': item['name'],
-            'details': item['description'],
-            'occurred': timestamp_to_datestring(incident_created_time),
-            'rawJSON': json.dumps(item),
-            'severity': SEVERITY_DICT[item.get('severity', 'Low')]
+    next_page_token = raw.get('reply', {}).get('next_page_token')
+    alerts = raw.get('reply', {}).get('alerts')
+    if next_page_token:
+        alerts = sorted(alerts, key=lambda alert: alert['local_insert_ts'])  # Sort is not supported when using the use_page_token / next_page_token fields.  # noqa: E501
+
+    filtered_alerts = filter_incidents_by_duplicates_and_limit(
+        incidents_res=alerts, last_run=last_run, fetch_limit=(max_fetch + 1), id_field='alert_id'
+    )
+
+    for alert in filtered_alerts:
+        alert_created_time = datetime.fromtimestamp(alert.get('local_insert_ts') / 1000.0).strftime(TIME_FORMAT_Z)  # local_insert_ts is the closest time to alert creation time in Xpanse.  # noqa: E501
+
+        alert = {
+            'name': alert['name'],
+            'details': alert['description'],
+            'occurred': alert_created_time,  # occurred in XSOAR same time a Xpanse alert was created.
+            'rawJSON': json.dumps(alert),
+            'xpanse_alert_id': alert['alert_id'],
+            'severity': SEVERITY_DICT[alert.get('severity', 'Low')]
         }
+        xsoar_incidents.append(alert)
 
-        incidents.append(incident)
+    demisto.debug(f"CortexXpanse - Logger - Number of incidents: {len(xsoar_incidents)}")
+    if len(xsoar_incidents) > 0:
+        demisto.debug(f"CortexXpanse - Logger - Last fetched alert timestamp: {str(last_run.get('last_fetch', None))}")
+        alert_id_list = [alert['alert_id'] for alert in filtered_alerts]
+        demisto.debug(f"CortexXpanse - Logger - Xpanse alerts ingested: {alert_id_list}")
+        demisto.debug(f"CortexXpanse - Logger - Request data: {request_data}")
 
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=xsoar_incidents,
+        fetch_limit=max_fetch,
+        start_fetch_time=start_xpanse_fetch_time,
+        end_fetch_time=end_xpanse_fetch_time,
+        look_back=look_back,
+        created_time_field='occurred',
+        id_field='xpanse_alert_id',
+        date_format=TIME_FORMAT_Z
+    )
+    last_run.update({'next_page_token': next_page_token})
+    demisto.debug(f"CortexXpanse - Logger - last_run: {str(last_run)}")
+    demisto.setLastRun(last_run)
 
-    next_run = {'last_fetch': latest_created_time}
-
-    demisto.debug(f"CortexXpanse - Number of incidents: {len(incidents)}")
-    demisto.debug(f"CortexXpanse - Next run after incidents fetching: : {next_run}")
-
-    return next_run, incidents
+    return xsoar_incidents
 
 
 def test_module(client: Client, params: dict[str, Any], first_fetch_time: Optional[int]) -> None:
@@ -1429,11 +1770,16 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: Option
             severity = params.get('severity')
             status = params.get('status')
             tags = params.get('tags')
+            look_back = int(params.get('look_back', 0))
             max_fetch = int(params.get('max_fetch', 10))
+
+            if look_back > 720:
+                raise DemistoException('The Look Back value is currently set too high. Please adjust it to 720 minutes or less.')
             fetch_incidents(
                 client=client,
                 max_fetch=max_fetch,
                 last_run={},
+                look_back=look_back,
                 first_fetch_time=first_fetch_time,
                 severity=severity,
                 status=status,
@@ -1467,6 +1813,7 @@ def main() -> None:
         severity = params.get('severity')
         status = params.get('status')
         tags = params.get('tags')
+        look_back = int(params.get('look_back', 0))
         max_fetch = int(params.get('max_fetch', 10))
         creds = params.get('credentials', {})
         api = creds.get('password', '')
@@ -1474,7 +1821,8 @@ def main() -> None:
         headers = {
             'Authorization': f'{api}',
             'x-xdr-auth-id': f'{auth_id}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "User-Agent": f"Cortex Xpanse Integration Pack/{PACK_VERSION} XSOAR/{DEMISTO_VERSION}"
         }
 
         proxy = params.get('proxy', False)
@@ -1499,42 +1847,44 @@ def main() -> None:
                 demisto.debug(demisto.debug(f"CortexXpanse - Integration Severity: {severity}"))
 
         commands = {
-            'asm-list-external-service': list_external_service_command,
-            'asm-get-external-service': get_external_service_command,
-            'asm-list-external-ip-address-range': list_external_ip_address_range_command,
-            'asm-get-external-ip-address-range': get_external_ip_address_range_command,
-            'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
+            'asm-add-note-to-asset': add_note_to_asset_command,
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
-            'asm-list-alerts': list_alerts_command,
             'asm-get-attack-surface-rule': list_attack_surface_rules_command,
+            'asm-get-external-ip-address-range': get_external_ip_address_range_command,
+            'asm-get-external-service': get_external_service_command,
+            'asm-get-incident': get_incident_command,
+            'asm-list-alerts': list_alerts_command,
+            'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
+            'asm-list-external-ip-address-range': list_external_ip_address_range_command,
+            'asm-list-external-service': list_external_service_command,
+            'asm-list-external-websites': list_external_websites_command,
+            'asm-list-incidents': list_incidents_command,
             'asm-tag-asset-assign': assign_tag_to_assets_command,
             'asm-tag-asset-remove': remove_tag_to_assets_command,
             'asm-tag-range-assign': assign_tag_to_ranges_command,
             'asm-tag-range-remove': remove_tag_to_ranges_command,
-            'asm-list-incidents': list_incidents_command,
-            'asm-get-incident': get_incident_command,
-            'asm-update-incident': update_incident_command,
             'asm-update-alerts': update_alert_command,
-            'asm-list-external-websites': list_external_websites_command,
+            'asm-update-incident': update_incident_command,
+            'domain': domain_command,
             'ip': ip_command,
-            'domain': domain_command
         }
 
         if command == 'test-module':
             test_module(client, params, first_fetch_timestamp)
-        if command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(
+        elif command == 'fetch-incidents':
+            incidents = fetch_incidents(
                 client=client,
                 max_fetch=max_fetch,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_timestamp,
                 severity=severity,
                 status=status,
-                tags=tags
+                tags=tags,
+                look_back=look_back
             )
-
-            demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+        elif command == 'asm-reset-last-run':
+            return_results(reset_last_run_command())
         elif command in commands:
             return_results(commands[command](client, args))
         else:

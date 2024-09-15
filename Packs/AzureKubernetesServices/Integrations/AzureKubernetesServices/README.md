@@ -1,6 +1,13 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
 This integration was integrated and tested with API version 2023-02-01 of AKS.
 
+In order to connect to the AzureKubernetesServices using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
+
+- *Authorization Code Flow* (Recommended).
+- *Device Code Flow*.
+- *Azure Managed Identities*
+- *Client Credentials Flow*.
+
 # Self-Deployed Application
 
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
@@ -25,10 +32,6 @@ Follow these steps for a self-deployed configuration:
 8. Run the `!azure-ks-generate-login-url` command in the War Room and follow the instruction.
 9.  Run the ***!azure-ks-auth-test*** command - a 'Success' message should be printed to the War Room.
 
-#### Cortex XSOAR Azure App
-
-In order to use the Cortex XSOAR Azure application, use the default application ID (ab217a43-e09b-4f80-ae93-482fc7a3d1a3).
-
 ### Authentication Using the Device Code Flow
 
 Follow these steps for a self-deployed configuration:
@@ -40,6 +43,26 @@ Follow these steps for a self-deployed configuration:
 5. Run the ***!azure-ks-auth-complete*** command.
 
 At end of the process you'll see a message that you've logged in successfully. 
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (ab217a43-e09b-4f80-ae93-482fc7a3d1a3).
+
+## Client Credentials Flow Authentication
+
+Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+*Note:* In the *Select members* section, assign the application you created earlier.
+To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+   1. In the **Authentication Type** field, select the **Client Credentials** option.
+   2. In the **Application ID** field, enter your Client/Application ID.
+   3. In the **Tenant ID** field, enter your Tenant ID .
+   4. In the **Client Secret** field, enter your Client Secret.
+   5. Click **Test** to validate the URLs, token, and connection
+   6. Save the instance.
+
+### Testing authentication and connectivity
+If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure Kubernetes Services service run the ***!azure-ks-auth-test*** command. 
+If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
 
 ## Configure Azure Kubernetes Services on Cortex XSOAR
 
@@ -56,12 +79,12 @@ At end of the process you'll see a message that you've logged in successfully.
     | azure_ad_endpoint                  | Azure AD endpoint associated with a national cloud. See note below.                                     | False        |
     | insecure                           | Trust any certificate \(not secure\)                                                                           | False        |
     | proxy                              | Use system proxy settings                                                                                      | False        |
-    | Tenant ID (for User Auth mode)     | Tenant ID                                                                                                      | False        |
-    | Client Secret (for User Auth mode) | Encryption key given by the admin                                                                              | False        |
+    | Tenant ID                          | Tenant ID                                                                                                      | False        |
+    | Client Secret                      | Encryption key given by the admin                                                                              | False        |
     | Authentication Type                | The request authentication type for the instance                                                               | False        |
-    | Authorization code                 | Received from the authorization step                                                                        | False        |
+    | Authorization code                 | Received from the authorization step                                                                           | False        |
     | Application redirect URI           | The redirect URI entered in the Azure portal                                                                   | False        |
-    | Azure Managed Identities Client ID | The managed identities client ID for authentication. Relevant only if the integration is running on Azure VM. | False        |
+    | Azure Managed Identities Client ID | The managed identities client ID for authentication. Relevant only if the integration is running on Azure VM.  | False        |
 
 4. Azure cloud options
 
