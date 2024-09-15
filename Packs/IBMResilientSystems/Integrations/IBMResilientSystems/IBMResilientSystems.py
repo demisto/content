@@ -176,7 +176,6 @@ FILE_DOWNLOAD_ERROR_MESSAGE = "<html><head><title>Download error</title></head><
 SCRIPT_ENTITIES = "entities"
 DEFAULT_RETURN_LEVEL = "full"
 DEFAULT_RETRIES = 1
-STATUS_NOT_FOUND = 404
 IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME = "IBM QRadar SOAR Incident Schema"
 DEFAULT_SEVERITY_CODE = 5
 """ ENDPOINTS """
@@ -1307,19 +1306,20 @@ def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id:
     try:
         file_path_obj = demisto.getFilePath(entry_id)
     except ValueError:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not find a file with entry ID: {entry_id}",
-        )
+        raise DemistoException(f"Could not find a file with entry ID: {entry_id}")
 
     file_path, file_name = file_path_obj.get("path"), file_path_obj.get("name")
-    if '.' in file_name:
-        tagged_file_name, extension = file_name.split('.')[0], file_name.split('.')[1]
-        file_name = f'{tagged_file_name}_{tag_to_ibm}.{extension}'
+
+    # Split the file name into root and extension
+    root, extension = os.path.splitext(file_name)
+    tagged_file_name = f'{root}_{tag_to_ibm}'
+    if extension:
+        tagged_file_name = tagged_file_name + extension
+
     response = client.post_attachment(
         uri=f"/incidents/{incident_id}/attachments",
         filepath=file_path,
-        filename=file_name,
+        filename=tagged_file_name,
     )
     demisto.debug(f"upload_incident_attachment_command {response=}")
 
