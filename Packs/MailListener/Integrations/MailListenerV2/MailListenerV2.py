@@ -52,7 +52,7 @@ class Email:
         self.headers = email_object.headers
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
-        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None
+        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None  # noqa: UP017
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
@@ -162,7 +162,11 @@ class Email:
         for attachment in self.attachments:
             payload = attachment.get('payload')
 
-            file_data = base64.b64decode(payload) if attachment.get('binary') else payload
+            try:
+                file_data = base64.b64decode(payload) if attachment.get('binary') else payload
+            except Exception as e:
+                file_data = payload
+                demisto.error(f'parse_attachments: Failed to decode the attachment data - {str(e)}')
 
             # save the attachment
             file_result = fileResult(attachment.get('filename'), file_data, attachment.get('mail_content_type'))
@@ -192,13 +196,13 @@ class Email:
         date = self.date
         if not date:
             demisto.info(f'Could not identify date for mail with ID {self.id}. Setting its date to be now.')
-            date = datetime.now(timezone.utc).isoformat()
+            date = datetime.now(timezone.utc).isoformat()  # noqa: UP017
         else:
             date = self.date.isoformat()
         return {
             'labels': self._generate_labels(),
             'occurred': date,
-            'created': datetime.now(timezone.utc).isoformat(),
+            'created': datetime.now(timezone.utc).isoformat(),  # noqa: UP017
             'details': self.text or self.html,
             'name': self.subject,
             'attachment': self.parse_attachments(),
@@ -520,7 +524,7 @@ def list_emails(client: IMAPClient,
                                       permitted_from_domains=permitted_from_domains,
                                       limit=_limit)
     results = [{'Subject': email.subject,
-                'Date': email.date.isoformat() if email.date else datetime.now(timezone.utc).isoformat(),
+                'Date': email.date.isoformat() if email.date else datetime.now(timezone.utc).isoformat(),  # noqa: UP017
                 'To': email.to,
                 'From': email.from_,
                 'ID': email.id} for email in mails_fetched]
@@ -542,13 +546,6 @@ def get_email_as_eml(client: IMAPClient, message_id: int) -> dict:
     mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
     mail_file = [fileResult('original-email-file.eml', mail.mail_bytes) for mail in mails_fetched]
     return mail_file[0] if mail_file else {}
-
-
-def _convert_to_bytes(data) -> bytes:
-    demisto.debug("Converting data to bytes.")
-    bytes_data = bytes(data)
-    demisto.debug("Converted data successfully.")
-    return bytes_data
 
 
 def replace_spaces_in_credentials(credentials: str | None) -> str | None:
