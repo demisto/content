@@ -140,11 +140,11 @@ class AWSClient:
                 config=self.config,
                 endpoint_url=self.sts_endpoint_url
             )
-            sts_response = sts_client.assume_role(
-                RoleArn=role_arn or self.aws_role_arn,
-                RoleSessionName=role_session_name or self.aws_role_session_name,
-                **kwargs
-            )
+            kwargs.update({
+                'RoleArn': role_arn or self.aws_role_arn,
+                'RoleSessionName': role_session_name or self.aws_role_session_name,
+            })
+            sts_response = sts_client.assume_role(**kwargs)
             client = boto3.client(
                 service_name=service,
                 region_name=region or self.aws_default_region,
