@@ -1,5 +1,5 @@
 {
-    "name": "IBM Security SOAR",
+    "name": "IBM Security QRadar SOAR",
     "description": "Case management that enables visibility across your tools for continual IR improvement",
     "support": "xsoar",
     "currentVersion": "1.2.0",
@@ -14,7 +14,7 @@
     "useCases": [],
     "keywords": [
         "IBM Resilient Systems",
-        "IBM Security SOAR"
+        "IBM Security QRadar SOAR"
     ],
     "marketplaces": [
         "xsoar",
