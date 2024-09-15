@@ -73,4 +73,6 @@ tests:
 - No tests
 fromversion: 6.0.0
 toversion: 7.9.9
+marketplaces:
+  - xsoar_on_prem
 beta: true
