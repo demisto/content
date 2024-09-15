@@ -1,95 +1,76 @@
-name: IBM Resilient Systems
-display: IBM Security QRadar SOAR
 category: Case Management
-description: Case management that enables visibility across your tools for continual IR improvement.
-
 commonfields:
   id: IBM Resilient Systems
   version: -1
-
 configuration:
 - display: Server URL (e.g. 192.168.0.1)
   name: server
   required: true
   type: 0
   section: Connect
-
 - display: Organization name
   name: org
-  required: true
   type: 0
+  required: true
   section: Connect
-
 - display: API key ID
   name: api_key_id
+  required: false
   type: 4
   hidden: true
-  required: false
   section: Connect
-
 - display: API key secret
   name: api_key_secret
   type: 4
-  hidden: true
   required: false
+  hidden: true
   section: Connect
-
 - display: API key ID
   name: credentials_api_key
   type: 9
-  displaypassword: API key secret
   required: true
+  displaypassword: API key secret
   section: Connect
-
 - display: Credentials (Deprecated - use API Key authentication instead)
   name: credentials
   type: 9
   required: false
   hidden: false
-  deprecated: true
   section: Connect
-
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
   section: Connect
   advanced: true
-
-- display: Use system proxy settings
+- display: 'Use system proxy settings'
   name: proxy
   type: 8
   required: false
   advanced: true
   section: Connect
-
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Connect
-
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
   section: Collect
-
 - display: Fetch closed incidents
   name: fetch_closed
   type: 8
-  required: false
   section: Collect
-
+  required: false
 - display: Fetch notes
   name: fetch_notes
-  additionalInfo: Whether incident notes shall be fetched.
   type: 8
   section: Collect
 
 - display: Fetch tasks
   name: fetch_tasks
-  additionalInfo: Whether incident tasks shall be fetched.
   type: 8
   section: Collect
 
@@ -113,10 +94,10 @@ configuration:
   required: false
   type: 15
   options:
-    - None
-    - In
-    - Out
-    - Both
+  - None
+  - In
+  - Out
+  - Both
   defaultvalue: None
 
 - display: Close Mirrored XSOAR Incidents
@@ -153,41 +134,38 @@ configuration:
   section: Collect
   advanced: true
 
+description: Case management that enables visibility across your tools for continual IR improvement.
+display: IBM Security QRadar SOAR
+name: IBM Resilient Systems
 script:
   commands:
-  - name: update-remote-system
-    description: Updates the remote incident with local incident changes. This method
-      is only used for debugging purposes and will not update the current incident.
-
-  - name: get-mapping-fields
-    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-
-  - name: get-remote-data
-    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
-    arguments:
-    - name: id
-      description: The remote incident ID.
+  - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
+  - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - arguments:
+    - description: The remote incident ID.
+      name: id
       required: true
     - name: lastUpdate
       description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
       defaultValue: '0'
       required: false
 
-  - name: get-modified-remote-data
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data
+  - arguments:
+    - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
     description: Returns the list of incidents IDs that were modified since the last update time. Note that this method is for debugging purposes. The get-modified-remote-data command is used as part of the mirroring feature, which is available from version 6.1.
-    arguments:
-      - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
-        name: lastUpdate
-
-  - name: rs-search-incidents
-    description: Query for incidents
-    arguments:
-    - name: page
+    name: get-modified-remote-data
+  - arguments:
+    - description: Indicates the starting point for the first record in the dataset. Starting from 1.
+      name: page
       defaultValue: 0
-      description: Indicates the starting point for the first record in the dataset. Starting from 1.
-    - name: page_size
+    - description: The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0. An error will be thrown if the length is greater than the server-configured maximum limit.
+      name: page_size
       defaultValue: 0
-      description: The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0. An error will be thrown if the length is greater than the server-configured maximum limit.
     - name: limit
       defaultValue: 1000
       description: Maximum number of incidents to retrieve.
@@ -259,10 +237,11 @@ script:
       description: The incident data structure returned ("partial", "normal", "full").'
       auto: PREDEFINED
       predefined:
-        - partial
-        - normal
-        - full
-      defaultvalue: full
+      - partial
+      - normal
+      - full
+    description: Query for incidents.
+    name: rs-search-incidents
     outputs:
     - contextPath: Resilient.Incidents.CreateDate
       description: Created date of the incident.
@@ -316,8 +295,8 @@ script:
       description: Incident resolution summary.
       type: string
 
-  - name: rs-update-incident
-    description: Updates incidents.
+  - description: Updates incidents.
+    name: rs-update-incident
     arguments:
     - description: Incident ID to update.
       name: incident-id
@@ -383,12 +362,12 @@ script:
     - description: 'A JSON object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}`. The name should be the path to it in the incident separated by "." For example: `{"properties.incident_summary": {"text": "The new name"}}". Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. For more information, refer to https://xsoar.pan.dev/docs/reference/integrations/ibm-resilient-systems. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields value will be used.'
       name: other-fields
 
-  - name: rs-incidents-get-members
-    description: Gets members of the incident.
-    arguments:
+  - arguments:
     - description: Incident ID to get members of.
       name: incident-id
       required: true
+    description: Gets members of the incident.
+    name: rs-incidents-get-members
     outputs:
     - contextPath: Resilient.Incidents.ID
       description: Incident ID.
@@ -406,12 +385,12 @@ script:
       description: Member's email address.
       type: string
 
-  - name: rs-get-incident
-    description: Gets an individual incident by ID.
-    arguments:
+  - arguments:
     - description: ID of incident to get.
       name: incident-id
       required: true
+    description: Gets an individual incident by ID.
+    name: rs-get-incident
     outputs:
     - contextPath: Resilient.Incidents.CreateDate
       description: Created date of the incident.
@@ -465,9 +444,7 @@ script:
       description: Incident resolution summary.
       type: string
 
-  - name: rs-incidents-update-member
-    description: Updates the incident's members.
-    arguments:
+  - arguments:
     - description: ID of the incident for which to update its members.
       name: incident-id
       required: true
@@ -475,23 +452,23 @@ script:
       name: members
       required: true
 
-  - name: rs-get-users
-    description: Gets a list of all users in the system.
-
-  - description: Closes an incident.
-    name: rs-close-incident
-    arguments:
-    - default: true
-      description: ID of the incident to close.
+    description: Updates the incident's members.
+    name: rs-incidents-update-member
+  - description: Gets a list of all users in the system.
+    name: rs-get-users
+  - arguments:
+    - description: ID of the incident to close.
       name: incident-id
       required: true
-
-  - name: rs-create-incident
-    description: Creates an incident.
-    arguments:
+      default: true
+    description: Closes an incident.
+    name: rs-close-incident
+  - arguments:
     - description: Incident name.
       name: name
       required: true
+    description: Creates an incident.
+    name: rs-create-incident
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -499,13 +476,12 @@ script:
     - contextPath: Resilient.Incidents.Name
       description: Incident name.
       type: string
-
-  - name: rs-incident-artifacts
-    description: Gets incident artifacts.
-    arguments:
+  - arguments:
     - description: Incident ID to get artifacts of.
       name: incident-id
       required: true
+    description: Gets incident artifacts.
+    name: rs-incident-artifacts
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -549,13 +525,12 @@ script:
     - contextPath: Resilient.Incidents.Artifacts.Attachments.Size
       description: Attachment size.
       type: number
-
-  - name: rs-incident-attachments
-    description: Gets incident attachments.
-    arguments:
+  - arguments:
     - description: Incident ID to get attachments from.
       name: incident-id
       required: true
+    description: Gets incident attachments.
+    name: rs-incident-attachments
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -584,7 +559,6 @@ script:
     - contextPath: Resilient.Incidents.Attachments.Size
       description: Attachment size.
       type: number
-
   - name: rs-get-attachment
     description: Gets incident attachment's name and contents as a file by its ID.
     arguments:
@@ -759,7 +733,7 @@ script:
     - contextPath: Resilient.IncidentNote.comment_perms.delete
       description: Whether the current user has permission to delete this note.
       type: Boolean
-      
+
   - name: rs-add-artifact
     description: Add an artifact to an incident.
     arguments:
@@ -1045,33 +1019,33 @@ script:
   - name: rs-update-task
     description: Update an incident's task fields.
     arguments:
-      - name: task_id
-        description: ID of task to update.
-        required: true
-      - name: name
-        description: Task name. Technically required, copy original task name if no changes are desired.
-        required: true
-      - name: owner_id
-        description: User ID of the new owner.
-      - name: due_date
-        description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
-      - name: phase
-        description: The phase to which this task belongs.
-        auto: PREDEFINED
-        predefined:
-          - Initial
-          - Engage
-          - Detect/Analyze
-          - Respond
-          - Post-Incident
-          - Custom
-          - Complete
-      - name: status
-        description: Changing the status field, completes or re-openes the task.
-        auto: PREDEFINED
-        predefined:
-          - Open
-          - Completed
+    - name: task_id
+      description: ID of task to update.
+      required: true
+    - name: name
+      description: Task name. Technically required, copy original task name if no changes are desired.
+      required: true
+    - name: owner_id
+      description: User ID of the new owner.
+    - name: due_date
+      description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
+    - name: phase
+      description: The phase to which this task belongs.
+      auto: PREDEFINED
+      predefined:
+      - Initial
+      - Engage
+      - Detect/Analyze
+      - Respond
+      - Post-Incident
+      - Custom
+      - Complete
+    - name: status
+      description: Changing the status field, completes or re-openes the task.
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - Completed
 
   - name: rs-get-task-members
     description: Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
@@ -1112,17 +1086,16 @@ script:
 
   dockerimage: demisto/resilient:2.0.0.112034
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
-
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
 fromversion: 5.0.0
+tests:
+- IBM_Security_QRadar_Soar_Test
 defaultclassifier: IBM QRadar SOAR - Classifier
 defaultmapperin: IBM QRadar SOAR Incoming Mapper
 defaultmapperout: IBM QRadar SOAR Outgoing Mapper
-tests:
-- IBM_Security_QRadar_Soar_Test
