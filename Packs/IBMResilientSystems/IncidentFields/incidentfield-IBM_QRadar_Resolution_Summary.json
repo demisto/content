@@ -61,5 +61,6 @@
 			"XDRBuiltInField": false,
 			"selectValuesMap": null,
 			"ipVersion": "",
-			"pretty_name": "IBM QRadar Resolution Summary"
+			"pretty_name": "IBM Security QRadar SOAR Resolution Summary",
+            "fromVersion": "6.0.0"
     }

@@ -61,5 +61,7 @@
 			"XDRBuiltInField": false,
 			"selectValuesMap": null,
 			"ipVersion": "",
-			"pretty_name": "IBM QRadar Reporter Name"
+			"pretty_name": "IBM Security QRadar SOAR Reporter Name",
+            "fromVersion": "6.0.0"
+
 		}

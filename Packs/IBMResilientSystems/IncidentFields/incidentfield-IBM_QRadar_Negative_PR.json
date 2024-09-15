@@ -61,5 +61,6 @@
 			"XDRBuiltInField": false,
 			"selectValuesMap": null,
 			"ipVersion": "",
-			"pretty_name": "IBM QRadar Negative PR"
+			"pretty_name": "IBM Security QRadar SOAR Negative PR",
+            "fromVersion": "6.0.0"
 		}

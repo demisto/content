@@ -61,5 +61,6 @@
 			"XDRBuiltInField": false,
 			"selectValuesMap": null,
 			"ipVersion": "",
-			"pretty_name": "IBM QRadar NIST Attack Vectors"
+			"pretty_name": "IBM Security QRadar SOAR NIST Attack Vectors",
+            "fromVersion": "6.0.0"
 		}

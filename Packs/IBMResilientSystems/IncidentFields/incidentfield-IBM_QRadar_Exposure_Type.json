@@ -61,5 +61,6 @@
 			"XDRBuiltInField": false,
 			"selectValuesMap": null,
 			"ipVersion": "",
-			"pretty_name": "IBM QRadar Exposure Type"
+			"pretty_name": "IBM Security QRadar SOAR Exposure Type",
+            "fromVersion": "6.0.0"
 		}

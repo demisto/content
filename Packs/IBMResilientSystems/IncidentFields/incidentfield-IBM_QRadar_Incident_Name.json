@@ -68,5 +68,6 @@
 				"slaGoals": null,
 				"slaTimer": null,
 				"timerConditions": null
-			}
+			},
+            "fromVersion": "6.0.0"
 		}
