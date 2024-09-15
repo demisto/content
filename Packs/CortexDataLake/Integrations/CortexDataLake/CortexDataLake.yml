@@ -3,33 +3,33 @@ commonfields:
   id: Cortex Data Lake
   version: -1
 configuration:
-- display: Authentication Token
+- display: Token
   name: refresh_token
   type: 4
   hidden: true
   required: false
-- display: Registration ID
+- display: ID
   name: reg_id
   type: 4
   hidden: true
   required: false
-- display: Encryption Key
+- display: Key
   name: auth_key
   type: 4
   hidden: true
   required: false
-- displaypassword: Key
+- displaypassword: Encryption Key
   name: credentials_auth_key
   hiddenusername: true
   type: 9
   required: false
-- displaypassword: Token
+- displaypassword: Authentication Token
   additionalinfo: The API Key to use for connection
   name: credentials_refresh_token
   hiddenusername: true
   type: 9
   required: false
-- displaypassword: ID
+- displaypassword: Registration ID
   name: credentials_reg_id
   type: 9
   hiddenusername: true
