@@ -6,7 +6,8 @@ import pytest
 def test_convert_to_table_no_incident(mocker):
     import re
     mocker.patch.object(demisto, 'incident', return_value=None)
-    with pytest.raises(ValueError, match=re.escape("Error - demisto.incident() expected to return current incident from context but returned None")):
+    with pytest.raises(ValueError, match=re.escape(
+            "Error - demisto.incident() expected to return current incident from context but returned None")):
         convert_to_table()
 
 

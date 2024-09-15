@@ -1110,7 +1110,7 @@ script:
       type: Dictionary
 
 
-  dockerimage: demisto/resilient:2.0.0.86430
+  dockerimage: demisto/resilient:2.0.0.112034
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1125,4 +1125,4 @@ defaultclassifier: IBM QRadar SOAR - Classifier
 defaultmapperin: IBM QRadar SOAR Incoming Mapper
 defaultmapperout: IBM QRadar SOAR Outgoing Mapper
 tests:
-- No tests (auto formatted)
+- IBM_Security_QRadar_Soar_Test

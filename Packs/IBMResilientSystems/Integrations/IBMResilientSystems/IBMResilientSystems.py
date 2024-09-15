@@ -203,7 +203,7 @@ def validate_iso_time_format(iso_time: str) -> str:
     return iso_time
 
 
-def normalize_timestamp(timestamp_ms: int):
+def normalize_timestamp(timestamp_ms: int | None):
     """
     Converts a timestamp in milliseconds to an ISO 8601 formatted date string in UTC.
 
@@ -213,6 +213,8 @@ def normalize_timestamp(timestamp_ms: int):
     Returns:
     - str: The ISO 8601 formatted date string (e.g., "2020-08-09T10:00:00Z").
     """
+    if not timestamp_ms:
+        return ""
     try:
         # Convert milliseconds to seconds
         timestamp_s = timestamp_ms / 1000.0
@@ -290,11 +292,12 @@ def prettify_incident_notes(notes: list[dict]) -> list[dict]:
         note = notes_copy.pop()
         demisto.debug(f"prettify_incident_notes {note=}")
         if note.get('text'):
+            create_date: int | None = note.get("create_date")
             new_note_obj = {
                 "id": note.get("id", ""),
                 "text": note.get("text"),
                 "created_by": f"{note.get('user_fname', '')} {note.get('user_lname', '')}",
-                "create_date": normalize_timestamp(note.get("create_date")),
+                "create_date": normalize_timestamp(create_date),
                 "modify_date": note.get("modify_date")
             }
             formatted_notes.append(new_note_obj)
@@ -1815,8 +1818,8 @@ def get_remote_data_command(client: SimpleClient,
             file_entry = fileResult(filename=file_name, data=content, file_type=EntryType.ENTRY_INFO_FILE)
             entries.append(file_entry)
 
-    # Handling remote incident resolution.
-    if DEMISTO_PARAMS.get('close_xsoar_incident', False) and incident.get("end_date") and incident.get("plan_status") == "C":  # 'C' stands for 'Closed'
+    # Handling remote incident resolution. 'C' stands for 'Closed'
+    if DEMISTO_PARAMS.get('close_xsoar_incident', False) and incident.get("end_date") and incident.get("plan_status") == "C":
         resolution_id = incident.get("resolution_id")
         closing_entry = handle_incoming_incident_resolution(
             incident_id=incident_id,
