@@ -1,0 +1,95 @@
+[
+    {
+        "addresses": [
+            "one cnn center"
+        ],
+        "administrativeContactCity": "Atlanta",
+        "administrativeContactCountry": "UNITED STATES",
+        "administrativeContactEmail": "test@test.com",
+        "administrativeContactFax": null,
+        "administrativeContactFaxExt": "",
+        "administrativeContactName": "Domain Name Manager",
+        "administrativeContactOrganization": "Turner Broadcasting System, Inc.",
+        "administrativeContactPostalCode": "30303",
+        "administrativeContactState": "GA",
+        "administrativeContactStreet": [
+            "one cnn center"
+        ],
+        "administrativeContactTelephone": "14048275000",
+        "administrativeContactTelephoneExt": "",
+        "auditUpdatedDate": "2023-09-06 13:29:35 UTC",
+        "billingContactCity": "",
+        "billingContactCountry": "",
+        "billingContactEmail": "",
+        "billingContactFax": "",
+        "billingContactFaxExt": "",
+        "billingContactName": "",
+        "billingContactOrganization": "",
+        "billingContactPostalCode": "",
+        "billingContactState": "",
+        "billingContactStreet": [],
+        "billingContactTelephone": "",
+        "billingContactTelephoneExt": "",
+        "created": "1993-09-22",
+        "domainName": "test.com",
+        "emails": [
+            "test@test.com",
+            "test@test.com"
+        ],
+        "expires": "2026-09-21",
+        "hasRawText": true,
+        "nameServers": [
+            "example.com"
+        ],
+        "recordExpired": false,
+        "registrantCity": "Atlanta",
+        "registrantCountry": "UNITED STATES",
+        "registrantEmail": "test@test.com",
+        "registrantFax": "14048271995",
+        "registrantFaxExt": "",
+        "registrantName": "Domain Name Manager",
+        "registrantOrganization": "Turner Broadcasting System, Inc.",
+        "registrantPostalCode": "30303",
+        "registrantState": "GA",
+        "registrantStreet": [
+            "one cnn center"
+        ],
+        "registrantTelephone": "14048275000",
+        "registrantTelephoneExt": "",
+        "registrarIANAID": "299",
+        "registrarName": "CSC Corporate Domains, Inc.",
+        "status": [
+            "clientTransferProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited"
+        ],
+        "technicalContactCity": "Atlanta",
+        "technicalContactCountry": "UNITED STATES",
+        "technicalContactEmail": "test@test.com",
+        "technicalContactFax": "14048271593",
+        "technicalContactFaxExt": "",
+        "technicalContactName": "TBS Server Operations",
+        "technicalContactOrganization": "Turner Broadcasting System, Inc.",
+        "technicalContactPostalCode": "30303",
+        "technicalContactState": "GA",
+        "technicalContactStreet": [
+            "one cnn center"
+        ],
+        "technicalContactTelephone": "14048275000",
+        "technicalContactTelephoneExt": "",
+        "timeOfLatestRealtimeCheck": null,
+        "timestamp": null,
+        "updated": "2020-10-20",
+        "whoisServers": null,
+        "zoneContactCity": "",
+        "zoneContactCountry": "",
+        "zoneContactEmail": "",
+        "zoneContactFax": "",
+        "zoneContactFaxExt": "",
+        "zoneContactName": "",
+        "zoneContactOrganization": "",
+        "zoneContactPostalCode": "",
+        "zoneContactState": "",
+        "zoneContactStreet": [],
+        "zoneContactTelephone": "",
+        "zoneContactTelephoneExt": ""
+    }
+]

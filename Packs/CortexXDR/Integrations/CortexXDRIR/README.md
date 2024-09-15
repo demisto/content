@@ -17,7 +17,8 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Custom close-reason mapping for mirrored **XDR -> XSOAR** incidents.             | Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {XDR close reason}={XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False        |
     | Server URL (copy URL from XDR - click ? to see more info.)                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | True         |
     | API Key ID                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | API Key                                                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
+    | API Key                                                                          |
+    | XDR mirroring delay in minutes| In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. | False        |
     | HTTP Timeout                                                                     | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | False        |
     | Maximum number of incidents per fetch                                            | The maximum number of incidents per fetch. Cannot exceed 100.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | False        |
     | Only fetch starred incidents                                                     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
@@ -46,9 +47,11 @@ You need to collect several pieces of information in order to configure the inte
 4. Copy and paste the key.
 5. From the ID column, copy the Key ID.
 
-*Note*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
+*Note 1*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
 The highest privileged builtin role is the Instance Admin. 
-For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.  
+For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.
+
+*Note 2*: In case of missing updates in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the delay period. However, be aware that this may result in increased latency when updating incidents.
 
 #### URL
 
@@ -244,7 +247,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                          | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                             | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                            | Optional | 
-| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto, resolved_auto_resolve. | Optional | 
 | starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false.                                                                                                                          | Optional | 
 | starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days.                                                                                                              | Optional | 
 
@@ -2016,7 +2019,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptResult.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
 | PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
-| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Name of successfully retrieved files. | 
 | PaloAltoNetworksXDR.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
 | PaloAltoNetworksXDR.ScriptResult.results.endpoint_status | String | Endpoint status. | 
 | PaloAltoNetworksXDR.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
@@ -2277,6 +2280,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_ids | A comma-separated list of alert IDs. | Required | 
+| events_from_decider_format | Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False. | Optional |
 
 
 #### Context Output
@@ -3281,7 +3285,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | The name of the host. | Optional | 
+| host_id | The host name of a specific host. | Optional | 
 | limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
@@ -3510,7 +3514,7 @@ There is no context output for this command.
 
 >Role was removed successfully for 1 user.
 
-## xdr-script-run
+### xdr-script-run
 
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
@@ -3856,7 +3860,7 @@ Update one or more alerts. You can update up to 100 alerts per request. Missing 
 | --- | --- | --- |
 | alert_ids | Comma-separated list of alert IDs. | Required | 
 | severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low. | Optional | 
-| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
+| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_auto_resolve, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
 | comment | Comment to append to updated alerts. | Optional | 
 
 #### Context Output

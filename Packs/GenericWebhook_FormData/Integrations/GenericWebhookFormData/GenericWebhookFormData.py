@@ -165,7 +165,7 @@ def main() -> None:
                         '()': GenericWebhookAccessFormatter,
                         'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
                     }
-                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)  # type: ignore[arg-type]
                 except Exception as e:
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
                     demisto.updateModuleHealth(f'An error occurred: {str(e)}')

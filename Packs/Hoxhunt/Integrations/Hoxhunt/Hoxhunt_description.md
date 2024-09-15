@@ -1,0 +1,1 @@
+Get your API key from Hoxhunt: https://admin.hoxhunt.com/ -> Account settings page.

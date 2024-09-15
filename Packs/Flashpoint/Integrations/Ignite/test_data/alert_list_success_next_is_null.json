@@ -1,0 +1,59 @@
+{
+    "items": [
+        {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "resource": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "basetypes": [
+                    "code",
+                    "file",
+                    "github",
+                    "repository"
+                ],
+                "file": "2024/06/17/My First Blog/index.html",
+                "url": "https://dummyurl.com/naive-gabrie-white",
+                "owner": "naive-gabrie-white",
+                "source": "github",
+                "repo": "naive-gabrie-white.github.io",
+                "snippet": "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"facebook,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:..."
+            },
+            "reason": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "name": "fb",
+                "text": "facebook",
+                "origin": "searches",
+                "details": {
+                    "sources": [
+                        "data_exposure__github",
+                        "data_exposure__gitlab",
+                        "data_exposure__bitbucket"
+                    ],
+                    "params": {}
+                },
+                "entity": {
+                    "id": "000000000000000001",
+                    "name": "Crest Data Systems",
+                    "type": "organization"
+                }
+            },
+            "status": null,
+            "generated_at": "2024-06-17T05:54:19Z",
+            "created_at": "2024-06-17T05:54:22.158905Z",
+            "tags": {},
+            "highlights": {
+                "snippet": [
+                    "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"<x-fp-highlight>facebook</x-fp-highlight>,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:..."
+                ]
+            },
+            "highlight_text": "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"<x-fp-highlight>facebook</x-fp-highlight>,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:...",
+            "data_type": "github",
+            "parent_data_type": null,
+            "source": "data_exposure__github",
+            "is_read": false
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "first": null
+    }
+}
