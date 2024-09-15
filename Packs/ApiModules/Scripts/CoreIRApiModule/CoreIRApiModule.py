@@ -3627,7 +3627,7 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             decode_dict_values(alert)
         except Exception as e:
             demisto.debug("encountered the following while decoding dictionary values, skipping")
-            demisto.debug(e)
+            demisto.debug(f'{e}')
             continue
 
         # Remove original_alert_json field and add its content to the alert body.
