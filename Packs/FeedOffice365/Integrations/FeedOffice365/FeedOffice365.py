@@ -1,4 +1,5 @@
-from typing import Dict, List, Tuple, Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 
 import uuid
 import urllib3
@@ -34,7 +35,7 @@ def build_region_or_category_list(param_list: list, all_config_list: list, allow
     return param_list
 
 
-def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[Dict[str, Any]]:
+def build_urls_dict(regions_list: list, services_list: list, unique_id) -> list[dict[str, Any]]:
     """Builds a URL dictionary with the relevant data for each service
 
     Args:
@@ -69,22 +70,22 @@ class Client:
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
 
-    def __init__(self, urls_list: list, category_list: list, insecure: bool = False, tags: Optional[list] = None,
-                 tlp_color: Optional[str] = None):
+    def __init__(self, urls_list: list, category_list: list, insecure: bool = False, tags: list | None = None,
+                 tlp_color: str | None = None):
         """
         Implements class for Office 365 feeds.
         :param urls_list: List of url, regions and service of each service.
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param tlp_color: Traffic Light Protocol color.
         """
-        self._urls_list: List[dict] = urls_list
+        self._urls_list: list[dict] = urls_list
         self._verify: bool = insecure
         self.tags = [] if tags is None else tags
         self.tlp_color = tlp_color
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         self.category_list = category_list
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
 
         Returns:
@@ -158,7 +159,7 @@ class Client:
             return FeedIndicatorType.Domain
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -170,7 +171,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1, enrichment_excluded: bool = False) -> list[dict]:
     """Retrieves indicators from the feed
 
     Args:
@@ -183,7 +184,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
     """
     iterator = client.build_iterator()
     # filter indicator_type specific entries
-    if not indicator_type_lower == 'both':
+    if indicator_type_lower != 'both':
         iterator = [i for i in iterator if indicator_type_lower in i]
     indicators = []
     if limit > 0:
@@ -222,17 +223,24 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                 if client.tlp_color:
                     indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color
 
-                indicators.append({
+                indicator_obj = {
                     'value': value,
                     'type': type_,
                     'rawJSON': raw_data,
-                    'fields': indicator_mapping_fields
-                })
+                    'fields': indicator_mapping_fields,
+                }
+
+                if enrichment_excluded:
+                    indicator_obj['enrichmentExcluded'] = enrichment_excluded
+
+                indicators.append(indicator_obj)
 
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client,
+                           args: dict[str, str],
+                           enrichment_excluded: bool = False) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -245,14 +253,14 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators = fetch_indicators(client, indicator_type_lower, limit)
+    indicators = fetch_indicators(client, indicator_type_lower, limit, enrichment_excluded)
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
 
     return human_readable, {}, {'raw_response': indicators}
 
 
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client, enrichment_excluded: bool = False) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -261,7 +269,7 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicators = fetch_indicators(client, 'both')
+    indicators = fetch_indicators(client, 'both', enrichment_excluded=enrichment_excluded)
     return indicators
 
 
@@ -279,13 +287,14 @@ def main():
     use_ssl = not params.get('insecure', False)
     tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
+    enrichment_excluded = demisto.params().get('enrichmentExcluded', False)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
         client = Client(urls_list, category_list, use_ssl, tags, tlp_color)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]] = {
             'test-module': test_module,
             'office365-get-indicators': get_indicators_command
         }
@@ -293,7 +302,7 @@ def main():
             return_outputs(*commands[command](client, demisto.args()))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            indicators = fetch_indicators_command(client, enrichment_excluded)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 

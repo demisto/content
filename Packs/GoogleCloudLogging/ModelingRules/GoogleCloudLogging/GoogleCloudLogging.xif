@@ -1,0 +1,226 @@
+[MODEL: dataset = google_dns_raw]
+// DNS Queries 
+filter logName contains "dns.googleapis.com"
+| call GCP_MAP_COMMON_FIELDS
+| call GCP_MAP_DNS_QUERIES;
+
+[MODEL: dataset = google_cloud_logging_raw]
+// Audit Logs (Admin Activity, Data Access, System Events & Policy Denied events) 
+filter logName contains "cloudaudit.googleapis.com"
+| call GCP_MAP_COMMON_FIELDS
+| call GCP_MAP_AUDIT_LOGS;
+
+// DNS Queries
+filter logName contains "dns.googleapis.com"
+| call GCP_MAP_COMMON_FIELDS
+| call GCP_MAP_DNS_QUERIES;
+
+// General fallback mapping to all other logs  
+filter logName !~= "cloudaudit.googleapis.com|dns.googleapis.com"
+| call GCP_MAP_COMMON_FIELDS
+| alter 
+    http_method = httpRequest -> requestMethod, 
+    http_request_client_ip = httpRequest -> remoteIp,
+    http_request_server_ip = httpRequest -> serverIp,
+    http_status = to_integer(httpRequest -> status)
+| alter 
+    xdm.network.application_protocol = httpRequest -> protocol,
+    xdm.network.http.method = if(http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "POST", XDM_CONST.HTTP_METHOD_POST,http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.referrer = httpRequest -> referer,
+    xdm.network.http.response_code = if(http_status = 200, XDM_CONST.HTTP_RSP_CODE_OK, http_status = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, http_status = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, http_status = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_status = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_status = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_status = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_status = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_status = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_status = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_status = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_status = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_status = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_status = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_status = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_status = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_status = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_status = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_status = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_status = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_status = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_status = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_status = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_status = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_status = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_status = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_status = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_status = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, http_status = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_status = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_status = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_status = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_status = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_status = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_status = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_status = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_status = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_status = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_status = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_status = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_status = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_status = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_status = 410, XDM_CONST.HTTP_RSP_CODE_GONE, http_status = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_status = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_status = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_status = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_status = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_status = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_status = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_status = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_status = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_status = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, http_status = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_status = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_status = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_status = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_status = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_status = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_status = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, to_string(http_status)),
+    xdm.network.http.url = httpRequest -> requestUrl,
+    xdm.source.cloud.project_id = arrayindex(regextract(logName, "projects\/([^\/]+)\/"), 0),
+    xdm.source.ipv4 = arrayindex(regextract(http_request_client_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    xdm.source.ipv6 = if(http_request_client_ip !~= "(?:\d{1,3}\.){3}\d{1,3}", http_request_client_ip),
+    xdm.source.port = to_integer(arrayindex(regextract(http_request_client_ip, "(?:\d{1,3}\.){3}\d{1,3}:(\d{1,5})$"), 0)),
+    xdm.source.sent_bytes = to_integer(httpRequest -> requestSize),
+    xdm.source.user_agent = httpRequest -> userAgent,
+    xdm.target.ipv4 = arrayindex(regextract(http_request_server_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    xdm.target.ipv6 = if(http_request_server_ip !~= "(?:\d{1,3}\.){3}\d{1,3}", http_request_server_ip),
+    xdm.target.port = to_integer(arrayindex(regextract(http_request_server_ip, "(?:\d{1,3}\.){3}\d{1,3}:(\d{1,5})$"), 0)),
+    xdm.target.sent_bytes = to_integer(httpRequest -> responseSize);
+
+
+[RULE: GCP_MAP_COMMON_FIELDS]
+alter // Map fields that are common to all log entries. Schema: https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry.
+    xdm.alert.severity = severity,
+    xdm.event.description = coalesce(to_string(protoPayload), to_string(jsonPayload), textPayload),
+    xdm.event.id = insertId,
+    xdm.event.log_level = if(severity = "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "NOTICE", XDM_CONST.LOG_LEVEL_NOTICE, severity = "WARNING", XDM_CONST.LOG_LEVEL_WARNING, severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "ALERT", XDM_CONST.LOG_LEVEL_ALERT, severity = "EMERGENCY", XDM_CONST.LOG_LEVEL_EMERGENCY),
+    xdm.event.original_event_type = arrayindex(regextract(logName, "logs\/(.+)"), 0),
+    xdm.event.type = arrayindex(regextract(logName, "(?:%2F?|\/?)(\w+)"), -1),
+    xdm.session_context_id = coalesce(operation -> id),
+    xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_GCP,
+    xdm.target.cloud.project_id = coalesce(resource -> labels.project_id, resource -> labels.resource_container),
+    xdm.target.resource.type = resource -> type;
+
+[RULE: GCP_MAP_AUDIT_LOGS]
+alter // Audit Log events. Audit protoPayload Schema: https://cloud.google.com/logging/docs/reference/audit/auditlog/rest/Shared.Types/AuditLog 
+    authorization_info = protoPayload -> authorizationInfo[], // Authorization information. If there are multiple resources or permissions involved, then there is one AuthorizationInfo element for each {resource, permission} tuple.
+    method_name = protoPayload -> methodName, // The name of the service method or operation. For API calls, this should be the name of the API method.
+    policy_constraint_name = arraystring(arraymap(protoPayload -> policyViolationInfo.orgPolicyViolationInfo.violationInfo[], "@element" -> constraint), ","), // Constraint name
+    principal_email = protoPayload -> authenticationInfo.principalEmail, // The email address of the authenticated user (or service account on behalf of third party principal) making the request.
+    principal_subject = protoPayload -> authenticationInfo.principalSubject, // String representation of identity of requesting party
+    http_request_method = httpRequest -> requestMethod, // The request method. Examples: "GET", "HEAD", "PUT", "POST".
+    http_request_url = httpRequest -> requestUrl, // The scheme (http, https), the host name, the path and the query portion of the URL that was requested.
+    http_request_size = to_integer(httpRequest -> requestSize), // The size of the HTTP request message in bytes, including the request headers and the request body.
+    http_request_useragent = httpRequest -> userAgent, // The user agent sent by the client.
+    http_request_client_ip = httpRequest -> remoteIp, // The IP address (IPv4 or IPv6) of the client that issued the HTTP request. This field can include port information
+    http_request_server_ip = httpRequest -> serverIp, // The IP address (IPv4 or IPv6) of the origin server that the request was sent to. This field can include port information
+    http_request_referrer = httpRequest -> referer, // The referer URL of the request, as defined in HTTP/1.1 Header Field Definitions.
+    http_request_protocol = httpRequest -> protocol, // Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2"
+    http_response_status = to_integer(httpRequest -> status), // The response code indicating the status of response. Examples: 200, 404.
+    http_response_size = to_integer(httpRequest -> responseSize), // The size of the HTTP response message sent back to the client, in bytes, including the response headers and the response body.
+    resource_name = protoPayload -> resourceName, // The resource or collection that is the target of the operation. 
+    resource_current_locations = protoPayload -> resourceLocation.currentLocations[], // The locations of a resource after the execution of the operation.
+    resource_original_locations = protoPayload -> resourceLocation.originalLocations[], // The locations of a resource prior to the execution of the operation.
+    resource_labels_location = resource -> labels.location, 
+    resource_labels_region = resource -> labels.region, 
+    resource_labels_zone = resource -> labels.zone, 
+    request_caller_ip = protoPayload -> requestMetadata.callerIp, // The IP address of the caller. 
+    request_user_agent = protoPayload -> requestMetadata.callerSuppliedUserAgent, // The user agent of the caller.
+    request_destination_ip = protoPayload -> requestMetadata.destinationAttributes.ip, // The IP address of the peer.
+    request_destination_port = to_integer(protoPayload -> requestMetadata.destinationAttributes.port), // The network port of the peer.
+    request_destination_principal = protoPayload -> requestMetadata.destinationAttributes.principal, // The identity of this peer.
+    request_destination_region_code = protoPayload -> requestMetadata.destinationAttributes.regionCode, // The CLDR country/region code associated with the above IP address. 
+    request_attr_host = protoPayload -> requestMetadata.requestAttributes.host, // The HTTP request Host header value.
+    request_attr_method = protoPayload -> requestMetadata.requestAttributes.method, // The HTTP request method, such as GET, POST.
+    request_attr_path = coalesce(protoPayload -> requestMetadata.requestAttributes.path, ""), // The HTTP URL path, excluding the query parameters
+    request_attr_protocol = protoPayload -> requestMetadata.requestAttributes.protocol, // The network protocol used with the request
+    request_attr_query = coalesce(concat("?", protoPayload -> requestMetadata.requestAttributes.query), ""), // The HTTP URL query in the format of name1=value1&name2=value2, as it appears in the first line of the HTTP request. No decoding is performed
+    request_attr_scheme = protoPayload -> requestMetadata.requestAttributes.scheme, // The HTTP URL scheme, such as http and https.
+    rlbls = resource -> labels{}, // short mnemonic for resource.labels re-usage 
+    service_name = protoPayload -> serviceName, // The name of the API service performing the operation
+    service_account_delegations = protoPayload -> authenticationInfo.serviceAccountDelegationInfo[],
+    status_code = to_integer(protoPayload -> status.code), // The status code, which should be an enum value of google.rpc.Code.  (https://cloud.google.com/tasks/docs/reference/rpc/google.rpc)
+    status_message = protoPayload -> status.message, // A developer-facing error message
+    target_cloud_platform = uppercase(resource -> labels.cloud_platform) // The cloud platform on which the GCS client runs. (relevant for storage.googleapis.com/Client resource)
+| alter
+    delegated_principal_subjects = arraystring(arraymap(service_account_delegations, coalesce("@element" -> principalSubject, "@element" -> firstPartyPrincipal.principalEmail)), ","),
+    formatted_principal_subject = arrayindex(regextract(principal_subject, "(?:\w+\:)(.+)"), 0), 
+    http_request_client_ipv4 = arrayindex(regextract(http_request_client_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0), 
+    http_request_client_ipv6 = if(http_request_client_ip !~= "(?:\d{1,3}\.){3}\d{1,3}", http_request_client_ip), 
+    http_request_server_ipv4 = arrayindex(regextract(http_request_server_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0), 
+    http_request_server_ipv6 = if(http_request_server_ip !~= "(?:\d{1,3}\.){3}\d{1,3}", http_request_server_ip), 
+    http_method = coalesce(http_request_method, request_attr_method),
+    request_caller_ipv4 = if(request_caller_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", request_caller_ip), 
+    request_caller_ipv6 = if(request_caller_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", request_caller_ip), 
+    request_destination_ipv4 = if(request_destination_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", request_destination_ip), 
+    request_destination_ipv6 = if(request_destination_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", request_destination_ip),
+    resource_granted_permissions = arraymap(arrayfilter(authorization_info, "@element" -> granted = "True"), "@element" -> permission), // filter to granted permissions only
+    resource_uid = arraystring(arraymap(authorization_info, "@element" -> resourceAttributes.uid), ","), // The unique identifier of the resource
+    resource_location = arraystring(arraymap(authorization_info, "@element" -> resourceAttributes.location), ","), // The location of the resource.
+    status_code_description = if(status_code = 0, "OK", status_code = 1, "CANCELLED", status_code = 2, "UNKNOWN", status_code = 3, "INVALID_ARGUMENT", status_code = 4, "DEADLINE_EXCEEDED", status_code = 5, "NOT_FOUND", status_code = 6, "ALREADY_EXISTS", status_code = 7, "PERMISSION_DENIED", status_code = 8, "UNAUTHENTICATED", status_code = 9, "RESOURCE_EXHAUSTED", status_code = 10, "FAILED_PRECONDITION", status_code = 11, "ABORTED", status_code = 12, "OUT_OF_RANGE", status_code = 13, "UNIMPLEMENTED", status_code = 14, "INTERNAL", status_code = 15, "UNAVAILABLE", status_code = 16, "DATA_LOSS"), // https://cloud.google.com/tasks/docs/reference/rpc/google.rpc
+    target_url = coalesce(http_request_url, concat(request_attr_scheme, request_attr_host, request_attr_path, request_attr_query)),
+    user_domain = arrayindex(split(principal_email, "@"), 1)
+| alter 
+    dst_ipv4_addresses = arraycreate(request_destination_ipv4, http_request_server_ipv4),
+    dst_ipv6_addresses = arraycreate(request_destination_ipv6, http_request_server_ipv6),
+    http_request_src_port = to_integer(arrayindex(regextract(http_request_client_ipv4, ":(\d{1,5})$"), 0)),
+    http_request_dst_port = to_integer(arrayindex(regextract(http_request_server_ipv4, ":(\d{1,5})$"), 0)),
+    resource_region = coalesce(resource_labels_region, arrayindex(regextract(resource_labels_location, "(\w+\-\w+)"), 0), resource_labels_location, request_destination_region_code),
+    resource_zone = if(resource_labels_location ~= "\w+\-\w+\-", resource_labels_location, coalesce(resource_labels_zone, resource_location, arraystring(resource_current_locations, ","), arraystring(resource_original_locations, ","))), 
+    src_ipv4_addresses = arraycreate(request_caller_ipv4, http_request_client_ipv4),
+    src_ipv6_addresses = arraycreate(request_caller_ipv6, http_request_client_ipv6)
+| alter // XDM mappings 
+    xdm.database.name = coalesce(rlbls -> database_id, rlbls -> table_name), 
+    xdm.database.tables = arraycreate(resource -> ["labels.table"]),
+    xdm.event.operation_sub_type = method_name,
+    xdm.event.outcome = if(status_code = 0 or status_message = null, XDM_CONST.OUTCOME_SUCCESS, status_code > 0, XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = arraystring(arraycreate(to_string(status_code), status_code_description, status_message), ": "),
+    xdm.intermediate.host.hostname = rlbls -> target_proxy_name, 
+    xdm.intermediate.user.username = delegated_principal_subjects,
+    xdm.network.application_protocol = coalesce(request_attr_protocol, http_request_protocol),
+    xdm.network.http.method = if(http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "POST", XDM_CONST.HTTP_METHOD_POST,http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE,  http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH,   http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH,  http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.url = target_url,
+    xdm.network.http.response_code = if(http_response_status = 200, XDM_CONST.HTTP_RSP_CODE_OK, http_response_status = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, http_response_status = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, http_response_status = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_response_status = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_response_status = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_response_status = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_response_status = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_response_status = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_response_status = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_response_status = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_response_status = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_response_status = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_response_status = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_response_status = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_response_status = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_response_status = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_response_status = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_response_status = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_response_status = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_response_status = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_response_status = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_response_status = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_response_status = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_response_status = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_response_status = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_response_status = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_response_status = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, http_response_status = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_response_status = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_response_status = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_response_status = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_response_status = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_response_status = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_response_status = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_response_status = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_response_status = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_response_status = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_response_status = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_response_status = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_response_status = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_response_status = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_response_status = 410, XDM_CONST.HTTP_RSP_CODE_GONE, http_response_status = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_response_status = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_response_status = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_response_status = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_response_status = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_response_status = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_response_status = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_response_status = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_response_status = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_response_status = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, http_response_status = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_response_status = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_response_status = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_response_status = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_response_status = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_response_status = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_response_status = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, to_string(http_response_status)),
+    xdm.network.http.referrer = http_request_referrer,
+    xdm.network.rule = coalesce(policy_constraint_name, rlbls -> forwarding_rule_name, rlbls -> forwarding_rule_id, rlbls -> policy_name, rlbls -> firewall_rule_id, rlbls -> client_ssl_policy_id), 
+    xdm.source.application.name = service_name,
+    xdm.source.cloud.project_id = coalesce(arrayindex(regextract(logName, "projects\/([^\/]+)\/"), 0), rlbls -> project_id),
+    xdm.source.ipv4 = arrayindex(src_ipv4_addresses, 0),
+    xdm.source.ipv6 = arrayindex(src_ipv6_addresses, 0),
+    xdm.source.host.ipv4_addresses = src_ipv4_addresses,
+    xdm.source.host.ipv6_addresses = src_ipv6_addresses,
+    xdm.source.host.ipv4_public_addresses = arrayfilter(src_ipv4_addresses, not incidr("@element", "10.0.0.0/8") and not incidr("@element", "172.16.0.0/12") and not incidr("@element", "192.168.0.0/16") and not incidr("@element", "127.0.0.0/8") and not incidr("@element", "169.254.0.0/16") and not incidr("@element", "100.64.0.0/10")),
+    xdm.source.port = http_request_src_port,
+    xdm.source.sent_bytes = http_request_size,
+    xdm.source.user_agent = coalesce(request_user_agent, http_request_useragent),
+    xdm.source.user.domain = user_domain,
+    xdm.source.user.groups = resource_granted_permissions,
+    xdm.source.user.user_type = if(principal_subject ~= "^user:\S+", XDM_CONST.USER_TYPE_REGULAR, principal_subject ~= "^serviceAccount:\S+", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+    xdm.source.user.username = arraystring(arraydistinct(arraycreate(principal_email, formatted_principal_subject)), ","),
+    xdm.target.cloud.provider = if(target_cloud_platform ~= "ALIBABA", XDM_CONST.CLOUD_PROVIDER_ALIBABA, target_cloud_platform ~= "AWS|AMAZON", XDM_CONST.CLOUD_PROVIDER_AWS, target_cloud_platform ~= "AZURE|MS|MICROSOFT", XDM_CONST.CLOUD_PROVIDER_AZURE, target_cloud_platform ~= "GOOGLE|GCP", XDM_CONST.CLOUD_PROVIDER_GCP, target_cloud_platform),
+    xdm.target.cloud.region = if(resource_region != null and resource_region != "-", resource_region, arrayindex(regextract(resource_zone, "(\w+\-\w+)"), 0)),
+    xdm.target.cloud.zone = if(resource_zone != "-", resource_zone), 
+    xdm.target.host.fqdn = request_attr_host,
+    xdm.target.host.hostname = request_destination_principal,
+    xdm.target.host.device_id = rlbls -> host_id, 
+    xdm.target.ipv4 = arrayindex(dst_ipv4_addresses, 0),
+    xdm.target.ipv6 = arrayindex(dst_ipv6_addresses, 0),
+    xdm.target.host.ipv4_addresses = dst_ipv4_addresses,
+    xdm.target.host.ipv6_addresses = dst_ipv6_addresses,
+    xdm.target.host.ipv4_public_addresses = arrayfilter(dst_ipv4_addresses, not incidr("@element", "10.0.0.0/8") and not incidr("@element", "172.16.0.0/12") and not incidr("@element", "192.168.0.0/16") and not incidr("@element", "127.0.0.0/8") and not incidr("@element", "169.254.0.0/16") and not incidr("@element", "100.64.0.0/10")),
+    xdm.target.port = coalesce(request_destination_port, http_request_dst_port),
+    xdm.target.resource.id = coalesce(resource_uid, rlbls -> instance_id, rlbls -> database_id, rlbls -> cluster_uuid, rlbls -> endpoint_id,rlbls -> featurestore_id, rlbls -> index_endpoint_id, rlbls -> pipeline_job_id, rlbls -> workflow_id, rlbls -> tunnel_id, rlbls -> gateway_id, rlbls -> vm, rlbls -> source, rlbls -> application_id, rlbls -> appliance_id, rlbls -> worker_id, rlbls -> node_id, rlbls -> matrix_id, rlbls -> stream_instance_id, rlbls -> job_id, rlbls -> event_id, rlbls -> rollout_id, rlbls -> service_config_id, rlbls -> unique_id, rlbls -> secret_id, rlbls -> insight_type_id, rlbls -> recommender_id, rlbls -> key_id, rlbls -> topic_id, rlbls -> subscription_id, rlbls -> snapshot_id, rlbls -> organization_id, rlbls -> id, rlbls -> volume_id, rlbls -> router_id, rlbls -> service_id,  rlbls -> federation_id, rlbls -> cluster_id, rlbls -> bucket_id, rlbls -> channel_id, rlbls -> mesh_uid, rlbls -> restore_plan_id, rlbls -> backup_plan_id, rlbls -> operation_id, rlbls -> dataset_id, rlbls -> task_id, rlbls -> url_map_id, rlbls -> target_ssl_proxy_id, rlbls -> target_pool_id, rlbls -> target_http_proxy_id, rlbls -> target_https_proxy_id, rlbls -> target_http_instance_id, rlbls -> subnetwork_id, rlbls -> service_attachment_id, rlbls -> router_id, rlbls -> route_id, rlbls -> resource_policy_id, rlbls -> reserved_address_id, rlbls -> packet_mirroring_id, rlbls -> node_template_id, rlbls -> node_group_id, rlbls -> network_id, rlbls -> network_endpoint_group_id, rlbls -> license_id, rlbls -> instance_template_id, rlbls -> instance_group_manager_id, rlbls -> instance_group_id, rlbls -> image_id, rlbls -> health_check_id, rlbls -> forwarding_rule_id, rlbls -> firewall_rule_id, rlbls -> disk_id, rlbls -> commitment_id, rlbls -> client_ssl_policy_id, rlbls -> backend_service_id, rlbls -> backend_bucket_id, rlbls -> autoscaler_id, rlbls -> module_id, rlbls -> folder_id, rlbls -> prediction_result_id, rlbls -> engine_config_id, rlbls -> backtest_result_id, rlbls -> stream_id, rlbls -> zone_id, rlbls -> lake_id, rlbls -> rule_id, rlbls -> environment_id, rlbls -> datascan_id, rlbls -> asset_id, rlbls -> migration_job_id, rlbls -> repository_id, rlbls -> step_id, rlbls -> pod_id, rlbls -> namespace_id, rlbls -> credential_id, rlbls -> volume_id, rlbls -> version_id, rlbls -> key_ring_id, rlbls -> crypto_key_id, rlbls -> pipeline_id, rlbls -> queue_id, rlbls -> session_id, rlbls -> batch_id, rlbls -> client_id, rlbls -> brand_id, rlbls -> build_id, rlbls -> account_id, rlbls -> config_id, rlbls -> model_id, rlbls -> spark_job_id, rlbls -> backup_recovery_appliance_id, rlbls -> management_server_id, rlbls -> distribution_id, rlbls -> target_association_id, rlbls -> action_id),  // https://cloud.google.com/logging/docs/api/v2/resource-list#resource-types
+    xdm.target.resource.name = coalesce(resource_name, rlbls -> bucket_name, rlbls -> environment_name, rlbls -> policy_name, rlbls -> zone_name, rlbls -> cluster_id, rlbls -> tunnel_name, rlbls -> name, rlbls -> connector_name, rlbls -> detector_name, rlbls -> forwarding_rule_name, rlbls -> service_name, rlbls -> namespace_name, rlbls -> service, rlbls -> gateway_name, rlbls -> task_name, rlbls -> fqdn, rlbls -> mesh, rlbls -> pod_name, rlbls -> node_name, rlbls -> nodepool_name, rlbls -> component_name, rlbls -> cluster_name, rlbls -> cluster_identifier, rlbls -> integration, rlbls -> tenant_name, rlbls -> role_name, rlbls -> subnetwork_name, rlbls -> operation_name, rlbls -> instance_template_name, rlbls -> instance_group_manager_name, rlbls -> manifest_name, rlbls -> instance_group_name, rlbls -> scope, rlbls -> ruleset_name, rlbls -> release_name, rlbls -> table_name, rlbls -> domain_name, rlbls -> site_name, rlbls -> target_name, rlbls -> resource_name, rlbls -> deployment_name, rlbls -> job_name, rlbls -> container_name, rlbls -> connection, rlbls -> revision_name, rlbls -> function_name, rlbls -> app, rlbls -> queue, rlbls -> topic, rlbls -> stream_name, rlbls -> env, rlbls -> hostname), // https://cloud.google.com/logging/docs/api/v2/resource-list#resource-types
+    xdm.target.resource.parent_id = rlbls -> producer_project_id, // The id of the project which produces and owns this service (for managed_service resource).
+    xdm.target.resource.sub_type = coalesce(rlbls -> monitored_resource_type, rlbls -> kind, rlbls -> service_type),
+    xdm.target.sent_bytes = http_response_size, 
+    xdm.target.url = target_url,
+    xdm.target.user.groups = arraycreate(rlbls -> role_name); // The name of the IAM custom role; this label appears only on custom roles (iam_role resource)
+
+[RULE: GCP_MAP_DNS_QUERIES]
+alter  // DNS Queries events. Schema: https://cloud.google.com/dns/docs/monitoring#dns-log-record-format
+    destination_ip = jsonPayload -> destinationIP, // Target IP address, only applicable for forwarding cases
+    dns_query_name = jsonPayload -> queryName, // DNS query name, RFC 1035 4.1.2.
+    dns_query_type = jsonPayload -> queryType, // 	DNS query type, RFC 1035 4.1.2.
+    dns_rdata = jsonPayload -> rdata, // DNS answer in presentation format, RFC 1035 5.1, truncated to 260 bytes
+    dns_rcode = jsonPayload -> responseCode, // Response code, RFC 1035 4.1.1.
+    ip_protocol = jsonPayload -> protocol, // TCP | UDP
+    source_ip = jsonPayload -> sourceIP, // IP originating the query
+    vm_instance_id = to_string(jsonPayload -> vmInstanceId), // Compute Engine VM instance ID, only applicable to queries initiated by Compute Engine VMs,
+    vm_zone_name = jsonPayload -> vmZoneName // Name of the VM zone from which the query was sent, only applicable to queries initiated by Compute Engine VMs
+| alter 
+    dns_class = arrayindex(regextract(dns_rdata, "(?:\s+|\\t)\d+(?:\s+|\\t)(IN|CS|CH|HS)(?:\s+|\\t)"), 0),
+    dns_record_type = if(dns_query_type = "A", XDM_CONST.DNS_RECORD_TYPE_A, dns_query_type = "AAAA", XDM_CONST.DNS_RECORD_TYPE_AAAA, dns_query_type = "AFSDB", XDM_CONST.DNS_RECORD_TYPE_AFSDB, dns_query_type = "APL", XDM_CONST.DNS_RECORD_TYPE_APL, dns_query_type = "CAA", XDM_CONST.DNS_RECORD_TYPE_CAA, dns_query_type = "CDNSKEY", XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, dns_query_type = "CDS", XDM_CONST.DNS_RECORD_TYPE_CDS, dns_query_type = "CERT", XDM_CONST.DNS_RECORD_TYPE_CERT, dns_query_type = "CNAME", XDM_CONST.DNS_RECORD_TYPE_CNAME, dns_query_type = "CSYNC", XDM_CONST.DNS_RECORD_TYPE_CSYNC, dns_query_type = "DHCID", XDM_CONST.DNS_RECORD_TYPE_DHCID, dns_query_type = "DLV", XDM_CONST.DNS_RECORD_TYPE_DLV, dns_query_type = "DNAME", XDM_CONST.DNS_RECORD_TYPE_DNAME, dns_query_type = "DNSKEY", XDM_CONST.DNS_RECORD_TYPE_DNSKEY, dns_query_type = "DS", XDM_CONST.DNS_RECORD_TYPE_DS, dns_query_type = "EUI48", XDM_CONST.DNS_RECORD_TYPE_EUI48, dns_query_type = "EUI64", XDM_CONST.DNS_RECORD_TYPE_EUI64, dns_query_type = "HINFO", XDM_CONST.DNS_RECORD_TYPE_HINFO, dns_query_type = "HIP", XDM_CONST.DNS_RECORD_TYPE_HIP, dns_query_type = "HTTPS", XDM_CONST.DNS_RECORD_TYPE_HTTPS, dns_query_type = "IPSECKEY", XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, dns_query_type = "KEY", XDM_CONST.DNS_RECORD_TYPE_KEY, dns_query_type = "KX", XDM_CONST.DNS_RECORD_TYPE_KX, dns_query_type = "LOC", XDM_CONST.DNS_RECORD_TYPE_LOC, dns_query_type = "MX", XDM_CONST.DNS_RECORD_TYPE_MX, dns_query_type = "NAPTR", XDM_CONST.DNS_RECORD_TYPE_NAPTR, dns_query_type = "NS", XDM_CONST.DNS_RECORD_TYPE_NS, dns_query_type = "NSEC", XDM_CONST.DNS_RECORD_TYPE_NSEC, dns_query_type = "NSEC3", XDM_CONST.DNS_RECORD_TYPE_NSEC3, dns_query_type = "NSEC3PARAM", XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, dns_query_type = "OPENPGPKEY", XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, dns_query_type = "PTR", XDM_CONST.DNS_RECORD_TYPE_PTR, dns_query_type = "RRSIG", XDM_CONST.DNS_RECORD_TYPE_RRSIG, dns_query_type = "RP", XDM_CONST.DNS_RECORD_TYPE_RP, dns_query_type = "SIG", XDM_CONST.DNS_RECORD_TYPE_SIG, dns_query_type = "SMIMEA", XDM_CONST.DNS_RECORD_TYPE_SMIMEA, dns_query_type = "SOA", XDM_CONST.DNS_RECORD_TYPE_SOA, dns_query_type = "SRV", XDM_CONST.DNS_RECORD_TYPE_SRV, dns_query_type = "SSHFP", XDM_CONST.DNS_RECORD_TYPE_SSHFP, dns_query_type = "SVCB", XDM_CONST.DNS_RECORD_TYPE_SVCB, dns_query_type = "TA", XDM_CONST.DNS_RECORD_TYPE_TA, dns_query_type = "TKEY", XDM_CONST.DNS_RECORD_TYPE_TKEY, dns_query_type = "TLSA", XDM_CONST.DNS_RECORD_TYPE_TLSA, dns_query_type = "TSIG", XDM_CONST.DNS_RECORD_TYPE_TSIG, dns_query_type = "TXT", XDM_CONST.DNS_RECORD_TYPE_TXT, dns_query_type = "URI", XDM_CONST.DNS_RECORD_TYPE_URI, dns_query_type = "ZONEMD", XDM_CONST.DNS_RECORD_TYPE_ZONEMD, dns_query_type),
+    vm_region = arrayindex(regextract(vm_zone_name, "(\S+)\-\w+"), 0)
+| alter 
+    destination_ipv4 = if(destination_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", destination_ip),
+    destination_ipv6 = if(destination_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", destination_ip),
+    dns_class_number = if(dns_class = "IN", 1, dns_class = "CS", 2, dns_class = "CH", 3, dns_class = "HS", 4), // see https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4
+    dns_records = coalesce(if(
+        dns_query_type = "A", arraystring(regextract(dns_rdata, "((?:\d{1,3}\.){3}\d{1,3})"), ","), // ipv4 records
+        dns_query_type = "AAAA", arraystring(regextract(dns_rdata, "((?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4})"), ","), // ipv6 records
+        dns_query_type in ("CNAME", "PTR", "NS"), arraystring(regextract(dns_rdata, "(?i)(?:\s+|\\t)(?:CNAME|PTR|NS)(?:\s+|\\t)(\S+)\.?"), ",")), // domains,  
+        dns_rdata), // default fallback
+    source_ipv4 = if(source_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", source_ip),
+    source_ipv6 = if(source_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", source_ip)
+| alter // XDM mappings
+    xdm.event.outcome = if(dns_rcode = "NOERROR", XDM_CONST.OUTCOME_SUCCESS, dns_rcode != "NOERROR" and dns_rcode != null and dns_rcode != "", XDM_CONST.OUTCOME_FAILED),
+    xdm.network.dns.authoritative = to_boolean(uppercase(jsonPayload -> authAnswer)), // Authoritative answer, RFC 1035
+    xdm.network.dns.dns_question.class = dns_class_number,
+    xdm.network.dns.dns_question.name = dns_query_name,
+    xdm.network.dns.dns_question.type = dns_record_type,
+    xdm.network.dns.dns_resource_record.class = dns_class_number,
+    xdm.network.dns.dns_resource_record.name = dns_query_name,
+    xdm.network.dns.dns_resource_record.type = if(dns_rdata != null, dns_record_type),
+    xdm.network.dns.dns_resource_record.value = if(dns_records != null and dns_records != "", dns_records, dns_rdata),
+    xdm.network.dns.is_response = if(dns_rcode != null, true, dns_rcode = null and dns_rdata = null, false),
+    xdm.network.dns.response_code = if(dns_rcode = "NOERROR", XDM_CONST.DNS_RESPONSE_CODE_NO_ERROR, dns_rcode = "FORMERR", XDM_CONST.DNS_RESPONSE_CODE_FORMAT_ERROR, dns_rcode = "SERVFAIL", XDM_CONST.DNS_RESPONSE_CODE_SERVER_FAILURE, dns_rcode = "NXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NON_EXISTENT_DOMAIN, dns_rcode = "NOTIMP", XDM_CONST.DNS_RESPONSE_CODE_NOT_IMPLEMENTED, dns_rcode = "REFUSED", XDM_CONST.DNS_RESPONSE_CODE_QUERY_REFUSED, dns_rcode = "YXDOMAIN", XDM_CONST.DNS_RESPONSE_CODE_NAME_EXISTS_WHEN_IT_SHOULD_NOT, dns_rcode = "YXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_EXISTS_WHEN_IT_SHOULD_NOT, dns_rcode = "NXRRSET", XDM_CONST.DNS_RESPONSE_CODE_RR_SET_THAT_SHOULD_EXIST_DOES_NOT, dns_rcode = "NOTAUTH", XDM_CONST.DNS_RESPONSE_CODE_SERVER_NOT_AUTHORITATIVE_FOR_ZONE, dns_rcode = "NOTZONE", XDM_CONST.DNS_RESPONSE_CODE_NAME_NOT_CONTAINED_IN_ZONE, dns_rcode = "BADVERS", XDM_CONST.DNS_RESPONSE_CODE_BAD_OPT_VERSION, dns_rcode = "BADSIG", XDM_CONST.DNS_RESPONSE_CODE_TSIG_SIGNATURE_FAILURE, dns_rcode = "BADKEY", XDM_CONST.DNS_RESPONSE_CODE_KEY_NOT_RECOGNIZED, dns_rcode = "BADTIME", XDM_CONST.DNS_RESPONSE_CODE_SIGNATURE_OUT_OF_TIME_WINDOW, dns_rcode = "BADMODE", XDM_CONST.DNS_RESPONSE_CODE_BAD_TKEY_MODE, dns_rcode = "BADNAME", XDM_CONST.DNS_RESPONSE_CODE_DUPLICATE_KEY_NAME, dns_rcode = "BADALG", XDM_CONST.DNS_RESPONSE_CODE_ALGORITHM_NOT_SUPPORTED, dns_rcode = "BADTRUNC", XDM_CONST.DNS_RESPONSE_CODE_BAD_TRUNCATION, dns_rcode),
+    xdm.network.ip_protocol = if(ip_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP, ip_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP, ip_protocol),
+    xdm.source.agent.identifier = vm_instance_id,
+    xdm.source.cloud.project_id = jsonPayload -> vmProjectId, // Google Cloud project ID of the network from which the query was sent, only applicable to queries initiated by Compute Engine VMs,
+    xdm.source.cloud.region = vm_region,
+    xdm.source.cloud.zone = jsonPayload -> vmZoneName, // Name of the VM zone from which the query was sent, only applicable to queries initiated by Compute Engine VMs
+    xdm.source.host.device_category = resource -> labels.source_type, // Source of the query: inbound-forwarding, gce-vm
+    xdm.source.host.device_id = vm_instance_id,
+    xdm.source.host.hostname = jsonPayload -> vmInstanceName,  // Compute Engine VM instance name, only applicable to queries initiated by Compute Engine VMs
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.ipv6 = source_ipv6,
+    xdm.source.zone = vm_zone_name,
+    xdm.target.cloud.region = resource -> labels.location,
+    xdm.target.ipv4 = destination_ipv4,
+    xdm.target.ipv6 = destination_ipv6,
+    xdm.target.resource.sub_type = resource -> labels.target_type, // Type of target resolving the DNS query: private-zone, forwarding-zone, forwarding-policy, peering-zone, internal, external
+    xdm.target.resource.name = resource -> labels.target_name; // The target name, for example zone name, policy name, internal zone name, external domain name

@@ -37,7 +37,7 @@ if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection
+    from elasticsearch import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -74,7 +74,9 @@ class ElasticsearchClient:
                                verify_certs=self._insecure, proxies=self._proxy)
         # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
         if self._api_key and hasattr(es, 'transport'):
-            es.transport.get_connection().session.headers['authorization'] = self._get_api_key_header_val(self._api_key)
+            es.transport.get_connection().session.headers["authorization"] = self._get_api_key_header_val(  # type: ignore
+                self._api_key
+            )
         return es
 
     def send_test_request(self):

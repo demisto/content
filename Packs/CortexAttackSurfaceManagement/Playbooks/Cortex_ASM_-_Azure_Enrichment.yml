@@ -1318,7 +1318,9 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      Yes:
+      '#default#':
+      - "55"
+      "Yes":
       - '52'
     note: false
     quietmode: 0
@@ -1369,7 +1371,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '54'
+      - '56'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1414,7 +1416,85 @@ tasks:
     taskid: 46805d76-345f-4694-8330-53f721d6b03d
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 735\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 1010\n  }\n}"
+  "55":
+    id: "55"
+    taskid: aee707cb-1fab-477c-8540-b04e3f2edde8
+    type: regular
+    task:
+      id: aee707cb-1fab-477c-8540-b04e3f2edde8
+      version: -1
+      name: Set false flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_azure
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 385efb9d-430e-4c9e-8387-006a474451a2
+    type: regular
+    task:
+      id: 385efb9d-430e-4c9e-8387-006a474451a2
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_azure
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: "{\n  \"linkLabelsPosition\": {\n    \"25_19_yes\": 0.6,\n    \"3_42_#default#\": 0.32,\n    \"3_9_yes\": 0.5,\n    \"4_11_yes\": 0.43,\n    \"4_42_#default#\": 0.31,\n    \"7_18_yes\": 0.5\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3005,\n      \"width\": 2750,\n      \"x\": -440,\n      \"y\": -360\n    }\n  }\n}"
 inputSections:
 - description: Generic group for inputs

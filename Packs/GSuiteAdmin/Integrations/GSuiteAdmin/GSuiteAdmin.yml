@@ -227,7 +227,7 @@ script:
       - BASIC
       - FULL
     - name: query
-      description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators."
+      description: Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators.
     - auto: PREDEFINED
       name: order_by
       description: Device property to use for sorting results.
@@ -250,8 +250,8 @@ script:
       name: include_child_org_units
       description: Whether to return devices from all child organizational units. If this is set to true, 'org_unit_path' must be provided.
       predefined:
-      - yes
-      - no
+      - true
+      - false
     - name: limit
       description: The maximum number of records to return from the collection. Default is 50.
     - name: page
@@ -565,21 +565,27 @@ script:
     - description: The unique ID used to identify the mobile device.
       name: resource_id
       required: true
-    - description: |-
-        The action to be performed on the device.
+    - description: 'The action to be performed on the device.
+
 
         Available Options:
+
         admin_account_wipe - Remotely wipes only G Suite data from the device.
+
 
         admin_remote_wipe - Remotely wipes all data on the device.
 
+
         approve - Approves the device.
+
 
         block - Blocks access to G Suite data on the device.
 
+
         cancel_remote_wipe_then_activate - Cancels a remote wipe of the device and then reactivates it.
 
-        cancel_remote_wipe_then_block - Cancels a remote wipe of the device and then blocks it.
+
+        cancel_remote_wipe_then_block - Cancels a remote wipe of the device and then blocks it.'
       name: action
       required: true
       auto: PREDEFINED
@@ -937,11 +943,9 @@ script:
       predefined:
       - CUSTOMER
       - ORG_UNIT
-    - description: |-
-        If the role is restricted to an organization unit, this contains the ID for the organization unit the exercise of this role is restricted to.
+    - description: If the role is restricted to an organization unit, this contains the ID for the organization unit the exercise of this role is restricted to.
       name: org_unit_id
-    - description: |-
-        Email ID of the G Suite domain admin who acts on behalf of an end-user.
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
     description: Creates a role assignment.
     name: gsuite-role-assignment-create
@@ -1019,15 +1023,13 @@ script:
       required: true
     - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-    description: |-
-      Delete all access tokens issued by a user for an application.
+    description: Delete all access tokens issued by a user for an application.
     name: gsuite-token-revoke
   - arguments:
     - description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       name: user_key
       required: true
-    description: |-
-      Signs a user out of all web and device sessions and reset their sign-in cookies.
+    description: Signs a user out of all web and device sessions and reset their sign-in cookies.
     name: gsuite-user-signout
   - arguments:
     - description: Immutable ID of the G Suite account.
@@ -1038,15 +1040,13 @@ script:
       name: old_owner_user_id
     - description: Status of the transfer.
       name: status
-    - description: |-
-        Email ID of the G Suite domain admin who acts on behalf of an end-user.
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-    - description: |-
-        Maximum number of results to return. Default is 100. Acceptable values are 1 to 500, inclusive.
+    - description: Maximum number of results to return. Default is 100. Acceptable values are 1 to 500, inclusive.
       name: max_results
     - description: Token to specify the next page in the list.
       name: page_token
-    description: "Lists the transfers for a customer by source user, destination user, or status."
+    description: Lists the transfers for a customer by source user, destination user, or status.
     name: gsuite-datatransfer-list
     outputs:
     - contextPath: GSuite.DataTransfer.kind
@@ -1086,7 +1086,7 @@ script:
       description: Continuation token which will be used to specify next page in list API.
       type: String
   - arguments:
-    - description: 'Email ID of the G Suite domain admin who acts on behalf of an end-user.'
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
     - description: Immutable ID of the G Suite account.
       name: customer_id
@@ -1096,55 +1096,13 @@ script:
     - description: Display name for the schema.
       name: schema_display_name
       required: true
-    - description: |-
-        Raw JSON containing fields of the schema. Acceptable values for
-        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
-        values for readAccessType are ADMINS_AND_SELF- Only administrators and
-        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
-        your domain can see values.
-        E.g.
-        {
-          "fields": [
-            {
-              "fieldType": string,
-              "fieldName": string,
-              "displayName": string,
-              "multiValued": boolean,
-              "readAccessType": string,
-              "indexed": boolean,
-              "numericIndexingSpec": {
-                "minValue": double,
-                "maxValue": double
-              }
-            }
-          ]
-        }.
+    - description: "Raw JSON containing fields of the schema. Acceptable values for\nfieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable\nvalues for readAccessType are ADMINS_AND_SELF- Only administrators and\nthe associated user can see values, and ALL_DOMAIN_USERS- Any user in\nyour domain can see values.\nE.g.\n{\n  \"fields\": [\n    {\n      \"fieldType\": string,\n      \"fieldName\": string,\n      \"displayName\": string,\n      \"multiValued\": boolean,\n      \"readAccessType\": string,\n      \"indexed\": boolean,\n      \"numericIndexingSpec\": {\n        \"minValue\": double,\n        \"maxValue\": double\n      }\n    }\n  ]\n}."
       name: field_raw_json
-    - description: |-
-        JSON file entry ID containing fields of the schema. Acceptable values for
-        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
-        values for readAccessType are ADMINS_AND_SELF- Only administrators and
-        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
-        your domain can see values.
-        E.g.
-        {
-          "fields": [
-            {
-              "fieldType": string,
-              "fieldName": string,
-              "displayName": string,
-              "multiValued": boolean,
-              "readAccessType": string,
-              "indexed": boolean,
-              "numericIndexingSpec": {
-                "minValue": double,
-                "maxValue": double
-              }
-            }
-          ]
-        }.
+    - description: "JSON file entry ID containing fields of the schema. Acceptable values for\nfieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable\nvalues for readAccessType are ADMINS_AND_SELF- Only administrators and\nthe associated user can see values, and ALL_DOMAIN_USERS- Any user in\nyour domain can see values.\nE.g.\n{\n  \"fields\": [\n    {\n      \"fieldType\": string,\n      \"fieldName\": string,\n      \"displayName\": string,\n      \"multiValued\": boolean,\n      \"readAccessType\": string,\n      \"indexed\": boolean,\n      \"numericIndexingSpec\": {\n        \"minValue\": double,\n        \"maxValue\": double\n      }\n    }\n  ]\n}."
       name: field_json_entry_id
-    description: "Creates a custom user schema to add custom fields to user profiles.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
+    description: 'Creates a custom user schema to add custom fields to user profiles.
+
+      Note: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.'
     name: gsuite-custom-user-schema-create
     outputs:
     - contextPath: GSuite.UserSchema.kind
@@ -1196,7 +1154,7 @@ script:
       description: Maximum value of this field.
       type: Number
   - arguments:
-    - description: 'Email ID of the G Suite domain admin who acts on behalf of an end-user.'
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
     - description: Immutable ID of the G Suite account.
       name: customer_id
@@ -1206,55 +1164,13 @@ script:
       name: schema_id
     - description: Display name for the schema.
       name: schema_display_name
-    - description: |-
-        Raw JSON containing fields of the schema. Acceptable values for
-        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
-        values for readAccessType are ADMINS_AND_SELF- Only administrators and
-        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
-        your domain can see values.
-        E.g.
-        {
-          "fields": [
-            {
-              "fieldType": string,
-              "fieldName": string,
-              "displayName": string,
-              "multiValued": boolean,
-              "readAccessType": string,
-              "indexed": boolean,
-              "numericIndexingSpec": {
-                "minValue": double,
-                "maxValue": double
-              }
-            }
-          ]
-        }.
+    - description: "Raw JSON containing fields of the schema. Acceptable values for\nfieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable\nvalues for readAccessType are ADMINS_AND_SELF- Only administrators and\nthe associated user can see values, and ALL_DOMAIN_USERS- Any user in\nyour domain can see values.\nE.g.\n{\n  \"fields\": [\n    {\n      \"fieldType\": string,\n      \"fieldName\": string,\n      \"displayName\": string,\n      \"multiValued\": boolean,\n      \"readAccessType\": string,\n      \"indexed\": boolean,\n      \"numericIndexingSpec\": {\n        \"minValue\": double,\n        \"maxValue\": double\n      }\n    }\n  ]\n}."
       name: field_raw_json
-    - description: |-
-        JSON file entry ID containing fields of the schema. Acceptable values for
-        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
-        values for readAccessType are ADMINS_AND_SELF- Only administrators and
-        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
-        your domain can see values.
-        E.g.
-        {
-          "fields": [
-            {
-              "fieldType": string,
-              "fieldName": string,
-              "displayName": string,
-              "multiValued": boolean,
-              "readAccessType": string,
-              "indexed": boolean,
-              "numericIndexingSpec": {
-                "minValue": double,
-                "maxValue": double
-              }
-            }
-          ]
-        }.
+    - description: "JSON file entry ID containing fields of the schema. Acceptable values for\nfieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable\nvalues for readAccessType are ADMINS_AND_SELF- Only administrators and\nthe associated user can see values, and ALL_DOMAIN_USERS- Any user in\nyour domain can see values.\nE.g.\n{\n  \"fields\": [\n    {\n      \"fieldType\": string,\n      \"fieldName\": string,\n      \"displayName\": string,\n      \"multiValued\": boolean,\n      \"readAccessType\": string,\n      \"indexed\": boolean,\n      \"numericIndexingSpec\": {\n        \"minValue\": double,\n        \"maxValue\": double\n      }\n    }\n  ]\n}."
       name: field_json_entry_id
-    description: "Updates a custom user schema.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
+    description: 'Updates a custom user schema.
+
+      Note: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.'
     name: gsuite-custom-user-schema-update
     outputs:
     - contextPath: GSuite.UserSchema.kind
@@ -1318,49 +1234,17 @@ script:
       name: application_id
     - description: Key and value pair of application data transfer parameters. Key and value must be delimited by (:) colon. Multiple values must be delimited by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon. E.g. key1:val;key2:val1,val2.
       name: application_transfer_params
-    - description: |-
-        Raw JSON containing the whole body of the application data transfers.
-        E.g.
-        {
-          "applicationDataTransfers": [
-            {
-              "applicationId": long,
-              "applicationTransferParams": [
-                {
-                  "key": string,
-                  "value": [
-                    string
-                  ]
-                }
-              ]
-            }
-          ]
-        }.
+    - description: "Raw JSON containing the whole body of the application data transfers.\nE.g.\n{\n  \"applicationDataTransfers\": [\n    {\n      \"applicationId\": long,\n      \"applicationTransferParams\": [\n        {\n          \"key\": string,\n          \"value\": [\n            string\n          ]\n        }\n      ]\n    }\n  ]\n}."
       name: applications_raw_json
-    - description: |-
-        JSON file Entry ID containing the whole body of the application data transfers.
-        E.g.
-        {
-          "applicationDataTransfers": [
-            {
-              "applicationId": long,
-              "applicationTransferParams": [
-                {
-                  "key": string,
-                  "value": [
-                    string
-                  ]
-                }
-              ]
-            }
-          ]
-        }.
+    - description: "JSON file Entry ID containing the whole body of the application data transfers.\nE.g.\n{\n  \"applicationDataTransfers\": [\n    {\n      \"applicationId\": long,\n      \"applicationTransferParams\": [\n        {\n          \"key\": string,\n          \"value\": [\n            string\n          ]\n        }\n      ]\n    }\n  ]\n}."
       name: applications_raw_json_entry_id
-    description: |-
-      Inserts a data transfer request.
+    description: 'Inserts a data transfer request.
+
       Note: If all three applications_raw_json, applications_raw_json_entry_id and application_id are provided
+
       the higher precedence will be in order of applications_raw_json, applications_raw_json_entry_id,
-      and application_id respectively.
+
+      and application_id respectively.'
     name: gsuite-datatransfer-request-create
     outputs:
     - contextPath: GSuite.DataTransfer.kind
@@ -1405,7 +1289,7 @@ script:
     description: Deletes a user.
     name: gsuite-user-delete
   - arguments:
-    - description: 'The user''s first name.'
+    - description: The user's first name.
       name: first_name
     - description: The user's last name.
       name: last_name
@@ -2224,678 +2108,645 @@ script:
       description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
   - arguments:
-      - description: 'One of the following: user email address, alias email address, or the unique user ID.'
-        name: user_key
-        required: true
+    - description: 'One of the following: user email address, alias email address, or the unique user ID.'
+      name: user_key
+      required: true
     description: Indicates if the user is forced to change their password at next login.
     name: gsuite-user-reset-password
     outputs:
-      - contextPath: GSuite.User.id
-        description: The unique ID for the user.
-        type: String
-      - contextPath: GSuite.User.primaryEmail
-        description: The user's primary email address.
-        type: String
-      - contextPath: GSuite.User.firstName
-        description: The user's first name.
-        type: String
-      - contextPath: GSuite.User.lastName
-        description: The user's last name.
-        type: String
-      - contextPath: GSuite.User.customerId
-        description: The unique ID for the customer's G Suite account.
-        type: String
-      - contextPath: GSuite.User.gender
-        description: The user's gender.
-        type: String
-      - contextPath: GSuite.User.suspended
-        description: Indicates if the user is suspended.
-        type: Boolean
-      - contextPath: GSuite.User.notesValue
-        description: Content of the notes.
-        type: String
-      - contextPath: GSuite.User.notesContentType
-        description: Content type of the notes.
-        type: String
-      - contextPath: GSuite.User.isAdmin
-        description: Indicates a user with super administrator privileges.
-        type: Boolean
-      - contextPath: GSuite.User.creationTime
-        description: The time the user's account was created.
-        type: Date
-      - contextPath: GSuite.User.phones.value
-        description: A human-readable phone number. It may be in any telephone number format.
-        type: String
-      - contextPath: GSuite.User.phones.type
-        description: The type of phone number.
-        type: String
-      - contextPath: GSuite.User.phones.primary
-        description: Indicates if this is the user's primary phone number.
-        type: Boolean
-      - contextPath: GSuite.User.phones.customType
-        description: If the value of type is custom, this property contains the custom type string.
-        type: String
-      - contextPath: GSuite.User.addresses.type
-        description: The address type.
-        type: String
-      - contextPath: GSuite.User.addresses.customType
-        description: If the value of type is custom, this property contains the custom type string.
-        type: String
-      - contextPath: GSuite.User.addresses.sourceIsStructured
-        description: Indicates if the user-supplied address was formatted. Formatted addresses are not currently supported.
-        type: Boolean
-      - contextPath: GSuite.User.addresses.formatted
-        description: A full and unstructured postal address. This is not synced with the structured address fields.
-        type: String
-      - contextPath: GSuite.User.addresses.poBox
-        description: The post office box, if present.
-        type: String
-      - contextPath: GSuite.User.addresses.locality
-        description: The town or city of the address.
-        type: String
-      - contextPath: GSuite.User.addresses.countryCode
-        description: The country code. Uses the ISO 3166-1 standard.
-        type: String
-      - contextPath: GSuite.User.addresses.country
-        description: Country.
-        type: String
-      - contextPath: GSuite.User.addresses.postalCode
-        description: The ZIP or postal code.
-        type: String
-      - contextPath: GSuite.User.addresses.region
-        description: The abbreviated province or state.
-        type: String
-      - contextPath: GSuite.User.addresses.streetAddress
-        description: The street address.
-        type: String
-      - contextPath: GSuite.User.addresses.extendedAddress
-        description: For extended addresses, such as an address that includes a sub-region.
-        type: String
-      - contextPath: GSuite.User.addresses.primary
-        description: If this is the user's primary address.
-        type: Boolean
-      - contextPath: GSuite.User.emails.address
-        description: The user's secondary email.
-        type: String
-      - contextPath: GSuite.User.emails.type
-        description: The secondary email type.
-        type: String
-      - contextPath: GSuite.User.emails.customType
-        description: If the value of type is custom, this property contains the custom type string.
-        type: String
-      - contextPath: GSuite.User.emails.primary
-        description: Indicates if this is the user's primary email. Only one entry can be marked as primary.
-        type: Boolean
-      - contextPath: GSuite.User.ipWhitelisted
-        description: If true, the user's IP address is added to the allow list.
-        type: Boolean
-      - contextPath: GSuite.User.recoveryEmail
-        description: Recovery email of the user.
-        type: String
-      - contextPath: GSuite.User.isDelegatedAdmin
-        description: Indicates if the user is a delegated administrator.
-        type: Boolean
-      - contextPath: GSuite.User.recoveryPhone
-        description: Recovery phone of the user.
-        type: String
-      - contextPath: GSuite.User.orgUnitPath
-        description: The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
-        type: String
-      - contextPath: GSuite.User.isMailboxSetup
-        description: Indicates if the user's Google mailbox is created.
-        type: Boolean
-      - contextPath: GSuite.User.kind
-        description: The type of the API resource.
-        type: Boolean
-      - contextPath: GSuite.User.etag
-        description: ETag of the resource.
-        type: Boolean
-      - contextPath: GSuite.User.hashFunction
-        description: Stores the hash format of the password property.
-        type: String
-      - contextPath: GSuite.User.archived
-        description: Indicates if the user is archived.
-        type: Boolean
-      - contextPath: GSuite.User.fullName
-        description: The user's full name formed by concatenating the first and last name values.
-        type: String
-      - contextPath: GSuite.User.lastLoginTime
-        description: The last time the user logged into the user's account. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04+01:00.
-        type: Date
-      - contextPath: GSuite.User.deletionTime
-        description: The time the user's account was deleted. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04+01:00.
-        type: Date
-      - contextPath: GSuite.User.agreedToTerms
-        description: This property is true if the user has completed an initial login and accepted the Terms of Service agreement.
-        type: Boolean
-      - contextPath: GSuite.User.suspensionReason
-        description: The reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true.
-        type: String
-      - contextPath: GSuite.User.changePasswordAtNextLogin
-        description: Indicates if the user is forced to change their password at next login. This setting doesn't apply when the user signs in via a third-party identity provider.
-        type: Boolean
-      - contextPath: GSuite.User.ims.type
-        description: Type of the user's Instant Messenger (IM) account.
-        type: Boolean
-      - contextPath: GSuite.User.ims.customType
-        description: If the IM type is custom, this property holds the custom type string.
-        type: String
-      - contextPath: GSuite.User.ims.protocol
-        description: An IM protocol identifies the IM network. The value can be a custom network or the standard network.
-        type: String
-      - contextPath: GSuite.User.ims.customProtocol
-        description: If the protocol value is custom_protocol, this property holds the custom protocol's string.
-        type: String
-      - contextPath: GSuite.User.ims.im
-        description: The user's IM network ID.
-        type: String
-      - contextPath: GSuite.User.ims.primary
-        description: If this is the user's primary IM. Only one entry in the IM list can have a value of true.
-        type: Boolean
-      - contextPath: GSuite.User.externalIds.value
-        description: The value of the external ID.
-        type: String
-      - contextPath: GSuite.User.externalIds.type
-        description: The type of the external ID.
-        type: String
-      - contextPath: GSuite.User.externalIds.customType
-        description: If the external ID type is custom, this property holds the custom type.
-        type: String
-      - contextPath: GSuite.User.relations.value
-        description: The name of the person the user is related to.
-        type: String
-      - contextPath: GSuite.User.relations.type
-        description: The type of relationship.
-        type: String
-      - contextPath: GSuite.User.relations.customType
-        description: If the value of type is custom, this property contains the custom type.
-        type: String
-      - contextPath: GSuite.User.organizations.name
-        description: The name of the organization.
-        type: String
-      - contextPath: GSuite.User.organizations.title
-        description: The user's title within the organization, for example 'member' or 'engineer'.
-        type: String
-      - contextPath: GSuite.User.organizations.primary
-        description: Indicates if this is the user's primary organization. A user may only have one primary organization.
-        type: Boolean
-      - contextPath: GSuite.User.organizations.type
-        description: The type of organization.
-        type: String
-      - contextPath: GSuite.User.organizations.customType
-        description: If the value of type is custom, this property contains the custom type.
-        type: String
-      - contextPath: GSuite.User.organizations.department
-        description: Specifies the department within the organization, such as 'sales' or 'engineering'.
-        type: String
-      - contextPath: GSuite.User.organizations.symbol
-        description: Text string symbol of the organization. For example, the text symbol for Google is GOOG.
-        type: String
-      - contextPath: GSuite.User.organizations.location
-        description: The physical location of the organization. This does not need to be a fully qualified address.
-        type: String
-      - contextPath: GSuite.User.organizations.description
-        description: The description of the organization.
-        type: String
-      - contextPath: GSuite.User.organizations.domain
-        description: The domain the organization belongs to.
-        type: String
-      - contextPath: GSuite.User.organizations.costCenter
-        description: The cost center of the user's organization.
-        type: String
-      - contextPath: GSuite.User.organizations.fullTimeEquivalent
-        description: The full-time equivalent millipercent within the organization (100000 = 100%).
-        type: String
-      - contextPath: GSuite.User.languages.languageCode
-        description: Language Code. Should be used for storing Google III LanguageCode string representation for language. Illegal values cause SchemaException.
-        type: String
-      - contextPath: GSuite.User.languages.customLanguage
-        description: Other language. A user can provide their own language name if there is no corresponding Google III language code. If this is set, LanguageCode can't be set.
-        type: String
-      - contextPath: GSuite.User.posixAccounts.username
-        description: The username of the account.
-        type: String
-      - contextPath: GSuite.User.posixAccounts.uid
-        description: The POSIX compliant user ID.
-        type: Number
-      - contextPath: GSuite.User.posixAccounts.gid
-        description: The default group ID.
-        type: Number
-      - contextPath: GSuite.User.posixAccounts.homeDirectory
-        description: The path to the home directory for this account.
-        type: String
-      - contextPath: GSuite.User.posixAccounts.shell
-        description: The path to the login shell for this account.
-        type: String
-      - contextPath: GSuite.User.posixAccounts.gecos
-        description: The GECOS (user information) for this account.
-        type: String
-      - contextPath: GSuite.User.posixAccounts.systemId
-        description: System identifier for which account Username or UID applies to.
-        type: String
-      - contextPath: GSuite.User.posixAccounts.primary
-        description: If this is the user's primary account within the SystemId.
-        type: Boolean
-      - contextPath: GSuite.User.posixAccounts.accountId
-        description: A POSIX account field identifier.
-        type: String
-      - contextPath: GSuite.User.posixAccounts.operatingSystemType
-        description: The operating system type for this account.
-        type: String
-      - contextPath: GSuite.User.sshPublicKeys.key
-        description: An SSH public key.
-        type: String
-      - contextPath: GSuite.User.sshPublicKeys.expirationTimeUsec
-        description: An expiration time in microseconds since epoch.
-        type: String
-      - contextPath: GSuite.User.sshPublicKeys.fingerprint
-        description: A SHA-256 fingerprint of the SSH public key.
-        type: String
-      - contextPath: GSuite.User.aliases
-        description: List of the user's alias email addresses.
-        type: Unknown
-      - contextPath: GSuite.User.nonEditableAliases
-        description: List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain.
-        type: Unknown
-      - contextPath: GSuite.User.websites.value
-        description: The URL of the website.
-        type: String
-      - contextPath: GSuite.User.websites.primary
-        description: If this is the user's primary website or not.
-        type: Boolean
-      - contextPath: GSuite.User.websites.type
-        description: The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type.
-        type: String
-      - contextPath: GSuite.User.websites.customType
-        description: The custom type. Only used if the type is custom.
-        type: String
-      - contextPath: GSuite.User.locations.type
-        description: The location type.
-        type: String
-      - contextPath: GSuite.User.locations.customType
-        description: If the location type is custom, this property contains the custom value.
-        type: String
-      - contextPath: GSuite.User.locations.area
-        description: Textual location. This is most useful for display purposes to concisely describe the location. For example, "Mountain View, CA", "Near Seattle".
-        type: String
-      - contextPath: GSuite.User.locations.buildingId
-        description: Building identifier.
-        type: String
-      - contextPath: GSuite.User.locations.floorName
-        description: Floor name/number.
-        type: String
-      - contextPath: GSuite.User.locations.floorSection
-        description: Floor section. More specific location within the floor. For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values.
-        type: String
-      - contextPath: GSuite.User.locations.deskCode
-        description: Most specific textual code of individual desk location.
-        type: String
-      - contextPath: GSuite.User.keywords.type
-        description: Each entry can have a type which indicates the standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value.
-        type: String
-      - contextPath: GSuite.User.keywords.customType
-        description: Custom Type.
-        type: String
-      - contextPath: GSuite.User.keywords.value
-        description: Keyword.
-        type: String
-      - contextPath: GSuite.User.isEnrolledIn2Sv
-        description: Is enrolled in 2-step verification.
-        type: Boolean
-      - contextPath: GSuite.User.isEnforcedIn2Sv
-        description: Is 2-step verification enforced.
-        type: Boolean
-      - contextPath: GSuite.User.includeInGlobalAddressList
-        description: Indicates if the user's profile is visible in the G Suite global address list when the contact sharing feature is enabled for the domain.
-        type: Boolean
-      - contextPath: GSuite.User.thumbnailPhotoUrl
-        description: Photo URL of the user.
-        type: String
-      - contextPath: GSuite.User.thumbnailPhotoEtag
-        description: ETag of the user's photo.
-        type: String
-      - contextPath: GSuite.User.customSchemas
-        description: Custom fields of the user.
-        type: Unknown
+    - contextPath: GSuite.User.id
+      description: The unique ID for the user.
+      type: String
+    - contextPath: GSuite.User.primaryEmail
+      description: The user's primary email address.
+      type: String
+    - contextPath: GSuite.User.firstName
+      description: The user's first name.
+      type: String
+    - contextPath: GSuite.User.lastName
+      description: The user's last name.
+      type: String
+    - contextPath: GSuite.User.customerId
+      description: The unique ID for the customer's G Suite account.
+      type: String
+    - contextPath: GSuite.User.gender
+      description: The user's gender.
+      type: String
+    - contextPath: GSuite.User.suspended
+      description: Indicates if the user is suspended.
+      type: Boolean
+    - contextPath: GSuite.User.notesValue
+      description: Content of the notes.
+      type: String
+    - contextPath: GSuite.User.notesContentType
+      description: Content type of the notes.
+      type: String
+    - contextPath: GSuite.User.isAdmin
+      description: Indicates a user with super administrator privileges.
+      type: Boolean
+    - contextPath: GSuite.User.creationTime
+      description: The time the user's account was created.
+      type: Date
+    - contextPath: GSuite.User.phones.value
+      description: A human-readable phone number. It may be in any telephone number format.
+      type: String
+    - contextPath: GSuite.User.phones.type
+      description: The type of phone number.
+      type: String
+    - contextPath: GSuite.User.phones.primary
+      description: Indicates if this is the user's primary phone number.
+      type: Boolean
+    - contextPath: GSuite.User.phones.customType
+      description: If the value of type is custom, this property contains the custom type string.
+      type: String
+    - contextPath: GSuite.User.addresses.type
+      description: The address type.
+      type: String
+    - contextPath: GSuite.User.addresses.customType
+      description: If the value of type is custom, this property contains the custom type string.
+      type: String
+    - contextPath: GSuite.User.addresses.sourceIsStructured
+      description: Indicates if the user-supplied address was formatted. Formatted addresses are not currently supported.
+      type: Boolean
+    - contextPath: GSuite.User.addresses.formatted
+      description: A full and unstructured postal address. This is not synced with the structured address fields.
+      type: String
+    - contextPath: GSuite.User.addresses.poBox
+      description: The post office box, if present.
+      type: String
+    - contextPath: GSuite.User.addresses.locality
+      description: The town or city of the address.
+      type: String
+    - contextPath: GSuite.User.addresses.countryCode
+      description: The country code. Uses the ISO 3166-1 standard.
+      type: String
+    - contextPath: GSuite.User.addresses.country
+      description: Country.
+      type: String
+    - contextPath: GSuite.User.addresses.postalCode
+      description: The ZIP or postal code.
+      type: String
+    - contextPath: GSuite.User.addresses.region
+      description: The abbreviated province or state.
+      type: String
+    - contextPath: GSuite.User.addresses.streetAddress
+      description: The street address.
+      type: String
+    - contextPath: GSuite.User.addresses.extendedAddress
+      description: For extended addresses, such as an address that includes a sub-region.
+      type: String
+    - contextPath: GSuite.User.addresses.primary
+      description: If this is the user's primary address.
+      type: Boolean
+    - contextPath: GSuite.User.emails.address
+      description: The user's secondary email.
+      type: String
+    - contextPath: GSuite.User.emails.type
+      description: The secondary email type.
+      type: String
+    - contextPath: GSuite.User.emails.customType
+      description: If the value of type is custom, this property contains the custom type string.
+      type: String
+    - contextPath: GSuite.User.emails.primary
+      description: Indicates if this is the user's primary email. Only one entry can be marked as primary.
+      type: Boolean
+    - contextPath: GSuite.User.ipWhitelisted
+      description: If true, the user's IP address is added to the allow list.
+      type: Boolean
+    - contextPath: GSuite.User.recoveryEmail
+      description: Recovery email of the user.
+      type: String
+    - contextPath: GSuite.User.isDelegatedAdmin
+      description: Indicates if the user is a delegated administrator.
+      type: Boolean
+    - contextPath: GSuite.User.recoveryPhone
+      description: Recovery phone of the user.
+      type: String
+    - contextPath: GSuite.User.orgUnitPath
+      description: The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
+      type: String
+    - contextPath: GSuite.User.isMailboxSetup
+      description: Indicates if the user's Google mailbox is created.
+      type: Boolean
+    - contextPath: GSuite.User.kind
+      description: The type of the API resource.
+      type: Boolean
+    - contextPath: GSuite.User.etag
+      description: ETag of the resource.
+      type: Boolean
+    - contextPath: GSuite.User.hashFunction
+      description: Stores the hash format of the password property.
+      type: String
+    - contextPath: GSuite.User.archived
+      description: Indicates if the user is archived.
+      type: Boolean
+    - contextPath: GSuite.User.fullName
+      description: The user's full name formed by concatenating the first and last name values.
+      type: String
+    - contextPath: GSuite.User.lastLoginTime
+      description: The last time the user logged into the user's account. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04+01:00.
+      type: Date
+    - contextPath: GSuite.User.deletionTime
+      description: The time the user's account was deleted. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04+01:00.
+      type: Date
+    - contextPath: GSuite.User.agreedToTerms
+      description: This property is true if the user has completed an initial login and accepted the Terms of Service agreement.
+      type: Boolean
+    - contextPath: GSuite.User.suspensionReason
+      description: The reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true.
+      type: String
+    - contextPath: GSuite.User.changePasswordAtNextLogin
+      description: Indicates if the user is forced to change their password at next login. This setting doesn't apply when the user signs in via a third-party identity provider.
+      type: Boolean
+    - contextPath: GSuite.User.ims.type
+      description: Type of the user's Instant Messenger (IM) account.
+      type: Boolean
+    - contextPath: GSuite.User.ims.customType
+      description: If the IM type is custom, this property holds the custom type string.
+      type: String
+    - contextPath: GSuite.User.ims.protocol
+      description: An IM protocol identifies the IM network. The value can be a custom network or the standard network.
+      type: String
+    - contextPath: GSuite.User.ims.customProtocol
+      description: If the protocol value is custom_protocol, this property holds the custom protocol's string.
+      type: String
+    - contextPath: GSuite.User.ims.im
+      description: The user's IM network ID.
+      type: String
+    - contextPath: GSuite.User.ims.primary
+      description: If this is the user's primary IM. Only one entry in the IM list can have a value of true.
+      type: Boolean
+    - contextPath: GSuite.User.externalIds.value
+      description: The value of the external ID.
+      type: String
+    - contextPath: GSuite.User.externalIds.type
+      description: The type of the external ID.
+      type: String
+    - contextPath: GSuite.User.externalIds.customType
+      description: If the external ID type is custom, this property holds the custom type.
+      type: String
+    - contextPath: GSuite.User.relations.value
+      description: The name of the person the user is related to.
+      type: String
+    - contextPath: GSuite.User.relations.type
+      description: The type of relationship.
+      type: String
+    - contextPath: GSuite.User.relations.customType
+      description: If the value of type is custom, this property contains the custom type.
+      type: String
+    - contextPath: GSuite.User.organizations.name
+      description: The name of the organization.
+      type: String
+    - contextPath: GSuite.User.organizations.title
+      description: The user's title within the organization, for example 'member' or 'engineer'.
+      type: String
+    - contextPath: GSuite.User.organizations.primary
+      description: Indicates if this is the user's primary organization. A user may only have one primary organization.
+      type: Boolean
+    - contextPath: GSuite.User.organizations.type
+      description: The type of organization.
+      type: String
+    - contextPath: GSuite.User.organizations.customType
+      description: If the value of type is custom, this property contains the custom type.
+      type: String
+    - contextPath: GSuite.User.organizations.department
+      description: Specifies the department within the organization, such as 'sales' or 'engineering'.
+      type: String
+    - contextPath: GSuite.User.organizations.symbol
+      description: Text string symbol of the organization. For example, the text symbol for Google is GOOG.
+      type: String
+    - contextPath: GSuite.User.organizations.location
+      description: The physical location of the organization. This does not need to be a fully qualified address.
+      type: String
+    - contextPath: GSuite.User.organizations.description
+      description: The description of the organization.
+      type: String
+    - contextPath: GSuite.User.organizations.domain
+      description: The domain the organization belongs to.
+      type: String
+    - contextPath: GSuite.User.organizations.costCenter
+      description: The cost center of the user's organization.
+      type: String
+    - contextPath: GSuite.User.organizations.fullTimeEquivalent
+      description: The full-time equivalent millipercent within the organization (100000 = 100%).
+      type: String
+    - contextPath: GSuite.User.languages.languageCode
+      description: Language Code. Should be used for storing Google III LanguageCode string representation for language. Illegal values cause SchemaException.
+      type: String
+    - contextPath: GSuite.User.languages.customLanguage
+      description: Other language. A user can provide their own language name if there is no corresponding Google III language code. If this is set, LanguageCode can't be set.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.username
+      description: The username of the account.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.uid
+      description: The POSIX compliant user ID.
+      type: Number
+    - contextPath: GSuite.User.posixAccounts.gid
+      description: The default group ID.
+      type: Number
+    - contextPath: GSuite.User.posixAccounts.homeDirectory
+      description: The path to the home directory for this account.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.shell
+      description: The path to the login shell for this account.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.gecos
+      description: The GECOS (user information) for this account.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.systemId
+      description: System identifier for which account Username or UID applies to.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.primary
+      description: If this is the user's primary account within the SystemId.
+      type: Boolean
+    - contextPath: GSuite.User.posixAccounts.accountId
+      description: A POSIX account field identifier.
+      type: String
+    - contextPath: GSuite.User.posixAccounts.operatingSystemType
+      description: The operating system type for this account.
+      type: String
+    - contextPath: GSuite.User.sshPublicKeys.key
+      description: An SSH public key.
+      type: String
+    - contextPath: GSuite.User.sshPublicKeys.expirationTimeUsec
+      description: An expiration time in microseconds since epoch.
+      type: String
+    - contextPath: GSuite.User.sshPublicKeys.fingerprint
+      description: A SHA-256 fingerprint of the SSH public key.
+      type: String
+    - contextPath: GSuite.User.aliases
+      description: List of the user's alias email addresses.
+      type: Unknown
+    - contextPath: GSuite.User.nonEditableAliases
+      description: List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain.
+      type: Unknown
+    - contextPath: GSuite.User.websites.value
+      description: The URL of the website.
+      type: String
+    - contextPath: GSuite.User.websites.primary
+      description: If this is the user's primary website or not.
+      type: Boolean
+    - contextPath: GSuite.User.websites.type
+      description: The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type.
+      type: String
+    - contextPath: GSuite.User.websites.customType
+      description: The custom type. Only used if the type is custom.
+      type: String
+    - contextPath: GSuite.User.locations.type
+      description: The location type.
+      type: String
+    - contextPath: GSuite.User.locations.customType
+      description: If the location type is custom, this property contains the custom value.
+      type: String
+    - contextPath: GSuite.User.locations.area
+      description: Textual location. This is most useful for display purposes to concisely describe the location. For example, "Mountain View, CA", "Near Seattle".
+      type: String
+    - contextPath: GSuite.User.locations.buildingId
+      description: Building identifier.
+      type: String
+    - contextPath: GSuite.User.locations.floorName
+      description: Floor name/number.
+      type: String
+    - contextPath: GSuite.User.locations.floorSection
+      description: Floor section. More specific location within the floor. For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values.
+      type: String
+    - contextPath: GSuite.User.locations.deskCode
+      description: Most specific textual code of individual desk location.
+      type: String
+    - contextPath: GSuite.User.keywords.type
+      description: Each entry can have a type which indicates the standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value.
+      type: String
+    - contextPath: GSuite.User.keywords.customType
+      description: Custom Type.
+      type: String
+    - contextPath: GSuite.User.keywords.value
+      description: Keyword.
+      type: String
+    - contextPath: GSuite.User.isEnrolledIn2Sv
+      description: Is enrolled in 2-step verification.
+      type: Boolean
+    - contextPath: GSuite.User.isEnforcedIn2Sv
+      description: Is 2-step verification enforced.
+      type: Boolean
+    - contextPath: GSuite.User.includeInGlobalAddressList
+      description: Indicates if the user's profile is visible in the G Suite global address list when the contact sharing feature is enabled for the domain.
+      type: Boolean
+    - contextPath: GSuite.User.thumbnailPhotoUrl
+      description: Photo URL of the user.
+      type: String
+    - contextPath: GSuite.User.thumbnailPhotoEtag
+      description: ETag of the user's photo.
+      type: String
+    - contextPath: GSuite.User.customSchemas
+      description: Custom fields of the user.
+      type: Unknown
   - arguments:
-      - description: The unique identifier of the customer's Google account.
-        name: customer_id
-      - description: A comma-separated list of unique device IDs of Chrome browser devices to move. A maximum of 600 browsers may be moved per request. To get resource_id, please use gsuite-chromebrowserdevice-list command.
-        name: resource_ids
-        isArray: true
-        required: true
-      - description: Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'.
-        name: org_unit_path
-        required: true
+    - description: The unique identifier of the customer's Google account.
+      name: customer_id
+    - description: A comma-separated list of unique device IDs of Chrome browser devices to move. A maximum of 600 browsers may be moved per request. To get resource_id, please use gsuite-chromebrowserdevice-list command.
+      name: resource_ids
+      isArray: true
+      required: true
+    - description: Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'.
+      name: org_unit_path
+      required: true
     description: To move Chrome browser devices assigned to an account from one organization unit to another.
     name: gsuite-chromebrowserdevice-move-ou
   - arguments:
-      - description: The unique identifier of the customer's Google account.
-        name: customer_id
-      - description: The unique ID of the device.
-        name: device_id
-      - auto: PREDEFINED
-        description: Field by which to order.
-        name: order_by
-        predefined:
-          - id
-          - last_sync
-          - machine_name
-          - extension_count
-          - policy_count
-          - os_version
-          - last_signed_in_user
-          - annotated_user
-          - annotated_location
-          - annotated_asset_id
-          - notes
-          - browser_version_channel
-          - org_unit
-          - enrollment_date
-          - save_browsing_clickthrough
-          - platform_major_version
-          - last_activity
-          - browser_version_sortable
-          - os_version_sortable
-      - description: The full path of the organizational unit or its unique ID.
-        name: org_unit_path
-      - auto: PREDEFINED
-        description: Restrict information returned to a set of selected fields. "BASIC" - Includes only the basic metadata fields (i.e., the ones found in the columns of the admin console browser list as enumerated above). "FULL" - Includes all metadata fields (as enumerated above).
-        name: projection
-        predefined:
-          - BASIC
-          - FULL
-      - description: Search string using the list page query language (Filter Query Language).
-        name: query
-      - auto: PREDEFINED
-        description: "Whether to return results in ascending or descending order. Must be used with the orderBy parameter. Possible values are: ASCENDING, DESCENDING."
-        name: sort_order
-        predefined:
-          - ASCENDING
-          - DESCENDING
-      - description: The maximum number of policy schemas to return. Default and maximum are 100.
-        name: page_size
-        defaultValue: '100'
-      - description: Page token.
-        name: page_token
-      - description: Limit of number of devices. Default is 100.
-        name: limit
-        defaultValue: '50'
+    - description: The unique identifier of the customer's Google account.
+      name: customer_id
+    - description: The unique ID of the device.
+      name: device_id
+    - auto: PREDEFINED
+      description: Field by which to order.
+      name: order_by
+      predefined:
+      - id
+      - last_sync
+      - machine_name
+      - extension_count
+      - policy_count
+      - os_version
+      - last_signed_in_user
+      - annotated_user
+      - annotated_location
+      - annotated_asset_id
+      - notes
+      - browser_version_channel
+      - org_unit
+      - enrollment_date
+      - save_browsing_clickthrough
+      - platform_major_version
+      - last_activity
+      - browser_version_sortable
+      - os_version_sortable
+    - description: The full path of the organizational unit or its unique ID.
+      name: org_unit_path
+    - auto: PREDEFINED
+      description: Restrict information returned to a set of selected fields. "BASIC" - Includes only the basic metadata fields (i.e., the ones found in the columns of the admin console browser list as enumerated above). "FULL" - Includes all metadata fields (as enumerated above).
+      name: projection
+      predefined:
+      - BASIC
+      - FULL
+    - description: Search string using the list page query language (Filter Query Language).
+      name: query
+    - auto: PREDEFINED
+      description: 'Whether to return results in ascending or descending order. Must be used with the orderBy parameter. Possible values are: ASCENDING, DESCENDING.'
+      name: sort_order
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - description: The maximum number of policy schemas to return. Default and maximum are 100.
+      name: page_size
+      defaultValue: '100'
+    - description: Page token.
+      name: page_token
+    - description: Limit of number of devices. Default is 100.
+      name: limit
+      defaultValue: '50'
     description: Retrieve all Chrome browser devices for an account or a specific Chrome browser device.
     name: gsuite-chromebrowserdevice-list
     outputs:
-      - contextPath: GSuite.ChromeBrowserDevices.nextPageToken
-        description: The token of the next page.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.deviceId
-        description: The unique Device ID for the device.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.kind
-        description: The type of device.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osPlatform
-        description: operating system platform.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osVersion
-        description: Device operating system version.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.machineName
-        description: Device machine name.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.lastRegistrationTime
-        description: Device last registration time.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.lastActivityTime
-        description: Device last activity time.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osPlatformVersion
-        description: Device operating system platform version.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.serialNumber
-        description: Device serial number.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.virtualDeviceId
-        description: Device virtual ID.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.orgUnitPath
-        description: Device organizational unit path.
-        type: String
-      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.deviceIdentifiersHistory
-        description: Device identifier history.
-        type: String
+    - contextPath: GSuite.ChromeBrowserDevices.nextPageToken
+      description: The token of the next page.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.deviceId
+      description: The unique Device ID for the device.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.kind
+      description: The type of device.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osPlatform
+      description: operating system platform.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osVersion
+      description: Device operating system version.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.machineName
+      description: Device machine name.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.lastRegistrationTime
+      description: Device last registration time.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.lastActivityTime
+      description: Device last activity time.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osPlatformVersion
+      description: Device operating system platform version.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.serialNumber
+      description: Device serial number.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.virtualDeviceId
+      description: Device virtual ID.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.orgUnitPath
+      description: Device organizational unit path.
+      type: String
+    - contextPath: GSuite.ChromeBrowserDevices.browserObjects.deviceIdentifiersHistory
+      description: Device identifier history.
+      type: String
   - arguments:
-      - description: ID of the Google Workspace account or literal 'my_customer' for the customer associated with the request.
-        name: customer_id
-      - auto: PREDEFINED
-        description: In case of Group use “POST…groups:batchModify”. In case of OrgUnit use “POST…orgunits:batchModify”.
-        name: target_type
-        required: true
-        predefined:
-          - Group
-          - OrgUnit
-      - description: |-
-          String as JSON representation of the ModifyGroupPolicyRequest
-          {
-              "requests": [
-                  {
-                      "policyTargetKey": {
-                          "targetResource": "orgunits/03ph8a2z1kjba6k",
-                          "additionalTargetKeys": {
-                              "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"
-                          }
-                      },
-                      "policyValue": {
-                          "policySchema": "chrome.users.apps.InstallType",
-                          "value": {
-                              "appInstallType": "BLOCKED"
-                          }
-                      },
-                      "updateMask": "appInstallType"
-                  }
-             ]
-          }
-        name: policy_raw_json
-      - description: Entry ID of the file that contains JSON representation of the ModifyGroupPolicyRequest.
-        name: policy_field_json_entry_id
-      - description: |-
-          The target resource on which this policy is applied. The following resources are supported:
+    - description: ID of the Google Workspace account or literal 'my_customer' for the customer associated with the request.
+      name: customer_id
+    - auto: PREDEFINED
+      description: "In case of Group use \u201CPOST\u2026groups:batchModify\u201D. In case of OrgUnit use \u201CPOST\u2026orgunits:batchModify\u201D."
+      name: target_type
+      required: true
+      predefined:
+      - Group
+      - OrgUnit
+    - description: "String as JSON representation of the ModifyGroupPolicyRequest\n{\n    \"requests\": [\n        {\n            \"policyTargetKey\": {\n                \"targetResource\": \"orgunits/03ph8a2z1kjba6k\",\n                \"additionalTargetKeys\": {\n                    \"app_id\": \"chrome:jldhpllghnbhlbpcmnajkpdmadaolakh\"\n                }\n            },\n            \"policyValue\": {\n                \"policySchema\": \"chrome.users.apps.InstallType\",\n                \"value\": {\n                    \"appInstallType\": \"BLOCKED\"\n                }\n            },\n            \"updateMask\": \"appInstallType\"\n        }\n   ]\n}"
+      name: policy_raw_json
+    - description: Entry ID of the file that contains JSON representation of the ModifyGroupPolicyRequest.
+      name: policy_field_json_entry_id
+    - description: 'The target resource on which this policy is applied. The following resources are supported:
 
-          Organizational Unit ("orgunits/{orgunit_id}")
-          Group ("groups/{groupId}").
 
-        name: target_resource
-      - description: |-
-          Map containing the additional target key name and value pairs used to further identify the target of the policy.
+        Organizational Unit ("orgunits/{orgunit_id}")
 
-          A string containing a list of "key": "value" pairs. Example: ""name": "wrench", "mass": "1.3kg", "count": "3"".
+        Group ("groups/{groupId}").'
+      name: target_resource
+    - description: 'Map containing the additional target key name and value pairs used to further identify the target of the policy.
 
-        name: additional_target_keys
-      - description: The fully qualified name of the policy schema that is being inherited.
-        name: policy_schema
-      - description: The value of the policy that is compatible with the schema that it is associated with Struct format.
-        name: policy_value
-      - description: |-
-          Policy fields to update. Only fields in this mask will be updated; other fields in policyValue will be ignored (even if they have values). If a field is in this list it must have a value in 'policyValue'.
-          This is a comma-separated list of fully qualified names of fields. Example: "user.displayName,photo".
-          Field mask format.
-        name: update_mask
+
+        A string containing a list of "key": "value" pairs. Example: ""name": "wrench", "mass": "1.3kg", "count": "3"".'
+      name: additional_target_keys
+    - description: The fully qualified name of the policy schema that is being inherited.
+      name: policy_schema
+    - description: The value of the policy that is compatible with the schema that it is associated with Struct format.
+      name: policy_value
+    - description: 'Policy fields to update. Only fields in this mask will be updated; other fields in policyValue will be ignored (even if they have values). If a field is in this list it must have a value in ''policyValue''.
+
+        This is a comma-separated list of fully qualified names of fields. Example: "user.displayName,photo".
+
+        Field mask format.'
+      name: update_mask
     description: Modifies multiple policy values that are applied to a specific group. All targets must have the same target format. That is to say that they must point to the same target resource and must have the same keys specified in additionalTargetKeyNames, though the values for those keys may be different. On failure the request will return the error details as part of the google.rpc.Status.
     name: gsuite-policy-modify
   - arguments:
-      - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
-        name: customer_id
-      - description: The policy schema resource name to query. Required when asking for a specific policy.
-        name: schema_name
-      - description: The schema filter is used to find a particular schema based on fields like its resource name, description and additionalTargetKeyNames.
-        name: filter
-      - description: The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000.
-        name: page_size
-      - description: Page token.
-        name: page_token
-      - description: Limit of policies returned.
-        name: limit
-        defaultValue: '50'
+    - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
+      name: customer_id
+    - description: The policy schema resource name to query. Required when asking for a specific policy.
+      name: schema_name
+    - description: The schema filter is used to find a particular schema based on fields like its resource name, description and additionalTargetKeyNames.
+      name: filter
+    - description: The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000.
+      name: page_size
+    - description: Page token.
+      name: page_token
+    - description: Limit of policies returned.
+      name: limit
+      defaultValue: '50'
     description: Gets a list of policy schemas that match a specified filter value for a given customer.
     name: gsuite-policy-schemas-list
     outputs:
-      - contextPath: GSuite.PolicySchema.nextPageToken
-        description: The token of the next page.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects
-        description: A list of policy schemas objects.
-        type: List
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.name
-        description: Policy name.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.policyDescription
-        description: Policy description.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.definition
-        description: Policy definition.
-        type: Array
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.definition.enumType
-        description: Policy definition ENUM type.
-        type: List
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.definition.messageType
-        description: Policy definition message type.
-        type: List
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions
-        description: Policy file description.
-        type: Array
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.description
-        description: Policy file object description.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.field
-        description: Policy file description field.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.fieldConstraints
-        description: Policy file description field constraints.
-        type: Array
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.knownValueDescriptions
-        description: Policy file description known value description.
-        type: List
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices
-        description: Policy notice.
-        type: List
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.acknowledgementRequired
-        description: Policy notice is acknowledgement required.
-        type: Boolean
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.field
-        description: Policy notice field.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.noticeMessage
-        description: Policy notice message.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.noticeValue
-        description: Policy notice value.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.supportUri
-        description: Policy support URI.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.schemaName
-        description: Policy schema name.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.validTargetResources
-        description: Policy valid target resources.
-        type: List
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle
-        description: Policy API lifecycle.
-        type: Array
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle.policyApiLifecycleStage
-        description: Policy API lifecycle stage.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.categoryTitle
-        description: Policy category title.
-        type: String
-      - contextPath: GSuite.PolicySchema.policySchemaObjects.supportedPlatforms
-        description: Policy supported platforms.
-        type: String
+    - contextPath: GSuite.PolicySchema.nextPageToken
+      description: The token of the next page.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects
+      description: A list of policy schemas objects.
+      type: List
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.name
+      description: Policy name.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.policyDescription
+      description: Policy description.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.definition
+      description: Policy definition.
+      type: Array
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.definition.enumType
+      description: Policy definition ENUM type.
+      type: List
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.definition.messageType
+      description: Policy definition message type.
+      type: List
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions
+      description: Policy file description.
+      type: Array
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.description
+      description: Policy file object description.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.field
+      description: Policy file description field.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.fieldConstraints
+      description: Policy file description field constraints.
+      type: Array
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.knownValueDescriptions
+      description: Policy file description known value description.
+      type: List
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.notices
+      description: Policy notice.
+      type: List
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.acknowledgementRequired
+      description: Policy notice is acknowledgement required.
+      type: Boolean
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.field
+      description: Policy notice field.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.noticeMessage
+      description: Policy notice message.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.noticeValue
+      description: Policy notice value.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.supportUri
+      description: Policy support URI.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.schemaName
+      description: Policy schema name.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.validTargetResources
+      description: Policy valid target resources.
+      type: List
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle
+      description: Policy API lifecycle.
+      type: Array
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle.policyApiLifecycleStage
+      description: Policy API lifecycle stage.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.categoryTitle
+      description: Policy category title.
+      type: String
+    - contextPath: GSuite.PolicySchema.policySchemaObjects.supportedPlatforms
+      description: Policy supported platforms.
+      type: String
   - arguments:
-      - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
-        name: customer_id
-      - description: 'Specify a schema name to view a particular schema, for example: chrome.users.ShowLogoutButton. See https://developers.google.com/chrome/policy/guides/policy-schemas for details on schema namespaces.'
-        name: policy_schema_filter
-        required: true
-      - auto: PREDEFINED
-        description: Type of target.
-        name: target_type
-        required: true
-        predefined:
-          - Group
-          - OrgUnit
-      - description: 'The target resource on which this policy is applied. The following resources are supported: Organizational Unit ("orgunits/{orgunit_id}") or Group ("groups/{groupId}").'
-        name: target_resource
-        required: true
-      - description: 'Map (key: string, value: string) containing the additional target key name and value pairs used to further identify the target of the policy.'
-        name: additional_target_keys
-      - description: The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000.
-        name: page_size
-      - description: Page token.
-        name: page_token
-      - description: Limit of policies returned.
-        name: limit
-        defaultValue: '50'
+    - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
+      name: customer_id
+    - description: 'Specify a schema name to view a particular schema, for example: chrome.users.ShowLogoutButton. See https://developers.google.com/chrome/policy/guides/policy-schemas for details on schema namespaces.'
+      name: policy_schema_filter
+      required: true
+    - auto: PREDEFINED
+      description: Type of target.
+      name: target_type
+      required: true
+      predefined:
+      - Group
+      - OrgUnit
+    - description: 'The target resource on which this policy is applied. The following resources are supported: Organizational Unit ("orgunits/{orgunit_id}") or Group ("groups/{groupId}").'
+      name: target_resource
+      required: true
+    - description: 'Map (key: string, value: string) containing the additional target key name and value pairs used to further identify the target of the policy.'
+      name: additional_target_keys
+    - description: The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000.
+      name: page_size
+    - description: Page token.
+      name: page_token
+    - description: Limit of policies returned.
+      name: limit
+      defaultValue: '50'
     description: Gets the resolved policy values for a list of policies that match a search query.
     name: gsuite-policy-resolve
     outputs:
-      - contextPath: GSuite.Policy.nextPageToken
-        description: The token of the next page.
-        type: String
-      - contextPath: GSuite.Policy.policyObject.targetKey.targetResource
-        description: Policy target key target resource.
-        type: String
-      - contextPath: GSuite.Policy.policyObject.targetKey.additionalTargetKeys
-        description: Policy target key additional target keys.
-        type: String
-      - contextPath: GSuite.Policy.policyObject.value.policySchema
-        description: Policy schema value.
-        type: String
-      - contextPath: GSuite.Policy.policyObject.value.value
-        description: Policy value.
-        type: String
-      - contextPath: GSuite.Policy.policyObject.sourceKey.targetResource
-        description: Policy source key target resource.
-        type: String
-      - contextPath: GSuite.Policy.policyObject.addedSourceKey.targetResource
-        description: Policy added source key target resource.
-        type: String
+    - contextPath: GSuite.Policy.nextPageToken
+      description: The token of the next page.
+      type: String
+    - contextPath: GSuite.Policy.policyObject.targetKey.targetResource
+      description: Policy target key target resource.
+      type: String
+    - contextPath: GSuite.Policy.policyObject.targetKey.additionalTargetKeys
+      description: Policy target key additional target keys.
+      type: String
+    - contextPath: GSuite.Policy.policyObject.value.policySchema
+      description: Policy schema value.
+      type: String
+    - contextPath: GSuite.Policy.policyObject.value.value
+      description: Policy value.
+      type: String
+    - contextPath: GSuite.Policy.policyObject.sourceKey.targetResource
+      description: Policy source key target resource.
+      type: String
+    - contextPath: GSuite.Policy.policyObject.addedSourceKey.targetResource
+      description: Policy added source key target resource.
+      type: String
   - arguments:
-      - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
-        name: customer_id
-      - description: |-
-          String as JSON representation of the DeleteGroupPolicyRequest
-          {
-            "policyTargetKey": {
-              object (PolicyTargetKey)
-            },
-            "policySchema": string
-          }
-        name: policy_raw_json
-      - description: |-
-          Entry Id of the file that contains JSON representation of the DeleteGroupPolicyRequest
-          {
-            "policyTargetKey": {
-              object (PolicyTargetKey)
-            },
-            "policySchema": string
-          }
-        name: policy_field_json_entry_id
-      - description: |-
-          The target resource on which this policy is applied. The following resources are supported:
+    - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
+      name: customer_id
+    - description: "String as JSON representation of the DeleteGroupPolicyRequest\n{\n  \"policyTargetKey\": {\n    object (PolicyTargetKey)\n  },\n  \"policySchema\": string\n}"
+      name: policy_raw_json
+    - description: "Entry Id of the file that contains JSON representation of the DeleteGroupPolicyRequest\n{\n  \"policyTargetKey\": {\n    object (PolicyTargetKey)\n  },\n  \"policySchema\": string\n}"
+      name: policy_field_json_entry_id
+    - description: 'The target resource on which this policy is applied. The following resources are supported:
 
-          Organizational Unit ("orgunits/{orgunit_id}")
-          Group ("groups/{groupId}").
-        name: target_resource
-      - description: |-
-          Map containing the additional target key name and value pairs used to further identify the target of the policy.
 
-          An object containing a list of "key": value pairs. Example: { "name": "wrench", "mass": "1.3kg", "count": "3" }.
-        name: additional_target_keys
-      - description: The fully qualified name of the policy schema that is being inherited.
-        name: policy_schema
+        Organizational Unit ("orgunits/{orgunit_id}")
+
+        Group ("groups/{groupId}").'
+      name: target_resource
+    - description: 'Map containing the additional target key name and value pairs used to further identify the target of the policy.
+
+
+        An object containing a list of "key": value pairs. Example: { "name": "wrench", "mass": "1.3kg", "count": "3" }.'
+      name: additional_target_keys
+    - description: The fully qualified name of the policy schema that is being inherited.
+      name: policy_schema
     description: Delete multiple policy values that are applied to a specific group. All targets must have the same target format. That is to say that they must point to the same target resource and must have the same keys specified in additionalTargetKeyNames, though the values for those keys may be different. On failure the request will return the error details as part of the google.rpc.Status.
     name: gsuite-policy-groups-delete
-  dockerimage: demisto/googleapi-python3:1.0.0.91615
+  dockerimage: demisto/googleapi-python3:1.0.0.110187
   runonce: false
   script: '-'
   subtype: python3

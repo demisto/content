@@ -1010,8 +1010,8 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
             # Format any markdown in the email body as HTML
             context_html_body, reply_html_body = format_body(new_email_body)
 
-            # Trim "Re:" from subject since the reply-mail command in both EWS and Gmail adds it again
-            reply_subject = reply_subject.lstrip("Re: ")
+            # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
+            reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
 
             # Send the email reply
             result = validate_email_sent(incident_id, reply_subject, subject_include_incident_id,

@@ -11,7 +11,7 @@ args:
   description: Index of where to output flows (starts from 0).
   name: start
 - defaultValue: '512'
-  description: "Limit the HttpFileData field (in bytes)."
+  description: Limit the HttpFileData field (in bytes).
   name: limitData
 - description: The allowed content types to display, separated with comma, uses startswith to find a match (ie text,image will display text\html, and image\png).
   name: allowedContentTypes
@@ -67,7 +67,7 @@ tags:
 - http
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-http-extractor:1.0.0.93351
+dockerimage: demisto/pcap-http-extractor:1.0.0.110216
 tests:
 - PcapHTTPExtractor-Test
 subtype: python3

@@ -72,24 +72,28 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
 - display: Endpoint Incidents fetch query
   name: incidents_fetch_query
   required: false
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
+  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
 - display: Mobile Detections fetch query
   name: mobile_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
+  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
 - display: IOM fetch query
   name: iom_fetch_query
   type: 0
@@ -152,7 +156,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
+  additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR.
 - defaultvalue: 'false'
   display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
@@ -160,7 +164,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
+  additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
 - defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
@@ -5050,7 +5054,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.106945
+  dockerimage: demisto/py3-tools:1.0.0.108682
   isfetch: true
   ismappable: true
   isremotesyncin: true

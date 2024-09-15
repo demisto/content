@@ -1,10 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
 import os
 import re
 import json
-from pancloud import QueryService, Credentials, exceptions
+from pan_cortex_data_lake import Credentials, exceptions, QueryService
+import time
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Any
@@ -15,6 +17,7 @@ from datetime import timedelta
 
 # disable insecure warnings
 import urllib3
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBAL CONSTS '''
@@ -216,12 +219,15 @@ class Client(BaseClient):
 
         demisto.setIntegrationContext(integration_context)
 
-    def query_loggings(self, query: str) -> tuple[list[dict], list]:
+    def query_loggings(self, query: str, page_number: Optional[str] = None, page_size: Optional[str] = None) \
+            -> tuple[list[dict], list]:
         """
         This function handles all the querying of Cortex Logging service
 
         Args:
             query: The sql string query.
+            page_number: The page number to query.
+            page_size: The page size to query.
 
         Returns:
             A list of records according to the query
@@ -244,11 +250,24 @@ class Client(BaseClient):
                 error_message = query_result
 
             raise DemistoException(f'Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}')
-
+        raw_results = []
         try:
-            raw_results = [r.json() for r in query_service.iter_job_results(job_id=query_result.get('jobId'),
-                                                                            result_format='valuesDictionary',
-                                                                            max_wait=2000)]
+            for r in query_service.iter_job_results(job_id=query_result.get(
+                    'jobId'),
+                    page_number=arg_to_number(page_number),
+                    page_size=arg_to_number(page_size) or 50 if page_number else None,
+                    max_wait=2000,
+                    result_format='valuesDictionary'):
+                raw_results.append(r.json())
+
+        # There is a known issue in iter_job_results where pageCursor and pageNumber are not handled as expected after the first
+        # job reaches a 'DONE' status and contains the desired results. This may result in a response with an unexpected
+        # status code and missing standard fields, including the 'state' field. The method then attempts to access the 'state'
+        # field directly, which can lead to an error. This workaround helps to address the situation.
+
+        except KeyError as e:
+            if not e.args[0] == 'state':
+                raise DemistoException(f'Received error {str(e)} when querying logs.')
         except exceptions.HTTPError as e:
             raise DemistoException(f'Received error {str(e)} when querying logs.')
 
@@ -926,10 +945,10 @@ def query_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[
     limit = args.get('limit', '')
     transform_results = argToBoolean(args.get('transform_results', 'true'))
 
-    if 'limit' not in query.lower():
+    if not args.get('page') and 'limit' not in query.lower():
         query += f' LIMIT {limit}'
 
-    records, raw_results = client.query_loggings(query)
+    records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     table_name = get_table_name(query)
     output_results = records if not transform_results else [common_context_transformer(record) for record in records]
@@ -964,9 +983,12 @@ def get_critical_logs_command(args: dict, client: Client) -> tuple[str, dict[str
     query_start_time, query_end_time = query_timestamp(args)
     query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
     query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
-             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
+             f'TIMESTAMP("{query_end_time}")'
 
-    records, raw_results = client.query_loggings(query)
+    if not args.get('page'):
+        query += f' LIMIT {logs_amount}'
+
+    records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     transformed_results = [threat_context_transformer(record) for record in records]
 
@@ -998,9 +1020,12 @@ def get_social_applications_command(args: dict,
     query_start_time, query_end_time = query_timestamp(args)
     query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
     query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
-             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
+             f'TIMESTAMP("{query_end_time}")'
 
-    records, raw_results = client.query_loggings(query)
+    if not args.get('page'):
+        query += f' LIMIT {logs_amount}'
+
+    records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     transformed_results = [traffic_context_transformer(record) for record in records]
 
@@ -1021,9 +1046,12 @@ def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[s
     query_start_time, query_end_time = query_timestamp(args)
     query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line  # noqa: S608
     query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
-             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
+             f'TIMESTAMP("{query_end_time}")'
 
-    records, raw_results = client.query_loggings(query)
+    if not args.get('page'):
+        query += f' LIMIT {logs_amount}'
+
+    records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     transformed_results = [threat_context_transformer(record) for record in records]
 
@@ -1094,7 +1122,7 @@ def query_table_logs(args: dict,
         table_context_path: the context path where the parsed data should be located
     """
     fields, query = build_query(args, table_name)
-    results, raw_results = client.query_loggings(query)
+    results, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
     outputs = [context_transformer_function(record) for record in results]
     human_readable = records_to_human_readable_output(fields, table_name, results)
 
@@ -1109,9 +1137,11 @@ def build_query(args, table_name):
     query_start_time, query_end_time = query_timestamp(args)
     timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
                            f'TIMESTAMP("{query_end_time}") '
-    limit = args.get('limit') or '5'
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
-    query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'  # noqa: S608
+    query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where}'  # noqa: S608
+    if not args.get('page'):
+        limit = args.get('limit', '5')
+        query += f' LIMIT {limit}'
     return fields, query
 
 

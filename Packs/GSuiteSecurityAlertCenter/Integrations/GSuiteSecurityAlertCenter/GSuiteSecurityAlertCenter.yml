@@ -37,8 +37,7 @@ configuration:
   section: Connect
   hidden: true
   required: false
-- additionalinfo: |-
-    The maximum allowed value is 1000.
+- additionalinfo: The maximum allowed value is 1000.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
   name: max_fetch
@@ -117,7 +116,6 @@ configuration:
   name: proxy
   section: Connect
   type: 8
-
   required: false
 description: G Suite Security Alert Center allows users to fetch different alert types such as Suspicious login, Device compromised, Leaked password, and more. Users can delete or recover a single alert or a batch of alerts and retrieve the alert's metadata. This integration allows users to provide feedback for alerts and fetch existing feedback for a particular alert.
 display: G Suite Security Alert Center
@@ -129,9 +127,9 @@ script:
       name: page_size
     - description: A token identifying a page of results the server should return.
       name: page_token
-    - description: |-
-        A query string for filtering alert results.
-        For example: createTime >= "2020-10-28T20:43:34.381Z" AND type="Suspicious login".
+    - description: 'A query string for filtering alert results.
+
+        For example: createTime >= "2020-10-28T20:43:34.381Z" AND type="Suspicious login".'
       name: filter
     - auto: PREDEFINED
       description: 'The sort order of the list results. Possible values: "createTime asc", "createTime desc", "updateTime asc", and "updateTime desc".'
@@ -141,9 +139,9 @@ script:
       - createTime desc
       - updateTime asc
       - updateTime desc
-    description: |-
-      Lists the alerts. Use the filter to filter the list by various alert types.
-      Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
+    description: 'Lists the alerts. Use the filter to filter the list by various alert types.
+
+      Note: The alerts that have been marked for deletion in the past 30 days will still be visible.'
     name: gsac-alert-list
     outputs:
     - contextPath: GSuiteSecurityAlert.PageToken.Alert.nextPageToken
@@ -683,9 +681,9 @@ script:
     - description: The identifier of the alert the feedbacks belong to. The "-" wildcard can be used to represent all alerts.
       name: alert_id
       required: true
-    - description: |-
-        A query string for filtering alert results.
-        For example: alert_id = alertId01 AND feedback_id = feedbackId01.
+    - description: 'A query string for filtering alert results.
+
+        For example: alert_id = alertId01 AND feedback_id = feedbackId01.'
       name: filter
     - defaultValue: '50'
       description: The requested page size. Default is 50.
@@ -716,9 +714,9 @@ script:
       isArray: true
       name: alert_id
       required: true
-    description: |-
-      Performs delete operation on alerts.
-      Note: The alerts that are marked for deletion will be removed from the Alert Center after 30 days.
+    description: 'Performs delete operation on alerts.
+
+      Note: The alerts that are marked for deletion will be removed from the Alert Center after 30 days.'
     name: gsac-alert-delete
     outputs:
     - contextPath: GSuiteSecurityAlert.Delete.successAlerts.id
@@ -744,9 +742,9 @@ script:
       isArray: true
       name: alert_id
       required: true
-    description: |-
-      Performs a recover operation on alerts.
-      Note: Recovers the alerts that were marked for deletion within the past 30 days.
+    description: 'Performs a recover operation on alerts.
+
+      Note: Recovers the alerts that were marked for deletion within the past 30 days.'
     name: gsac-alert-recover
     outputs:
     - contextPath: GSuiteSecurityAlert.Recover.successAlerts.id
@@ -767,7 +765,7 @@ script:
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.status
       description: Status of the failed alert recovery.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.89487
+  dockerimage: demisto/googleapi-python3:1.0.0.110187
   isfetch: true
   runonce: false
   script: '-'
