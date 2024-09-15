@@ -4,7 +4,7 @@ ignore=IN126
 [file:Zendesk_image.png]
 ignore=IM111
 
-[file:Zendeskv2.yml]
+[file:README.md]
 ignore=RM106
 
 [known_words]
