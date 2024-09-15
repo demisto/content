@@ -471,7 +471,7 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
             path: str = 'tim_insert_jsons'
             response = client.http_request(path, requests_kwargs)
             if response.get('reply', {}).get('success') is not True:
-                raise DemistoException("Response status was not success")
+                raise DemistoException(f"Response status was not success, {response=}")
             if validation_errors := response.get('reply', {}).get('validation_errors'):
                 errors = create_validation_errors_response(validation_errors)
                 demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', ''))
