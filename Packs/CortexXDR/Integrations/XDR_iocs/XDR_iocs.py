@@ -908,7 +908,7 @@ def main():  # pragma: no cover
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
     if xsoar_comment_field := params.get('xsoar_comments_field'):
-        #talk with judith
+        # talk with judith
         Client.xsoar_comments_field = xsoar_comment_field[0] if isinstance(xsoar_comment_field, list) else xsoar_comment_field
 
     client = Client(params)
