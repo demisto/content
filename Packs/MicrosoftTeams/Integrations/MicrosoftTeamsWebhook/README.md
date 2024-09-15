@@ -17,22 +17,23 @@ This integration was integrated and tested with version 6.8 of Microsoft Teams v
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-teams-message
-***
-Send a message to Microsoft Teams via Incoming Webhook
 
+***
+Send a message to Microsoft Teams via Incoming Webhook.
 
 #### Base Command
 
 `ms-teams-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message | The message to send.  For example: "This is a message from Cortex XSOAR". Default is None. | Optional | 
+| message | The message to send.  For example: "This is a message from Cortex XSOAR,". Default is None. | Optional | 
 | team_webhook | The alternative webhook for a different team.  If not defined, the integration's default webhook is used. | Optional | 
 | alternative_url | The alternative URL to send in place of the link to the XSOAR Investigation. | Optional | 
 | url_title | The title for the link, defaults to "Cortex XSOAR URL". Default is Cortex XSOAR URL. | Optional | 
-
+| adaptive_cards_format | Should the adaptive cards format be used?. | Optional | 
 
 #### Context Output
 

@@ -12,7 +12,8 @@ from AnomaliThreatStreamv3 import main, get_indicators, \
     create_investigation_command, update_investigation_command, delete_investigation_command, add_investigation_element_command, \
     approve_import_job_command, search_threat_model_command, create_element_list, \
     add_threat_model_association_command, validate_values_search_threat_model, validate_investigation_action, \
-    return_params_of_pagination_or_limit, create_indicators_list, add_indicator_tag_command, remove_indicator_tag_command
+    return_params_of_pagination_or_limit, create_indicators_list, add_indicator_tag_command, remove_indicator_tag_command, \
+    clone_ioc_command, edit_classification_job_command
 from CommonServerPython import *
 import pytest
 
@@ -1885,3 +1886,67 @@ def test_http_request_without_credentials(mocker, without_credentials: bool, exp
 
     client.http_request("GET", "/hello", without_credentials=without_credentials)
     assert http_request.call_args.kwargs["headers"] == expected_params
+
+
+def test_clone_ioc_command(mocker):
+    """
+    Given:
+        - indicator id to clone
+    When:
+        - Call clone_ioc_command
+    Then:
+        - Validate the command result
+    """
+
+    # Mock API response
+    mocked_response = {
+        "import_session_id": "139",
+        "job_id": "1b0ad011-e595-4f7f-8eb6"
+    }
+
+    readable_output = '### Clone operation results for indicator 123\n' \
+                      '|Id|Import Session Id|Job Id|\n' \
+                      '|---|---|---|\n' \
+                      '| 123 | 139 | 1b0ad011-e595-4f7f-8eb6 |\n' \
+
+    outputs = mocked_response
+    outputs['ID'] = '123'
+
+    client = mock_client()
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    # Call function
+    command_result = clone_ioc_command(
+        client=client,
+        indicator_id=123,
+    )
+
+    # Verify result
+    assert command_result.raw_response == mocked_response
+    assert command_result.readable_output == readable_output
+    assert command_result.outputs == mocked_response
+
+
+def test_edit_classification_job_command(mocker):
+    """
+    Given:
+        - import  session id and JSON data of edits to be made
+    When:
+        - Call edit_classification_job_command
+    Then:
+        - Validate the command result
+    """
+    mocked_response = {'id': 123, "date": "2024-09-01T10:55:22.704146"}
+    readable_output = 'The import session was successfully approved.'
+    client = mock_client()
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    # Call function
+    command_result = edit_classification_job_command(
+        client=client,
+        import_id='139',
+        data='{"is_public":false,"circles":[11111]}')
+
+    # Verify result
+    assert command_result.raw_response == mocked_response
+    assert command_result.readable_output == readable_output

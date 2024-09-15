@@ -1,2 +1,6 @@
 [file:AzureDevOps_image.png]
 ignore=IM111
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-AzureDevOps_Layout.json]
+ignore=GR103
