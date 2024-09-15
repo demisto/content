@@ -5,7 +5,8 @@ import uuid
 
 def main():
     try:
-        unique_string = str(demisto.getLicenseID() + str(datetime.now().timestamp()))
+        # create a unique string based on the license ID and the current timestamp
+        unique_string = f'{demisto.getLicenseID()} {datetime.now().timestamp()}'
         external_id = uuid.uuid5(uuid.NAMESPACE_DNS, unique_string)
         return_results(CommandResults(
             readable_output=f'### External ID generated: *{external_id}*'
