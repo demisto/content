@@ -7,7 +7,7 @@ import time
 import urllib3
 import resilient
 from resilient.co3 import SimpleClient
-from datetime import datetime, timezone, UTC
+from datetime import timezone
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -194,6 +194,8 @@ def validate_iso_time_format(iso_time: str) -> str:
     Returns:
     str: The modified iso_time string with a 'Z' suffix if it wasn't already present.
     """
+    if not iso_time:
+        return iso_time
 
     # Remove milliseconds from the time string.
     iso_time = iso_time.split('.')[0]
@@ -220,7 +222,7 @@ def normalize_timestamp(timestamp_ms: int | None):
         timestamp_s = timestamp_ms / 1000.0
 
         # Create a datetime object in UTC
-        dt = datetime.fromtimestamp(timestamp_s, tz=UTC)
+        dt = datetime.fromtimestamp(timestamp_s, tz=timezone.utc)
 
         # Format the datetime without microseconds and append 'Z'
         iso_str = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -499,11 +501,11 @@ def prepare_search_query_data(args: dict) -> dict:
     page = int(args.get('page', 0))
     page_size = int(args.get('page_size', 0))
     limit = int(args.get('limit', MAX_FETCH))
-    data['length'] = limit
+    data['length']: int = limit
     # 'limit' parameter is redundant in case proper 'page' and 'page_size' were provided.
     if page_size > 0 and page > 0:
-        data['start'] = page_size * (page - 1)
-        data['length'] = page_size
+        data['start']: int = page_size * (page - 1)
+        data['length']: int = page_size
     elif page < 0 or page_size < 0:
         raise DemistoException('Invalid page number or page size. Page number and page sizes must be positive integers.')
     demisto.debug(f'prepare_search_query_data {data=}')
@@ -679,7 +681,7 @@ def to_timestamp(time_input):
             # Not an integer, try to parse as ISO time string
             try:
                 dt = datetime.strptime(time_input, '%Y-%m-%dT%H:%M:%SZ')
-                dt = dt.replace(tzinfo=UTC)
+                dt = dt.replace(tzinfo=timezone.utc)
                 timestamp_ms = int(dt.timestamp() * 1000)
                 return timestamp_ms
             except ValueError:
@@ -1076,7 +1078,7 @@ def get_tasks_command(client, incident_id):
 
 
 def update_task_command(client: SimpleClient, args: dict) -> CommandResults:
-    task_id = args.get('task_id')
+    task_id: str = args.get('task_id')
 
     task_dto = {}
     if task_name := args.get('name'):
@@ -1470,7 +1472,7 @@ def add_custom_task(client: SimpleClient,
                     incident_id: str,
                     task_name: str,
                     phase: str,
-                    due_date: int,
+                    due_date: int | None,
                     description: str,
                     instructions: str,
                     owner_id: str) -> dict:
@@ -1486,14 +1488,13 @@ def add_custom_task(client: SimpleClient,
     }
     # Optional fields.
     if due_date:
-        task_dto["due_date"] = due_date
+        task_dto["due_date"] = due_date     # Due date in milliseconds timestamp.
     if instructions:
         task_dto["instructions"] = instructions
     if owner_id and owner_id.isdigit():
         task_dto["owner_id"] = int(owner_id)
     elif owner_id:
         raise DemistoException("Owner ID must be an integer number.")
-
     demisto.debug(f"{task_dto=}")
     return client.post(uri=f"/incidents/{incident_id}/tasks", payload=task_dto)
 
@@ -1570,7 +1571,7 @@ def get_attachment_command(client: SimpleClient, args: dict) -> dict:
     """
     Retrieves an attachment with ID: `args['attachment_id']` from IBM QRadar SOAR.
     """
-    name, contents = get_attachment(client, args.get('incident_id'), args.get('attachment_id'))
+    name, contents = get_attachment(client, str(args.get('incident_id', '')), str(args.get('attachment_id', '')))
     demisto.debug(f"get_attachments_command {name=}")
     return fileResult(name, contents)
 
@@ -1610,7 +1611,7 @@ def list_incident_notes_command(client: SimpleClient, args: dict) -> CommandResu
     """
     Lists an array of open tasks to which the current user is assigned.
     """
-    incident_id = args.get("incident_id")
+    incident_id = str(args.get("incident_id"))
     demisto.debug(f"list_incident_notes_command {incident_id=}")
 
     response = get_incident_notes(client, incident_id)
@@ -1673,7 +1674,7 @@ def get_task_members_command(client: SimpleClient, args: dict) -> CommandResults
     """
     Gets the members of a given task by its ID.
     """
-    task_id = args.get("task_id")
+    task_id: str = str(args.get('task_id', ''))
     response = client.get(f'/tasks/{task_id}/members')
     demisto.debug(f'{response=}')
 
@@ -1731,14 +1732,18 @@ def add_custom_task_command(client: SimpleClient, args: dict) -> CommandResults:
     Adds a custom task to the specified incident.
     """
     demisto.debug(f"add_custom_task_command {args=}")
-    incident_id: str = args.get("incident_id")
-    name: str = args.get("name")
-    owner_id: str = args.get("owner_id")
-    description: str = args.get("description")
-    instructions: str = args.get("instructions")
-    phase: str = args.get("phase")
-    due_date: str = to_timestamp(validate_iso_time_format(args.get("due_date"))) if args.get("due_date") else ''
+    incident_id: str = str(args.get("incident_id", ''))
+    name: str = str(args.get("name", ''))
+    owner_id: str = str(args.get("owner_id", ''))
+    description: str = str(args.get("description", ''))
+    instructions: str = str(args.get("instructions", ''))
+    phase: str = str(args.get("phase", ''))
 
+    if due_date := args.get("due_date"):
+        due_date = validate_iso_time_format(str(due_date))
+        due_date = to_timestamp(due_date)
+    else:
+        due_date = None
     response = add_custom_task(client, incident_id, name, phase, due_date, description, instructions, owner_id)
     demisto.debug(f"add_custom_task_command {response=}")
     if task_id := response.get('id'):
@@ -1810,7 +1815,8 @@ def get_remote_data_command(client: SimpleClient,
     for attachment_entry in attachment_entries:
         demisto.debug(f'get_remote_data_command {attachment_entry=}')
         attachment_create_time = attachment_entry.get('Create Time')
-        if (tag_to_ibm not in attachment_entry.get('Name')
+
+        if (tag_to_ibm not in attachment_entry.get('Name', '')
                 and attachment_create_time
                 and attachment_create_time >= last_update_timestamp):
             file_name, content = get_attachment(client, incident_id, attachment_entry.get('ID'))
@@ -1820,13 +1826,13 @@ def get_remote_data_command(client: SimpleClient,
     # Handling remote incident resolution. 'C' stands for 'Closed'
     if DEMISTO_PARAMS.get('close_xsoar_incident', False) and incident.get("end_date") and incident.get("plan_status") == "C":
         resolution_id = incident.get("resolution_id")
-        closing_entry = handle_incoming_incident_resolution(
-            incident_id=incident_id,
-            resolution_id=resolution_id,
-            resolution_summary=incident.get("resolution_summary", "")
-
-        )
-        entries.append(closing_entry)
+        if resolution_id is not None:
+            closing_entry = handle_incoming_incident_resolution(
+                incident_id=incident_id,
+                resolution_id=int(resolution_id),
+                resolution_summary=incident.get("resolution_summary", "")
+            )
+            entries.append(closing_entry)
 
     # Handling open and remote incident re-opening.
     elif not incident.get("end_date") and incident.get("plan_status") == "A":
@@ -1905,6 +1911,7 @@ def test_module(client: SimpleClient, fetch_time: str):
                 "Invalid first fetch timestamp format, should be (YYYY-MM-DDTHH:MM:SSZ)."
                 " For example: 2020-02-02T19:00:00Z"
             )
+
     return "ok"
 
 

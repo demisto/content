@@ -7,7 +7,6 @@ from requests import Session
 
 import demistomock as demisto
 from CommonServerPython import DemistoException
-
 DEFAULT_MAX_FETCH = 1000
 TAG_TO_IBM = "FROM XSOAR"
 
@@ -135,7 +134,7 @@ def test_test_module(_mocker):
 @pytest.mark.parametrize('fetch_time, expected_result', [
     ('2024-01-01T00:00:00Z', 'ok'),
     ('2024-01-01T00:00:00', 'ok'),
-    ('', 'fail'),
+    ('', 'ok'),
     ('2024/01/01 00:00:00', 'fail'),
     ('invalid-date', 'fail'),
 ])
