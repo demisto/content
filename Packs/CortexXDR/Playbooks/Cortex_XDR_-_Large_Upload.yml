@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2864f683-d804-43bb-8946-4d90039fc751
+    taskid: f8019971-848d-42ea-8092-41468c83a05c
     type: condition
     task:
-      id: 2864f683-d804-43bb-8946-4d90039fc751
+      id: f8019971-848d-42ea-8092-41468c83a05c
       version: -1
       name: Found Results?
       description: Determine if previous false positive incidents have been detected with similar characteristics.
@@ -86,16 +86,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               complex:
                 root: DBotFindSimilarIncidents
+                accessor: isSimilarIncidentFound
             iscontext: true
           ignorecase: true
-          right:
-            value:
-              simple: "True"
       - - operator: containsGeneral
           left:
             value:
@@ -1824,14 +1822,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 7a26785e-f5dd-4561-896a-19bd45b9c190
+    taskid: f48d9fbb-df56-480b-81a9-83d55cc474a5
     type: playbook
     task:
-      id: 7a26785e-f5dd-4561-896a-19bd45b9c190
+      id: f48d9fbb-df56-480b-81a9-83d55cc474a5
       version: -1
       name: Cortex XDR - Isolate Endpoint
-      description: This playbook accepts an XDR endpoint ID and isolates it using
-        the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+      description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
       playbookName: Cortex XDR - Isolate Endpoint
       type: playbook
       iscommand: false
@@ -1846,19 +1843,9 @@ tasks:
           accessor: agent_id
           transformers:
           - operator: uniq
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty:
-                value:
-                  simple: "true"
-              defaultValue:
-                value:
-                  simple: Missing endpoint ID.Answers.0
-                iscontext: true
       hostname:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
-          accessor: host_name
           transformers:
           - operator: append
             args:
@@ -1867,12 +1854,13 @@ tasks:
                   simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
                 iscontext: true
           - operator: uniq
+          accessor: host_name
       ip_list:
         complex:
           root: PaloAltoNetworksXDR.OriginalAlert._all_events
-          accessor: action_local_ip
           transformers:
           - operator: uniq
+          accessor: action_local_ip
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -2376,10 +2364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: aeec3291-f750-4743-8442-77286d075ff8
+    taskid: 5087be8f-2ee3-498d-8d08-0e6c1bad71a5
     type: condition
     task:
-      id: aeec3291-f750-4743-8442-77286d075ff8
+      id: 5087be8f-2ee3-498d-8d08-0e6c1bad71a5
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -2395,29 +2383,7 @@ tasks:
     conditions:
     - label: More Than Threshold
       condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
-                accessor: description
-                transformers:
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "2"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: uploaded\s(.*(MB|GB|TB))
-            iscontext: true
-          right:
-            value:
-              simple: GB
-          ignorecase: true
-        - operator: greaterThanOrEqual
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -2434,6 +2400,60 @@ tasks:
                     regex:
                       value:
                         simple: uploaded\s(.*(MB|GB|TB))
+            iscontext: true
+          right:
+            value:
+              simple: GB
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: description
+                transformers:
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "1"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: uploaded\s(.*(MB|GB|TB))
+            iscontext: true
+          right:
+            value:
+              simple: TB
+          ignorecase: true
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: description
+                transformers:
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "0"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: uploaded\s(.*(MB|GB|TB))
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "0"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: (\d+)\.
                 - operator: StripChars
                   args:
                     chars:
@@ -2446,28 +2466,6 @@ tasks:
               complex:
                 root: inputs.Transferred_Data _Threshold
             iscontext: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
-                accessor: description
-                transformers:
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "2"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: uploaded\s(.*(MB|GB|TB))
-            iscontext: true
-          right:
-            value:
-              simple: TB
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -2485,10 +2483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 982ee5dc-7800-48a3-8597-1f23df3a9a05
+    taskid: c6187678-8e87-4577-8c87-ec9e721815a1
     type: regular
     task:
-      id: 982ee5dc-7800-48a3-8597-1f23df3a9a05
+      id: c6187678-8e87-4577-8c87-ec9e721815a1
       version: -1
       name: Set Additional Alerts to Context
       description: |-
@@ -2888,10 +2886,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: b2bb6cd9-4d66-4b55-80f0-66dc789b8dde
+    taskid: 35af27ee-79c5-4570-8d0f-8ea6696bc450
     type: regular
     task:
-      id: b2bb6cd9-4d66-4b55-80f0-66dc789b8dde
+      id: 35af27ee-79c5-4570-8d0f-8ea6696bc450
       version: -1
       name: Check Whether The Source Host Is an FTP Server
       description: |-
@@ -2945,10 +2943,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: 35023b14-4231-447e-835b-8316a0432e19
+    taskid: 792a83e6-24a5-4531-8c86-4c230c487c3e
     type: regular
     task:
-      id: 35023b14-4231-447e-835b-8316a0432e19
+      id: 792a83e6-24a5-4531-8c86-4c230c487c3e
       version: -1
       name: Check Whether The Source Host Is an SMTP Server
       description: |-
@@ -3729,10 +3727,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: 1a69ce4f-fcbe-40e7-8164-c4d8dc304ac4
+    taskid: a31ec1c6-bd93-4101-8aef-1f66cb5931f8
     type: playbook
     task:
-      id: 1a69ce4f-fcbe-40e7-8164-c4d8dc304ac4
+      id: a31ec1c6-bd93-4101-8aef-1f66cb5931f8
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
