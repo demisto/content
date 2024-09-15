@@ -226,7 +226,7 @@ script:
       - config      
       - composer.json
       - composer.lock
-    - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument code_categories ,for example.
+    - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument (code_categories, file_types, iac_categories...)
       name: fixable_only
       type: Boolean
       auto: PREDEFINED
