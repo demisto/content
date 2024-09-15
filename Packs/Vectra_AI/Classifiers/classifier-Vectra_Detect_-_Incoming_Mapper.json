@@ -1,7 +1,6 @@
 {
     "description": "Maps incoming Vectra Detect incidents fields.",
     "feed": false,
-    "fromVersion": "6.5.0",
     "id": "Vectra Detect - Incoming Mapper",
     "mapping": {
         "Vectra Account": {
@@ -9,6 +8,13 @@
             "internalMapping": {
                 "Account ID": {
                     "simple": "id"
+                },
+                "Account Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "display_name",
+                        "transformers": []
+                    }
                 },
                 "Department": {
                     "simple": "ldap.department.[0]"
@@ -22,15 +28,240 @@
                 "External Severity": {
                     "simple": "severity"
                 },
+                "Incident Link": {
+                    "complex": {
+                        "accessor": "UI_URL",
+                        "filters": [],
+                        "root": "_vectra_specific",
+                        "transformers": []
+                    }
+                },
+                "State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
                 "Title": {
                     "simple": "ldap.title.[0]"
                 },
                 "Usernames": {
                     "simple": "name"
                 },
+                "Vectra Account Host Access History": {
+                    "complex": {
+                        "filters": [],
+                        "root": "host_access_history",
+                        "transformers": []
+                    }
+                },
+                "Vectra Account Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "account_type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Vectra Assigned By": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.assigned_by",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assigned Date": {
+                    "complex": {
+                        "accessor": "date_assigned",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assigned To": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.assigned_to",
+                        "transformers": []
+                    }
+                },
+                "Vectra Certainty Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "certainty",
+                        "transformers": []
+                    }
+                },
+                "Vectra Detection Count": {
+                    "complex": {
+                        "accessor": "detection_id",
+                        "filters": [],
+                        "root": "detection_summaries",
+                        "transformers": [
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                },
+                "Vectra Detection Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_details",
+                        "transformers": [
+                            {
+                                "operator": "StringifyArray"
+                            }
+                        ]
+                    }
+                },
+                "Vectra Groups": {
+                    "complex": {
+                        "filters": [],
+                        "root": "groups",
+                        "transformers": []
+                    }
+                },
+                "Vectra Entity Type": {
+                    "complex": {
+                        "accessor": "entity_type",
+                        "filters": [],
+                        "root": "_vectra_specific",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assignment ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra Last Detection Timestamp": {
+                    "complex": {
+                        "filters": [],
+                        "root": "last_detection_timestamp",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assignment Outcome": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "assignment_details.outcome",
+                        "transformers": []
+                    }
+                },
+                "Vectra Privilege Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "privilege_category",
+                        "transformers": []
+                    }
+                },
+                "Vectra Privilege Level": {
+                    "complex": {
+                        "filters": [],
+                        "root": "privilege_level",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assignment Resolved By": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.resolved_by",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assignment Resolved Date": {
+                    "complex": {
+                        "accessor": "date_resolved",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra Sensors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sensors",
+                        "transformers": []
+                    }
+                },
+                "Vectra Service Access History": {
+                    "complex": {
+                        "filters": [],
+                        "root": "service_access_history",
+                        "transformers": []
+                    }
+                },
+                "Vectra Threat Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threat",
+                        "transformers": []
+                    }
+                },
                 "sAMAccountName": {
                     "simple": "ldap.sAMAccountName.[0]"
-                }
+                },
+                "dbotMirrorDirection": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_direction",
+						"transformers": []
+					}
+				},
+				"dbotMirrorId": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_id",
+						"transformers": []
+					}
+				},
+				"dbotMirrorInstance": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_instance",
+						"transformers": []
+					}
+				},
+				"dbotMirrorTags": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_tags",
+						"transformers": []
+					}
+				},
+                "severity": {
+					"complex": {
+						"filters": [],
+						"root": "calculated_severity",
+						"transformers": []
+					}
+				}
             }
         },
         "Vectra Detection": {
@@ -42,11 +273,11 @@
                 "Destination IPs": {
                     "simple": "summary.dst_ips"
                 },
-                "Dst Ports": {
-                    "simple": "summary.dst_ports"
-                },
                 "Detection ID": {
                     "simple": "id"
+                },
+                "Dst Ports": {
+                    "simple": "summary.dst_ports"
                 },
                 "External Category Name": {
                     "simple": "category"
@@ -74,6 +305,9 @@
         "Vectra Host": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Department": {
+                    "simple": "ldap.display_name.[0]"
+                },
                 "Device Id": {
                     "simple": "id"
                 },
@@ -82,6 +316,12 @@
                 },
                 "Device Name": {
                     "simple": "name"
+                },
+                "Display Name": {
+                    "simple": "ldap.department.[0]"
+                },
+                "Email": {
+                    "simple": "ldap.email.[0]"
                 },
                 "External Severity": {
                     "simple": "severity"
@@ -103,6 +343,7 @@
                                     },
                                     "operator": "isNotEqualString",
                                     "right": {
+                                        "isContext": false,
                                         "value": {
                                             "simple": "mac"
                                         }
@@ -113,7 +354,283 @@
                         "root": "host_artifact_set",
                         "transformers": []
                     }
-                }
+                },
+                "dbotMirrorDirection": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_direction",
+						"transformers": []
+					}
+				},
+				"dbotMirrorId": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_id",
+						"transformers": []
+					}
+				},
+				"dbotMirrorInstance": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_instance",
+						"transformers": []
+					}
+				},
+				"dbotMirrorTags": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_tags",
+						"transformers": []
+					}
+				},
+                "Incident Link": {
+                    "complex": {
+                        "accessor": "UI_URL",
+                        "filters": [],
+                        "root": "_vectra_specific",
+                        "transformers": []
+                    }
+                },
+                "State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Title": {
+                    "simple": "ldap.title.[0]"
+                },
+                "Vectra Assigned By": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.assigned_by",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assigned Date": {
+                    "complex": {
+                        "accessor": "date_assigned",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assigned To": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.assigned_to",
+                        "transformers": []
+                    }
+                },
+                "Vectra Certainty Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "certainty",
+                        "transformers": []
+                    }
+                },
+                "Vectra Detection Count": {
+                    "complex": {
+                        "accessor": "detection_id",
+                        "filters": [],
+                        "root": "detection_summaries",
+                        "transformers": [
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                },
+                "Vectra Detection Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_details",
+                        "transformers": [
+                            {
+                                "operator": "StringifyArray"
+                            }
+                        ]
+                    }
+                },
+                "Vectra Detection Profile": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_profile",
+                        "transformers": []
+                    }
+                },
+                "Vectra Groups": {
+                    "complex": {
+                        "filters": [],
+                        "root": "groups",
+                        "transformers": []
+                    }
+                },
+                "Vectra Entity Type": {
+                    "complex": {
+                        "accessor": "entity_type",
+                        "filters": [],
+                        "root": "_vectra_specific",
+                        "transformers": []
+                    }
+                },
+                "Vectra Host Account Access History": {
+                    "complex": {
+                        "filters": [],
+                        "root": "account_access_history",
+                        "transformers": []
+                    }
+                },
+                "Vectra Host Active Traffic": {
+                    "complex": {
+                        "filters": [],
+                        "root": "has_active_traffic",
+                        "transformers": []
+                    }
+                },
+                "Vectra Host Artifact Set": {
+                    "complex": {
+                        "filters": [],
+                        "root": "host_artifact_set",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Vectra Host Artifact Set"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Vectra Host Key Asset": {
+                    "complex": {
+                        "filters": [],
+                        "root": "is_key_asset",
+                        "transformers": []
+                    }
+                },
+                "Vectra Host Previous IPs": {
+                    "complex": {
+                        "filters": [],
+                        "root": "previous_ips",
+                        "transformers": []
+                    }
+                },
+                "Vectra Host Targets Key Asset": {
+                    "complex": {
+                        "filters": [],
+                        "root": "is_targeting_key_asset",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assignment ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra Last Detection Timestamp": {
+                    "complex": {
+                        "filters": [],
+                        "root": "last_detection_timestamp",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assignment Outcome": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "assignment_details.outcome",
+                        "transformers": []
+                    }
+                },
+                "Vectra Privilege Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "privilege_category",
+                        "transformers": []
+                    }
+                },
+                "Vectra Privilege Level": {
+                    "complex": {
+                        "filters": [],
+                        "root": "privilege_level",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assignment Resolved By": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.resolved_by",
+                        "transformers": []
+                    }
+                },
+                "Vectra Assignment Resolved Date": {
+                    "complex": {
+                        "accessor": "date_resolved",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra Sensors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sensor_name",
+                        "transformers": []
+                    }
+                },
+                "Vectra Service Access History": {
+                    "complex": {
+                        "filters": [],
+                        "root": "service_access_history",
+                        "transformers": []
+                    }
+                },
+                "Vectra Threat Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threat",
+                        "transformers": []
+                    }
+                },
+                "sAMAccountName": {
+                    "simple": "ldap.sAMAccountName.[0]"
+                },
+                "severity": {
+					"complex": {
+						"filters": [],
+						"root": "calculated_severity",
+						"transformers": []
+					}
+				}
             }
         },
         "dbot_classification_incident_type_all": {
@@ -139,5 +656,6 @@
     },
     "name": "Vectra Detect - Incoming Mapper",
     "type": "mapping-incoming",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.5.0"
 }
