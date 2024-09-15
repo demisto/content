@@ -14697,7 +14697,8 @@ def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
         fetch_start_time = fetch_start_datetime_dict.get(log_type)
         if fetch_start_time:
             query = add_time_filter_to_query_parameter(query, fetch_start_time, log_type_to_time_param(log_type))  # type: ignore
-        entries[log_type] = get_query_entries(log_type, query, max_fetch, fetch_job_polling_max_num_attempts, offset_fetch)  # type: ignore
+        entries[log_type] = get_query_entries(log_type, query, max_fetch,   # type: ignore
+                                              fetch_job_polling_max_num_attempts, offset_fetch)
     return entries
 
 
@@ -14868,7 +14869,8 @@ def update_offset_dict(incident_entries_dict: dict[str, list[dict[str, Any]]],
     """
     for log_type, incident_entries in incident_entries_dict.items():
         if incident_entries:
-            last_fetch_time = dateparser.parse(last_fetch_dict.get(log_type, ''), settings={'TIMEZONE': 'UTC'})  # type: ignore[literal-required]
+            last_fetch_time = dateparser.parse(last_fetch_dict.get(log_type, ''), settings={  # type: ignore[literal-required]
+                                               'TIMEZONE': 'UTC'})
             for entry in incident_entries:
                 time_field = 'match_time' if log_type == 'Correlation' else 'time_generated'
                 if not (log_time := dateparser.parse(entry.get(time_field, ''), settings={'TIMEZONE': 'UTC'})):
