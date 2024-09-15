@@ -298,6 +298,7 @@ class MaxFetch(TypedDict):
     Wildfire: NotRequired[int]
     Decryption: NotRequired[int]
 
+
 class Offset(TypedDict):
     '''dict[str, int]
     Contains the log types mapped to the offset needed.
@@ -14873,9 +14874,9 @@ def update_offset_dict(incident_entries_dict: dict[str, list[dict[str, Any]]],
                 if not (log_time := dateparser.parse(entry.get(time_field, ''), settings={'TIMEZONE': 'UTC'})):
                     raise DemistoException(f"{time_field=} is not a valid date in entry of {log_type=}.\n{entry=}")
 
-                if (not log_type in offset_fetch_dict or
-                    not last_fetch_time or
-                    log_time > last_fetch_time):
+                if (not log_type in offset_fetch_dict
+                    or not last_fetch_time
+                        or log_time > last_fetch_time):
                     offset_fetch_dict[log_type] = 1  # type: ignore[literal-required]
                     last_fetch_time = log_time
                 elif log_time == last_fetch_time:
