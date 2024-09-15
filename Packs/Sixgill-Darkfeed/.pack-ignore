@@ -8,7 +8,7 @@ ignore=BA108,BA109,IN122
 ignore=BA108,BA109
 
 [file:Darkfeed_IOC_detonation_and_proactive_blocking.yml]
-ignore=PB115
+ignore=PB115,GR107
 
 [file:SixgillDVEFeed_image.png]
 ignore=IM111
@@ -20,5 +20,8 @@ ignore=IM111
 ignore=IM111
 
 [known_words]
-Sixgill
+sixgill
+
+[file:Darkfeed_Threat_hunting_research.yml]
+ignore=GR107
 

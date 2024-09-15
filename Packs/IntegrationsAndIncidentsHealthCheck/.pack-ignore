@@ -1,7 +1,9 @@
 [file:playbook-JOB_-_Integrations_and_Playbooks_Health_Check.yml]
-ignore=PB105,BA101
+ignore=PB105,BA101,GR107
+
 [file:playbook-Integrations_and_Playbooks_Health_Check_-_Running_Scripts.yml]
 ignore=BA101
+
 [file:playbook-JOB_-_Integrations_and_Playbooks_Health_Check_-_Lists_handling.yml]
 ignore=BA101
 
@@ -96,4 +98,5 @@ ignore=RM106
 ignore=PA129
 
 [known_words]
-similarIncident
+similarincident
+

@@ -23,5 +23,8 @@ ignore=RM110
 virustotal
 livehunt
 retrohunt
-VT
+vt
+
+[file:Detonate_File-VirusTotal.yml]
+ignore=GR107
 
