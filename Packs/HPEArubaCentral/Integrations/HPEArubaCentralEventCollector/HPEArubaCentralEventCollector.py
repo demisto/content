@@ -34,7 +34,7 @@ class Client(BaseClient):
         self.user_password = user_password
         self.customer_id = customer_id
 
-    def get_access_token(self):
+    def get_access_token(self) -> str:
         """
          Get access token for Aruba Central API.
          If one exists in the integration context and is not expired, returns it.
@@ -67,7 +67,7 @@ class Client(BaseClient):
 
         return access_token
 
-    def refresh_access_token(self, refresh_token: str):
+    def refresh_access_token(self, refresh_token: str) -> tuple[str, str, int]:
         """
         Refreshes the access token using the provided refresh token.
 
@@ -95,7 +95,7 @@ class Client(BaseClient):
         )
         return token_resp['access_token'], token_resp['refresh_token'], token_resp['expires_in']
 
-    def oauth_sequence(self):
+    def oauth_sequence(self) -> tuple[str, str, int]:
         """
         Performs the full OAuth sequence to obtain an access token for the Aruba Central API.
 
@@ -155,7 +155,7 @@ class Client(BaseClient):
         """
         headers = {
             'Content-Type': 'application/json',
-            'X-CSFR-Token': csrf_token,
+            'X-CSRF-Token': csrf_token,
             'Cookie': f'session={session}',
         }
         params = {
@@ -230,7 +230,7 @@ class Client(BaseClient):
             headers=headers,
         )
 
-    def fetch_audit_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict):
+    def fetch_audit_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict) -> list[dict]:
         """
         Fetch audit events from Aruba Central API.
 
@@ -279,7 +279,7 @@ class Client(BaseClient):
 
         return events
 
-    def fetch_networking_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict):
+    def fetch_networking_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict) -> list[dict]:
         """
         Fetch networking events from Aruba Central API.
 
@@ -372,7 +372,7 @@ def filter_networking_events(events: list[dict], last_run: dict) -> list[dict]:
     filtered_events = []
     for i, event in enumerate(events):
         if event[NETWORKING_TS] > last_event_ts_ms:
-            filtered_events.extend(events[i + 1:])
+            filtered_events.extend(events[i:])
             break
 
         if event['event_uuid'] not in last_event_ids:
@@ -493,8 +493,8 @@ def test_module(client: Client, first_fetch_time: int, fetch_networking_events: 
     return 'ok'
 
 
-def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tuple[List[Dict],
-                                                                                   List[Dict] | None, List[CommandResults]]:
+def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tuple[list[dict],
+                                                                                   list[dict] | None, list[CommandResults]]:
     """
     Get events from the Aruba Central API.
 
