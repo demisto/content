@@ -142,7 +142,7 @@ class Client(BaseClient):
             api_token = self.authenticate(
                 username=username,
                 password=password,
-            )["api_key"]
+            ).json()["api_key"]
             super().__init__(
                 base_url=base_url,
                 headers={"Authorization": f"Token {api_token}"},
@@ -150,7 +150,7 @@ class Client(BaseClient):
                 proxy=proxy,
             )
 
-    def _http_request(self, *args, **kwargs) -> requests.Response | dict[str, Any]:
+    def _http_request(self, *args, **kwargs) -> requests.Response:
         """
         Warp to _http_request command, for adding error handler.
 
@@ -190,7 +190,7 @@ class Client(BaseClient):
         self,
         username: str,
         password: str,
-    ) -> dict[str, Any]:
+    ) -> requests.Response:
         """Get API token with username and password.
 
         Args:
@@ -198,7 +198,7 @@ class Client(BaseClient):
             password (str): DataBee password.
 
         Returns:
-            dict[str, Any]: API response from DataBee.
+            Response: API response from DataBee.
         """
         return self._http_request(
             method="POST",
@@ -207,6 +207,7 @@ class Client(BaseClient):
                 "username": username,
                 "password": password,
             },
+            resp_type="response",
         )
 
     def search(
