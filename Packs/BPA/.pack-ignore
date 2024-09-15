@@ -4,3 +4,6 @@ ignore=BA101
 [file:README.md]
 ignore=RM104
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-BPA-Integration-test.yml]
+ignore=GR103

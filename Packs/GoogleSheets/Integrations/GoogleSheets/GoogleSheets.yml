@@ -4,9 +4,9 @@ commonfields:
   version: -1
 configuration:
 - name: service_account_credentials
-  display:
+  display: null
   required: true
-  defaultvalue:
+  defaultvalue: null
   type: 9
   additionalinfo: A service account key from Google.
   displaypassword: Service Account Key
@@ -14,22 +14,20 @@ configuration:
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
-  additionalinfo:
+  additionalinfo: null
   required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
-  additionalinfo:
+  additionalinfo: null
   required: false
 - name: user_id
   display: Email - Associate to Google Drive
-  defaultvalue:
+  defaultvalue: null
   type: 0
-  additionalinfo: >
-    Used to impersonate a Google workspace user, so the
-    spreadsheets is created in the associated Google Drive and is
-    easily accessible from a UI. This parameter is used during the
-    authentication process.
+  additionalinfo: 'Used to impersonate a Google workspace user, so the spreadsheets is created in the associated Google Drive and is easily accessible from a UI. This parameter is used during the authentication process.
+
+    '
   required: false
 description: Google Sheets is a spreadsheet program that is part of the free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
 display: Google Sheets
@@ -58,10 +56,10 @@ script:
       - DATE_TIME
       - SCIENTIFIC
     - name: cell_format_backgroundColor
-      description: "A comma-separated list of background colors in the following order - red,green,blue,alpha. All values must be between 0-1. If chosen, you must specify all fields."
+      description: A comma-separated list of background colors in the following order - red,green,blue,alpha. All values must be between 0-1. If chosen, you must specify all fields.
       isArray: true
-      defaultValue: ""
-    - defaultValue: "11"
+      defaultValue: ''
+    - defaultValue: '11'
       description: Cell font size in the spreadsheet to create.
       name: cell_format_textformat_font_size
     - auto: PREDEFINED
@@ -96,13 +94,13 @@ script:
       description: ID of the spreadsheet to get.
       required: true
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - default: true
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: True if grid data should be returned. This parameter is ignored if a field mask was set in the request.
       name: include_grid_data
     - description: Works only with include_grid_data = True. The ranges to retrieve from the spreadsheet. Ranges are specified using A1 notation. For example, Sheet1!A1:D5. For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1.
@@ -141,11 +139,11 @@ script:
       required: true
     - name: echo_spreadsheet
       description: Include the spreadsheet in the response.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: Sheet title to create.
       name: sheet_title
       required: true
@@ -164,12 +162,12 @@ script:
       name: right_to_left
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
     - name: tab_color
       description: A comma-separated list of the color of the tab in the UI in the following order - red,green,blue,alpha. All values must be between 0-1. If chosen, you must specify all fields.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - description: True if the sheet is hidden in the UI. False if it is visible.
       name: hidden
     - name: sheet_id
@@ -198,25 +196,25 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID from which to copy a sheet.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: echo_spreadsheet
       description: True to add the spreadsheet to the output.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: source_sheet_id
       description: The ID of the sheet to copy.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: new_sheet_index
       description: If set, the ID of the new sheet. If not set, an ID is chosen. If set, the ID must not conflict with any existing sheet ID and it must be non-negative number.
-      defaultValue: ""
+      defaultValue: ''
     - name: new_sheet_name
       description: The name of the new sheet.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     outputs:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title
       description: Spreadsheet title.
@@ -239,15 +237,15 @@ script:
     - name: source_spreadsheet_id
       description: Spreadsheet ID to copy from.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: source_sheet_id
       description: The ID of the sheet to copy.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: destination_spreadsheet_id
       description: The ID of the spreadsheet to copy the sheet to.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     outputs: []
   - name: google-sheets-sheet-delete
     description: Delete a sheet from a spreadsheet by ID.
@@ -255,18 +253,18 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet from which to delete sheet.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: echo_spreadsheet
       description: True to add the spreadsheet to the output.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: sheet_id
       description: ID of sheet to delete.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     outputs:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title
       description: Spreadsheet title.
@@ -289,11 +287,11 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID to update.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: range
       description: A1 notation or R1C1 notation of the values to clear. A1 notation example, Sheet1!A1:D5. For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     outputs:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title
       description: Spreadsheet title.
@@ -316,38 +314,38 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: echo_spreadsheet
       description: True to add the spreadsheet to the output.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: sheet_id
       description: The sheet this range is in.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: start_row_index
       description: The start row (inclusive) of the range, or not set if unbounded.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: end_row_index
       description: The end row (exclusive) of the range, or not set if unbounded.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: start_column_index
       description: The start column (inclusive) of the range, or not set if unbounded.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: end_column_index
       description: The end column (exclusive) of the range, or not set if unbounded.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: shift_dimension
       description: The dimension from which deleted cells will be replaced with. If ROWS, existing cells will be shifted upward to replace the deleted cells. If COLUMNS, existing cells will be shifted left to replace the deleted cells.
       required: true
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
       - ROWS
@@ -374,18 +372,18 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: echo_spreadsheet
       description: True to add the spreadsheet to the output.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: dimension_type
       description: The dimension of the span.
       required: true
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
       - ROWS
@@ -393,15 +391,15 @@ script:
     - name: sheet_id
       description: The sheet this span is in.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: start_index
       description: The start (inclusive) of the span, or not set if unbounded.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: end_index
       description: The end (exclusive) of the span, or not set if unbounded.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     outputs:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title
       description: Spreadsheet title.
@@ -424,34 +422,34 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: echo_spreadsheet
       description: True to add the spreadsheet to the output.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: sheet_id
       description: The sheet this coordinate is in.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: row_index
       description: The row index of the coordinate.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: column_index
       description: The column index of the coordinate.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: data
       description: The data to insert. If data_kind is delimiter, the delimiter will be ',' and the data should be in the following format cell1, cell2, cell3... If data_kind is html, enter a single value.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: data_kind
       description: How to interpret the data inserted in data argument.
       required: true
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
       - delimiter
@@ -490,61 +488,61 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: echo_spreadsheet
       description: True to add the spreadsheet to the output.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: find
       description: The value to find.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: replacement
       description: The value to use as the replacement.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: sheet_id
       description: The sheet to find/replace.
-      defaultValue: ""
+      defaultValue: ''
     - name: all_sheets
       description: True to find/replace over all sheets.
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
     - name: match_case
       description: True if the search is case sensitive.
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
     - name: match_entire_cell
       description: True if the find value should match the entire cell.
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
     - name: range_sheet_id
       description: The sheet this range is on.
-      defaultValue: ""
+      defaultValue: ''
     - name: range_start_row_Index
       description: The start row (inclusive) of the range, or not set if unbounded.
-      defaultValue: ""
+      defaultValue: ''
     - name: range_end_row_Index
       description: The end row (exclusive) of the range, or not set if unbounded.
-      defaultValue: ""
+      defaultValue: ''
     - name: range_start_column_Index
       description: The start column (inclusive) of the range, or not set if unbounded.
-      defaultValue: ""
+      defaultValue: ''
     - name: range_end_column_Index
       description: The end column (exclusive) of the range, or not set if unbounded.
-      defaultValue: ""
+      defaultValue: ''
     outputs:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title
       description: Spreadsheet title.
@@ -567,15 +565,15 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: range
       description: The A1 notation of the values to update. For example, Sheet1!A1:D5. For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: input_option
       description: Determines how input data should be interpreted.
       required: true
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
       - RAW
@@ -590,7 +588,7 @@ script:
     - name: values
       description: The data that was read or to be written. This is an array of arrays. The outer array representing all the data and each inner array representing a major dimension. Each item in the inner array corresponds to one cell. To be entered in the following format - [1,2,3],[4,5,6] where each bracket will be the row or column, and each value inside will correspond to a cell.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     outputs: []
   - name: google-sheets-value-append
     description: Appends values to a spreadsheet. The input range is used to search for existing data and find a "table" within that range. Values will be appended to the next row of the table, starting with the first column of the table. See the guide (https://developers.google.com/sheets/api/guides/values#appending_values) and sample code (https://developers.google.com/sheets/api/samples/writing#append_values) for specific details of how tables are detected and data is appended. The caller must specify the spreadsheet ID, range, and a valueInputOption. The valueInputOption only controls how the input data will be added to the sheet (column-wise or row-wise), it does not influence what cell the data starts being written to.
@@ -598,14 +596,14 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: range
       description: The A1 notation of a range to search for a logical table of data. Values are appended after the last row of the table. A1 notation example, Sheet1!A1:D5 For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: input_option
       description: The way input data should be interpreted.
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
       - RAW
@@ -613,7 +611,7 @@ script:
     - name: insert_option
       description: The way input data should be inserted.
       required: true
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
       - OVERWRITE
@@ -621,7 +619,7 @@ script:
     - name: major_dimension
       description: The major dimension of the values.
       required: true
-      defaultValue: ""
+      defaultValue: ''
       auto: PREDEFINED
       predefined:
       - ROWS
@@ -629,7 +627,7 @@ script:
     - name: values
       description: The data that was read or to be written. This is an array of arrays. The outer array representing all the data and each inner array representing a major dimension. Each item in the inner array corresponds to one cell. To be entered in the following format - [1,2,3],[4,5,6] where each bracket will be the row or column, and each value inside will correspond to a cell.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     outputs: []
   - name: google-sheets-spreadsheet-update
     description: This is a custom update command, used to apply any of the Google Sheets API options. Applies one or more updates to the spreadsheet. Each request is validated before being applied. If any request is not valid, the entire request will fail and nothing will be applied.
@@ -637,18 +635,18 @@ script:
     - name: spreadsheet_id
       description: Spreadsheet ID.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: echo_spreadsheet
       description: True to add the spreadsheet to the output.
-      defaultValue: "False"
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-      - "False"
-      - "True"
+      - 'False'
+      - 'True'
     - name: requests
       description: JSON input according to the method documentation and object documentation - for advanced users' free use (Google Sheets API) https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/batchUpdate
       required: true
-      defaultValue: ""
+      defaultValue: ''
     outputs:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title
       description: Spreadsheet title.
@@ -665,9 +663,9 @@ script:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title
       description: Sheet title.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.89487
+  dockerimage: demisto/googleapi-python3:1.0.0.110187
   runonce: false
-  script: "-"
+  script: '-'
   subtype: python3
   type: python
 tests:

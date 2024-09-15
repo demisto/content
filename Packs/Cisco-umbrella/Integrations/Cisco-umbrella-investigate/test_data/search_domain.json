@@ -1,0 +1,14 @@
+{
+    "expression": "exa[a-z]ple.com",
+    "totalResults": 1,
+    "moreDataAvailable": false,
+    "limit": 1000,
+    "matches": [
+        {
+            "name": "example",
+            "firstSeen": 1432330927421,
+            "firstSeenISO": "2015-05-22T21:42:07.421Z",
+            "securityCategories": [ "Botnet" ]
+        }
+    ]
+}

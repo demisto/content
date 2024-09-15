@@ -65,10 +65,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -100,9 +101,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the created crypto-key. It must be unique within a KeyRing and match the regular expression [a-zA-Z0-9_-]{1,63}.
@@ -111,16 +112,20 @@ script:
     - description: Labels with user-defined metadata.
       isArray: true
       name: labels
-    - description: |-
-        Date of the next scheduled rotation time. The Key Management Service automatically creates a new version of this CryptoKey and
+    - description: 'Date of the next scheduled rotation time. The Key Management Service automatically creates a new version of this CryptoKey and
+
         marks the new version as primary at the next rotation time.
+
         Key rotations performed manually through cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
+
 
         Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this field must be omitted.
 
+
         A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. For example, "2014-10-02T15:01:23.045123456Z".
 
-        If left empty, it is set in 90 days.
+
+        If left empty, it is set in 90 days.'
       name: next_rotation_time
     - description: The statement that was generated and signed by the HSM at the key creation time. Use this statement to verify attributes of the key as stored on the HSM, independently of Google. Only provided for key versions with protectionLevel HSM.
       isArray: true
@@ -201,9 +206,9 @@ script:
       description: The time when this CryptoKey was created.
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
-      description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
-        creates a new version of this CryptoKey and marks the new version as primary.
+      description: 'The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+
+        creates a new version of this CryptoKey and marks the new version as primary.'
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
       description: The period for which the nextRotationTime is advanced, when the service automatically rotates a key.
@@ -238,10 +243,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical region where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical region where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -273,9 +279,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to use.
@@ -283,9 +289,9 @@ script:
       required: true
     - description: The ciphertext to decrypt to simple plain text.
       name: simple_ciphertext
-    - description: |-
-        A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request.
-        The optional data that must match the data originally supplied in the EncryptRequest.additional_authenticated_data.
+    - description: 'A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request.
+
+        The optional data that must match the data originally supplied in the EncryptRequest.additional_authenticated_data.'
       name: additional_authenticated_data
     - description: The ciphertext to decrypt to base64 plain text.
       name: base64_ciphertext
@@ -306,10 +312,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -341,9 +348,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to use.
@@ -351,10 +358,11 @@ script:
       required: true
     - description: Simple plain text to encrypt. Must be no larger than 64KiB.
       name: simple_plaintext
-    - description: |-
-        A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request. Must also be provided during decryption through DecryptRequest.additional_authenticated_data.
-        The maximum size depends on the key version's protection level.
-        For SOFTWARE keys, the AAD must be no larger than 64KiB. For HSM keys, the combined length of the plain text and additionalAuthenticatedData fields must be no larger than 8KiB.
+    - description: 'A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request. Must also be provided during decryption through DecryptRequest.additional_authenticated_data.
+
+        The maximum size depends on the key version''s protection level.
+
+        For SOFTWARE keys, the AAD must be no larger than 64KiB. For HSM keys, the combined length of the plain text and additionalAuthenticatedData fields must be no larger than 8KiB.'
       name: additional_authenticated_data
     - description: The Base64 plain text to encrypt.
       name: base64_plaintext
@@ -375,10 +383,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' sets the location to the default location.
+
+        Keyword ''default'' sets the location to the default location.'
       name: location
       predefined:
       - default
@@ -410,9 +419,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the fetched crypto-key.
@@ -431,9 +440,9 @@ script:
       description: The time at which this CryptoKey was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
-      description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
-        creates a new version of this CryptoKey and marks the new version as primary.
+      description: 'The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+
+        creates a new version of this CryptoKey and marks the new version as primary.'
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
       description: The period for which the nextRotationTime is advanced, when the service automatically rotates a key. hours.
@@ -468,10 +477,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -503,22 +513,25 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the updated crypto-key.
       name: crypto_key
       required: true
-    - description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+    - description: 'The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+
         creates a new version of this CryptoKey and marks the new version as primary.
+
         Key rotations performed manually via cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
+
 
         Keys with purpose ENCRYPT_DECRYPT, support automatic rotation. For other keys, this field must be omitted.
 
-        A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. For example, "2014-10-02T15:01:23.045123456Z".
+
+        A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. For example, "2014-10-02T15:01:23.045123456Z".'
       name: next_rotation_time
     - description: Statement that was generated and signed by the HSM at key creation time. Use this statement to verify attributes of the key as stored on the HSM, independently of Google. Only provided for key versions with protectionLevel HSM.
       isArray: true
@@ -587,9 +600,9 @@ script:
       description: The time at which this CryptoKey was created.
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
-      description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
-        creates a new version of this CryptoKey and marks the new version as primary.
+      description: 'The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+
+        creates a new version of this CryptoKey and marks the new version as primary.'
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
       description: The period for which the nextRotationTime is advanced, when the service automatically rotates a key.
@@ -624,10 +637,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For example, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -659,9 +673,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to destroy.
@@ -676,10 +690,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For example, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -711,9 +726,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to restore.
@@ -728,10 +743,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -763,9 +779,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to disable.
@@ -780,10 +796,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -815,9 +832,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to enable.
@@ -832,10 +849,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -867,9 +885,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - auto: PREDEFINED
@@ -889,10 +907,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the location to the default location.
+
+        Keyword ''default'' uses the location to the default location.'
       name: location
       predefined:
       - default
@@ -924,9 +943,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to use.
@@ -956,9 +975,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations
-        Keyword 'default' uses the default location.
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled, and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -990,9 +1009,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to use.
@@ -1022,10 +1041,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -1075,10 +1095,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -1141,10 +1162,11 @@ script:
       description: The time at which this CryptoKey was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
-      description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+      description: 'The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
+
         creates a new version of this CryptoKey and
-        marks the new version as primary.
+
+        marks the new version as primary.'
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
       description: The period for which the nextRotationTime is advanced, when the service automatically rotates a key.
@@ -1179,10 +1201,11 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
-      description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled,
+      description: 'The geographical regions where requests to Cloud KMS for a given resource are handled,
+
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
-        Keyword 'default' uses the default location.
+
+        Keyword ''default'' uses the default location.'
       name: location
       predefined:
       - default
@@ -1214,9 +1237,9 @@ script:
       - us
       required: true
     - defaultValue: default
-      description: |-
-        A grouping of keys for organizational purposes.
-        Keyword 'default' uses the default KeyRing.
+      description: 'A grouping of keys for organizational purposes.
+
+        Keyword ''default'' uses the default KeyRing.'
       name: key_ring
       required: true
     - description: The ID for the crypto-key to use.
@@ -1237,7 +1260,7 @@ script:
     - contextPath: GoogleKMS.PublicKey.Algorithm
       description: The algorithm used in the CryptoKey.
       type: String
-  dockerimage: demisto/google-kms:1.0.0.89771
+  dockerimage: demisto/google-kms:1.0.0.110980
   runonce: false
   script: '-'
   type: python

@@ -3,3 +3,7 @@ ignore=IM111
 
 [known_words]
 DelineaSS
+
+# GR103 is temporary, see CIAC-11656
+[file:Thycotic-Test.yml]
+ignore=GR103

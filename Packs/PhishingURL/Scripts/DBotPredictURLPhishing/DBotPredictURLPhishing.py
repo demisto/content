@@ -133,7 +133,7 @@ class Model:
     top_domains: dict
     top_domains_path: str
 
-    def predict(self, x_pred: pd.DataFrame) -> dict:
+    def predict(self, x_pred: pd.DataFrame):
         pass
 
 
@@ -472,7 +472,7 @@ def weed_rasterize_errors(urls: list[str], res_rasterize: list[Union[dict, str]]
     '''Remove the URLs that failed rasterization and return them.'''
     error_idx = [
         i for (i, res) in enumerate(res_rasterize)
-        if isinstance(res, str)
+        if not isinstance(res, dict)
     ][::-1]  # reverse the list as it will be used to remove elements.
     if error_idx:
         return_results(CommandResults(readable_output=tableToMarkdown(
@@ -494,7 +494,7 @@ def rasterize_command(urls: Union[list[str], str], rasterize_timeout: int) -> li
     )
     demisto.debug(f'Rasterize Data: {res_rasterize}')
     return_and_remove_additional_results(res_rasterize, len(urls) if isinstance(urls, list) else 1)
-    return [res['Contents'] for res in res_rasterize]
+    return [res['Contents'] or res['HumanReadable'] for res in res_rasterize]
 
 
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:

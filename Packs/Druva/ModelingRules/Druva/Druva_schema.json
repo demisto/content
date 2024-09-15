@@ -59,6 +59,10 @@
         "severity": {
             "type": "int",
             "is_array": false
+        },
+        "inSyncDataSourceName": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
