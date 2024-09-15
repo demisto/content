@@ -41,7 +41,7 @@ API_KEY_SECRET = DEMISTO_PARAMS.get('credentials_api_key', {}).get('password') o
 USE_SSL = not DEMISTO_PARAMS.get('insecure', False)
 MAX_FETCH = DEMISTO_PARAMS.get('max_fetch', '1000')
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
+UTC = timezone.utc  # noqa: UP017
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
     'DenialOfService': 21,
@@ -222,7 +222,7 @@ def normalize_timestamp(timestamp_ms: int | None):
         timestamp_s = timestamp_ms / 1000.0
 
         # Create a datetime object in UTC
-        dt = datetime.fromtimestamp(timestamp_s, tz=timezone.utc)
+        dt = datetime.fromtimestamp(timestamp_s, tz=UTC)
 
         # Format the datetime without microseconds and append 'Z'
         iso_str = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -487,7 +487,7 @@ def prepare_search_query_data(args: dict) -> dict:
             'value': value
         })
 
-    data = {
+    data: Dict[str, Any] = {
         'filters': [{
             'conditions': conditions
         }],
@@ -501,11 +501,11 @@ def prepare_search_query_data(args: dict) -> dict:
     page = int(args.get('page', 0))
     page_size = int(args.get('page_size', 0))
     limit = int(args.get('limit', MAX_FETCH))
-    data['length']: int = limit
+    data['length'] = limit
     # 'limit' parameter is redundant in case proper 'page' and 'page_size' were provided.
     if page_size > 0 and page > 0:
-        data['start']: int = page_size * (page - 1)
-        data['length']: int = page_size
+        data['start'] = page_size * (page - 1)
+        data['length'] = page_size
     elif page < 0 or page_size < 0:
         raise DemistoException('Invalid page number or page size. Page number and page sizes must be positive integers.')
     demisto.debug(f'prepare_search_query_data {data=}')
@@ -681,7 +681,7 @@ def to_timestamp(time_input):
             # Not an integer, try to parse as ISO time string
             try:
                 dt = datetime.strptime(time_input, '%Y-%m-%dT%H:%M:%SZ')
-                dt = dt.replace(tzinfo=timezone.utc)
+                dt = dt.replace(tzinfo=UTC)
                 timestamp_ms = int(dt.timestamp() * 1000)
                 return timestamp_ms
             except ValueError:
@@ -1078,7 +1078,9 @@ def get_tasks_command(client, incident_id):
 
 
 def update_task_command(client: SimpleClient, args: dict) -> CommandResults:
-    task_id: str = args.get('task_id')
+    task_id = args.get('task_id')
+    if not task_id:
+        raise DemistoException('task_id is required')
 
     task_dto = {}
     if task_name := args.get('name'):
@@ -1481,7 +1483,7 @@ def add_custom_task(client: SimpleClient,
     If task creation was successful, task ID is returned.
     """
     # Initiating with required fields.
-    task_dto = {
+    task_dto: Dict[str, Any] = {
         "name": task_name,
         "phase_id": {"name": phase},
         "description": description,
@@ -1547,13 +1549,14 @@ def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     response = get_scripts(client, script_id)
 
     script_ids = []
-    scripts_to_process = (
-        [response] if script_id else response.get(SCRIPT_ENTITIES, [])
-    )
+    scripts_to_process = [response] if script_id else response.get(SCRIPT_ENTITIES, [])
 
     if not script_id and len(scripts_to_process) > 1:  # Multiple script to retrieve info for.
         for script in scripts_to_process:
             _script_id = script.get('id')
+            if not _script_id:
+                raise DemistoException("Script with ID not found.")
+
             script = get_scripts(client, _script_id)  # Enriching script's data.
             script_ids.append(_script_id)
 
@@ -1583,8 +1586,14 @@ def upload_incident_attachment_command(
     Uploads a file from XSOAR to an IBM QRadar SOAR incident.
     """
     incident_id = args.get("incident_id")
+    if not incident_id:
+        raise DemistoException("Incident ID is required.")
+
     entry_id = args.get("entry_id")
-    upload_incident_attachment(client, incident_id, entry_id, tag_to_ibm)
+    if not entry_id:
+        raise DemistoException("Entry ID is required.")
+
+    upload_incident_attachment(client, str(incident_id), str(entry_id), tag_to_ibm)
     return CommandResults(
         readable_output=f"File was uploaded successfully to {incident_id}."
     )
