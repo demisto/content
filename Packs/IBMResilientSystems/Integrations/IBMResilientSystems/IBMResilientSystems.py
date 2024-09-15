@@ -203,13 +203,29 @@ def validate_iso_time_format(iso_time: str) -> str:
     return iso_time
 
 
-def normalize_timestamp(timestamp):
+def normalize_timestamp(timestamp_ms: int):
     """
-    Converts epoch timestamp to human readable timestamp.
+    Converts a timestamp in milliseconds to an ISO 8601 formatted date string in UTC.
+
+    Parameters:
+    - timestamp_ms (int or float): The timestamp in milliseconds since the Unix epoch.
+
+    Returns:
+    - str: The ISO 8601 formatted date string (e.g., "2020-08-09T10:00:00Z").
     """
-    if timestamp is None:
-        return timestamp
-    return datetime.fromtimestamp(timestamp / 1000.0).strftime("%Y-%m-%dT%H:%M:%SZ")
+    try:
+        # Convert milliseconds to seconds
+        timestamp_s = timestamp_ms / 1000.0
+
+        # Create a datetime object in UTC
+        dt = datetime.fromtimestamp(timestamp_s, tz=timezone.utc)
+
+        # Format the datetime without microseconds and append 'Z'
+        iso_str = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+        return iso_str
+    except (OverflowError, OSError) as e:
+        raise ValueError("The timestamp is out of the valid range.") from e
 
 
 def prettify_incidents(client, incidents):

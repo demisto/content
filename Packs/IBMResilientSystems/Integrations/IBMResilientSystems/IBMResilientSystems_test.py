@@ -239,7 +239,7 @@ def test_prepare_search_query_data(_mocker, args, expected):
                     "delete": True
                 }
             }],
-            [{'create_date': '2024-07-31T14:11:08Z',
+            [{'create_date': '2024-07-31T11:11:08Z',
               'created_by': 'Demisto Resilient',
               'id': 0,
               'modify_date': 1722424268280,
@@ -247,7 +247,7 @@ def test_prepare_search_query_data(_mocker, args, expected):
         ),
         (
             [{"id": 2, "text": " ", "create_date": 1722424253387}],
-            [{'create_date': '2024-07-31T14:10:53Z',
+            [{'create_date': '2024-07-31T11:10:53Z',
               'created_by': ' ',
               'id': 2,
               'modify_date': None,
@@ -375,7 +375,7 @@ def test_update_incident(_mocker):
      '### IBM QRadar SOAR incident ID 1000\n|Id|Name|Description|NistAttackVectors|Phase|Resolution|ResolutionSummary|Owner'
      '|CreatedDate|DateOccurred|DiscoveredDate|DueDate|NegativePr|Confirmed|ExposureType|Severity|Reporter|\n'
      '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1000 | incident_name | 1111 2222 3333 | '
-     'E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T14:32:36Z |  | 2024-07-29T14:31:57Z '
+     'E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T11:32:36Z |  | 2024-07-29T11:31:57Z '
      '|  | true | true | ExternalParty | 6 |  |'),
 ])
 def test_get_incident_command(_mocker, incident_id, expected_human_readable):
@@ -1173,8 +1173,8 @@ def test_process_raw_incident(_mocker):
     result = process_raw_incident(client, load_test_data("./test_data/test_get_incident_response.json"))
 
     assert result["description"] == "1111 2222 3333"
-    assert result["discovered_date"] == "2024-07-29T14:31:57Z"
-    assert result["create_date"] == "2024-07-29T14:32:36Z"
+    assert result["discovered_date"] == "2024-07-29T11:31:57Z"
+    assert result["create_date"] == "2024-07-29T11:32:36Z"
 
 
 @pytest.mark.parametrize("incident_id, delta, expected_dto", [
