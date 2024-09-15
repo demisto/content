@@ -4,7 +4,7 @@ from CommonServerPython import *
 import re
 import json
 import base64
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from email.utils import parsedate_to_datetime, format_datetime
 import httplib2
 from httplib2 import socks
