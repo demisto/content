@@ -11,6 +11,20 @@ args:
 - description: The user domain to retrieve users from, available only for the iam-get-user command.
   name: domain
   isArray: true
+- description: |-
+    Which integrations brands to run the command for. If not provided, the command will run for all connected brands.
+    For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne".
+  name: brands
+  auto: PREDEFINED
+  predefined:
+  - 'SailPointIdentityNow'
+  - 'Active Directory Query v2'
+  - 'PingOne'
+  - 'Okta v2'
+  - 'AWS - IAM'
+  - 'Microsoft Graph User'
+  - 'SailPointIdentityIQ'
+  - 'Cortex XDR - IR'
 - description: Whether to retrieve human readable entry for every command or only the final result.
   name: verbose
   auto: PREDEFINED
@@ -96,7 +110,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.111526
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

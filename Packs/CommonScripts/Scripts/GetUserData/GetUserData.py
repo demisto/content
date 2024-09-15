@@ -13,8 +13,9 @@ class Command:
 
 
 class Modules:
-    def __init__(self, modules: dict[str, Any]):
+    def __init__(self, modules: dict[str, Any], brands_to_run: list[str]) -> None:
         self.modules_context = modules
+        self._brands_to_run = brands_to_run
         self._enabled_brands = {
             module.get("brand")
             for module in self.modules_context.values()
@@ -36,6 +37,12 @@ class Modules:
             demisto.debug(
                 f"Skipping command '{command.name}' since the brand '{command.brand}' is not available."
             )
+        elif self._brands_to_run and command.brand not in self._brands_to_run:
+            demisto.debug(
+                f"Skipping command '{command.name}' since the brand '{command.brand}' is not in the list of brands to run."
+            )
+            is_available = False
+
         return is_available
 
 
@@ -627,7 +634,8 @@ def main():  # pragma: no cover
         users_emails = argToList(args.get("user_email", []))
         domain = args.get("domain", "")
         verbose = argToBoolean(args.get("verbose", False))
-        modules = Modules(demisto.getModules())
+        brands_to_run = argToList(args.get("brands", []))
+        modules = Modules(demisto.getModules(), brands_to_run)
 
         if domain and not users_names:
             raise ValueError(
