@@ -22,7 +22,5 @@ def test_convert_to_table_with_artifacts(mocker):
     }
     mocker.patch.object(demisto, 'incident', return_value=mock_incident)
     result = convert_to_table()
-    assert 'IP' in result.readable_output
-    assert '192.168.1.1' in result.readable_output
-    assert 'URL' in result.readable_output
-    assert 'https://example.com' in result.readable_output
+    assert '| IP | 192.168.1.1 |' in result.readable_output
+    assert '| URL | https://example.com |' in result.readable_output
