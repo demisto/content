@@ -1,5 +1,5 @@
 import copy
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
