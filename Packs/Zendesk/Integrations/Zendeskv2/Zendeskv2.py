@@ -1,13 +1,12 @@
-from collections import deque
-from collections.abc import Callable, Iterable, Iterator
-from requests import Response
-from requests.exceptions import HTTPError
-from urllib3 import disable_warnings
-from functools import lru_cache
+import demistomock as demisto
+from CommonServerPython import *
 from copy import copy
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = Zendesk, pack version = 2.1.3')
+from functools import lru_cache
+from urllib3 import disable_warnings
+from requests.exceptions import HTTPError
+from requests import Response
+from collections.abc import Callable, Iterable, Iterator
+from collections import deque
 
 
 STR_OR_STR_LIST = str | list[str]
