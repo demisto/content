@@ -1,6 +1,6 @@
 	{
 		"id": "IBM QRadar SOAR Incident",
-		"version": 1,
+		"version": -1,
 		"cacheVersn": 0,
 		"sequenceNumber": 9438185,
 		"primaryTerm": 2,

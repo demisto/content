@@ -5,8 +5,6 @@ import pytest
 import requests
 from requests import Session
 
-from pytest import raises
-
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
@@ -74,7 +72,7 @@ def test_update_incident_command_with_invalid_json(_mocker):
     }
     from IBMResilientSystems import update_incident_command
 
-    with raises(Exception) as exception:
+    with pytest.raises(Exception) as exception:
         update_incident_command(MockClient, args)
     assert 'The other_fields argument is not a valid json.' in exception.value.args[0]
 
@@ -151,7 +149,7 @@ def test_test_module_fetch_time(fetch_time, expected_result, _mocker):
     _mocker.patch.object(client, 'get', return_value={})
     fetch_time = validate_iso_time_format(fetch_time)
     if expected_result == 'fail':
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             test_module(client, fetch_time)
     else:
         assert test_module(client, fetch_time) == expected_result

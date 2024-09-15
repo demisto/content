@@ -1051,8 +1051,8 @@ def get_users_command(client):
 def get_tasks_command(client, incident_id):
     tasks = get_tasks(client, incident_id)
     tasks = prettify_incident_tasks(client, tasks)
-    for tasks in tasks:
-        incident_name = tasks.get('IncidentName', '')
+    for task in tasks:
+        incident_name = task.get('IncidentName', '')
         ec = {
             'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
                 'Id': incident_id,
@@ -1072,8 +1072,7 @@ def get_tasks_command(client, incident_id):
             'EntryContext': ec
         }
         return entry
-    else:
-        return 'No tasks found for this incident.'
+    return 'No tasks found for this incident.'
 
 
 def update_task_command(client: SimpleClient, args: dict) -> CommandResults:
