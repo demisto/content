@@ -2364,10 +2364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 5087be8f-2ee3-498d-8d08-0e6c1bad71a5
+    taskid: ea8a64b6-fe97-4964-8ae1-022f1e04d0f6
     type: condition
     task:
-      id: 5087be8f-2ee3-498d-8d08-0e6c1bad71a5
+      id: ea8a64b6-fe97-4964-8ae1-022f1e04d0f6
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -2444,16 +2444,6 @@ tasks:
                     regex:
                       value:
                         simple: uploaded\s(.*(MB|GB|TB))
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "0"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: (\d+)\.
                 - operator: StripChars
                   args:
                     chars:
