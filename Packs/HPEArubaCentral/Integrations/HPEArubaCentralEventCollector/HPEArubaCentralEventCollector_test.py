@@ -97,17 +97,11 @@ def test_fetch_events_command(mocker, requests_mock, fetch_networking):
     main()
 
     audit_response_mock['events'].reverse()
-    if fetch_networking:
-        send_events_to_xsiam_mock.assert_any_call(audit_response_mock['events'],
-                                                  vendor=VENDOR,
-                                                  product=PRODUCT)
-        send_events_to_xsiam_mock.assert_any_call(networking_response_mock['events'],
-                                                  vendor=VENDOR,
-                                                  product=f'{PRODUCT}_network_events')
-    else:
-        send_events_to_xsiam_mock.assert_called_once_with(audit_response_mock['events'],
-                                                          vendor=VENDOR,
-                                                          product=PRODUCT)
+    expected_events = audit_response_mock['events'] if not fetch_networking else (audit_response_mock['events']
+                                                                                  + networking_response_mock['events'])
+    send_events_to_xsiam_mock.assert_called_once_with(expected_events,
+                                                      vendor=VENDOR,
+                                                      product=PRODUCT)
 
 
 @freeze_time(FETCH_DATE)
@@ -289,15 +283,11 @@ def test_fetch_with_duplicates(mocker, requests_mock):
     main()
 
     expected_audit_events = audit_response_mock['events'][:-2]
-    expected_networking_events = networking_response_mock['events'][2:]
     expected_audit_events.reverse()
-    send_events_to_xsiam_mock.assert_any_call(expected_audit_events,
-                                              vendor=VENDOR,
-                                              product=PRODUCT)
-    if fetch_networking:
-        send_events_to_xsiam_mock.assert_any_call(expected_networking_events,
-                                                  vendor=VENDOR,
-                                                  product=f'{PRODUCT}_network_events')
+    expected_networking_events = networking_response_mock['events'][2:]
+    send_events_to_xsiam_mock.assert_called_once_with(expected_audit_events + expected_networking_events,
+                                                      vendor=VENDOR,
+                                                      product=PRODUCT)
 
 
 @pytest.mark.parametrize('should_fail', [True, False])
@@ -377,12 +367,10 @@ def test_get_events_command(mocker, requests_mock, fetch_networking, should_push
 
     if should_push_events:
         audit_response_mock['events'].reverse()
-        send_events_to_xsiam_mock.assert_any_call(audit_response_mock['events'],
-                                                  vendor=VENDOR,
-                                                  product=PRODUCT)
-        if fetch_networking:
-            send_events_to_xsiam_mock.assert_any_call(networking_response_mock['events'],
-                                                      vendor=VENDOR,
-                                                      product=f'{PRODUCT}_network_events')
+        expected_events = audit_response_mock['events'] if not fetch_networking else (audit_response_mock['events']
+                                                                                      + networking_response_mock['events'])
+        send_events_to_xsiam_mock.assert_called_once_with(expected_events,
+                                                          vendor=VENDOR,
+                                                          product=PRODUCT)
     else:
         send_events_to_xsiam_mock.assert_not_called()

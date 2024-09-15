@@ -438,20 +438,20 @@ def push_events(audit_events: list | None, networking_events: list | None):
         audit_events (list): list of fetched audit events
         networking_events (list): list of fetched networking events
     """
+    events_to_send = []
     if audit_events:
         add_time_to_events(audit_events, AUDIT_TS)
-        send_events_to_xsiam(
-            audit_events,
-            vendor=VENDOR,
-            product=PRODUCT
-        )
+        events_to_send.extend(audit_events)
 
     if networking_events:
         add_time_to_events(networking_events, NETWORKING_TS)
+        events_to_send.extend(networking_events)
+
+    if events_to_send:
         send_events_to_xsiam(
-            networking_events,
+            events_to_send,
             vendor=VENDOR,
-            product=f'{PRODUCT}_network_events',
+            product=PRODUCT,
         )
 
 
