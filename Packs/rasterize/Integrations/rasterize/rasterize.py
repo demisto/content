@@ -312,10 +312,10 @@ def write_file(filename, contents, overwrite=False, ):
         demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
 
 
-def read_chrome_instances_file() -> dict| None:
+def read_chrome_instances_file() -> dict | None:
     """
     Read the content from a JSON file and return it as a Python dictionary or list.
-    
+
     :param file_path: Path to the JSON file.
     :return: The JSON content as a Python dictionary or list, or None if the file does not exist or is empty.
     """
@@ -339,7 +339,7 @@ def read_chrome_instances_file() -> dict| None:
 def write_chrome_instances_file(content=None, overwrite=True):
     """
     Write to a JSON file with an option to overwrite or create an empty file.
-    
+
     :param file_path: Path to the JSON file.
     :param content: Data to write to the file. If None, an empty file is created.
     :param overwrite: If True, the file is overwritten. If False, data is appended.
@@ -349,7 +349,7 @@ def write_chrome_instances_file(content=None, overwrite=True):
             # Overwrite the file with the new content
             with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
                 json.dump(content, file, indent=4)
-        
+
         elif content is not None and not overwrite:
             # Append to the file (requires reading existing content)
             if os.path.exists(CHROME_INSTANCES_FILE_PATH):
@@ -371,12 +371,12 @@ def write_chrome_instances_file(content=None, overwrite=True):
                 # Create a new file with the content as a list
                 with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
                     json.dump([content], file, indent=4)
-        
+
         elif content is None:
             # Create an empty file
             with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
                 json.dump({}, file, indent=4)
-    
+
     except Exception as e:
         demisto.debug(f"An error occurred: {e}")
 
@@ -536,7 +536,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options') or 'None'
     demisto.debug(f'MAI MORAG TEST {chrome_options}')
-    chrome_instances_contents =  read_file(CHROME_INSTANCES_FILE_PATH) or {}
+    chrome_instances_contents = read_file(CHROME_INSTANCES_FILE_PATH) or {}
     instances_id = []
     for chrome_port_data in chrome_instances_contents.values():
         instances_id.append(chrome_port_data['instance_id'])
@@ -650,9 +650,9 @@ def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_
         write_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
 
 
-def edit_chrome_port_file_configurations(chrome_port: str= '',
+def edit_chrome_port_file_configurations(chrome_port: str = '',
                                          key_to_update: str = '',
-                                         value_to_update:str = '',
+                                         value_to_update: str = '',
                                          if_increase_counter: bool = False,
                                          content: dict = {}):
     '''
@@ -668,15 +668,15 @@ def edit_chrome_port_file_configurations(chrome_port: str= '',
         write_chrome_instances_file(content, False)
     elif chrome_port in data:
         if if_increase_counter:
-            data[chrome_port]['chrome_rasterize_connections']+=1
+            data[chrome_port]['chrome_rasterize_connections'] += 1
         if key_to_update:
             data[chrome_port][key_to_update] = value_to_update
         # Remove the specified port if it exists
         else:
             del data[chrome_port]
         write_file(CHROME_INSTANCES_FILE_PATH, data, True)
-        
-        
+
+
 def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:
     tab_ready_event = Event()
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
@@ -912,7 +912,7 @@ def perform_rasterize(path: str | list[str],
     """
     demisto.debug(f"perform_rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
-    
+
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
@@ -953,7 +953,7 @@ def perform_rasterize(path: str | list[str],
                 demisto.info(f"Terminating Chrome after {total_rasterizations_count=} rasterizations")
                 terminate_chrome(chrome_port=chrome_port)
                 edit_chrome_port_file_configurations(chrome_port=chrome_port)
-                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count-1), overwrite=True)
+                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count - 1), overwrite=True)
             else:
                 write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
                 edit_chrome_port_file_configurations(chrome_port=chrome_port, if_increase_counter=True)
