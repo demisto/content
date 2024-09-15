@@ -1,9 +1,9 @@
 category: Messaging and Conferencing
 commonfields:
-  id: KafkaV3
+  id: KafkaV3 dev
   version: -1
 configuration:
-- display: CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093
+- display: CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092, 172.16.20.234:9093
   name: brokers
   required: true
   type: 0
@@ -70,9 +70,13 @@ configuration:
   name: max_bytes_per_message
   type: 0
   required: false
+- display: Consumer Only
+  name: consumer_only
+  type: 8
+  section: Collect
 description: Kafka is an open source distributed streaming platform.
-display: Kafka v3
-name: KafkaV3
+display: Kafka v3 dev
+name: KafkaV3 dev
 script:
   commands:
   - arguments:
