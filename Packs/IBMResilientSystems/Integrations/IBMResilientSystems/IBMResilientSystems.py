@@ -1713,13 +1713,13 @@ def add_custom_task_command(client: SimpleClient, args: dict) -> CommandResults:
     Adds a custom task to the specified incident.
     """
     demisto.debug(f"add_custom_task_command {args=}")
-    incident_id = args.get("incident_id")
-    name = args.get("name")
-    owner_id = args.get("owner_id")
-    description = args.get("description")
-    instructions = args.get("instructions")
-    phase = args.get("phase")
-    due_date = to_timestamp(validate_iso_time_format(args.get("due_date"))) if args.get("due_date") else None
+    incident_id: str = args.get("incident_id")
+    name: str = args.get("name")
+    owner_id: str = args.get("owner_id")
+    description: str = args.get("description")
+    instructions: str = args.get("instructions")
+    phase: str = args.get("phase")
+    due_date: str = to_timestamp(validate_iso_time_format(args.get("due_date"))) if args.get("due_date") else ''
 
     response = add_custom_task(client, incident_id, name, phase, due_date, description, instructions, owner_id)
     demisto.debug(f"add_custom_task_command {response=}")
