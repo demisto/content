@@ -3,17 +3,17 @@ commonfields:
   id: Cortex Data Lake
   version: -1
 configuration:
-- display: Token
+- display: Authentication Token
   name: refresh_token
   type: 4
   hidden: true
   required: false
-- display: ID
+- display: Registration ID
   name: reg_id
   type: 4
   hidden: true
   required: false
-- display: Key
+- display: Encryption Key
   name: auth_key
   type: 4
   hidden: true
