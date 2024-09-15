@@ -1891,7 +1891,7 @@ tasks:
       key:
         simple: remediationattacksurfacerules
       value:
-        simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack
+        simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack,TftpServer,InsecureSFTPGo,InsecureBitviseSSHServer,Libssh
     separatecontext: false
     continueonerrortype: ""
     view: |-
