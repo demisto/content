@@ -60,7 +60,7 @@
             "timestamp": 1726014093000
         },
         {
-            "_time": "2024-09-11T00:21:33Z",
+            "_time": "2024-09-11T00:36:43Z",
             "bssid": "6c:d1:51",
             "client_mac": "96:16:06",
             "description": "802.11 Disassociation received from client 96:19:06 associated to BSSID 6c:d1:51",
@@ -118,7 +118,7 @@
                     "name": "HI TEST - 84"
                 }
             ],
-            "timestamp": 1726014093000
+            "timestamp": 1726015003000
         }
     ]
 }

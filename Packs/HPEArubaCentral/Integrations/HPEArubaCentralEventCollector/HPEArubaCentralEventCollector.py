@@ -147,7 +147,7 @@ class Client(BaseClient):
         Perform auth code request step in oauth sequence
 
         Args:
-            csfr_token (str): CSRF token obtained from the login request
+            csrf_token (str): CSRF token obtained from the login request
             session (str): Session object obtained from login request
 
         Returns:
