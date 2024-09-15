@@ -7,7 +7,8 @@ enabled: true
 name: AwsGenerateExternalID
 outputs: []
 script: '-'
-tags: []  # TBD
+tags:
+- Amazon Web Services
 timeout: '0'
 type: python
 subtype: python3
