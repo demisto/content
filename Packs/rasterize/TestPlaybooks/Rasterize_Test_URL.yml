@@ -1,6 +1,5 @@
-id: 51487074-9660-4f8f-86b3-c88d41dd6eab
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+id: Rasterize Test URL
+version: -1
 name: Rasterize Test URL
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -44,6 +44,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -442,4 +443,5 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Rasterize Test
-dirtyInputs: true
+fromversion: 6.10.0
+description: ''

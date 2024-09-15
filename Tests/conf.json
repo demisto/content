@@ -3180,11 +3180,32 @@
             "timeout": 1500
         },
         {
-            "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest",
-            "fromversion": "5.0.0",
-            "memory_threshold": 300,
-            "pid_threshold": 200
+            "integrations": [
+                "Rasterize",
+                "Image OCR"
+            ],
+            "playbookID": "Rasterize Test HTML"
+        },
+        {
+            "integrations": [
+                "Rasterize",
+                "Image OCR"
+            ],
+            "playbookID": "Rasterize Test Process Email"
+        },
+        {
+            "integrations": [
+                "Rasterize",
+                "Image OCR"
+            ],
+            "playbookID": "Rasterize Test URL to PNG and OCR"
+        },
+        {
+            "integrations": [
+                "Rasterize",
+                "Image OCR"
+            ],
+            "playbookID": "Rasterize Test URL"
         },
         {
             "integrations": "Ipstack",

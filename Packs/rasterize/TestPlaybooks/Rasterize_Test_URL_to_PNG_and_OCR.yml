@@ -1,6 +1,5 @@
-id: 5095c6bd-0769-48a3-818a-74569b5aca78
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+id: Rasterize Test URL to PNG and OCR
+version: -1
 name: Rasterize Test URL to PNG and OCR
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -260,6 +260,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -291,4 +292,5 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Rasterize Test
-dirtyInputs: true
+fromversion: 6.10.0
+description: ''

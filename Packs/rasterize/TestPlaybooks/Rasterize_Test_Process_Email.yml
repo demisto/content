@@ -1,6 +1,5 @@
-id: 5e079dfa-a608-49cc-85ca-f1f57e3b1786
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+id: Rasterize Test Process Email
+version: -1
 name: Rasterize Test Process Email
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -86,6 +86,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -228,6 +229,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -300,6 +302,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -400,6 +403,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -431,4 +435,5 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Rasterize Test
-dirtyInputs: true
+fromversion: 6.10.0
+description: ''
