@@ -4,10 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 def upload_attachment(args: Dict[str, Any]) -> CommandResults:
     remote_incident_id = demisto.incident()['dbotMirrorId']
-    demisto.debug(f'upload_attachment {args=} | {remote_incident_id}')
+    demisto.debug(f'upload_attachment {args=} | {remote_incident_id=}')
 
-    # Updating arguments according to expected command arguments.
-    tags = argToList(args.pop('tags', ''))
     args["incident_id"] = remote_incident_id
     response = demisto.executeCommand('rs-upload-incident-attachment', args)
     demisto.debug(f"upload_attachment {response=}")
@@ -19,7 +17,7 @@ def upload_attachment(args: Dict[str, Any]) -> CommandResults:
         else ''
 
     return CommandResults(
-        readable_output=human_readable, tags=tags
+        readable_output=human_readable
     )
 
 

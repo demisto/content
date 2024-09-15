@@ -1,10 +1,21 @@
-def test_add_comment_as_note():
-    """Test if the correct arguments are given to the CommandResults object when
-    adding a comment as a note.
-    """
-    from IbmUpdateNote import add_note
-    result = add_note({'note': 'New Note', 'tags': 'comment tag to IBM'})
+from IbmUpdateNote import update_note
+import demistomock as demisto
 
-    assert result.readable_output == 'New Note'
-    assert result.tags == ['comment tag to IBM']
+def test_update_note_with_all_args(mocker):
+    """Test update_note function with all arguments."""
+    mock_execute_command = mocker.patch.object(demisto, 'executeCommand', return_value=[])
+    mock_incident = mocker.patch.object(demisto, 'incident', return_value={'dbotMirrorId': '1000'})
+    result = update_note({
+        'note_id': '123',
+        'note_body': 'Full Update',
+        'tags': 'FROM XSOAR'
+    })
+
+    mock_execute_command.assert_called_once_with('rs-update-incident-note', args={
+        'note_id': '123',
+        'note': 'Full Update',
+        'incident_id': '1000'
+    })
+    assert result.readable_output == 'Full Update'
+    assert result.tags == ['FROM XSOAR']
     assert result.mark_as_note

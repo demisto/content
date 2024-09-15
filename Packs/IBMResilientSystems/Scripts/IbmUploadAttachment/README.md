@@ -9,14 +9,21 @@ Use this script to upload an attachment to an IBM QRadar SOAR incident. This scr
 | Script Type | python3 |
 | Cortex XSOAR Version | 6.8.0 |
 
+## Dependencies
+
+---
+This script uses the following commands and scripts.
+
+* rs-upload-incident-attachment
+* IBM Resilient Systems
+
 ## Inputs
 
 ---
 
-| **Argument Name** | **Description**                                                                                                        |
-|-------------------|------------------------------------------------------------------------------------------------------------------------|
-| note              | task to be added to the IBM QRadar SOAR incident.                                                                      |
-| tags              | The task tag. Use the task entry tag \(defined in your instance configuration\) to mirror the task to IBM QRadar SOAR. |
+| **Argument Name** | **Description** |
+| --- | --- |
+| entry_id | EntryID of the file to upload. |
 
 ## Outputs
 

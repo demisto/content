@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 def add_task(args: Dict[str, Any]) -> CommandResults:
     remote_incident_id = demisto.incident()['dbotMirrorId']
-    demisto.debug(f'add_task {args=} | {remote_incident_id}')
+    demisto.debug(f'add_task {args=} | {remote_incident_id=}')
 
     # Updating arguments according to expected command arguments.
     tags = argToList(args.pop('tags', ''))

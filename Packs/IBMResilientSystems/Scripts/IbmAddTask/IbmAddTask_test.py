@@ -1,14 +1,12 @@
 from IbmAddTask import add_task
-from CommonServerPython import *
+import demistomock as demisto
 
 def test_add_task(mocker):
     """Test if the correct arguments are given to the CommandResults object when
     adding a task.
     """
-    # Mock the demisto.executeCommand to return a dummy response
     mocker.patch.object(demisto, 'executeCommand', return_value=[{"HumanReadable": "New task created"}])
 
-    # Mock the demisto.incident() to return a dummy incident with dbotMirrorId
     mocker.patch.object(demisto, 'incident', return_value={'dbotMirrorId': '123'})
 
     result = add_task({

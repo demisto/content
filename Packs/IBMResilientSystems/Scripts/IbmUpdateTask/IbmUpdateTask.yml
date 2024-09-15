@@ -13,7 +13,7 @@ args:
   defaultvalue: '-'
 
 - name: due_date
-  description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
+  description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z". Empty date indicates that the task has no assigned due date.
   defaultvalue: '-'
 
 - name: phase
@@ -30,7 +30,7 @@ args:
   defaultvalue: '-'
 
 - name: status
-  description: Changing the status field, completes or re-openes the task.
+  description: Changing the status field, completes or re-opens the task.
   auto: PREDEFINED
   predefined:
     - Open

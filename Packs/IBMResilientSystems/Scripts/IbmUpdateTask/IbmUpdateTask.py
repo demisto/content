@@ -23,7 +23,7 @@ def main():  # pragma: no cover
         return_results(res)
 
     except Exception as ex:
-        return_error(f'Failed to execute IbmUpdateNote. Error: {str(ex)}')
+        return_error(f'Failed to execute IbmUpdateTask. Error: {str(ex)}')
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:

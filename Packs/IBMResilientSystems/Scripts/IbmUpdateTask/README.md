@@ -1,4 +1,4 @@
-Use this script to add a note with a tag (the "Note tag to IBM" defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a note to a IBM QRadar SOAR incident. This script should be run within an incident.
+Use this script to update an IBM QRadar SOAR incident's task. This script should be run within an incident.
 
 ## Script Data
 
@@ -9,14 +9,26 @@ Use this script to add a note with a tag (the "Note tag to IBM" defined in the i
 | Script Type | python3 |
 | Cortex XSOAR Version | 6.8.0 |
 
+## Dependencies
+
+---
+This script uses the following commands and scripts.
+
+* IBM Resilient Systems
+* rs-update-task
+
 ## Inputs
 
 ---
 
-| **Argument Name** | **Description**                                                                                                        |
-|-------------------|------------------------------------------------------------------------------------------------------------------------|
-| note              | note to be added to the IBM QRadar SOAR incident.                                                                      |
-| tags              | The note tag. Use the note entry tag \(defined in your instance configuration\) to mirror the note to IBM QRadar SOAR. |
+| **Argument Name** | **Description** |
+| --- | --- |
+| task_id | ID of task to update. |
+| name | Task name. Technically required, copy original task name if no changes are desired. |
+| owner_id | User ID of the new owner. |
+| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. |
+| phase | The phase to which this task belongs. |
+| status | Changing the status field, completes or re-openes the task. |
 
 ## Outputs
 

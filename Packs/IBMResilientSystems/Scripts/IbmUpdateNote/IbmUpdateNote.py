@@ -7,7 +7,7 @@ def update_note(args: Dict[str, Any]) -> CommandResults:
     note_body = args.get('note_body', '')
     tags = argToList(args.get('tags', ''))
     remote_incident_id = demisto.incident()['dbotMirrorId']
-    demisto.debug(f'update_note {note_body=} | {remote_incident_id}')
+    demisto.debug(f'update_note {note_body=} | {remote_incident_id=}')
     response = demisto.executeCommand('rs-update-incident-note', args={
         'note_id': note_id,
         'note': note_body,
