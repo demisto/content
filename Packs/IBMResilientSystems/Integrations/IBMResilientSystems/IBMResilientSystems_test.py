@@ -49,7 +49,15 @@ class MockClient:
         return url, body
 
 
-def test_update_incident_command_with_invalid_json(mocker):
+@pytest.fixture
+def _mocker(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'close_ibm_incident': True
+    })
+    return mocker
+
+
+def test_update_incident_command_with_invalid_json(_mocker):
     """
     Given:
      - An incident should be updated.
@@ -60,7 +68,6 @@ def test_update_incident_command_with_invalid_json(mocker):
     Then:
      - Ensure the parsing before the request fails and returns a JSONDecodeError.
     """
-    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
     args = {
         "incident-id": "1234",
         "other-fields": 'Invalid json'
@@ -72,7 +79,7 @@ def test_update_incident_command_with_invalid_json(mocker):
     assert 'The other_fields argument is not a valid json.' in exception.value.args[0]
 
 
-def test_add_note(mocker):
+def test_add_note(_mocker):
     """
     Given:
      - An incident that should be updated with a note.
@@ -83,8 +90,7 @@ def test_add_note(mocker):
     Then:
      - Ensure the function runs as expected.
     """
-    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
-    mock_result = mocker.patch.object(MockClient, 'post')
+    mock_result = _mocker.patch.object(MockClient, 'post')
     expected_result = ('/incidents/1234/comments', {'text': {'format': 'text', 'content': f'This is a new note\n{TAG_TO_IBM}'}})
     from IBMResilientSystems import add_note_command
 
@@ -94,7 +100,7 @@ def test_add_note(mocker):
     assert '1234' in output.readable_output
 
 
-def test_add_incident_artifact(mocker):
+def test_add_incident_artifact(_mocker):
     """
     Given:
      - An incident should be updated with an artifact.
@@ -105,8 +111,7 @@ def test_add_incident_artifact(mocker):
     Then:
      - Ensure the function runs as expected.
     """
-    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
-    mock_result = mocker.patch.object(MockClient, 'post')
+    mock_result = _mocker.patch.object(MockClient, 'post')
     expected_result = ('/incidents/1234/artifacts', {'type': 'IP Address', 'value': '1.1.1.1',
                                                      'description': {'format': 'text',
                                                                      'content': 'This is the artifact description'}})
@@ -118,16 +123,14 @@ def test_add_incident_artifact(mocker):
     assert '1234' in output.get('HumanReadable')
 
 
-def test_test_module(mocker):
+def test_test_module(_mocker):
     """
     Tests whether the test module returns expected result for default http response.
     """
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
-    })
+
     from IBMResilientSystems import test_module, SimpleClient
     client = SimpleClient()
-    mocker.patch.object(client, 'get', return_value={})
+    _mocker.patch.object(client, 'get', return_value={})
     assert test_module(client, '2024-01-01T00:00:00Z') == "ok"
 
 
@@ -138,16 +141,14 @@ def test_test_module(mocker):
     ('2024/01/01 00:00:00', 'fail'),
     ('invalid-date', 'fail'),
 ])
-def test_test_module_fetch_time(fetch_time, expected_result, mocker):
+def test_test_module_fetch_time(fetch_time, expected_result, _mocker):
     """
     Tests whether the test module returns expected result for valid and invalid responses.
     """
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
-    })
+
     from IBMResilientSystems import test_module, SimpleClient, validate_iso_time_format
     client = SimpleClient()
-    mocker.patch.object(client, 'get', return_value={})
+    _mocker.patch.object(client, 'get', return_value={})
     fetch_time = validate_iso_time_format(fetch_time)
     if expected_result == 'fail':
         with raises(DemistoException):
@@ -190,10 +191,7 @@ def test_test_module_fetch_time(fetch_time, expected_result, mocker):
     })
 ], ids=['no-filters-query', 'args-1-query', 'args-2-query', 'pagination-params-query']
                          )
-def test_prepare_search_query_data(mocker, args, expected):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
-    })
+def test_prepare_search_query_data(_mocker, args, expected):
     from IBMResilientSystems import prepare_search_query_data
     assert prepare_search_query_data(args) == expected
 
@@ -258,10 +256,7 @@ def test_prepare_search_query_data(mocker, args, expected):
 
     ]
 )
-def test_prettify_incident_notes(mocker, input_notes, expected_output):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
-    })
+def test_prettify_incident_notes(_mocker, input_notes, expected_output):
     from IBMResilientSystems import prettify_incident_notes
     assert prettify_incident_notes(input_notes) == expected_output
 
@@ -269,13 +264,10 @@ def test_prettify_incident_notes(mocker, input_notes, expected_output):
 @pytest.mark.parametrize('incidents, expected_output', [
     ([], 'No results found.'),
 ])
-def test_search_incidents_command(mocker, incidents, expected_output):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_search_incidents_command(_mocker, incidents, expected_output):
     from IBMResilientSystems import SimpleClient, search_incidents_command
     client = SimpleClient()
-    mocker.patch('IBMResilientSystems.search_incidents', return_value=incidents)
+    _mocker.patch('IBMResilientSystems.search_incidents', return_value=incidents)
 
     assert search_incidents_command(client=client, args={}) == expected_output
 
@@ -287,14 +279,11 @@ def test_search_incidents_command(mocker, incidents, expected_output):
         ),
     ]
 )
-def test_search_incidents(mocker, args):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
-    })
+def test_search_incidents(_mocker, args):
     from IBMResilientSystems import SimpleClient, search_incidents, DEFAULT_RETURN_LEVEL
     test_dict_response = load_test_data('./test_data/test_search_incidents_response.json')
     test_response = dict_to_response(test_dict_response)
-    request = mocker.patch.object(Session, "post", return_value=test_response)
+    request = _mocker.patch.object(Session, "post", return_value=test_response)
     client = SimpleClient()
     client.org_id = 0
     search_incidents(client=client, args=args)
@@ -351,17 +340,14 @@ def test_search_incidents(mocker, args):
                   {"field": "name", "old_value": {"text": "incident_name"}, "new_value": {"text": "incident-0000"}}]}
     ),
 ])
-def test_update_incident_command(mocker, args, processed_payload):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_update_incident_command(_mocker, args, processed_payload):
     from IBMResilientSystems import SimpleClient, update_incident_command
     client = SimpleClient()
     client.org_id = 0
-    mocker.patch.object(Session, 'get', return_value=dict_to_response(
+    _mocker.patch.object(Session, 'get', return_value=dict_to_response(
         load_test_data('./test_data/test_get_incident_response.json')))
 
-    request = mocker.patch.object(Session, 'patch', return_value=dict_to_response({
+    request = _mocker.patch.object(Session, 'patch', return_value=dict_to_response({
         "success": True, "title": None, "message": None, "hints": []
     }))
     update_incident_command(client, args)
@@ -369,14 +355,10 @@ def test_update_incident_command(mocker, args, processed_payload):
     assert json.loads(request.call_args[1]['data']) == processed_payload
 
 
-def test_update_incident(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
-
+def test_update_incident(_mocker):
     from IBMResilientSystems import SimpleClient, update_incident
 
-    request = mocker.patch.object(Session, 'patch', return_value=dict_to_response({
+    request = _mocker.patch.object(Session, 'patch', return_value=dict_to_response({
         "success": True, "title": None, "message": None, "hints": []
     }))
 
@@ -396,18 +378,14 @@ def test_update_incident(mocker):
      'E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T14:32:36Z |  | 2024-07-29T14:31:57Z '
      '|  | true | true | ExternalParty | 6 |  |'),
 ])
-def test_get_incident_command(mocker, incident_id, expected_human_readable):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
-
+def test_get_incident_command(_mocker, incident_id, expected_human_readable):
     from IBMResilientSystems import SimpleClient, get_incident_command
 
     client = SimpleClient()
     client.org_id = 0
-    mocker.patch('IBMResilientSystems.get_users', return_value=[])
-    mocker.patch('IBMResilientSystems.get_phases', return_value={})
-    mocker.patch.object(Session, 'get', return_value=dict_to_response(
+    _mocker.patch('IBMResilientSystems.get_users', return_value=[])
+    _mocker.patch('IBMResilientSystems.get_phases', return_value={})
+    _mocker.patch.object(Session, 'get', return_value=dict_to_response(
         load_test_data('./test_data/test_get_incident_response.json')))
 
     context_entry = get_incident_command(client, incident_id)
@@ -449,10 +427,7 @@ def test_get_incident_command(mocker, incident_id, expected_human_readable):
 |  |  |  |  |
 """)
 ])
-def test_list_scripts_command(mocker, script_id: str, expected_outputs: list, expected_readable_output: str):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_list_scripts_command(_mocker, script_id: str, expected_outputs: list, expected_readable_output: str):
     from IBMResilientSystems import SimpleClient, list_scripts_command
     from os import path
 
@@ -471,7 +446,7 @@ def test_list_scripts_command(mocker, script_id: str, expected_outputs: list, ex
     client.org_id = 0
     args = {'script_id': script_id}
 
-    mocker.patch.object(SimpleClient, 'get', side_effect=side_effect)
+    _mocker.patch.object(SimpleClient, 'get', side_effect=side_effect)
 
     command_result = list_scripts_command(client, args)
     assert command_result.readable_output == expected_readable_output
@@ -479,10 +454,7 @@ def test_list_scripts_command(mocker, script_id: str, expected_outputs: list, ex
 
 
 @pytest.mark.parametrize('file_entry_id', ['ENTRY_ID'])
-def test_upload_incident_attachment(mocker, file_entry_id: str):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_upload_incident_attachment(_mocker, file_entry_id: str):
     from IBMResilientSystems import SimpleClient, upload_incident_attachment_command
     client = SimpleClient()
     client.org_id = 0
@@ -493,8 +465,8 @@ def test_upload_incident_attachment(mocker, file_entry_id: str):
         if entry_id == 'ENTRY_ID':
             return {'path': '/path/to/file', 'name': 'filename.txt'}
 
-    mocker.patch.object(demisto, 'getFilePath', side_effect=mock_get_file_path)
-    post_attachment_request = mocker.patch.object(SimpleClient, 'post_attachment', return_value=response)
+    _mocker.patch.object(demisto, 'getFilePath', side_effect=mock_get_file_path)
+    post_attachment_request = _mocker.patch.object(SimpleClient, 'post_attachment', return_value=response)
 
     args = {'entry_id': file_entry_id, 'incident_id': 1000}
     result = upload_incident_attachment_command(SimpleClient(), args, tag_to_ibm="FROM XSOAR")
@@ -507,15 +479,12 @@ def test_upload_incident_attachment(mocker, file_entry_id: str):
     )
 
 
-def test_delete_incidents_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_delete_incidents_command(_mocker):
     from IBMResilientSystems import SimpleClient, delete_incidents_command
     client = SimpleClient()
     client.org_id = 0
 
-    delete_incident_request = mocker.patch.object(SimpleClient, 'put', return_value={
+    delete_incident_request = _mocker.patch.object(SimpleClient, 'put', return_value={
         "success": True, "title": None, "message": None, "hints": []
     })
 
@@ -525,16 +494,13 @@ def test_delete_incidents_command(mocker):
     delete_incident_request.assert_called_once_with("/incidents/delete", payload=incident_ids)
 
 
-def test_list_incident_notes_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_list_incident_notes_command(_mocker):
     from IBMResilientSystems import SimpleClient, list_incident_notes_command
 
     client = SimpleClient()
     client.org_id = 0
 
-    get_incident_notes_request = mocker.patch.object(
+    get_incident_notes_request = _mocker.patch.object(
         SimpleClient,
         'get',
         return_value=load_test_data('./test_data/test_get_incident_notes_reponse.json')
@@ -546,16 +512,13 @@ def test_list_incident_notes_command(mocker):
     )
 
 
-def test_update_incident_note(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_update_incident_note(_mocker):
     from IBMResilientSystems import SimpleClient, update_incident_note_command
 
     client = SimpleClient()
     client.org_id = 0
 
-    update_incident_note_request = mocker.patch.object(
+    update_incident_note_request = _mocker.patch.object(
         SimpleClient,
         'put',
         return_value={}
@@ -643,10 +606,7 @@ def test_update_incident_note(mocker):
         }
     ),
 ])
-def test_add_custom_task_command(mocker, args, expected_task_dto):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_add_custom_task_command(_mocker, args, expected_task_dto):
     from IBMResilientSystems import SimpleClient, add_custom_task_command
     client = SimpleClient()
     client.org_id = 0
@@ -658,7 +618,7 @@ def test_add_custom_task_command(mocker, args, expected_task_dto):
         assert payload == expected_task_dto
         return {"id": "1234"}
 
-    add_custom_task_request = mocker.patch.object(
+    add_custom_task_request = _mocker.patch.object(
         SimpleClient,
         'post',
         side_effect=post_side_effect
@@ -673,15 +633,12 @@ def test_add_custom_task_command(mocker, args, expected_task_dto):
         assert result.readable_output == f"Successfully created new task for incident with ID {args['incident_id']}. Task ID: 1234"
 
 
-def test_list_tasks_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_list_tasks_command(_mocker):
     from IBMResilientSystems import SimpleClient, list_tasks_command
     client = SimpleClient()
     client.org_id = 0
 
-    get_tasks_request = mocker.patch.object(
+    get_tasks_request = _mocker.patch.object(
         SimpleClient,
         'get',
         return_value={}
@@ -690,15 +647,12 @@ def test_list_tasks_command(mocker):
     get_tasks_request.assert_called_with(f"/tasks")
 
 
-def test_get_task_members_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_get_task_members_command(_mocker):
     from IBMResilientSystems import SimpleClient, get_task_members_command
     client = SimpleClient()
     client.org_id = 0
     task_id = "1234"
-    get_task_members_request = mocker.patch.object(
+    get_task_members_request = _mocker.patch.object(
         SimpleClient,
         'get',
         return_value={}
@@ -713,15 +667,12 @@ def test_get_task_members_command(mocker):
     ("2000,3000", False),
     ("", True)
 ])
-def test_delete_tasks_command(mocker, task_ids, should_raise_exception):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_delete_tasks_command(_mocker, task_ids, should_raise_exception):
     from IBMResilientSystems import SimpleClient, delete_tasks_command
     client = SimpleClient()
     client.org_id = 0
 
-    delete_tasks_request = mocker.patch.object(SimpleClient, 'put', return_value={
+    delete_tasks_request = _mocker.patch.object(SimpleClient, 'put', return_value={
         "success": True, "title": None, "message": None, "hints": []
     })
 
@@ -735,10 +686,7 @@ def test_delete_tasks_command(mocker, task_ids, should_raise_exception):
         assert result.readable_output == f"Tasks with IDs {task_id_list} were deleted successfully."
 
 
-def test_delete_task_members_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_delete_task_members_command(_mocker):
     from IBMResilientSystems import SimpleClient, delete_task_members_command
     client = SimpleClient()
     client.org_id = 0
@@ -746,7 +694,7 @@ def test_delete_task_members_command(mocker):
     task_id = '1234'
     mock_response = {"content": "Members deleted successfully"}
 
-    delete_task_members_request = mocker.patch.object(
+    delete_task_members_request = _mocker.patch.object(
         SimpleClient,
         'delete',
         return_value=mock_response
@@ -756,10 +704,7 @@ def test_delete_task_members_command(mocker):
     delete_task_members_request.assert_called_once_with(f"/tasks/{task_id}/members")
 
 
-def test_list_task_instructions_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_list_task_instructions_command(_mocker):
     from IBMResilientSystems import SimpleClient, list_task_instructions_command
     client = SimpleClient()
     client.org_id = 0
@@ -772,7 +717,7 @@ def test_list_task_instructions_command(mocker):
         }
     }
 
-    get_task_instructions_request = mocker.patch.object(
+    get_task_instructions_request = _mocker.patch.object(
         SimpleClient,
         'get',
         return_value=mock_response
@@ -785,10 +730,7 @@ def test_list_task_instructions_command(mocker):
     )
 
 
-def test_get_attachment_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_get_attachment_command(_mocker):
     from IBMResilientSystems import SimpleClient, get_attachment_command
     from requests import Response
     client = SimpleClient()
@@ -825,7 +767,7 @@ def test_get_attachment_command(mocker):
                 "inc_owner": 0
             }
 
-    get_attachment_request = mocker.patch.object(SimpleClient, 'get', side_effect=side_effect)
+    get_attachment_request = _mocker.patch.object(SimpleClient, 'get', side_effect=side_effect)
 
     args = {'incident_id': '1000', 'attachment_id': '1'}
     get_attachment_command(client, args)
@@ -835,22 +777,19 @@ def test_get_attachment_command(mocker):
 
     # Check the calls made to the mock
     get_attachment_request.assert_has_calls([
-        mocker.call(get_attachment_endpoint),
-        mocker.call(get_attachment_contents_endpoint, get_response_object=True)
+        _mocker.call(get_attachment_endpoint),
+        _mocker.call(get_attachment_contents_endpoint, get_response_object=True)
     ])
 
 
-def test_get_modified_remote_data_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_get_modified_remote_data_command(_mocker):
     from IBMResilientSystems import SimpleClient, get_modified_remote_data_command
     from CommonServerPython import GetModifiedRemoteDataResponse
 
     client = SimpleClient()
     client.org_id = 0
 
-    mock_search_incidents = mocker.patch('IBMResilientSystems.search_incidents', return_value=[
+    mock_search_incidents = _mocker.patch('IBMResilientSystems.search_incidents', return_value=[
         {'id': 1000, 'last_modified_time': '2023-09-01T12:01:00Z'},
         {'id': 1001, 'last_modified_time': '2023-09-01T12:02:00Z'}
     ])
@@ -864,10 +803,7 @@ def test_get_modified_remote_data_command(mocker):
     assert result.modified_incident_ids == expected_output.modified_incident_ids
 
 
-def test_get_remote_data_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_get_remote_data_command(_mocker):
     from IBMResilientSystems import SimpleClient, get_remote_data_command
 
     # Mock client and its methods
@@ -899,12 +835,12 @@ def test_get_remote_data_command(mocker):
         }]
     }
 
-    mocker.patch('IBMResilientSystems.get_incident', return_value=mock_incident_data)
-    mocker.patch('IBMResilientSystems.process_raw_incident', return_value=mock_incident_data)
+    _mocker.patch('IBMResilientSystems.get_incident', return_value=mock_incident_data)
+    _mocker.patch('IBMResilientSystems.process_raw_incident', return_value=mock_incident_data)
 
     # Mock get_attachment and handle_incoming_incident_resolution
-    mocker.patch('IBMResilientSystems.get_attachment', return_value=("filename.txt", b"file content"))
-    mocker.patch('IBMResilientSystems.handle_incoming_incident_resolution', return_value={'Contents': 'Incident resolved'})
+    _mocker.patch('IBMResilientSystems.get_attachment', return_value=("filename.txt", b"file content"))
+    _mocker.patch('IBMResilientSystems.handle_incoming_incident_resolution', return_value={'Contents': 'Incident resolved'})
     # Call the command and capture the result
     result = get_remote_data_command(client, args, tag_to_ibm="FROM ", tag_from_ibm="TO ")
 
@@ -915,10 +851,7 @@ def test_get_remote_data_command(mocker):
     assert result.mirrored_object
 
 
-def test_update_remote_system_command_no_changes(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_update_remote_system_command_no_changes(_mocker):
     from IBMResilientSystems import SimpleClient, update_remote_system_command
 
     client = SimpleClient()
@@ -931,7 +864,7 @@ def test_update_remote_system_command_no_changes(mocker):
         'incStatus': 'Active'
     }
 
-    debug_mock = mocker.patch.object(demisto, 'debug')
+    debug_mock = _mocker.patch.object(demisto, 'debug')
     result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
 
     assert result == '1000'
@@ -940,10 +873,7 @@ def test_update_remote_system_command_no_changes(mocker):
     )
 
 
-def test_update_remote_system_command_with_changes(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_update_remote_system_command_with_changes(_mocker):
     from IBMResilientSystems import SimpleClient, update_remote_system_command
 
     client = SimpleClient()
@@ -956,8 +886,9 @@ def test_update_remote_system_command_with_changes(mocker):
         'incStatus': 'Active'
     }
 
-    prepare_mock = mocker.patch('IBMResilientSystems.prepare_incident_update_dto_for_mirror', return_value={'name': 'Updated Incident Name'})
-    update_mock = mocker.patch('IBMResilientSystems.update_incident')
+    prepare_mock = _mocker.patch('IBMResilientSystems.prepare_incident_update_dto_for_mirror',
+                                 return_value={'name': 'Updated Incident Name'})
+    update_mock = _mocker.patch('IBMResilientSystems.update_incident')
 
     result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
 
@@ -966,10 +897,7 @@ def test_update_remote_system_command_with_changes(mocker):
     update_mock.assert_called_once_with(client, '1001', {'name': 'Updated Incident Name'})
 
 
-def test_update_remote_system_command_with_note(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_update_remote_system_command_with_note(_mocker):
     from IBMResilientSystems import SimpleClient, update_remote_system_command
     from CommonServerPython import EntryType
 
@@ -983,7 +911,7 @@ def test_update_remote_system_command_with_note(mocker):
         'incStatus': 'Active'
     }
 
-    add_note_mock = mocker.patch('IBMResilientSystems.add_note')
+    add_note_mock = _mocker.patch('IBMResilientSystems.add_note')
 
     result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
 
@@ -991,10 +919,7 @@ def test_update_remote_system_command_with_note(mocker):
     add_note_mock.assert_called_once_with(client, '1002', 'Test note')
 
 
-def test_update_remote_system_command_with_file(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_update_remote_system_command_with_file(_mocker):
     from IBMResilientSystems import SimpleClient, update_remote_system_command
     from CommonServerPython import EntryType
 
@@ -1008,7 +933,7 @@ def test_update_remote_system_command_with_file(mocker):
         'incStatus': 'Active'
     }
 
-    upload_mock = mocker.patch('IBMResilientSystems.upload_incident_attachment')
+    upload_mock = _mocker.patch('IBMResilientSystems.upload_incident_attachment')
 
     result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
 
@@ -1016,10 +941,7 @@ def test_update_remote_system_command_with_file(mocker):
     upload_mock.assert_called_once_with(client, '1003', '2', "FROM XSOAR")
 
 
-def test_update_remote_system_command_with_multiple_entries(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_update_remote_system_command_with_multiple_entries(_mocker):
     from IBMResilientSystems import SimpleClient, update_remote_system_command
     from CommonServerPython import EntryType
 
@@ -1037,10 +959,11 @@ def test_update_remote_system_command_with_multiple_entries(mocker):
         'incStatus': 'Active'
     }
 
-    prepare_mock = mocker.patch('IBMResilientSystems.prepare_incident_update_dto_for_mirror', return_value={'description': 'Updated description'})
-    update_mock = mocker.patch('IBMResilientSystems.update_incident')
-    add_note_mock = mocker.patch('IBMResilientSystems.add_note')
-    upload_mock = mocker.patch('IBMResilientSystems.upload_incident_attachment')
+    prepare_mock = _mocker.patch('IBMResilientSystems.prepare_incident_update_dto_for_mirror',
+                                 return_value={'description': 'Updated description'})
+    update_mock = _mocker.patch('IBMResilientSystems.update_incident')
+    add_note_mock = _mocker.patch('IBMResilientSystems.add_note')
+    upload_mock = _mocker.patch('IBMResilientSystems.upload_incident_attachment')
 
     result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
 
@@ -1053,10 +976,7 @@ def test_update_remote_system_command_with_multiple_entries(mocker):
     upload_mock.assert_called_once_with(client, '1004', '4', "FROM XSOAR")
 
 
-def test_update_remote_system_command_with_untagged_entries(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_update_remote_system_command_with_untagged_entries(_mocker):
     from IBMResilientSystems import SimpleClient, update_remote_system_command
     from CommonServerPython import EntryType
 
@@ -1073,8 +993,8 @@ def test_update_remote_system_command_with_untagged_entries(mocker):
         'incStatus': 'Active'
     }
 
-    add_note_mock = mocker.patch('IBMResilientSystems.add_note')
-    upload_mock = mocker.patch('IBMResilientSystems.upload_incident_attachment')
+    add_note_mock = _mocker.patch('IBMResilientSystems.add_note')
+    upload_mock = _mocker.patch('IBMResilientSystems.upload_incident_attachment')
 
     result = update_remote_system_command(client, args, tag_to_ibm="FROM XSOAR")
 
@@ -1083,10 +1003,7 @@ def test_update_remote_system_command_with_untagged_entries(mocker):
     upload_mock.assert_not_called()
 
 
-def test_get_mapping_fields_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_get_mapping_fields_command(_mocker):
     from IBMResilientSystems import (
         get_mapping_fields_command, IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME, IBM_QRADAR_INCIDENT_FIELDS
     )
@@ -1105,61 +1022,404 @@ def test_get_mapping_fields_command(mocker):
         assert field_name in scheme.fields
 
 
-def test_validate_iso_time_format():
-    # TODO
-    pass
-
-
 @pytest.mark.parametrize('last_run, first_fetch_time, expected_args, expected_last_run', [
     (None, '2023-01-01T00:00:00Z', {'date-created-after': 1672531200000}, 1672531200001),
     ({'time': 1672531200000}, '2023-01-01T00:00:00Z', {'date-created-after': 1672531200000}, 1672531200001),
 ])
-def test_fetch_incidents(mocker, last_run, first_fetch_time, expected_args, expected_last_run):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
+def test_fetch_incidents(_mocker, last_run, first_fetch_time, expected_args, expected_last_run):
     from IBMResilientSystems import SimpleClient, fetch_incidents
-    
-    mock_search_incidents = mocker.patch('IBMResilientSystems.search_incidents', return_value=[])
-    mock_set_last_run = mocker.patch.object(demisto, 'setLastRun', return_value=None)
-    
+
+    mock_search_incidents = _mocker.patch('IBMResilientSystems.search_incidents', return_value=[])
+    mock_set_last_run = _mocker.patch.object(demisto, 'setLastRun', return_value=None)
+
     client = SimpleClient()
     client.org_id = 0
     fetch_incidents(client, first_fetch_time, fetch_closed=True)
-    
+
     mock_search_incidents.assert_called_once_with(client, {'date-created-after': expected_args['date-created-after']})
     mock_set_last_run.assert_called_once_with({'time': expected_last_run})
 
 
-def test_to_timestamp_with_integer(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
-
+def test_to_timestamp_with_integer(_mocker):
     from IBMResilientSystems import to_timestamp
     assert to_timestamp(1641024000000) == 1641024000000
 
-def test_to_timestamp_with_string_timestamp(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
 
+def test_to_timestamp_with_string_timestamp(_mocker):
     from IBMResilientSystems import to_timestamp
     assert to_timestamp("1641024000000") == 1641024000000
-def test_to_timestamp_with_string_date(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
 
+
+def test_to_timestamp_with_string_date(_mocker):
     from IBMResilientSystems import to_timestamp
     assert to_timestamp("2022-01-01T12:00:00Z") == 1641038400000
 
-def test_to_timestamp_with_invalid_string(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'server': 'example.com:80', 'org': 'example', 'proxy': True
-    })
 
+def test_to_timestamp_with_invalid_string(_mocker):
     from IBMResilientSystems import to_timestamp
     import pytest
     with pytest.raises(ValueError):
         to_timestamp("INVALID_DATE_STRING")
+
+
+def test_validate_iso_time_format_with_milliseconds(_mocker):
+    from IBMResilientSystems import validate_iso_time_format
+    input_time = "2023-01-01T12:30:45.123456Z"
+    expected_output = "2023-01-01T12:30:45Z"
+    assert validate_iso_time_format(input_time) == expected_output
+
+
+def test_validate_iso_time_format_without_z(_mocker):
+    from IBMResilientSystems import validate_iso_time_format
+    input_time = "2023-01-01T12:30:45"
+    expected_output = "2023-01-01T12:30:45Z"
+    assert validate_iso_time_format(input_time) == expected_output
+
+
+def test_validate_iso_time_format_with_z(_mocker):
+    from IBMResilientSystems import validate_iso_time_format
+    input_time = "2023-01-01T12:30:45Z"
+    expected_output = "2023-01-01T12:30:45Z"
+    assert validate_iso_time_format(input_time) == expected_output
+
+
+def test_update_task_command_multiple_fields(_mocker):
+    from IBMResilientSystems import SimpleClient, update_task_command
+    client = SimpleClient()
+    args = {
+        'task_id': '5678',
+        'name': 'Complex Task',
+        'owner_id': '10',
+        'due_date': '2023-12-31T23:59:59Z',
+        'phase': 'Engage',
+        'instructions': 'Investigate thoroughly',
+        'status': 'Open'
+    }
+
+    update_task_mock = _mocker.patch('IBMResilientSystems.update_task')
+    to_timestamp_mock = _mocker.patch('IBMResilientSystems.to_timestamp', return_value=1704067199000)
+
+    result = update_task_command(client, args)
+
+    expected_dto = {
+        'name': 'Complex Task',
+        'inc_owner_id': 10,
+        'due_date': 1704067199000,
+        'phase_id': 'Engage',
+        'instructions': 'Investigate thoroughly',
+        'status': 'O'
+    }
+    update_task_mock.assert_called_once_with(client, '5678', expected_dto)
+    assert result.readable_output == 'Task 5678 updated successfully.'
+
+
+def test_update_task_command_completed_status(_mocker):
+    from IBMResilientSystems import SimpleClient, update_task_command
+    client = SimpleClient()
+    args = {'task_id': '9012', 'status': 'Completed'}
+
+    update_task_mock = _mocker.patch('IBMResilientSystems.update_task')
+
+    result = update_task_command(client, args)
+
+    update_task_mock.assert_called_once_with(client, '9012', {'status': 'C'})
+    assert result.readable_output == 'Task 9012 updated successfully.'
+
+
+def test_update_task_command_invalid_status(_mocker):
+    from IBMResilientSystems import SimpleClient, update_task_command
+    client = SimpleClient()
+    args = {'task_id': '3456', 'status': 'Invalid'}
+
+    update_task_mock = _mocker.patch('IBMResilientSystems.update_task')
+
+    result = update_task_command(client, args)
+
+    update_task_mock.assert_called_once_with(client, '3456', {})
+    assert result.readable_output == 'Task 3456 updated successfully.'
+
+
+def test_update_task_command_empty_args(_mocker):
+    from IBMResilientSystems import SimpleClient, update_task_command
+    client = SimpleClient()
+    args = {'task_id': '7890'}
+
+    update_task_mock = _mocker.patch('IBMResilientSystems.update_task')
+
+    result = update_task_command(client, args)
+
+    update_task_mock.assert_called_once_with(client, '7890', {})
+    assert result.readable_output == 'Task 7890 updated successfully.'
+
+
+def test_process_raw_incident(_mocker):
+    _mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80',
+                                                          'org': 'example',
+                                                          'proxy': True,
+                                                          'fetch_tasks': True,
+                                                          'fetch_notes': True
+                                                          })
+
+    from IBMResilientSystems import SimpleClient, process_raw_incident
+    client = SimpleClient()
+
+    _mocker.patch('IBMResilientSystems.get_tasks', return_value=[])
+    _mocker.patch('IBMResilientSystems.get_incident_notes', return_value=[])
+    _mocker.patch('IBMResilientSystems.incident_attachments', return_value=[])
+    _mocker.patch('IBMResilientSystems.incident_artifacts', return_value=[])
+    _mocker.patch('IBMResilientSystems.get_phase_name', return_value="Detect/Analyze")
+
+    result = process_raw_incident(client, load_test_data("./test_data/test_get_incident_response.json"))
+
+    assert result["description"] == "1111 2222 3333"
+    assert result["discovered_date"] == "2024-07-29T14:31:57Z"
+    assert result["create_date"] == "2024-07-29T14:32:36Z"
+
+
+@pytest.mark.parametrize("incident_id, delta, expected_dto", [
+    (
+        "1000",
+        {"ibmqradarname": "Updated Incident Name", "description": "New description"},
+        {'changes': [
+            {
+                'field': 'name',
+                'new_value': {'text': 'Updated Incident Name'},
+                'old_value': {'text': 'incident_name'}
+            },
+            {
+                'field': 'description',
+                'new_value': {
+                    'textarea': {
+                        'content': 'New description',
+                        'format': 'html'
+                    }
+                },
+                'old_value': {
+                    'textarea': {
+                        'content': '1111 2222 3333',
+                        'format': 'html'
+                    }
+                }
+            }
+        ]
+        }
+    ),
+    (
+        "1001",
+        {"resolution_id": ""},
+        {
+            'changes': [
+                {
+                    'field': 'plan_status',
+                    'new_value': {'text': 'C'},
+                    'old_value': {'text': 'A'}},
+                {
+                    'field': 'resolution_id',
+                    'new_value': {'textarea': None},
+                    'old_value': {'id': 9}
+                }
+            ]
+        }
+    )
+])
+def test_prepare_incident_update_dto_for_mirror(_mocker, incident_id, delta, expected_dto):
+    from IBMResilientSystems import SimpleClient, prepare_incident_update_dto_for_mirror
+
+    client = SimpleClient()
+    client.org_id = 0
+
+    mock_get_incident = _mocker.patch('IBMResilientSystems.get_incident',
+                                      return_value=load_test_data('./test_data/test_get_incident_response.json'))
+
+    _mocker.patch.object(demisto, 'params', return_value={'close_ibm_incident': True})
+
+    result = prepare_incident_update_dto_for_mirror(client, incident_id, delta)
+
+    mock_get_incident.assert_called_once_with(client, incident_id)
+    assert result == expected_dto
+
+
+def test_prettify_incident_tasks_multiple_tasks(_mocker):
+    from IBMResilientSystems import SimpleClient, prettify_incident_tasks
+    client = SimpleClient()
+    tasks = [
+        {
+            'id': 1,
+            'name': 'Task 1',
+            'description': 'Description 1',
+            'due_date': 1641024000000,
+            'status': 'O',
+            'required': True,
+            'owner_fname': 'John',
+            'owner_lname': 'Doe',
+            'phase_id': 1,
+            'creator_principal': {'display_name': 'Admin User'},
+            'instructions': {'content': 'Instructions 1'}
+        },
+        {
+            'id': 2,
+            'name': 'Task 2',
+            'description': 'Description 2',
+            'due_date': None,
+            'status': 'C',
+            'required': False,
+            'owner_fname': 'Jane',
+            'owner_lname': 'Smith',
+            'phase_id': 2,
+            'creator_principal': None,
+            'instructions': None
+        }
+    ]
+    _mocker.patch('IBMResilientSystems.get_phase_name', side_effect=['Initial', 'Analysis'])
+    _mocker.patch('IBMResilientSystems.normalize_timestamp', return_value='2022-01-01T12:00:00Z')
+
+    result = prettify_incident_tasks(client, tasks)
+
+    assert len(result) == 2
+    assert result[0]['ID'] == 1
+    assert result[0]['Name'] == 'Task 1'
+    assert result[0]['Status'] == 'Open'
+    assert result[0]['DueDate'] == '2022-01-01T12:00:00Z'
+    assert result[0]['Phase'] == 'Initial'
+    assert result[0]['Creator'] == 'Admin User'
+    assert result[0]['Instructions'] == 'Instructions 1'
+
+    assert result[1]['ID'] == 2
+    assert result[1]['Name'] == 'Task 2'
+    assert result[1]['Status'] == 'Closed'
+    assert result[1]['DueDate'] == 'No due date'
+    assert result[1]['Phase'] == 'Analysis'
+    assert result[1]['Creator'] == ''
+    assert result[1]['Instructions'] == ''
+
+
+def test_prettify_incident_tasks_missing_fields(_mocker):
+    from IBMResilientSystems import SimpleClient, prettify_incident_tasks
+    client = SimpleClient()
+    tasks = [{
+        'id': 1,
+        'name': 'Minimal Task',
+        'description': '',
+        'due_date': None,
+        'status': 'O',
+        'required': False,
+        'phase_id': 1
+    }]
+    _mocker.patch('IBMResilientSystems.get_phase_name', return_value='Initial')
+
+    result = prettify_incident_tasks(client, tasks)
+
+    assert len(result) == 1
+    assert result[0]['ID'] == 1
+    assert result[0]['Name'] == 'Minimal Task'
+    assert result[0]['Description'] == ''
+    assert result[0]['DueDate'] == 'No due date'
+    assert result[0]['Status'] == 'Open'
+    assert result[0]['Required'] is False
+    assert result[0]['Owner'] == ' '
+    assert result[0]['Phase'] == 'Initial'
+    assert result[0]['Creator'] == ''
+    assert result[0]['Instructions'] == ''
+
+
+def test_list_open_incidents(_mocker):
+    from IBMResilientSystems import SimpleClient, list_open_incidents
+    client = SimpleClient()
+    get_incidents_request = _mocker.patch.object(SimpleClient, 'get', return_value=[])
+
+    list_open_incidents(client)
+    get_incidents_request.assert_called_once_with('/incidents/open')
+
+
+def test_get_users(_mocker):
+    from IBMResilientSystems import SimpleClient, get_users
+    client = SimpleClient()
+    _mocker.patch.object(SimpleClient, 'get', return_value=[])
+    get_users(client)
+    client.get.assert_called_once_with('/users')
+
+def test_get_phase_name(_mocker):
+    from IBMResilientSystems import SimpleClient, get_phase_name
+    client = SimpleClient()
+    _mocker.patch.object(SimpleClient, 'get', return_value={
+        "id": 1004,
+        "name": "Engage",
+        "enabled": True,
+        "perms": {
+            "deleteable": True,
+            "reorderable": True
+        },
+        "uuid": "0000-0000-0000-00000",
+        "order": 1,
+        "tags": []
+})
+    
+    get_phase_name(client, '1004')
+
+    client.get.assert_called_once_with('/phases/1004')
+
+def test_get_phases(_mocker):
+    from IBMResilientSystems import SimpleClient, get_phases
+    client = SimpleClient()
+    _mocker.patch.object(SimpleClient, 'get', return_value={
+        "entities": [
+            {
+                "id": 1003,
+                "name": "Initial",
+                "enabled": True,
+                "perms": {
+                    "deleteable": False,
+                    "reorderable": False
+                },
+                "uuid": "0000-0000-0000-0000",
+                "order": 0,
+                "tags": []
+            }
+        ]
+    })
+    get_phases(client)
+    
+    client.get.assert_called_once_with('/phases')
+
+def test_get_tasks(_mocker):
+    from IBMResilientSystems import SimpleClient, get_tasks
+    client = SimpleClient()
+    _mocker.patch.object(SimpleClient, 'get', return_value=[])
+    
+    get_tasks(client, '1000')
+    
+    client.get.assert_called_once_with('/incidents/1000/tasks?text_content_output_format=objects_convert_text')
+
+
+@pytest.mark.parametrize("resolution_id, resolution_summary, expected_close_reason, expected_close_notes", [
+    (8, "Duplicate issue", "Duplicate", "Duplicate issue"),
+    (0, "Hardware failure", "Resolved", "Hardware failure"),
+    (None, "User error", "Resolved", "User error")
+])
+def test_handle_incoming_incident_resolution(_mocker,
+                                             resolution_id,
+                                             resolution_summary,
+                                             expected_close_reason,
+                                             expected_close_notes):
+    from IBMResilientSystems import EntryType, EntryFormat, handle_incoming_incident_resolution
+    incident_id = "1234"
+    result = handle_incoming_incident_resolution(incident_id, resolution_id, resolution_summary)
+
+    assert result["Type"] == EntryType.NOTE
+    assert result["ContentsFormat"] == EntryFormat.JSON
+    assert result["Contents"]["dbotIncidentClose"] is True
+    assert result["Contents"]["closeReason"] == expected_close_reason
+    assert result["Contents"]["closeNotes"] == f"{expected_close_notes}\nClosed on IBM QRadar SOAR"
+
+def test_handle_incoming_incident_resolution_unknown_resolution(_mocker):
+    from IBMResilientSystems import EntryType, EntryFormat, handle_incoming_incident_resolution
+    incident_id = "5678"
+    resolution_id = 999  # Unknown resolution ID
+    resolution_summary = "Unknown resolution"
+    result = handle_incoming_incident_resolution(incident_id, resolution_id, resolution_summary)
+
+    assert result["Type"] == EntryType.NOTE
+    assert result["ContentsFormat"] == EntryFormat.JSON
+    assert result["Contents"]["dbotIncidentClose"] is True
+    assert result["Contents"]["closeReason"] == "Resolved"
+    assert result["Contents"]["closeNotes"] == "Unknown resolution\nClosed on IBM QRadar SOAR"

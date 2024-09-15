@@ -1,4 +1,3 @@
-import copy
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -7,7 +6,8 @@ import logging
 import time
 import urllib3
 import resilient
-from resilient.co3 import SimpleClient, SimpleHTTPException
+from resilient.co3 import SimpleClient
+from datetime import datetime, timezone
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -301,7 +301,7 @@ def prettify_incident_tasks(client: SimpleClient, tasks: list[dict]) -> list[dic
             'DueDate': normalize_timestamp(task['due_date']) if task['due_date'] else 'No due date',
             'Status': 'Open' if task['status'] == 'O' else 'Closed',
             'Required': task['required'],
-            'Owner': f"{task.get('owner_fname', '')} {task.get('owner_lname')}",
+            'Owner': f"{task.get('owner_fname', '')} {task.get('owner_lname', '')}",
             'Creator': '',
             'Instructions': ''
         })
@@ -648,45 +648,7 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
     return dto
 
 
-# def to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
-#     """
-#     Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%SZ) to milliseconds.
-#     If the input is already a timestamp, it returns it as is.
-#
-#     :type date_str_or_dt: ``str``, ``datetime.datetime``, or ``int``
-#     :param date_str_or_dt: The date to be parsed. (required)
-#
-#     :type date_format: ``str``
-#     :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
-#         datetime.datetime or int). (optional)
-#
-#     :return: The parsed timestamp.
-#     :rtype: ``int``
-#     """
-#     # Check if the input is already an integer, assuming it's a timestamp in milliseconds
-#     if isinstance(date_str_or_dt, int):
-#         return date_str_or_dt
-#
-#     # Check if the input is a string that could be a timestamp
-#     if isinstance(date_str_or_dt, str):
-#         try:
-#             # Try converting the string directly to an integer (e.g., Unix timestamp)
-#             timestamp = int(date_str_or_dt)
-#             return timestamp
-#         except ValueError:
-#             # If it can't be converted, assume it's a date string and parse it
-#             parsed_time = time.strptime(date_str_or_dt, date_format)
-#             return int(time.mktime(parsed_time) * 1000)
-#
-#     # If the input is a datetime object, convert it to a timestamp
-#     if isinstance(date_str_or_dt, datetime):
-#         return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
-#
-#     raise TypeError("Unsupported type for date_str_or_dt")
-
-from datetime import datetime, timezone
-
-def to_timestamp(time_input, date_format='%Y-%m-%dT%H:%M:%SZ'):
+def to_timestamp(time_input):
     if isinstance(time_input, int):
         # Input is already a timestamp in milliseconds
         return time_input
@@ -707,6 +669,7 @@ def to_timestamp(time_input, date_format='%Y-%m-%dT%H:%M:%SZ'):
                     f"Invalid time input: '{time_input}' is neither a valid integer timestamp nor a valid ISO time string.")
     else:
         raise TypeError(f"Invalid type for time_input: expected str or int, got {type(time_input).__name__}.")
+
 def extract_data_form_other_fields_argument(other_fields, incident, changes):
     """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
 
@@ -814,7 +777,6 @@ def get_incident(client: SimpleClient, incident_id, content_format=False):
         url += '?text_content_output_format=objects_convert_text'
     response = client.get(url)
     return response
-
 
 def list_open_incidents(client):
     response = client.get('/incidents/open')
@@ -1099,19 +1061,23 @@ def update_task_command(client: SimpleClient, args: dict) -> CommandResults:
     task_dto = {}
     if task_name := args.get('name'):
         task_dto['name'] = task_name
+
     if owner_id := args.get('owner_id'):
-        task_dto['inc_owner_id']: int(owner_id)
+        task_dto['inc_owner_id'] = int(owner_id)
+
     if due_date := args.get('due_date'):
         task_dto['due_date'] = to_timestamp(due_date)
+
     if phase := args.get('phase'):
         task_dto['phase_id'] = phase
+
     if instructions := args.get('instructions'):
         task_dto['instructions'] = instructions
+
     if "Open" == args.get('status'):
         task_dto['status'] = 'O'
     elif "Completed" == args.get('status'):
         task_dto['status'] = 'C'
-
     demisto.debug(f'update_task_command {task_dto=}')
     update_task(client, task_id, task_dto)
     return CommandResults(readable_output=f'Task {task_id} updated successfully.')

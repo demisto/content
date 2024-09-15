@@ -1,10 +1,30 @@
-def test_add_comment_as_note():
-    """Test if the correct arguments are given to the CommandResults object when
-    adding a comment as a note.
-    """
-    from IbmAddTask import add_note
-    result = add_note({'note': 'New Note', 'tags': 'comment tag to IBM'})
+from IbmAddTask import add_task
+from CommonServerPython import *
 
-    assert result.readable_output == 'New Note'
-    assert result.tags == ['comment tag to IBM']
-    assert result.mark_as_note
+def test_add_task(mocker):
+    """Test if the correct arguments are given to the CommandResults object when
+    adding a task.
+    """
+    # Mock the demisto.executeCommand to return a dummy response
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{"HumanReadable": "New task created"}])
+
+    # Mock the demisto.incident() to return a dummy incident with dbotMirrorId
+    mocker.patch.object(demisto, 'incident', return_value={'dbotMirrorId': '123'})
+
+    result = add_task({
+        'name': 'New Task',
+        'phase': 'Initial',
+        'due_date': '2023-06-01',
+        'description': 'Task description',
+        'instructions': 'Task instructions',
+        'tags': 'FROM XSOAR'
+    })
+
+    assert "New task created" in result.readable_output
+    assert "New Task" in result.readable_output
+    assert "Initial" in result.readable_output
+    assert "2023-06-01" in result.readable_output
+    assert "Task description" in result.readable_output
+    assert "Task instructions" in result.readable_output
+    assert result.tags == ['FROM XSOAR']
+    assert not result.mark_as_note
