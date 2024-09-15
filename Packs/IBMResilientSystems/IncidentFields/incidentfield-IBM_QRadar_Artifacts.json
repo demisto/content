@@ -14,7 +14,7 @@
     "id": "incident_ibmqradarartifacts",
     "isReadOnly": false,
     "locked": false,
-    "name": "IBM QRadar Artifacts",
+    "name": "IBM Security QRadar SOAR Artifacts",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

@@ -30,10 +30,10 @@
                 "Email": {
                     "simple": "creator.email"
                 },
-                "IBM QRadar Discovered Date": {
+                "IBM Security QRadar SOAR Discovered Date": {
                     "simple": "discovered_date"
                 },
-                "IBM QRadar Exposure Type": {
+                "IBM Security QRadar SOAR Exposure Type": {
                     "complex": {
                         "filters": [],
                         "root": "exposure_type_id",
@@ -58,7 +58,7 @@
                         ]
                     }
                 },
-                "IBM QRadar NIST Attack Vectors": {
+                "IBM Security QRadar SOAR NIST Attack Vectors": {
                     "complex": {
                         "filters": [],
                         "root": "nist_attack_vectors",
@@ -83,13 +83,13 @@
                         ]
                     }
                 },
-                "IBM QRadar Negative PR": {
+                "IBM Security QRadar SOAR Negative PR": {
                     "simple": "negative_pr_likely"
                 },
-                "IBM QRadar Reporter Name": {
+                "IBM Security QRadar SOAR Reporter Name": {
                     "simple": "reporter"
                 },
-                "IBM QRadar Resolution": {
+                "IBM Security QRadar SOAR Resolution": {
                     "complex": {
                         "filters": [],
                         "root": "resolution_id",
@@ -114,7 +114,7 @@
                         ]
                     }
                 },
-                "IBM QRadar Resolution Summary": {
+                "IBM Security QRadar SOAR Resolution Summary": {
 					"complex": {
 						"filters": [],
 						"root": "resolution_summary",
@@ -148,7 +148,7 @@
 						]
 					}
 				},
-				"IBM QRadar Name": {
+				"IBM Security QRadar SOAR Name": {
 					"simple": "name"
 				},
                 "Last Modified On": {
@@ -192,16 +192,16 @@
                         ]
                     }
                 },
-                "IBM QRadar Notes": {
+                "IBM Security QRadar SOAR Notes": {
                     "simple": "notes"
                 },
-                "IBM QRadar Tasks": {
+                "IBM Security QRadar SOAR Tasks": {
                     "simple": "tasks"
                 },
-                "IBM QRadar Attachments": {
+                "IBM Security QRadar SOAR Attachments": {
                     "simple": "attachments"
                 },
-                "IBM QRadar Artifacts": {
+                "IBM Security QRadar SOAR Artifacts": {
                     "simple": "artifacts"
                 },
                 "dbotMirrorDirection": {

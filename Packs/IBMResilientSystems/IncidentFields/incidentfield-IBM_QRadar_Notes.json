@@ -14,7 +14,7 @@
     "id": "incident_ibmqradarnotes",
     "isReadOnly": false,
     "locked": false,
-    "name": "IBM QRadar Notes",
+    "name": "IBM Security QRadar SOAR Notes",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

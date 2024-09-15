@@ -633,8 +633,8 @@ def test_add_custom_task_command(_mocker, args, expected_task_dto):
     else:
         result = add_custom_task_command(client, args=args)
         add_custom_task_request.assert_called_once_with(uri=f"/incidents/{args['incident_id']}/tasks", payload=expected_task_dto)
-        assert (result.readable_output ==
-                f"Successfully created new task for incident with ID {args['incident_id']}. Task ID: 1234")
+        assert (result.readable_output
+                == f"Successfully created new task for incident with ID {args['incident_id']}. Task ID: 1234")
 
 
 def test_list_tasks_command(_mocker):

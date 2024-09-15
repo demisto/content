@@ -33,7 +33,7 @@
 		"disabled": false,
 		"reputationCalc": 0,
 		"onChangeRepAlg": 0,
-		"layout": "82afb870-b972-49b1-8434-34a2a5f55ab3",
+		"layout": "IBM QRadar SOAR Incident",
 		"detached": false,
 		"extractSettings": {
 			"mode": "Specific",

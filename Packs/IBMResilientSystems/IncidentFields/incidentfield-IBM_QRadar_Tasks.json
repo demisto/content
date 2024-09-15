@@ -14,7 +14,7 @@
     "id": "incident_ibmqradartasks",
     "isReadOnly": false,
     "locked": false,
-    "name": "IBM QRadar Tasks",
+    "name": "IBM Security QRadar SOAR Tasks",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

@@ -329,7 +329,7 @@ script:
       - Low
       - Medium
       - High
-    - description: User full name to set as incident owner, e.g., Steve Jobs
+    - description: User full name to set as incident owner, e.g., Steve Jobs.
       name: owner
     - auto: PREDEFINED
       description: Incident type (added to the current incident types list).

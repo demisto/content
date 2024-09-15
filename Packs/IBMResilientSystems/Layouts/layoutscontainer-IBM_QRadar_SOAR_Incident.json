@@ -766,18 +766,13 @@
 				"id": "workPlan",
 				"name": "Work Plan",
 				"type": "workPlan"
-			},
-			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
 			}
 		]
 	},
 	"edit": null,
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "82afb870-b972-49b1-8434-34a2a5f55ab3",
+	"id": "IBM QRadar SOAR Incident",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",

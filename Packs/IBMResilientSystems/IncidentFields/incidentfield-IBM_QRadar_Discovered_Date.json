@@ -61,5 +61,6 @@
 			"XDRBuiltInField": false,
 			"selectValuesMap": null,
 			"ipVersion": "",
-			"pretty_name": "IBM QRadar Discovered Date"
+			"pretty_name": "IBM QRadar Discovered Date",
+            "fromVersion": "6.9.0"
 		}

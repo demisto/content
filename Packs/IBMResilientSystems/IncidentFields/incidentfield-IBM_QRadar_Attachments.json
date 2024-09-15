@@ -14,7 +14,7 @@
     "id": "incident_ibmqradarattachments",
     "isReadOnly": false,
     "locked": false,
-    "name": "IBM QRadar Attachments",
+    "name": "IBM Security QRadar SOAR Attachments",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
