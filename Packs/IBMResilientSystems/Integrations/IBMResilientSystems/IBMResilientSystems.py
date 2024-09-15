@@ -669,6 +669,7 @@ def to_timestamp(time_input):
     else:
         raise TypeError(f"Invalid type for time_input: expected str or int, got {type(time_input).__name__}.")
 
+
 def extract_data_form_other_fields_argument(other_fields, incident, changes):
     """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
 
@@ -750,6 +751,7 @@ def update_task(client: SimpleClient, task_id: str, task_dto: dict):
     response = client.put(f'/tasks/{task_id}', payload=task_dto)
     return response
 
+
 def search_incidents(client: SimpleClient, args: dict) -> list | dict:
     """
     Search and get IBM QRadar incidents according to filters and pagination parameters.
@@ -776,6 +778,7 @@ def get_incident(client: SimpleClient, incident_id, content_format=False):
         url += '?text_content_output_format=objects_convert_text'
     response = client.get(url)
     return response
+
 
 def list_open_incidents(client):
     response = client.get('/incidents/open')
@@ -880,7 +883,7 @@ def search_incidents_command(client, args):
                     result_incidents,
                     headers=['Id', 'Name', 'PlanStatus', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
                     removeNull=True
-                ),
+            ),
 
             'EntryContext': ec
         }
@@ -1073,9 +1076,9 @@ def update_task_command(client: SimpleClient, args: dict) -> CommandResults:
     if instructions := args.get('instructions'):
         task_dto['instructions'] = instructions
 
-    if "Open" == args.get('status'):
+    if args.get('status') == "Open":
         task_dto['status'] = 'O'
-    elif "Completed" == args.get('status'):
+    elif args.get('status') == "Completed":
         task_dto['status'] = 'C'
     demisto.debug(f'update_task_command {task_dto=}')
     update_task(client, task_id, task_dto)
@@ -1421,7 +1424,7 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
             if fetch_closed or (not incident.get('end_date') and incident.get('plan_status') == 'A'):  # 'A' stands for 'Active'
                 demisto.debug(f'fetch_incidents {incident=}')
                 incident = process_raw_incident(client, incident)
-                demisto_incident = dict()
+                demisto_incident = {}
                 demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])}'
                 demisto_incident['occurred'] = incident.get('discovered_date', None) or incident['create_date']
                 demisto_incident['rawJSON'] = json.dumps(incident)
@@ -1630,6 +1633,7 @@ def update_incident_note_command(client: SimpleClient, args: dict) -> CommandRes
         readable_output=f"Successfully updated note ID {note_id} for incident ID {incident_id}"
     )
 
+
 def list_tasks_command(client: SimpleClient) -> CommandResults:
     """
     Lists an array of open tasks to which the current user is assigned.
@@ -1696,7 +1700,7 @@ def list_task_instructions_command(client: SimpleClient, args: dict) -> CommandR
     """
     task_id = args.get("task_id")
     response = client.get(f"/tasks/{task_id}/instructions_ex?text_content_output_format=objects_convert_text")
-    
+
     return CommandResults(
         outputs_prefix="Resilient.Task",
         outputs=response,
@@ -1811,7 +1815,7 @@ def get_remote_data_command(client: SimpleClient,
         reopening_entry = handle_incoming_incident_reopening(incident_id=incident_id)
         entries.append(reopening_entry)
 
-    mirrored_data = dict()
+    mirrored_data = {}
     mirrored_data["rawJSON"] = json.dumps(incident)
 
     demisto.debug(f"get_remote_data_command mirrored_object={incident}")

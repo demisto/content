@@ -23,6 +23,7 @@ def convert_to_table():
         readable_output=markdown
     )
 
+
 def main():
     try:
         return_results(convert_to_table())

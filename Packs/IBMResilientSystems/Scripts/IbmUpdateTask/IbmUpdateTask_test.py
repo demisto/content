@@ -1,6 +1,7 @@
 from IbmUpdateTask import update_task
 import demistomock as demisto
 
+
 def test_update_task_success(mocker):
     args = {"task_id": "123", "status": "Completed", "phase": "Initial", "due_date": "2020-02-02T19:00:00Z"}
     mock_results = [{"HumanReadable": "Task updated successfully"}]

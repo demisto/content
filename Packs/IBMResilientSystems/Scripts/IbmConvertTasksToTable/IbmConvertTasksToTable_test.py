@@ -1,6 +1,8 @@
 from IbmConvertTasksToTable import convert_to_table
 import demistomock as demisto
 import pytest
+
+
 def test_empty_incident(mocker):
     import re
     mocker.patch.object(demisto, 'incident', return_value={})
@@ -8,15 +10,18 @@ def test_empty_incident(mocker):
                                                    "but returned None")):
         convert_to_table()
 
+
 def test_no_custom_fields(mocker):
     mocker.patch.object(demisto, 'incident', return_value={'id': '1'})
     result = convert_to_table()
     assert result.readable_output == 'No tasks were found for this incident'
 
+
 def test_empty_tasks(mocker):
     mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {'ibmqradartasks': []}})
     result = convert_to_table()
     assert result.readable_output == 'No tasks were found for this incident'
+
 
 def test_multiple_tasks(mocker):
     import json

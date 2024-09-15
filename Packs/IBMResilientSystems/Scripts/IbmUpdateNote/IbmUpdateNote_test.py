@@ -1,10 +1,11 @@
 from IbmUpdateNote import update_note
 import demistomock as demisto
 
+
 def test_update_note_with_all_args(mocker):
     """Test update_note function with all arguments."""
     mock_execute_command = mocker.patch.object(demisto, 'executeCommand', return_value=[])
-    mock_incident = mocker.patch.object(demisto, 'incident', return_value={'dbotMirrorId': '1000'})
+    mocker.patch.object(demisto, 'incident', return_value={'dbotMirrorId': '1000'})
     result = update_note({
         'note_id': '123',
         'note_body': 'Full Update',

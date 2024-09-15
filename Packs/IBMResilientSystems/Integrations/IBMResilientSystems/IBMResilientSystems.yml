@@ -45,7 +45,7 @@ configuration:
   name: credentials
   type: 9
   required: false
-  hidden: true
+  hidden: false
   deprecated: true
   section: Connect
 

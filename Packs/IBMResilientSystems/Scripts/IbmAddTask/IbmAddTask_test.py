@@ -1,6 +1,7 @@
 from IbmAddTask import add_task
 import demistomock as demisto
 
+
 def test_add_task(mocker):
     """Test if the correct arguments are given to the CommandResults object when
     adding a task.

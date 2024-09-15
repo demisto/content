@@ -1,6 +1,7 @@
 from IbmConvertArtifactsToTable import convert_to_table
 import demistomock as demisto
 
+
 def test_convert_to_table_no_artifacts(mocker):
     mock_incident = {
         'CustomFields': {
@@ -10,6 +11,7 @@ def test_convert_to_table_no_artifacts(mocker):
     mocker.patch.object(demisto, 'incident', return_value=mock_incident)
     result = convert_to_table()
     assert result.readable_output == 'No artifacts were found for this incident'
+
 
 def test_convert_to_table_with_artifacts(mocker):
     mock_incident = {

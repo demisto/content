@@ -190,7 +190,7 @@ def test_test_module_fetch_time(fetch_time, expected_result, _mocker):
         'length': 10
     })
 ], ids=['no-filters-query', 'args-1-query', 'args-2-query', 'pagination-params-query']
-                         )
+)
 def test_prepare_search_query_data(_mocker, args, expected):
     from IBMResilientSystems import prepare_search_query_data
     assert prepare_search_query_data(args) == expected
@@ -302,42 +302,42 @@ def test_search_incidents(_mocker, args):
 
 @pytest.mark.parametrize('args, processed_payload', [
     ({
-         'incident-id': 0000,
-         'severity': 'Low',
-         'incident-type': "Malware",
-         'nist': "Attrition",
-         "resolution": "NotAnIssue",
-         "resolution-summary": "This is a test incident.",
-         "description": "Test incident",
-         "name": "incident-0000",
-     },
-     {"changes": [{"field": "severity_code", "old_value": {"id": 6}, "new_value": {"id": 4}},
-                  {"field": "incident_type_ids", "old_value": {"ids": [21, 19, 17, 6]},
-                   "new_value": {"ids": [21, 19, 17, 6, 19]}},
-                  {"field": "nist_attack_vectors", "old_value": {"ids": [4, 2]}, "new_value": {"ids": [4, 2, 2]}},
-                  {"field": "resolution_id", "old_value": {"id": 9}, "new_value": {"id": 9}},
-                  {"field": "resolution_summary",
-                   "old_value": {
-                       "textarea": {
-                           "format": "html",
-                           "content": "This is a test incident."
-                       }},
-                   "new_value": {
-                       "textarea": {
-                           "format": "html",
-                           "content": "This is a test incident."
-                       }}
-                   },
-                  {"field": "description",
-                   "old_value": {
-                       "textarea": {
-                           "format": "html",
-                           "content": "1111 2222 3333"
-                       }
-                   },
-                   "new_value": {
-                       "textarea": {"format": "html", "content": "Test incident"}}},
-                  {"field": "name", "old_value": {"text": "incident_name"}, "new_value": {"text": "incident-0000"}}]}
+        'incident-id': 0000,
+        'severity': 'Low',
+        'incident-type': "Malware",
+        'nist': "Attrition",
+        "resolution": "NotAnIssue",
+        "resolution-summary": "This is a test incident.",
+        "description": "Test incident",
+        "name": "incident-0000",
+    },
+        {"changes": [{"field": "severity_code", "old_value": {"id": 6}, "new_value": {"id": 4}},
+                     {"field": "incident_type_ids", "old_value": {"ids": [21, 19, 17, 6]},
+                      "new_value": {"ids": [21, 19, 17, 6, 19]}},
+                     {"field": "nist_attack_vectors", "old_value": {"ids": [4, 2]}, "new_value": {"ids": [4, 2, 2]}},
+                     {"field": "resolution_id", "old_value": {"id": 9}, "new_value": {"id": 9}},
+                     {"field": "resolution_summary",
+                      "old_value": {
+                          "textarea": {
+                              "format": "html",
+                              "content": "This is a test incident."
+                          }},
+                      "new_value": {
+                          "textarea": {
+                              "format": "html",
+                              "content": "This is a test incident."
+                          }}
+                      },
+                     {"field": "description",
+                      "old_value": {
+                          "textarea": {
+                              "format": "html",
+                              "content": "1111 2222 3333"
+                          }
+                      },
+                      "new_value": {
+                          "textarea": {"format": "html", "content": "Test incident"}}},
+                     {"field": "name", "old_value": {"text": "incident_name"}, "new_value": {"text": "incident-0000"}}]}
     ),
 ])
 def test_update_incident_command(_mocker, args, processed_payload):
@@ -464,6 +464,7 @@ def test_upload_incident_attachment(_mocker, file_entry_id: str):
     def mock_get_file_path(entry_id):  # noqa: F811
         if entry_id == 'ENTRY_ID':
             return {'path': '/path/to/file', 'name': 'filename.txt'}
+        return None
 
     _mocker.patch.object(demisto, 'getFilePath', side_effect=mock_get_file_path)
     post_attachment_request = _mocker.patch.object(SimpleClient, 'post_attachment', return_value=response)
@@ -508,7 +509,7 @@ def test_list_incident_notes_command(_mocker):
     list_incident_notes_command(client, {"incident_id": "2000"})
 
     get_incident_notes_request.assert_called_once_with(
-        f"/incidents/2000/comments?text_content_output_format=objects_convert_text"
+        "/incidents/2000/comments?text_content_output_format=objects_convert_text"
     )
 
 
@@ -529,7 +530,7 @@ def test_update_incident_note(_mocker):
         'note': "NOTE_BODY"
     })
 
-    update_incident_note_request.assert_called_once_with(f"/incidents/2000/comments/1", payload={
+    update_incident_note_request.assert_called_once_with("/incidents/2000/comments/1", payload={
         'text': {
             'format': 'text',
             'content': 'NOTE_BODY'
@@ -644,7 +645,7 @@ def test_list_tasks_command(_mocker):
         return_value={}
     )
     list_tasks_command(client)
-    get_tasks_request.assert_called_with(f"/tasks")
+    get_tasks_request.assert_called_with("/tasks")
 
 
 def test_get_task_members_command(_mocker):
@@ -1018,7 +1019,7 @@ def test_get_mapping_fields_command(_mocker):
     assert scheme.type_name == IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME
 
     # Assert that the scheme contains the correct fields
-    for field_name, field_data in IBM_QRADAR_INCIDENT_FIELDS.items():
+    for field_name, _field_data in IBM_QRADAR_INCIDENT_FIELDS.items():
         assert field_name in scheme.fields
 
 
@@ -1097,7 +1098,7 @@ def test_update_task_command_multiple_fields(_mocker):
     }
 
     update_task_mock = _mocker.patch('IBMResilientSystems.update_task')
-    to_timestamp_mock = _mocker.patch('IBMResilientSystems.to_timestamp', return_value=1704067199000)
+    _mocker.patch('IBMResilientSystems.to_timestamp', return_value=1704067199000)
 
     result = update_task_command(client, args)
 
@@ -1338,6 +1339,7 @@ def test_get_users(_mocker):
     get_users(client)
     client.get.assert_called_once_with('/users')
 
+
 def test_get_phase_name(_mocker):
     from IBMResilientSystems import SimpleClient, get_phase_name
     client = SimpleClient()
@@ -1352,11 +1354,12 @@ def test_get_phase_name(_mocker):
         "uuid": "0000-0000-0000-00000",
         "order": 1,
         "tags": []
-})
-    
+    })
+
     get_phase_name(client, '1004')
 
     client.get.assert_called_once_with('/phases/1004')
+
 
 def test_get_phases(_mocker):
     from IBMResilientSystems import SimpleClient, get_phases
@@ -1378,16 +1381,17 @@ def test_get_phases(_mocker):
         ]
     })
     get_phases(client)
-    
+
     client.get.assert_called_once_with('/phases')
+
 
 def test_get_tasks(_mocker):
     from IBMResilientSystems import SimpleClient, get_tasks
     client = SimpleClient()
     _mocker.patch.object(SimpleClient, 'get', return_value=[])
-    
+
     get_tasks(client, '1000')
-    
+
     client.get.assert_called_once_with('/incidents/1000/tasks?text_content_output_format=objects_convert_text')
 
 
@@ -1410,6 +1414,7 @@ def test_handle_incoming_incident_resolution(_mocker,
     assert result["Contents"]["dbotIncidentClose"] is True
     assert result["Contents"]["closeReason"] == expected_close_reason
     assert result["Contents"]["closeNotes"] == f"{expected_close_notes}\nClosed on IBM QRadar SOAR"
+
 
 def test_handle_incoming_incident_resolution_unknown_resolution(_mocker):
     from IBMResilientSystems import EntryType, EntryFormat, handle_incoming_incident_resolution

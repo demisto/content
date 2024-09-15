@@ -2,6 +2,7 @@ from IbmConvertCommentsToTable import convert_to_table
 import demistomock as demisto
 import pytest
 
+
 def test_convert_to_table_no_incident(mocker):
     import re
     mocker.patch.object(demisto, 'incident', return_value=None)
@@ -9,11 +10,13 @@ def test_convert_to_table_no_incident(mocker):
                                                    "but returned None")):
         convert_to_table()
 
+
 def test_convert_to_table_no_comments(mocker):
     mock_incident = {'CustomFields': {}, 'dbotMirrorTags': []}
     mocker.patch.object(demisto, 'incident', return_value=mock_incident)
     result = convert_to_table()
     assert result.readable_output == 'No comments were found in the notable'
+
 
 def test_convert_to_table_with_mirror_tags(mocker):
     import json
@@ -34,6 +37,7 @@ def test_convert_to_table_with_mirror_tags(mocker):
     result = convert_to_table()
     assert '|ID|Comment|Created at|Created by|tags|' in result.readable_output
     assert '| 1 | Test comment with | 2023-05-01T12:00:00 | User1 | FROM XSOAR |' in result.readable_output
+
 
 def test_convert_to_table_multiple_comments(mocker):
     import json
