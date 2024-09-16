@@ -1,6 +1,6 @@
 from CommonServerPython import *
 
-import SekoiaXDR # type: ignore
+import SekoiaXDR  # type: ignore
 
 from datetime import datetime
 import pytest

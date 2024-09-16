@@ -611,7 +611,6 @@ def fetch_incidents(
 
 
 def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     alerts = client.list_alerts(
         alerts_limit=args.get("limit"),
         alerts_status=args.get("status"),
@@ -1173,9 +1172,9 @@ def main() -> None:
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(params["max_fetch"])
-            last_run: Dict[str, Any] = (
-                demisto.getLastRun()
-            )  # getLastRun() gets the last run dict
+            last_run: Dict[
+                str, Any
+            ] = demisto.getLastRun()  # getLastRun() gets the last run dict
 
             next_run, incidents = fetch_incidents(
                 client=client,
