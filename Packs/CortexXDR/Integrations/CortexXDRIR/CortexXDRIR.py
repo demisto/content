@@ -439,7 +439,7 @@ class Client(CoreClient):
             })
         if len(filters) > 0:
             request_data['filters'] = filters
-        demisto.debug(f'{request_data=}')
+        demisto.debug(f'Before sending get_multiple_incidents_extra_data request: {request_data=}')
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -1108,7 +1108,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     non_created_incidents: list = raw_incidents.copy()
     try:
         incidents = []
-        for raw_incident in raw_incidents[:max_fetch]:
+        for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
