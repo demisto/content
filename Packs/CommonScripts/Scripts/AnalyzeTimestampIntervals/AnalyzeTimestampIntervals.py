@@ -35,10 +35,6 @@ def check_high_frequency(timestamps, max_intervals_per_window, time_window=60):
     return count_exceeds_threshold
 
 def calculate_statistics(intervals):
-    if not intervals:
-        demisto.debug("No intervals to calculate statistics.")
-        return None, None, None
-
     mean_interval = sum(intervals) / len(intervals)
     median_interval = statistics.median(intervals)
     std_deviation = statistics.stdev(intervals) if len(intervals) > 1 else 0
@@ -53,55 +49,58 @@ def analyze_intervals(timestamps, verbose, max_intervals_per_window=30, interval
         "IsPatternLikelyAutomated": False
     }
 
-    if intervals:
+    # Check for high frequency of intervals
+    high_frequency = check_high_frequency(timestamps, max_intervals_per_window)
 
-        # Check for high frequency of intervals
-        high_frequency = check_high_frequency(timestamps, max_intervals_per_window)
+    # Calculate statistics
+    mean_interval, median_interval, std_deviation = calculate_statistics(intervals)
 
-        # Calculate statistics
-        mean_interval, median_interval, std_deviation = calculate_statistics(intervals)
+    # Check for consistent intervals
+    consistent_intervals = std_deviation < interval_consistency_threshold
 
-        # Check for consistent intervals
-        consistent_intervals = std_deviation < interval_consistency_threshold
+    result.update({
+        "MeanIntervalInSeconds": mean_interval,
+        "MedianIntervalInSeconds": median_interval,
+        "StandardDeviationInSeconds": std_deviation,
+        "HighFrequencyDetected": high_frequency,
+        "ConsistentIntervalsDetected": consistent_intervals
+    })
 
-        result.update({
-            "MeanIntervalInSeconds": mean_interval,
-            "MedianIntervalInSeconds": median_interval,
-            "StandardDeviationInSeconds": std_deviation,
-            "HighFrequencyDetected": high_frequency,
-            "ConsistentIntervalsDetected": consistent_intervals
-        })
+    if verbose:
+        result["IntervalsInSeconds"] = intervals
 
-        if verbose:
-            result["IntervalsInSeconds"] = intervals
-
-        # Determine if pattern is likely automated in a unified result. High frequency or intervals that are more or less the same can suggest automation.
-        if high_frequency or consistent_intervals:
-            result["IsPatternLikelyAutomated"] = True
+    # Determine if pattern is likely automated in a unified result. High frequency or intervals that are more or less the same can suggest automation.
+    if high_frequency or consistent_intervals:
+        result["IsPatternLikelyAutomated"] = True
 
     return result
 
 def create_human_readable(result, verbose):
-    human_readable = "### Interval Analysis Results\n"
-    human_readable += f"- **Number of Timestamps:** {result.get('TimestampCount')}\n"
-    human_readable += f"- **Mean Interval (seconds):** {result.get('MeanIntervalInSeconds')}\n"
-    human_readable += f"- **Median Interval (seconds):** {result.get('MedianIntervalInSeconds')}\n"
-    human_readable += f"- **Standard Deviation (seconds):** {result.get('StandardDeviationInSeconds')}\n"
-    human_readable += f"- **High Frequency Detected:** {result.get('HighFrequencyDetected')}\n"
-    human_readable += f"- **Consistent Intervals Detected:** {result.get('ConsistentIntervalsDetected')}\n"
-    human_readable += f"- **Is Pattern Likely Automated:** {result.get('IsPatternLikelyAutomated')}\n"
-
+    headers = [
+        "TimestampCount",
+        "MeanIntervalInSeconds",
+        "MedianIntervalInSeconds",
+        "StandardDeviationInSeconds",
+        "HighFrequencyDetected",
+        "ConsistentIntervalsDetected",
+        "IsPatternLikelyAutomated",
+    ]
     if verbose:
-        intervals = result.get('IntervalsInSeconds', [])
-        if intervals:  # Fixing the condition to correctly check intervals
-            human_readable += f"- **Intervals (seconds):** {intervals}\n"
+        headers += "IntervalsInSeconds"
+    return tableToMarkdown(
+        "Interval Analysis Results",
+        result,
+        headers=headers,
+        headerTransform=pascalToSpace,
+    )
 
-    return human_readable
-
-def main():
+def main():  # pragma: no cover
     try:
         timestamps = argToList(demisto.args()['timestamps'], transform=int)
         verbose = argToBoolean(demisto.args().get('verbose') or False)
+
+        if len(timestamps) < 2:
+            raise ValueError(f"The total number of timestamps should exceed 2. The detected number was {len(timestamps)}.")
 
         # Get thresholds from arguments
         max_intervals_per_window = int(demisto.args().get('max_intervals_per_window', 30))
