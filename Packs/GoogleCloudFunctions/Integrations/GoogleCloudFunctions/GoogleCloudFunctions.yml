@@ -29,7 +29,6 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-
   required: false
 description: Google Cloud Functions is an event-driven serverless compute platform that enables you to run your code locally or in the cloud without having to provision servers.
 display: Google Cloud Functions
@@ -86,7 +85,7 @@ script:
       description: A user-defined name of the Google Cloud function.
       type: String
     - contextPath: GoogleCloudFunctions.Function.status
-      description: 'Status of the Google Cloud function deployment. The status can be ACTIVE, OFFLINE, DEPLOY_IN_PROGRESS, DELETE_IN_PROGRESS, UNKNOWN.'
+      description: Status of the Google Cloud function deployment. The status can be ACTIVE, OFFLINE, DEPLOY_IN_PROGRESS, DELETE_IN_PROGRESS, UNKNOWN.
       type: String
     - contextPath: GoogleCloudFunctions.Function.labels
       description: The labels associated with this Google Cloud Function.
@@ -114,7 +113,7 @@ script:
     - contextPath: GoogleCloudFunctions.Execution.error
       description: Either a system or user-function generated error. Set if the execution was not successful.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.86674
+  dockerimage: demisto/google-api-py3:1.0.0.110173
   runonce: false
   script: '-'
   type: python

@@ -68,7 +68,7 @@ script:
     - description: The name of the resource to list tag bindings under. For example, setting this field to 'folders/1234' would list all tags directly applied to that folder.
       name: parent
       required: true
-    description: 'List tag bindings (key value pair) applied to a project/folder/organization object.'
+    description: List tag bindings (key value pair) applied to a project/folder/organization object.
     name: gcp-iam-tagbindings-list
     outputs:
     - contextPath: GCPIAM.TagBindings.key
@@ -134,8 +134,7 @@ script:
     - description: The name of the project for which the policy is being specified. For example, projects/415104041262.
       name: project_name
       required: true
-    - description: |-
-        The name of the policy role.
+    - description: The name of the policy role.
       name: role
       required: true
     - description: 'A comma-separated list of members to remove from the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
@@ -148,15 +147,7 @@ script:
     - description: The name of the project for which the policy is being specified. For example, projects/415104041262.
       name: project_name
       required: true
-    - description: |-
-        A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
-          {
-            "role": "roles/resourcemanager.organizationViewer",
-            "members": [
-              "user:eve@example.com"
-            ]
-          }
-        ]
+    - description: "A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [\n  {\n    \"role\": \"roles/resourcemanager.organizationViewer\",\n    \"members\": [\n      \"user:eve@example.com\"\n    ]\n  }\n]"
       isArray: true
       name: policy
       required: true
@@ -194,7 +185,7 @@ script:
       isArray: true
       name: role
       required: true
-    description: 'Removes the policy from the project IAM policies.'
+    description: Removes the policy from the project IAM policies.
     name: gcp-iam-project-iam-policy-remove
   - arguments:
     - description: A comma-separated list of folder names to retrieve. For example, folders/12342. Leave empty to retrieve a list of folders under a specified parent resource.
@@ -289,8 +280,7 @@ script:
     - description: The name of the folder for which the policy is being specified. For example, folders/12342.
       name: folder_name
       required: true
-    - description: |-
-        The name of the policy role.
+    - description: The name of the policy role.
       name: role
       required: true
     - description: 'A comma-separated list of members to remove from the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
@@ -303,15 +293,7 @@ script:
     - description: The name of the folder for which the policy is being specified. For example, folders/12342.
       name: folder_name
       required: true
-    - description: |-
-        A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
-          {
-            "role": "roles/resourcemanager.organizationViewer",
-            "members": [
-              "user:eve@example.com"
-            ]
-          }
-        ]
+    - description: "A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [\n  {\n    \"role\": \"roles/resourcemanager.organizationViewer\",\n    \"members\": [\n      \"user:eve@example.com\"\n    ]\n  }\n]"
       isArray: true
       name: policy
       required: true
@@ -435,8 +417,7 @@ script:
     - description: The name of the organization for which the policy is being specified. For example, organizations/3456.
       name: organization_name
       required: true
-    - description: |-
-        The name of the policy role.
+    - description: The name of the policy role.
       name: role
       required: true
     - description: 'A comma-separated list of members to remove from the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
@@ -449,15 +430,7 @@ script:
     - description: The name of the organization for which the policy is being specified. For example, organizations/3456.
       name: organization_name
       required: true
-    - description: |-
-        A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
-          {
-            "role": "roles/resourcemanager.organizationViewer",
-            "members": [
-              "user:eve@example.com"
-            ]
-          }
-        ]
+    - description: "A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [\n  {\n    \"role\": \"roles/resourcemanager.organizationViewer\",\n    \"members\": [\n      \"user:eve@example.com\"\n    ]\n  }\n]"
       isArray: true
       name: policy
       required: true
@@ -591,7 +564,7 @@ script:
     - description: The email address of the member to add to the group.
       name: member_email
       required: true
-    - defaultValue: 'MEMBER'
+    - defaultValue: MEMBER
       description: A comma-separated list of membership roles that apply to the membership. The 'MEMBER' role must be provided.
       isArray: true
       name: role
@@ -614,7 +587,7 @@ script:
       description: The membership roles that apply to the membership.
       type: String
   - arguments:
-    - description: 'The name of the group that contains the membership. Must be of the form groups/{group_id}.'
+    - description: The name of the group that contains the membership. Must be of the form groups/{group_id}.
       name: group_name
       required: true
     - defaultValue: '50'
@@ -725,10 +698,10 @@ script:
       description: Indicates whether the service account is disabled.
       type: Boolean
   - arguments:
-    - description: 'The name of the service account to update. Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
+    - description: The name of the service account to update. Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
       name: service_account_name
       required: true
-    - description: 'Human readable name for the updated service account.'
+    - description: Human readable name for the updated service account.
       name: display_name
     - description: Human readable description for the updated service account.
       name: description
@@ -739,7 +712,7 @@ script:
       predefined:
       - displayName
       - description
-    description: 'Updates a service account.'
+    description: Updates a service account.
     name: gcp-iam-service-account-update
   - arguments:
     - description: 'A comma-separated list of service accounts names to retrieve in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. Leave empty to retrieve a list of service accounts under a specified project resource.'
@@ -789,7 +762,7 @@ script:
     description: Disables a project service account.
     name: gcp-iam-service-account-disable
   - arguments:
-    - description: 'The name of the service account associated with the key. Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
+    - description: The name of the service account associated with the key. Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
       name: service_account_name
       required: true
     - description: The RSA key algorithm.
@@ -799,7 +772,7 @@ script:
       predefined:
       - KEY_ALG_RSA_1024
       - KEY_ALG_RSA_2048
-    description: 'Creates a service account key. A service account can have up to 10 keys. Service account keys that you create don''t have an expiry date and stay valid until you delete them.'
+    description: Creates a service account key. A service account can have up to 10 keys. Service account keys that you create don't have an expiry date and stay valid until you delete them.
     name: gcp-iam-service-account-key-create
     outputs:
     - contextPath: GCPIAM.ServiceAccountKey.keyAlgorithm
@@ -968,7 +941,7 @@ script:
     description: Removes permissions from a custom organization role.
     name: gcp-iam-organization-role-permission-remove
   - arguments:
-    - description: 'The name of the organization that contains the custom role. For example organizations/12345.'
+    - description: The name of the organization that contains the custom role. For example organizations/12345.
       name: organization_name
       required: true
     - auto: PREDEFINED
@@ -1021,7 +994,7 @@ script:
     description: Deletes a custom organization role.
     name: gcp-iam-organization-role-delete
   - arguments:
-    - description: 'The ID of the project that contains the custom role.'
+    - description: The ID of the project that contains the custom role.
       name: project_id
       required: true
     - description: The unique ID of the role to create. A role ID may contain alphanumeric characters, underscores (_), and periods (.). It must contain a minimum of 3 characters and a maximum of 64 characters.
@@ -1031,7 +1004,7 @@ script:
       name: description
     - description: The title of the role to create.
       name: title
-    - description: 'A comma-separated list of names of the permissions the role grants when bound in an IAM policy.'
+    - description: A comma-separated list of names of the permissions the role grants when bound in an IAM policy.
       isArray: true
       name: permissions
     - auto: PREDEFINED
@@ -1102,7 +1075,7 @@ script:
     description: Removes permissions from a custom project role.
     name: gcp-iam-project-role-permission-remove
   - arguments:
-    - description: 'The ID of the project that contains the custom role.'
+    - description: The ID of the project that contains the custom role.
       name: project_id
       required: true
     - auto: PREDEFINED
@@ -1155,7 +1128,7 @@ script:
     description: Deletes a custom project role.
     name: gcp-iam-project-role-delete
   - arguments:
-    - description: 'The name of the resource to query from the list of testable permissions. For a project''''s resource, provide "projects/project-ID", and for organizations, provide "organizations/organization-ID".'
+    - description: The name of the resource to query from the list of testable permissions. For a project''s resource, provide "projects/project-ID", and for organizations, provide "organizations/organization-ID".
       name: resource_name
       required: true
     - defaultValue: '50'
@@ -1181,7 +1154,7 @@ script:
     description: Deletes a service account.
     name: gcp-iam-service-account-delete
   - arguments:
-    - description: 'The resource name to query from the list of grantable roles. For a project''''s resource, provide "projects/project-ID", and for organizations, provide "organizations/organization-ID".'
+    - description: The resource name to query from the list of grantable roles. For a project''s resource, provide "projects/project-ID", and for organizations, provide "organizations/organization-ID".
       name: resource_name
       required: true
     - defaultValue: '50'
@@ -1250,7 +1223,7 @@ script:
     description: Create a short-lived access token for a service account. The generated token will be exposed to the context menu and War Room, and can potentially be logged.
     execution: true
     name: gcp-iam-service-account-generate-access-token
-  dockerimage: demisto/google-api-py3:1.0.0.105788
+  dockerimage: demisto/google-api-py3:1.0.0.110173
   runonce: false
   script: '-'
   subtype: python3

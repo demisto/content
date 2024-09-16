@@ -18,7 +18,7 @@ configuration:
   type: 0
   additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example, "from:example@demisto.com is:unread".
   section: Collect
-  defaultvalue: "label:Inbox"
+  defaultvalue: label:Inbox
   required: false
 - display: Events user key
   name: queryUserKey
@@ -65,7 +65,7 @@ configuration:
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   type: 0
-  defaultvalue: "50"
+  defaultvalue: '50'
   section: Collect
   additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). The default is 50.
   required: false
@@ -259,7 +259,7 @@ script:
       - minimal
       - raw
     - auto: PREDEFINED
-      defaultValue: False
+      defaultValue: false
       description: Whether to include the attachment entries in the result or not.
       name: include-attachments
       predefined:
@@ -537,8 +537,8 @@ script:
       description: Whether to return only mailboxes which contain the email. Default is "True".
       name: show-only-mailboxes
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
     - description: Accounts to search in.
       name: list_accounts
     - description: Used to track search progress.
@@ -1316,53 +1316,34 @@ script:
       predefined:
       - 'false'
       - 'true'
-    - description: |-
-        The address that needs to be used to reply to the message.
+    - description: The address that needs to be used to reply to the message.
       name: replyTo
-    - description: |-
-        A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.
-                Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3
-                To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5.
+    - description: "A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.\n        Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3\n        To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5."
       isArray: true
       name: attachNames
-    - description: |-
-        A comma-separated list of CID images to embed attachments inside the email.
+    - description: A comma-separated list of CID images to embed attachments inside the email.
       isArray: true
       name: attachCIDs
-    - description: |-
-        Textual name for an attached file. Multiple files are supported as a
-                comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
-                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
+    - description: "Textual name for an attached file. Multiple files are supported as a\n        comma-separated list. For example, transientFile=\"t1.txt,temp.txt,t3.txt\" transientFileContent=\"test\n        2,temporary file content,third file content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\")."
       isArray: true
       name: transientFile
-    - description: |-
-        Content for the attached file. Multiple files are supported as a comma-separated
-                list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
-                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
+    - description: "Content for the attached file. Multiple files are supported as a comma-separated\n        list. For example, transientFile=\"t1.txt,temp.txt,t3.txt\" transientFileContent=\"test\n        2,temporary file content,third file content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\")."
       isArray: true
       name: transientFileContent
-    - description: |-
-        CID image for an attached file to include within the email body. Multiple files are
-                supported as a comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-                transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
+    - description: "CID image for an attached file to include within the email body. Multiple files are\n        supported as a comma-separated list. (e.g. transientFile=\"t1.txt,temp.txt,t3.txt\"\n        transientFileContent=\"test 2,temporary file content,third file content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\")."
       isArray: true
       name: transientFileCID
     - description: 'A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
       name: additionalHeader
       isArray: true
-    - description: |-
-        'Replaces {varname} variables with values from this parameter. Expected
-               values are in the form of a JSON document. For example, {"varname" :{"value" "some
-               value", "key": "context key"}}. Each var name can either be provided with
-               the value or a context key to retrieve the value.
-               Note that only context data is accessible for this argument, while incident fields are not.'
+    - description: "'Replaces {varname} variables with values from this parameter. Expected\n       values are in the form of a JSON document. For example, {\"varname\" :{\"value\" \"some\n       value\", \"key\": \"context key\"}}. Each var name can either be provided with\n       the value or a context key to retrieve the value.\n       Note that only context data is accessible for this argument, while incident fields are not.'"
       name: templateParams
     - description: Whether message response body type is text or HTML.
       name: bodyType
       auto: PREDEFINED
       predefined:
-      - 'HTML'
-      - 'Text'
+      - HTML
+      - Text
       defaultValue: Text
     - description: Indicates whether to render the email body.
       name: renderBody
@@ -1435,32 +1416,25 @@ script:
       name: htmlBody
     - description: The address that needs to be used to reply to the message.
       name: replyTo
-    - description: |-
-        A comma-separated list of new names used to rename attachments corresponding to the order in which they were attached to the email.
-                Examples - To rename the first and third file: attachNames=new_fileName1,,new_fileName3
-                To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5.
+    - description: "A comma-separated list of new names used to rename attachments corresponding to the order in which they were attached to the email.\n        Examples - To rename the first and third file: attachNames=new_fileName1,,new_fileName3\n        To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5."
       isArray: true
       name: attachNames
     - description: A comma-separated list of CID images to embed as attachments inside the email.
       isArray: true
       name: attachCIDs
-    - description: |-
-        Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
+    - description: Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
       isArray: true
       name: transientFile
-    - description: |-
-        Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
+    - description: Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
       isArray: true
       name: transientFileContent
-    - description: |-
-        CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
+    - description: CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
       isArray: true
       name: transientFileCID
     - description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
-    - description: |-
-        'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'
+    - description: '''Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'''
       name: templateParams
     - auto: PREDEFINED
       defaultValue: Text
@@ -1574,10 +1548,10 @@ script:
       name: disposition
       auto: PREDEFINED
       predefined:
-      - 'archive'
-      - 'leaveInInbox'
-      - 'markRead'
-      - 'trash'
+      - archive
+      - leaveInInbox
+      - markRead
+      - trash
     - description: A comma-separated list of emails addresses to which messages can be forwarded.
       isArray: true
       name: forwarding_email
@@ -1585,8 +1559,7 @@ script:
     - description: The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID.
       name: user_id
       required: true
-    description: |-
-      Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
+    description: Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
     name: gmail-forwarding-address-update
     outputs:
     - contextPath: Gmail.ForwardingAddress.forwardingEmail
@@ -1637,27 +1610,31 @@ script:
     - description: The password that will be used for authentication with the SMTP service. This is a write-only field that can be specified in requests to create or update SendAs settings.
       name: smtp_password
     - auto: PREDEFINED
-      description: |-
-        The protocol that will be used to secure communication with the SMTP service. Required for SMTP configuration.
+      description: 'The protocol that will be used to secure communication with the SMTP service. Required for SMTP configuration.
+
 
         Available Options:
+
         SECURITY_MODE_UNSPECIFIED - Unspecified security mode.
+
 
         NONE - Communication with the remote SMTP service is unsecured. Requires port 25.
 
+
         SSL - Communication with the remote SMTP service is secured using SSL.
 
-        STARTTLS - Communication with the remote SMTP service is secured using STARTTLS.
+
+        STARTTLS - Communication with the remote SMTP service is secured using STARTTLS.'
       name: smtp_securitymode
       predefined:
       - SECURITY_MODE_UNSPECIFIED
       - NONE
       - SSL
       - STARTTLS
-    description: |-
-      Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
+    description: 'Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource''s verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
 
-      This command is only available to service account clients who have been delegated domain-wide authority.
+
+      This command is only available to service account clients who have been delegated domain-wide authority.'
     name: gmail-send-as-add
     outputs:
     - contextPath: Gmail.SendAs.userId
@@ -1733,7 +1710,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.98645
+  dockerimage: demisto/google-api-py3:1.0.0.110173
   isfetch: true
   runonce: false
   script: '-'
