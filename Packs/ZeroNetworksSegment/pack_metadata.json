@@ -11,7 +11,7 @@
     ],
     "tags": ["Security", "Network"],
     "useCases": [],
-    "keywords": ["zero", "network", "segment", "zeronetworks"],
+    "keywords": ["zero", "networks", "segment", "zeronetworks"],
     "marketplaces": [
         "marketplacev2"
     ]
