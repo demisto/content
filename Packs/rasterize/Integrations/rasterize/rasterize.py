@@ -283,11 +283,11 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
     return None
 
 
-def read_file(file_path) -> dict | str | None:
+def read_text_file(file_path) -> dict | str | None:
     try:
         if os.path.exists(file_path):
             with open(file_path) as file:
-                ret_value = json.load(file) if file_path == CHROME_INSTANCES_FILE_PATH else file.read()
+                ret_value = file.read()
                 demisto.info(f"File '{file_path}' contents: {ret_value}.")
                 return ret_value
         else:
@@ -301,7 +301,7 @@ def read_file(file_path) -> dict | str | None:
         return None
 
 
-def write_file(filename, contents, overwrite=False, ):
+def write_text_file(filename, contents, overwrite=False, ):
     demisto.info(f"Saving File '{filename}' with {contents}.")
     mode = 'w' if overwrite else 'a'
     try:
@@ -312,24 +312,24 @@ def write_file(filename, contents, overwrite=False, ):
         demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
 
 
-def read_chrome_instances_file() -> dict | None:
+def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict | None:
     """
     Read the content from a JSON file and return it as a Python dictionary or list.
 
     :param file_path: Path to the JSON file.
     :return: The JSON content as a Python dictionary or list, or None if the file does not exist or is empty.
     """
-    if not os.path.exists(CHROME_INSTANCES_FILE_PATH):
-        demisto.info(f"File '{CHROME_INSTANCES_FILE_PATH}' does not exist.")
+    if not os.path.exists(json_file_path):
+        demisto.info(f"File '{json_file_path}' does not exist.")
         return None
 
     try:
-        with open(CHROME_INSTANCES_FILE_PATH) as file:
+        with open(json_file_path) as file:
             # Read and parse the JSON data
             data = json.load(file)
             return data
     except json.JSONDecodeError:
-        demisto.debug(f"Error decoding JSON from the file '{CHROME_INSTANCES_FILE_PATH}'.")
+        demisto.debug(f"Error decoding JSON from the file '{json_file_path}'.")
         return None
     except Exception as e:
         demisto.debug(f"An error occurred: {e}")
@@ -536,7 +536,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options') or 'None'
     demisto.debug(f'MAI MORAG TEST {chrome_options}')
-    chrome_instances_contents = read_file(CHROME_INSTANCES_FILE_PATH) or {}
+    chrome_instances_contents = read_text_file(CHROME_INSTANCES_FILE_PATH) or {}
     instances_id = []
     for chrome_port_data in chrome_instances_contents.values():
         instances_id.append(chrome_port_data['instance_id'])
@@ -632,7 +632,7 @@ def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_
 
     This function searches for a row in the content that includes the specified instance ID and port.
     Once the row is found, it is deleted from the content. The updated content is then written
-    back to the file using the write_file function.
+    back to the file using the write_text_file function.
     """
     index_to_delete = -1
 
@@ -647,7 +647,7 @@ def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_
     if index_to_delete >= 0:
         del splitted_chrome_instances_contents[index_to_delete]
         chrome_instances_contents = '\n'.join(splitted_chrome_instances_contents)
-        write_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
+        write_text_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
 
 
 def edit_chrome_port_file_configurations(chrome_port: str = '',
@@ -662,7 +662,7 @@ def edit_chrome_port_file_configurations(chrome_port: str = '',
                         'chrome_rasterize_connections': '1'
                     }
     '''
-    data: dict = read_chrome_instances_file() or {}
+    data: dict = read_json_file() or {}
     if content or not data:
         data.update(content)
         write_chrome_instances_file(content, False)
@@ -674,7 +674,7 @@ def edit_chrome_port_file_configurations(chrome_port: str = '',
         # Remove the specified port if it exists
         else:
             del data[chrome_port]
-        write_file(CHROME_INSTANCES_FILE_PATH, data, True)
+        write_text_file(CHROME_INSTANCES_FILE_PATH, data, True)
 
 
 def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:
@@ -940,7 +940,7 @@ def perform_rasterize(path: str | list[str],
             demisto.info(
                 f"Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
 
-            previous_rasterizations_counter_from_file = read_file(RASTERIZATIONS_COUNTER_FILE_PATH)
+            previous_rasterizations_counter_from_file = read_text_file(RASTERIZATIONS_COUNTER_FILE_PATH)
             if previous_rasterizations_counter_from_file:
                 total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
             else:
@@ -953,9 +953,9 @@ def perform_rasterize(path: str | list[str],
                 demisto.info(f"Terminating Chrome after {total_rasterizations_count=} rasterizations")
                 terminate_chrome(chrome_port=chrome_port)
                 edit_chrome_port_file_configurations(chrome_port=chrome_port)
-                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count - 1), overwrite=True)
+                write_text_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count - 1), overwrite=True)
             else:
-                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
+                write_text_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
                 edit_chrome_port_file_configurations(chrome_port=chrome_port, if_increase_counter=True)
 
             # Get the results
