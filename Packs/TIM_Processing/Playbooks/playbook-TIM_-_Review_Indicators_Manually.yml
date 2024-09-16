@@ -513,7 +513,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: tags:pending_review and -tags:being_reviewed
+    query: tags:"pending_review" and -tags:"being_reviewed"
     queryEntity: indicators
     results: null
     daterange:

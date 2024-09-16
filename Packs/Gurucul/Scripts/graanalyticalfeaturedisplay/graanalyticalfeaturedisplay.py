@@ -1,5 +1,4 @@
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-import json
 from datetime import datetime
 
 
@@ -13,7 +12,6 @@ def displayAnalyticalFeatures():
     anomalyName = ''
     riskDate = ''
     entityTypeId = 0
-    analyticalFeaturesObj = []
     displayData = []
     for label in incident['labels']:
         if label['value'] is not None and label['type'] == 'entityTypeId':
@@ -22,15 +20,13 @@ def displayAnalyticalFeatures():
             riskDate = datetime.strptime(label['value'], "%m/%d/%Y %H:%M:%S").strftime("%Y-%m-%d")
         if label['value'] is not None and label['type'] == 'entity':
             entityValue = label['value']
-        if label['value'] is not None and label['type'] == 'anomalies':
-            anomalies = str(label['value']).replace("null", "\"\"")
 
+    anomalies = incident['CustomFields']['gracaseanomalydetails']
     if int(entityTypeId) > 0:
-        anomaliesDetailString = json.loads(anomalies)
-        for anomalyDetailString in anomaliesDetailString:
+        for anomalyDetailString in anomalies:
             anomalyName = ''
             for key in anomalyDetailString:
-                if key is not None and key == 'anomalyName':
+                if key is not None and key == 'anomalyname':
                     anomalyName = anomalyDetailString[key]
 
             fromDate = riskDate
@@ -42,23 +38,22 @@ def displayAnalyticalFeatures():
                                       'modelName': anomalyName,
                                       'fromDate': fromDate,
                                       'toDate': toDate,
-                                      'entityTypeId': entityTypeId
+                                      'entityTypeId': entityTypeId,
+                                      'using': incident['sourceInstance']
                                   }
                                   )
             if res is not None:
-                for analyticalFeaturesObj in res:
-                    if analyticalFeaturesObj is not None:
-                        for analyticalObj in analyticalFeaturesObj:
-                            if analyticalObj is not None:
-                                for key1 in analyticalObj:
-                                    if key1 == 'analyticalFeatureValues':
-                                        analyticalFeatures = analyticalObj[key1]
-                                        if analyticalFeatures is not None:
-                                            for feature in analyticalFeatures:
-                                                displayData.append({'Anomaly Name': anomalyName,
-                                                                    'Analytical Feature': feature,
-                                                                    'Count': len(analyticalFeatures[feature]),
-                                                                    'Values': analyticalFeatures[feature]})
+                for analyticalObj in res:
+                    if analyticalObj is not None:
+                        for key1 in analyticalObj:
+                            if key1 == 'analyticalFeatureValues':
+                                analyticalFeatures = analyticalObj[key1]
+                                if analyticalFeatures is not None:
+                                    for feature in analyticalFeatures:
+                                        displayData.append({'Anomaly Name': anomalyName,
+                                                            'Analytical Feature': feature,
+                                                            'Count': len(analyticalFeatures[feature]),
+                                                            'Values': analyticalFeatures[feature]})
 
         if len(displayData) > 0:
             data = {

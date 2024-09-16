@@ -1,14 +1,15 @@
 {
     "CONTRIBUTION_REVIEWERS": [
-        "RotemAmit",
-        "jlevypaloalto",
-        "Shellyber"
+        "adi88d",
+        "israelpoli",
+        "rshunim"
     ],
-    "CONTRIBUTION_TL": "BEAdi",
-    "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
+    "CONTRIBUTION_TL": "thefrieddan1",
+    "CONTRIBUTION_SECURITY_REVIEWER": ["tomer-pan"],
     "ON_CALL_DEVS": [
-        "acarmi",
-        "ypreisler"
+        "skidorball",
+        "ayousef",
+        "israelpoli"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1"

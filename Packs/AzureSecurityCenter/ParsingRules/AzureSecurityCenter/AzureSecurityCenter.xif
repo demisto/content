@@ -1,0 +1,4 @@
+[INGEST:vendor = "microsoft", product = "defender_for_cloud", target_dataset = "microsoft_defender_for_cloud_raw", no_hit = keep]
+filter _collector_type = "Azure Event Hub"
+| alter
+        _time = parse_timestamp("%b %d %Y %H:%M:%S", TimeGenerated);

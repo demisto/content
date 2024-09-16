@@ -50,7 +50,7 @@ XSOAR endpoint URL-
 3. Enter the **App Name**.
 4. Click **Create**.
 
-![enter image description here](doc_files/create-team-chat-app.gif)
+![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/create-team-chat-app.gif)
 ### Configure App Settings
 Enter your Cortex XSOAR endpoint URL in all Redirect URLS.
 
@@ -61,7 +61,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
    - For Cortex XSOAR 8.x / XSAIM you need to run using extrnal engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
 
 
-![enter image description here](doc_files/bot_endpoint_url.gif)
+![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/bot_endpoint_url.gif)
 
 1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
 
@@ -71,10 +71,10 @@ In the Team Chat Subscription section under BOT endpoint URL add:
    | Team Chat |  Send a team chat message to a Zoom Team Chat user or channel on behalf of a Chatbot /imchat:write:admin |
    | Team Chat |  View and manage all users' team chat channels /chat_channel:write:admin |
    | User |   View all user information /user:read:admin |
-![enter image description here](doc_files/scope-premissions.png)
+![enter image description here](../../doc_files/scope-premissions.png)
 
 1. Click **Local Test** >**Add** to test your app and authorize your Cortex XSOAR app.
- ![enter image description here](doc_files/test-zoom-app.gif)
+ ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/test-zoom-app.gif)
 
  1. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
 **Endpoint URL Requirements-**
@@ -85,7 +85,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
     <a name="secret-token"></a>
       1. Copy the **secret token** from the "Feature" page under the "Token" section and add it
     to the instance configuration.
-    ![enter image description here](doc_files/zoom-token.png)
+    ![enter image description here](../../doc_files/zoom-token.png)
       2. Configure Event Subscriptions. 
          1. In the "Feature" page
    under the "General Features" section, enable "Event Subscriptions".
@@ -94,13 +94,13 @@ In the Team Chat Subscription section under BOT endpoint URL add:
          - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
          - Authentication Header Option - 
              1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.
-              ![enter image description here](doc_files/verification.png)
+              ![enter image description here](../../doc_files/verification.png)
               2. **Basic Authentication Option (must in XSOAR8)** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration. 
-              ![enter image description here](doc_files/authentication_header.png)
+              ![enter image description here](../../doc_files/authentication_header.png)
          - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
          - Validate the URL: Just after setting up/configuration of the Cortex XSOAR side you can validate the URL.
          - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
-![enter image description here](doc_files/add-event.gif)
+![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/add-event.gif)
 
 
 ## Commands
@@ -1935,8 +1935,7 @@ Sends messages from your Marketplace Chatbot app on Zoom to either an individual
 | to |  The email address or user ID or member ID of the person to send a message.  | Required | 
 | channel_id |  The channel ID of the channel to send a message. | Optional | 
 | message | The message to be sent. Maximum of 1024 characters. | Required | 
-| visible_to_user | The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message. | Optional | 
-| zoom_ask | Whether to send the message as a JSON. | Optional | 
+| visible_to_user | The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message. | Optional |
 
 #### Context Output
 

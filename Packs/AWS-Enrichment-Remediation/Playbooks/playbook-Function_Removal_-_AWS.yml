@@ -1,0 +1,489 @@
+id: Function Removal - AWS
+version: -1
+name: Function Removal - AWS
+description: |-
+  This playbook automates the removal of an AWS Lambda function and its associated resources used for managing resources within an Amazon EKS cluster. It ensures all related roles, policies, and security configurations are properly detached and deleted.
+
+  ### Resource Detachment and Deletion
+
+  - **Get the Lambda Role**: Retrieve the IAM role associated with the Lambda function.
+  - **Detach Policy from Lambda Role**: Remove the policy attached to the Lambda role.
+  - **Delete IAM Role**: Delete the IAM role that was used for the Lambda function.
+  - **Delete Lambda Policy**: Remove the policy specifically created for the Lambda function.
+  - **Delete Security Group**: Delete the security group that was managing the Lambda function's traffic.
+
+  ### Access Entry Check
+
+  - **Check if Access Entry was Created**: Verify if the access entry for the EKS cluster was created.
+    - **If YES**: Proceed to delete additional resources.
+    - **If NO**: Skip the deletion of additional resources.
+
+  ### Additional Resource Deletion
+
+  - **Delete Kubernetes Layer**: Remove the Kubernetes layer that was used by the Lambda function.
+  - **Delete Lambda Function**: Delete the Lambda function itself, ensuring all related code and configurations are removed.
+
+  ### Resolution
+
+  - **Final Cleanup**: Ensure all specified resources have been deleted successfully.
+  - **Completion**: Confirm that the removal process is complete, providing a clean environment free from the previously deployed Lambda function and its configurations.
+
+  This playbook provides a comprehensive, automated approach to removing an AWS Lambda function and its related resources, ensuring all configurations and dependencies are properly managed and deleted.
+
+  ### Required Integration
+
+  #### AWS IAM (Identity and Access Management)
+  - [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)
+  - [Cortex XSOAR AWS IAM Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSIAM/)
+
+  #### AWS EC2 (Elastic Compute Cloud)
+  - [AWS EC2 API Documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Welcome.html)
+  - [Cortex XSOAR AWS EC2 Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEC2/)
+
+  #### AWS Lambda
+  - [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)
+  - [Cortex XSOAR AWS Lambda Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSLambda/).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d93db492-de20-46e2-85a1-4ef9ba832775
+    type: start
+    task:
+      id: d93db492-de20-46e2-85a1-4ef9ba832775
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fdbcc382-ca58-4afa-83f0-7e728756d41a
+    type: regular
+    task:
+      id: fdbcc382-ca58-4afa-83f0-7e728756d41a
+      version: -1
+      name: Delete an AWS IAM role
+      description: Deletes the specified role. The role must not have any policies attached.
+      script: '|||aws-iam-delete-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      roleName:
+        simple: ${AWS.IAM.Roles.RoleName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7564f56e-3c0a-4b00-87ba-b788e24fa2d9
+    type: regular
+    task:
+      id: 7564f56e-3c0a-4b00-87ba-b788e24fa2d9
+      version: -1
+      name: Delete the lambda policy
+      description: Deletes the specified managed policy.  Before you can delete a managed policy, you must first detach the policy from all users, groups, and roles that it is attached to. In addition you must delete all the policy's versions.
+      script: '|||aws-iam-delete-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      policyArn:
+        simple: ${inputs.LambdaRolePolicyARN}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0d04fbd9-0015-488f-8758-62d6be2e9cca
+    type: regular
+    task:
+      id: 0d04fbd9-0015-488f-8758-62d6be2e9cca
+      version: -1
+      name: Delete the kubernetes layer
+      description: Deletes a version of an Lambda layer.
+      script: '|||aws-lambda-delete-layer-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      layer-name:
+        simple: ${inputs.LambdaLayerName}
+      region:
+        simple: ${inputs.region}
+      version-number:
+        simple: ${inputs.LambdaLayerVersion}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4a042a6e-cb90-41fc-8f3f-203cd0b71fcd
+    type: regular
+    task:
+      id: 4a042a6e-cb90-41fc-8f3f-203cd0b71fcd
+      version: -1
+      name: Delete the lambda function
+      description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
+      script: '|||aws-lambda-delete-function'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      functionName:
+        simple: ${inputs.LambdaFunctionName}
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3b0700e8-cbd4-49ea-89a8-baab89e30a37
+    type: title
+    task:
+      id: 3b0700e8-cbd4-49ea-89a8-baab89e30a37
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: cd61c4e6-55ae-479e-8be5-16ed088c9094
+    type: regular
+    task:
+      id: cd61c4e6-55ae-479e-8be5-16ed088c9094
+      version: -1
+      name: Detach policy from the Lambda role
+      description: Removes the specified managed policy from the specified IAM Entity.
+      script: '|||aws-iam-detach-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entityName:
+        simple: ${inputs.LambdaRoleName}
+      policyArn:
+        simple: ${inputs.LambdaRolePolicyARN}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
+      type:
+        simple: Role
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 391e8948-b824-4daf-867c-9765a1c2e2cb
+    type: regular
+    task:
+      id: 391e8948-b824-4daf-867c-9765a1c2e2cb
+      version: -1
+      name: Get the Lambda role
+      description: Retrieves information about the specified role.
+      script: '|||aws-iam-get-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      roleName:
+        simple: ${inputs.LambdaRoleName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 999be9e9-3f12-4d65-846a-a8d9b1698546
+    type: regular
+    task:
+      id: 999be9e9-3f12-4d65-846a-a8d9b1698546
+      version: -1
+      name: Delete the security group
+      description: Deletes a security group.
+      script: '|||aws-ec2-delete-security-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      groupId:
+        simple: ${inputs.SecurityGroupID}
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d7292c20-05a4-4ecc-8cae-6527fa34f097
+    type: condition
+    task:
+      id: d7292c20-05a4-4ecc-8cae-6527fa34f097
+      version: -1
+      name: Check if an access entry was created
+      description: Checks if an access entry was created for the Lambda role in the Function Deployment playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: incident.errormessage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_8_yes": 0.35
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1495,
+        "width": 380,
+        "x": 450,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: region
+  value: {}
+  required: false
+  description: The region of the resource.
+  playbookInputQuery:
+- key: LambdaFunctionName
+  value: {}
+  required: false
+  description: The Lambda function name.
+  playbookInputQuery:
+- key: LambdaLayerVersion
+  value: {}
+  required: false
+  description: The Lambda layer version.
+  playbookInputQuery:
+- key: LambdaLayerName
+  value: {}
+  required: false
+  description: The Lambda layer name.
+  playbookInputQuery:
+- key: LambdaRoleName
+  value: {}
+  required: false
+  description: The lambda role name to delete.
+  playbookInputQuery:
+- key: LambdaRolePolicyARN
+  value: {}
+  required: false
+  description: The ARN of the policy to delete.
+  playbookInputQuery:
+- key: SecurityGroupID
+  value: {}
+  required: false
+  description: The security group ID.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - region
+  name: General (Inputs group)
+  description: Generic group for inputs
+- inputs:
+  - LambdaFunctionName
+  - LambdaLayerVersion
+  - LambdaLayerName
+  name: FunctionParameters
+  description: This group holds inputs related to the function deletion.
+- inputs:
+  - LambdaRoleName
+  - LambdaRolePolicyARN
+  name: IAMParameters
+  description: |
+    This group holds inputs related to IAM.
+- inputs:
+  - SecurityGroupID
+  name: EC2Parameters
+  description: This group holds inputs related to EC2.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces:
+  - xsoar
+  - marketplacev2
+fromversion: 6.10.0

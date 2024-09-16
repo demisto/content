@@ -26,6 +26,9 @@ def is_rapid_breach_response_installed() -> bool | DemistoException:
     try:
         res = demisto.executeCommand("core-api-get", {"uri": "/contentpacks/metadata/installed"})
         if res:
+            for entry in res:
+                if is_error(entry):
+                    return_error(get_error(entry))
             installed_packs = res[0].get("Contents", {}).get("response")
             return any(pack["name"] == "Rapid Breach Response" for pack in installed_packs)
         return False
@@ -108,6 +111,7 @@ def main():
         t.append({'Use Case Adoption & Coverage': use_case, 'Status': '❌'})
     table = tableToMarkdown(name='Use Case Coverage', t=t, headers=headers)
 
+    return_results(table)
     return table
 
 

@@ -109,7 +109,7 @@ script:
       name: limit
     description: Gets the reports from the RSS feed.
     name: rss-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.90842
+  dockerimage: demisto/py3-tools:1.0.0.108552
   feed: true
   runonce: false
   script: '-'

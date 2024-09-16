@@ -280,7 +280,7 @@ def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[D
     score, description = max(
         [indicator_calculate_score(entry.get('detection', '')) for entry in analyses if entry.get('sha256') == sha256],
         key=lambda tup: tup[1])  # Find the max dbot score between all the analysis results.
-    dbot_score = Common.DBotScore(indicator=file_name, integration_name='JoeSecurityV2',
+    dbot_score = Common.DBotScore(indicator=sha256, integration_name='JoeSecurityV2',
                                   indicator_type=DBotScoreType.FILE,
                                   reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
                                       client.reliability), score=score, malicious_description=description)

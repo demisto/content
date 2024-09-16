@@ -16,10 +16,9 @@ Supported authentication methods:
 
 ### Overview
 In response to Microsoft's deprecation of the App ID, the following changes to app registration in Azure are required:
-1. Add the `Exchange.Manage` delegated permissions.
+1. Add the `Exchange.ManageAsApp` application permissions.
 2. Enable "Allow public client flows" in the authentication section.
 3. Add an app secret to the app registration.
-4. Enable the app for Multi-Tenant access.
 
 ### Step-by-Step Instructions
 
@@ -39,8 +38,8 @@ In response to Microsoft's deprecation of the App ID, the following changes to a
    - Click on **Add a permission**.
    - Select **APIs my organization uses**.
    - Type "Office" in the search bar and select **Office 365 Exchange Online**.
-   - Choose **Delegated permissions**.
-   - Search for `Exchange.Manage` and check the corresponding box.
+   - Choose **Application permissions**.
+   - Search for `Exchange.ManageAsApp` and check the corresponding box.
    - Click on **Add permissions**.
    - Ensure the permissions are granted for your organization by selecting **Grant admin consent for [Your Organization]** and confirming the action.
 
@@ -66,16 +65,6 @@ In response to Microsoft's deprecation of the App ID, the following changes to a
    - Click **Add**.
    - After the secret is created, copy the value immediately as it will not be displayed again. Store this secret securely, as it will be used in your application to authenticate.
 
-#### 4. Enable the App for Multi-Tenant Access
-
-1. **Navigate to Authentication Settings:**
-   From your app registration, under **Manage**, select **Authentication**.
-
-2. **Enable Multi-Tenant Access:**
-   - Scroll down to the **Supported account types** section.
-   - Ensure that **Accounts in any organizational directory (Any Azure AD directory - Multitenant)** is selected.
-   - Click **Save** at the top to apply the changes.
-   - If prompted, confirm the change by selecting **Yes**.
 
 ### Additional Resources
 - [Azure Active Directory App Registrations](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)

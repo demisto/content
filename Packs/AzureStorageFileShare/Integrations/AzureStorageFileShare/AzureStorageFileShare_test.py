@@ -35,7 +35,7 @@ def test_azure_storage_create_share_command(requests_mock):
     """
     from AzureStorageFileShare import Client, create_share_command
     share_name = 'test'
-    url = f'{BASE_URL}{share_name}{SAS_TOKEN}&restype=share'
+    url = f'{BASE_URL}{share_name}?{SAS_TOKEN}&restype=share'
 
     requests_mock.put(url, text="")
 
@@ -67,7 +67,7 @@ def test_azure_storage_delete_share_command(requests_mock):
     """
     from AzureStorageFileShare import Client, delete_share_command
     share_name = 'test'
-    url = f'{BASE_URL}{share_name}{SAS_TOKEN}&restype=share'
+    url = f'{BASE_URL}{share_name}?{SAS_TOKEN}&restype=share'
 
     requests_mock.delete(url, text="")
 
@@ -94,7 +94,7 @@ def test_azure_storage_list_shares_command(requests_mock):
      - Ensure a sample value from the API matches what is generated in the context.
     """
     from AzureStorageFileShare import Client, list_shares_command
-    url = f'{BASE_URL}{SAS_TOKEN}&comp=list&maxresults=50'
+    url = f'{BASE_URL}?{SAS_TOKEN}&comp=list&maxresults=50'
     mock_response = load_xml_mock_response('shares.xml')
     requests_mock.get(url, text=mock_response)
 
@@ -123,7 +123,7 @@ def test_azure_storage_list_directories_and_files_command(requests_mock):
     """
     from AzureStorageFileShare import Client, list_directories_and_files_command
     share_name = "test"
-    url = f'{BASE_URL}{share_name}{SAS_TOKEN}&restype=directory&comp=list&include=Timestamps&maxresults=50'
+    url = f'{BASE_URL}{share_name}?{SAS_TOKEN}&restype=directory&comp=list&include=Timestamps&maxresults=50'
     mock_response = load_xml_mock_response('files.xml')
     requests_mock.get(url, text=mock_response)
 
@@ -156,7 +156,7 @@ def test_azure_storage_create_directory_command(requests_mock):
     from AzureStorageFileShare import Client, create_directory_command
     share_name = "test"
     directory_name = "test_new_directory"
-    url = f'{BASE_URL}{share_name}/{directory_name}{SAS_TOKEN}&restype=directory'
+    url = f'{BASE_URL}{share_name}/{directory_name}?{SAS_TOKEN}&restype=directory'
 
     requests_mock.put(url, text='')
 
@@ -191,7 +191,7 @@ def test_azure_storage_delete_directory_command(requests_mock):
     from AzureStorageFileShare import Client, delete_directory_command
     share_name = "test"
     directory_name = "test_new_directory"
-    url = f'{BASE_URL}{share_name}/{directory_name}{SAS_TOKEN}&restype=directory'
+    url = f'{BASE_URL}{share_name}/{directory_name}?{SAS_TOKEN}&restype=directory'
 
     requests_mock.delete(url, text='')
 
@@ -219,7 +219,7 @@ def test_azure_storage_get_file_command(requests_mock):
     from AzureStorageFileShare import Client, get_file_command
     share_name = "test"
     file_name = "test_file.txt"
-    url = f'{BASE_URL}{share_name}/{file_name}{SAS_TOKEN}'
+    url = f'{BASE_URL}{share_name}/{file_name}?{SAS_TOKEN}'
 
     with open('test_data/test_file.txt', 'rb') as text_file_mock:
         requests_mock.get(url, content=text_file_mock.read())
@@ -250,7 +250,7 @@ def test_azure_storage_delete_file_command(requests_mock):
     from AzureStorageFileShare import Client, delete_file_command
     share_name = "test"
     file_name = "test_file.txt"
-    url = f'{BASE_URL}{share_name}/{file_name}{SAS_TOKEN}'
+    url = f'{BASE_URL}{share_name}/{file_name}?{SAS_TOKEN}'
 
     requests_mock.delete(url, text='')
 
@@ -307,12 +307,12 @@ def test_create_file_command(requests_mock, mocker):
     directory_path = "xsoar/path"
     file_name = "test_file.txt"
 
-    command_arguments = dict(share_name=share_name, file_entry_id=file_entry_id,
-                             directory_path=directory_path, file_name=file_name)
-    url = f'{BASE_URL}{share_name}/{directory_path}/{file_name}{SAS_TOKEN}'
+    command_arguments = {"share_name": share_name, "file_entry_id": file_entry_id,
+                         "directory_path": directory_path, "file_name": file_name}
+    url = f'{BASE_URL}{share_name}/{directory_path}/{file_name}?{SAS_TOKEN}'
 
     requests_mock.put(url, text='', status_code=201)
-    url = f'{BASE_URL}{share_name}/{directory_path}/{file_name}{SAS_TOKEN}&comp=range'
+    url = f'{BASE_URL}{share_name}/{directory_path}/{file_name}?{SAS_TOKEN}&comp=range'
 
     requests_mock.put(url, text='', status_code=201)
 

@@ -1,7 +1,12 @@
-To get an The API client ID and secret please contact the crowdstrike support: support@crowdstrike.com
+To get an The API client ID and secret, contact the crowdstrike support: support@crowdstrike.com
+
+
+#### Important:
+This integration is enabled by default for the new CrowdStrike Raptor version. For the older API version (pre-Raptor release), ensure you check the "Use legacy API" checkbox and select the Legacy mapper as well.
 
 ### Required API client scope
 In order to use the CrowdStrike Falcon integration, your API client must be provisioned with the following scope and permissions:
+
 - Real Time Response - Read and Write
 - Alerts - Read and Write
 - IOC Manager - Read and Write

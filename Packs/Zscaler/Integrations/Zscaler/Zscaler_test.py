@@ -718,7 +718,7 @@ def test_category_add_url(mocker):
 
     result = category_add('1', 'test1.com', 'test2.com', "url")
 
-    assert result['HumanReadable'].startswith('Added the following URL addresses to category 1')
+    assert result['HumanReadable'].startswith('Added the following URL, retaining-parent-category-url addresses to category 1')
 
 
 def test_category_add_ip(mocker):
@@ -734,4 +734,20 @@ def test_category_add_ip(mocker):
     mocker.patch('Zscaler.get_categories', return_value=[{'id': 1, 'urls': [], 'customCategory': 'true'}])
     mocker.patch('Zscaler.add_or_remove_urls_from_category', return_value={})
     result = category_add(1, '1.1.1.1', '1.1.1.1', "ip")
-    assert result['HumanReadable'].startswith('Added the following IP addresses to category 1')
+    assert result['HumanReadable'].startswith('Added the following IP, retaining-parent-category-ip addresses to category 1')
+
+
+def test_return_error_is_called_on_error(mocker, requests_mock):
+    """
+    Given:
+        - Any command run
+    When:
+        - Calling login() which fails on 429
+    Then:
+        - Ensure an error entry is returned
+    """
+    from Zscaler import main
+    requests_mock.get('http://cloud/api/v1/status', status_code=429)
+    return_error_mock = mocker.patch.object(CommonServerPython, 'return_error')
+    main()
+    assert return_error_mock.called_once

@@ -19,7 +19,8 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Flashpoint Alerts"
+        "Flashpoint Alerts",
+        "Ignite Alert"
     ],
     "associatedToAll": false,
     "unmapped": false,
