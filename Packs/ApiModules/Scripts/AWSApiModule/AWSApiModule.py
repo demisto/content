@@ -3,6 +3,11 @@ from CommonServerUserPython import *
 import boto3
 from botocore.config import Config
 
+STS_ENDPOINTS = {
+    "us-gov-west-1": "https://sts.us-gov-west-1.amazonaws.com",
+    "us-gov-east-1": "https://sts.us-gov-east-1.amazonaws.com",
+}  # See: https://docs.aws.amazon.com/general/latest/gr/sts.html
+
 
 def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key):
     """
@@ -106,6 +111,7 @@ class AWSClient:
             kwargs.update({'Policy': self.aws_role_policy})
 
         demisto.debug(f'{kwargs=}')
+        self.sts_endpoint_url = self.sts_endpoint_url or STS_ENDPOINTS.get(region) or STS_ENDPOINTS.get(self.aws_default_region)
 
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
             if not self.aws_access_key_id:
