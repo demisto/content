@@ -6,11 +6,14 @@ IBM QRadar SIEM helps security teams accurately detect and prioritize threats ac
 # Supported Versions and license needed
 This integration was integrated and tested with version 14-20 of QRadar v3
 # Use cases
-Using the commands in the integration, you can leverage what the QRadar API has to offer, such as:
-- Editing objects
-- Getting object lists
-- Adding notes
-You can perform tasks that a user would need to do manually in the QRadar UI or would need to provide automations to do.
+### Incident and Offense Management:
+Automate the fetching and management of security incidents (offenses) from QRadar into Cortex. This includes enrichment of offenses with additional data, calculating severity, assigning incidents to analysts, and even automating the closure of false positives.
+### Threat Hunting:
+Leverage the QRadar integration to perform advanced threat hunting activities. Use playbooks to run automated queries across QRadar data to identify indicators of compromise (IoCs) such as suspicious IP addresses, domains, or file hashes.
+### Automated Response and Enrichment:
+Use the integration to automate the enrichment of offenses with contextual data, such as linking associated IP addresses, user details, and related assets.
+### Indicator Management:
+Automate the process of pushing indicators into QRadar reference sets. This can be used to either block malicious indicators or exclude benign ones from triggering alerts, thereby fine-tuning the detection capabilities of your QRadar instance.
 # Special Notes/Disclaimers
 ## Important Note Regarding the *Query to fetch offenses* Parameter
 The *Query to fetch offenses* feature enables defining a specific query for offenses to be retrieved, e.g., **'status = OPEN and id = 5'**. The QRadar integration keeps track of IDs that have already been fetched in order to avoid duplicate fetching.   
@@ -58,9 +61,6 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 </details>
 
 # Known Limitations
-## Mapping Limitation for Cortex XSOAR Versions below 6.0.0
-The *Pull from instance* option to create a new mapper is not supported in Cortex XSOAR versions below 6.0.0. 
-
 ## Creating a Classifier Using the *Pull from instance* Parameter
 QRadar fetches incidents using a long-running execution, not in real time. Therefore, *Pull from instance* pulls incidents from the QRadar service to create a classifier using samples, not real time data. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
 
@@ -523,6 +523,8 @@ Updates an offense.
 </details>
 
 <details><summary><h3 style={{display: 'inline'}}>qradar-closing-reasons</h3></summary> 
+
+### qradar-closing-reasons
 ***
 Retrieves a list of offense closing reasons.
 
@@ -602,6 +604,7 @@ Retrieves a list of offense closing reasons.
 
 <details><summary><h3 style={{display: 'inline'}}> qradar-offense-notes-list</h3></summary> 
 
+### qradar-offense-notes-list
 ***
 Retrieves a list of notes for an offense.
 
@@ -664,6 +667,7 @@ Retrieves a list of notes for an offense.
 
 <details><summary><h3 style={{display: 'inline'}}> qradar-offense-note-create</h3></summary> 
 
+### qradar-offense-note-create
 ***
 Creates a note on an offense.
 
@@ -714,7 +718,9 @@ Creates a note on an offense.
 </details>
 
 <details><summary><h3 style={{display: 'inline'}}> qradar-rules-list</h3></summary> 
-***
+
+### qradar-rules-list
+*** 
 Retrieves a list of rules.
 
 #### Base Command
@@ -814,6 +820,8 @@ Retrieves a list of rules.
 </details>
 
 <details><summary><h3 style={{display: 'inline'}}> qradar-rule-groups-list</h3></summary> 
+
+### qradar-rule-groups-list
 ***
 Retrieves a list of the rule groups.
 
@@ -950,6 +958,8 @@ Retrieves a list of the rule groups.
 </details>
 
 <details><summary><h3 style={{display: 'inline'}}> qradar-assets-list</h3></summary> 
+
+### qradar-assets-list
 ***
 Retrieves assets list.
 
@@ -1078,6 +1088,8 @@ Retrieves assets list.
 </details>
 
 <details><summary><h3 style={{display: 'inline'}}> qradar-saved-searches-list</h3></summary> 
+
+### qradar-saved-searches-lis
 ***
 Retrieves a list of Ariel saved searches.
 
@@ -1161,6 +1173,7 @@ Retrieves a list of Ariel saved searches.
 
 <details><summary><h3 style={{display: 'inline'}}>qradar-searches-list</h3></summary> 
 
+### qradar-searches-list
 ***
 Retrieves the list of Ariel searches IDs. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands.
 
@@ -1402,6 +1415,7 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
 
 <details><summary><h3 style={{display: 'inline'}}>qradar-search-create</h3></summary> 
 
+### qradar-search-create
 ***
 Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
 
@@ -1477,6 +1491,7 @@ Retrieves status information for a search, based on the search ID.
 
 <details><summary><h3 style={{display: 'inline'}}>qradar-search-results-get</h3></summary> 
 
+### qradar-search-results-get
 ***
 Retrieves search results.
 
@@ -1502,6 +1517,7 @@ Retrieves search results.
 
 <details><summary><h3 style={{display: 'inline'}}>qradar-reference-sets-list</h3></summary> 
 
+### qradar-reference-sets-list
 ***
 Retrieves a list of reference sets.
 
@@ -1580,6 +1596,7 @@ Retrieves a list of reference sets.
 
 <details><summary><h3 style={{display: 'inline'}}>qradar-reference-set-create</h3></summary> 
 
+### qradar-reference-set-create
 ***
 Creates a new reference set.
 
@@ -1641,6 +1658,7 @@ Creates a new reference set.
 
 <details><summary><h3 style={{display: 'inline'}}>qradar-reference-set-delete</h3></summary> 
 
+### qradar-reference-set-delete
 ***
 Removes a reference set or purges its contents.
 
@@ -3365,6 +3383,7 @@ There is no context output for this command.
 
 <details><summary><h3 style={{display: 'inline'}}>qradar-wincollect-destinations-list</h3></summary> 
 
+### qradar-wincollect-destinations-list
 ***
 Retrieves a list of WinCollect destinations. 
 In order to get wincollect_internal_destination_ids - filter internal=true needs to be used
