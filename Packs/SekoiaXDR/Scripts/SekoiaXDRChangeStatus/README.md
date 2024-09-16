@@ -1,4 +1,4 @@
-This script changes the status of the Sekoia alert.
+This script changes the status of the Sekoia alert in XSOAR.
 
 ## Script Data
 

@@ -1,4 +1,4 @@
-Post-processing script to close Sekoia Alert after the XSOAR incident is closed.
+Post-processing script to close XSOAR incident.
 
 ## Script Data
 

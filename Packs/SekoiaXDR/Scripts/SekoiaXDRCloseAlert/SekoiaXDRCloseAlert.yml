@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - post-processing
-comment: Post-processing script to close Sekoia Alert after the XSOAR incident is closed.
+comment: Post-processing script to close XSOAR incident.
 enabled: true
 scripttarget: 0
 subtype: python3
