@@ -110,7 +110,7 @@ script:
     name: gti-livehunt-get-indicators
   - description: 'This command will reset your fetch history.'
     name: gti-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.111526
   feed: true
   runonce: false
   script: '-'
