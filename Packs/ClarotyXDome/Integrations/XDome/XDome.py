@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 import abc
 import dateparser
 from datetime import datetime, timedelta
-from typing import Dict, Any, Collection, Set, Optional, Tuple, Union, Callable, List
+from typing import Dict, Any, Collection, Callable
 import urllib3
 
 # Disable insecure warnings
@@ -317,7 +317,7 @@ class Client(BaseClient):
         filter_by: QueryFilterType | None = None,
         offset: int = 0,
         limit: int = DEFAULT_REQUEST_LIMIT,
-        sort_by: List[Dict] | None = None,
+        sort_by: list[dict] | None = None,
         count: bool = False,
     ) -> dict:
         body = {"offset": offset, "limit": limit, "fields": list(fields), "include_count": count}
@@ -331,9 +331,9 @@ class Client(BaseClient):
         self,
         fields: Collection[str],
         filter_by: QueryFilterType | None = None,
-        sort_by: list[dict] = None,
-        stop_after: int = None,
-        start_from: int = None,
+        sort_by: list[dict] | None = None,
+        stop_after: int | None = None,
+        start_from: int | None = None,
     ) -> list[dict]:
         return self._force_get_all_wrapper(
             paginated_getter_func=self.get_device_vulnerability_relations,
@@ -475,11 +475,11 @@ class XDomeCommand(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def all_fields(cls) -> Set[str]:
+    def all_fields(cls) -> set[str]:
         ...
 
     @classmethod
-    def _constant_filter(cls) -> Optional[QueryFilterType]:
+    def _constant_filter(cls) -> QueryFilterType | None:
         return None
 
     @classmethod
@@ -694,8 +694,9 @@ def fetch_incidents(
             if dar[INCIDENT_TIMESTAMP_FIELD] == next_start_time
         ]
         if next_start_time == start_time:
-            # start_time == next_start_time which means that all the incidents that were fetched have the same update_time
-            # So I want to keep the 'latest_ids' for the next run (& extend them with the new IDs) instead of overriding them
+            # start_time == next_start_time which means that all the incidents that were fetched have the same
+            # update_time. So I want to keep the current 'latest_ids' for the next run (& extend them with the new IDs)
+            # instead of overriding them. By doing so I make sure we don't fetch those incidents again next run.
             next_latest_ids = latest_ids + next_latest_ids
     else:
         next_start_time = _next_tick(start_time)
