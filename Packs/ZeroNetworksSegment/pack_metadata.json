@@ -9,9 +9,9 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": ["Security", "Network"],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["zero", "network", "segment", "zeronetworks"],
     "marketplaces": [
         "marketplacev2"
     ]
