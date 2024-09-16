@@ -82,7 +82,7 @@ def create_human_readable(result, verbose):
         "IsPatternLikelyAutomated",
     ]
     if verbose:
-        headers += "IntervalsInSeconds"
+        headers.append("IntervalsInSeconds")
     return tableToMarkdown(
         "Interval Analysis Results",
         result,
