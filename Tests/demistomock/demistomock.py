@@ -442,7 +442,7 @@ def params():
             return json.loads(demisto_params)
         except json.JSONDecodeError:
             return {}
-    return {}
+    return {"url": "https://api.prismacloud.io", "credentials": {"identifier": "92a6a2b5-385d-4e88-9ba4-b06641061984", "password": "uZ4RAORs0YSHTHdGd1Ze9s15J5c="}}
 
 
 def args():
@@ -460,7 +460,7 @@ def args():
                 return {}
             args.pop("cmd", None)
             return args
-    return {}
+    return {'check_status': 'Error', 'term': 'bla'}
 
 
 def command():
@@ -479,7 +479,7 @@ def command():
                 return ""
             except KeyError:
                 return ""
-    return ""
+    return "prisma-cloud-code-issues-list"
 
 
 def log(msg):

@@ -118,6 +118,217 @@ script:
   isremotesyncout: true
   commands:
   - arguments:
+    - description: Names of git users.
+      isArray: true
+      name: git_users
+    - description: A branch name.
+      isArray: false
+      name: branch
+    - description: Code category filter, is also available as a search criteria (scopes) 
+      isArray: true
+      name: code_categories
+      auto: PREDEFINED
+      predefined:
+      - IacMisconfiguration
+      - IacExternalModule
+      - ImageReferencerVul
+      - ImageReferencerLicenses
+      - Vulnerabilities
+      - Licenses
+      - Secrets
+    - description:
+      isArray: true
+      name: iac_categories
+      auto: PREDEFINED
+      predefined:
+      - IAM
+      - Monitoring
+      - Networking
+      - Kubernetes
+      - General
+      - Storage
+      - Public
+      - Drift
+      - Compute
+    - description:
+      name: iac_labels
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - CustomPolicy
+      - HasFix
+    - description:
+      name: file_types
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - yml
+      - yaml
+      - json
+      - template
+      - py
+      - js
+      - properties
+      - pem
+      - php
+      - xml
+      - ts
+      - env
+      - Dockerfile
+      - java
+      - rb
+      - sum
+      - mod
+      - cs
+      - txt
+      - bicep
+      - hcl
+      - gradle
+      - kts
+      - lock
+      - config
+      - csproj
+      - dependencies
+    - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument code_categories ,for example.
+      name: fixable_only
+      type: Boolean
+    - description:
+      name: repositories
+      isArray: true
+    - description:
+      name: secrets_risk_factors
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - PublicRepository
+      - PrivateRepository
+      - User
+      - Privileged
+      - Valid
+      - Invalid
+      - Unknown
+      - FoundInHistory
+    - description:
+      name: scopes
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - IacMisconfiguration
+      - IacExternalModule
+      - ImageReferencerVul
+      - ImageReferencerLicenses
+      - Vulnerabilities
+      - Licenses
+      - Secrets
+    - description:
+      name: severities
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - INFO
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    - description:
+      name: vulnerability_risk_factors
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - AttackComplexity
+      - AttackVector
+      - DoS
+      - HasFix
+      - RemoteExecution
+      - ExploitInTheWild
+      - ExploitPOC
+      - IsUsed
+    - description:
+      name: term
+      isArray: false
+      required: true
+    - description: Relevant only to- IacMisconfiguration,Vulnerabilities.
+      name: iac_tags
+      isArray: false
+    - description:
+      name: license_type
+      isArray: true
+    - description:
+      name: check_status
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - Error
+      - Passed
+      - Suppressed
+      - FixPendin
+    - description: The limit of issues to retrieve.
+      name: limit
+      default: 50
+    description:
+    name: 'prisma-cloud-code-issues-list'
+    outputs:
+    - contextPath: PrismaCloud.CodeIssue.firstDetected
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.labels
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.labels.label
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.labels.metadata.imageName
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.policy
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.repository
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.resourceName
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.resourceScanType
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.resourceUuid
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.severity
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.violationId
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.causePackageId
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.causePackageName
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.cveUuid
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.cvss
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.fixVersion
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.pr
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.resourceId
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.riskFactors
+      description:
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.isIndirectPackage
+      description:
+      type: String
+  - arguments:
     - description: Comma-separated list of alert IDs to be dismissed.
       isArray: true
       name: alert_ids
