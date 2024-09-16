@@ -429,7 +429,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
         demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
 
         if process:
-            demisto.debug(f'New Chrome session active on Port {chrome_port}')
+            demisto.debug(f'New Chrome session active on {chrome_port=}: {chrome_options=} {chrome_options=}')
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = get_chrome_browser(chrome_port)
