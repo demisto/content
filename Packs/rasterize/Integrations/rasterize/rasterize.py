@@ -305,7 +305,7 @@ def write_text_file(filename, contents, overwrite=False):
         demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
 
 
-def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict | None:
+def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict:
     """
     Read the content from a JSON file and return it as a Python dictionary or list.
     :param file_path: Path to the JSON file.
@@ -313,8 +313,7 @@ def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict | No
     """
     if not os.path.exists(json_file_path):
         demisto.info(f"File '{json_file_path}' does not exist.")
-        return None
-
+        return {}
     try:
         with open(json_file_path) as file:
             # Read and parse the JSON data
@@ -322,7 +321,7 @@ def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict | No
             return data
     except json.JSONDecodeError:
         demisto.debug(f"Error decoding JSON from the file '{json_file_path}'.")
-        return None
+        return {}
 
 
 def write_json_file(content: Optional[Dict]= {},
@@ -538,7 +537,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     # it can compare between the fetched 'None' string and the 'None' that assigned.
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options') or 'None'
-    chrome_instances_contents = read_text_file(CHROME_INSTANCES_FILE_PATH) or {}
+    chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
     instances_id = []
     for chrome_port_data in chrome_instances_contents.values():
         instances_id.append(chrome_port_data['instance_id'])
