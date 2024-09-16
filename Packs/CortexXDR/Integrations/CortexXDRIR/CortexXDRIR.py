@@ -136,16 +136,17 @@ def get_xsoar_close_reasons():
     """
      Get the default XSOAR close-reasons in addition to custom close-reasons from server configuration.
     """
-    default_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
-    custom_close_reasons: List[str] = []
+    xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
     try:
         server_config = get_server_config()
         demisto.debug(f'get_xsoar_close_reasons server-config: {str(server_config)}')
-        if server_config:
-            custom_close_reasons = argToList(server_config.get('incident.closereasons', ''))
+        if server_config and server_config.get('incident.closereasons'):
+            xsoar_close_reasons.extend(argToList(server_config.get('incident.closereasons', '')))
     except Exception as e:
         demisto.error(f"Could not get server configuration: {e}")
-    return default_xsoar_close_reasons + custom_close_reasons
+    demisto.debug(f'get_xsoar_close_reasons :{xsoar_close_reasons=}')
+    # removing duplicates
+    return list(dict.fromkeys(xsoar_close_reasons))
 
 
 def validate_custom_close_reasons_mapping(mapping: str, direction: str):
