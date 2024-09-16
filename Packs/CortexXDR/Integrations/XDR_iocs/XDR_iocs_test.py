@@ -1220,6 +1220,7 @@ def test_update_integration_context(mock_set_integration_context, mock_get_integ
                                                      'is_first_sync_phase': False,
                                                      'search_after': ['765', '000']})
 
+
 @patch('XDR_iocs.get_integration_context')
 @patch('XDR_iocs.sync')
 def test_xdr_iocs_sync_command(mock_sync, mock_integration_context):
@@ -1241,6 +1242,7 @@ def test_xdr_iocs_sync_command(mock_sync, mock_integration_context):
     mock_integration_context.return_value = {}
     xdr_iocs_sync_command(client)
     mock_sync.assert_called_with(client, batch_size=4000)
+
 
 @patch('XDR_iocs.get_integration_context')
 @patch('XDR_iocs.sync_for_fetch')

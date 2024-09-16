@@ -460,11 +460,6 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
                           f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, with indicator {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
-                # is the update_sync_time_with_date_string necessary (to ask judith)
-                # update_integration_context(update_is_first_sync_phase='false',
-                #                            update_sync_time_with_date_string=CURRENT_BATCH_LAST_MODIFIED_TIME
-                #                            if last_sync_time > CURRENT_BATCH_LAST_MODIFIED_TIME
-                #                            else None)
                 update_integration_context(update_is_first_sync_phase='false')
                 demisto.debug(f"updated integration_context to {get_integration_context()=}")
             requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
@@ -908,7 +903,7 @@ def main():  # pragma: no cover
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
     if xsoar_comment_field := params.get('xsoar_comments_field'):
-        # talk with judith
+        # will remove this before merging
         Client.xsoar_comments_field = xsoar_comment_field[0] if isinstance(xsoar_comment_field, list) else xsoar_comment_field
 
     client = Client(params)
