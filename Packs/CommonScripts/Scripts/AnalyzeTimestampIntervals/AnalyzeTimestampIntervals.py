@@ -4,10 +4,6 @@ import statistics
 
 
 def calculate_interval_differences(timestamps):
-    if len(timestamps) < 2:
-        demisto.debug("Not enough timestamps to calculate intervals.")
-        return []
-
     # Sort the timestamps
     timestamps.sort()
 
@@ -100,7 +96,7 @@ def main():  # pragma: no cover
         verbose = argToBoolean(demisto.args().get('verbose') or False)
 
         if len(timestamps) < 2:
-            raise ValueError(f"The total number of timestamps should exceed 2. The detected number was {len(timestamps)}.")
+            raise ValueError(f"The number of timestamps should exceed 2. The number of timestamps given was {len(timestamps)}.")
 
         # Get thresholds from arguments
         max_intervals_per_window = int(demisto.args().get('max_intervals_per_window', 30))

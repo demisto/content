@@ -3,7 +3,7 @@
     "description": "Monitor the PAN-OS FW log upload to the Strata Logging Service in a reoccurring job. The key pre-requisite is the configuration of the Strata Logging Service integration.",
     "support": "community",
     "currentVersion": "1.0.15",
-    "fromversion": "6.0.0",
+    "fromVersion": "6.0.0",
     "author": "Brice RENAUD",
     "url": "",
     "email": "brenaud@paloaltonetworks.com",
