@@ -5809,6 +5809,10 @@
             "integrations": "XQL Query Engine",
             "playbookID": "XQL Query Engine - Test",
             "timeout": 500
+        },
+        {
+            "integrations": "IBM Resilient Systems",
+            "playbookID": "IBM_Security_QRadar_Soar_Test"
         }
     ],
     "skipped_tests": {
