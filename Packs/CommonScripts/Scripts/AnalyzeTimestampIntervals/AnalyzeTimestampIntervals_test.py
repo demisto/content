@@ -31,14 +31,16 @@ def test_consistent_intervals():
     max_intervals_per_window = 30
     interval_consistency_threshold = 0.15
 
-    result = analyze_intervals(consistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window, interval_consistency_threshold=interval_consistency_threshold)
+    result = analyze_intervals(
+        consistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
+        interval_consistency_threshold=interval_consistency_threshold)
 
     assert result["MeanIntervalInSeconds"] == pytest.approx(1000.0, rel=1e-2)
     assert result["MedianIntervalInSeconds"] == pytest.approx(1000.0, rel=1e-2)
     assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-2)
-    assert result["HighFrequencyDetected"] == False
-    assert result["ConsistentIntervalsDetected"] == True
-    assert result["IsPatternLikelyAutomated"] == True
+    assert result["HighFrequencyDetected"] is False
+    assert result["ConsistentIntervalsDetected"] is True
+    assert result["IsPatternLikelyAutomated"] is True
 
 
 def test_high_frequency_detection():
@@ -56,14 +58,16 @@ def test_high_frequency_detection():
     max_intervals_per_window = 30
     interval_consistency_threshold = 0.15
 
-    result = analyze_intervals(high_freq_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window, interval_consistency_threshold=interval_consistency_threshold)
+    result = analyze_intervals(
+        high_freq_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
+        interval_consistency_threshold=interval_consistency_threshold)
 
     assert result["MeanIntervalInSeconds"] == pytest.approx(100.0, rel=1e-2)
     assert result["MedianIntervalInSeconds"] == pytest.approx(100.0, rel=1e-2)
     assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-2)
-    assert result["HighFrequencyDetected"] == True
-    assert result["ConsistentIntervalsDetected"] == True
-    assert result["IsPatternLikelyAutomated"] == True
+    assert result["HighFrequencyDetected"] is True
+    assert result["ConsistentIntervalsDetected"] is True
+    assert result["IsPatternLikelyAutomated"] is True
 
 
 def test_inconsistent_intervals():
@@ -81,12 +85,13 @@ def test_inconsistent_intervals():
     max_intervals_per_window = 30
     interval_consistency_threshold = 0.15
 
-    result = analyze_intervals(inconsistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window, interval_consistency_threshold=interval_consistency_threshold)
+    result = analyze_intervals(
+        inconsistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
+        interval_consistency_threshold=interval_consistency_threshold)
 
     assert result["MeanIntervalInSeconds"] == pytest.approx(3000.0, rel=1e-2)
     assert result["MedianIntervalInSeconds"] == pytest.approx(3000.0, rel=1e-2)
     assert result["StandardDeviationInSeconds"] == pytest.approx(2000.0, rel=1e-2)
-    assert result["HighFrequencyDetected"] == False
-    assert result["ConsistentIntervalsDetected"] == False
-    assert result["IsPatternLikelyAutomated"] == False
-
+    assert result["HighFrequencyDetected"] is False
+    assert result["ConsistentIntervalsDetected"] is False
+    assert result["IsPatternLikelyAutomated"] is False
