@@ -958,13 +958,13 @@ class STIX2XSOARParser(BaseClient):
         Returns:
             PatternComparisons. the value in the pattern.
         """
-        supported_patterns: PatternComparisons = {}
+        supported_comparisons: PatternComparisons = {}
         for field_type, comps in parsed.items():
             if field_type in STIX_SUPPORTED_TYPES:
                 for comp in comps:
-                    if comp[0][0] in STIX_SUPPORTED_TYPES[field_type]:
-                        supported_patterns.setdefault(field_type, []).append(comp)
-        return supported_patterns
+                    if dict_safe_get(comp, [0, 0]) in STIX_SUPPORTED_TYPES[field_type]:
+                        supported_comparisons.setdefault(field_type, []).append(comp)
+        return supported_comparisons
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any], ignore_external_id: bool = False):
@@ -2070,12 +2070,11 @@ class STIX2XSOARParser(BaseClient):
         ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
         """
         ioc_value = ioc_obj.get(key, '')
-        try:
-            ioc_value_groups = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value) # switch to pattern
-            if ioc_value_groups:
-                ioc_value = ioc_value_groups.group(0)
-        except AttributeError:
-            ioc_value = None
+        comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value)
+        ioc_value = next(
+            (comp[-1] for comp in comps.get('file', []) if ['hashes', 'SHA-256'] in comp),
+            None
+        )
         return ioc_value
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):

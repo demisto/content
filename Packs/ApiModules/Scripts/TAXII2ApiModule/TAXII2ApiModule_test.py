@@ -2397,3 +2397,6 @@ def test_get_supported_pattern_comparisons():
         'ipv4-addr': [(['value'], '=', "'1.51.100.1/32'")],
         'domain-name': [(['value'], '=', "'example.com'")]
     }
+
+
+def test_extract_ioc_value
