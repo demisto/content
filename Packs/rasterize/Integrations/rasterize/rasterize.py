@@ -291,7 +291,7 @@ def read_text_file(file_path) -> dict | str | None:
                 demisto.info(f"File '{file_path}' contents: {ret_value}.")
                 return ret_value
         else:
-            demisto.debug('If the file does not exist, create an empty JSON file')
+            demisto.debug('File does not exist, creating an empty JSON file')
             data = {}
             with open(file_path, 'w') as file:
                 json.dump(data, file)
