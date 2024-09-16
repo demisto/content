@@ -98,7 +98,7 @@ def create_human_readable(result, verbose):
 
     return human_readable
 
-def main():
+def main():  # pragma: no cover
     try:
         timestamps = argToList(demisto.args()['timestamps'], transform=int)
         verbose = argToBoolean(demisto.args().get('verbose') or False)
