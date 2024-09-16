@@ -167,6 +167,9 @@ script:
     - contextPath: AHA.Idea.created_at
       description: The idea creation date.
       type: Date
+    - contextPath: AHA.Idea.created_with
+      description: test desc.
+      type: Date
   runonce: false
   script: "-"
   type: python
