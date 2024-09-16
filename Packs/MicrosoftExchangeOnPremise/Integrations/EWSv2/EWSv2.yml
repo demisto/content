@@ -66,7 +66,7 @@ configuration:
   type: 13
   section: Connect
   required: false
-- display: "┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉\n‎                                           Manual Mode\nExchange Server Hostname or IP address"
+- display: "\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\n\u200E                                           Manual Mode\nExchange Server Hostname or IP address"
   name: ewsServer
   type: 0
   section: Connect
@@ -90,7 +90,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: "┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉\n‎                                         Advanced Mode\nOverride Authentication Type (NTLM, Basic, or Digest)."
+- display: "\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\n\u200E                                         Advanced Mode\nOverride Authentication Type (NTLM, Basic, or Digest)."
   name: authType
   type: 0
   section: Connect
@@ -215,10 +215,10 @@ script:
       description: The ID of the deleted attachment, in case of other attachment (for example, "email").
       type: string
     - contextPath: EWS.Items.FileAttachments.action
-      description: "The deletion action in case of file attachment. This is a constant value: 'deleted'."
+      description: 'The deletion action in case of file attachment. This is a constant value: ''deleted''.'
       type: string
     - contextPath: EWS.Items.ItemAttachments.action
-      description: "The deletion action in case of other attachment (for example, \"email\"). This is a constant value: 'deleted'."
+      description: 'The deletion action in case of other attachment (for example, "email"). This is a constant value: ''deleted''.'
       type: string
   - description: Returns a list of searchable mailboxes. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
     name: ews-get-searchable-mailboxes
@@ -514,12 +514,12 @@ script:
       name: item-id
       required: true
     - auto: PREDEFINED
-      defaultValue: yes
+      defaultValue: true
       description: Whether to move the item from the original folder to the junk folder.
       name: move-items
       predefined:
-      - yes
-      - no
+      - true
+      - false
     - description: If empty, will use the default mailbox. If you specify a different mailbox, you might need impersonation rights to the mailbox.
       name: target-mailbox
     description: 'Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx.'
@@ -570,12 +570,12 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      defaultValue: no
+      defaultValue: false
       description: If the email item contains another email as an attachment (EML or MSG file), whether to retrieve the EML/MSG file attachment. Can be "yes" or "no". Default is "no".
       name: get-internal-item
       predefined:
-      - yes
-      - no
+      - true
+      - false
     description: Retrieves items from a specified folder in a mailbox. The items are order by the item created time, most recent is first.
     name: ews-get-items-from-folder
     outputs:
@@ -1030,7 +1030,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.4.1.98221
+  dockerimage: demisto/py-ews:5.4.3.111931
   isfetch: true
   runonce: false
   script: '-'
