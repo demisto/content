@@ -7525,7 +7525,7 @@ def test_fix_time_field():
     assert detection_3['created_timestamp'] == '2023-04-20T11:13:10.424Z'
 
 
-def test_enrich_groups__no_resources(mocker):
+def test_enrich_groups_no_resources(mocker):
     """
     Given:
         - A non exist group id.
