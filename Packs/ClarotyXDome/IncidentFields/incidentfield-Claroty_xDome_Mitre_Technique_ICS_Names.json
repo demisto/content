@@ -2,7 +2,7 @@
     "id": "incident_clarotyxdomemitretechniqueicsnames",
     "version": -1,
     "modified": "2024-09-16T10:25:25.209772537Z",
-    "name": "Claroty xDome Mitre Technique ICS IDs",
+    "name": "Claroty xDome Mitre Technique ICS Names",
     "ownerOnly": false,
     "description": "MITRE ATT&CK ICS technique names mapped to the alert",
     "cliName": "clarotyxdomemitretechniqueicsnames",
