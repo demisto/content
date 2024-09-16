@@ -9,6 +9,7 @@ tags: []
 enabled: true
 args:
 - name: timestamps
+  required: true
   description: List of Unix timestamps (in milliseconds) representing time intervals.
   isArray: true
 - name: max_intervals_per_window
