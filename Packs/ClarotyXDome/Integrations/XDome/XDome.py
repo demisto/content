@@ -35,6 +35,7 @@ DEVICE_ALERT_FIELDS = {
     "alert_labels",
     "alert_name",
     "alert_type_name",
+    "alert_description",
     "device_alert_detected_time",
     "device_alert_status",
     "device_alert_updated_time",

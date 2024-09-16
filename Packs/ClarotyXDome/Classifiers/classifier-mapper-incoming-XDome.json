@@ -35,6 +35,9 @@
                 "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
                 },
+                "Claroty xDome Alert Description": {
+                    "simple": "alert_description"
+                },
                 "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
                 },
