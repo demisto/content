@@ -15,6 +15,7 @@ This integration was integrated and tested with version 1.0 of AwsSecretsManager
     | Role Session Duration |  | False |
     | Access Key |  | False |
     | Secret Key |  | False |
+    | Role Session Duration |  | False |
     | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout separated from the read timeout with a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
     | Fetches credentials |  | False |

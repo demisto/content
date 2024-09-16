@@ -36,8 +36,8 @@ def extract_session_from_secret(secret_key, session_token):
 class AWSClient:
 
     def __init__(self, aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                 aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries,
-                 aws_session_token=None, sts_endpoint_url=None, endpoint_url=None):
+                 aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                 retries, aws_external_id=None, aws_session_token=None, sts_endpoint_url=None, endpoint_url=None):
 
         self.sts_endpoint_url = sts_endpoint_url
         self.endpoint_url = endpoint_url
@@ -49,6 +49,7 @@ class AWSClient:
         self.aws_role_policy = aws_role_policy
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key, self.aws_session_token = extract_session_from_secret(aws_secret_access_key, aws_session_token)
+        self.aws_external_id = aws_external_id
         self.verify_certificate = verify_certificate
 
         sts_regional_endpoint = demisto.params().get("sts_regional_endpoint") or None
@@ -109,30 +110,36 @@ class AWSClient:
             kwargs.update({'Policy': role_policy})
         elif self.aws_role_policy is not None:
             kwargs.update({'Policy': self.aws_role_policy})
+        
+        if self.aws_external_id:
+            kwargs['ExternalId'] = self.aws_external_id
 
         demisto.debug(f'{kwargs=}')
         self.sts_endpoint_url = self.sts_endpoint_url or STS_ENDPOINTS.get(region) or STS_ENDPOINTS.get(self.aws_default_region)
 
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
-            if not self.aws_access_key_id:
-                sts_client = boto3.client('sts', config=self.config, verify=self.verify_certificate,
-                                          region_name=region if region else self.aws_default_region,
-                                          endpoint_url=self.sts_endpoint_url)
-                sts_response = sts_client.assume_role(**kwargs)
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region if region else self.aws_default_region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=self.verify_certificate,
-                    config=self.config,
-                    endpoint_url=self.endpoint_url
-                )
+            sts_client = boto3.client(
+                service_name='sts',
+                config=self.config,
+                verify=self.verify_certificate,
+                region_name=region or self.aws_default_region,
+                endpoint_url=self.sts_endpoint_url
+            )
+            sts_response = sts_client.assume_role(**kwargs)
+            client = boto3.client(
+                service_name=service,
+                region_name=region or self.aws_default_region,
+                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                aws_session_token=sts_response['Credentials']['SessionToken'],
+                verify=self.verify_certificate,
+                config=self.config,
+                endpoint_url=self.endpoint_url
+            )
         elif self.aws_access_key_id and (role_arn or self.aws_role_arn):  # login with Access Key ID and Role ARN
             sts_client = boto3.client(
                 service_name='sts',
-                region_name=region if region else self.aws_default_region,
+                region_name=region or self.aws_default_region,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,
@@ -146,7 +153,7 @@ class AWSClient:
             sts_response = sts_client.assume_role(**kwargs)
             client = boto3.client(
                 service_name=service,
-                region_name=region if region else self.aws_default_region,
+                region_name=region or self.aws_default_region,
                 aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
                 aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
                 aws_session_token=sts_response['Credentials']['SessionToken'],
@@ -157,7 +164,7 @@ class AWSClient:
         elif self.aws_session_token and not self.aws_role_arn:  # login with session token
             client = boto3.client(
                 service_name=service,
-                region_name=region if region else self.aws_default_region,
+                region_name=region or self.aws_default_region,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 aws_session_token=self.aws_session_token,
@@ -168,7 +175,7 @@ class AWSClient:
         elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
             client = boto3.client(
                 service_name=service,
-                region_name=region if region else self.aws_default_region,
+                region_name=region or self.aws_default_region,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,
@@ -177,7 +184,7 @@ class AWSClient:
             )
         else:  # login with default permissions, permissions pulled from the ec2 metadata
             client = boto3.client(service_name=service,
-                                  region_name=region if region else self.aws_default_region,
+                                  region_name=region or self.aws_default_region,
                                   endpoint_url=self.endpoint_url)
 
         return client

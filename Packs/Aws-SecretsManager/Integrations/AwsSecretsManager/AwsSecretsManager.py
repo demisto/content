@@ -261,6 +261,7 @@ def main():  # pragma: no cover:
         aws_role_policy = None
         aws_access_key_id = params.get('credentials').get('identifier')
         aws_secret_access_key = params.get('credentials').get('password')
+        aws_external_id = params.get('externalId')
         verify_certificate = not argToBoolean(params.get('insecure'))
         timeout = params.get('timeout')
         retries = int(params.get('retries')) if params.get('retries') else 5
@@ -270,7 +271,7 @@ def main():  # pragma: no cover:
 
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                               retries)
+                               retries, aws_external_id=aws_external_id)
 
         args = demisto.args()
 
