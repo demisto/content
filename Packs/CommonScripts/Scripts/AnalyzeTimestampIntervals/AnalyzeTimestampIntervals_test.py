@@ -35,8 +35,9 @@ def test_consistent_intervals():
         consistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
         interval_consistency_threshold=interval_consistency_threshold)
 
-    assert result["MeanIntervalInSeconds"] == pytest.approx(1000.0, rel=1e-2)
-    assert result["MedianIntervalInSeconds"] == pytest.approx(1000.0, rel=1e-2)
+    # Adjust expected value to seconds (1000 ms = 1 second)
+    assert result["MeanIntervalInSeconds"] == pytest.approx(1.0, rel=1e-2)
+    assert result["MedianIntervalInSeconds"] == pytest.approx(1.0, rel=1e-2)
     assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-2)
     assert result["HighFrequencyDetected"] is False
     assert result["ConsistentIntervalsDetected"] is True
@@ -62,8 +63,9 @@ def test_high_frequency_detection():
         high_freq_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
         interval_consistency_threshold=interval_consistency_threshold)
 
-    assert result["MeanIntervalInSeconds"] == pytest.approx(100.0, rel=1e-2)
-    assert result["MedianIntervalInSeconds"] == pytest.approx(100.0, rel=1e-2)
+    # Adjust expected value to seconds (100 ms = 0.1 second)
+    assert result["MeanIntervalInSeconds"] == pytest.approx(0.1, rel=1e-2)
+    assert result["MedianIntervalInSeconds"] == pytest.approx(0.1, rel=1e-2)
     assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-2)
     assert result["HighFrequencyDetected"] is True
     assert result["ConsistentIntervalsDetected"] is True
@@ -89,9 +91,10 @@ def test_inconsistent_intervals():
         inconsistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
         interval_consistency_threshold=interval_consistency_threshold)
 
-    assert result["MeanIntervalInSeconds"] == pytest.approx(3000.0, rel=1e-2)
-    assert result["MedianIntervalInSeconds"] == pytest.approx(3000.0, rel=1e-2)
-    assert result["StandardDeviationInSeconds"] == pytest.approx(2000.0, rel=1e-2)
+    # Adjust expected value to seconds (3000 ms = 3 seconds)
+    assert result["MeanIntervalInSeconds"] == pytest.approx(3.0, rel=1e-2)
+    assert result["MedianIntervalInSeconds"] == pytest.approx(3.0, rel=1e-2)
+    assert result["StandardDeviationInSeconds"] == pytest.approx(2.0, rel=1e-2)
     assert result["HighFrequencyDetected"] is False
     assert result["ConsistentIntervalsDetected"] is False
     assert result["IsPatternLikelyAutomated"] is False

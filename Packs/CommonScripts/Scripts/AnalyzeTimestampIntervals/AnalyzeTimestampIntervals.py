@@ -65,7 +65,8 @@ def analyze_intervals(timestamps, verbose, max_intervals_per_window=30, interval
     if verbose:
         result["IntervalsInSeconds"] = intervals
 
-    # Determine if pattern is likely automated in a unified result. High frequency or intervals that are more or less the same can suggest automation.
+    # Determine if pattern is likely automated in a unified result. High frequency or intervals that are more or less the same
+    # can suggest automation.
     if high_frequency or consistent_intervals:
         result["IsPatternLikelyAutomated"] = True
 
