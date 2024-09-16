@@ -2,9 +2,9 @@
         "events" : [
             {
                 "_time": "2024-09-11T07:16:09Z",
-                "cid": "50b8aef1ec7496754ec069d890c4",
+                "cid": "50b8aef1ec7496754e",
                 "classification": "Configuration",
-                "cname": "Test National Financial, Inc.",
+                "cname": "Test Name",
                 "description": "Access point configuration sync successful",
                 "device_type": "iap",
                 "gid": 328,
@@ -18,9 +18,9 @@
             },
             {
                 "_time": "2024-09-11T02:18:39Z",
-                "cid": "50b8aef1ec7796754ec069d890c4",
+                "cid": "50b8aef1ec77",
                 "classification": "Configuration",
-                "cname": "Test National Financial, Inc.",
+                "cname": "Test Name",
                 "description": "Access point configuration sync successful",
                 "device_type": "iap",
                 "gid": 328,
@@ -34,9 +34,9 @@
             },
             {
                 "_time": "2024-09-11T00:21:33Z",
-                "cid": "50b8aef1ecd496754ec069d890c4",
+                "cid": "50b8aef1e",
                 "classification": "Configuration",
-                "cname": "Test National Financial, Inc.",
+                "cname": "Test Name",
                 "description": "Swarm configuration sync successful",
                 "device_type": "iap",
                 "gid": 69,
@@ -50,9 +50,9 @@
             },
             {
                 "_time": "2024-09-11T00:21:33Z",
-                "cid": "50b8aef1ec774dd54ec069d890c4",
+                "cid": "50b8ec774d",
                 "classification": "Configuration",
-                "cname": "Test National Financial, Inc.",
+                "cname": "Test Name",
                 "description": "Swarm configuration sync successful",
                 "device_type": "iap",
                 "gid": 69,

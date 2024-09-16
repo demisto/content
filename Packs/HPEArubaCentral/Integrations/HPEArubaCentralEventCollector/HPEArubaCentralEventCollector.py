@@ -34,11 +34,15 @@ class Client(BaseClient):
         self.user_password = user_password
         self.customer_id = customer_id
 
-    def get_access_token(self) -> str:
+    def get_access_token(self, use_cached_token=True) -> str:
         """
          Get access token for Aruba Central API.
          If one exists in the integration context and is not expired, returns it.
          Otherwise, refreshes the access token using the refresh token and returns the new token.
+
+         Args:
+         use_cached_token (bool): Whether to use the cached access token if it exists and is not expired.
+                                  If set to false, the token will either be refreshed or a new one will be created.
 
          Returns:
              Valid access token to the Aruba Central API.
@@ -48,7 +52,7 @@ class Client(BaseClient):
         expiry_time = integration_context.get('expiry_time', 0)
         refresh_token = integration_context.get('refresh_token')
 
-        if access_token and expiry_time > int(time.time()):
+        if use_cached_token and access_token and expiry_time > int(time.time()):
             demisto.debug('Returning cached access token')
             return access_token
         elif isinstance(refresh_token, str):
@@ -87,12 +91,21 @@ class Client(BaseClient):
             'refresh_token': refresh_token
         }
 
-        token_resp = self._http_request(
-            method='POST',
-            url_suffix='/oauth2/token',
-            headers=headers,
-            params=params,
-        )
+        try:
+            token_resp = self._http_request(
+                method='POST',
+                url_suffix='/oauth2/token',
+                headers=headers,
+                params=params,
+            )
+
+        except DemistoException as e:
+            if "Invalid refresh_token" in e.message:
+                demisto.debug('Refresh token is invalid, acquiring new access token via oauth.')
+                return self.oauth_sequence()
+
+            raise e
+
         return token_resp['access_token'], token_resp['refresh_token'], token_resp['expires_in']
 
     def oauth_sequence(self) -> tuple[str, str, int]:
@@ -223,12 +236,27 @@ class Client(BaseClient):
             'authorization': f'Bearer {self.get_access_token()}',
         }
 
-        return self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            params=params,
-            headers=headers,
-        )
+        try:
+            response = self._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                headers=headers,
+            )
+        except DemistoException as e:
+            if 'access token is invalid' in e.message:
+                demisto.debug('Access token is invalid, refreshing and retrying the request')
+                headers['authorization'] = f'Bearer {self.get_access_token(use_cached_token=False)}'
+                response = self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    headers=headers,
+                )
+            else:
+                raise e
+
+        return response
 
     def fetch_audit_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict) -> list[dict]:
         """
@@ -512,7 +540,7 @@ def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tup
     audit_limit = limit or MAX_GET_AUDIT_LIMIT
     networking_limit = limit or MAX_GET_EVENTS_LIMIT
     if 'from_date' in args:
-        start_time = date_to_timestamp(args.get('from_date'))
+        start_time = int(date_to_timestamp(arg_to_datetime(args.get('from_date'))) / 1000)
     else:
         start_time = int(time.time()) - timedelta(hours=3).seconds
 
