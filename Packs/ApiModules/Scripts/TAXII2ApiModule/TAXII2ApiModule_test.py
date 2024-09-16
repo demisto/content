@@ -2410,6 +2410,6 @@ def test_extract_ioc_value():
     """
     pattern = "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])"
 
-    res = STIX2XSOARParser.extract_ioc_value(pattern)
+    res = STIX2XSOARParser.extract_ioc_value({'pattern': pattern}, 'pattern')
 
     assert res == '1111'

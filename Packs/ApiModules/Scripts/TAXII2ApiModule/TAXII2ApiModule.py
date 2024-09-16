@@ -925,13 +925,13 @@ class STIX2XSOARParser(BaseClient):
         For Example:
 
         >>> STIX2XSOARParser.get_pattern_comparisons(
-        >>>     "[ipv4-addr:value = '1.51.100.1/32' "
-        >>>     "OR ipv4-addr:value = '203.0.113.33/32' "
+        >>>     "[ipv4-addr:value = '1.1.1.1/32' "
+        >>>     "OR ipv4-addr:value = '8.8.8.8/32' "
         >>>     "AND domain-name:value = 'example.com' "
         >>>     "OR file:hashes.'SHA-256' = '13987239847...']"
         >>> )
         {
-            'ipv4-addr': [(['value'], '=', "'1.51.100.1/32'"), (['value'], '=', "'203.0.113.33/32'")],
+            'ipv4-addr': [(['value'], '=', "'1.1.1.1/32'"), (['value'], '=', "'8.8.8.8/32'")],
             'domain-name': [(['value'], '=', "'example.com'")],
             'file': [(['hashes', 'SHA-256'], '=', "'13987239847...'")]
         }
@@ -1012,10 +1012,10 @@ class STIX2XSOARParser(BaseClient):
         """
         indicator_obj = id_to_object.get(related_obj, {})
         entity_b_value = indicator_obj.get('name', '')
-        entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(indicator_obj.get('type', ''),
-                                                             STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
+        entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(
+            indicator_obj.get('type', ''), STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
         if indicator_obj.get('type') == "indicator":
-            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern'))  # type: ignore
+            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern'))
         elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
             _, entity_b_value = STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_obj)
         elif indicator_obj.get('type') == "report" and is_unit42_report:
@@ -2071,8 +2071,8 @@ class STIX2XSOARParser(BaseClient):
         """
         ioc_value = ioc_obj.get(key, '')
         comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value)
-        ioc_value = next((comp[-1] for comp in comps.get('file', []) if ['hashes', 'SHA-256'] in comp), None)
-        return ioc_value
+        return next(
+            (comp[-1].strip("'") for comp in comps.get('file', []) if ['hashes', 'SHA-256'] in comp), None)
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
         if not indicator_modified_str:
