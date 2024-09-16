@@ -203,7 +203,11 @@ def fetch_indicators_command(client: Client,
         if (indicator_obj.get('gti_threat_score') or 0) >= minimum_score:
             indicators.append(indicator_obj)
         else:
-            existing_indicators = list(IndicatorsSearcher(value=indicator_obj['value']))
+            try:
+                existing_indicators = list(IndicatorsSearcher(value=indicator_obj['value']))
+            except SystemExit as exc:
+                demisto.debug(exc)
+                existing_indicators = []
             if len(existing_indicators) > 0 and int(existing_indicators[0].get('total', 0)) > 0:
                 indicators.append(indicator_obj)
 
