@@ -410,6 +410,18 @@ def filter_networking_events(events: list[dict], last_run: dict) -> list[dict]:
 
 
 def create_next_run(audit_events: list[dict], networking_events: list[dict] | None, end_time: int) -> dict[str, str]:
+    """
+    Create the next run object based on the latest fetched events.
+
+    Args:
+        audit_events (list[dict]): List of the latest fetched audit events
+        networking_events (list[dict] | None): List of the latest fetched networking events
+        end_time (int): Unix timestamp in seconds for the end time used in the fetches
+
+    Returns:
+        next_run (dict[str, str]): Object containing the latest event timestamps and event IDs to be used for duplicate removals
+                                    in the next run
+    """
     next_run: dict[str, Any] = {}
     end_time_ms = end_time * 1000
     if audit_events:
@@ -417,6 +429,7 @@ def create_next_run(audit_events: list[dict], networking_events: list[dict] | No
         next_run['last_audit_ts'] = str(last_audit_ts)
         last_audit_event_ids = []
         for event in reversed(audit_events):
+            # Save all event IDs with the latest timestamp
             if event.get(AUDIT_TS, 0) < last_audit_ts:
                 break
 
@@ -432,6 +445,7 @@ def create_next_run(audit_events: list[dict], networking_events: list[dict] | No
         next_run['last_networking_ts'] = str(last_networking_ts)
         last_networking_event_ids = []
         for event in reversed(networking_events):
+            # Save all event IDs with the latest timestamp
             if event.get(NETWORKING_TS, 0) < last_networking_ts:
                 break
 
@@ -448,8 +462,10 @@ def create_next_run(audit_events: list[dict], networking_events: list[dict] | No
 def add_time_to_events(events: list[dict] | None, time_arg: str):
     """
     Adds the _time key to the events.
+
     Args:
         events: List[Dict] - list of events to add the _time key to.
+
     Returns:
         list: The events with the _time key.
     """
@@ -460,7 +476,8 @@ def add_time_to_events(events: list[dict] | None, time_arg: str):
 
 
 def push_events(audit_events: list | None, networking_events: list | None):
-    """Push audit and networking events to XSIAM
+    """
+    Push audit and networking events to XSIAM
 
     Args:
         audit_events (list): list of fetched audit events
@@ -570,6 +587,8 @@ def fetch_events(client: Client,
                  num_networking_events_to_fetch: int,
                  ) -> tuple[dict, list[dict], list[dict] | None]:
     """
+    Fetches events from the Aruba Central API
+
     Args:
         client (Client): Aruba Central client to use.
         last_run (dict): A dict with a key containing the end time of the last successful fetch.
@@ -578,6 +597,7 @@ def fetch_events(client: Client,
         num_audit_events_to_fetch (int): number of audit events to fetch.
         fetch_networking_events (bool): whether to fetch networking events in addition to audit events.
         num_networking_events_to_fetch (int): number of networking events to fetch.
+
     Returns:
         next_run(dict): Dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         audit_events(list): List of fetched audit events.
