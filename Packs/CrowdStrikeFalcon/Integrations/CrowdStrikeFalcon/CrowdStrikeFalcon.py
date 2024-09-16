@@ -5512,7 +5512,7 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
         outputs.append({
             'incident_id': detection.get('incident_id'),
             'behavior_id': detection.get('behavior_id'),
-            'detection_ids': detection.get('detection_ids'),
+            'detection_ids': detection.get('detection_ids') or detection.get('alert_ids'),
 
         })
     return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
