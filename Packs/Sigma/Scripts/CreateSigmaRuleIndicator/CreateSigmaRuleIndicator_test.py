@@ -16,6 +16,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from sigma.rule import SigmaRuleTag, SigmaRule
 
+
 def load_file(path: str) -> dict[str, Any]:
     with open(path) as f:
         return json.load(f)
@@ -73,7 +74,7 @@ def test_create_indicator_relationships(mock_return_results, mock_create_relatio
 
 
 def test_parse_detection_field():
-    
+
     with open("test_data/sigma_rule.yml") as f:
         sigma_rule = SigmaRule.from_yaml(f.read())
 

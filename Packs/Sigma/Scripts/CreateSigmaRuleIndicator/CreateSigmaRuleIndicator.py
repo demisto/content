@@ -98,14 +98,13 @@ def parse_detection_field(rule: SigmaRule) -> list:
     """
     grid = []
     row = {}
-    
+
     def build_row(selection, data):
         row['selection'] = selection
         row['key'] = data.field
         row['modifiers'] = ','.join([reverse_modifier_mapping[modifier.__name__] for modifier in data.modifiers])
         row['values'] = '\n'.join([f'({index}){value.to_plain()}' for index, value in enumerate(data.original_value, 1)])
         return row
-
 
     for selection, value in rule.detection.detections.items():
         for fields in value.detection_items:
@@ -115,7 +114,7 @@ def parse_detection_field(rule: SigmaRule) -> list:
                     row = build_row(selection, field)
                     grid.append(row)
                     row = {}
-                
+
             except AttributeError:
                 row = build_row(selection, fields)
                 grid.append(row)
@@ -129,7 +128,7 @@ def parse_tags(tags: list) -> tuple[list[str], list[str], list[str], str]:
     cves = []
     processed_tags = []
     tlp = 'CLEAR'
-    
+
     for tag in tags.copy():
         if tag.namespace == "attack" and re.match(r"t\d{4}", tag.name):
             demisto.debug(f'Searching for the technique {tag.name} in TIM')
@@ -148,13 +147,13 @@ def parse_tags(tags: list) -> tuple[list[str], list[str], list[str], str]:
         elif tag.namespace == 'cve':
             demisto.debug(f'Found a CVE tag - {tag}')
             cve = tag.name.replace(".", "-").upper()
-            
+
             if not cve.startswith('CVE-'):
                 cve = f'CVE-{cve}'
-            
+
             cves.append(cve)
             processed_tags.append(cve)
-        
+
         elif tag.namespace == 'tlp':
             tlp = tag.name.upper()
 
@@ -178,7 +177,7 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
         "sigmarulestatus": rule.status.name,
         "author": rule.author,
         "sigmarulelevel": rule.level.name,
-        #"sigmarulelicense": rule_dict.get("license", ""),
+        # "sigmarulelicense": rule_dict.get("license", ""),
         "description": rule.description,
         "category": rule.logsource.category,
         "product": rule.logsource.product,
@@ -195,10 +194,10 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
 
     try:
         indicator["definition"] = rule.logsource.custom_attributes["definition"]
-    
+
     except AttributeError:
         pass
-    
+
     techniques, cves, tags, tlp = parse_tags(rule.tags)
     indicator["tags"] = tags
     indicator["tlp"] = tlp
@@ -207,7 +206,7 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
         indicator["verdict"] = "Malicious"
 
     indicator = {key: value for key, value in indicator.items() if value is not None}
-    
+
     return {"indicator": indicator, "techniques": techniques, "cves": cves}
 
 

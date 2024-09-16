@@ -1,4 +1,3 @@
-import json
 
 from sigma import exceptions
 from sigma.backends.carbonblack import CarbonBlackBackend

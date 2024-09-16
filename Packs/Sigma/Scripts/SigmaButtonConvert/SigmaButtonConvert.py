@@ -1,4 +1,3 @@
-import json
 
 from sigma import exceptions
 from sigma.backends.carbonblack import CarbonBlackBackend
@@ -37,7 +36,7 @@ def main():
 
     rule_str = indicator["CustomFields"]["sigmaruleraw"]
     rule = SigmaRule.from_yaml(rule_str)
-    
+
     # Set the context
     try:
         query = siem.convert_rule(rule)[0]
