@@ -4039,6 +4039,11 @@ detections = {'resources': [
      'detection_ids': ['example_detection2'],
      'incident_id': 'example_incident_id',
      'some_field': 'some_example2',
+     },
+    {'behavior_id': 'example_behavior_3',
+     'alert_ids': ['example_detection3'],
+     'incident_id': 'example_incident_id',
+     'some_field': 'some_example3',
      }
 ]}
 
@@ -4050,7 +4055,10 @@ DETECTION_FOR_INCIDENT_CASES = [
             {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
              'detection_ids': ['example_detection']},
             {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
-             'detection_ids': ['example_detection2']}],
+             'detection_ids': ['example_detection2']},
+            {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_3',
+             'detection_ids': ['example_detection3']}
+        ],
         [
             {'behavior_id': 'example_behavior_1',
              'detection_ids': ['example_detection'],
@@ -4059,12 +4067,17 @@ DETECTION_FOR_INCIDENT_CASES = [
             {'behavior_id': 'example_behavior_2',
              'detection_ids': ['example_detection2'],
              'incident_id': 'example_incident_id',
-             'some_field': 'some_example2'}
+             'some_field': 'some_example2'},
+            {'behavior_id': 'example_behavior_3',
+             'alert_ids': ['example_detection3'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example3'}
         ],
         'CrowdStrike.IncidentDetection',
         '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
         '\n| example_behavior_1 | example_detection | example_incident_id |\n'
-        '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
+        '| example_behavior_2 | example_detection2 | example_incident_id |\n'
+        '| example_behavior_3 | example_detection3 | example_incident_id |\n'),
     ({'resources': []}, [], None, None, None, 'Could not find behaviors for incident zz')
 ]
 
@@ -4076,7 +4089,8 @@ def test_get_detection_for_incident_command(mocker, detections, resources, expec
                                             expected_prefix,
                                             expected_md):
     """
-    Given: An incident ID
+    Given: An incident ID.
+    the detection_ids are in 'detection_ids' key or in 'alert_ids' key see XSUP-41622
     When: When running cs-falcon-get-detections-for-incident command
     Then: validates the created command result contains the correct data (whether found or not).
     """

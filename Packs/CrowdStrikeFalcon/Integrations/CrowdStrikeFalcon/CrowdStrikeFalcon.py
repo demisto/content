@@ -5508,6 +5508,7 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
     detection_res = get_detections_by_behaviors(behaviors_id).get('resources', {})
     outputs = []
 
+    # detection_ids may be under the alert_ids key, see XSUP-41622
     for detection in detection_res:
         outputs.append({
             'incident_id': detection.get('incident_id'),
