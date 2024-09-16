@@ -28,6 +28,11 @@ configuration:
   name: serviceAccountJson
   required: false
   type: 0
+- display: Default Slack user for notifications
+  additionalinfo: the default user to receive Slack notifications in case of any errors.
+  name: defaultSlackUser
+  required: true
+  type: 0
 - display: Lifetime for slack notification ( in hours)
   name: slackMsgLifetime
   required: true

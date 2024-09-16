@@ -833,6 +833,7 @@ def get_integration_config():
         "dspmApiKey": demisto.params().get("dspmApiKey", {}).get("password"),
         "GCPAccessToken": gcp_access_token,
         "slackMsgLifetime": demisto.params().get("slackMsgLifetime"),
+        "defaultSlackUser": demisto.params().get("defaultSlackUser"),
     }
     demisto.debug(f" integration config : ${integration_config}")
 
