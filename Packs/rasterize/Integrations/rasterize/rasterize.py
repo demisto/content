@@ -336,7 +336,7 @@ def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict | No
         return None
 
 
-def write_chrome_instances_file(content=None, overwrite=True):
+def write_json_file(content: Optional[str]=None, overwrite:bool=True, json_file_path:str = CHROME_INSTANCES_FILE_PATH):
     """
     Write to a JSON file with an option to overwrite or create an empty file.
 
@@ -347,13 +347,13 @@ def write_chrome_instances_file(content=None, overwrite=True):
     try:
         if content is not None and overwrite:
             # Overwrite the file with the new content
-            with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+            with open(json_file_path, 'w') as file:
                 json.dump(content, file, indent=4)
 
         elif content is not None and not overwrite:
             # Append to the file (requires reading existing content)
-            if os.path.exists(CHROME_INSTANCES_FILE_PATH):
-                with open(CHROME_INSTANCES_FILE_PATH, 'r+') as file:
+            if os.path.exists(json_file_path):
+                with open(json_file_path, 'r+') as file:
                     try:
                         existing_data = json.load(file)
                         if isinstance(existing_data, list):
@@ -369,12 +369,12 @@ def write_chrome_instances_file(content=None, overwrite=True):
                         json.dump([content], file, indent=4)
             else:
                 # Create a new file with the content as a list
-                with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+                with open(json_file_path, 'w') as file:
                     json.dump([content], file, indent=4)
 
         elif content is None:
             # Create an empty file
-            with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+            with open(json_file_path, 'w') as file:
                 json.dump({}, file, indent=4)
 
     except Exception as e:
@@ -665,7 +665,7 @@ def edit_chrome_port_file_configurations(chrome_port: str = '',
     data: dict = read_json_file() or {}
     if content or not data:
         data.update(content)
-        write_chrome_instances_file(content, False)
+        write_json_file(content, False)
     elif chrome_port in data:
         if if_increase_counter:
             data[chrome_port]['chrome_rasterize_connections'] += 1
