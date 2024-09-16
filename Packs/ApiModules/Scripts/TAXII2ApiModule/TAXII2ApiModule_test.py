@@ -2399,4 +2399,17 @@ def test_get_supported_pattern_comparisons():
     }
 
 
-def test_extract_ioc_value
+def test_extract_ioc_value():
+    """
+    Given
+    - A STIX pattern.
+    When
+    - Extracted an IOC value from a pattern.
+    Then
+    - Retrieve the IOC value.
+    """
+    pattern = "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])"
+
+    res = STIX2XSOARParser.extract_ioc_value(pattern)
+
+    assert res == '1111'

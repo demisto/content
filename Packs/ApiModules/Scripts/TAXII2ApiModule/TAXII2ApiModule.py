@@ -2067,14 +2067,11 @@ class STIX2XSOARParser(BaseClient):
     def extract_ioc_value(ioc_obj, key: str = "name"):
         """
         Extract SHA-256 from specific key, default key is name.
-        ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
+        "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
         """
         ioc_value = ioc_obj.get(key, '')
         comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value)
-        ioc_value = next(
-            (comp[-1] for comp in comps.get('file', []) if ['hashes', 'SHA-256'] in comp),
-            None
-        )
+        ioc_value = next((comp[-1] for comp in comps.get('file', []) if ['hashes', 'SHA-256'] in comp), None)
         return ioc_value
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
