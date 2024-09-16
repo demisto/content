@@ -18,5 +18,4 @@ To use this integration, you need to add a new Azure App Registration in the Azu
 -------
 ##### Note
 If the credentials object is used, make sure to set the `certificate` value as the `username` property and not as the certificate field
-![](https://github.com/demisto/content/blob/master/Packs/Microsoft365Defender/doc_files/credentials_example.png
-)
+![credentials_example](https://github.com/demisto/content/blob/master/Packs/Microsoft365Defender/doc_files/credentials_example.png)

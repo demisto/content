@@ -80,6 +80,6 @@ configure the preprocessing rule.
 
 > The configuration of the preprocessing rule is optional, but highly recommended.
 
-![Pre-process Rule](https://github.com/demisto/content/blob/master/Packs/IdentityRecordedFuture/doc_files/playbook_alerts_pre_process_rule.png)
+![Pre-process Rule](../../doc_files/playbook_alerts_pre_process_rule.png)
 
 Copyright (C) 2020-2024 Recorded Future, Inc.

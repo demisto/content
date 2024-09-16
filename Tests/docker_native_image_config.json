@@ -128,7 +128,7 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.8.0.108239"
+            "docker_ref": "demisto/py3-native:8.8.0.108569"
         }
     },
     "ignored_content_items": [
@@ -226,6 +226,20 @@
             "id": "FireEyeNX",
             "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "IBMSecurityVerify",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id":"Gmail",
+            "reason":"CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images":[
                 "native:8.6"
             ]
         }

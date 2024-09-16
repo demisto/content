@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8d47d645-51d6-4558-8c3c-0ee66ba1c125
+    taskid: d8ac5624-523a-43e5-8440-9e56b63434c0
     type: start
     task:
-      id: 8d47d645-51d6-4558-8c3c-0ee66ba1c125
+      id: d8ac5624-523a-43e5-8440-9e56b63434c0
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 784232b8-1fa4-42ec-8364-e8732178eca7
+    taskid: 5534121c-b7b2-4f84-8f68-1f70067d5fbe
     type: regular
     task:
-      id: 784232b8-1fa4-42ec-8364-e8732178eca7
+      id: 5534121c-b7b2-4f84-8f68-1f70067d5fbe
       version: -1
       name: Delete context
       description: |-
@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6ca89c26-e2d5-4bab-86ff-304cf114a3ba
+    taskid: db5d1ede-94e5-43e2-8cc3-32083f98796d
     type: regular
     task:
-      id: 6ca89c26-e2d5-4bab-86ff-304cf114a3ba
+      id: db5d1ede-94e5-43e2-8cc3-32083f98796d
       version: -1
       name: DBotTrainClustering
       description: Train clustering model on any incident type.
@@ -126,10 +126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: c2752ff7-c045-41ec-80fa-6685b9fec5c6
+    taskid: 38afcb1f-4eb8-4c25-8f90-22de2b5b016e
     type: title
     task:
-      id: c2752ff7-c045-41ec-80fa-6685b9fec5c6
+      id: 38afcb1f-4eb8-4c25-8f90-22de2b5b016e
       version: -1
       name: Done
       type: title
@@ -154,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8eca7357-0f46-4ef0-8fb4-8f149570fb94
+    taskid: a98a77c0-d33f-4ce4-85d8-fa01d499b971
     type: regular
     task:
-      id: 8eca7357-0f46-4ef0-8fb4-8f149570fb94
+      id: a98a77c0-d33f-4ce4-85d8-fa01d499b971
       version: -1
       name: Create incident 1
       description: commands.local.cmd.create.inc
@@ -197,10 +197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 9506a849-b09a-4661-8271-3be5e3ed3006
+    taskid: 9ceaa680-d378-4903-8daa-aa5df751e2b0
     type: regular
     task:
-      id: 9506a849-b09a-4661-8271-3be5e3ed3006
+      id: 9ceaa680-d378-4903-8daa-aa5df751e2b0
       version: -1
       name: Create incident 2
       description: commands.local.cmd.create.inc
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0b79b530-3848-420a-8918-32c8fe1f365b
+    taskid: d6436c6f-b522-425c-8912-606e9c01ca77
     type: regular
     task:
-      id: 0b79b530-3848-420a-8918-32c8fe1f365b
+      id: d6436c6f-b522-425c-8912-606e9c01ca77
       version: -1
       name: Create incident 3
       description: commands.local.cmd.create.inc
@@ -283,10 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 28ce43a3-ca81-473b-8adf-2c04a3b406ff
+    taskid: f4e1f102-9d51-4280-8fd8-7bfd9badefed
     type: regular
     task:
-      id: 28ce43a3-ca81-473b-8adf-2c04a3b406ff
+      id: f4e1f102-9d51-4280-8fd8-7bfd9badefed
       version: -1
       name: Create incident 4
       description: commands.local.cmd.create.inc
@@ -326,10 +326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 3d0b2c73-d3d0-4801-8a8c-ff149bae71b0
+    taskid: d11cd00a-4027-4642-841a-e1461fc9196d
     type: regular
     task:
-      id: 3d0b2c73-d3d0-4801-8a8c-ff149bae71b0
+      id: d11cd00a-4027-4642-841a-e1461fc9196d
       version: -1
       name: Set group 1
       description: Set a value in context under the key you entered.
@@ -365,10 +365,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7f672417-ca4c-42ea-8ed4-7eadd94f055b
+    taskid: 8b9abbfe-c159-4124-8afe-bdadafad45cc
     type: regular
     task:
-      id: 7f672417-ca4c-42ea-8ed4-7eadd94f055b
+      id: 8b9abbfe-c159-4124-8afe-bdadafad45cc
       version: -1
       name: Delete context
       description: |-
@@ -409,10 +409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: f7b5e81f-69c7-47b6-8953-a1d4f6535352
+    taskid: eb4f0004-fbbb-49f5-86a2-2a0d8cf1eb5e
     type: regular
     task:
-      id: f7b5e81f-69c7-47b6-8953-a1d4f6535352
+      id: eb4f0004-fbbb-49f5-86a2-2a0d8cf1eb5e
       version: -1
       name: Create incident 5
       description: commands.local.cmd.create.inc
@@ -452,10 +452,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: c8175ae6-70c8-4c9d-8f26-29079f08fafd
+    taskid: 65f55e7b-da23-430a-8721-b9121935801e
     type: regular
     task:
-      id: c8175ae6-70c8-4c9d-8f26-29079f08fafd
+      id: 65f55e7b-da23-430a-8721-b9121935801e
       version: -1
       name: Create incident 6
       description: commands.local.cmd.create.inc
@@ -495,10 +495,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 99abdc0d-56b4-41b0-8875-7df743b3b2b6
+    taskid: e759a62a-0116-496d-8987-23b305e5d288
     type: regular
     task:
-      id: 99abdc0d-56b4-41b0-8875-7df743b3b2b6
+      id: e759a62a-0116-496d-8987-23b305e5d288
       version: -1
       name: Set group 2
       description: Set a value in context under the key you entered.
@@ -534,10 +534,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 876bd45b-fdee-46d8-8b63-3f6122a06b2e
+    taskid: 007cd4ad-e6fd-46bf-8b09-f2bf9127cbae
     type: regular
     task:
-      id: 876bd45b-fdee-46d8-8b63-3f6122a06b2e
+      id: 007cd4ad-e6fd-46bf-8b09-f2bf9127cbae
       version: -1
       name: Delete context
       description: |-
@@ -576,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 072fb1cc-cf05-4a0c-897c-d6e095595927
+    taskid: 69c87a27-bfe0-4055-816c-45e4c693f3f1
     type: condition
     task:
-      id: 072fb1cc-cf05-4a0c-897c-d6e095595927
+      id: 69c87a27-bfe0-4055-816c-45e4c693f3f1
       version: -1
       name: Check outputs
       type: condition
@@ -592,8 +592,12 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: inList
           left:
+            value:
+              simple: group1
+            iscontext: true
+          right:
             value:
               complex:
                 root: JsonObject.data
@@ -607,28 +611,13 @@ tasks:
                       value:
                         simple: "12345"
                 accessor: incidents_ids
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: StringifyArray
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              simple: group2
             iscontext: true
           right:
-            value:
-              complex:
-                root: group1
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: StringifyArray
-            iscontext: true
-      - - operator: in
-          left:
             value:
               complex:
                 root: JsonObject.data
@@ -642,25 +631,6 @@ tasks:
                       value:
                         simple: "67890"
                 accessor: incidents_ids
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: StringifyArray
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: group2
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: StringifyArray
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -679,10 +649,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: f7e5aac3-e0a9-479c-85d6-0b57eff215c5
+    taskid: aa8c5c06-5830-4d40-8304-a7471c632190
     type: regular
     task:
-      id: f7e5aac3-e0a9-479c-85d6-0b57eff215c5
+      id: aa8c5c06-5830-4d40-8304-a7471c632190
       version: -1
       name: Delete context
       description: |-
@@ -721,10 +691,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5a318006-2407-44eb-8b65-519cc26e49a5
+    taskid: 97504047-1591-40f0-8230-af2a1ab090b8
     type: regular
     task:
-      id: 5a318006-2407-44eb-8b65-519cc26e49a5
+      id: 97504047-1591-40f0-8230-af2a1ab090b8
       version: -1
       name: DBotTrainClustering
       description: Train clustering model on any incident type.
@@ -768,115 +738,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: df78874c-7495-4fdb-81a6-d5cc5be2cb91
-    type: condition
-    task:
-      id: df78874c-7495-4fdb-81a6-d5cc5be2cb91
-      version: -1
-      name: Check outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: JsonObject.data
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: JsonObject.data.name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "12345"
-                accessor: incidents_ids
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: StringifyArray
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: group1
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: StringifyArray
-            iscontext: true
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: JsonObject.data
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: JsonObject.data.name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "67890"
-                accessor: incidents_ids
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: StringifyArray
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: group2
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: StringifyArray
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 32ca3902-c998-480e-8f13-56067bf2438a
+    taskid: 3d43ee49-f98e-42be-827f-a1ba38e415bd
     type: regular
     task:
-      id: 32ca3902-c998-480e-8f13-56067bf2438a
+      id: 3d43ee49-f98e-42be-827f-a1ba38e415bd
       version: -1
       name: Load clusters
       description: Loads a json from string input, and returns a json object result.
@@ -908,10 +775,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: a9bed7eb-416b-4810-8db7-c6936dae9d70
+    taskid: 2dc6de51-3722-4c0f-8a03-6b38f5fbe48c
     type: regular
     task:
-      id: a9bed7eb-416b-4810-8db7-c6936dae9d70
+      id: 2dc6de51-3722-4c0f-8a03-6b38f5fbe48c
       version: -1
       name: Load clusters
       description: Loads a json from string input, and returns a json object result.
@@ -921,7 +788,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "29"
     scriptarguments:
       input:
         simple: ${DBotTrainClustering}
@@ -932,6 +799,79 @@ tasks:
         "position": {
           "x": 480,
           "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 3e3b8d25-40c6-4f3b-858b-c978b700b9e6
+    type: condition
+    task:
+      id: 3e3b8d25-40c6-4f3b-858b-c978b700b9e6
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: group1
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: JsonObject.data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: JsonObject.data.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "12345"
+                accessor: incidents_ids
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              simple: group2
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: JsonObject.data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: JsonObject.data.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "67890"
+                accessor: incidents_ids
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
         }
       }
     note: false
