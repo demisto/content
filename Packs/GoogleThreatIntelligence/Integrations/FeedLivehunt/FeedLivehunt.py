@@ -212,8 +212,7 @@ def fetch_indicators_command(client: Client,
 
 def get_indicators_command(client: Client,
                            params: Dict[str, str],
-                           args: Dict[str, str]
-                           ) -> CommandResults:
+                           args: Dict[str, str]) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
