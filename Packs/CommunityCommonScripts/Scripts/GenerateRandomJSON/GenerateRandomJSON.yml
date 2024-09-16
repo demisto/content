@@ -1,0 +1,47 @@
+args:
+- defaultValue: '1'
+  description: Size of the list of dictionaries to generate.
+  name: list_size
+- description: Comma separated list of Faker provider(s) to generate data from (Only relevant if category input is set to Other). For the list of providers, please visit https://faker.readthedocs.io/en/master/providers.html
+  name: faker_providers
+- auto: PREDEFINED
+  defaultValue: Random
+  description: Faker providers grouped into categories (e.g. IT, Finance, Person, etc) for the creation of the dictionary. If Random is selected, faker providers are chosen at random from the entire set of providers.
+  name: category
+  predefined:
+  - IT
+  - Company
+  - Address
+  - Person
+  - Finance
+  - DateTime
+  - Profile
+  - Color
+  - Job
+  - Other
+  - Random
+  required: true
+- defaultValue: '10'
+  description: Number of key-value pairs contained on each dictionary if Random is selected as category, otherwise this number is chosen from a pre-defined list.
+  name: dict_size
+comment: Generate a list of random dictionaries, using Faker Python library. For more information, please visit https://faker.readthedocs.io
+commonfields:
+  id: GenerateRandomJSON
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/faker3:1.0.0.110560
+enabled: true
+engineinfo: {}
+name: GenerateRandomJSON
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -3285,7 +3285,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | The name of the host. | Optional | 
+| host_id | The host name of a specific host. | Optional | 
 | limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
@@ -3514,7 +3514,7 @@ There is no context output for this command.
 
 >Role was removed successfully for 1 user.
 
-## xdr-script-run
+### xdr-script-run
 
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
