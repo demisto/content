@@ -91,7 +91,6 @@ def test_inconsistent_intervals():
         inconsistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
         interval_consistency_threshold=interval_consistency_threshold)
 
-    # Adjust expected value to seconds (3000 ms = 3 seconds)
     assert result["MeanIntervalInSeconds"] == pytest.approx(3.0, rel=1e-2)
     assert result["MedianIntervalInSeconds"] == pytest.approx(3.0, rel=1e-2)
     assert result["StandardDeviationInSeconds"] == pytest.approx(2.0, rel=1e-2)
