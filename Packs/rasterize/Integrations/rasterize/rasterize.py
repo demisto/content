@@ -536,23 +536,26 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
     # it can compare between the fetched 'None' string and the 'None' that assigned.
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
-    chrome_options = demisto.params().get('chrome_options') or 'None'
+    chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-    instances_id = []
-    for chrome_port_data in chrome_instances_contents.values():
-        instances_id.append(chrome_port_data['instance_id'])
-    if not chrome_instances_contents or instance_id not in instances_id:
+    instance_id_dict = {}
+    for key, value in chrome_instances_contents.items():
+        instance_id_dict[value]['instance_id'] = {
+            'chrome_port': key,
+            'chrome_options': instance_id_dict[value]['chrome_options']
+        }
+    if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    elif chrome_options != instance_id_to_chrome_options.get(instance_id):
-        chrome_port = instance_id_to_port.get(instance_id, '')
+    elif chrome_options != instance_id_dict.get(instance_id, {}).get('chrome_options', ''):
+        chrome_port = instance_id_dict.get(instance_id, '')
         write_json_file(chrome_port=chrome_port,
                         key_to_update='instance_id',
                         value_to_update=instance_id)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    chrome_port = instance_id_to_port.get(instance_id, '')
+    chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
     browser = get_chrome_browser(chrome_port)
     return browser, chrome_port
 
