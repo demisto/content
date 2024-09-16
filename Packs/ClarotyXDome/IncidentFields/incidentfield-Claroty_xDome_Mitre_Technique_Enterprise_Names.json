@@ -5,7 +5,7 @@
     "name": "Claroty xDome Mitre Technique Enterprise Names",
     "ownerOnly": false,
     "description": "MITRE ATT&CK Enterprise technique names mapped to the alert",
-    "cliName": "incident_clarotyxdomemitretechniqueenterprisenames",
+    "cliName": "clarotyxdomemitretechniqueenterprisenames",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,

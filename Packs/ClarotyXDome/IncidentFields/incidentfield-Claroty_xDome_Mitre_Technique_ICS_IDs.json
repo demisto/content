@@ -5,7 +5,7 @@
     "name": "Claroty xDome Mitre Technique Enterprise IDs",
     "ownerOnly": false,
     "description": "MITRE ATT&CK ICS technique IDs mapped to the alert",
-    "cliName": "incident_clarotyxdomemitretechniqueicsids",
+    "cliName": "clarotyxdomemitretechniqueicsids",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,

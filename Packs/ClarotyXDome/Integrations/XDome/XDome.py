@@ -6,7 +6,8 @@ from CommonServerUserPython import *  # noqa
 import abc
 import dateparser
 from datetime import datetime, timedelta
-from typing import Dict, Any, Collection, Callable
+from typing import Any, TypeAlias
+from collections.abc import Collection, Callable
 import urllib3
 
 # Disable insecure warnings
@@ -252,7 +253,7 @@ DEVICE_VULNERABILITY_FIELDS = {
 
 INCIDENT_TIMESTAMP_FIELD = "device_alert_updated_time"
 
-QueryFilterType = Dict[str, Any]
+QueryFilterType: TypeAlias = dict[str, Any]
 
 
 ''' CLIENT CLASS '''
@@ -400,8 +401,10 @@ def _format_date(date: str | datetime, format: str = DATE_FORMAT) -> str:
     assert dt is not None
     return dt.strftime(format)
 
+
 def _ascending(field: str) -> dict[str, str]:
     return {"field": field, "order": "asc"}
+
 
 def _simple_filter(field: str, operation: str, value: Any) -> QueryFilterType:
     return {"field": field, "operation": operation, "value": value}
