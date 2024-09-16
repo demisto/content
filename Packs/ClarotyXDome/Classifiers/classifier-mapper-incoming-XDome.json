@@ -121,6 +121,18 @@
                 },
                 "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
+                },
+                "Claroty xDome Mitre Technique Enterprise IDs": {
+                    "simple": "mitre_technique_enterprise_ids"
+                },
+                "Claroty xDome Mitre Technique Enterprise Names": {
+                    "simple": "mitre_technique_enterprise_names"
+                },
+                "Claroty xDome Mitre Technique ICS IDs": {
+                    "simple": "mitre_technique_ics_ids"
+                },
+                "Claroty xDome Mitre Technique ICS Names": {
+                    "simple": "mitre_technique_ics_names"
                 }
             }
         }

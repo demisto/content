@@ -66,6 +66,10 @@ DEVICE_ALERT_FIELDS = {
     "device_subcategory",
     "device_type",
     "device_uid",
+    "mitre_technique_enterprise_ids",
+    "mitre_technique_enterprise_names",
+    "mitre_technique_ics_ids",
+    "mitre_technique_ics_names",
 }
 
 DEVICE_VULNERABILITY_FIELDS = {
