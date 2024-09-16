@@ -4073,7 +4073,7 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
     result = {}
     params = {'ids': all_group_ids}
     response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
-    for resource in response_json['resources']:
+    for resource in response_json['resources'] or []:
         try:
             result[resource['id']] = resource['name']
         except KeyError:
