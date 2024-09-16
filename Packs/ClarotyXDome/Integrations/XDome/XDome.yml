@@ -37,7 +37,7 @@ configuration:
   type: 0
 - display: Maximum number of incidents per fetch
   name: max_fetch
-  defaultvalue: '50000'
+  defaultvalue: '5000'
   type: 0
   required: false
 - display: Fetch Only Unresolved Device-Alert Pairs
