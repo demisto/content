@@ -99,7 +99,7 @@ configuration:
   name: look_back
   type: 0
   required: false
-  defaultvalue: 1
+  defaultvalue: '1'
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
 - display: Incident type
   name: incidentType
@@ -125,12 +125,14 @@ configuration:
   - Exabeam Incident
   - Exabeam Notable User
   section: Collect
+  required: false
 - display: Max Users Per Fetch
   name: max_fetch_users
   additionalinfo: Applies only when the Fetch Type is set to Exabeam Notable User.
   type: 0
   section: Collect
-  defaultvalue: 50
+  defaultvalue: '50'
+  required: false
 - display: Notable Users Fetch Interval
   name: notable_users_fetch_interval
   additionalinfo: The interval, in whole hours, between consecutive fetch operations.
@@ -138,18 +140,26 @@ configuration:
   type: 19
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 3 months
   display: Notable Users First Fetch Timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: notable_users_first_fetch
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Minimum Risk Score To Fetch Users
   name: minimum_risk_score_to_fetch_users
   type: 0
   section: Collect
   advanced: true
-  defaultvalue: 90
+  defaultvalue: '90'
+  required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
 display: Exabeam Advanced Analytics
 name: Exabeam
@@ -265,6 +275,7 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
+    arguments: []
   - description: Returns all watchlist IDs and titles.
     name: exabeam-get-watchlists
     outputs:
@@ -277,6 +288,7 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
+    arguments: []
   - deprecated: true
     description: Returns all peer groups.
     name: get-peer-groups
@@ -284,12 +296,14 @@ script:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
+    arguments: []
   - description: Returns all peer groups.
     name: exabeam-get-peer-groups
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
+    arguments: []
   - arguments:
     - description: The username of the user to fetch.
       name: username
@@ -390,12 +404,14 @@ script:
     - contextPath: Exabeam.UserLabel.Label
       description: The label of the user.
       type: String
+    arguments: []
   - description: Returns all labels of the user.
     name: exabeam-get-user-labels
     outputs:
     - contextPath: Exabeam.UserLabel.Label
       description: The label of the user.
       type: String
+    arguments: []
   - arguments:
     - description: The username for which to fetch data.
       name: username
@@ -1740,14 +1756,59 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  dockerimage: demisto/python3:3.11.9.101916
+  - arguments:
+    - description: The asset sequence ID.
+      name: asset_sequence_id
+      required: true
+    - defaultValue: '50'
+      description: Maximum number of rules to retrieve.
+      name: limit
+    - defaultValue: '0'
+      description: Results page number.
+      name: page
+    description: Returns triggered rules for the given asset sequence ID.
+    name: exabeam-get-sequence-triggered-rules
+    outputs:
+    - contextPath: Exabeam.TriggeredRule._Id
+      description: UUID of the rule.
+    - contextPath: Exabeam.TriggeredRule.ruleId
+      description: ID of the rule.
+    - contextPath: Exabeam.TriggeredRule.ruleType
+      description: Type of the rule.
+    - contextPath: Exabeam.TriggeredRule.eventId
+      description: Event ID of the rule.
+    - contextPath: Exabeam.TriggeredRule.sessionId
+      description: Session ID of the rule.
+    - contextPath: Exabeam.TriggeredRule.lockoutId
+      description: Lockout ID of the rule.
+    - contextPath: Exabeam.TriggeredRule.sequenceId
+      description: Sequence ID of the rule.
+    - contextPath: Exabeam.TriggeredRule.username
+      description: Username of the rule.
+    - contextPath: Exabeam.TriggeredRule.eType
+      description: Event type of the rule.
+    - contextPath: Exabeam.TriggeredRule.triggeringTime
+      description: Time when the rule was triggered.
+    - contextPath: Exabeam.TriggeredRule.riskScore
+      description: Risk score of the rule.
+    - contextPath: Exabeam.TriggeredRule.anchorScore
+      description: Anchor score of the rule.
+    - contextPath: Exabeam.TriggeredRule.anomalyFactor
+      description: Anomaly factor of the rule.
+    - contextPath: Exabeam.TriggeredRule.ruleData
+      description: Data insight of the rule.
+    - contextPath: Exabeam.TriggeredRule.createdTime
+      description: Time when the rule was created.
+    - contextPath: Exabeam.TriggeredRule.scoreData
+      description: Score data of the rule.
+    - contextPath: Exabeam.TriggeredRule.multiPeerGroupData
+      description: Multi-peer group data of the triggered rule.
+  dockerimage: demisto/python3:3.11.10.111526
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
 - Exabeam - Test
 fromversion: 5.0.0
-defaultclassifier: "Exabeam Classifier"
-defaultmapperin: "Exabeam mapping"

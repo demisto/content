@@ -1,11 +1,11 @@
+import urllib3
+import dateparser
+import requests
+from typing import Any
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Exabeam Advanced Analytics, pack version = 2.4.1')
 
-
-from typing import Any
-import requests
-import dateparser
-import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -741,6 +741,18 @@ class Client(BaseClient):
         }
         response = self._http_request('GET', url_suffix=f'/uba/api/asset/sequence/{asset_sequence_id}/eventTypes',
                                       params=params)
+        return response
+
+    def get_notable_sequence_event_triggered_rules(self, asset_sequence_id: str = None):
+        """
+        Args:
+            asset_sequence_id: ID of the asset sequence to fetch info for
+
+        Returns:
+            (dict) The sequence event types response.
+        """
+
+        response = self._http_request('GET', url_suffix=f'/uba/api/asset/sequence/{asset_sequence_id}/triggeredRules')
         return response
 
     def get_list_incidents(self, query_params: dict):
@@ -2075,6 +2087,39 @@ def get_notable_sequence_event_types(client: Client, args: dict[str, str]) -> tu
     return human_readable, entry_context, sequence_event_types_raw_data
 
 
+def get_notable_sequence_triggered_rules(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    asset_sequence_id = args.get('asset_sequence_id')
+
+    limit = int(args['limit'])
+    page = int(args['page'])
+    from_idx = page * limit
+    to_idx = (page + 1) * limit
+
+    sequence_triggered_rules_raw_data = client.get_notable_sequence_event_triggered_rules(asset_sequence_id)
+
+    if not sequence_triggered_rules_raw_data:
+        return f'The Asset {asset_sequence_id} has no sequence triggered rules.', {}, {}
+
+    triggered_rules = sequence_triggered_rules_raw_data.get('triggeredRules', [])[from_idx:to_idx]
+    for triggered_rule in triggered_rules:
+        triggered_rule['createdTime'] = convert_unix_to_date(triggered_rule.get('createdTime'))
+        triggered_rule['triggeringTime'] = convert_unix_to_date(triggered_rule.get('triggeringTime'))
+
+    entry_context = {'Exabeam.TriggeredRules(val._Id && val._Id === obj._Id)': triggered_rules}
+    human_readable = tableToMarkdown(f'Asset Sequence {asset_sequence_id} Triggered Rules', triggered_rules,
+                                     removeNull=True)
+
+    # return_error(triggered_rules)
+    return human_readable, entry_context, sequence_triggered_rules_raw_data
+
+
 def list_incidents(client: Client, args: dict[str, str]):
     incident_ids = argToList(args.get('incident_id'))
     query = args.get('query')
@@ -2345,6 +2390,7 @@ def main():  # pragma: no cover
         'exabeam-get-notable-sequence-details': get_notable_sequence_details,
         'exabeam-get-notable-session-details': get_notable_session_details,
         'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
+        'exabeam-get-sequence-triggered-rules': get_notable_sequence_triggered_rules,
         'exabeam-list-incident': list_incidents,
     }
     client = None

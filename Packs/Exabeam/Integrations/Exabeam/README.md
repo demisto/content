@@ -23,7 +23,7 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
 ## Configure Exabeam on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Exabeam.
+2. Search for Exabeam Advanced Analytics.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -31,19 +31,27 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
     | Server URL (e.g https://100.24.16.156:8484) |  | True |
     | Username |  | False |
     | Password |  | False |
-    | API Token | Cluster Authentication Token | False |
-    | Exabeam Incident Type | Incident type to filter in Exabeam. Possible values are: generic, abnormalAuth, accountManipulation, accountTampering, ueba, bruteForce, compromisedCredentials, cryptomining, dataAccessAbuse, dataExfiltration, dlp, departedEmployee, dataDestruction, evasion, lateralMovement, alertTriage, malware, phishing, privilegeAbuse, physicalSecurity, privilegeEscalation, privilegedActivity, ransomware, workforceProtection. | False |
-    | Priority | Incident priority to filter in Exabeam. Possible values are: low, medium, high, critical. | False |
-    | Status | Incident status to filter in Exabeam. Possible values are: closed, closedFalsePositive, inprogress, new, pending, resolved. | False |
+    | Username | Cluster Authentication Token | False |
+    | API Token |  | False |
+    | Exabeam Incident Type |  | False |
+    | Priority |  | False |
+    | Status |  | False |
     | Fetch incidents |  | False |
     | Max incidents per fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. Default is 1. | False |
+    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
     | Incident type |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Fetch Type |  | False |
+    | Max Users Per Fetch | Applies only when the Fetch Type is set to Exabeam Notable User. | False |
+    | Notable Users Fetch Interval | The interval, in whole hours, between consecutive fetch operations. | False |
+    | Notable Users First Fetch Timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Minimum Risk Score To Fetch Users |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 
 ### Fetch
@@ -113,16 +121,18 @@ Returns notable users in a period of time.
 
 
 ### exabeam-get-watchlists
+
 ***
 Returns all watchlist IDs and titles.
-
 
 #### Base Command
 
 `exabeam-get-watchlists`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -131,20 +141,6 @@ There are no input arguments for this command.
 | Exabeam.Watchlist.Category | String | The watchlist category. | 
 | Exabeam.Watchlist.Title | String | The watchlist title. | 
 | Exabeam.Watchlist.WatchlistID | String | The watchlist ID. | 
-
-
-#### Command Example
-```!exabeam-get-watchlists```
-
-#### Human Readable Output
-### Exabeam Watchlists:
-|WatchlistID|Title|Category|
-|--- |--- |--- |
-|5c869ab0315c745d905a26d9|Executive Users|UserLabels|
-|5c869ab0315c745d905a26da|Service Accounts|UserLabels|
-|5dbaba2dd4e62a0009dd7ae4|user watchlist|Users|
-|5d8751723b72ea000830066a|VP Operations|PeerGroups|
-
 
 ### exabeam-get-peer-groups
 ***
@@ -158,41 +154,26 @@ Returns all peer groups.
 
 There are no input arguments for this command.
 
+### exabeam-get-peer-groups
+
+***
+Returns all peer groups.
+
+#### Base Command
+
+`exabeam-get-peer-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Exabeam.PeerGroup.Name | String | The name of the peer group. | 
 
-
-#### Command Example
-```!exabeam-get-peer-groups```
-
-#### Human Readable Output
-### Exabeam Peer Groups:
-|Name|
-|--- |
-|Marketing|
-|usa|
-|101|
-|Program Manager|
-|Channel Administrator|
-|Chief Marketing Officer|
-|Chief Strategy Officer|
-
-
-### exabeam-get-user-info
-***
-Returns user information data for the username.
-
-
-#### Base Command
-
-`exabeam-get-user-info`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
 | username | The username of the user to fetch. | Required | 
 
 
@@ -252,36 +233,26 @@ There are no input arguments for this command.
 |Label|
 |--- |
 |privileged_user|
-|service_account|
+### exabeam-get-user-labels
 
-
-### exabeam-get-user-sessions
 ***
-Returns sessions for the given username and time range.
-
+Returns all labels of the user.
 
 #### Base Command
 
-`exabeam-get-user-sessions`
+`exabeam-get-user-labels`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username for which to fetch data. | Required | 
-| start_time | The Start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago". | Optional | 
-| end_time | The end time of the time range. For example, 2018-08-01T11:50:16 or "1 week ago". | Optional | 
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Exabeam.User.Session.EndTime | Date | The end time of the session. | 
-| Exabeam.User.Session.InitialRiskScore | Number | The initial risk score of the session. | 
-| Exabeam.User.Session.Label | String | The label of the session. | 
-| Exabeam.User.Session.LoginHost | String | The login host. | 
-| Exabeam.User.Session.RiskScore | Number | The risk score of the session. | 
-| Exabeam.User.Session.SessionID | String | The ID of the session. | 
+| Exabeam.UserLabel.Label | String | The label of the user. | 
+
 | Exabeam.User.Session.StartTime | Date | The start time of the session. | 
 | Exabeam.User.Username | String | The username of the session. | 
 
@@ -1393,3 +1364,42 @@ Returns incidents from Exabeam.
 
 #### Command Example
 ```!exabeam-list-incident priority=high```
+### exabeam-get-sequence-triggered-rules
+
+***
+Returns triggered rules for the given asset sequence ID.
+
+#### Base Command
+
+`exabeam-get-sequence-triggered-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_sequence_id | The asset sequence ID. | Required | 
+| limit | Maximum number of rules to retrieve. Default is 50. | Optional | 
+| page | Results page number. Default is 0. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Exabeam.TriggeredRule._Id | unknown | UUID of the rule. | 
+| Exabeam.TriggeredRule.ruleId | unknown | ID of the rule. | 
+| Exabeam.TriggeredRule.ruleType | unknown | Type of the rule. | 
+| Exabeam.TriggeredRule.eventId | unknown | Event ID of the rule. | 
+| Exabeam.TriggeredRule.sessionId | unknown | Session ID of the rule. | 
+| Exabeam.TriggeredRule.lockoutId | unknown | Lockout ID of the rule. | 
+| Exabeam.TriggeredRule.sequenceId | unknown | Sequence ID of the rule. | 
+| Exabeam.TriggeredRule.username | unknown | Username of the rule. | 
+| Exabeam.TriggeredRule.eType | unknown | Event type of the rule. | 
+| Exabeam.TriggeredRule.triggeringTime | unknown | Time when the rule was triggered. | 
+| Exabeam.TriggeredRule.riskScore | unknown | Risk score of the rule. | 
+| Exabeam.TriggeredRule.anchorScore | unknown | Anchor score of the rule. | 
+| Exabeam.TriggeredRule.anomalyFactor | unknown | Anomaly factor of the rule. | 
+| Exabeam.TriggeredRule.ruleData | unknown | Data insight of the rule. | 
+| Exabeam.TriggeredRule.createdTime | unknown | Time when the rule was created. | 
+| Exabeam.TriggeredRule.scoreData | unknown | Score data of the rule. | 
+| Exabeam.TriggeredRule.multiPeerGroupData | unknown | Multi-peer group data of the triggered rule. | 
+
