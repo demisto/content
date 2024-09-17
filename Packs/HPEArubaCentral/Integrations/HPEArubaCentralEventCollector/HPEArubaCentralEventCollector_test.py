@@ -252,39 +252,55 @@ def test_fetch_with_duplicates(mocker, requests_mock):
     - Fetched events are returned without the previously fetched ones
     """
     fetch_networking = True
-    audit_response_mock = util_load_json('test_data/mock_audit_response.json')
-    networking_response_mock = util_load_json('test_data/mock_networking_response.json')
+    full_audit_response = util_load_json('test_data/mock_audit_response.json')
+    full_networking_response = util_load_json('test_data/mock_networking_response.json')
 
-    # Mock last run to show the first two events for both audit and networking were previously seen.
-    # Audit events are in descending order so we take the end
-    seen_audit_events = audit_response_mock['events'][-2:]
-    seen_networking_events = networking_response_mock['events'][:2]
-    mocker.patch.object(demisto, 'getLastRun', return_value={
-        'last_audit_ts': str(seen_audit_events[0]['ts']),
-        'last_audit_event_ids': [event['id'] for event in seen_audit_events],
-        'last_networking_ts': str(seen_networking_events[0]['timestamp']),
-        'last_networking_event_ids': [event['event_uuid'] for event in seen_networking_events],
-    })
-
-    requests_mock.get(f'{BASE_URL}/auditlogs/v1/events',
-                      request_headers={'authorization': f'Bearer {TEST_TOKEN}'},
-                      json=audit_response_mock)
-    requests_mock.get(f'{BASE_URL}/monitoring/v2/events',
-                      request_headers={'authorization': f'Bearer {TEST_TOKEN}'},
-                      json=networking_response_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mock_instance_params(mocker, fetch_networking=fetch_networking)
     mocker.patch('HPEArubaCentralEventCollector.get_integration_context', return_value={
         'access_token': TEST_TOKEN,
         'expiry_time': FETCH_TIME + 1})
 
+    # Mock first fetch to get some of the events
+    first_audit_response = full_audit_response.copy()
+    first_audit_response['events'] = first_audit_response['events'][-2:]
+    first_networking_response = full_networking_response.copy()
+    first_networking_response['events'] = first_networking_response['events'][:2]
+
+    requests_mock.get(f'{BASE_URL}/auditlogs/v1/events',
+                      request_headers={'authorization': f'Bearer {TEST_TOKEN}'},
+                      json=first_audit_response)
+    requests_mock.get(f'{BASE_URL}/monitoring/v2/events',
+                      request_headers={'authorization': f'Bearer {TEST_TOKEN}'},
+                      json=first_networking_response)
+
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    set_last_run_mock = mocker.patch.object(demisto, 'setLastRun')
     send_events_to_xsiam_mock = mocker.patch('HPEArubaCentralEventCollector.send_events_to_xsiam', return_value={})
 
     main()
 
-    expected_audit_events = audit_response_mock['events'][:-2]
-    expected_audit_events.reverse()
-    expected_networking_events = networking_response_mock['events'][2:]
+    expected_audit_events = list(reversed(first_audit_response['events']))
+    expected_networking_events = first_networking_response['events']
+    send_events_to_xsiam_mock.assert_called_once_with(expected_audit_events + expected_networking_events,
+                                                      vendor=VENDOR,
+                                                      product=PRODUCT)
+
+    # Mock next fetch to get all of the events, including the previously fetched
+    requests_mock.get(f'{BASE_URL}/auditlogs/v1/events',
+                      request_headers={'authorization': f'Bearer {TEST_TOKEN}'},
+                      json=full_audit_response)
+    requests_mock.get(f'{BASE_URL}/monitoring/v2/events',
+                      request_headers={'authorization': f'Bearer {TEST_TOKEN}'},
+                      json=full_networking_response)
+
+    mocker.patch.object(demisto, 'getLastRun', return_value=set_last_run_mock.call_args[0][0])
+    send_events_to_xsiam_mock = mocker.patch('HPEArubaCentralEventCollector.send_events_to_xsiam', return_value={})
+
+    main()
+
+    expected_audit_events = list(reversed(full_audit_response['events'][:-2]))
+    expected_networking_events = full_networking_response['events'][2:]
     send_events_to_xsiam_mock.assert_called_once_with(expected_audit_events + expected_networking_events,
                                                       vendor=VENDOR,
                                                       product=PRODUCT)
