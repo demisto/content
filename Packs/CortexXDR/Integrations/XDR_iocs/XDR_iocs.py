@@ -450,7 +450,7 @@ def sync_for_fetch(client: Client, batch_size: int = 200):
     try:
         full_query = create_query_with_end_time(to_date=get_integration_context().get('time'))
         request_data = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size,
-                                                                       is_first_stage_sync=is_first_stage_sync,
+                                                                       is_first_stage_sync=True,
                                                                        query=full_query)))
         if request_data:
             integration_context = get_integration_context()
