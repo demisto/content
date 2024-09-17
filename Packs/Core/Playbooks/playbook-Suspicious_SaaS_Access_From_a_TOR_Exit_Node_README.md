@@ -37,6 +37,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Integrations
 
 * CortexCoreIR
+* Azure Active Directory Users
+* Google Workspace Admin
+* AWS IAM
 
 ### Scripts
 
