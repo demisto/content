@@ -117,7 +117,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
   type: 17
 - defaultvalue: '20160'
@@ -180,7 +179,7 @@ script:
       description: IPv4 to get the reputation of.
       name: ip
       required: true
-      isArray: true
+      isArray: false
     description: Get reputation of IP address observable.
     name: ip
     outputs:
@@ -222,7 +221,7 @@ script:
       description: URL observable to get the reputation of.
       name: url
       required: true
-      isArray: true
+      isArray: false
     description: Gets the reputation of a URL observable.
     name: url
     outputs:
@@ -264,7 +263,7 @@ script:
       description: File hash observable to get the reputation of.
       name: file
       required: true
-      isArray: true
+      isArray: false
     description: Gets the reputation of a file hash observable.
     name: file
     outputs:
@@ -384,7 +383,7 @@ script:
     - default: true
       description: Email address observable to get the reputation of.
       name: email
-      isArray: true
+      isArray: false
       required: true
     description: Gets the reputation of an email address observable.
     name: email
@@ -423,7 +422,7 @@ script:
     - default: true
       description: Domain observable to get the reputation of.
       name: domain
-      isArray: true
+      isArray: false
       required: true
     description: Gets the reputation of a domain observable.
     name: domain
@@ -730,7 +729,7 @@ script:
   - arguments: []
     name: eclecticiq-get-indicators
     description: Get last block of Indicators from configured to fetch Outgoing feed.
-  dockerimage: demisto/python3:3.11.9.105369
+  dockerimage: demisto/python3:3.11.9.107902
   feed: true
   isFetchSamples: true
   runonce: false

@@ -1485,4 +1485,6 @@ script:
   type: python
 tests:
 - Carbon Black Enterprise EDR Test
+- Carbon Black Enterprise EDR process search with polling Test
+- Carbon Black Enterprise EDR alert-workflow-update Test
 fromversion: 5.0.0

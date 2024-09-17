@@ -922,7 +922,7 @@ def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_forma
     Then:
         - case 1: verify the header in the correct format
         - case 2: correct the invalid Message-ID header value
-        - case 3: return the header value without without further handling
+        - case 3: return the header value without further handling
 
     """
     mime_content = b'\xc400'
@@ -951,7 +951,7 @@ def test_handle_incorrect_message_id(message_id, expected_message_id_output):
     Then:
         - case 1: verify the header in the correct format
         - case 2: correct the invalid Message-ID header value
-        - case 3: return the header value without without further handling
+        - case 3: return the header value without further handling
 
     """
     assert handle_incorrect_message_id(message_id) == expected_message_id_output

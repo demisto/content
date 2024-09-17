@@ -52,10 +52,11 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
 ## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM.
 
 ### Using Cortex XSOAR or Cortex XSIAM rerouting
-1. Set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
-2. Check the **long running instance** parameter in the integration instance configuration.
-3. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
-4. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
+1. For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
+2. For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://edl-<CORTEXT-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the `xdr` in the url to `crtx`.
+3. Check the **long running instance** parameter in the integration instance configuration.
+4. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
+5. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
    a. Go to the Microsoft Teams app.
    b. Go to your team, and click the three dots next to the name.
    c. Go to **manage team** > **apps**.
@@ -73,7 +74,7 @@ The messaging endpoint needs to be:
 
 For Cortex XSOAR version 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`.
 
-For Cortex XSOAR version 8 and XSIAM: `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
+For Cortex XSOAR version 8 and Cortex XSIAM: `https://edl-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step. Make sure to set the instance name in all lowercase letters and as one word.
 

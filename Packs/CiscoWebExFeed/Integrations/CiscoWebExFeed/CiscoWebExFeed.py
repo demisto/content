@@ -189,7 +189,10 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     )
 
 
-def fetch_indicators_command(client: Client, tags: tuple = None, tlp_color: str = None) -> list:
+def fetch_indicators_command(client: Client,
+                             tags: tuple = None,
+                             tlp_color: str = None,
+                             enrichment_excluded: bool = False) -> list:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -204,11 +207,17 @@ def fetch_indicators_command(client: Client, tags: tuple = None, tlp_color: str 
     results = []
     indicator_mapping_fields = {'tags': tags, 'trafficlightprotocol': tlp_color}
     for indicator in clean_res[CIDR] + clean_res[DOMAIN]:
-        results.append({
+        indicator_obj: dict[str, Any] = {
             'value': indicator,
             'type': check_indicator_type(indicator),
-            'fields': indicator_mapping_fields
-        })
+            'fields': indicator_mapping_fields,
+        }
+
+        if enrichment_excluded:
+            indicator_obj['enrichmentExcluded'] = enrichment_excluded
+
+        results.append(indicator_obj)
+
     return results
 
 
@@ -219,6 +228,7 @@ def main():
     proxy = params.get('proxy', False)
     tags = params.get('feedTags'),
     tlp_color = params.get('tlp_color')
+    enrichment_excluded = demisto.params().get('enrichmentExcluded', False)
     command = demisto.command()
 
     try:
@@ -231,7 +241,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client=client))
         elif command == 'fetch-indicators':
-            res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color)
+            res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color, enrichment_excluded=enrichment_excluded)
             for iter_ in batch(res, batch_size=2000):
                 demisto.createIndicators(iter_)
         elif command == 'webex-get-indicators':

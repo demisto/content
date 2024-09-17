@@ -193,6 +193,18 @@ def user_account_to_boolean_fields(user_account_control):
     }
 
 
+def user_account_to_boolean_fields_msDS_user_account_control_computed(user_account_control):
+    """
+    parse the msDS-User-Account-Control-Computed into boolean values.
+    following the values from:
+    https://learn.microsoft.com/en-us/windows/win32/adschema/a-msds-user-account-control-computed
+    """
+    return {
+        'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
+        'LOCKOUT': bool(user_account_control & 0x0010),
+    }
+
+
 def account_entry(person_object, custom_attributes):
     # create an account entry from a person objects
     account = {
@@ -666,7 +678,8 @@ def search_users(default_base_dn, page_size):
 
     attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES)
                       - set(argToList(args.get('attributes-to-exclude'))))
-
+    if 'userAccountControl' in attributes:
+        attributes.append('msDS-User-Account-Control-Computed')
     entries = search_with_paging(
         query,
         default_base_dn,
@@ -687,6 +700,13 @@ def search_users(default_base_dn, page_size):
                 if args.get('user-account-control-out', '') == 'true':
                     user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(
                         user_account_control) or user_account_control
+
+            if user.get("msDS-User-Account-Control-Computed"):
+                user_account_control_msDS = user.get("msDS-User-Account-Control-Computed")[0]
+                user_account_to_boolean_dict = user_account_to_boolean_fields_msDS_user_account_control_computed(
+                    user_account_control_msDS)
+                user.setdefault("userAccountControlFields", {}).update(user_account_to_boolean_dict)
+
     entry_context = {
         'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
         # 'backward compatability' with ADGetUser script

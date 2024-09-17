@@ -4,3 +4,5 @@ ignore=RM104
 [file:FeedCyCognitoGetAssetEndpoint.yml]
 ignore=BA124
 
+[file:FeedCyCognito.yml]
+ignore=IN122

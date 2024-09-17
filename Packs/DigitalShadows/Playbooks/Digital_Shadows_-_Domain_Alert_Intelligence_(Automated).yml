@@ -1,8 +1,9 @@
 id: Digital Shadows - Domain Alert Intelligence (Automated)
 version: -1
 name: Digital Shadows - Domain Alert Intelligence (Automated)
-description: Provides intelligence and reputation outputs based on the most recent Impersonating Domain, Subdomain or Phishing URL reported by Digital Shadows SearchLight.
+description: Deprecated. No available replacement playbook
 starttaskid: "0"
+deprecated: true
 tasks:
   "0":
     id: "0"
@@ -555,4 +556,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.10.0

@@ -6,6 +6,21 @@ commonfields:
   id: EWSO365
   version: -1
 configuration:
+- display: Azure Cloud
+  name: azure_cloud
+  type: 15
+  required: false
+  defaultvalue: Worldwide
+  options:
+    - Worldwide
+    - US GCC
+    - US GCC-High
+    - DoD
+    - Germany
+    - China
+  section: Connect
+  advanced: true
+  additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - additionalinfo: ID can be received from the admin consent procedure - see Detailed Instructions.
   display: ID / Application ID
   name: _client_id

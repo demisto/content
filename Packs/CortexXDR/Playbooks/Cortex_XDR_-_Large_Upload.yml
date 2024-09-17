@@ -2364,10 +2364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: f70c3820-f3f8-47d0-89c4-12976b23af85
+    taskid: cd98007c-e657-4dfd-8b44-41ab914cc017
     type: condition
     task:
-      id: f70c3820-f3f8-47d0-89c4-12976b23af85
+      id: cd98007c-e657-4dfd-8b44-41ab914cc017
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -2383,7 +2383,7 @@ tasks:
     conditions:
     - label: More Than Threshold
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -2405,7 +2405,7 @@ tasks:
             value:
               simple: GB
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsGeneral
           left:
             value:
               complex:
@@ -2443,22 +2443,8 @@ tasks:
                     keys: {}
                     regex:
                       value:
-                        simple: uploaded\s(.*(MB|GB|TB))
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: MB
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "0"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: (\d+)\.
+                        simple: (?i)uploaded\s(\d+(?:[.]\d+)?)
+                - operator: SumList
             iscontext: true
           right:
             value:
@@ -2482,14 +2468,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 3e44628e-0e46-4b23-8d7a-a71a8d1f10ae
+    taskid: c6187678-8e87-4577-8c87-ec9e721815a1
     type: regular
     task:
-      id: 3e44628e-0e46-4b23-8d7a-a71a8d1f10ae
+      id: c6187678-8e87-4577-8c87-ec9e721815a1
       version: -1
       name: Set Additional Alerts to Context
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -2880,14 +2871,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: 2bc52b3e-5e56-44c6-8f9e-b32015f195ab
+    taskid: 35af27ee-79c5-4570-8d0f-8ea6696bc450
     type: regular
     task:
-      id: 2bc52b3e-5e56-44c6-8f9e-b32015f195ab
+      id: 35af27ee-79c5-4570-8d0f-8ea6696bc450
       version: -1
       name: Check Whether The Source Host Is an FTP Server
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -2932,14 +2928,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: 96de7dc0-b937-4303-8c9d-9ce3ef043a53
+    taskid: 792a83e6-24a5-4531-8c86-4c230c487c3e
     type: regular
     task:
-      id: 96de7dc0-b937-4303-8c9d-9ce3ef043a53
+      id: 792a83e6-24a5-4531-8c86-4c230c487c3e
       version: -1
       name: Check Whether The Source Host Is an SMTP Server
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -3711,10 +3712,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: 422ddc12-44eb-4b4b-8508-cd59c892834f
+    taskid: a31ec1c6-bd93-4101-8aef-1f66cb5931f8
     type: playbook
     task:
-      id: 422ddc12-44eb-4b4b-8508-cd59c892834f
+      id: a31ec1c6-bd93-4101-8aef-1f66cb5931f8
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -3823,34 +3824,6 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user
           accessor: username
-          transformers:
-          - operator: uniq
-      CVE:
-        complex:
-          root: CVE
-          accessor: ID
-      Email:
-        complex:
-          root: Account
-          accessor: Email.Address
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
-      SHA1:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: URL
-          accessor: Data
           transformers:
           - operator: uniq
     separatecontext: true
