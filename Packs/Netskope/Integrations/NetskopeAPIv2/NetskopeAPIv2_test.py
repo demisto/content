@@ -575,6 +575,8 @@ def test_fetch_incidents(client, requests_mock):
             "mirror_direction": "Incoming and Outgoing",
         },
     )
+    last_run["dlp_incident"]["date"] = "11-09-2024 08:00"
+    last_run["dlp_incident"]["time"] = 1726041600
 
     assert incidents == [
         {
@@ -883,7 +885,11 @@ def test_get_remote_data_command():
         result = get_remote_data_command(args, {"close_incident": True})
 
         expected_response = GetRemoteDataResponse(
-            mock_get_context,
+            {
+                'incident_type': 'dlp_incident',
+                "object_id": "incident123",
+                "status": "closed"
+            },
             [{
                 "Type": 1,
                 "Contents": {
