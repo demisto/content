@@ -548,8 +548,7 @@ def process_ask_user(message: str) -> dict:
     if form_type == FormType.PREDEFINED_OPTIONS:
         body.append({
             'type': 'TextBlock',
-            'text': text,
-            'wrap': True
+            'text': text
         })
 
         for option in options:
@@ -574,8 +573,7 @@ def process_ask_user(message: str) -> dict:
                 'horizontalAlignment': 'Center',
                 'size': 'Medium',
                 'weight': 'Bolder',
-                'color': 'Accent',
-                'wrap': True
+                'color': 'Accent'
             },
             {
                 'type': 'Container',
