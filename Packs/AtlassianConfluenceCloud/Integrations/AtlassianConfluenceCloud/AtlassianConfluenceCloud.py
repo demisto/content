@@ -162,7 +162,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def run_fetch_mechanism(client: Client, next_link: str | None, start_date: int, end_date: int) -> dict[str, Any]:
+def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[str, Any]) -> dict[str, Any]:
     """
     Retrieve events from the Atlassian Confluence Cloud API according to the following logic:
         - If next_link is not provided, it searches for events within the specified date range.
@@ -171,13 +171,15 @@ def run_fetch_mechanism(client: Client, next_link: str | None, start_date: int, 
     Args:
         client (Client): The client instance for making API requests.
         next_link (str | None): The link for the next page of results, if any.
-        start_date (int): The start date for the event search.
-        end_date (int): The end date for the event search.
+        last_run (dict[str, Any]): The dictionary containing the last run information, such as the end date.
 
     Returns:
         dict[str, Any]: The API response containing the fetched events.
     """
     if not next_link:
+        end_date = int((time.time() - 5) * 1000)
+        last_end_date = last_run.get('end_date', 0)
+        start_date = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
         demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {AUDIT_FETCH_PAGE_SIZE}')
         response = client.search_events(limit=AUDIT_FETCH_PAGE_SIZE, start_date=str(start_date), end_date=str(end_date))
         demisto.debug(f'Found {response["size"]} events between {start_date} and {end_date}')
@@ -1393,85 +1395,112 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
 
 
 def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int):
-    """
-    Fetches events from the Atlassian Confluence Cloud API.
-
-    This function implements a pagination mechanism to retrieve events, respecting the fetch limit
-    and handling cleanup of previous batches. It yields batches of events along with pagination
-    information for subsequent calls.
-
-    Args:
-        client (Client): The client object for making API requests.
-        last_run (dict[str, Any]): Dictionary containing information from the last execution.
-        fetch_limit (int): Maximum number of events to fetch.
-
-    Yields:
-        tuple: A tuple containing:
-            - list: A batch of events.
-            - str: The next_link for pagination or an empty string if no more pages.
-            - int: The end_date used for the current fetch operation.
-
-    Note:
-        This function uses debug logging extensively to track its progress and decision-making.
-    """
     demisto.debug(f'Starting fetch_events with last_run: {last_run} and fetch_limit: {fetch_limit}')
-    end_date = int((time.time() - 5) * 1000)
-    last_end_date = last_run.get('end_date', 0)
-    start_date = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
     next_link = last_run.get('next_link', '')
-    is_cleanup = bool(next_link)
+    finished_last_query = not next_link
+    exhausted_confluence = False
     total_length = 0
 
-    demisto.debug(f'Initial start_date: {start_date}, end_date: {end_date}, next_link: {next_link}, is_cleanup: {is_cleanup}')
-    while True:
-        response = run_fetch_mechanism(client, next_link, start_date, end_date)
+    while total_length < fetch_limit and not exhausted_confluence:
+        response = run_fetch_mechanism(client, next_link, last_run)
         events = response['results']
         next_link = response['_links'].get('next', None)
         total_length += len(events)
-
         demisto.debug(f'Fetched {len(events)} events, total_length: {total_length}, next_link: {next_link}')
-        if total_length >= fetch_limit:
-            diff = total_length - fetch_limit
-            correct_last_index = len(events) - diff
-            events = events[:correct_last_index]
 
-            demisto.debug(f'Fetch limit reached. Adjusting events to {len(events)} and calculating next_link.')
-            if next_link:
-                parsed_next_link = urllib.parse.urlparse(next_link)
-                query_params = urllib.parse.parse_qs(parsed_next_link.query)
-                query_params['start'] = [str(fetch_limit)]
-                next_link = urllib.parse.urlunparse(
-                    parsed_next_link._replace(
-                        query=urllib.parse.urlencode(query_params, doseq=True)
-                    )
-                )
-            else:
-                next_link = URL_SUFFIX['NEXT_LINK_TEMPLATE'].format(end_date, AUDIT_FETCH_PAGE_SIZE, fetch_limit, start_date)
-            demisto.debug(f'Yielding events and next_link: {next_link}')
-            yield events, next_link, end_date
-            break
+        if finished_last_query and not next_link:
+            exhausted_confluence = True
 
-        if not next_link:
-            if not is_cleanup:
-                demisto.debug('No more next_link and not in cleanup mode. Yielding events and ending fetch.')
-                yield events, next_link, end_date
-                break
+        finished_last_query = not next_link
+        last_end_date = events[-1]['creationDate'] if events else 0
+        new_last_run_obj = {
+            'next_link': next_link,
+            'end_date': last_end_date
+        }
+        demisto.setLastRun(new_last_run_obj)
+        yield events, next_link, last_end_date
 
-            # last call cleaned up the previous batch, start new batch
-            demisto.debug('Finished cleanup mode. Starting the new batch.')
-            response = run_fetch_mechanism(client, None, start_date, end_date)
-            events.extend(response['results'])
-            next_link = response['_links'].get('next', None)
-            total_length += len(events)
-            if not next_link:
-                yield events, next_link, end_date
-                break
 
-        yield events, next_link, end_date
-        demisto.debug(f'Yielding events and next_link: {next_link}')
-
-    demisto.debug('Fetch complete. Yielding final empty results.')
-    yield [], next_link, end_date
+# def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int):
+#     """
+#     Fetches events from the Atlassian Confluence Cloud API.
+#
+#     This function implements a pagination mechanism to retrieve events, respecting the fetch limit
+#     and handling cleanup of previous batches. It yields batches of events along with pagination
+#     information for subsequent calls.
+#
+#     Args:
+#         client (Client): The client object for making API requests.
+#         last_run (dict[str, Any]): Dictionary containing information from the last execution.
+#         fetch_limit (int): Maximum number of events to fetch.
+#
+#     Yields:
+#         tuple: A tuple containing:
+#             - list: A batch of events.
+#             - str: The next_link for pagination or an empty string if no more pages.
+#             - int: The end_date used for the current fetch operation.
+#
+#     Note:
+#         This function uses debug logging extensively to track its progress and decision-making.
+#     """
+#     demisto.debug(f'Starting fetch_events with last_run: {last_run} and fetch_limit: {fetch_limit}')
+#     end_date = int((time.time() - 5) * 1000)
+#     last_end_date = last_run.get('end_date', 0)
+#     start_date = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
+#     next_link = last_run.get('next_link', '')
+#     is_cleanup = bool(next_link)
+#     total_length = 0
+#
+#     demisto.debug(f'Initial start_date: {start_date}, end_date: {end_date}, next_link: {next_link}, is_cleanup: {is_cleanup}')
+#     while True:
+#         response = run_fetch_mechanism(client, next_link, start_date, end_date)
+#         events = response['results']
+#         next_link = response['_links'].get('next', None)
+#         total_length += len(events)
+#
+#         demisto.debug(f'Fetched {len(events)} events, total_length: {total_length}, next_link: {next_link}')
+#         if total_length >= fetch_limit:
+#             diff = total_length - fetch_limit
+#             correct_last_index = len(events) - diff
+#             events = events[:correct_last_index]
+#
+#             demisto.debug(f'Fetch limit reached. Adjusting events to {len(events)} and calculating next_link.')
+#             if next_link:
+#                 parsed_next_link = urllib.parse.urlparse(next_link)
+#                 query_params = urllib.parse.parse_qs(parsed_next_link.query)
+#                 query_params['start'] = [str(fetch_limit)]
+#                 next_link = urllib.parse.urlunparse(
+#                     parsed_next_link._replace(
+#                         query=urllib.parse.urlencode(query_params, doseq=True)
+#                     )
+#                 )
+#             else:
+#                 next_link = URL_SUFFIX['NEXT_LINK_TEMPLATE'].format(end_date, AUDIT_FETCH_PAGE_SIZE, fetch_limit, start_date)
+#             demisto.debug(f'Yielding events and next_link: {next_link}')
+#             yield events, next_link, end_date
+#             break
+#
+#         if not next_link:
+#             if not is_cleanup:
+#                 demisto.debug('No more next_link and not in cleanup mode. Yielding events and ending fetch.')
+#                 yield events, next_link, end_date
+#                 break
+#
+#             # last call cleaned up the previous batch, start new batch
+#             demisto.debug('Finished cleanup mode. Starting the new batch.')
+#             response = run_fetch_mechanism(client, None, start_date, end_date)
+#             events.extend(response['results'])
+#             next_link = response['_links'].get('next', None)
+#             total_length += len(events)
+#             if not next_link:
+#                 yield events, next_link, end_date
+#                 break
+#
+#         yield events, next_link, end_date
+#         demisto.debug(f'Yielding events and next_link: {next_link}')
+#
+#     demisto.debug('Fetch complete. Yielding final empty results.')
+#     yield [], next_link, end_date
 
 
 def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
