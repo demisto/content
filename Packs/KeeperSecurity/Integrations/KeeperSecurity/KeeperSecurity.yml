@@ -36,7 +36,7 @@ configuration:
   required: false
   section: Connect
 description: Use this integration to fetch audit logs from Keeper Security Admin Console as XSIAM events.
-display: Keeper Security Event Collector
+display: Keeper Security
 name: KeeperSecurity
 script:
   commands:
@@ -45,12 +45,12 @@ script:
       name: code
       required: false
     description: "Use this command to complete the registration process."
-    name: ks-event-collector-register-complete
+    name: keeper-security-register-complete
   - description: "Use this command to start the registration process."
-    name: ks-event-collector-register-start
+    name: keeper-security-register-start
     arguments: []
   - description: Use this command to test the connectivity of the instance.
-    name: ks-event-collector-register-test
+    name: keeper-security-register-test
     arguments: []
   runonce: false
   isfetchevents: true

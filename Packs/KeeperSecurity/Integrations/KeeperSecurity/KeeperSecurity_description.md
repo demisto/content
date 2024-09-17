@@ -14,10 +14,10 @@ To create a new user:
 
 In order to authenticate the configured user, the product uses a device registration process. In order to register a new device that will be used to authenticate the user, follow the following procedures:
 
-1. Run the **!ks-event-collector-register-start** command.
+1. Run the **!keeper-security-register-start** command.
 2. If the account does **not** have a configured device, then an authorization code will be sent to the configured email address.
-3. Run the **!ks-event-collector-register-complete** command with the acquired authorization code. If the account already has a registered device, run the command without supplying any arguments.
-4. Run the command **!ks-event-collector-register-test** to test that everything is working fine.
+3. Run the **!keeper-security-register-complete** command with the acquired authorization code. If the account already has a registered device, run the command without supplying any arguments.
+4. Run the command **!keeper-security-register-test** to test that everything is working fine.
 
 ## Server Regions
 

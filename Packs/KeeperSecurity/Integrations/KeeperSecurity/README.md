@@ -23,14 +23,14 @@ This integration was integrated and tested with version 16.11.8 of Keeper Comman
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### ks-event-collector-register-start
+### keeper-security-register-start
 
 ***
 Use this command to start the registration process.
 
 #### Base Command
 
-`ks-event-collector-register-start`
+`keeper-security-register-start`
 
 #### Input
 
@@ -44,14 +44,14 @@ There is no context output for this command.
 
 >Code was sent successfully to the user's email
 
-### ks-event-collector-register-complete
+### keeper-security-register-complete
 
 ***
 Use this command to complete the registration process.
 
 #### Base Command
 
-`ks-event-collector-register-complete`
+`keeper-security-register-complete`
 
 #### Input
 
@@ -67,14 +67,14 @@ There is no context output for this command.
 
 >Login completed
 
-### ks-event-collector-register-test
+### keeper-security-register-test
 
 ***
 Use this command to test the connectivity of the instance.
 
 #### Base Command
 
-`ks-event-collector-register-test`
+`keeper-security-register-test`
 
 #### Input
 

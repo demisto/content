@@ -19,12 +19,12 @@ DEFAULT_MAX_FETCH = 10000
 API_MAX_FETCH = 1000
 SESSION_TOKEN_TTL = 3600  # In seconds
 REGISTRATION_FLOW_MESSAGE = (
-    "In order to authorize the instance, first run the command `!ks-event-collector-register-start`."
+    "In order to authorize the instance, first run the command `!keeper-security-register-start`."
     " A code will be sent to your email, copy it and paste that value in the command"
-    " `!ks-event-collector-register-complete` as an argument to finish the process."
+    " `!keeper-security-register-complete` as an argument to finish the process."
 )
 DEVICE_ALREADY_REGISTERED = (
-    "Device is already registered, try running the 'ks-event-collector-register-complete'"
+    "Device is already registered, try running the 'keeper-security-register-complete'"
     " command without supplying a code argument."
 )
 LAST_RUN = "Last Run"
@@ -497,11 +497,11 @@ def main() -> None:  # pragma: no cover
     try:
         if command == "test-module":
             return_results(test_module())
-        elif command == "ks-event-collector-register-start":
+        elif command == "keeper-security-register-start":
             return_results(start_registration_command(client=client))
-        elif command == "ks-event-collector-register-complete":
+        elif command == "keeper-security-register-complete":
             return_results(complete_registration_command(client=client, code=args.get("code", "")))
-        elif command == "ks-event-collector-register-test":
+        elif command == "keeper-security-register-test":
             return_results(test_authorization(client=client))
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
