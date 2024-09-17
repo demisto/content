@@ -81,7 +81,7 @@ configuration:
 - name: fetch_time
   display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   type: 0
-  required: true
+  required: false
   section: Collect
 
 - name: max_fetch
@@ -125,7 +125,7 @@ configuration:
   additionalinfo: Add this tag to an entry to mirror it from IBM Qradar SOAR.
   defaultvalue: 'FROM IBM'
   type: 0
-  required: true
+  required: false
   section: Collect
   advanced: true
 
@@ -134,7 +134,7 @@ configuration:
   additionalinfo: Add this tag to an entry to mirror it as to IBM Qradar SOAR.
   defaultvalue: 'FROM XSOAR'
   type: 0
-  required: true
+  required: false
   section: Collect
   advanced: true
 
