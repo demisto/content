@@ -3,7 +3,7 @@ from AnalyzeTimestampIntervals import analyze_intervals
 import numpy as np
 
 
-# Consistent intervals (2000 ms apart, i.e., 1 event every 10 seconds)
+# Consistent intervals (10,000 ms apart, i.e., 1 event every 10 seconds)
 consistent_timestamps = [1609459200000 + i * 10000 for i in range(100)]
 
 # High frequency detection (100 ms apart, i.e., 10 events per second)
@@ -40,7 +40,7 @@ def test_consistent_intervals():
         interval_consistency_threshold=interval_consistency_threshold)
 
     assert result["MeanIntervalInSeconds"] == pytest.approx(10.0, rel=1e-1)
-    assert result["MedianIntervalInSeconds"] == pytest.approx(3.085, rel=1e-1)  # Adjust expectation
+    assert result["MedianIntervalInSeconds"] == pytest.approx(10.0, rel=1e-1)
     assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-1)
     assert result["HighFrequencyDetected"] is False  # 1 event per 2 seconds is allowed
     assert result["ConsistentIntervalsDetected"] is True  # Intervals are consistent
