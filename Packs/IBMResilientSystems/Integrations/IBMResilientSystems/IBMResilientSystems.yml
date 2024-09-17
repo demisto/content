@@ -7,6 +7,7 @@ configuration:
   name: server
   required: true
   type: 0
+  hidden: false
   section: Connect
 - display: Organization name
   name: org
@@ -19,27 +20,25 @@ configuration:
   type: 4
   hidden: true
   section: Connect
-
 - display: API key secret
   name: api_key_secret
   type: 4
   required: false
   hidden: true
   section: Connect
-
 - display: API key ID
   name: credentials_api_key
   type: 9
   required: true
   displaypassword: API key secret
   section: Connect
-
 - display: Credentials (Deprecated - use API Key authentication instead)
   name: credentials
   type: 9
   required: false
   deprecated: true
-  hidden: true
+  hiddenusername: true
+  hiddenpassword: true
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
