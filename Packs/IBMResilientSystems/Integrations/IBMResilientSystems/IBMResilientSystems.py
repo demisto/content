@@ -178,6 +178,8 @@ DEFAULT_RETURN_LEVEL = "full"
 DEFAULT_RETRIES = 1
 IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME = "IBM QRadar SOAR Incident Schema"
 DEFAULT_SEVERITY_CODE = 5
+DEFAULT_TAG_FROM_IBM = 'FROM IBM'
+DEFAULT_TAG_TO_IBM = 'FROM XSOAR'
 """ ENDPOINTS """
 SEARCH_INCIDENTS_ENDPOINT = "/incidents/query_paged"
 ''' HELPER FUNCTIONS '''
@@ -1961,8 +1963,8 @@ def main():  # pragma: no cover
     integration_logger = logging.getLogger("resilient")  # type: logging.Logger
     integration_logger.propagate = False
 
-    tag_to_ibm = params.get('tag_to_ibm')
-    tag_from_ibm = params.get('tag_from_ibm')
+    tag_to_ibm = params.get('tag_to_ibm', DEFAULT_TAG_TO_IBM)
+    tag_from_ibm = params.get('tag_from_ibm', DEFAULT_TAG_FROM_IBM)
     demisto.debug(f"main {tag_from_ibm=} | {tag_to_ibm=}")
 
 
