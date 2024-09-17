@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cd2f7a88-5f69-46ec-8826-977c7f5ac0d0
+    taskid: b8b84a8c-31ee-4daa-884a-5c8fae07434e
     type: start
     task:
-      id: cd2f7a88-5f69-46ec-8826-977c7f5ac0d0
+      id: b8b84a8c-31ee-4daa-884a-5c8fae07434e
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a2c60e6b-fb0b-4faf-8396-1e6e36c9d321
+    taskid: 36f91bcf-47d2-403f-8036-6371edfdab2a
     type: regular
     task:
-      id: a2c60e6b-fb0b-4faf-8396-1e6e36c9d321
+      id: 36f91bcf-47d2-403f-8036-6371edfdab2a
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 1180
+          "y": 1000
         }
       }
     note: false
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 4a8ab746-7531-44b5-8447-fd12a3589236
+    taskid: fc631aab-e26a-46ec-823f-8c32ea5d2b7a
     type: condition
     task:
-      id: 4a8ab746-7531-44b5-8447-fd12a3589236
+      id: fc631aab-e26a-46ec-823f-8c32ea5d2b7a
       version: -1
       name: Is asmserviceownerunrankedraw populated?
       description: Determines if the asmserviceowner or asmserviceownerunrankedraw fields have been populated to continue.
@@ -160,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 6c41a727-a8ae-4676-8345-e60fb2392799
+    taskid: f0be60f7-946b-484c-8f3f-2fce48393887
     type: title
     task:
-      id: 6c41a727-a8ae-4676-8345-e60fb2392799
+      id: f0be60f7-946b-484c-8f3f-2fce48393887
       version: -1
       name: Done
       type: title
@@ -175,8 +175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1450
+          "x": 190,
+          "y": 1170
         }
       }
     note: false
@@ -188,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: a550da7c-7d3b-4645-8738-dce7a71e3f0b
+    taskid: 9cc9f303-da36-400b-83ed-f1bb106cbe04
     type: condition
     task:
-      id: a550da7c-7d3b-4645-8738-dce7a71e3f0b
+      id: 9cc9f303-da36-400b-83ed-f1bb106cbe04
       version: -1
       name: Was there a result?
       description: Determines if there was a result from the previous command to continue cloud enrichment.
@@ -200,7 +200,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "10"
+      - "6"
       "yes":
       - "19"
     separatecontext: false
@@ -231,10 +231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 4ec2a65b-0820-49bd-8d92-eed5e19509f6
+    taskid: a1bbef47-dfa9-4e51-8be1-4d0d1d70c470
     type: regular
     task:
-      id: 4ec2a65b-0820-49bd-8d92-eed5e19509f6
+      id: a1bbef47-dfa9-4e51-8be1-4d0d1d70c470
       version: -1
       name: Get external service information
       description: Get service details according to the service ID.
@@ -274,10 +274,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 2018e442-e24d-446c-8e00-3bf2a8f28e21
+    taskid: 62302e49-c1c0-4c9d-8dff-d32b1502daf2
     type: condition
     task:
-      id: 2018e442-e24d-446c-8e00-3bf2a8f28e21
+      id: 62302e49-c1c0-4c9d-8dff-d32b1502daf2
       version: -1
       name: Is Cortex ASM enabled?
       description: Determines if the "Cortex Attack Surface Management" integration instance is configured to continue with cloud enrichment.
@@ -335,10 +335,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: adadb903-8fb7-4900-8ef1-dccb92ce4ede
+    taskid: d99dfe0a-1433-4c4f-8bc3-44bb2c53c3f1
     type: regular
     task:
-      id: adadb903-8fb7-4900-8ef1-dccb92ce4ede
+      id: d99dfe0a-1433-4c4f-8bc3-44bb2c53c3f1
       version: -1
       name: Look up project owners for service account
       description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
@@ -361,7 +361,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 1005
+          "y": 825
         }
       }
     note: false
@@ -374,14 +374,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_10_#default#": 0.2,
+      "15_19_yes": 0.36,
       "17_10_#default#": 0.2,
       "9_10_#default#": 0.33
     },
     "paper": {
       "dimensions": {
-        "height": 1665,
-        "width": 680,
+        "height": 1385,
+        "width": 620,
         "x": -50,
         "y": -150
       }
