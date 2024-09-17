@@ -103,7 +103,7 @@
 <h5>Command example</h5>
 <p><code>!minemeld-add-to-miner miner=Supicious indicator=7.7.7.7</code></p>
 <h5>War Room Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip0.png"></p>
+<p><img src="../../doc_files/PaloAlto_MineMeld_mceclip0.png"></p>
 <h3 id="h_84291944691533030131743">2. Remove an indicator from a miner</h3>
 <hr>
 <p>Removes a specified indicator from a specified miner.</p>
@@ -147,7 +147,7 @@
 <h5>Command example</h5>
 <p><code>!minemeld-remove-from-miner miner=Suspicious indicator=7.7.7.7</code></p>
 <h5>War Room Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip4.png"></p>
+<p><img src="../../doc_files/PaloAlto_MineMeld_mceclip4.png"></p>
 <p> </p>
 <h3 id="h_8831063331321533030138926">3. Get miner details</h3>
 <hr>
@@ -219,7 +219,7 @@
 <h5>Command Example</h5>
 <p><code>!minemeld-retrieve-miner miner=Suspicious</code></p>
 <h5>War Room Output</h5>
-<h5><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip3.png"></h5>
+<h5><img src="../../doc_files/PaloAlto_MineMeld_mceclip3.png"></h5>
 <p> </p>
 <h3 id="h_5439582361971533030145741">4. Get an indicator within a miner</h3>
 <hr>
@@ -299,7 +299,7 @@
 <h5>Command Example</h5>
 <p><code>!minemeld-get-indicator-from-miner miner=Suspicious indicator=7.7.7.7</code></p>
 <h5>War Room Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip2.png"></p>
+<p><img src="../../doc_files/PaloAlto_MineMeld_mceclip2.png"></p>
 <h3 id="h_549080515261533045679386">5. Get IP address indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified IP address, including the context in which it is found.</p>
@@ -413,7 +413,7 @@
 <h5>Command Example</h5>
 <p><code>!ip ip=7.7.7.7 using-brand="Palo Alto Minemeld"</code></p>
 <h5>War Room Output</h5>
-<h5><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip8.png"></h5>
+<h5><img src="../../doc_files/PaloAlto_MineMeld_mceclip8.png"></h5>
 <p> </p>
 <h3 id="h_7852984883241533030162610">6. Get file indicator</h3>
 <hr>
@@ -536,7 +536,7 @@
 <h5>Command example</h5>
 <p><code>!file file=9acb44549b41563697bb490144ec6258 using-brand="Palo Alto Minemeld"</code></p>
 <h5>War Room Output</h5>
-<h5><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip6.png"></h5>
+<h5><img src="../../doc_files/PaloAlto_MineMeld_mceclip6.png"></h5>
 <p> </p>
 <h3 id="h_5903761773861533030170543">7. Get domain indicator</h3>
 <hr>
@@ -651,7 +651,7 @@
 <h5>Command example</h5>
 <p><code>!domain domain=moogle.com using-brand="Palo Alto Minemeld"</code></p>
 <h5>War Room Output</h5>
-<h5><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip7.png"></h5>
+<h5><img src="../../doc_files/PaloAlto_MineMeld_mceclip7.png"></h5>
 <p> </p>
 <h3 id="h_6945056004471533030179038">8. Get URL indicator</h3>
 <hr>
@@ -766,7 +766,7 @@
 <h5>Command example</h5>
 <p><code>!url url=voogle.com/malicious.exe using-brand="Palo Alto Minemeld"</code></p>
 <h5>War Room Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip5.png"></p>
+<p><img src="../../doc_files/PaloAlto_MineMeld_mceclip5.png"></p>
 <p> </p>
 <h3 id="h_8427503055071533030188825">9. Get a list of all the miners</h3>
 <hr>
@@ -806,4 +806,4 @@
 <h5>Command example</h5>
 <p>!minemeld-get-all-miners-names</p>
 <h5>War Room Output</h5>
-<pre> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip1.png"></pre>
+<pre> <img src="../../doc_files/PaloAlto_MineMeld_mceclip1.png"></pre>

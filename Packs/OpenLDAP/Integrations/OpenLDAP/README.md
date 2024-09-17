@@ -42,11 +42,11 @@ Use OpenLDAP or Active Directory user authentication groups to set user roles in
 **Steps required for setting AD roles Mapping:** (The steps refer to an OpenLDAP server)
 
 1. Create OpenLDAP child entry of *User Account* template under wanted *Organizational Unit* and *Posix Group*, with *uid* as part of DN:
-![user](https://user-images.githubusercontent.com/45535078/71556364-722c4980-2a40-11ea-850a-4b556f5f0f4b.png)
+![user](../../doc_files/71556364-722c4980-2a40-11ea-850a-4b556f5f0f4b.png)
 
 
 2. Create OpenLDAP child entry of *Posix Group* template, with created account from step 1 as *memberUid*:
-![group](https://user-images.githubusercontent.com/45535078/71556408-04345200-2a41-11ea-8368-6eb430c1aa93.png)
+![group](../../doc_files/71556408-04345200-2a41-11ea-8368-6eb430c1aa93.png)
 
 
 3. If using different attributes and class/group templates (different *objectClass*), customize the following default values in the instance configuration:
@@ -61,7 +61,7 @@ Use OpenLDAP or Active Directory user authentication groups to set user roles in
 5. Choose the role.
 
 6. Add the created group from step 2 to **AD Roles Mapping**.
-![mapping](https://user-images.githubusercontent.com/45535078/71556645-ee745c00-2a43-11ea-90da-764d0543f1ca.png)
+![mapping](../../doc_files/71556645-ee745c00-2a43-11ea-90da-764d0543f1ca.png)
 
 
 7. Login to Cortex XSOAR using *uid* or full DN and password of the user created in step 1. 
