@@ -162,7 +162,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[str, Any]) -> dict[str, Any]:
+def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[str, Any], page_size: int) -> dict[str, Any]:
     """
     Retrieve events from the Atlassian Confluence Cloud API according to the following logic:
         - If next_link is not provided, it searches for events within the specified date range.
@@ -172,7 +172,7 @@ def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[st
         client (Client): The client instance for making API requests.
         next_link (str | None): The link for the next page of results, if any.
         last_run (dict[str, Any]): The dictionary containing the last run information, such as the end date.
-
+        page_size (int): The desired page size for the search.
     Returns:
         dict[str, Any]: The API response containing the fetched events.
     """
@@ -180,7 +180,7 @@ def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[st
         end_date = int((time.time() - 5) * 1000)
         last_end_date = last_run.get('end_date', 0)
         start_date = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
-        demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {AUDIT_FETCH_PAGE_SIZE}')
+        demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
         response = client.search_events(limit=AUDIT_FETCH_PAGE_SIZE, start_date=str(start_date), end_date=str(end_date))
         demisto.debug(f'Found {response["size"]} events between {start_date} and {end_date}')
         demisto.debug(json.dumps(response, indent=4))
@@ -1402,7 +1402,8 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int):
     total_length = 0
 
     while total_length < fetch_limit and not exhausted_confluence:
-        response = run_fetch_mechanism(client, next_link, last_run)
+        page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - total_length)
+        response = run_fetch_mechanism(client, next_link, last_run, page_size)
         events = response['results']
         next_link = response['_links'].get('next', None)
         total_length += len(events)
