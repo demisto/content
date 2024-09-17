@@ -1901,7 +1901,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return GetMappingFieldsResponse([ibm_qradar_incident_type_scheme])
 
 
-def test_module(client: SimpleClient, fetch_time: str):
+def test_module(client: SimpleClient, fetch_time: str, tag_to_ibm: str, tag_from_ibm: str) -> str:
     """
     Verify client connectivity and the fetch_time parameter are according to the standards, if exists.
 
@@ -1920,6 +1920,11 @@ def test_module(client: SimpleClient, fetch_time: str):
                 "Invalid first fetch timestamp format, should be (YYYY-MM-DDTHH:MM:SSZ)."
                 " For example: 2020-02-02T19:00:00Z"
             )
+
+    # Testing tags
+    if tag_from_ibm == tag_to_ibm:
+        raise DemistoException(
+            f'Tag *to* IBM (`{tag_to_ibm}`) and Tag *from* IBM (`{tag_from_ibm}`) cannot have the same value.')
 
     return "ok"
 
@@ -1959,9 +1964,7 @@ def main():  # pragma: no cover
     tag_to_ibm = params.get('tag_to_ibm')
     tag_from_ibm = params.get('tag_from_ibm')
     demisto.debug(f"main {tag_from_ibm=} | {tag_to_ibm=}")
-    if tag_from_ibm == tag_to_ibm:
-        raise DemistoException(
-            'Tag *to* IBM and Tag *from* IBM cannot have the same value.')
+
 
     try:
         command = demisto.command()
@@ -1970,7 +1973,7 @@ def main():  # pragma: no cover
 
         if command == "test-module":
             # Checks if there is an authenticated session
-            return_results(test_module(client, fetch_time))
+            return_results(test_module(client, fetch_time, tag_to_ibm, tag_from_ibm))
         elif command == "fetch-incidents":
             fetch_incidents(client, fetch_time, params.get('fetch_closed', False))
         elif command == "rs-search-incidents":

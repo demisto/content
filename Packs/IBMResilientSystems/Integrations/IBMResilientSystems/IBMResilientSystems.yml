@@ -19,23 +19,27 @@ configuration:
   type: 4
   hidden: true
   section: Connect
+
 - display: API key secret
   name: api_key_secret
   type: 4
   required: false
   hidden: true
   section: Connect
+
 - display: API key ID
   name: credentials_api_key
   type: 9
   required: true
   displaypassword: API key secret
   section: Connect
+
 - display: Credentials (Deprecated - use API Key authentication instead)
   name: credentials
   type: 9
   required: false
-  hidden: false
+  deprecated: true
+  hidden: true
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -119,18 +123,18 @@ configuration:
 - display: Tag from IBM Qradar SOAR
   name: tag_from_ibm
   additionalinfo: Add this tag to an entry to mirror it from IBM Qradar SOAR.
-  defaultvalue: FROM IBM
+  defaultvalue: 'FROM IBM'
   type: 0
-  required: false
+  required: true
   section: Collect
   advanced: true
 
 - display: Tag to IBM QRadar SOAR
   name: tag_to_ibm
   additionalinfo: Add this tag to an entry to mirror it as to IBM Qradar SOAR.
-  defaultvalue: FROM XSOAR
+  defaultvalue: 'FROM XSOAR'
   type: 0
-  required: false
+  required: true
   section: Collect
   advanced: true
 
@@ -294,7 +298,6 @@ script:
     - contextPath: Resilient.Incidents.ResolutionSummary
       description: Incident resolution summary.
       type: string
-
   - description: Updates incidents.
     name: rs-update-incident
     arguments:
@@ -361,7 +364,6 @@ script:
       - Web
     - description: 'A JSON object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}`. The name should be the path to it in the incident separated by "." For example: `{"properties.incident_summary": {"text": "The new name"}}". Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. For more information, refer to https://xsoar.pan.dev/docs/reference/integrations/ibm-resilient-systems. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields value will be used.'
       name: other-fields
-
   - arguments:
     - description: Incident ID to get members of.
       name: incident-id
@@ -384,7 +386,6 @@ script:
     - contextPath: Resilient.Incidents.Members.Email
       description: Member's email address.
       type: string
-
   - arguments:
     - description: ID of incident to get.
       name: incident-id
@@ -443,7 +444,6 @@ script:
     - contextPath: Resilient.Incidents.ResolutionSummary
       description: Incident resolution summary.
       type: string
-
   - arguments:
     - description: ID of the incident for which to update its members.
       name: incident-id
@@ -1007,7 +1007,6 @@ script:
       - Post-Incident
       - Custom
       - Complete
-
 
   - name: rs-list-tasks
     description: Gets an array of open tasks to which the current user is assigned.
