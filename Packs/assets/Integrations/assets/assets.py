@@ -312,16 +312,17 @@ def main():   # pragma:  no cover
             if next_run_page:
                 new_last_run = {'next_page': next_run_page, 'snapshot_id': snapshot_id,
                                 'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
+                                   items_count=0, should_update_health_module=False)
             else:
                 new_last_run = {'nextTrigger': None, "type": FETCH_COMMAND.get('assets')}
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
+                                   items_count=total_assets, should_update_health_module=False)
 
             demisto.debug('sending assets to XSIAM.')
-            send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
-                               items_count=total_assets, should_update_health_module=False)
 
             demisto.setAssetsLastRun(new_last_run)
-            if not next_run_page:
-                demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'):  total_assets})
+            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'):  total_assets})
             demisto.debug('finished fetch assets run')
 
     except Exception as e: 
