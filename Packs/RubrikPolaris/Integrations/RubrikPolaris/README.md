@@ -696,8 +696,8 @@ Request for the analysis and retrieve the download link for the Radar CSV analyz
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster_id | The unique ID of the cluster.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-| snapshot_id | The snapshot ID.<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
-| object_id | The VM object ID.<br/><br/>Note: Users can retrieve the list of object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
+| snapshot_id | The CDM snapshot ID.<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command.<br/>Use the "rubrik-radar-suspicious-file-list" command to retrieve the actual CDM ID from the Anomaly ID.<br/>Example format to get the snapshot CDM ID from Anomaly ID: "&lt;Cluster-ID&gt;:::VirtualMachine:::&lt;Snappable-ID&gt;:::&lt;CDM-ID&gt;". | Required | 
+| object_id | The VM object ID (Snappable ID).<br/><br/>Note: Users can retrieve the list of Snappable IDs by executing the "rubrik-polaris-vm-objects-list" command.<br/>Example format to get the Snappable ID: "VirtualMachine:::&lt;Snappable-ID&gt;". | Required | 
 
 
 #### Context Output
