@@ -159,3 +159,19 @@ ignore=BA124
 
 [file:1_0_4.md]
 ignore=RN116
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-PAN-OS_-_Enforce_URL_Filtering_Best_Practices_Profile.yml]
+ignore=GR103
+[file:playbook-CoA_-_T1078_-_Valid_Accounts.yml]
+ignore=GR103
+[file:playbook-PAN-OS_-_Enforce_Anti-Virus_Best_Practices_Profile.yml]
+ignore=GR103
+[file:playbook-PAN-OS_-_Enforce_Vulnerability_Protection_Best_Practices_Profile.yml]
+ignore=GR103
+[file:playbook-PAN-OS_-_Enforce_Anti-Spyware_Best_Practices_Profile.yml]
+ignore=GR103
+[file:playbook-PAN-OS_-_Enforce_WildFire_Best_Practices_Profile.yml]
+ignore=GR103
+[file:playbook-PAN-OS_-_Enforce_File_Blocking_Best_Practices_Profile.yml]
+ignore=GR103
