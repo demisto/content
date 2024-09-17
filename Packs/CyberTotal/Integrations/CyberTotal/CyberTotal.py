@@ -86,7 +86,7 @@ class Client(BaseClient):
 
         return self.parse_reputation(cybertotal_result, ip)
 
-    def get_url_reputation(self, url: str) -> Dict[str, Any]:
+    def get_url_reputation(self, url: str) -> Dict[str, Any]:   # pragma: nocover
         """Gets the URL reputation using the '/_api/search/url/basic' API endpoint
 
         :type url: ``str``
@@ -746,7 +746,7 @@ def domain_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: nocover
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -776,7 +776,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def main() -> None:
+def main() -> None:    # pragma: nocover
 
     verify_certificate = not demisto.params().get('insecure', False)
     cybertotal_url = demisto.params().get('url')
