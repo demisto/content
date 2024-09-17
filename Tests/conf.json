@@ -3173,17 +3173,6 @@
                 "Rasterize",
                 "Image OCR"
             ],
-            "playbookID": "Rasterize Test",
-            "fromversion": "5.0.0",
-            "memory_threshold": 300,
-            "pid_threshold": 200,
-            "timeout": 1500
-        },
-        {
-            "integrations": [
-                "Rasterize",
-                "Image OCR"
-            ],
             "playbookID": "Rasterize Test HTML"
         },
         {
