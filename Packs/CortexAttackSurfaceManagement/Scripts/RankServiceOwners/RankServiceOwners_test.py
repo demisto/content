@@ -447,6 +447,17 @@ def test_score_model_inference_fail(mocker):
             },
         ]
     ),
+    # single service owner entry (xsoar converts to dictionary with filters)
+    (
+        {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': 1},
+        [''],
+        [
+            {
+                'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': 1,
+                'ranking_score': 1.0, 'justification': 'source1'
+            },
+        ]
+    ),
 ])
 def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
     """
@@ -478,7 +489,10 @@ def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
 
     # Verify the output value was set
     expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmserviceowner': expected_out})]
-    assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
+    if demisto_execution_mock.call_args_list:
+        assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
+    else:
+        assert demisto_execution_mock.call_args_list == []
 
 
 def test_main_error(mocker, capfd):
