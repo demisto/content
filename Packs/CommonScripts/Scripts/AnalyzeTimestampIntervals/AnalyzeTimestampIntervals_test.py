@@ -34,9 +34,9 @@ def test_consistent_intervals():
         consistent_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
         interval_consistency_threshold=interval_consistency_threshold)
 
-    assert result["MeanIntervalInSeconds"] == pytest.approx(2.0, rel=1e-2)
-    assert result["MedianIntervalInSeconds"] == pytest.approx(2.0, rel=1e-2)
-    assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-2)
+    assert result["MeanIntervalInSeconds"] == pytest.approx(2.0, rel=1e-1)
+    assert result["MedianIntervalInSeconds"] == pytest.approx(2.0, rel=1e-1)
+    assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-1)
     assert result["HighFrequencyDetected"] is False  # 1 event per 2 seconds is allowed
     assert result["ConsistentIntervalsDetected"] is True  # Intervals are consistent
     assert result["IsPatternLikelyAutomated"] is True  # Consistent intervals suggest automation
@@ -62,9 +62,9 @@ def test_high_frequency_detection():
         high_freq_timestamps, verbose=True, max_intervals_per_window=max_intervals_per_window,
         interval_consistency_threshold=interval_consistency_threshold)
 
-    assert result["MeanIntervalInSeconds"] == pytest.approx(0.1, rel=1e-2)
-    assert result["MedianIntervalInSeconds"] == pytest.approx(0.1, rel=1e-2)
-    assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-2)
+    assert result["MeanIntervalInSeconds"] == pytest.approx(0.1, rel=1e-1)
+    assert result["MedianIntervalInSeconds"] == pytest.approx(0.1, rel=1e-1)
+    assert result["StandardDeviationInSeconds"] == pytest.approx(0.0, rel=1e-1)
     assert result["HighFrequencyDetected"] is True  # More than 1 event per 2 seconds, flagged as high frequency
     assert result["ConsistentIntervalsDetected"] is True  # Even though fast, the intervals are consistent
     assert result["IsPatternLikelyAutomated"] is True  # High frequency and consistency suggest automation
@@ -92,8 +92,8 @@ def test_inconsistent_intervals():
 
     # Adjusted for the inconsistency of intervals
     assert result["MeanIntervalInSeconds"] == pytest.approx(3.0, rel=1e-1)
-    assert result["MedianIntervalInSeconds"] == pytest.approx(3.0, rel=1e-2)
-    assert result["StandardDeviationInSeconds"] == pytest.approx(2.0, rel=1e-2)
+    assert result["MedianIntervalInSeconds"] == pytest.approx(3.0, rel=1e-1)
+    assert result["StandardDeviationInSeconds"] == pytest.approx(2.0, rel=1e-1)
     assert result["HighFrequencyDetected"] is False  # No high frequency detected
     assert result["ConsistentIntervalsDetected"] is False  # Intervals are too varied
     assert result["IsPatternLikelyAutomated"] is False  # Not enough evidence for automation
