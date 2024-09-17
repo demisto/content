@@ -1430,7 +1430,7 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
 
     if not last_fetched_timestamp:
         if not first_fetch_time:
-            raise DemistoException(f'First fetch time not provided.')
+            raise DemistoException('First fetch time not provided.')
 
         last_fetched_timestamp = to_timestamp(first_fetch_time)
     args = {'date-created-after': last_fetched_timestamp}  # Fetch incident from the last fetched timestamp.
