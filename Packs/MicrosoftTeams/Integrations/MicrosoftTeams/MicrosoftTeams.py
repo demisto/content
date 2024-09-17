@@ -2,24 +2,24 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from enum import Enum
 import re
 import time
+import urllib.parse
 from distutils.util import strtobool
+from enum import Enum
+from re import Match
+from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLError
 from tempfile import NamedTemporaryFile
 from threading import Thread
 from traceback import format_exc
 from typing import Any, cast
-from re import Match
 
 import jwt
 import requests
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
-import urllib.parse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -325,9 +325,14 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         elif newIncidentWelcomeMessage == "no_welcome_message":
             newIncidentWelcomeMessage = ""
 
-        if newIncidentWelcomeMessage and ('<incident_name>' in newIncidentWelcomeMessage) and ('<incident_link>' in newIncidentWelcomeMessage):
-            newIncidentWelcomeMessage = newIncidentWelcomeMessage.replace('<incident_name>', f"{created_incident.get('name', '')}").replace(
-                '<incident_link>', f"{server_link}/WarRoom/{created_incident.get('id', '')}")
+        if (
+            newIncidentWelcomeMessage
+            and ("<incident_name>" in newIncidentWelcomeMessage)
+            and ("<incident_link>" in newIncidentWelcomeMessage)
+        ):
+            newIncidentWelcomeMessage = newIncidentWelcomeMessage.replace(
+                "<incident_name>", f"{created_incident.get('name', '')}"
+            ).replace("<incident_link>", f"{server_link}/WarRoom/{created_incident.get('id', '')}")
         data = newIncidentWelcomeMessage
 
     return data
