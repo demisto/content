@@ -327,17 +327,20 @@ def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict:
 def write_json_file(content: Optional[Dict]= {},
                     overwrite:bool=True,
                     chrome_port: str = '',
-                    key_to_update: str = '',
-                    value_to_update: str = '',
+                    chrome_instance_data_update: Dict[str, Any]= {},
                     increase_counter: bool = False,
                     terminate_port: bool = False,
                     json_file_path:str = CHROME_INSTANCES_FILE_PATH):
     """
     Write to a JSON file with an option to overwrite or create an empty file.
 
-    :param file_path: Path to the JSON file.
     :param content: Data to write to the file. If None, an empty file is created.
     :param overwrite: If True, the file is overwritten. If False, data is appended.
+    :param chrome_port: Port for Chrome instance.
+    :param chrome_instance_data_update: Data to update the Chrome instance.
+    :param increase_counter: If True, increase the counter.
+    :param terminate_port: If True, terminate the port.
+    :param json_file_path: Path to the JSON file.
     """
     try:
         if content and overwrite:
@@ -357,7 +360,7 @@ def write_json_file(content: Optional[Dict]= {},
                         elif chrome_port and chrome_port in existing_data:
                             if increase_counter:
                                 existing_data[chrome_port]['chrome_rasterize_connections'] += 1
-                            if key_to_update:
+                            for key_to_update, value_to_update in chrome_instance_data_update.items():
                                 existing_data[chrome_port][key_to_update] = value_to_update
                             if terminate_port:
                                 del existing_data[chrome_port]
@@ -525,12 +528,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         tuple[Any | None, int | None]: A tuple containing:
             - The Browser or None if an error occurred.
             - The chrome port or None if an error occurred.
-    chrome_port: {
-                        'instance_id': instance_id,
-                        'chrome_options': chrome_options,
-                        'chrome_rasterize_connections': '1'
-                    }
-    '''
     """
     # If instance_id or chrome_options are not set, assign 'None' to these variables.
     # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
@@ -550,8 +547,8 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     elif chrome_options != instance_id_dict.get(instance_id, {}).get('chrome_options', ''):
         chrome_port = instance_id_dict.get(instance_id, '')
         write_json_file(chrome_port=chrome_port,
-                        key_to_update='instance_id',
-                        value_to_update=instance_id)
+                        chrome_instance_data_update={'chrome_options': chrome_options,
+                                                     'chrome_rasterize_connections': 1})
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
