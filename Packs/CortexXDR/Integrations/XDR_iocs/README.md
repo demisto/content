@@ -41,9 +41,10 @@ An API key of type **Advanced** with an **Administrator** role.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.  
 After you successfully execute a command, a DBot message appears in the War Room with the command details.  
 ### xdr-iocs-sync  
-***  
-run once when configure the integration (do NOT run this twice!). 
-will all the indicators that was synced with XDR and then resync.
+***
+Sync your IOC with Cortex XDR.
+Run once when configure the integration (do NOT run this twice!).
+Recommended to run manually only if there are at most 40,000 indicators.
   
 #### Base Command  
   
@@ -64,7 +65,7 @@ There is no context output for this command.
   
 ### xdr-iocs-push
 ***  
-Push new IOCs to XDR. run This every minute (without indicator argument) or ioc trigerd (using indicator argument).
+Push new or modified IOCs to Cortex XDR.
   
   
 #### Base Command  

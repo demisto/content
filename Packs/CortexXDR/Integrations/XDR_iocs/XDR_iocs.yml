@@ -179,10 +179,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Sync your IOC with Cortex XDR and delete the old.
+    description: Sync your IOC with Cortex XDR.
     name: xdr-iocs-sync
   - arguments:
-    - description: IOCs to push. leave empty to push all recently modified IOCs.the indicators.
+    - description: IOCs to push. The indicators to be pushed, leave empty to push all recently modified IOCs.
       name: indicator
       isArray: true
     description: Push modified IOCs to Cortex XDR.

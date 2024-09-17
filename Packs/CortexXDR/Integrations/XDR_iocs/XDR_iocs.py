@@ -1,4 +1,3 @@
-import math
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -12,11 +11,11 @@ from collections.abc import Sequence, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
 import zipfile
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INDICATORS_TO_SYNC: int = 40000
+BATCH_SIZE: int = 4000
 xdr_types_to_demisto: dict = {
     "DOMAIN_NAME": 'Domain',
     "HASH": 'File',
@@ -202,7 +201,7 @@ def create_file_sync(file_path, batch_size: int = 200):
             demisto.info("created sync file without any indicators")
 
 
-def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.query})', is_first_stage_sync=False) -> Iterable:
+def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.query})', stop_iteration=False) -> Iterable:
     full_query = query or Client.query
     ioc_count = 0
     try:
@@ -219,12 +218,12 @@ def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.qu
                                               {"field": "id", "asc": True}],
                                         filter_fields=filter_fields):
             search_after_array = batch.get('searchAfter', [])
+            ioc_count += len(batch.get('iocs', []))
             for ioc in batch.get('iocs', []):
-                ioc_count += 1
                 yield ioc
-                if is_first_stage_sync and ioc_count >= MAX_INDICATORS_TO_SYNC:
-                    update_integration_context(update_search_after_array=search_after_array)
-                    raise StopIteration
+            if stop_iteration and ioc_count >= MAX_INDICATORS_TO_SYNC:
+                update_integration_context(update_search_after_array=search_after_array)
+                raise StopIteration
         update_integration_context(update_search_after_array=search_after_array)
     except StopIteration:
         update_integration_context(update_search_after_array=search_after_array)
@@ -450,16 +449,13 @@ def sync_for_fetch(client: Client, batch_size: int = 200):
     try:
         full_query = create_query_with_end_time(to_date=get_integration_context().get('time'))
         request_data = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size,
-                                                                       is_first_stage_sync=True,
+                                                                       stop_iteration=True,
                                                                        query=full_query)))
         if request_data:
             integration_context = get_integration_context()
             demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
                           f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, with indicator {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
-            if len(request_data) < MAX_INDICATORS_TO_SYNC:
-                update_integration_context(update_is_first_sync_phase='false')
-                demisto.debug(f"updated integration_context to {get_integration_context()=}")
             requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             path: str = 'tim_insert_jsons'
             response = client.http_request(path, requests_kwargs)
@@ -468,6 +464,9 @@ def sync_for_fetch(client: Client, batch_size: int = 200):
             if validation_errors := response.get('reply', {}).get('validation_errors'):
                 errors = create_validation_errors_response(validation_errors)
                 demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', ''))
+            if len(request_data) < MAX_INDICATORS_TO_SYNC:
+                update_integration_context(update_is_first_sync_phase='false')
+                demisto.debug(f"updated integration_context to {get_integration_context()=}")
         else:
             demisto.debug("request_data is empty, no indicators to sync")
             update_integration_context(update_is_first_sync_phase='false')
@@ -517,22 +516,6 @@ def create_query_with_end_time(to_date: str):
     return f'modified:<{to_date} and (expirationStatus:active AND ({Client.query}))'
 
 
-def get_last_iocs(batch_size=200) -> list:
-    current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-    integration_context: dict = get_integration_context()
-    query = (create_query_with_end_time(to_date=current_run)
-             if integration_context.get('search_after')
-             else create_last_iocs_query(from_date=integration_context.get('time'), to_date=current_run))
-    demisto.info(f"querying XSOAR's recently-modified IOCs with {query=}")
-    iocs: list = list(get_iocs_generator(query=query, size=batch_size))
-    demisto.info(f"querying XSOAR's recently-modified: got {len(iocs)}")
-    integration_context = get_integration_context()
-    integration_context['time'] = current_run
-    demisto.debug(f"querying XSOAR's recently-modified IOCs: updating integration context to {integration_context}.")
-    set_integration_context(integration_context)
-    return iocs
-
-
 def get_indicators(indicators: str) -> list:
     demisto.debug("searching for IOCs in XSOAR")
     if indicators:
@@ -556,27 +539,54 @@ def get_indicators(indicators: str) -> list:
     return []
 
 
+def push_iocs(client, iocs, path='tim_insert_jsons/'):
+    path = 'tim_insert_jsons/'
+    validation_errors : list = []
+    demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
+    for i, single_batch_iocs in enumerate(batch_iocs(iocs, batch_size=MAX_INDICATORS_TO_SYNC)):
+        demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
+        requests_kwargs: dict = get_requests_kwargs(_json=list(
+            map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
+        response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+        validation_errors.extend(response.get('reply', {}).get('validation_errors'))
+    return validation_errors
+
+
 def tim_insert_jsons(client: Client):
     # Retrieve iocs changes from xsoar and pushes to XDR
     indicators = demisto.args().get('indicator', '')
+    validation_errors: list = []
+    # If tim_insert_jsons is called from xdr-iocs-push is called
     if indicators:
         demisto.info(f"pushing IOCs to XDR: querying with input {indicators}")
         iocs = get_indicators(indicators)
+        if iocs:
+            validation_errors = push_iocs(client, iocs)
+        else:
+            demisto.info("pushing IOCs to XDR: found no matching IOCs")
+    # If tim_insert_jsons is called from fetch_indicators
     else:
         demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
-        iocs = get_last_iocs(batch_size=4000)
-    validation_errors: list = []
-    if iocs:
-        path = 'tim_insert_jsons/'
-        demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
-        for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
-            demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
-            requests_kwargs: dict = get_requests_kwargs(_json=list(
-                map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
-            response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
-            validation_errors.extend(response.get('reply', {}).get('validation_errors'))
-    else:
-        demisto.info("pushing IOCs to XDR: found no matching IOCs")
+        current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
+        integration_context: dict = get_integration_context()
+        while True:
+            query = (create_query_with_end_time(to_date=current_run)
+                    if integration_context.get('search_after')
+                    else create_last_iocs_query(from_date=integration_context.get('time'), to_date=current_run))
+            demisto.info(f"pushing IOCs to XDR: querying XSOAR's recently-modified IOCs with {query=}")
+            iocs = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=BATCH_SIZE,
+                                                                    stop_iteration=True,
+                                                                    query=query)))
+            if iocs:
+                path = 'tim_insert_jsons/'
+                demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
+                requests_kwargs: dict = get_requests_kwargs(_json=iocs, validate=True)
+                response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+                validation_errors.extend(response.get('reply', {}).get('validation_errors', []))
+            else:
+                demisto.debug("pushing IOCs to XDR: No more recently modified indicators to push.")
+                break
+        demisto.debug("pushing IOCs to XDR: completed.")
     if validation_errors:
         errors = create_validation_errors_response(validation_errors)
         demisto.info('pushing IOCs to XDR:' + errors.replace('\n', '. '))
@@ -737,10 +747,10 @@ def xdr_iocs_sync_command(client: Client,
     if first_time or not get_integration_context() or is_first_stage_sync:
         demisto.debug("first time, running sync")
         if called_from_fetch:
-            sync_for_fetch(client, batch_size=4000)
+            sync_for_fetch(client, batch_size=BATCH_SIZE)
         else:
             # the sync is the large operation including the data and the get_integration_context is fill in the sync
-            sync(client, batch_size=4000)
+            sync(client, batch_size=BATCH_SIZE)
     else:
         iocs_to_keep(client)
 
