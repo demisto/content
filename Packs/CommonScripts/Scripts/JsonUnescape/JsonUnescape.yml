@@ -7,8 +7,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3-deb:3.10.13.85666
+    fromServerVersion: ''
+dockerimage: demisto/python3-deb:3.11.10.110726
 enabled: true
 name: JsonUnescape
 outputs:
