@@ -1970,7 +1970,6 @@ def main():  # pragma: no cover
     tag_from_ibm = params.get('tag_from_ibm', DEFAULT_TAG_FROM_IBM)
     demisto.debug(f"main {tag_from_ibm=} | {tag_to_ibm=}")
 
-
     try:
         command = demisto.command()
         args = demisto.args()
