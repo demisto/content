@@ -19,14 +19,6 @@ configuration:
   displaypassword: Client Secret
   section: Connect
   hiddenusername: false
-- name: user
-  display: HPE User Name
-  required: true
-  defaultvalue:
-  type: 9
-  displaypassword: HPE User Password 
-  section: Connect
-  hiddenusername: false
 - name: customer_id
   required: true
   defaultvalue:
@@ -34,6 +26,14 @@ configuration:
   displaypassword: Customer ID
   section: Connect
   hiddenusername: true
+- name: user
+  display: Username
+  required: true
+  defaultvalue:
+  type: 9
+  displaypassword: Password 
+  section: Connect
+  hiddenusername: false
 - display: Fetch networking events
   name: fetch_networking_events
   type: 8

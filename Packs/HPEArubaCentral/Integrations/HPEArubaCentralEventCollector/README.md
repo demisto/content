@@ -11,9 +11,9 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
     | Server URL | Domain URL for API gateway access | True |
     | Client ID || True |
     | Client Secret || True |
-    | HPE User Name || True |
-    | HPE User Password || True |
     | Customer ID || True |
+    | Username || True |
+    | Password || True |
     | Fetch networking events | Whether to fetch networking events or only audit | False |
     | The maximum number of audit events per fetch (Max. allowed - 1,000) | Default - 100 | False |
     | The maximum number of networking events per fetch (Max. allowed - 5,000) | Default - 1000 | False |
