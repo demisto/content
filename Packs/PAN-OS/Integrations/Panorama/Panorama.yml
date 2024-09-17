@@ -9538,7 +9538,7 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: The action type of the exception. Default value is 'default'. 
+    - description: The action type of the exception. Default value is 'default'.
       name: action
       auto: PREDEFINED
       required: false
@@ -9554,7 +9554,7 @@ script:
       name: packet_capture
       required: false
       auto: PREDEFINED
-      predefined: 
+      predefined:
       - Disable
       - Single Packet
       - Extended Capture
@@ -9592,7 +9592,7 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: The action type of the exception. Default value is 'default'. 
+    - description: The action type of the exception. Default value is 'default'.
       name: action
       required: false
       auto: PREDEFINED
@@ -9608,7 +9608,7 @@ script:
       name: packet_capture
       required: false
       auto: PREDEFINED
-      predefined: 
+      predefined:
       - Disable
       - Single Packet
       - Extended Capture
@@ -9700,7 +9700,7 @@ script:
       description: The exception exempt ID.
       type: String
     - contextPath: Panorama.Spyware.Exception.packet-capture
-      description: The exception packet capture.
+      description: The exception packet capture added a cahnge.
       type: String
   dockerimage: demisto/pan-os-python:1.0.0.108041
   isfetch: true

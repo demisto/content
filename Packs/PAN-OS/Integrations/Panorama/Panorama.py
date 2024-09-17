@@ -74,7 +74,7 @@ XPATH_RULEBASE = ''
 # pan-os-python device timeout value, in seconds
 DEVICE_TIMEOUT = 120
 DEFAULT_LIMIT_PAGE_SIZE = 50
-
+# comment
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
     'rulename': 'Name',
