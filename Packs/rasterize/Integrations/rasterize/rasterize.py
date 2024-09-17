@@ -436,14 +436,14 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = get_chrome_browser(chrome_port)
             if browser:
-                new_port = {
+                new_chrome_instance = {
                     chrome_port: {
                         'instance_id': instance_id,
                         'chrome_options': chrome_options,
                         'chrome_rasterize_connections': '1'
                     }
                 }
-                write_json_file(content=new_port)
+                write_json_file(content=new_chrome_instance)
             else:
                 process.kill()
                 return None, None
@@ -618,40 +618,6 @@ def generate_chrome_port() -> str | None:
 
     demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
     return None
-
-
-def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents: str, instance_id: str,
-                                                                         chrome_port: str) -> None:
-    """
-    Removes a specific row from the given content based on the instance ID and port,
-    and updates the file with the new content.
-
-    Args:
-        chrome_instances_contents (str): The file content to be searched and modified.
-        instance_id (str): The instance ID to search for in the content.
-        chrome_port (str): The port to search for in the content.
-
-    Returns:
-        None
-
-    This function searches for a row in the content that includes the specified instance ID and port.
-    Once the row is found, it is deleted from the content. The updated content is then written
-    back to the file using the write_text_file function.
-    """
-    index_to_delete = -1
-
-    splitted_chrome_instances_contents = chrome_instances_contents.strip().splitlines()
-    for index, line in enumerate(splitted_chrome_instances_contents):
-        port_from_chrome_instances_file, instance_id_from_chrome_instances_file, chrome_options_from_chrome_instances_file = \
-            line.strip().split('\t')
-        if port_from_chrome_instances_file == chrome_port and instance_id_from_chrome_instances_file == instance_id:
-            index_to_delete = index
-            break
-
-    if index_to_delete >= 0:
-        del splitted_chrome_instances_contents[index_to_delete]
-        chrome_instances_contents = '\n'.join(splitted_chrome_instances_contents)
-        write_text_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
 
 
 def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:
