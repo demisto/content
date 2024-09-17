@@ -511,7 +511,7 @@ def update_incident_command(client, args):
     unassign_user = args.get('unassign_user') == 'true'
     resolve_comment = args.get('resolve_comment')
     add_comment = args.get('add_comment')
-    demisto.debug(f"{incident_id=} this_is_the_status {status} {resolve_comment=} {add_comment=}")
+    demisto.debug(f"update_incident_command {incident_id=} this_is_the_status {status} {resolve_comment=} {add_comment=}")
     resolve_alerts = argToBoolean(args.get('resolve_alerts', False))
 
     if assigned_user_pretty_name and not assigned_user_mail:
@@ -532,7 +532,7 @@ def update_incident_command(client, args):
     if resolve_alerts and is_closed:
         args['status'] = args['status'].lower()
         update_related_alerts(client, args)
-
+    demisto.debug(f'update_incident_command {incident_id=} {is_closed=}')
     return f'Incident {incident_id} has been updated', None, None
 
 
@@ -846,7 +846,9 @@ def handle_incoming_closing_incident(incident_data) -> dict:
             f"handle_incoming_closing_incident {incident_id=} {incident_data.get('status')=} "
         )
         demisto.debug(f"Closing XDR issue {incident_id=}")
-        xdr_close_status = incident_data.get('closeReason', '') or incident_data.get('close_reason', '')
+        xdr_close_reason = incident_data.get('closeReason', '') or incident_data.get('close_reason', '')
+        xdr_close_status = incident_data.get('status', '')
+        demisto.debug(f' {xdr_close_reason=} { xdr_close_status=}')
         xsoar_close_reason = resolve_xsoar_close_reason(xdr_close_reason=xdr_close_status)
         closing_entry = {
             "Type": EntryType.NOTE,
@@ -871,7 +873,7 @@ def handle_incoming_closing_incident(incident_data) -> dict:
             demisto.debug(
                 f"handle_incoming_closing_incident {incident_id=} {close_notes=}"
             )
-
+    demisto.debug(f'handle_incoming_closing_incident {closing_entry=}')
     return closing_entry
 
 
@@ -948,8 +950,9 @@ def get_remote_data_command(client, args):
                 sync_incoming_incident_owners(incident_data)
 
             # handle closed issue in XDR and handle outgoing error entry
+            demisto.debug(f'get_remote_data_command before getting the entries {incident_data=}')
             entries = [handle_incoming_closing_incident(incident_data)]
-
+            demisto.debug(f'get_remote_data_command AFTER getting the entries {incident_data=} {entries=}')
             reformatted_entries = []
             for entry in entries:
                 if entry:
