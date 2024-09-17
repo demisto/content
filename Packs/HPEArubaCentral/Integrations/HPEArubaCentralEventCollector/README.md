@@ -1,45 +1,48 @@
-This is the Hello World event collector integration for XSIAM.
+This is the Aruba Central event collector integration for Cortex XSIAM.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+## Configure HPE Aruba Central Event Collector on Cortex XSIAM
 
-## Configure HelloWorld Event Collector on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HelloWorld Event Collector.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
+2. Search for HPE Aruba Central Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | False |
-    | Fetch alerts with status (ACTIVE, CLOSED) | False |
-    | Max number of events per fetch | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL | Domain URL for API gateway access | True |
+    | Client ID || True |
+    | Client Secret || True |
+    | HPE User Name || True |
+    | HPE User Password || True |
+    | Customer ID || True |
+    | Fetch networking events | Whether to fetch networking events or only audit | False |
+    | The maximum number of audit events per fetch (Max. allowed - 1,000) | Default - 100 | False |
+    | The maximum number of networking events per fetch (Max. allowed - 5,000) | Default - 1000 | False |
+    | Trust any certificate (not secure) || False |
+    | Use system proxy settings || False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URL, credentials and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### hello-world-get-events
+### aruba-central-get-events
 
 ***
-Gets events from Hello World.
+Gets events from Aruba Central.
 
 #### Base Command
 
-`hello-world-get-events`
+`aruba-central-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional | 
 | limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| from_date | Date from which to get events. Default is 3 hours prior | Optional | 
 
 #### Context Output
 
