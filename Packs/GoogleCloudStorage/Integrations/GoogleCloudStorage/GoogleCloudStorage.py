@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-from google.cloud import storage
+from google.cloud import storage  # type: ignore[attr-defined]
 from typing import Any
 import requests
 import traceback
