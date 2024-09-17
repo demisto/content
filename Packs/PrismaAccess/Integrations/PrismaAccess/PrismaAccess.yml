@@ -4,9 +4,10 @@ commonfields:
 name: Prisma Access
 display: Prisma Access
 category: Network Security
-description: |+
-  Integrate with Prisma Access to monitor the status of the Service, alert and take actions.
+description: 'Integrate with Prisma Access to monitor the status of the Service, alert and take actions.
 
+
+  '
 configuration:
 - display: Server Host or IP (e.g.,  10.1.1.9 or panorama.my.domain)
   name: server
@@ -99,7 +100,7 @@ script:
       description: Active Users on Prisma Access
     description: Query currently active users.
     deprecated: true
-  dockerimage: demisto/netmiko:1.0.0.91280
+  dockerimage: demisto/netmiko:1.0.0.111905
   subtype: python3
 fromversion: 5.0.0
 tests:
