@@ -2,7 +2,7 @@
 - In the **Username / API Key** field, type **_api_token_key**.  
 - In the **Password** field, type your API token.
 
-## Choose your API version
+### Choose your API version
 1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
 2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.
 
@@ -28,8 +28,6 @@ To reset fetch incidents, run the ***qradar-reset-last-run*** command - This wil
 To mirror offenses with events, enable the *Long running instance* parameter and set *Mirroring Options* to *Mirror Offense and Events*.
 - When mirroring offenses with events it is advised to set the *Number of offenses to pull per API call* to a small value.
 
-#### Mapping limitations for XSOAR users below 6.0.0
-* For XSOAR users below 6.0.0 version, using 'Pull from instance' option when creating a new mapper is not supported.
 #### Required Permissions
 | Component | Permission |
 | --- | --- |
@@ -40,3 +38,5 @@ To mirror offenses with events, enable the *Long running instance* parameter and
 | Offenses (Read) | Offenses |
 | References (Create/Update) | Admin |
 | References (Read) | View Reference Data |
+
+Fore more information check the [documentation](https://xsoar.pan.dev/docs/reference/integrations/q-radar-v3)
