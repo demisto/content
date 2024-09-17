@@ -584,14 +584,6 @@ def tim_insert_jsons(client: Client):
     return_outputs('pushing IOCs to XDR: complete.')
 
 
-def push_iocs_to_xdr(batch_index, iocs_batch, client, path):
-    demisto.debug(f'pushing IOCs to XDR: batch #{batch_index} with {len(iocs_batch)} IOCs')
-    requests_kwargs: dict = get_requests_kwargs(
-        _json=list(map(demisto_ioc_to_xdr, iocs_batch)), validate=True)
-    response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
-    return response.get('reply', {}).get('validation_errors', [])
-
-
 def iocs_command(client: Client):
     command = demisto.command().split('-')[-1]
     indicators = demisto.args().get('indicator', '')
