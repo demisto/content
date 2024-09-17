@@ -160,7 +160,7 @@ def fetch_incidents(client: Client,
 
                 incidents.append(incident)
         except Exception as e:
-            demisto.debug(e)
+            demisto.debug(f'{e}')
             continue
 
     next_run = {'last_fetch': last_fetch}
