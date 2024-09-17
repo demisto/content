@@ -1,19 +1,17 @@
 {
     "associatedToAll": false,
-    "associatedTypes": [
-        "Netskope DLP Incident"
-    ],
+    "associatedTypes": ["Netskope DLP Incident"],
     "caseInsensitive": true,
-    "cliName": "netskopetimestamp",
+    "cliName": "netskopedlppolicy",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_netskopetimestamp",
+    "id": "incident_netskopedlppolicy",
     "isReadOnly": false,
     "locked": false,
-    "name": "Netskope Timestamp",
+    "name": "Netskope DLP Policy",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -23,7 +21,7 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.10.0"
