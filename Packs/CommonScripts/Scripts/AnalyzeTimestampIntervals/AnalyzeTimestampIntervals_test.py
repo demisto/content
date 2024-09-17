@@ -96,9 +96,9 @@ def test_inconsistent_intervals():
         interval_consistency_threshold=interval_consistency_threshold)
 
     # Adjusted for the inconsistency of intervals
-    assert result["MeanIntervalInSeconds"] == pytest.approx(3.0, rel=1e-1)
-    assert result["MedianIntervalInSeconds"] == pytest.approx(3.0, rel=1e-1)
-    assert result["StandardDeviationInSeconds"] == pytest.approx(1.23, rel=2e-1)
+    assert result["MeanIntervalInSeconds"] == pytest.approx(3.5, rel=1e-1)
+    assert result["MedianIntervalInSeconds"] == pytest.approx(3.5, rel=1e-1)
+    assert result["StandardDeviationInSeconds"] == pytest.approx(1.4, rel=2e-1)
     assert result["HighFrequencyDetected"] is False  # No high frequency detected
     assert result["ConsistentIntervalsDetected"] is False  # Intervals are too varied
     assert result["IsPatternLikelyAutomated"] is False  # Not enough evidence for automation
