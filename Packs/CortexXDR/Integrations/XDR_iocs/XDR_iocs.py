@@ -569,17 +569,12 @@ def tim_insert_jsons(client: Client):
     if iocs:
         path = 'tim_insert_jsons/'
         demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
-        with ThreadPoolExecutor(max_workers=math.ceil(len(iocs) / MAX_INDICATORS_TO_SYNC)) as executor:
-            futures = {executor.submit(push_iocs_to_xdr, i, batch, client, path): i for i, batch in
-                       enumerate(batch_iocs(generator=iocs, batch_size=MAX_INDICATORS_TO_SYNC))}
-
-            for future in as_completed(futures.keys()):
-                batch_index = futures[future]
-                try:
-                    errors = future.result()
-                    validation_errors.extend(errors)
-                except Exception as exc:
-                    demisto.error(f'Batch #{batch_index} generated an exception: {exc}')
+        for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
+            demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
+            requests_kwargs: dict = get_requests_kwargs(_json=list(
+                map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
+            response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+            validation_errors.extend(response.get('reply', {}).get('validation_errors'))
     else:
         demisto.info("pushing IOCs to XDR: found no matching IOCs")
     if validation_errors:
