@@ -305,7 +305,7 @@ def write_text_file(filename, contents, overwrite=False):
         demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
 
 
-def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict:
+def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict:
     """
     Read the content from a JSON file and return it as a Python dictionary or list.
     :param file_path: Path to the JSON file.
@@ -324,13 +324,13 @@ def read_json_file(json_file_path:str = CHROME_INSTANCES_FILE_PATH) -> dict:
         return {}
 
 
-def write_json_file(content: Optional[Dict]= {},
-                    overwrite:bool=True,
+def write_json_file(content: Optional[Dict] = {},
+                    overwrite: bool = True,
                     chrome_port: str = '',
-                    chrome_instance_data_update: Dict[str, Any]= {},
+                    chrome_instance_data_update: Dict[str, Any] = {},
                     increase_counter: bool = False,
                     terminate_port: bool = False,
-                    json_file_path:str = CHROME_INSTANCES_FILE_PATH):
+                    json_file_path: str = CHROME_INSTANCES_FILE_PATH):
     """
     Write to a JSON file with an option to overwrite or create an empty file.
 
@@ -353,7 +353,7 @@ def write_json_file(content: Optional[Dict]= {},
             if os.path.exists(json_file_path):
                 with open(json_file_path, 'r+') as file:
                     try:
-                        existing_data:Dict = json.load(file)
+                        existing_data: Dict = json.load(file)
                         # chrome port , key to edit, counter increase
                         if content:
                             existing_data.update(content)
@@ -379,7 +379,7 @@ def write_json_file(content: Optional[Dict]= {},
         else:
             # Create an empty file
             with open(json_file_path, 'w') as file:
-                
+
                 json.dump({}, file, indent=4)
 
     except Exception as e:
