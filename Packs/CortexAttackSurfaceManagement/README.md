@@ -32,7 +32,7 @@ Aditionally, [a list of integrations used for the Active Response playbook can b
 Automated remediation is only possible when the right conditions are met.  These are the current requirements:
 
 - One of the following attack surface rule IDs:
-  - Insecure OpenSSH
+  - Insecure OpenSSH**
   - OpenSSH
   - SSH Server
   - SSH Terrapin Attack
@@ -44,6 +44,10 @@ Automated remediation is only possible when the right conditions are met.  These
   - Mongo Server
   - Postgres Server
   - Elasticsearch Server
+  - TFTP Server
+  - Libssh
+  - Insecure Bitvise SSH Server
+  - nsecure SFTPGo
   - Unclaimed S3 Bucket*
 - Asset one of the following:
   - AWS EC2 Instance
@@ -75,7 +79,7 @@ Automated remediation is only possible when the right conditions are met.  These
 
 \* The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be enabled.
 
-\* Patching using AWS Systems manager requires agent to be installed on the EC2 instance and currently we only support InsecureOpenSSH and OS versions of Linux Ubuntu.
+\*\* Patching using AWS Systems manager requires agent to be installed on the EC2 instance and currently we only support InsecureOpenSSH and OS versions of Linux Ubuntu.
 
 ## What is included in this pack?
 
