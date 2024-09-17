@@ -479,8 +479,7 @@ class XDomeCommand(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def all_fields(cls) -> set[str]:
-        ...
+    def all_fields(cls) -> set[str]: ...
 
     @classmethod
     def _constant_filter(cls) -> QueryFilterType | None:
@@ -522,12 +521,10 @@ class XDomeCommand(abc.ABC):
         return filter_by
 
     @abc.abstractmethod
-    def _get_data(self) -> list:
-        ...
+    def _get_data(self) -> list: ...
 
     @abc.abstractmethod
-    def _generate_results(self, raw_response: list | dict) -> CommandResults:
-        ...
+    def _generate_results(self, raw_response: list | dict) -> CommandResults: ...
 
 
 class XDomeGetDeviceAlertRelationsCommand(XDomeCommand):
