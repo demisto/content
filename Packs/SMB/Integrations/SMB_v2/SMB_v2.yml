@@ -12,7 +12,7 @@ configuration:
   required: false
 - display: Port
   name: port
-  defaultvalue: "445"
+  defaultvalue: '445'
   type: 0
   required: false
 - display: Domain Controller
@@ -36,7 +36,7 @@ configuration:
   required: false
 - display: Secure Dialect Negotiation
   name: require_secure_negotiate
-  defaultvalue: "true"
+  defaultvalue: 'true'
   type: 8
   additionalinfo: Validate the negotiation info when connecting to a share. More information can be found on https://docs.microsoft.com/en-us/archive/blogs/openspecification/smb3-secure-dialect-negotiation
   required: false
@@ -162,7 +162,7 @@ script:
     - name: password
       description: The password to use for authentication. If empty, the password from the instance configuration is used.
     description: Removes a directory from the given path.
-  dockerimage: demisto/smbprotocol:1.0.0.85835
+  dockerimage: demisto/smbprotocol:1.0.0.111923
   runonce: false
   script: '-'
   type: python
