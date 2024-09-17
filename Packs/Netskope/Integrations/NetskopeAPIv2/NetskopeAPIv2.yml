@@ -24,7 +24,6 @@ configuration:
     required: true
     hiddenusername: true
     type: 9
-    display: ""
   - additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago".
     defaultvalue: 3 days
     display: First fetch timestamp

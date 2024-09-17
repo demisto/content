@@ -970,7 +970,6 @@ Fetch DLP incidents.
 
 | **Path**                                                           | **Type** | **Description** |
 | ------------------------------------------------------------------ | -------- | --------------- |
-| Netskope.Incident.ok                                               | Unknown  |                 |
 | Netskope.Incident.\_id                                             | String   |                 |
 | Netskope.Incident.access_method                                    | String   |                 |
 | Netskope.Incident.acting_user                                      | String   |                 |
@@ -1032,7 +1031,6 @@ Fetch DLP incidents.
 | Netskope.Incident.referer                                          | String   |                 |
 | Netskope.Incident.destination_instance_id                          | String   |                 |
 | Netskope.Incident.wait_time                                        | Unknown  |                 |
-| Netskope.Incident.timestamp_hwm                                    | Unknown  |                 |
 
 #### Command example
 
