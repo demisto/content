@@ -440,7 +440,7 @@ def sync(client: Client, batch_size: int = 200):
     return_outputs("sync with XDR completed.")
 
 
-def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: bool = False):
+def sync_for_fetch(client: Client, batch_size: int = 200):
     """
     Sync command runs in batches of 4,000 with total of 40,000 indicators in each sync.
     Syncs the data in xsoar to xdr.
@@ -448,9 +448,7 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
     demisto.info("executing sync")
     request_data: List[Any] = []
     try:
-        full_query = Client.query
-        if is_first_stage_sync:
-            full_query = create_query_with_end_time(to_date=get_integration_context().get('time'))
+        full_query = create_query_with_end_time(to_date=get_integration_context().get('time'))
         request_data = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size,
                                                                        is_first_stage_sync=is_first_stage_sync,
                                                                        query=full_query)))
@@ -752,7 +750,7 @@ def xdr_iocs_sync_command(client: Client,
     if first_time or not get_integration_context() or is_first_stage_sync:
         demisto.debug("first time, running sync")
         if called_from_fetch:
-            sync_for_fetch(client, batch_size=4000, is_first_stage_sync=True)
+            sync_for_fetch(client, batch_size=4000)
         else:
             # the sync is the large operation including the data and the get_integration_context is fill in the sync
             sync(client, batch_size=4000)
