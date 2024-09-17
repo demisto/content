@@ -73,8 +73,8 @@ tasks:
       id: 72d68f27-3f59-4b81-8e76-0672b557a892
       version: -1
       name: Find Similar Alerts
-      description: Find past similar alerts based on alert fields' similarity. Includes an option to also display indicators similarity.
-      scriptName: DBotFindSimilarAlerts
+      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
       brand: ""
