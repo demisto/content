@@ -854,7 +854,7 @@ def handle_incoming_closing_incident(incident_data) -> dict:
         xdr_close_reason = incident_data.get('closeReason', '') or incident_data.get('close_reason', '')
         xdr_close_status = incident_data.get('status', '')
         demisto.debug(f' {xdr_close_reason=} { xdr_close_status=}')
-        xsoar_close_reason = resolve_xsoar_close_reason(xdr_close_reason=xdr_close_status)
+        xsoar_close_reason = resolve_xsoar_close_reason(xdr_close_reason=xdr_close_reason)
         closing_entry = {
             "Type": EntryType.NOTE,
             "Contents": {
