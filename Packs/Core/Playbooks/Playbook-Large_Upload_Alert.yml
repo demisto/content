@@ -73,8 +73,8 @@ tasks:
       id: 72d68f27-3f59-4b81-8e76-0672b557a892
       version: -1
       name: Find Similar Alerts
-      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
-      scriptName: DBotFindSimilarIncidents
+      description: Find past similar alerts based on alert fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarAlerts
       type: regular
       iscommand: false
       brand: ""
@@ -299,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d0d2fb68-10ed-4b50-8f0f-b5c8348bd997
+    taskid: e865ea1c-7558-4b04-8c30-778d7107c2f0
     type: condition
     task:
-      id: d0d2fb68-10ed-4b50-8f0f-b5c8348bd997
+      id: e865ea1c-7558-4b04-8c30-778d7107c2f0
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -378,13 +378,7 @@ tasks:
                     keys: {}
                     regex:
                       value:
-                        simple: uploaded\s(.*(MB|GB|TB))
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: MB
-                - operator: SumList
+                        simple: (?i)uploaded\s(\d+(?:[.]\d+)?)
             iscontext: true
           right:
             value:
