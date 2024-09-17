@@ -9,13 +9,6 @@ from functools import partial
 import enum
 import html
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
-else:
-    TypedDict = type('TypedDict', (), {'__new__': lambda cls, **kw: kw})
-    NotRequired = list
-
 import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
@@ -34,9 +27,14 @@ import shutil
 
 ''' IMPORTS '''
 import uuid
-from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
+from typing import Tuple, Callable, ValuesView, Iterator, TYPE_CHECKING
 from urllib.parse import urlparse
 
+if TYPE_CHECKING:
+    from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
+else:
+    TypedDict = type('TypedDict', (), {'__new__': lambda cls, **kw: kw})
+    NotRequired = Optional
 
 ''' GLOBALS '''
 URL = ''
@@ -99,7 +97,23 @@ SECURITY_RULE_ARGS = {
     'profile-setting': 'ProfileSetting',
     'audit-comment': 'AuditComment'
 }
-
+ELEM_TO_CONTEXT = {
+    'source': 'Source',
+    'destination': 'Destination',
+    'application': 'Application',
+    'action': 'Action',
+    'category': 'Category',
+    'description': 'Description',
+    'disabled': 'Disabled',
+    'target': 'Target',
+    'log-forwarding': 'LogForwarding',
+    'log-setting': 'LogForwarding',
+    'tag': 'Tags',
+    'profile-setting': 'ProfileSetting',
+    'source-user': 'SourceUser',
+    'service': 'Service',
+    'audit-comment': 'AuditComment'
+}
 PAN_OS_ERROR_DICT = {
     '1': 'Unknown command - The specific config or operational command is not recognized.',
     '2': 'Internal errors - Check with technical support when seeing these errors.',
@@ -231,7 +245,7 @@ class ExceptionCommandType(enum.Enum):
     ADD = 'set'
     EDIT = 'edit'
     DELETE = 'delete'
-    LIST = "get"
+    LIST = 'get'
 
 
 class QueryMap(TypedDict):
@@ -285,10 +299,24 @@ class MaxFetch(TypedDict):
     Decryption: NotRequired[int]
 
 
+class Offset(TypedDict):
+    '''dict[str, int]
+    Contains the log types mapped to the offset needed.
+    '''
+    Traffic: NotRequired[int]
+    Threat: NotRequired[int]
+    Url: NotRequired[int]
+    Data: NotRequired[int]
+    Correlation: NotRequired[int]
+    System: NotRequired[int]
+    Wildfire: NotRequired[int]
+    Decryption: NotRequired[int]
+
+
 class LastRun(TypedDict):
     last_fetch_dict: LastFetchTimes
     last_id_dict: LastIDs
-    max_fetch_dict: MaxFetch
+    offset_dict: Offset
 
 
 class PAN_OS_Not_Found(Exception):
@@ -4071,7 +4099,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
 
     rule_output = {
         'Name': rulename,
-        SECURITY_RULE_ARGS[element_to_change]: values
+        ELEM_TO_CONTEXT[element_to_change]: values
     }
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
@@ -4127,7 +4155,7 @@ def panorama_edit_rule_command(args: dict):
     if element_to_change == 'target' and not DEVICE_GROUP:
         raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
 
-    behaviour = args.get('behaviour') if 'behaviour' in args else 'replace'
+    behaviour = args.get('behaviour', 'replace')
     # in this case of profile-setting add is the same as replace
     behaviour = 'replace' if element_to_change == 'profile-setting' and behaviour == 'add' else behaviour
     if behaviour != 'replace':
@@ -4174,7 +4202,7 @@ def panorama_edit_rule_command(args: dict):
 
         rule_output = {
             'Name': rulename,
-            SECURITY_RULE_ARGS[element_to_change]: element_value
+            ELEM_TO_CONTEXT[element_to_change]: element_value
         }
         if DEVICE_GROUP:
             rule_output['DeviceGroup'] = DEVICE_GROUP
@@ -14392,7 +14420,7 @@ def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
         args: The command arguments.
 
     Returns:
-        A confirmation for deleting the exception. 
+        A confirmation for deleting the exception.
     """
     results = profile_exception_crud_requests(args, ExceptionCommandType.DELETE.value)
     raw_response = results.get('raw_response')
@@ -14486,19 +14514,21 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
 """ Fetch Incidents """
 
 
-def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> str:
+def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int, offset_fetch: int) -> str:
     """get the Job ID linked to a particular query.
 
     Args:
         log_type (str): query log type
         query (str): query for the fetch
         max_fetch (int): maximum number of entries to fetch
+        offset_fetch (int): number if entries to skip
 
     Returns:
         job_id (str): returns the Job ID associated with the given query
     """
     params = assign_params(key=API_KEY, type='log',
-                           log_type=LOG_TYPE_TO_REQUEST[log_type], query=query, nlogs=max_fetch, dir='forward')
+                           log_type=LOG_TYPE_TO_REQUEST[log_type], query=query, nlogs=max_fetch, dir='forward', skip=offset_fetch)
+    demisto.debug(f'{params=}')
     response = http_request(URL, 'GET', params=params)
     return dict_safe_get(response, ('response', 'result', 'job'))  # type: ignore
 
@@ -14532,7 +14562,7 @@ def get_query_entries_by_id_request(job_id: str, fetch_job_polling_max_num_attem
     return {}
 
 
-def get_query_entries(log_type: str, query: str, max_fetch: int, fetch_job_polling_max_num_attempts: int) -> List[Dict[Any, Any]]:
+def get_query_entries(log_type: str, query: str, max_fetch: int, fetch_job_polling_max_num_attempts: int, offset_fetch: int) -> List[Dict[Any, Any]]:
     """get query entries according to a specific query.
 
     Args:
@@ -14540,12 +14570,13 @@ def get_query_entries(log_type: str, query: str, max_fetch: int, fetch_job_polli
         query (str): query for the fetch
         max_fetch (int): maximum number of entries to fetch
         fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results from a job.
+        offset_fetch (int): number of incidents to skip
 
     Returns:
         List[Dict[Any,Any]]): a list of raw entries for the specified query
     """
     # first http request: send request with query, valid response will contain a job id.
-    job_id = get_query_by_job_id_request(log_type, query, max_fetch)
+    job_id = get_query_by_job_id_request(log_type, query, max_fetch, offset_fetch)
     demisto.debug(f'{job_id=}')
 
     # second http request: send request with job id, valid response will contain a dictionary of entries.
@@ -14641,33 +14672,10 @@ def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dic
     return new_entries_dict
 
 
-def update_max_fetch_dict(max_fetch_dict: MaxFetch,
-                          last_fetch_dict: LastFetchTimes,
-                          new_incident_entries: dict) -> MaxFetch:
-    """ This function updates the max fetch value for each log type according to the last fetch timestamp.
-    Args:
-        max_fetch_dict (MaxFetch): a dictionary of log type and its max fetch value
-        last_fetch_dict (LastFetchTimes): a dictionary of log type and its last fetch timestamp
-        new_incident_entries (dict): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle.
-    Returns:
-        max_fetch_dict (MaxFetch): a dictionary of log type and its updated max fetch value
-    """
-    configured_max_fetch = arg_to_number(demisto.params().get('max_fetch', 100))
-    previous_last_fetch = demisto.getLastRun().get("last_fetch_dict", {})
-    # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
-    # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
-    new_max_fetch = {
-        log_type: max_fetch_dict[log_type] + configured_max_fetch  # type: ignore[literal-required]
-        for log_type, last_fetch in last_fetch_dict.items()
-        if new_incident_entries.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
-    }
-    demisto.debug(f"{new_max_fetch=}")
-    return cast(MaxFetch, new_max_fetch)
-
-
 def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
                             fetch_start_datetime_dict: Dict[str, datetime],
-                            fetch_job_polling_max_num_attempts: int) -> dict[str, list[dict[str, Any]]]:
+                            fetch_job_polling_max_num_attempts: int,
+                            offset_fetch_dict: Offset) -> dict[str, list[dict[str, Any]]]:
     """get raw entires of incidents according to provided queries, log types and max_fetch parameters.
 
     Args:
@@ -14675,7 +14683,7 @@ def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
         max_fetch_dict (MaxFetch): max incidents per fetch parameter per log type dictionary
         fetch_start_datetime_dict (Dict[str,datetime]): updated last fetch time per log type dictionary
         fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
-
+        offset_fetch_dict (Offset): offset incidents per fetch parameter per log type dictionary
     Returns:
         dict[str, list[dict[str, Any]]]: a dictionary of all fetched raw incidents entries
     """
@@ -14685,10 +14693,12 @@ def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
     entries = {}
     for log_type, query in queries_dict.items():
         max_fetch = max_fetch_dict[log_type]  # type: ignore[literal-required]
+        offset_fetch = offset_fetch_dict.get(log_type, 0)  # type: ignore[literal-required]
         fetch_start_time = fetch_start_datetime_dict.get(log_type)
         if fetch_start_time:
             query = add_time_filter_to_query_parameter(query, fetch_start_time, log_type_to_time_param(log_type))  # type: ignore
-        entries[log_type] = get_query_entries(log_type, query, max_fetch, fetch_job_polling_max_num_attempts)  # type: ignore
+        entries[log_type] = get_query_entries(log_type, query, max_fetch,   # type: ignore
+                                              fetch_job_polling_max_num_attempts, offset_fetch)   # type: ignore
     return entries
 
 
@@ -14844,8 +14854,40 @@ def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, 
     return parsed_incident_entries
 
 
+def update_offset_dict(incident_entries_dict: dict[str, list[dict[str, Any]]],
+                       last_fetch_dict: LastFetchTimes,
+                       offset_fetch_dict: Offset):
+    """
+        for each log type incident entries array, parse the raw incidents into context incidents.
+        if necessary, update the latest fetch time and last ID values in their corresponding dictionaries.
+
+        Args:
+            incident_entries_dict (Dict[str, List[Dict[str, Any]]]): list of dictionaries representing raw incident entries
+            last_fetch_dict (Dict[str, str]): last fetch dictionary
+            offset_fetch_dict (Dict[str, Dict]): last offset dictionary
+
+    """
+    for log_type, incident_entries in incident_entries_dict.items():
+        if incident_entries:
+            last_fetch_time = dateparser.parse(last_fetch_dict.get(log_type, ''), settings={  # type: ignore
+                                               'TIMEZONE': 'UTC'})
+            for entry in incident_entries:
+                time_field = 'match_time' if log_type == 'Correlation' else 'time_generated'
+                if not (log_time := dateparser.parse(entry.get(time_field, ''), settings={'TIMEZONE': 'UTC'})):
+                    raise DemistoException(f"{time_field=} is not a valid date in entry of {log_type=}.\n{entry=}")
+
+                if (not log_type in offset_fetch_dict
+                    or not last_fetch_time
+                        or log_time > last_fetch_time):
+                    offset_fetch_dict[log_type] = 1  # type: ignore[literal-required]
+                    last_fetch_time = log_time
+                elif log_time == last_fetch_time:
+                    offset_fetch_dict[log_type] += 1  # type: ignore[literal-required]
+
+
 def fetch_incidents(last_run: LastRun, first_fetch: str,
-                    queries_dict: QueryMap, max_fetch_dict: MaxFetch,
+                    queries_dict: QueryMap,
+                    max_fetch_dict: MaxFetch,
                     fetch_job_polling_max_num_attempts: int
                     ) -> tuple[LastRun, list[dict[str, list]]]:
     """run one cycle of fetch incidents.
@@ -14862,16 +14904,21 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
     """
     last_fetch_dict = last_run.get('last_fetch_dict', {})
     last_id_dict = last_run.get('last_id_dict', {})
+    offset_dict = last_run.get('offset_dict', {})
     demisto.debug(f'last fetch time dictionary from previous fetch is: {last_fetch_dict=}.')
     demisto.debug(f'last id dictionary from previous fetch is: {last_id_dict=}.')
+    demisto.debug(f'last offset dictionary from previous fetch is: {offset_dict=}.')
 
     fetch_start_datetime_dict = get_fetch_start_datetime_dict(
         last_fetch_dict, first_fetch, queries_dict)  # type: ignore[arg-type]
     demisto.debug(f'updated last fetch per log type: {fetch_start_datetime_dict=}.')
 
     incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch_dict, fetch_start_datetime_dict,
-                                                    fetch_job_polling_max_num_attempts)
+                                                    fetch_job_polling_max_num_attempts, offset_dict)
     demisto.debug('raw incident entries fetching has completed.')
+
+    # Update offset if needed
+    update_offset_dict(incident_entries_dict, last_fetch_dict, offset_dict)
 
     # remove duplicated incidents from incident_entries_dict
     unique_incident_entries_dict = filter_fetched_entries(
@@ -14880,10 +14927,8 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
     parsed_incident_entries_list = get_parsed_incident_entries(
         unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 
-    next_max_fetch = update_max_fetch_dict(max_fetch_dict, last_fetch_dict,  # type: ignore[arg-type]
-                                           unique_incident_entries_dict)  # type: ignore[arg-type]
     new_last_run = LastRun(last_fetch_dict=last_fetch_dict, last_id_dict=last_id_dict,  # type: ignore[typeddict-item]
-                           max_fetch_dict=next_max_fetch)  # type: ignore[typeddict-item]
+                           offset_dict=offset_dict)  # type: ignore[typeddict-item]
 
     return new_last_run, parsed_incident_entries_list  # type: ignore[return-value]
 
@@ -14937,8 +14982,7 @@ def main():  # pragma: no cover
             configured_max_fetch = arg_to_number(params['max_fetch'])
             queries = log_types_queries_to_dict(params)
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
-            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch)
-                             | last_run.get('max_fetch_dict', {}))  # type: ignore[arg-type, operator]
+            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch))
 
             new_last_run, incident_entries = fetch_incidents(
                 last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
