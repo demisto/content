@@ -198,7 +198,7 @@ class Client(BaseClient):
             password (str): DataBee password.
 
         Returns:
-            dict[str, Any]: API response from DataBee.
+            Response: API response from DataBee.
         """
         return self._http_request(
             method="POST",
@@ -207,6 +207,7 @@ class Client(BaseClient):
                 "username": username,
                 "password": password,
             },
+            resp_type="response",
         )
 
     def search(
@@ -454,7 +455,7 @@ def search_command(
     )
 
     response = client.search(
-        table=settings.type,
+        table=settings.type.value,
         query=build_full_query(search_type=settings.type, args=args),
         limit=limit,
         offset=offset,
@@ -538,7 +539,7 @@ def test_module(client: Client) -> str:
         str: Output message.
     """
     try:
-        response = client.search(table=SearchTypes.USER, query="start_time is None", limit=1)
+        response = client.search(table=SearchTypes.USER.value, query="start_time is None", limit=1)
         if response.status_code == HTTPStatus.OK:
             return "ok"
         else:
@@ -591,7 +592,7 @@ def fetch_incidents(
     offset = 0
     while data is None or len(data) > 0:
         response = client.search(
-            table=SearchTypes.FINDING,
+            table=SearchTypes.FINDING.value,
             limit=(max_fetch or DEFAULT_LIMIT),
             query=query,
             offset=(offset or DEFAULT_OFFSET),
