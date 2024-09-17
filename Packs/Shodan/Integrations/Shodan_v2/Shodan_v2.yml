@@ -72,7 +72,7 @@ configuration:
   required: false
 - display: The maximum number of events per fetch
   name: max_fetch
-  defaultvalue: "50_000" # TODO: check after the design is finished
+  defaultvalue: "50_000"
   advanced: true
   type: 0
   required: true

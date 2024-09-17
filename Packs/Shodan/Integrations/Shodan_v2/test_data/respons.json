@@ -30,5 +30,21 @@
         "notifiers": [],
         "id": "6789",
         "size": 1
+    },
+    {
+        "name": "nat-alert",
+        "created": "2024-08-15T08:46:18.012000",
+        "triggers": {},
+        "has_triggers": false,
+        "expires": 0,
+        "expiration": null,
+        "filters": {
+            "ip": [
+                "8.8.8.8"
+            ]
+        },
+        "notifiers": [],
+        "id": "6789",
+        "size": 1
     }
 ]

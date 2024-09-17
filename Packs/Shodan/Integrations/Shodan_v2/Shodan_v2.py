@@ -26,7 +26,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 VENDOR = 'shodan'
 PRODUCT = 'banner'
-MAX_EVENTS_API_CALL = 50_000
+MAX_EVENTS = 50_000
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 handle_proxy()
@@ -112,8 +112,17 @@ def add_time_to_events(events: list[dict]):
             event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
-def filter_events(events, start_date, limit):
+def filter_events(events: List[Dict[str, str]], start_date: datetime, limit: int) -> List[Dict[str, str]]:
     """
+    Filters and sorts events based on a start date and limit.
+
+    Args:
+        events (List[Dict[str, str]]): List of events where each event is represented as a dictionary.
+        start_date (datetime): The start date as a datetime object.
+        limit (int): The maximum number of events to return.
+
+    Returns:
+        List[Dict[str, str]]: A list of filtered events sorted by date, up to the specified limit.
     """
     events.sort(key=parse_event_date)
 
@@ -122,7 +131,7 @@ def filter_events(events, start_date, limit):
     return filtered_events[:limit]
 
 
-def parse_event_date(event):
+def parse_event_date(event: Dict[str, str]) -> datetime:
     return datetime.strptime(event['created'], DATE_FORMAT)
 
 
@@ -501,8 +510,9 @@ def get_events_command(args: dict) -> tuple[str, list[dict]]:
     if isinstance(events, dict):
         events = [events]
 
-    limit = arg_to_number(args.get("max_fetch"))
-    start_date = arg_to_datetime(args.get("start_date"))
+    limit = arg_to_number(args.get("max_fetch")) or MAX_EVENTS
+    start_date = arg_to_datetime(args.get("start_date")) or (datetime.now() - timedelta(days=1))
+
     filtered_events = filter_events(events, start_date, limit)
 
     hr = tableToMarkdown(f"{VENDOR.title()} - {PRODUCT.title()} Events:", format_record_keys(filtered_events))
@@ -520,26 +530,26 @@ def fetch_events(last_run: dict[str, str], params) -> tuple[Dict, List[Dict]]:
         tuple[Dict, List[Dict]]: A tuple where the first item is the updated last_run data,
         and the second item is a list of fetched events.
     """
-    start_date = last_run.get("start_date")
+    events = http_request('GET', '/shodan/alert/info')
+    if not isinstance(events, list):
+        events = [events]
+    demisto.debug(f'Before filtering, {len(events)} events')
 
-    if not start_date:  # If this is a first run
-        start_date = arg_to_datetime("now").strftime(DATE_FORMAT)
+    start_date = arg_to_datetime(last_run.get("start_date"))
+    if start_date is None:  # If this is a first run
+        start_date = datetime.now()
         demisto.debug('Last run data is missing. Fetching initial last_run and setting start_date to now')
+    limit = arg_to_number(params.get("max_fetch")) or MAX_EVENTS
 
-    args = {
-        "start_date": start_date,
-        "max_fetch": params.get("max_fetch")
-    }
-    _, events = get_events_command(args)
-    demisto.debug(f'After filtering, {len(events)} events remain')
+    filtered_events = filter_events(events, start_date, limit)
+    demisto.debug(f'After filtering, {len(filtered_events)} events remain')
 
-    if events:
-        latest_event = max(events, key=parse_event_date)
-        start_date = latest_event['created']
+    if filtered_events:
+        latest_event = max(filtered_events, key=parse_event_date)
+        start_date = parse_event_date(latest_event)
 
-    last_run["start_date"] = start_date
-    demisto.debug(f'Got {len(events)} events from api')
-    return last_run, events
+    last_run["start_date"] = start_date.strftime(DATE_FORMAT)
+    return last_run, filtered_events
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
