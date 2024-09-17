@@ -83,7 +83,7 @@ script:
     - name: risks
       description: Risks threshold. This value must be equal to or higher than the input.
     - name: tags
-      description: A comma-separated list of tags.
+      description: A comma-separated list of tags change.
       isArray: true
     - name: page
       description: The page number of the results to retrieve.
