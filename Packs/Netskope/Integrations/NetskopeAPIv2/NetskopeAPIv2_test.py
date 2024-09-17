@@ -883,10 +883,7 @@ def test_get_remote_data_command():
         result = get_remote_data_command(args, {"close_incident": True})
 
         expected_response = GetRemoteDataResponse(
-            {
-                "object_id": "incident123",
-                "status": "closed",
-            },
+            mock_get_context.return_value,
             [{
                 "Type": 1,
                 "Contents": {
