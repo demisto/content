@@ -875,6 +875,7 @@ def test_get_remote_data_command():
     with patch("NetskopeAPIv2.get_demisto_integration_context"
                ) as mock_get_context:
         mock_get_context.return_value = [{
+            'incident_type': 'dlp_incident',
             "object_id": "incident123",
             "status": "closed"
         }]
@@ -940,6 +941,7 @@ def test_update_remote_system():
             mock_UpdateRemoteSystemArgs.return_value = UpdateRemoteSystemArgs(
                 args)
 
-            result = update_remote_system(client_instance, args)
+            result = update_remote_system(client_instance, args,
+                                          {"close_netskope_incident": True})
 
             assert result == "incident123"
