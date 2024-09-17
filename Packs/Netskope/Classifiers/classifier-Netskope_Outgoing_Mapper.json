@@ -3,18 +3,6 @@
     "feed": false,
     "id": "Netskope Outgoing Mapper",
     "mapping": {
-        "Netskope DLP": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "status": {
-                    "complex": {
-                        "filters": [],
-                        "root": "status",
-                        "transformers": []
-                    }
-                }
-            }
-        },
         "Netskope DLP Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {

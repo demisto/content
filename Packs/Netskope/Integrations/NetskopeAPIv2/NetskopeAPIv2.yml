@@ -18,8 +18,7 @@ configuration:
     name: insecure
     required: false
     type: 8
-  - additionalinfo: "Netskope API access token (make sure to generate token for the required endpoints)."
-    displaypassword: API token
+  - displaypassword: API token
     name: credentials
     required: true
     hiddenusername: true
