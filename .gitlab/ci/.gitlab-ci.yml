@@ -1,5 +1,5 @@
 variables:
-  CURRENT_BRANCH_NAME: "new_bucket_upload"
+  CURRENT_BRANCH_NAME: "new_bucket_upload" 
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml" 
