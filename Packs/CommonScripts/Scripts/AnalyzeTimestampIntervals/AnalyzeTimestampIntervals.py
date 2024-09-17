@@ -18,11 +18,12 @@ def check_high_frequency(timestamps, max_intervals_per_window, time_window=60):
     timestamps.sort()
     count_exceeds_threshold = False
 
+    # Use a sliding window approach, ensuring no overlap
     for i in range(len(timestamps)):
         window_start = timestamps[i]
-        window_end = window_start + (time_window * 1000)  # time_window in seconds, converting to milliseconds
+        window_end = window_start + (time_window * 1000)  # time_window in milliseconds
 
-        count = sum(1 for t in timestamps if window_start <= t <= window_end)
+        count = sum(1 for t in timestamps[i:] if t <= window_end)  # Count events only in the current window
 
         if count > max_intervals_per_window:
             count_exceeds_threshold = True
