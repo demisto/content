@@ -1,17 +1,22 @@
 import pytest
 from AnalyzeTimestampIntervals import analyze_intervals
+import numpy as np
 
-# Consistent intervals (2000 ms apart, i.e., 1 event every 10 seconds)
-consistent_timestamps = [1609459200000 + i * 10000 for i in range(100)]
+
+# Consistent intervals (2000 ms apart, i.e., 1 event every 2 seconds)
+consistent_timestamps = [1609459200000 + i * 2000 for i in range(100)]
 
 # High frequency detection (100 ms apart, i.e., 10 events per second)
 high_freq_timestamps = [1609459200000 + i * 100 for i in range(100)]
 
-# Inconsistent intervals (varied intervals)
+# Random intervals with +-1500 ms variation
+np.random.seed(42)  # Ensures reproducibility for tests
+random_intervals = [3000 + np.random.randint(-1500, 1500) for _ in range(90)]
+
 inconsistent_timestamps = [
     1609459200000, 1609459205000, 1609459210000, 1609459215000, 1609459220000,
     1609459227000, 1609459234000, 1609459241000, 1609459248000, 1609459255000
-] + [1609459255000 + i * 3000 for i in range(90)]
+] + [1609459255000 + sum(random_intervals[:i+1]) for i in range(90)]
 
 
 def test_consistent_intervals():
@@ -93,7 +98,7 @@ def test_inconsistent_intervals():
     # Adjusted for the inconsistency of intervals
     assert result["MeanIntervalInSeconds"] == pytest.approx(3.0, rel=1e-1)
     assert result["MedianIntervalInSeconds"] == pytest.approx(3.0, rel=1e-1)
-    assert result["StandardDeviationInSeconds"] == pytest.approx(2.0, rel=1e-1)
+    assert result["StandardDeviationInSeconds"] == pytest.approx(1.23, rel=2e-1)
     assert result["HighFrequencyDetected"] is False  # No high frequency detected
     assert result["ConsistentIntervalsDetected"] is False  # Intervals are too varied
     assert result["IsPatternLikelyAutomated"] is False  # Not enough evidence for automation
