@@ -1906,7 +1906,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return GetMappingFieldsResponse([ibm_qradar_incident_type_scheme])
 
 
-def test_module(client: SimpleClient, fetch_time: str, tag_to_ibm: str, tag_from_ibm: str) -> str:
+def test_module(client: SimpleClient, fetch_time: str, tag_to_ibm=DEFAULT_TAG_TO_IBM, tag_from_ibm=DEFAULT_TAG_FROM_IBM) -> str:
     """
     Verify client connectivity and the fetch_time parameter are according to the standards, if exists.
 
