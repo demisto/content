@@ -1021,7 +1021,9 @@ def find_observation_details_command(args: dict, client: Client):
         rows (int, optional): The number of rows to fetch.
         job_id (str, optional): The job ID for the polling mechanism.
         alert_id (str, optional): The alert ID associated with the observations.
-        event_ids (list, optional): The event IDs for the observations.
+        observation_ids (list, optional): The observation IDs for the observations.
+        event_ids (list, optional): Functioning the same as `observation_ids`. This argument is retained for backward
+                                    compatibility to ensure existing implementations continue to work without changes.
         process_hash (str, optional): The process hash for the observations.
         device_id (int, optional): The device ID associated with the observations.
         count_unique_devices (bool, optional): Whether to count unique devices.
@@ -1039,7 +1041,7 @@ def find_observation_details_command(args: dict, client: Client):
         count_unique_devices = args.get('count_unique_devices', False)
         body = assign_params(
             alert_id=args.get('alert_id'),
-            observation_ids=argToList(args.get('event_ids')),
+            observation_ids=argToList(args.get('observation_ids')) or argToList(args.get('event_ids')),
             process_hash=args.get('process_hash'),
             device_id=arg_to_number(args.get('device_id')),
             count_unique_devices=argToBoolean(count_unique_devices) if count_unique_devices else None,
@@ -1071,7 +1073,9 @@ def find_observation_details_command(args: dict, client: Client):
     if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
         readable_output = tableToMarkdown(
             'Defense Event Details Results', res.get('results', []),
-            headers=['event_id', 'device_id', 'device_external_ip', 'device_internal_ip', 'enriched_event_type'],
+            headers=[
+                'observation_id', 'event_id', 'device_id', 'device_external_ip', 'device_internal_ip', 'enriched_event_type'
+            ],
             removeNull=True, headerTransform=string_to_table_header
         )
 
@@ -1185,7 +1189,7 @@ def find_observation_command(args: dict, client: Client):
     if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
         readable_output = tableToMarkdown(
             'Defense Event Results', res.get('results', []),
-            headers=['event_id', 'device_id', 'netconn_ipv4', 'netconn_local_ipv4', 'enriched_event_type'],
+            headers=['observation_id', 'event_id', 'device_id', 'netconn_ipv4', 'netconn_local_ipv4', 'enriched_event_type'],
             removeNull=True, headerTransform=string_to_table_header
         )
 
