@@ -811,10 +811,6 @@ def test_get_modified_remote_data(client):
         client_instance = MockClient.return_value
         client_instance.list_dlp_incident.return_value = mock_response
 
-        args = {
-            "lastUpdate": "2023-02-14 12:30:45",
-        }
-
         with patch("NetskopeAPIv2.get_demisto_integration_context"
                    ) as mock_get_context:
             mock_get_context.return_value = 123456789
@@ -823,7 +819,7 @@ def test_get_modified_remote_data(client):
                        ) as mock_get_hourly_timestamps:
                 mock_get_hourly_timestamps.return_value = [123456789]
 
-                result = get_modified_remote_data(client_instance, args)
+                result = get_modified_remote_data(client_instance)
 
                 expected_response = GetModifiedRemoteDataResponse(["1", "2"])
                 assert result.modified_incident_ids == expected_response.modified_incident_ids
@@ -871,49 +867,37 @@ def test_get_remote_data_command():
     """
     from NetskopeAPIv2 import get_remote_data_command
 
-    mock_response = {
-        "result": [{
-            "object_id": "incident123",
-            "status": "closed",
-        }]
+    args = {
+        "id": "incident123",
+        "lastUpdate": "2023-02-14 12:30:45",
     }
 
-    with patch("NetskopeAPIv2.Client") as MockClient:
-        client_instance = MockClient.return_value
-        client_instance.list_dlp_incident.return_value = mock_response
+    with patch("NetskopeAPIv2.get_demisto_integration_context"
+               ) as mock_get_context:
+        mock_get_context.return_value = [{
+            "object_id": "incident123",
+            "status": "closed"
+        }]
 
-        args = {
-            "id": "incident123",
-            "lastUpdate": "2023-02-14 12:30:45",
-        }
+        result = get_remote_data_command(args, {"close_incident": True})
 
-        with patch("NetskopeAPIv2.get_demisto_integration_context"
-                   ) as mock_get_context:
-            mock_get_context.return_value = [{
+        expected_response = GetRemoteDataResponse(
+            {
                 "object_id": "incident123",
-                "status": "closed"
-            }]
-
-            result = get_remote_data_command(client_instance, args,
-                                             {"close_incident": True})
-
-            expected_response = GetRemoteDataResponse(
-                {
-                    "object_id": "incident123",
-                    "status": "closed",
+                "status": "closed",
+            },
+            [{
+                "Type": 1,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": "Closed from Netskope."
                 },
-                [{
-                    "Type": 1,
-                    "Contents": {
-                        "dbotIncidentClose": True,
-                        "closeReason": "Closed from Netskope."
-                    },
-                    "ContentsFormat": "json",
-                }],
-            )
+                "ContentsFormat": "json",
+            }],
+        )
 
-            assert result.mirrored_object == expected_response.mirrored_object
-            assert result.entries == expected_response.entries
+        assert result.mirrored_object == expected_response.mirrored_object
+        assert result.entries == expected_response.entries
 
 
 def test_update_remote_system():

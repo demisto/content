@@ -8,6 +8,8 @@ from collections.abc import Callable
 import time
 from functools import wraps
 
+MAX_IDS_NUMBER = 289262
+
 MIN_PAGE_NUM = 1
 MAX_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 1
@@ -955,8 +957,7 @@ def list_dlp_incident_command(
 
     readable_output = tableToMarkdown(
         name="DLP Incident List:",
-        metadata="",
-        t=remove_empty_elements(incidents),
+        t=incidents,
         headers=INCIDENT_HEADERS,
         headerTransform=string_to_table_header,
     )
@@ -1046,16 +1047,12 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
     return last_run, incidents
 
 
-def get_modified_remote_data(
-    client: Client,
-    args: dict[str, Any],
-) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data(client: Client) -> GetModifiedRemoteDataResponse:
     """
     Queries for incidents that were modified since the last update.
 
     Args:
         client: Netskope API client.
-        args (Dict[str, Any]): command arguments.
 
     Returns:
         GetModifiedRemoteDataResponse: modified tickets from Netskope.
@@ -1090,11 +1087,8 @@ def get_modified_remote_data(
     set_demisto_integration_context("dlp_incidents_to_update", dlp_incidents,
                                     "append")
 
-    if incidents := dlp_incidents:
-        for ticket in incidents:
-            modified_tickets.append(ticket["object_id"])
-
-    # modified_tickets = list(set(modified_tickets))
+    for ticket in dlp_incidents:
+        modified_tickets.append(ticket["object_id"])
 
     demisto.debug(
         f"There are {len(modified_tickets)} modified incidents from Netskope")
@@ -1125,6 +1119,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 def update_remote_system(
     client: Client,
     args: dict[str, Any],
+    params: dict[str, Any],
 ) -> str:
     """
     This command pushes local changes to the remote system.
@@ -1139,7 +1134,6 @@ def update_remote_system(
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     incident_id = parsed_args.remote_incident_id
-
     demisto.debug(
         f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
         if parsed_args.delta else "There is no delta fields in Netskope")
@@ -1147,7 +1141,7 @@ def update_remote_system(
     try:
         if parsed_args.incident_changed and parsed_args.delta:
             demisto.debug(
-                f"Incident changed: {parsed_args.incident_changed}, {parsed_args.delta=}"
+                f"Incident changed: {parsed_args.incident_changed}, {parsed_args.delta=}, {parsed_args.inc_status=}"
             )
 
             update_args: dict[str, Any] = parsed_args.delta
@@ -1155,13 +1149,21 @@ def update_remote_system(
 
             updated_arguments = {}
 
-            for key, value in update_args.items():
-                if key in MIRRORING_FIELDS:
-                    updated_arguments["field"] = key
-                    updated_arguments["old_value"] = old_args[
-                        f'original_{key}']
-                    updated_arguments["new_value"] = value
-                    updated_arguments["object_id"] = incident_id
+            if parsed_args.inc_status == IncidentStatus.DONE and params.get(
+                    'close_netskope_incident'):
+                updated_arguments["field"] = 'status'
+                updated_arguments["old_value"] = old_args['original_status']
+                updated_arguments["new_value"] = 'closed'
+                updated_arguments["object_id"] = incident_id
+
+            else:
+                for key, value in update_args.items():
+                    if key in MIRRORING_FIELDS:
+                        updated_arguments["field"] = key
+                        updated_arguments["old_value"] = old_args[
+                            f'original_{key}']
+                        updated_arguments["new_value"] = value
+                        updated_arguments["object_id"] = incident_id
 
             demisto.debug(
                 f"Send remote ID [{incident_id}] updates to Netskope. {updated_arguments=}|| {update_args=}"
@@ -1179,7 +1181,6 @@ def update_remote_system(
 
 
 def get_remote_data_command(
-    client: Client,
     args: dict[str, Any],
     params: dict[str, Any],
 ) -> GetRemoteDataResponse:
@@ -1187,8 +1188,8 @@ def get_remote_data_command(
     Gets new information about the incidents in the remote system
     and updates existing incidents in Cortex XSOAR.
     Args:
-        client: Netskope API client.
         args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): command parameters.
     Returns:
         List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
     """
@@ -1205,14 +1206,13 @@ def get_remote_data_command(
     for incident in dlp_incidents:
         if incident["object_id"] == incident_id:
             mirrored_ticket = incident
+            dlp_incidents.remove(mirrored_ticket)
+            set_demisto_integration_context("dlp_incidents_to_update",
+                                            dlp_incidents, "override")
             break
 
-    if mirrored_ticket:
-        dlp_incidents.remove(mirrored_ticket)
-        set_demisto_integration_context("dlp_incidents_to_update",
-                                        dlp_incidents, "override")
-
     entries = []
+    mirrored_ticket["incident_type"] = 'dlp_incident'
 
     if mirrored_ticket.get("status") == "closed" and params.get(
             "close_incident"):
@@ -1401,6 +1401,10 @@ def fetch_dlp_incidents_as_incidents(
 
     if not last_run_id:
         set_demisto_integration_context("dlp_incident_ids", [], "override")
+        set_demisto_integration_context("dlp_incident_last_run_timestamp",
+                                        None, "override")
+        set_demisto_integration_context("dlp_incidents_to_update", [],
+                                        "override")
 
     end_time_number = date_to_seconds_timestamp(datetime.now())
     max_fetch = int(params["max_dlp_incidents_fetch"])
@@ -1857,7 +1861,16 @@ def set_demisto_integration_context(
     if action == 'append':
         if not integration_context.get(key):
             integration_context[key] = []
+
         integration_context[key] += value_to_update
+
+        # check if integration context size is reached to 40mb
+        if len(integration_context[key]) >= MAX_IDS_NUMBER:
+            # remove the first items to avoid overflow
+            number_of_items_to_remove = len(
+                integration_context[key]) - MAX_IDS_NUMBER
+            integration_context[key] = integration_context[key][
+                number_of_items_to_remove:]
     else:
         integration_context[key] = value_to_update
 
@@ -1900,12 +1913,11 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
         elif command == "get-remote-data":
-            return_results(
-                get_remote_data_command(client, demisto.args(), params))
+            return_results(get_remote_data_command(args, params))
         elif command == "get-modified-remote-data":
-            return_results(get_modified_remote_data(client, demisto.args()))
+            return_results(get_modified_remote_data(client))
         elif command == "update-remote-system":
-            return_results(update_remote_system(client, demisto.args()))
+            return_results(update_remote_system(client, args, params))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
         elif command == "fetch-incidents":

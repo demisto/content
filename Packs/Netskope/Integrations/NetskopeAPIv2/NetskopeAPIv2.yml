@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: netskope_api_v2_TEST
+  id: netskope_api_v2
   version: -1
 configuration:
   - defaultvalue: https://{environment}.goskope.com
