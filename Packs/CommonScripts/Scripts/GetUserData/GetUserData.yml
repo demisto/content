@@ -8,11 +8,11 @@ args:
 - description: List of users emails of the user to retrieve.
   name: user_email
   isArray: true
-- description: The user domain to retrieve users from, available only for the iam-get-user command.
+- description: The domain to retrieve users from, available only for the iam-get-user command.
   name: domain
   isArray: true
 - description: |-
-    Which integrations brands to run the command for. If not provided, the command will run for all connected brands.
+    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
     For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne".
   name: brands
   auto: PREDEFINED
@@ -25,6 +25,7 @@ args:
   - 'Microsoft Graph User'
   - 'SailPointIdentityIQ'
   - 'Cortex XDR - IR'
+  - 'iam-get-user'
 - description: Whether to retrieve human readable entry for every command or only the final result.
   name: verbose
   auto: PREDEFINED

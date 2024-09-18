@@ -22,6 +22,27 @@ class Modules:
             if module.get("state") == "active"
         }
 
+    def is_brand_in_brands_to_run(self, command: Command) -> bool:
+        """
+        Check if a brand is in the list of brands to run.
+
+        Args:
+            command (Command): The command object containing the brand to check.
+
+        Returns:
+            bool: True if the brand is in the list of brands to run, False otherwise.
+        """
+        is_in_brands_to_run = (
+            command.brand in self._enabled_brands if self._enabled_brands else True
+        )
+
+        if not is_in_brands_to_run:
+            demisto.debug(
+                f"Skipping command '{command.name}' since the brand '{command.brand}' is not in the list of brands to run."
+            )
+
+        return is_in_brands_to_run
+
     def is_brand_available(self, command: Command) -> bool:
         """
         Check if a brand is available (active) in the Modules instance.
@@ -37,10 +58,7 @@ class Modules:
             demisto.debug(
                 f"Skipping command '{command.name}' since the brand '{command.brand}' is not available."
             )
-        elif self._brands_to_run and command.brand not in self._brands_to_run:
-            demisto.debug(
-                f"Skipping command '{command.name}' since the brand '{command.brand}' is not in the list of brands to run."
-            )
+        elif not self.is_brand_in_brands_to_run(command):
             is_available = False
 
         return is_available
@@ -274,7 +292,7 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
 
 
 def run_execute_command(
-    command_name: str, args: dict[str, Any]
+    command_name: str, args: dict[str, Any], timeout: int = 5
 ) -> tuple[list[dict], str, list[CommandResults]]:
     """
     Executes a command and processes its results.
@@ -293,6 +311,7 @@ def run_execute_command(
             - A list of CommandResults objects representing any errors that occurred.
     """
     demisto.debug(f"Executing command: {command_name}")
+    args.update({"execution-timeout": timeout})
     res = demisto.executeCommand(command_name, args)
     errors_command_results = []
     human_readable_list = []
@@ -306,7 +325,7 @@ def run_execute_command(
                 )
             )
         else:
-            human_readable_list.append(entry.get("HumanReadable", ""))
+            human_readable_list.append(entry.get("HumanReadable") or "")
     human_readable = "\n".join(human_readable_list)
     demisto.debug(f"Finished executing command: {command_name}")
     return entry_context_list, human_readable, errors_command_results
@@ -358,7 +377,7 @@ def identitynow_get_accounts(
     account_output = create_account(
         id=outputs.get("id"),
         source_id=command.brand,
-        display_name=outputs.get("name"),
+        username=outputs.get("name"),
         is_enabled=is_enabled,
     )
 
@@ -382,7 +401,6 @@ def ad_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any],
     account_disable = outputs.get("userAccountControlFields", {}).get("ACCOUNTDISABLE")
     is_enabled = (not account_disable) if isinstance(account_disable, bool) else None
     account_output = create_account(
-        id=outputs.get("dn"),
         source_id=command.brand,
         username=outputs.get("sAMAccountName"),
         display_name=outputs.get("displayName"),
@@ -453,6 +471,9 @@ def okta_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any
     )
     output_key = get_output_key("Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
+    is_enabled = (
+        (outputs.get("Status") != "DEPROVISIONED") if outputs.get("Status") else None
+    )
     account_output = create_account(
         id=outputs.get("ID"),
         source_id=command.brand,
@@ -460,9 +481,7 @@ def okta_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any
         display_name=outputs.get("DisplayName"),
         email_address=outputs.get("Email"),
         manager_display_name=outputs.get("Manager"),
-        is_enabled=(outputs.get("Status") == "ACTIVE")
-        if outputs.get("Status")
-        else None,
+        is_enabled=is_enabled,
     )
 
     return readable_outputs_list, account_output
@@ -577,7 +596,7 @@ def iam_get_user_command(
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(
-        command_name, args
+        command_name, args, timeout=10
     )
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(
@@ -795,11 +814,14 @@ def main():  # pragma: no cover
                 single_user_outputs.append(outputs)
 
             ### iam-get-user command implementation ###
-            readable_outputs, outputs = iam_get_user_command(
-                user_id, user_name, user_email, domain
-            )
-            single_user_readable_outputs.extend(readable_outputs)
-            single_user_outputs.extend(outputs)
+            if modules.is_brand_in_brands_to_run(
+                Command(brand="", name="iam-get-user", args={})
+            ):
+                readable_outputs, outputs = iam_get_user_command(
+                    user_id, user_name, user_email, domain
+                )
+                single_user_readable_outputs.extend(readable_outputs)
+                single_user_outputs.extend(outputs)
 
             if verbose:
                 command_results_list.extend(single_user_readable_outputs)
@@ -827,7 +849,7 @@ def main():  # pragma: no cover
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="Account",
-                    outputs_key_field="ID",
+                    outputs_key_field="Username",
                     outputs=account_outputs_list,
                     readable_output=tableToMarkdown(
                         name="User(s) Accounts data",
