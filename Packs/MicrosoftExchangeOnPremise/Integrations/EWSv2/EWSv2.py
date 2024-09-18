@@ -1481,7 +1481,7 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
                 entries.append(fileResult(get_attachment_name(attachment.name,
                                                               content_id=attachment.content_id,
                                                               is_inline=attachment.is_inline,
-                                                              attachment_subject=attachment.item.subjcet) + ".eml",
+                                                              attachment_subject=attachment.item.subject) + ".eml",
                                           attached_email.as_string()))
 
     return entries
