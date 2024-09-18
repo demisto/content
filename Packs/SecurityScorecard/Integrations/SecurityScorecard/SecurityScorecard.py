@@ -1306,7 +1306,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "1.1.0"}  # noqa: E501
+        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "1.0.8"}  # noqa: E501
 
         client = SecurityScorecardClient(
             base_url=base_url,
