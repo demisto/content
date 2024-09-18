@@ -1,5 +1,9 @@
 {
   "mcafee_epo_raw": {
+    "AnalyzerContentVersion": {
+      "type": "string",
+      "is_array": false
+    },
     "AgentGUID": {
       "type": "string",
       "is_array": false
@@ -26,10 +30,6 @@
     },
     "AutoID": {
       "type": "int",
-      "is_array": false
-    },
-    "ContentVersion": {
-      "type": "string",
       "is_array": false
     },
     "FileMD5Hash": {
