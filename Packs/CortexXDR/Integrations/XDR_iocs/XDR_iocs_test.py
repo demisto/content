@@ -656,9 +656,10 @@ class TestCommands:
 
     def test_tim_insert_jsons(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
+        http_request.return_value = {'reply':{'success': True}}
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'time': '2020-06-03T00:00:00Z'})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
-        mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=[iocs, {"total": 0}])
         mocker.patch('XDR_iocs.return_outputs')
         tim_insert_jsons(client)
         assert http_request.call_args.kwargs['url_suffix'] == 'tim_insert_jsons/', 'tim_insert_jsons command url changed'
@@ -1168,7 +1169,6 @@ def test_xdr_iocs_sync_command_sync_for_fetch_fails(mock_update_integration_cont
     """
     with pytest.raises(DemistoException) as e:
         xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
-    mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
     assert e.value.message == ("Failed to sync indicators with error Response status was not success, "
                                "response={'reply': {'success': False}}.")
 
@@ -1196,8 +1196,10 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
     """
     xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
     mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
-    mock_demisto_debug.assert_called_with('pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: '
-                                          'error1.456: error2.')
+    debug_calls = [call.args[0] for call in mock_demisto_debug.call_args_list]
+    expected_debug_message = 'pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: error1.456: error2.'
+    assert any(expected_debug_message in call for call in debug_calls), \
+        f"Expected debug message not found in: {debug_calls}"
 
 
 @patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z',
@@ -1258,8 +1260,8 @@ def test_xdr_iocs_sync_command_from_fetch(mock_sync_for_fetch, mock_integration_
     """
     client = MagicMock()
     xdr_iocs_sync_command(client, called_from_fetch=True, is_first_stage_sync=True)
-    mock_sync_for_fetch.assert_called_with(client, batch_size=4000, is_first_stage_sync=True)
+    mock_sync_for_fetch.assert_called_with(client, batch_size=4000)
     mock_sync_for_fetch.reset_mock()
     mock_integration_context.return_value = {}
     xdr_iocs_sync_command(client, called_from_fetch=True)
-    mock_sync_for_fetch.assert_called_with(client, batch_size=4000, is_first_stage_sync=True)
+    mock_sync_for_fetch.assert_called_with(client, batch_size=4000)

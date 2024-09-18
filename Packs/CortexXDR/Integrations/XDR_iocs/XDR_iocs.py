@@ -537,7 +537,7 @@ def get_indicators(indicators: str) -> list:
 
 def push_iocs(client, iocs, path='tim_insert_jsons/'):
     path = 'tim_insert_jsons/'
-    validation_errors : list = []
+    validation_errors: list = []
     demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
     for i, single_batch_iocs in enumerate(batch_iocs(iocs, batch_size=MAX_INDICATORS_TO_SYNC)):
         demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
@@ -556,7 +556,6 @@ def push_indicators_to_xdr_request(client, indicators, ):
     if response.get('reply', {}).get('success') is not True:
         raise DemistoException(f"Response status was not success, {response=}")
     return response
-        
 
 
 def tim_insert_jsons(client: Client):
@@ -578,12 +577,12 @@ def tim_insert_jsons(client: Client):
         integration_context: dict = get_integration_context()
         while True:
             query = (create_query_with_end_time(to_date=current_run)
-                    if integration_context.get('search_after')
-                    else create_last_iocs_query(from_date=integration_context.get('time'), to_date=current_run))
+                     if integration_context.get('search_after')
+                     else create_last_iocs_query(from_date=integration_context.get('time'), to_date=current_run))
             demisto.info(f"pushing IOCs to XDR: querying XSOAR's recently-modified IOCs with {query=}")
             iocs = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=BATCH_SIZE,
-                                                                    stop_iteration=True,
-                                                                    query=query)))
+                                                                   stop_iteration=True,
+                                                                   query=query)))
             if iocs:
                 response = push_indicators_to_xdr_request(client, iocs)
                 validation_errors.extend(response.get('reply', {}).get('validation_errors', []))
