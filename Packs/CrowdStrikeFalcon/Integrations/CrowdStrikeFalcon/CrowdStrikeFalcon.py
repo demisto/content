@@ -1581,7 +1581,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
 
     return response
 
-def tets():
+def test():
     return "this is a test"
 
 def get_detections_entities(detections_ids: list):
