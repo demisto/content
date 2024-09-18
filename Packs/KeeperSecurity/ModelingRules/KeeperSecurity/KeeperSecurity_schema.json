@@ -5,7 +5,7 @@
         "is_array": false
       },
         "id": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "ip_address": {
@@ -17,7 +17,7 @@
         "is_array": false
       },
         "node_id": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "from_username": {
