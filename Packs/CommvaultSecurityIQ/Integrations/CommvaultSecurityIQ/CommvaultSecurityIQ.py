@@ -240,6 +240,8 @@ class Constants:
     source_webhook: str = "webhook"
     source_fetch_incidents: str = "fetch"
     description: str = "description"
+    max_vm_fetch: int = 1000
+    default_recovery_group_name: str = "APIRecoveryGroup"
 
 
 def field_mapper(field_name: str, source: str = Constants.source_syslog) -> str:
@@ -441,10 +443,8 @@ class Client(BaseClient):
         else:
             current_epoch = int(datetime.now().timestamp())
             token_expiry_from_last_generation = int(
-
                 self.access_token_last_generation
                 + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
-
             )
             if current_epoch > token_expiry_from_last_generation:
                 demisto.debug("Token is expired, re-generating")
@@ -787,7 +787,7 @@ class Client(BaseClient):
             "originating_client": extract_from_regex(
                 message,
                 "",
-                fr"{field_mapper(Constants.originating_client)} \[(.*?)\]",
+                rf"{field_mapper(Constants.originating_client)} \[(.*?)\]",
             ),
             "affected_files_count": if_zero_set_none(
                 extract_from_regex(
@@ -1132,7 +1132,12 @@ class Client(BaseClient):
         recovery_target_id = None
         response = self.http_request("GET", "/V4/recoverytargets", None)
         if response is not None and "recoveryTargets" in response:
-            recovery_target_id = response["recoveryTargets"][0]["id"]
+            targets = response["recoveryTargets"]
+            for current_target in targets:
+                # Always selecting first recovery target with application type CLEAN_ROOM
+                if current_target.get("applicationType") == "CLEAN_ROOM":
+                    recovery_target_id = current_target["id"]
+                    break
         return recovery_target_id
 
     def search_recovery_group(self, recovery_group_name):
@@ -1220,7 +1225,7 @@ class Client(BaseClient):
                     "client": {"id": vm_info["hypervisorId"]},
                     "recoveryPointDetails": {
                         "entityRecoveryPoint": recovery_point_timestamp,
-                        "inheritedFrom": "RECOVERY_GROUP",
+                        "inheritedFrom": "RECOVERY_ENTITY",
                         "entityRecoveryPointCategory": "POINT_IN_TIME",
                     },
                     "workload": 8,
@@ -1261,14 +1266,16 @@ class Client(BaseClient):
                 and backupSetId. If the VM is not found, an empty dictionary is returned.
         """
         vm_info = {}
-        response = self.http_request("GET", "/v4/virtualmachines")
+        headers = self.headers
+        headers["pagingInfo"] = f"0,{Constants.max_vm_fetch}"
+        response = self.http_request("GET", "/v4/virtualmachines", headers=headers)
         if response is not None and "virtualMachines" in response:
             vms = response["virtualMachines"]
             for vm in vms:
                 current_vm_name = vm["name"].lower()
                 if current_vm_name == vm_name.lower():
                     demisto.info(f"Found VM [{current_vm_name}] ")
-                    vm_info["vmName"] = current_vm_name
+                    vm_info["vmName"] = vm_name
                     vm_info["vmGroupId"] = vm["vmGroup"]["id"]
                     vm_info["hypervisorId"] = vm["hypervisor"]["id"]
                     vm_info["vmGuid"] = vm["UUID"]
@@ -1292,13 +1299,15 @@ class Client(BaseClient):
             dt = dt.replace(tzinfo=None)
             epoch_time = int(dt.timestamp())
         except Exception:
-            demisto.error("Invalid recovery point format. Use format dd:mm:yyyy hh:mm:ss")
+            demisto.error(
+                "Invalid recovery point format. Use format dd:mm:yyyy hh:mm:ss"
+            )
         return epoch_time
 
     def add_vm_to_recovery_group(self, vm_name, inpute_date):
         point_in_time_ts = self.get_point_in_time_timestamp(inpute_date)
         demisto.error(f"Point in time reference {point_in_time_ts}")
-        recovery_group_name = "APIRecoveryGroup"
+        recovery_group_name = Constants.default_recovery_group_name
         target_id = self.list_recovery_target()
         demisto.debug(f"Target Id {target_id}")
         if target_id is not None:
@@ -1314,9 +1323,7 @@ class Client(BaseClient):
                     ):
                         return True
                     else:
-                        raise Exception(
-                            f"Add VM [{vm_name}] to recovery group failed."
-                        )
+                        raise Exception(f"Add VM [{vm_name}] to recovery group failed.")
                 else:
                     raise Exception("Recovery group is not available.")
             else:
@@ -1691,7 +1698,9 @@ def main() -> None:
         elif command == "commvault-security-set-cleanroom-add-vm-to-recovery-group":
             vm_name = demisto.args().get("vm_name")
             clean_recovery_point_time = demisto.args().get("clean_recovery_point")
-            return_results(add_vm_to_cleanroom(client, vm_name, clean_recovery_point_time))
+            return_results(
+                add_vm_to_cleanroom(client, vm_name, clean_recovery_point_time)
+            )
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
 

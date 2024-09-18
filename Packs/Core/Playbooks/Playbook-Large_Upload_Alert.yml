@@ -1,7 +1,7 @@
 id: Large Upload Alert
 version: -1
 name: Large Upload Alert
-description: "The playbook investigates Cortex XDR incidents involving large upload alerts. \nThe playbook consists of the following procedures:\n- Searches for similar previous incidents that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
+description: "The playbook investigates Cortex XDR alerts involving large upload alerts. \nThe playbook consists of the following procedures:\n- Searches for similar previous alerts that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
     task:
       id: 8697d08d-678e-464f-835b-1f6ffd24f71a
       version: -1
-      name: Check Previous Similar Incidents
+      name: Check Previous Similar Alerts
       type: title
       iscommand: false
       brand: ""
@@ -165,7 +165,7 @@ tasks:
       id: 1ec586df-20a7-443a-8739-b444dcd6c8da
       version: -1
       name: Investigation Should be Continued?
-      description: Determines whether an alert requires further investigation if similar previous false positive incidents were found.
+      description: Determines whether an alert requires further investigation if similar previous false positive alerts were found.
       type: condition
       iscommand: false
       brand: ""
@@ -299,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: aaf85552-310e-44ec-80df-6d13fc74babe
+    taskid: e865ea1c-7558-4b04-8c30-778d7107c2f0
     type: condition
     task:
-      id: aaf85552-310e-44ec-80df-6d13fc74babe
+      id: e865ea1c-7558-4b04-8c30-778d7107c2f0
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -318,7 +318,7 @@ tasks:
     conditions:
     - label: More Than Threshold
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -340,7 +340,7 @@ tasks:
             value:
               simple: GB
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsGeneral
           left:
             value:
               complex:
@@ -378,22 +378,7 @@ tasks:
                     keys: {}
                     regex:
                       value:
-                        simple: uploaded\s(.*(MB|GB|TB))
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: MB
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "0"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: (\d+)\.
+                        simple: (?i)uploaded\s(\d+(?:[.]\d+)?)
             iscontext: true
           right:
             value:
@@ -580,14 +565,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: d9285c68-50eb-40bd-8fd4-759eb210ac87
+    taskid: 4512ad3f-a604-4ee3-8f9a-f0fc78614dbc
     type: regular
     task:
-      id: d9285c68-50eb-40bd-8fd4-759eb210ac87
+      id: 4512ad3f-a604-4ee3-8f9a-f0fc78614dbc
       version: -1
       name: Set Additional Alerts to Context
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -639,14 +629,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ba180592-3db7-47b3-85a0-b67b132defdb
+    taskid: 6beec2c4-76c1-4f04-8002-d9757de02ba3
     type: regular
     task:
-      id: ba180592-3db7-47b3-85a0-b67b132defdb
+      id: 6beec2c4-76c1-4f04-8002-d9757de02ba3
       version: -1
       name: Check Whether The Source Host Is an FTP Server
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -692,14 +687,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 8dd7433f-8937-4d38-8eb5-3227abd969df
+    taskid: 42b98818-3436-40d0-8767-84ee2fe2cb49
     type: regular
     task:
-      id: 8dd7433f-8937-4d38-8eb5-3227abd969df
+      id: 42b98818-3436-40d0-8767-84ee2fe2cb49
       version: -1
       name: Check Whether The Source Host Is an SMTP Server
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -2860,7 +2860,7 @@ tasks:
       id: 54b0d9f0-f693-45b4-87ba-11ff89012f78
       version: -1
       name: Manual Investigation
-      description: "Upon review, the playbook did not identify any obvious malicious indicators associated with the alert. However, there are some noteworthy observations that require manual investigation. \n\n**Review the following alert details and determine whether remediation is necessary:**\n1. Verify if previous false positive alerts with similar characteristics have been detected.\n2. Review the additional alerts within the incident, if any exist.\n3. Examine the additional alerts retrieved by the sub-playbooks associated with the initiator account, similar command line, or initiator host.\n4. Check the FW application ID to ensure it is a known and authorized application within the organization (if the activity and application are valid, add the ID to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n5. Check the initiator process to ensure it is a known and authorized process within the organization (if the activity and process are valid, add the process name to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n6. Analyze the command line analysis results and any additional alerts with similar initiator command lines retrieved from the 'Cortex XDR - Search and Compare Process Executions - XDR Alerts' sub-playbook.\n7. Determine whether the user is aware of the upload activity and what caused the massive upload that triggered the alert.\n8. Verify whether the uploaded files contain sensitive information."
+      description: "Upon review, the playbook did not identify any obvious malicious indicators associated with the alert. However, there are some noteworthy observations that require manual investigation. \n\n**Review the following alert details and determine whether remediation is necessary:**\n1. Verify if previous false positive alerts with similar characteristics have been detected.\n2. Review the additional alerts within the alert, if any exist.\n3. Examine the additional alerts retrieved by the sub-playbooks associated with the initiator account, similar command line, or initiator host.\n4. Check the FW application ID to ensure it is a known and authorized application within the organization (if the activity and application are valid, add the ID to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n5. Check the initiator process to ensure it is a known and authorized process within the organization (if the activity and process are valid, add the process name to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n6. Analyze the command line analysis results and any additional alerts with similar initiator command lines retrieved from the 'Cortex XDR - Search and Compare Process Executions - XDR Alerts' sub-playbook.\n7. Determine whether the user is aware of the upload activity and what caused the massive upload that triggered the alert.\n8. Verify whether the uploaded files contain sensitive information."
       type: condition
       iscommand: false
       brand: ""
