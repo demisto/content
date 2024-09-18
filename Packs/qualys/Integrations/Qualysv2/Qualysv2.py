@@ -27,7 +27,7 @@ HOST_DETECTIONS_NEWEST_EVENT_DATETIME = 'host_detections_newest_event_datetime'
 HOST_DETECTIONS_NEXT_PAGE = 'host_detections_next_page'
 HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_run'
 HOST_LAST_FETCH = 'host_last_fetch'
-ASSETS_FETCH_FROM = '5 days'
+ASSETS_FETCH_FROM = '90 days'
 HOST_LIMIT = 1000
 TEST_FROM_DATE = 'one day'
 
@@ -1687,7 +1687,7 @@ class Client(BaseClient):
             url_suffix=urljoin(API_SUFFIX, 'asset/host/vm/detection/?action=list'),
             resp_type='text',
             params=params,
-            timeout=200,
+            timeout=150,
             error_handler=self.error_handler,
         )
         return response

@@ -11956,6 +11956,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+    demisto.debug(f'The number of logs sent: {data_size}')
 
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
