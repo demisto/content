@@ -1,5 +1,4 @@
 #### Integration Author: Prisma Cloud DSPM
-***
 #### Prisma Cloud DSPM
 Remediate your data security risks. Integrate with Prisma Cloud DSPM to fetch your data security risks and remediate them with OOTB playbooks.
 
@@ -18,6 +17,7 @@ Configure the instance by providing following mandatory details:
 - GCP Service Account JSON
 
 - Lifetime for slack notification ( in hours)
+- Default Slack user for notifications
 
 #### Prisma Cloud DSPM
  - To retrieve DSPM API Token, login to [Prisma Cloud DSPM Portal](https://login.dig.security/).
@@ -49,5 +49,4 @@ After providing the mandatory details, please test the configuration using the T
 
 ---
 
----
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/dspm)
