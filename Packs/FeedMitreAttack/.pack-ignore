@@ -12,3 +12,9 @@ ignore=BA101
 
 [file:FeedMitreAttack_image.png]
 ignore=IM111
+
+[file:reputation-mitreAttck.json]
+ignore=GR107
+
+[file:MITRE_ATT&CK.json]
+ignore=GR107

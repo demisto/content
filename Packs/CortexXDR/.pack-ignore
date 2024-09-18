@@ -167,3 +167,5 @@ ignore=GR103
 [file:Cortex_XDR_Alerts_Handling_v2.yml]
 ignore=GR107
 
+[file:Cortex_XDR_Port_Scan.json]
+ignore=GR107
