@@ -946,5 +946,3 @@ view: |-
 inputs: []
 outputs: []
 description: ""
-tests:
-  - No tests (auto formatted)
