@@ -8,6 +8,10 @@ from typing import Any
 import re
 from google.oauth2 import service_account
 from google.auth.transport.requests import Request
+import hashlib
+import hmac
+import base64
+from requests.exceptions import ConnectionError
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -146,6 +150,9 @@ SUPPORTED_STATUSES = [
     "HANDLED",
     "INVESTIGATING",
 ]
+SUPPORTED_CLOUD_ENVIRONMENTS = ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"]
+SUPPORTED_POLICY_SEVERITIES = ["HIGH", "MEDIUM", "LOW" ]
+SUPPORTED_CATEGORY_TYPES = ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]
 
 # Define remediation steps for specific findings
 ASSET_REMEDIATION_DESCRIPTION = {
@@ -297,6 +304,81 @@ def create_gcp_access_token(gcp_service_account_json):
     return access_token
 
 
+def check_azure_credentials():
+    try:
+        account_name = str(demisto.params().get("azureStorageName"))
+        account_key = str(demisto.params().get("azureSharedKey", {}).get("password"))
+        api_version = "2024-11-04"
+        request_url = f"https://{account_name}.blob.core.windows.net/?comp=list"
+        request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+        # string for API signature
+        string_to_sign = (
+            f"GET\n"  # HTTP Verb
+            f"\n"  # Content-Encoding
+            f"\n"  # Content-Language
+            f"\n"  # Content-Length
+            f"\n"  # Content-MD5
+            f"\n"  # Content-Type
+            f"\n"  # Date
+            f"\n"  # If-Modified-Since
+            f"\n"  # If-Match
+            f"\n"  # If-None-Match
+            f"\n"  # If-Unmodified-Since
+            f"\n"  # Range
+            f"x-ms-date:{request_date}\n"
+            f"x-ms-version:{api_version}\n"
+            f"/{account_name}/\n"
+            "comp:list"
+        )
+
+        # create signature token for API auth
+        decoded_key = base64.b64decode(account_key)
+        signature = hmac.new(
+            decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256
+        ).digest()
+        encoded_signature = base64.b64encode(signature).decode("utf-8")
+
+        authorization_header = f"SharedKey {account_name}:{encoded_signature}"
+        headers = {
+            "x-ms-date": request_date,
+            "x-ms-version": api_version,
+            "Authorization": authorization_header,
+        }
+        response = requests.get(request_url, headers=headers)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return_error(
+                f"The provided Azure shared Key is invalid, Status Code '{response.status_code}'."
+            )
+    except ConnectionError:
+        return_error(
+            f"The provided Azure Storage account name - '{account_name}' is invalid."
+        )
+    except Exception:
+        return_error("The provided Azure shared Key is invalid.")
+
+
+def check_gcp_json_credentials():
+    try:
+        # create GCP access token
+        gcp_service_account_json = demisto.params().get("serviceAccountJson")
+        access_token = create_gcp_access_token(gcp_service_account_json)
+
+        # validate the GCP access token
+        validation_url = (
+            f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={access_token}"
+        )
+        response = requests.get(validation_url)
+        return response.status_code == 200
+
+    except Exception as err:
+        return_error(f"Failed to validate the GCP credentials, Err: {err}")
+        return False
+
+
 def validate_parameter(
     param_name: str, param_in: str, param_equal: str, supported_list: list[str]
 ):
@@ -319,15 +401,28 @@ def test_module(client: Client) -> str:
         # validate dspm creds
         client.get_data_types()
 
+        # check Azure creds if provided
+        azure_storage_name = demisto.params().get("azureStorageName")
+        account_key = str(demisto.params().get("azureSharedKey", {}).get("password"))
+        if azure_storage_name or account_key:
+            is_valid = check_azure_credentials()
+            if not is_valid:
+                raise Exception("Invalid Azure credentials")
+
+        # check GCP creds if provided
+        gcp_service_account_json = demisto.params().get("serviceAccountJson")
+        if gcp_service_account_json:
+            is_valid = check_gcp_json_credentials()
+            if not is_valid:
+                raise Exception("Invalid GCP credentials")
+
         return "ok"
 
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
             return "Authorization Error: make sure DSPM API Key is correctly set"
-        elif "Jira" in str(e):
-            return "Authorization Error: make sure Jira creds Key is correctly set"
         else:
-            return "Error"
+            return f"Error: An unknown exception occurred: {e}"
 
 
 def dspm_get_risk_findings(
@@ -689,6 +784,48 @@ def get_list_of_alerts(
     client: Client, args: dict[str, Any], page: int
 ) -> list[dict]:
     """fetch list of dspm alerts"""
+    # check supported cloud providers
+    cloudProviderIn = args.get("cloudProviderIn", "")
+    cloudProviderEqual = args.get("cloudProviderEqual", "")
+    validate_parameter(
+        "cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS
+    )
+
+    # check supported cloud environments
+    cloudEnvironmentIn = args.get("cloudEnvironmentIn", "")
+    cloudEnvironmentEqual = args.get("cloudEnvironmentEqual", "")
+    validate_parameter(
+        "cloudEnvironment", cloudEnvironmentIn, cloudEnvironmentEqual, SUPPORTED_CLOUD_ENVIRONMENTS
+    )
+
+    # check supported policy severity
+    policySeverityIn = args.get("policySeverityIn", "")
+    policySeverityEqual = args.get("policySeverityEqual", "")
+    validate_parameter(
+        "policySeverity", policySeverityIn, policySeverityEqual, SUPPORTED_POLICY_SEVERITIES
+    )
+    
+    # check supported category type
+    categoryTypeIn = args.get("categoryTypeIn", "")
+    categoryTypeEqual = args.get("categoryTypeEqual", "")
+    validate_parameter(
+        "categoryType", categoryTypeIn, categoryTypeEqual, SUPPORTED_CATEGORY_TYPES
+    )
+    
+    # check supported category type
+    statusIn = args.get("statusIn", "")
+    statusEqual = args.get("statusEqual", "")
+    validate_parameter(
+        "status", statusIn, statusEqual, SUPPORTED_STATUSES
+    )
+
+    # Check supported sorting order
+    sort_order = args.get("sort")
+    if sort_order:
+        pattern = r"^.*,(ASC|DESC)$"
+        matches = re.findall(pattern, sort_order, re.IGNORECASE)  # type: ignore
+        if not matches:
+            raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
         "detectionTime.equals": args.get("detectionTimeEquals"),
@@ -820,21 +957,28 @@ def get_list_of_alerts(
 
 
 def get_integration_config():
-    # create GCP access token
-    gcp_service_account_json = demisto.params().get("serviceAccountJson")
-    gcp_access_token = create_gcp_access_token(gcp_service_account_json)
 
     integration_config = {
         # "jiraEmail": demisto.params().get("jiraEmail"),
         # "jiraServerUrl": demisto.params().get("jiraServerUrl"),
         # "jiraApiToken": demisto.params().get("jiraApiToken", {}).get("password"),
-        "azureStorageName": demisto.params().get("azureStorageName"),
-        "azureSharedKey": demisto.params().get("azureSharedKey", {}).get("password"),
+        # "azureStorageName": demisto.params().get("azureStorageName"),
+        # "azureSharedKey": demisto.params().get("azureSharedKey", {}).get("password"),
         "dspmApiKey": demisto.params().get("dspmApiKey", {}).get("password"),
-        "GCPAccessToken": gcp_access_token,
+        # "GCPAccessToken": gcp_access_token,
         "slackMsgLifetime": demisto.params().get("slackMsgLifetime"),
         "defaultSlackUser": demisto.params().get("defaultSlackUser"),
     }
+
+    # Update the dict with GCP and Azure credentials, if provided.
+    gcp_service_account_json = demisto.params().get("serviceAccountJson")
+    azure_shared_key = demisto.params().get("azureSharedKey", {}).get("password")
+    azure_storage_name = demisto.params().get("azureStorageName")
+    if gcp_service_account_json:
+        gcp_access_token = create_gcp_access_token(gcp_service_account_json)
+        integration_config.update({"GCPAccessToken": gcp_access_token})
+    if azure_storage_name:
+        integration_config.update({"azureSharedKey": azure_shared_key, "azureStorageName": azure_storage_name})
     demisto.debug(f" integration config : ${integration_config}")
 
     # Prepare data for table format
@@ -998,14 +1142,34 @@ def main() -> None:
             return_results(update_risk_finding_status(client, demisto.args()))
         elif demisto.command() == "dspm-get-list-of-alerts":
             page = 0
-            alerts = get_list_of_alerts(client, demisto.args(), page)
-            return_results(
-                CommandResults(
-                    outputs_prefix="DSPM.Alerts",
-                    outputs_key_field="id",
-                    outputs=alerts,
+            while True:
+                alerts = get_list_of_alerts(client, demisto.args(), page)
+                if not alerts:
+                    if page == 0:
+                        readable_output = (
+                            "### Data Types\n"
+                            "| No | Key |\n"
+                            "|----|-----|\n"
+                            "**No entries.**\n"
+                        )
+                        return_results(
+                            CommandResults(
+                                outputs_prefix="DSPM.Alerts",
+                                outputs_key_field="Key",
+                                outputs=[],
+                                readable_output=readable_output,
+                            )
+                        )
+                    break
+
+                return_results(
+                    CommandResults(
+                        outputs_prefix="DSPM.Alerts",
+                        outputs_key_field="id",
+                        outputs=alerts
+                    )
                 )
-            )
+                page += 1
 
     except Exception as e:
         return_error(
