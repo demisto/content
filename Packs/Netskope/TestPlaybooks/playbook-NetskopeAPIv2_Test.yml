@@ -14,10 +14,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
-      '#none#':
-      - "1"
+      "#none#":
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -47,8 +47,8 @@ tasks:
       brand: ""
       scriptName: DeleteContext
     nexttasks:
-      '#none#':
-      - "2"
+      "#none#":
+        - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -81,8 +81,8 @@ tasks:
       iscommand: true
       brand: netskope_(api_v2)
     nexttasks:
-      '#none#':
-      - "3"
+      "#none#":
+        - "3"
     scriptarguments:
       alert_type:
         simple: policy
@@ -119,91 +119,91 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert._id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.acked
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.action
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.activity
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.alert
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.alert_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.alert_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.category
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.page
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.policy
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.severity
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.timestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Alert.user
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert._id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.acked
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.action
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.activity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.alert
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.alert_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.alert_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.category
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.domain
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.page
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.policy
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.timestamp
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.url
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Alert.user
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -232,8 +232,8 @@ tasks:
       iscommand: true
       brand: netskope_(api_v2)
     nexttasks:
-      '#none#':
-      - "5"
+      "#none#":
+        - "5"
     scriptarguments:
       event_type:
         simple: page
@@ -270,43 +270,43 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Event._id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Event.category
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Event.page
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Event.site
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Event.timestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Event.type
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Event._id
+                iscontext: true
+              right:
+                value: {}
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Event.category
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Event.page
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Event.site
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Event.timestamp
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Event.type
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -335,8 +335,8 @@ tasks:
       iscommand: true
       brand: netskope_(api_v2)
     nexttasks:
-      '#none#':
-      - "7"
+      "#none#":
+        - "7"
     scriptarguments:
       deploy:
         simple: "false"
@@ -377,53 +377,53 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+        - "8"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.urls
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.json_version
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_by
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_type
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.id
+                iscontext: true
+              right:
+                value: {}
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.urls
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.json_version
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_by
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_type
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -452,8 +452,8 @@ tasks:
       iscommand: true
       brand: netskope_(api_v2)
     nexttasks:
-      '#none#':
-      - "9"
+      "#none#":
+        - "9"
     scriptarguments:
       deploy:
         simple: "false"
@@ -492,53 +492,53 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.urls
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.json_version
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_by
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_time
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.id
+                iscontext: true
+              right:
+                value: {}
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.urls
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.json_version
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_by
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_time
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -567,8 +567,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "11"
+      "#none#":
+        - "11"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -598,46 +598,46 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.data.urls
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_by
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.modify_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.pending
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.data.urls
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_by
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.modify_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.pending
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -666,8 +666,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "13"
+      "#none#":
+        - "13"
     scriptarguments:
       url_list_id:
         simple: "7"
@@ -700,21 +700,21 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.URLList.name
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.URLList.name
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -743,8 +743,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "15"
+      "#none#":
+        - "15"
     scriptarguments:
       limit:
         simple: "2"
@@ -779,33 +779,33 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+        - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Client.client_id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Client.user_name
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Netskope.Client.active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Client.emails
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Client.client_id
+                iscontext: true
+              right:
+                value: {}
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Client.user_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Netskope.Client.active
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Client.emails
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -832,7 +832,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -864,7 +864,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-      - "18"
+        - "18"
     scriptarguments:
       end_time:
         simple: now
@@ -899,21 +899,21 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+        - "16"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Incident.object_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Netskope.Incident.status
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Incident.object_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Netskope.Incident.status
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -945,4 +945,6 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
+description: ""
+tests:
+  - No tests (auto formatted)

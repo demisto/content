@@ -938,8 +938,14 @@ def list_dlp_incident_command(
     Returns:
         CommandResults: Outputs of the command that represent an entry in the warroom.
     """
-    start_time = int(arg_to_datetime(args["start_time"]).timestamp())
-    end_time = int(arg_to_datetime(args["end_time"]).timestamp())
+    start_time_dt = arg_to_datetime(args["start_time"])
+    end_time_dt = arg_to_datetime(args["end_time"])
+
+    if not start_time_dt or not end_time_dt:
+        raise DemistoException("Time argument is required.")
+
+    start_time = int(start_time_dt.timestamp())
+    end_time = int(end_time_dt.timestamp())
 
     incidents = []
     hourly_timestamps = get_hourly_timestamps(
@@ -1057,7 +1063,7 @@ def get_modified_remote_data(client: Client) -> GetModifiedRemoteDataResponse:
     Returns:
         GetModifiedRemoteDataResponse: modified tickets from Netskope.
     """
-
+    # get the fetch last run time to check if exist incidents was updated for sync incidents
     start_timestamp = get_demisto_integration_context(
         "dlp_incident_last_run_timestamp", None)
 
@@ -1084,6 +1090,7 @@ def get_modified_remote_data(client: Client) -> GetModifiedRemoteDataResponse:
 
     dlp_incidents = remove_duplicates(dlp_incidents, "object_id")
 
+    # save the updated incidents for get_remote_data_command
     set_demisto_integration_context("dlp_incidents_to_update", dlp_incidents,
                                     "append")
 
@@ -1134,6 +1141,7 @@ def update_remote_system(
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     incident_id = parsed_args.remote_incident_id
+
     demisto.debug(
         f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
         if parsed_args.delta else "There is no delta fields in Netskope")
@@ -1145,6 +1153,7 @@ def update_remote_system(
             )
 
             update_args: dict[str, Any] = parsed_args.delta
+            # fetch old arguments data for API call
             old_args: dict[str, Any] = parsed_args.data
 
             updated_arguments = {}
@@ -1165,11 +1174,12 @@ def update_remote_system(
                         updated_arguments["new_value"] = value
                         updated_arguments["object_id"] = incident_id
 
-            demisto.debug(
-                f"Send remote ID [{incident_id}] updates to Netskope. {updated_arguments=}|| {update_args=}"
-            )
+            if updated_arguments:
+                demisto.debug(
+                    f"Send remote ID [{incident_id}] updates to Netskope. {updated_arguments=}|| {update_args=}"
+                )
 
-            client.update_dlp_incident(**updated_arguments)
+                client.update_dlp_incident(**updated_arguments)
 
     except Exception as error:
         demisto.info(
@@ -1198,14 +1208,17 @@ def get_remote_data_command(
 
     demisto.debug(f"Check if incident {incident_id} updated")
 
+    # fetch updated incidents (that saved in get_modified_remote_data command)
     dlp_incidents: list = get_demisto_integration_context(
         "dlp_incidents_to_update", [])
 
     mirrored_ticket = {}
 
     for incident in dlp_incidents:
+        # get the incident data by the relevant incident ID
         if incident["object_id"] == incident_id:
             mirrored_ticket = incident
+            # remove the incident from integration context
             dlp_incidents.remove(mirrored_ticket)
             set_demisto_integration_context("dlp_incidents_to_update",
                                             dlp_incidents, "override")
@@ -1399,6 +1412,7 @@ def fetch_dlp_incidents_as_incidents(
     new_incident_ids = []
     last_run_id, last_run_timestamp = get_last_run(params, "dlp_incident")
 
+    # when last run is rest - update integration context data
     if not last_run_id:
         set_demisto_integration_context("dlp_incident_ids", [], "override")
         set_demisto_integration_context("dlp_incident_last_run_timestamp",
@@ -1415,6 +1429,7 @@ def fetch_dlp_incidents_as_incidents(
     )
     dlp_incidents = []
 
+    # get incident IDs that exist in XSOAR to avoid duplicates
     exist_dlp_incidents: list = get_demisto_integration_context(
         "dlp_incident_ids", [])
 
@@ -1441,12 +1456,15 @@ def fetch_dlp_incidents_as_incidents(
             new_incident_ids.append(incident_id)
 
     if new_incident_ids:
+        # set the new incident IDs to avoid duplicates on next fetch
         set_demisto_integration_context("dlp_incident_ids", new_incident_ids,
                                         "append")
 
     else:
         last_run_timestamp = end_time_number
 
+    # set the updated fetch last run time for get_modified_remote_data command
+    # to update existing incidents and ensure full sync
     set_demisto_integration_context("dlp_incident_last_run_timestamp",
                                     last_run_timestamp, "override")
 

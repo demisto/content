@@ -29,8 +29,8 @@ configuration:
     name: first_fetch
     type: 0
     required: false
-  - additionalinfo: First incident updated date to fetch. e.g., "1 min ago". Maximum recommended time should be no earlier than “1 day”.
-    defaultvalue: 1 day
+  - additionalinfo: First incident updated date to fetch. e.g., "1 min ago". Maximum recommended time should be no earlier than “3 day”.
+    defaultvalue: 3 day
     display: First fetch timestamp for DLP incidents
     name: dlp_incidents_first_fetch
     type: 0
@@ -129,7 +129,7 @@ name: netskope_api_v2
 script:
   commands:
     - name: netskope-incident-dlp-list
-      description: Fetch DLP incidents.
+      description: Fetch DLP incidents by update time. The maximum recommended time range should be no more from 3 days.
       arguments:
         - name: start_time
           description: Restrict incidents to those that have updated dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Default is ‘1 hour ago’.
@@ -1259,7 +1259,7 @@ script:
           name: lastUpdate
       description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
       name: get-modified-remote-data
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.111526
   isfetch: true
   ismappable: true
   isremotesyncin: true
