@@ -198,14 +198,23 @@ Gets an individual incident by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Resilient.Incidents.CreateDate | string | Created date of the incident. | 
-| Resilient.Incidents.Name | string | Incident name. | 
-| Resilient.Incidents.Resolution | string | Incident resolution. | 
-| Resilient.Incidents.DiscoveredDate | string | Discovered date of the incident. | 
-| Resilient.Incidents.ResolutionSummary | string | Incident resolution summary. | 
-| Resilient.Incidents.Id | string | Incident ID. | 
-| Resilient.Incidents.Phase | string | Incident phase. | 
-| Resilient.Incidents.Severity | string | Incident severity. | 
+| Resilient.Incidents.CreateDate | string | Created date of the incident. |
+| Resilient.Incidents.Name | string | Incident name. |
+| Resilient.Incidents.Resolution | string | Incident resolution. |
+| Resilient.Incidents.DiscoveredDate | string | Discovered date of the incident. |
+| Resilient.Incidents.ResolutionSummary | string | Incident resolution summary. |
+| Resilient.Incidents.Id | string | Incident ID. |
+| Resilient.Incidents.Phase | string | Incident phase. |
+| Resilient.Incidents.PlanStatus | string | Incident status. |
+| Resilient.Incidents.Severity | string | Incident severity. |
+| Resilient.Incidents.Description | string | Incident description. |
+| Resilient.Incidents.Confirmed | boolean | Incident confirmation. |
+| Resilient.Incidents.NegativePr | boolean | Whether negative PR is likely. |
+| Resilient.Incidents.DateOccurred | string | Date incident occurred. |
+| Resilient.Incidents.Reporter | string | Name of reporting individual. |
+| Resilient.Incidents.NistAttackVectors | Unknown | Incident NIST attack vectors. |
+| Resilient.Incidents.ExposureType | string | Incident exposure type. |
+
 ### rs-get-incident
 
 ***
