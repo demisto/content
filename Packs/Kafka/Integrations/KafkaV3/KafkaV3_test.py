@@ -9,7 +9,7 @@ import pytest
 import KafkaV3
 import os
 
-KAFKA = KafkaCommunicator(brokers=['some_broker_ip'])
+KAFKA = KafkaCommunicator(brokers='some_broker_ip')
 
 
 def test_passing_simple_test_module(mocker):
@@ -851,3 +851,105 @@ def test_ssl_configuration():
     os.remove(kafka.ca_path)
     os.remove(kafka.client_cert_path)
     os.remove(kafka.client_key_path)
+    
+    
+update_client_dict_data = [
+            # Case 1: trust_any_cert is True and dict isn't empty
+            (
+                {'value': 'value1'}, True, None, None, None, None,
+                {
+                    'ssl.endpoint.identification.algorithm': 'none',
+                    'enable.ssl.certificate.verification': False,
+                    'value': 'value1'
+                }
+            ),
+            # Case 2: ca_cert is provided and dict isn't empty
+            (
+                {'value': 'value1'}, False, "ca_cert_content", None, None, None,
+                {
+                    'ssl.ca.location': None,  # The actual file path will be checked later
+                    'value': 'value1'
+                }
+            ),
+            # Case 3: client_cert is provided
+            (
+                {}, False, None, "client_cert_content", None, None,
+                {
+                    'ssl.certificate.location': None,  # The actual file path will be checked later
+                    'security.protocol': 'ssl'
+                }
+            ),
+            # Case 4: client_cert_key is provided
+            (
+                {}, False, None, None, "client_cert_key_content", None,
+                {
+                    'ssl.key.location': None  # The actual file path will be checked later
+                }
+            ),
+            # Case 5: ssl_password is provided
+            (
+                {}, False, None, None, None, "ssl_password_value",
+                {
+                    'ssl.key.password': 'ssl_password_value'
+                }
+            ),
+            # Case 6: All parameters are provided
+            (
+                {}, True, "ca_cert_content", "client_cert_content", "client_cert_key_content", "ssl_password_value",
+                {
+                    'ssl.endpoint.identification.algorithm': 'none',
+                    'enable.ssl.certificate.verification': False,
+                    'ssl.ca.location': None,  # The actual file path will be checked later
+                    'ssl.certificate.location': None,  # The actual file path will be checked later
+                    'security.protocol': 'ssl',
+                    'ssl.key.location': None,  # The actual file path will be checked later
+                    'ssl.key.password': 'ssl_password_value'
+                }
+            ),
+        ]
+@pytest.mark.parametrize('client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, expected', update_client_dict_data)
+def test_update_client_dict(client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, expected):
+    """
+        Given:
+        arguments for update_client_dict function.
+        When:
+        update_client_dict function is called.
+        Then:
+        The dictionary is updated correctly.
+    """
+    KAFKA.update_client_dict(client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password)
+    
+    for key, value in expected.items():
+            if value is None:
+                assert key in client_dict
+            else:
+                assert client_dict[key] == value
+                
+                
+
+def test_KafkaCommunicator__consumer_only():
+    """
+        Given:
+        A consumer_only=True argument and other required ones.
+        When:
+        Calling KafkaCommunicator init function.
+        Then:
+        The Kafka communicator is created with a conf_consumer and without conf_producer.
+    """
+    comunicator = KafkaCommunicator('some_broker', True)
+    assert comunicator.conf_consumer
+    assert not comunicator.conf_producer
+    
+    
+def test_KafkaCommunicator__not_consumer_only():
+    """
+        Given:
+        A consumer_only=False argument and other required ones.
+        When:
+        Calling KafkaCommunicator init function.
+        Then:
+        The Kafka communicator is created with a conf_consumer and with conf_producer.
+    """
+    comunicator = KafkaCommunicator('some_broker', False)
+    assert comunicator.conf_consumer
+    assert comunicator.conf_producer

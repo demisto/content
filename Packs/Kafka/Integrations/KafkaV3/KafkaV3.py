@@ -42,7 +42,7 @@ class KafkaCommunicator:
     POLL_TIMEOUT: float = 1.0
     MAX_POLLS_FOR_LOG: int = 100
 
-    def __init__(self, consumer_only, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
+    def __init__(self, brokers: str, consumer_only: bool = False, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
@@ -800,7 +800,7 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
                      log_stream: Optional[StringIO] = None) -> None:
     """Start command function according to demisto command."""
     kafka_kwargs['kafka_logger'] = kafka_logger
-    kafka = KafkaCommunicator(**kafka_kwargs)
+    kafka = KafkaCommunicator(demisto_params.get('consumer_only'), **kafka_kwargs)
 
     try:
         if demisto_command == 'test-module':
