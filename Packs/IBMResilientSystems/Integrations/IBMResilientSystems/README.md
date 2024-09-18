@@ -1154,3 +1154,15 @@ Gets incident attachment's name and contents as a file by its ID.
 #### Context Output
 
 There is no context output for this command.
+
+`rs-update-incident-members`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident-id | ID of the incident for which to update its members. | Required |
+| members | A comma-separated list of members to add, e.g. 1,2,3. | Required |
+
+#### Context Output
+
+There is no context output for this command.

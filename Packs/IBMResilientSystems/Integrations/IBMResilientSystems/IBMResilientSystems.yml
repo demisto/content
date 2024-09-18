@@ -143,8 +143,10 @@ script:
   commands:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
+
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
+
   - arguments:
     - description: The remote incident ID.
       name: id
@@ -156,11 +158,13 @@ script:
 
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
+
   - arguments:
     - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
     description: Returns the list of incidents IDs that were modified since the last update time. Note that this method is for debugging purposes. The get-modified-remote-data command is used as part of the mirroring feature, which is available from version 6.1.
     name: get-modified-remote-data
+
   - arguments:
     - description: Indicates the starting point for the first record in the dataset. Starting from 1.
       name: page
@@ -296,6 +300,7 @@ script:
     - contextPath: Resilient.Incidents.ResolutionSummary
       description: Incident resolution summary.
       type: string
+
   - description: Updates incidents.
     name: rs-update-incident
     arguments:
@@ -362,6 +367,7 @@ script:
       - Web
     - description: 'A JSON object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}`. The name should be the path to it in the incident separated by "." For example: `{"properties.incident_summary": {"text": "The new name"}}". Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. For more information, refer to https://xsoar.pan.dev/docs/reference/integrations/ibm-resilient-systems. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields value will be used.'
       name: other-fields
+
   - arguments:
     - description: Incident ID to get members of.
       name: incident-id
@@ -384,6 +390,7 @@ script:
     - contextPath: Resilient.Incidents.Members.Email
       description: Member's email address.
       type: string
+
   - arguments:
     - description: ID of incident to get.
       name: incident-id
@@ -441,7 +448,8 @@ script:
       type: string
     - contextPath: Resilient.Incidents.ResolutionSummary
       description: Incident resolution summary.
-      type: string
+      type: strin
+
   - arguments:
     - description: ID of the incident for which to update its members.
       name: incident-id
@@ -452,8 +460,10 @@ script:
 
     description: Updates the incident's members.
     name: rs-incidents-update-member
+
   - description: Gets a list of all users in the system.
     name: rs-get-users
+
   - arguments:
     - description: ID of the incident to close.
       name: incident-id
@@ -461,6 +471,7 @@ script:
       default: true
     description: Closes an incident.
     name: rs-close-incident
+
   - arguments:
     - description: Incident name.
       name: name
@@ -474,6 +485,7 @@ script:
     - contextPath: Resilient.Incidents.Name
       description: Incident name.
       type: string
+
   - arguments:
     - description: Incident ID to get artifacts of.
       name: incident-id
@@ -523,6 +535,7 @@ script:
     - contextPath: Resilient.Incidents.Artifacts.Attachments.Size
       description: Attachment size.
       type: number
+
   - arguments:
     - description: Incident ID to get attachments from.
       name: incident-id
@@ -557,6 +570,7 @@ script:
     - contextPath: Resilient.Incidents.Attachments.Size
       description: Attachment size.
       type: number
+
   - name: rs-get-attachment
     description: Gets incident attachment's name and contents as a file by its ID.
     arguments:
@@ -1079,7 +1093,6 @@ script:
     - contextPath: Resilient.Task
       description: Task instructions.
       type: Dictionary
-
 
   dockerimage: demisto/resilient:2.0.0.112034
   isfetch: true
