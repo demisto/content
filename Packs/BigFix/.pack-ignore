@@ -7,3 +7,6 @@ hcl
 [file:BigFix.yml]
 ignore=BA124
 
+[file:README.md]
+ignore=RM112
+

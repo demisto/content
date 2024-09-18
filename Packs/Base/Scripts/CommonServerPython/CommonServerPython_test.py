@@ -18,18 +18,21 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
-    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs, safe_sleep
+from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
+                                flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList,
+                                remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
+                                get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
+                                b64_encode, parse_date_range, return_outputs, is_filename_valid, convert_dict_values_bytes_to_str,
+                                argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch,
+                                FeedIndicatorType, encode_string_results, safe_load_json, remove_empty_elements,
+                                aws_table_to_markdown, is_demisto_version_ge, appendContext, auto_detect_indicator_type,
+                                handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, url_to_clickable_markdown,
+                                WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, remove_duplicates_from_list_arg,
+                                DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
+                                response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
+                                is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config
+                                )
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -65,7 +68,7 @@ Parameters used:
         "instance-name": "test_integration_instance",
         "final-reporting-device": "www.test_url.com",
         "collector-type": "assets",
-        "snapshot-id": "123000",
+        "snapshot-id": "test_integration_instance123000",
         "total-items-count": "2"
 }}
 
@@ -1565,6 +1568,48 @@ def test_is_mac_address():
 
     assert (is_mac_address(mac_address_false) is False)
     assert (is_mac_address(mac_address_true))
+
+
+def test_return_error_truncated_message(mocker):
+    """
+    Given
+    - invalid error message due to longer than max length (50,000)
+
+    When
+    - return_error function is called
+
+    Then
+    - Return a truncated message that contains clarification about the truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * (MAX_ERROR_MESSAGE_LENGTH + 1)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
+        len("...This error body was truncated...")
+    assert "This error body was truncated" in results.call_args[0][0]["Contents"]
+
+
+def test_return_error_valid_message(mocker):
+    """
+    Given
+    - A valid error message
+
+    When
+    - return_error function is called
+
+    Then
+    - Ensure the same message is returned
+    - Ensure the error message does not contain clarification about a truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * int(MAX_ERROR_MESSAGE_LENGTH * 0.9)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == len(err_msg)
+    assert "This error body was truncated" not in results.call_args[0][0]["Contents"]
 
 
 def test_return_error_command(mocker):
@@ -4704,6 +4749,41 @@ def test_integration_return_results_execution_metrics_command_results(mocker):
 
     assert execution_metrics_entry_found
     assert demisto_results_mock.call_count == 3
+
+
+def test_dynamic_section_script_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains execution metrics entries
+      - The command currently running is a dynamic-section script
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 2 times (without the 2 execution metrics entries)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ScriptName': 'some_script_name'}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        # CommandResults metrics entry: Should not be returned.
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        # CommandResults regular entry: Should be returned.
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        # Dict metrics entry: Should not be returned.
+        {'MockContext': 1, "Type": 19},
+        # Dict regular entry: Should be returned.
+        {'MockContext': 1, "Type": 1},
+    ]
+    return_results(mock_command_results)
+    for call_args in demisto_results_mock.call_args_list:
+        for args in call_args.args:
+            if isinstance(args, list):
+                for arg in args:
+                    assert arg["Type"] != 19
+            else:
+                assert args["Type"] != 19
+
+    assert demisto_results_mock.call_count == 2
 
 
 def test_return_results_multiple_command_results(mocker):
@@ -8916,6 +8996,49 @@ class TestSendEventsToXSIAMTest:
             assert arguments_called['headers']['snapshot-id'] == '123000'
             assert arguments_called['headers']['total-items-count'] == '2'
 
+    @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
+        ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
+        ('assets', '12345', 25, {'snapshot_id': '12345', 'items_count': '25'})
+    ])
+    def test_send_data_to_xsiam_custom_snapshot_id_and_items_count(self, mocker, data_type, snapshot_id, items_count, expected):
+        """
+        Test the send_data_to_xsiam with and without custom snapshot_id and items_count
+        Given:
+            Case a: no custom snapshot_id and items_count.
+            Case b: custom snapshot_id and items_count.
+
+        When:
+            Case a: Calling the send_assets_to_xsiam function without custom snapshot_id and items_count.
+            Case b: Calling the send_assets_to_xsiam function with custom snapshot_id and items_count.
+
+        Then ensure that:
+            Case a: The headers was set with the default data.
+            Case b: The headers was set with the custom data
+        """
+        if not IS_PY3:
+            return
+
+        from CommonServerPython import BaseClient
+        from requests import Response
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        items = self.test_data['json_assets'][data_type]
+        send_data_to_xsiam(data=items, vendor='some vendor', product='some product', data_type=data_type, snapshot_id=snapshot_id,
+                           items_count=items_count)
+
+        arguments_called = _http_request_mock.call_args[1]
+        assert arguments_called['headers']['collector-type'] == data_type
+        assert arguments_called['headers']['snapshot-id'] == expected['snapshot_id']
+        assert arguments_called['headers']['total-items-count'] == expected['items_count']
+
     @pytest.mark.parametrize('error_msg, data_type', [(None, "events"), ({'error': 'error'}, "events"), ('', "events"),
                                                       ({'error': 'error'}, "assets")])
     def test_send_data_to_xsiam_error_handling(self, mocker, requests_mock, error_msg, data_type):
@@ -9727,3 +9850,51 @@ def test_sleep_mocked_time(mocker):
 
     # Verify sleep duration based on mocked time difference
     assert sleep_mocker.call_count == 2
+
+
+def test_get_server_config(mocker):
+    mock_response = {
+        'body': '{"sysConf":{"incident.closereasons":"CustomReason1, CustomReason 2, Foo","versn":40},"defaultMap":{}}\n',
+        'headers': {
+            'Content-Length': ['104'],
+            'X-Xss-Protection': ['1; mode=block'],
+            'X-Content-Type-Options': ['nosniff'],
+            'Strict-Transport-Security': ['max-age=10886400000000000; includeSubDomains'],
+            'Vary': ['Accept-Encoding'],
+            'Server-Timing': ['7'],
+            'Date': ['Wed, 03 Jul 2010 09:11:35 GMT'],
+            'X-Frame-Options': ['DENY'],
+            'Content-Type': ['application/json']
+        },
+        'status': '200 OK',
+        'statusCode': 200
+    }
+
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    server_config = get_server_config()
+    assert server_config == {'incident.closereasons': 'CustomReason1, CustomReason 2, Foo', 'versn': 40}
+
+
+@pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+def test_get_server_config_fail(mocker):
+    mock_response = {
+        'body': 'NOT A VALID JSON',
+        'headers': {
+            'Content-Length': ['104'],
+            'X-Xss-Protection': ['1; mode=block'],
+            'X-Content-Type-Options': ['nosniff'],
+            'Strict-Transport-Security': ['max-age=10886400000000000; includeSubDomains'],
+            'Vary': ['Accept-Encoding'],
+            'Server-Timing': ['7'],
+            'Date': ['Wed, 03 Jul 2010 09:11:35 GMT'],
+            'X-Frame-Options': ['DENY'],
+            'Content-Type': ['application/json']
+        },
+        'status': '200 OK',
+        'statusCode': 200
+    }
+
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    mocked_error = mocker.patch.object(demisto, 'error')
+    assert get_server_config() == {}
+    assert mocked_error.call_args[0][0] == 'Error decoding JSON: Expecting value: line 1 column 1 (char 0)'

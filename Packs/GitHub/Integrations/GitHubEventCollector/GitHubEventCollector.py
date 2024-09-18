@@ -47,14 +47,14 @@ class GithubParams(BaseModel):
     order: str = 'asc'
     phrase: str
     per_page: int = 100  # Maximum is 100
-    _normalize_after = validator('phrase', pre=True, allow_reuse=True)(
+    _normalize_after = validator('phrase', pre=True, allow_reuse=True)(  # type: ignore[type-var]
         get_github_timestamp_format
     )
 
 
 class GithubEventsRequestConfig(IntegrationHTTPRequest):
     url: AnyUrl
-    method = Method.GET
+    method: Method = Method.GET
     params: GithubParams  # type: ignore
 
 
@@ -66,7 +66,7 @@ class GithubClient(IntegrationEventsClient):
 
 class GithubGetEvents(IntegrationGetEvents):
 
-    def _iter_events(self) -> Generator:
+    def _iter_events(self) -> Generator | list:  # type: ignore[return]
         """
         Function that responsible for the iteration over the events returned from github api
         """
@@ -97,9 +97,15 @@ class GithubGetEvents(IntegrationGetEvents):
         return {'after': last_timestamp}
 
 
-def main():
+def main():  # pragma: no cover
+    # Once the parameter "after" is hidden, the previous value of the parameter is saved, not the new default value which
+    # is 1 minute. For example if the previous value of "after" (First fetch time interval) was "3 days", after the parameter
+    # "after" is hidden it will remain "3 days" and each time Reset the "last run" timestamp is used, it will use "3 days"
+    # instead of "1 minute".
+    demisto.params()['after'] = '1 minute'
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    demisto.debug(f'{demisto_params.get("after")=}')
 
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
 
@@ -125,6 +131,7 @@ def main():
             return_results('ok')
         elif command in ('github-get-events', 'fetch-events'):
             events = get_events.run()
+            demisto.debug(f'{len(events)=}')
 
             if command == 'fetch-events':
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)

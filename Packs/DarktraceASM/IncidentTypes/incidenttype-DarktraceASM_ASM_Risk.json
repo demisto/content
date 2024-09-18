@@ -1,0 +1,30 @@
+{
+    "id": "Darktrace ASM Risk",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Darktrace ASM Risk",
+    "prevName": "Darktrace ASM Risk",
+    "color": "#D4E8F1",
+    "playbookId": "Darktrace ASM Basic Risk Handler",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Darktrace ASM Risk Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    }
+}

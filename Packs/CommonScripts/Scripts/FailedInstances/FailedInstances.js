@@ -17,6 +17,12 @@ Object.keys(all).forEach(function(m) {
         }])});
 
         var res =  executeCommand(cmd, {});
+        var content = res[0].Contents
+        var result = content.includes("Test button cannot be used") && (all[m].brand === "ServiceNow v2" || all[m].brand === "ServiceNow CMDB");
+        if (result === true) {
+            cmd = all[m].brand === "ServiceNow v2" ? "servicenow-oauth-test" : "servicenow-cmdb-oauth-test"
+            res =  executeCommand(cmd, {});
+        }
         executeCommand("addEntries", {"entries": JSON.stringify([{
             Type: entryTypes.note,
             Contents: 'done testing **' + m + '**:\n' + res[0].Contents,

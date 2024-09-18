@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
 
+from logging import Logger
+import logging
 import os
 import sys
 import json
+import git.exc
+import requests
 from datetime import datetime
 from typing import Any
 from collections.abc import Generator, Iterable
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_metadata
+import git
 
-from git import Repo
-
-CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
-CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_roles.json"))
 
 DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 TIM_REVIEWER_KEY = "TIM_REVIEWER"
+
+CONTENT_ROLES_FILENAME = "content_roles.json"
+GITHUB_HIDDEN_DIR = ".github"
+CONTENT_ROLES_BLOB_MASTER_URL = f"https://raw.githubusercontent.com/demisto/content/master/{GITHUB_HIDDEN_DIR}/{CONTENT_ROLES_FILENAME}"
+
+LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 
 # override print so we have a timestamp with each print
 org_print = print
@@ -102,7 +109,7 @@ class Checkout:  # pragma: no cover
     previously current branch.
     """
 
-    def __init__(self, repo: Repo, branch_to_checkout: str, fork_owner: str | None = None, repo_name: str = 'content'):
+    def __init__(self, repo: git.Repo, branch_to_checkout: str, fork_owner: str | None = None, repo_name: str = 'content'):
         """Initializes instance attributes.
         Arguments:
             repo: git repo object
@@ -120,19 +127,21 @@ class Checkout:  # pragma: no cover
                 self.repo.create_remote(name=forked_remote_name, url=url)
                 print(f'Successfully created remote {forked_remote_name} for repo {url}')  # noqa: T201
             except Exception as error:
-                print(f'could not create remote from {url}, {error=}')  # noqa: T201
-                # handle the case where the name of the forked repo is not content
-                if github_event_path := os.getenv("GITHUB_EVENT_PATH"):
-                    try:
-                        payload = json.loads(github_event_path)
-                    except ValueError:
-                        print('failed to load GITHUB_EVENT_PATH')  # noqa: T201
-                        raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the owner {fork_owner}')
-                    # forked repo name includes fork_owner + repo name, for example foo/content.
-                    forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
-                    self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{forked_repo_name}")
-                else:
-                    raise
+                if f'{forked_remote_name} already exists' not in str(error):
+                    print(f'could not create remote from {url}, {error=}')  # noqa: T201
+                    # handle the case where the name of the forked repo is not content
+                    if github_event_path := os.getenv("GITHUB_EVENT_PATH"):
+                        try:
+                            payload = json.loads(github_event_path)
+                        except ValueError:
+                            print('failed to load GITHUB_EVENT_PATH')  # noqa: T201
+                            raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the '
+                                             f'owner {fork_owner}')
+                        # forked repo name includes fork_owner + repo name, for example foo/content.
+                        forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
+                        self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{forked_repo_name}")
+                    else:
+                        raise
 
             forked_remote = self.repo.remote(forked_remote_name)
             forked_remote.fetch(branch_to_checkout)
@@ -196,8 +205,8 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
             print(f"'{CONTRIBUTION_REVIEWERS_KEY}' is not an array. Terminating...")  # noqa: T201
             sys.exit(1)
 
-        if not isinstance(security_reviewer, str) or not security_reviewer:
-            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a string. Terminating...")  # noqa: T201
+        if not isinstance(security_reviewer, list) or not security_reviewer:
+            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a list. Terminating...")  # noqa: T201
             sys.exit(1)
 
         if not isinstance(tim_reviewer, str) or not tim_reviewer:
@@ -248,3 +257,131 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
     if not (reviewer := content_roles.get(DOC_REVIEWER_KEY)):
         raise ValueError("Cannot get doc reviewer")
     return reviewer
+
+
+def get_content_roles_from_blob() -> dict[str, Any] | None:
+    """
+    Helper method to retrieve the 'content_roles.json` from
+    the `demisto/content` master blob.
+
+    Returns:
+    - `dict[str, Any]` representing the content roles. See `.github/content_roles.json` for
+    the expected structure. If there's any failure getting/reading the resource,
+    we return `None`.
+    """
+
+    roles = None
+
+    try:
+        response = requests.get(CONTENT_ROLES_BLOB_MASTER_URL)
+        response.raise_for_status()  # Raise an error for bad status codes
+        print(f"Successfully retrieved {CONTENT_ROLES_FILENAME} from blob")
+        roles = response.json()
+    except (requests.RequestException, requests.HTTPError, json.JSONDecodeError, TypeError) as e:
+        print(f"{e.__class__.__name__} getting {CONTENT_ROLES_FILENAME} from blob: {e}.")
+    finally:
+        return roles
+
+
+def get_content_roles(path: Path | None = None) -> dict[str, Any] | None:
+    """
+    Helper method to retrieve the content roles config.
+    We first attempt to retrieve the content roles from `demisto/content` master blob.
+    If this attempt fails, we attempt to retrieve it from the filesystem.
+
+    Arguments:
+    - `path` (``Path | None``): The path used to find the content_roles.json.
+    Used in case we can't retrieve the file from GitHub.
+
+    Returns:
+    - `dict[str, Any]` representing the content roles.
+    """
+
+    print(f"Attempting to retrieve '{CONTENT_ROLES_FILENAME}' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")
+    roles = get_content_roles_from_blob()
+
+    if not roles:
+        print(f"Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")
+        repo_root_path = get_repo_path(str(path))
+        content_roles_path = repo_root_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
+        roles = load_json(content_roles_path)
+
+    return roles
+
+
+def get_repo_path(path: str = ".") -> Path:
+    """
+    Helper method to get the path of the repo.
+
+    Arguments:
+    - `path` (``str``): The path to search for the repo.
+    If nothing is defined we use the current working directory.
+
+    Returns:
+    - `Path` of the root repo. If the repo doesn't exist or
+    it's bare, we exit.
+    """
+
+    try:
+        repo = git.Repo(path, search_parent_directories=True)
+        git_root = repo.working_tree_dir
+        if git_root:
+            return Path(git_root)
+        else:
+            raise ValueError
+    except (git.exc.InvalidGitRepositoryError, ValueError):
+        print("Unable to get repo root path. Terminating...")
+        sys.exit(1)
+
+
+def get_metadata(pack_dirs: set[str]) -> list[dict]:
+    """
+    Get the pack metadata.
+
+    Args:
+        pack_dirs (set): paths to the packs that were changed
+
+    Return:
+        - pack metadata dictionary
+    """
+    pack_metadata_list = []
+
+    for pack_dir in pack_dirs:
+        if pack_metadata := get_pack_metadata(pack_dir):
+            print(f"pack metadata was retrieved for pack {pack_dir}")  # noqa: T201
+            pack_metadata_list.append(pack_metadata)
+        else:
+            print(f'Could not find pack support level for pack {pack_dir}')  # noqa: T201
+
+    return pack_metadata_list
+
+
+def get_logger(file_name: str) -> Logger:
+    """
+    Return a logger.
+
+    Arguments:
+    - `file_name` (``str``): The name of the log file.
+
+    Returns:
+    - `Logger` instance.
+    """
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)  # Set the lowest level to capture all messages
+
+    # Create file handle and set level to DEBUG
+    file_handler = logging.FileHandler(f"{file_name}.log")
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+
+    # Create stdout handler and set level to INFO
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    stream_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+
+    # Add handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
+
+    return logger

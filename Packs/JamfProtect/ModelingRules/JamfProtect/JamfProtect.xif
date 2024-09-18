@@ -1,17 +1,72 @@
 [MODEL: dataset = jamf_protect_raw]
+config case_sensitive = true
+
+// Jamf computers logs mapping
+|filter source_log_type = "computers"
+| alter 
+event_type = source_log_type,
+check_in = checkin,
+computer_created = created,
+host_name = hostName ,
+memory_size = to_integer(memorySize) , // Already in bytes
+model_name = modelName ,
+operating_system = osString ,
+serial_number = serial,
+universally_unique_identifier = uuid ,
+agent_version = version ,
+signatures_version = concat("Threat Version ",to_string(signaturesVersion)) ,
+// plan
+computer_plan = to_string(plan)
+// insights
+| alter tmp_failed = to_string(insightsStatsFail),
+        tmp_success = to_string(insightsStatsPass),
+        tmp_unknown = to_string(insightsStatsUnknown)
+| alter insights_status = object_create("Rules Status Failed", tmp_failed , "Rules Status Passed", tmp_success , "Rules Status Unknown", tmp_unknown )
+// discard all rules that passed and keep the failed rules that can be a risk to the asset
+| alter tmp_computer_risks = arrayfilter(scorecard ->[], "@element"->pass="false")
+// Create new array with the relevant information
+| alter computer_risks = arraymap(tmp_computer_risks, object_create("Section", "@element"->section, "Rule Name", "@element"-> label, "Benchmark Level", replex(arraystring("@element"->tags[], ""), "\"", "")))
+// Check if the last connection IP is v4 or v6
+|alter last_connection_ipv4 = arrayindex(regextract(lastConnectionIp, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0) 
+| alter last_connection_ipv6 = arrayindex(regextract(lastConnectionIp , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
+
+// XDM mapping
+| alter xdm.event.type = event_type,
+xdm.source.host.boot_time = check_in,
+xdm.source.agent.installation_time = computer_created, 
+xdm.source.host.hostname = host_name , 
+xdm.event.description = insights_status, 
+xdm.source.host.memory = memory_size,
+xdm.source.host.device_model = model_name , 
+xdm.source.host.os = operating_system , 
+xdm.source.host.device_id = serial_number, 
+xdm.source.host.hardware_uuid = universally_unique_identifier ,
+xdm.source.agent.version = agent_version, 
+xdm.observer.version = signatures_version ,
+xdm.network.rule = computer_plan , 
+xdm.alert.risks = computer_risks ,
+xdm.source.ipv4 = last_connection_ipv4 ,
+xdm.source.ipv6 = last_connection_ipv6 ;
+
+
 // Jamf audit logs mapping
 config case_sensitive = true
-| filter source_log_type = "audit"
+|filter source_log_type = "audit"
 | alter
         host_ipv4_addresses = arrayfilter(arraymap(split(ips, ","), trim("@element")), "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
-        host_ipv6_addresses = arrayfilter(arraymap(split(ips, ","), trim("@element")), "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}")
+        host_ipv6_addresses = arrayfilter(arraymap(split(ips, ","), trim("@element")), "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),
+        tmp_operation = arrayindex(regextract(op, "(?:create|delete|update|send|Prevented)"), 0),
+        tmp_operation_target = arrayindex(regextract(op, "(?:[A-Z]+[a-z]+)+"), 0)
+
 // XDM mapping
 | alter
         xdm.event.type = source_log_type,
+        xdm.event.description = args -> input.description,
         xdm.event.original_event_type = op,
+        xdm.event.operation_sub_type = tmp_operation,
+        xdm.target.resource.type  = tmp_operation_target,
         xdm.target.resource.id = resourceId,
         xdm.target.resource.name = coalesce (args -> input.name, args -> input.email),
-        xdm.target.resource.type = arrayindex(regextract(op, "[a-z]+([A-Z].*)"), 0),
         xdm.target.resource.sub_type = args -> input.type,
         xdm.source.user.username = arrayindex(regextract(user, "([^#]+)#?"), 0),
         xdm.target.user.username = args -> input.email,
@@ -23,7 +78,8 @@ config case_sensitive = true
         xdm.source.ipv6 = arrayindex(host_ipv6_addresses, 0);
 
 // Jamf alert logs mapping
-filter source_log_type = "alert"
+config case_sensitive = true
+|filter source_log_type = "alert"
 | alter
         facts = json_extract_array(json, "$.match.facts"),
         actions = json_extract_array(json, "$.match.actions"),
@@ -34,10 +90,11 @@ filter source_log_type = "alert"
         host_ipv4_addresses = arrayfilter(json_extract_scalar_array(json, "$.host.ips"), "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
         host_ipv6_addresses = arrayfilter(json_extract_scalar_array(json, "$.host.ips"), "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),
         os = lowercase(json -> host.os),
-        blocked = if(json -> match.event.blocked = "true", "blocked", "not blocked"),
+        blocked = if(json -> match.event.blocked = "true", "blocked", json -> match.event.blocked = "false", "not blocked", null),
         facts_human = arraystring(arraymap(facts, "@element" -> human), ", "),
         actions_parameters_title = arraystring(arraymap(actions, "@element" -> parameters.title), ", "),
-        actions_parameters_message = arraystring(arraymap(actions, "@element" -> parameters.message), ", ")
+        actions_parameters_message = arraystring(arraymap(actions, "@element" -> parameters.message), ", "),
+        action_by_alertname = if(lowercase(arraystring(arraymap(facts, "@element" -> name), ", ")) contains "block", "blocked", null)
 | alter
         human_title = if(actions_parameters_title != null, concat(facts_human, ", ", actions_parameters_title), facts_human)
 | alter
@@ -47,7 +104,7 @@ filter source_log_type = "alert"
         xdm.event.type = source_log_type,
         xdm.event.original_event_type = json -> eventType,
         xdm.event.description = to_string(json),
-        xdm.observer.action = coalesce(blocked, arraystring(arraymap(actions, "@element" -> name), ", ")),
+        xdm.observer.action = coalesce(blocked, action_by_alertname, arraystring(arraymap(actions, "@element" -> name), ", ")),
         xdm.alert.severity = severity,
         xdm.source.host.hostname = computer -> hostName,
         xdm.source.host.os = json -> host.os,

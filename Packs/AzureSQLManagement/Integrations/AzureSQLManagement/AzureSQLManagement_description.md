@@ -1,5 +1,12 @@
 Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
 
+In order to connect to the AzureSQLManagement using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
+
+- *Authorization Code Flow* (Recommended).
+- *Device Code Flow*.
+- *Azure Managed Identities*
+- *Client Credentials Flow*.
+
 # Self-Deployed Application
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
@@ -19,12 +26,6 @@ Follow these steps for a User-Authentication configuration:
 9. Run the ***!azure-sql-generate-login-url*** command in the War Room and follow the instruction.
 10. Run the **!azure-sql-auth-test*** command - a 'Success' message should be printed to the War Room.
 
-#### Cortex XSOAR Azure App
-
-In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
-
-You only need to fill in your subscription ID and resource group name. You can find your resource group and 
-subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
 
 ### Authentication Using the Device Code Flow
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
@@ -39,6 +40,13 @@ Follow these steps for a self-deployed configuration:
 
 Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
+
+You only need to fill in your subscription ID and resource group name. You can find your resource group and 
+subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
+
 ### Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.
 Follow one of these steps for authentication based on Azure Managed Identities:
@@ -52,3 +60,21 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
 
 For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+
+
+## Client Credentials Flow Authentication
+
+Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+*Note:* In the *Select members* section, assign the application you created earlier.
+To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+   1. In the **Authentication Type** field, select the **Client Credentials** option.
+   2. In the **Application ID** field, enter your Client/Application ID.
+   3. In the **Tenant ID** field, enter your Tenant ID .
+   4. In the **Client Secret** field, enter your Client Secret.
+   5. Click **Test** to validate the URLs, token, and connection
+   6. Save the instance.
+
+### Testing authentication and connectivity
+
+If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure SQL Management service run the ***!azure-sql-auth-test*** command. 
+If you are using Client Credentials Flow, click **Test** when you are configuring the instance.

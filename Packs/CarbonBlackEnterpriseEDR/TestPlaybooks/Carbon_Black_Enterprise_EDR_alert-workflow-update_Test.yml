@@ -1,0 +1,150 @@
+id: Carbon Black Enterprise EDR alert-workflow-update Test
+version: -1
+name: Carbon Black Enterprise EDR alert-workflow-update Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f589cf6f-cb71-483f-8f2e-c654039f1f5b
+    type: start
+    task:
+      id: f589cf6f-cb71-483f-8f2e-c654039f1f5b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: be2d3bb1-dc2f-44a8-8828-8e504362ed1e
+    type: regular
+    task:
+      id: be2d3bb1-dc2f-44a8-8828-8e504362ed1e
+      version: -1
+      name: Run cb-eedr-alert-workflow-update command
+      description: Updates the workflow of a single alert.
+      script: Carbon Black Enterprise EDR|||cb-eedr-alert-workflow-update
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alert_id:
+        simple: "2d8edf70-45dc-729a-a5f9-e1303667ac8d\t"
+      comment:
+        simple: alert's status has changed
+      state:
+        simple: OPEN
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9e760e62-2349-4917-8260-dd09656bdd7e
+    type: title
+    task:
+      id: 9e760e62-2349-4917-8260-dd09656bdd7e
+      version: -1
+      name: Done
+      tags:
+      - N/A
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 980,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: alert_id
+  value:
+    simple: "2d8edf70-45dc-729a-a5f9-e1303667ac8d\t"
+  required: true
+  description: The alert id
+  playbookInputQuery:
+- key: status
+  value:
+    simple: OPEN
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: comment
+  value:
+    simple: status has changed
+  required: false
+  description: comment to add to alert
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - alert_id
+  - status
+  - comment
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+quiet: true
+fromversion: 6.10.0
+description: Test playbook for 'alert-workflow-update' command.

@@ -3,3 +3,6 @@ ignore=BA108,BA109
 
 [file:README.md]
 ignore=RM104
+
+[known_words]
+Anomali

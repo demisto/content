@@ -21,6 +21,12 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+- display: Incremental Feed
+  defaultvalue: 'true'
+  hidden: true
+  name: feedIncremental
+  type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -49,7 +55,7 @@ configuration:
   type: 15
   additionalinfo: |
     Predefined list of indicator types:
-    - YARA: Parses YARA rules from the feed.
+    - YARA: Parses YARA rules from the feed. The "Yara" pack is required for this type.
     - STIX: Parses STIX data from the feed.
     - IOCs: Parses Indicators of Compromise (IOCs) using regex patterns.
   section: Collect
@@ -126,7 +132,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
 - display: ''
   name: feedExpirationInterval
   type: 1
@@ -151,7 +156,7 @@ script:
       name: limit
     description: Gets indicators from the feed within a specified date range and up to a maximum limit..
     name: github-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.96747
+  dockerimage: demisto/taxii2:1.0.0.107875
   feed: true
   isfetch: false
   longRunning: false
@@ -167,4 +172,3 @@ marketplaces:
 - marketplacev2
 tests:
 - No tests (auto formatted)
-

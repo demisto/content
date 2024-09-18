@@ -240,9 +240,9 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape_url: bool 
     html_file_names = get_files_names_in_path(output_folder, "*.html")
     html_content = ""
     for file_name in html_file_names:
-        with open(file_name) as f:
+        with open(file_name, "rb") as f:
             for line in f:
-                html_content += html.unescape(line) if unescape_url else line
+                html_content += html.unescape(str(line)) if unescape_url else str(line)
     return html_content
 
 
@@ -287,7 +287,7 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
             results.append(file)
     all_pdf_data = ""
     if metadata:
-        for k, v in metadata.items():
+        for _, v in metadata.items():
             all_pdf_data += str(v)
     if text:
         all_pdf_data += text
@@ -492,7 +492,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
                 page_object = page_sliced.get_object()
 
                 # Extracts the PDF's Annots (Annotations and Commenting):
-                if annots := page_object.get('/Annots'):
+                if annots := page_object.get('/Annots'):  # type: ignore[union-attr]
                     if not isinstance(annots, PyPDF2.generic.ArrayObject):
                         annots = [annots]
 

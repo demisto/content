@@ -554,7 +554,7 @@ def get_incidents_for_event(
                     str(context_event.get('severity', 0)), 0
                 ),
                 'rawJSON': json.dumps(context_event),
-                'dbotMirrorId': str(event_id),
+                'dbotMirrorId': str(event.get('eventId')),
             }
             remove_nulls_from_dictionary(incident)
             incidents.append(incident)

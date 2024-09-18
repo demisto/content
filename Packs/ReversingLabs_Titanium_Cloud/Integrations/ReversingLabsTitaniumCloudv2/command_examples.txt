@@ -37,4 +37,5 @@
 !reversinglabs-titaniumcloud-submit-sample-for-dynamic-analysis sha1=21841b32c6165b27dddbd4d6eb3a672defe54271 platform=windows10
 !reversinglabs-titaniumcloud-get-url-dynamic-analysis-results url=http://classicairjordanshoes.com/classic-air-jordan-9-c-7.html?zenid=egbmmbi039iqms5ho5dt2qnunm0mettt analysis_id=0f57134a-ecb8-4f8f-ad60-903b63bf8bc4 latest_analysis=false
 !reversinglabs-titaniumcloud-submit-url-for-dynamic-analysis url=http://classicairjordanshoes.com/classic-air-jordan-9-c-7.html?zenid=egbmmbi039iqms5ho5dt2qnunm0mettt platform=windows10
-
+!reversinglabs-titaniumcloud-customer-usage-data data_type="MONTHLY USAGE" whole_company="false"
+!reversinglabs-titaniumcloud-customer-usage-yara

@@ -1,5 +1,6 @@
 import datetime
 import json
+import uuid
 
 from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
 
@@ -9,7 +10,7 @@ import logging
 import dateparser
 import pytest
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
-from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address
+from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address, get_attachment_name
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
@@ -459,7 +460,7 @@ def test_send_mail(mocker):
     """
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
-    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=(''))
     results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
@@ -482,7 +483,8 @@ def test_send_mail_with_from_arg(mocker):
     """
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
-    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=('', [
+        {'Contents': '', 'ContentsFormat': 'text', 'Type': 'png', 'File': 'image.png', 'FileID': '12345'}]))
     results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
@@ -504,7 +506,8 @@ def test_send_mail_with_trailing_comma(mocker):
     """
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
-    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox', return_value=('', [
+        {'Contents': '', 'ContentsFormat': 'text', 'Type': 'png', 'File': 'image.png', 'FileID': '12345'}]))
     results = send_email({'to': "test@gmail.com,", 'subject': "test"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert results[0].get('Contents') == {
@@ -620,7 +623,7 @@ def test_list_parse_item_as_dict():
 def test_parse_item_as_dict_with_empty_field():
     """
     Given -
-        a Message where effective rights is None and other fields are false\empty strings.
+        a Message where effective rights is None and other fields are false/empty strings.
 
     When -
         running the parse_item_as_dict function.
@@ -775,45 +778,56 @@ def test_get_message_for_body_type_no_body_type_with_html_body():
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
     result = get_message_for_body_type(body, None, html_body)
-    assert isinstance(result, HTMLBody)
-    assert result == HTMLBody(html_body)
+    assert isinstance(result[0], HTMLBody)
+    assert result[0] == HTMLBody(html_body)
+
+
+def test_get_message_for_body_type_no_body_type_with_html_body_and_image(mocker):
+    from exchangelib import FileAttachment
+    mocker.patch.object(uuid, 'uuid4', return_value='123456')
+    body = "This is a plain text body"
+    html_body = '<p>This is an HTML body</p><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+    result = get_message_for_body_type(body, None, html_body)
+    assert isinstance(result[0], HTMLBody)
+    assert isinstance(result[1][0], FileAttachment)
+    assert result[0] == HTMLBody('<p>This is an HTML body</p><p><img src="cid:image0_123456_123456"/></p>')
 
 
 def test_get_message_for_body_type_no_body_type_with_no_html_body():
     body = "This is a plain text body"
     result = get_message_for_body_type(body, None, None)
-    assert isinstance(result, Body)
-    assert result == Body(body)
+    assert isinstance(result[0], Body)
+    assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_html_body_type_with_html_body():
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
     result = get_message_for_body_type(body, 'html', html_body)
-    assert isinstance(result, HTMLBody)
-    assert result == HTMLBody(html_body)
+    assert isinstance(result[0], HTMLBody)
+    assert result[0] == HTMLBody(html_body)
 
 
 def test_get_message_for_body_type_text_body_type_with_html_body():
     body = "This is a plain text body"
     html_body = "<p>This is an HTML body</p>"
     result = get_message_for_body_type(body, 'text', html_body)
-    assert isinstance(result, Body)
-    assert result == Body(body)
+    assert isinstance(result[0], Body)
+    assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_html_body_type_with_no_html_body():
     body = "This is a plain text body"
     result = get_message_for_body_type(body, 'html', None)
-    assert isinstance(result, Body)
-    assert result == Body(body)
+    assert isinstance(result[0], Body)
+    assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_text_body_type_with_no_html_body():
     body = "This is a plain text body"
     result = get_message_for_body_type(body, 'text', None)
-    assert isinstance(result, Body)
-    assert result == Body(body)
+    assert isinstance(result[0], Body)
+    assert result[0] == Body(body)
 
 
 def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
@@ -824,8 +838,8 @@ def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
     """
     html_body = "<p>This is an HTML body</p>"
     result = get_message_for_body_type('', 'text', html_body)
-    assert isinstance(result, HTMLBody)
-    assert result == HTMLBody(html_body)
+    assert isinstance(result[0], HTMLBody)
+    assert result[0] == HTMLBody(html_body)
 
 
 def test_parse_physical_address():
@@ -858,3 +872,48 @@ def test_parse_item_as_dict_return_json_serializable():
     item_as_json = json.dumps(item_as_dict, ensure_ascii=False)
     assert isinstance((item_as_dict.get("cc_recipients", [])[0]).get("item_id"), dict)
     assert '"item_id": {"id": "id123", "changekey": "change"}' in item_as_json
+
+
+@pytest.mark.parametrize("attachment_name, content_id, is_inline, expected_result", [
+    pytest.param('image1.png', "", False, "image1.png"),
+    pytest.param('image1.png', '123', True, "123-attachmentName-image1.png"),
+    pytest.param('image1.png', None, False, "image1.png"),
+
+])
+def test_get_attachment_name(attachment_name, content_id, is_inline, expected_result):
+    """
+    Given:
+        - case 1: attachment is not inline.
+        - case 1: attachment is inline.
+        - case 3: attachment is not inline.
+    When:
+        - get_attachment_name is called with LEGACY_NAME=FALSE
+    Then:
+        Only case 2 should add an ID to the attachment name.
+
+    """
+    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
+                               is_inline=is_inline) == expected_result
+
+
+@pytest.mark.parametrize("attachment_name, content_id, is_inline, expected_result", [
+    pytest.param('image1.png', "", False, "image1.png"),
+    pytest.param('image1.png', '123', True, "image1.png"),
+    pytest.param('image1.png', None, False, "image1.png"),
+
+])
+def test_get_attachment_name_legacy_name(monkeypatch, attachment_name, content_id, is_inline, expected_result):
+    """
+    Given:
+        - case 1: attachment is not inline.
+        - case 1: attachment is inline.
+        - case 3: attachment is not inline.
+    When:
+        - get_attachment_name is called with LEGACY_NAME=FALSE
+    Then:
+        All cases should not add an ID to the attachment name.
+
+    """
+    monkeypatch.setattr('EWSv2.LEGACY_NAME', True)
+    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
+                               is_inline=is_inline) == expected_result

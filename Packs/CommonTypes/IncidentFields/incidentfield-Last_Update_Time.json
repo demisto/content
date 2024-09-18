@@ -39,7 +39,8 @@
         "Graph Security Alert",
         "CrowdStrike Falcon IDP Detection",
         "Cyberint Incident",
-        "CrowdStrike Falcon Mobile Detection"
+        "CrowdStrike Falcon Mobile Detection",
+        "CrowdStrike Falcon On-Demand Scans Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,

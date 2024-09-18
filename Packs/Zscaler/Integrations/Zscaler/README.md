@@ -614,13 +614,14 @@ Retrieves a list of all categories.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
-| Zscaler.Category.Description | string | The description of the category. | 
-| Zscaler.Category.Name | string | The name of the category. | 
+| **Path**                                    | **Type** | **Description**                                               |
+|---------------------------------------------|----------|---------------------------------------------------------------|
+| Zscaler.Category.ID                         | string   | The ID of the category.                                       | 
+| Zscaler.Category.CustomCategory             | boolean  | True, if the category is a custom category. Otherwise, false. | 
+| Zscaler.Category.URL                        | string   | The URL of the category.                                      | 
+| Zscaler.Category.RetainingParentCategoryURL | string   | The URLs of the retaining parent category.                    | 
+| Zscaler.Category.Description                | string   | The description of the category.                              | 
+| Zscaler.Category.Name                       | string   | The name of the category.                                     | 
 
 #### Command Example
 
@@ -646,6 +647,10 @@ Retrieves a list of all categories.
          "demisto.com",
          "apple.com"
       ],
+      "RetainingParentCategoryURL":[  
+         "pandora.com",
+         "spotify.com"
+      ],
       "CustomCategory":"true"
    }
 }
@@ -653,10 +658,10 @@ Retrieves a list of all categories.
 
 #### Human Readable Output
 
-|CustomCategory|Description|ID|Name|URL|
-|--- |--- |--- |--- |--- |
-|false|INTERNET_SERVICES_DESC|INTERNET_SERVICES||google.com,facebook.com|
-|true||CUSTOM_01|CustomCategory|demisto.com,apple.com|
+| CustomCategory | Description            | ID                | Name           | URL                     | RetainingParentCategoryURL |
+|----------------|------------------------|-------------------|----------------|-------------------------|----------------------------|
+| false          | INTERNET_SERVICES_DESC | INTERNET_SERVICES |                | google.com,facebook.com |                            |
+| true           |                        | CUSTOM_01         | CustomCategory | demisto.com,apple.com   | pandora.com","spotify.com  |
 
 ### zscaler-get-blacklist
 

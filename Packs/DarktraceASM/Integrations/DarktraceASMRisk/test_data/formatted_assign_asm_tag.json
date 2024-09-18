@@ -1,0 +1,10 @@
+{
+    "success": true,
+    "asset": {
+      "id": "QXBwbGljYXRpb25UeXBlOjI2NjI4",
+      "tags": [
+        "API TEST"
+      ]
+    },
+    "readable_output": "Successfully assigned tag API TEST to asset QXBwbGljYXRpb25UeXBlOjI2NjI4.  Tags applied to asset:\nAPI TEST"
+}

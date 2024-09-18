@@ -21,6 +21,7 @@ from CommvaultSecurityIQ import (
     copy_files_to_war_room,
     get_params,
     validate_inputs,
+    add_vm_to_cleanroom,
 )
 
 
@@ -57,8 +58,26 @@ class CommvaultClientMock(Client):
             }
         elif endpoint == "/Subclient/11351":
             return {"subClientProperties": [{"content": []}]}
+        elif endpoint == "/V4/recoverytargets":
+            return {"recoveryTargets": [{"id": "123", "applicationType": "CLEAN_ROOM"}]}
+        elif endpoint == "/recoverygroup/recid/entity":
+            return {"errorCode": 0, "errorMessage": ""}
+        elif endpoint == "/v4/virtualmachines":
+            return {
+                "virtualMachines": [
+                    {
+                        "name": "vm_name",
+                        "vmGroup": {"id": "id"},
+                        "hypervisor": {"id": "id"},
+                        "UUID": "UUID",
+                        "backupset": {"backupSetId": "backupSetId"},
+                    }
+                ]
+            }
         elif endpoint == "/User/":
             return {"subClientProperties": [{"content": [{"path": "C:\\Folder"}]}]}
+        elif endpoint == "/recoverygroup":
+            return {"recoveryGroup": {"id": "recid"}}
         elif endpoint.startswith("/events"):
             return {
                 "commservEvents": [
@@ -98,6 +117,8 @@ class CommvaultClientMock(Client):
             }
         elif endpoint.startswith("/ApiToken/User"):
             return {"token": "keyvaulturl"}
+        elif endpoint.startswith("/recoverygroups"):
+            return {"recoveryGroups": [{"name": "recgid", "id": "id"}]}
         elif endpoint == "/User/1":
             return {"users": [{"enableUser": True}]}
         elif endpoint == "/User/1/Disable":
@@ -198,8 +219,13 @@ def test_disable_data_aging():
         proxy=False,  # disable-secrets-detection
     )
     response = disable_data_aging(client)
-    expected_resp = {"DisableDataAgingResponse": "Error disabling data aging on the client"}
-    assert response.raw_response["DisableDataAgingResponse"] == expected_resp["DisableDataAgingResponse"]
+    expected_resp = {
+        "DisableDataAgingResponse": "Error disabling data aging on the client"
+    }
+    assert (
+        response.raw_response["DisableDataAgingResponse"]
+        == expected_resp["DisableDataAgingResponse"]
+    )
 
 
 def test_copy_files_to_war_room():
@@ -217,7 +243,10 @@ def test_generate_access_token():
     )
     resp = generate_access_token(client, "")
     expected_resp = {"GenerateTokenResponse": "Successfully generated access token"}
-    assert resp.raw_response["GenerateTokenResponse"] == expected_resp["GenerateTokenResponse"]
+    assert (
+        resp.raw_response["GenerateTokenResponse"]
+        == expected_resp["GenerateTokenResponse"]
+    )
 
 
 def test_fetch_and_disable_saml_identity_provider():
@@ -228,8 +257,12 @@ def test_fetch_and_disable_saml_identity_provider():
         proxy=False,  # disable-secrets-detection
     )
     resp = fetch_and_disable_saml_identity_provider(client)
-    expected_resp = {"DisableSamlResponse": "Successfully disabled SAML identity provider"}
-    assert resp.raw_response["DisableSamlResponse"] == expected_resp["DisableSamlResponse"]
+    expected_resp = {
+        "DisableSamlResponse": "Successfully disabled SAML identity provider"
+    }
+    assert (
+        resp.raw_response["DisableSamlResponse"] == expected_resp["DisableSamlResponse"]
+    )
 
 
 def test_disable_user():
@@ -241,7 +274,9 @@ def test_disable_user():
     )
     resp = disable_user(client, "dummy@email.com")
     expected_resp = {"DisableUserResponse": "Successfully disabled user"}
-    assert resp.raw_response["DisableUserResponse"] == expected_resp["DisableUserResponse"]
+    assert (
+        resp.raw_response["DisableUserResponse"] == expected_resp["DisableUserResponse"]
+    )
 
 
 def test_get_access_token_from_keyvault():
@@ -251,7 +286,10 @@ def test_get_access_token_from_keyvault():
     )
     resp = get_secret_from_key_vault(client)
     expected_resp = {"GetAccessTokenResponse": "secret"}
-    assert resp.raw_response["GetAccessTokenResponse"] == expected_resp["GetAccessTokenResponse"]
+    assert (
+        resp.raw_response["GetAccessTokenResponse"]
+        == expected_resp["GetAccessTokenResponse"]
+    )
 
 
 def test_fetch_incidents():
@@ -271,7 +309,9 @@ def test_get_backup_anomaly():
     resp0 = get_backup_anomaly(0)
     resp1 = get_backup_anomaly(1)
     resp2 = get_backup_anomaly(2)
-    assert resp0 == "Undefined" and resp1 == "File Activity" and resp2 == "File Type"
+    assert resp0 == "Undefined"
+    assert resp1 == "File Activity"
+    assert resp2 == "File Type"
 
 
 def test_if_zero_set_none():
@@ -282,7 +322,7 @@ def test_if_zero_set_none():
 
 def test_extract_from_regex():
     """Unit test function"""
-    resp = extract_from_regex("clientid[123]", '0', "clientid\\[(.*)\\]")
+    resp = extract_from_regex("clientid[123]", "0", "clientid\\[(.*)\\]")
     assert resp == "123"
 
 
@@ -308,6 +348,29 @@ def test_long_running_execution():
     )
     server: StreamServer = client.prepare_globals_and_create_server(port, "", "")
     assert server.address[1] == 33333
+
+
+def test_add_vm_to_cleanroom(capfd):
+    """Unit test function"""
+    with capfd.disabled():
+        client = CommvaultClientMock(
+            base_url="https://webservice_url:81",
+            verify=False,
+            proxy=False,  # disable-secrets-detection
+        )
+        resp = add_vm_to_cleanroom(client, "vm_name", "02:12:2024 21:00:00")
+        assert (
+            resp.raw_response["AddEntityToCleanroomResponse"]
+            == "Successfully added entity to clean room."
+        )
+
+        try:
+            _ = client.get_point_in_time_timestamp("invalid date")
+        except Exception as e:
+            assert (
+                str(e)
+                == "Invalid recovery point format. Use format dd:mm:yyyy hh:mm:ss"
+            )
 
 
 def test_webhook():
