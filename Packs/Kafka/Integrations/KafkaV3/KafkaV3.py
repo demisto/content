@@ -237,7 +237,7 @@ class KafkaCommunicator:
             return_results(f'Message was successfully produced to '
                            f'topic \'{msg.topic()}\', partition {msg.partition()}')
 
-    def get_topics(self, consumer: bool = False) -> dict:  # TODO need to see what to do with the consumer argument here
+    def get_topics(self, consumer: bool = True) -> dict:
         """Get Kafka topics
 
         Args:
