@@ -46,6 +46,18 @@ configuration:
   type: 0
   required: false
   additionalinfo: Fetch operations which contain this name.
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 7 days
+  name: first_fetch
+  type: 0
+  required: false
+- display: Maximum number of incidents per fetch
+  additionalinfo: The maximum number of incidents per fetch. Cannot exceed 50.
+  name: max_fetch
+  type: 0
+  defaultvalue: "50"
+  required: false
+  section: Collect
 script:
   script: ''
   type: python

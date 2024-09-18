@@ -1353,15 +1353,15 @@ def filter_operations(operations: list, params: Dict[str, str], last_fetch: str)
     parsed_last_fetch = dateparser.parse(last_fetch)
     if not parsed_last_fetch:
         raise ValueError(f"Failed parsing {last_fetch}")
-    
+
     filtered_operations = [
         operation for operation in operations
         if (start_date := dateparser.parse(operation.get("start"))) and start_date > parsed_last_fetch
     ]
-    
+
     if client_name := params.get("client_name"):
         filtered_operations = [operation for operation in filtered_operations if client_name in operation.get("name")]
-        
+
     return filtered_operations
 
 
@@ -1380,18 +1380,19 @@ def operation_to_incident(operation: dict, operation_date: str) -> dict:
     operation_name = operation.get("name")
     incident = {
         "name": f"Caldera: {operation_id} {operation_name}",
-        "occurred": f"{operation_date}",
+        "occurred": operation_date,
         "rawJSON": json.dumps(operation),
     }
     return incident
 
 
-def operations_to_incidents(operations: list, last_fetch_datetime: str) -> tuple[list, str]:
+def operations_to_incidents(operations: list, params: Dict[str, str], last_fetch_datetime: str) -> tuple[list, str]:
     """
     Converts a list of operations into a list of incidents and updates the latest incident time.
 
     Args:
         operations (list): A list of dictionaries, where each dictionary represents an operation.
+        params (dict): The integration parameters.
         last_fetch_datetime (str): The datetime string representing the last time incidents were fetched.
 
     Returns:
@@ -1401,11 +1402,15 @@ def operations_to_incidents(operations: list, last_fetch_datetime: str) -> tuple
     """
     incidents: List[Dict[str, str]] = []
     latest_incident_time = last_fetch_datetime
-    
+    max_fetch = int(params.get("max_fetch", 50))
+
     # Parse last fetch datetime
     parsed_last_fetch_datetime = dateparser.parse(last_fetch_datetime)
     if not parsed_last_fetch_datetime:
         raise ValueError(f"Failed parsing {last_fetch_datetime}")
+
+    # The count of incidents, so as not to pass the limit
+    count_incidents = 0
 
     for operation in operations:
         operation_datetime = operation.get("start", "")
@@ -1420,6 +1425,10 @@ def operations_to_incidents(operations: list, last_fetch_datetime: str) -> tuple
 
         if parsed_datetime and parsed_datetime > parsed_last_fetch_datetime:
             latest_incident_time = operation_datetime
+
+        count_incidents += 1
+        if count_incidents == max_fetch:
+            break
 
     return incidents, latest_incident_time
 
@@ -1437,7 +1446,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any], params: Dict[str, str]
     # Fetch only operations after last fetch time
     operations = filter_operations(operations, params, last_fetch)
 
-    incidents, latest_operation_time = operations_to_incidents(operations, last_fetch_datetime=last_fetch)
+    incidents, latest_operation_time = operations_to_incidents(operations, params, last_fetch_datetime=last_fetch)
 
     demisto.debug(f"[Caldera] Fetched {len(incidents)} incidents")
 
