@@ -36,7 +36,6 @@ configuration:
   name: credentials
   type: 9
   required: false
-  deprecated: true
   hiddenusername: true
   hiddenpassword: true
   section: Connect
