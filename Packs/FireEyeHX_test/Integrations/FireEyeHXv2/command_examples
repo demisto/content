@@ -1,0 +1,36 @@
+!fireeye-hx-get-alerts limit=2 sort=alertId
+!fireeye-hx-get-alert alertId=8
+!fireeye-hx-list-policy limit=2 policyName=Demisto
+!fireeye-hx-list-host-set-policy limit=1
+!fireeye-hx-list-containment limit=2
+!fireeye-hx-create-indicator category=Custom
+!fireeye-hx-search hostsNames=XXX ipAddress=8.8.8.8 ipAddressOperator=equals polling=false
+!fireeye-hx-search-list limit=1
+!fireeye-hx-search-result-get searchId=141
+!fireeye-hx-get-all-hosts-information limit=1
+!fireeye-hx-get-host-set-information hostSetID=1001
+!fireeye-hx-get-host-information hostName=XXX
+!fireeye-hx-data-acquisition hostName=XXX defaultSystemScript=osx
+!fireeye-hx-get-data-acquisition acquisitionId=102
+!fireeye-hx-delete-data-acquisition acquisitionId=102
+!fireeye-hx-assign-host-set-policy hostSetId=1005 policyId=YYYY-5471-4ae1-918d-YYYY
+!!fireeye-hx-approve-containment agentId=YYYY2ns3oui1fYYYY
+!fireeye-hx-cancel-containment hostName=XXX
+!fireeye-hx-search-stop searchId=141
+!fireeye-hx-search-delete searchId=142
+!fireeye-hx-suppress-alert alertId=18
+!fireeye-hx-host-containment hostName=XXX
+!fireeye-hx-get-indicator category=Custom name=5d5cea45-2856-4338-8de8-7ef2b16f9511
+!fireeye-hx-get-indicators limit=2
+!fireeye-hx-delete-host-set-policy hostSetId=1005 policyId=YYYY-5471-4ae1-918d-YYYY
+!fireeye-hx-append-conditions category=Custom name=5d5cea45-2856-4338-8de8-7ef2b16f9511 condition=exsmple.com
+!fireeye-hx-list-indicator-category search=fireEye
+!fireeye-hx-delete-indicator category=Custom indicator_name=7f49e4c6-14d5-4b06-8d17-843fd17f79de
+!fireeye-hx-delete-indicator-condition category=Custom condition_id=4gMIyj9rWnt2o9vOXzYI5A== indicator_name=049c2e93-dae8-4fcd-a8e6-924029e12171 type=execution
+!fireeye-hx-delete-host-set host_set_id=1036
+!fireeye-hx-create-host-set-static host_set_name=demisto_test_static hosts_ids=Hqb2ns3oui1fpzg0BxI1Ch
+!fireeye-hx-update-host-set-static host_set_name=demisto_test_static host_set_id=1068 add_host_ids=GfLI00Q4zpidezw9I11rV6 remove_host_ids=Hqb2ns3oui1fpzg0BxI1Ch
+!fireeye-hx-create-host-set-dynamic host_set_name=demisto_test_dynamic query_key=Bitlevel query_operator=eq query_value=64-bit
+!fireeye-hx-create-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}`
+!fireeye-hx-update-host-set-dynamic host_set_name=demisto_test_dynamic query_key=Bitlevel query_operator=eq query_value=64-bit host_set_id=1069
+!fireeye-hx-create-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}` host_set_id=1069
