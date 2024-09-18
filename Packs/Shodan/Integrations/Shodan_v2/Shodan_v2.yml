@@ -75,7 +75,7 @@ configuration:
   defaultvalue: "50_000"
   advanced: true
   type: 0
-  required: true
+  required: false
   section: Collect
 description: A search engine used for searching Internet-connected devices.
 display: Shodan v2
@@ -381,3 +381,5 @@ script:
 tests:
 - Test-Shodan_v2
 fromversion: 5.0.0
+marketplaces:
+- marketplacev2

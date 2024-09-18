@@ -6,14 +6,20 @@ A search engine used for searching Internet-connected devices.
 2. Search for Shodan v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Api Key | True |
-    | Base url to Shodan API | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | API Key |  | False |
+    | API Key |  | False |
+    | Base url to Shodan API |  | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+    |  |  | False |
+    |  |  | False |
+    | The maximum number of events per fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
@@ -752,6 +758,26 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Removed service "1.1.1.1:80" for trigger any in alert 0EKRH38BBQEHTQ3E from the allow list
+### shodan-get-events
+
+***
+Retrieves events from Shodan.
+
+#### Base Command
+
+`shodan-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | If set to 'True', the command will create events; otherwise, it will only display them. Possible values are: True, False. Default is False. | Optional | 
+| start_date | Fetch events created after this date. You can also use relative terms like "3 days ago". Default is 3 days ago. | Optional | 
+| max_fetch | The maximum amount of events to return. Default is 50000. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
 
 
 ## Fetch Events
