@@ -9,7 +9,7 @@ Use the Google Threat Intelligence Livehunt Feed integration to fetch indicators
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
-| api_key | API Key. | True |
+| credentials | API Key. | True |
 | filter | Exact name of the rule or ruleset you want to filter on. Leave empty to receive all. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
@@ -57,9 +57,3 @@ There is no context output for this command.
 | Sha256 | Detections |Filetype | Rulesetname | Rulename |
 |---|---|---|---|---|
 f221425286c9073cbb2168f73120b6...|59/69|Win32 EXE|Wannacry Ransomware|WannaCry_Ransomware_Gen|
-
-
-## Demo Video
-<iframe width="560" height="315" src="https://www.youtube.com/watch?v=Qv89-iS9HVY" frameborder="0"
-allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-allowfullscreen="true"></iframe>

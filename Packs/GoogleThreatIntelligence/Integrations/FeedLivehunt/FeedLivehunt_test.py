@@ -162,30 +162,45 @@ def _mock_file(sha256=None, gti_score=None):
 
 def test_fetch_indicators_command(mocker):
     client = Client('https://fake')
-    mocker.patch.object(
-        client, 'get_api_indicators', return_value=MOCK_VT_RESPONSE)
+    for mock_gti_score, params_gti_score, len_response in [
+        (None, 0, 1),
+        (0, 0, 1),
+        (0, 10, 0),
+        (10, 0, 1),
+        (10, 10, 1),
+    ]:
+        mocker.patch.object(
+            client,
+            'get_api_indicators',
+            return_value={
+                'data': [
+                    _mock_file(gti_score=mock_gti_score),
+                ],
+            },
+        )
 
-    indicators = fetch_indicators_command(client, None, [], 1, None)
+        indicators = fetch_indicators_command(client, None, [], 1, None, params_gti_score)
 
-    fields = indicators[0]['fields']
+        assert len(indicators) == len_response
 
-    assert len(indicators) == 1
-    assert fields['md5'] == '6a650da84adf6e3356227cc8890a9ee7'
-    assert fields['sha1'] == 'f13339bc7527261c3552cc37c619f33ca04c1321'
-    assert fields['sha256'] == '9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25'
-    assert fields['ssdeep'] == '12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:VbLgdrgDdmMSirYbcMNgef0Xk+8'
-    assert fields['fileextension'] == 'exe'
-    assert fields['filetype'] == 'peexe'
-    assert fields['imphash'] == '9ecee117164e0b870a53dd187cdd7174'
-    assert fields['firstseenbysource'] == 1635952526
-    assert fields['lastseenbysource'] == 1635952526
-    assert fields['creationdate'] == 1290243788
-    assert fields['updateddate'] == 1635959808
-    assert fields['detectionengines'] == 69
-    assert fields['positivedetections'] == 60
-    assert fields['displayname'] == '6a650da84adf6e3356227cc8890a9ee7.virus'
-    assert fields['name'] == '6a650da84adf6e3356227cc8890a9ee7.virus'
-    assert fields['size'] == 3723264
+        if len_response > 0:
+            fields = indicators[0]['fields']
+            assert fields['md5'] == '6a650da84adf6e3356227cc8890a9ee7'
+            assert fields['sha1'] == 'f13339bc7527261c3552cc37c619f33ca04c1321'
+            assert fields['sha256'] == '9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25'
+            assert fields['ssdeep'] == '12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:VbLgdrgDdmMSirYbcMNgef0Xk+8'
+            assert fields['fileextension'] == 'exe'
+            assert fields['filetype'] == 'peexe'
+            assert fields['imphash'] == '9ecee117164e0b870a53dd187cdd7174'
+            assert fields['firstseenbysource'] == 1635952526
+            assert fields['lastseenbysource'] == 1635952526
+            assert fields['creationdate'] == 1290243788
+            assert fields['updateddate'] == 1635959808
+            assert fields['detectionengines'] == 69
+            assert fields['positivedetections'] == 60
+            assert fields['displayname'] == '6a650da84adf6e3356227cc8890a9ee7.virus'
+            assert fields['name'] == '6a650da84adf6e3356227cc8890a9ee7.virus'
+            assert fields['size'] == 3723264
 
 
 def test_get_indicators_command(mocker):
