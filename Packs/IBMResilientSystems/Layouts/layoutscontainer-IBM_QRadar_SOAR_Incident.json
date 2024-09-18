@@ -1,12 +1,8 @@
 {
-	"cacheVersn": 0,
-	"close": null,
 	"definitionId": "",
 	"description": "",
-	"detached": false,
 	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -770,24 +766,13 @@
 		]
 	},
 	"edit": null,
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "IBM QRadar SOAR Incident",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
 	"mobile": null,
 	"name": "IBM QRadar SOAR Incident",
-	"packID": "",
-	"packName": "IBM Security QRadar SOAR",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1,
     "fromVersion": "6.0.0"
 }
