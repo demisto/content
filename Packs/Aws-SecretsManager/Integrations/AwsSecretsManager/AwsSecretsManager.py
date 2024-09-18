@@ -236,7 +236,7 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]):  # pragma: no co
         try:
             secret_as_dict = json.loads(creds_dict[cred_key].get("SecretString"))
 
-            if not any(key in ["user", "password", "workgroup", "certificate"] for key in secret_as_dict.keys()):
+            if any(key in ["username", "password", "workgroup", "certificate"] for key in secret_as_dict.keys()):
                 credentials.append({
                     "user": secret_as_dict.get("username", ""),
                     "password": secret_as_dict.get("password", ""),
@@ -245,8 +245,9 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]):  # pragma: no co
                     "name": f'{creds_dict[cred_key].get("Name")}',
                 })
             else:
-                LOG(f'({creds_dict[cred_key]}) has no keys supporting the format')
+                demisto.debug(f'({creds_dict[cred_key]}) has no keys supporting the format')
         except Exception as e:
+            demisto.debug(f'exception occured during parsing {e}')
             return_error(f'theres is a problem parsing ({creds_dict[cred_key]}) secret value, {e}')
     demisto.credentials(credentials)
 
