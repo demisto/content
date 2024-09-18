@@ -16,7 +16,6 @@ from requests.exceptions import ConnectionError
 # Disable insecure warnings
 urllib3.disable_warnings()
 """ CONSTANTS """
-# RISK_FINDINGS = []
 MAX_PAGE_SIZE: int = 50
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 GET_RISK_FINDINGS_ENDPOINT = "/v1/risk-findings"
@@ -30,12 +29,6 @@ GET_ALERTS_LIST: str = "/v1/alerts"
 GET_RISK_FINDING_BY_ID: str = "/v1/risk-findings/id/"
 INCIDENT_STATUS = {"OPEN": 1, "INVESTIGATING": 2, "HANDLED": 2, "CLOSED": 2}
 RISK_STATUS = {"Active": "OPEN", "Closed": "INVESTIGATING", "Pending": "INVESTIGATING"}
-# MIRROR_DIRECTION = {
-#     "None": None,
-#     "Incoming": "In",
-#     "Outgoing": "Out",
-#     "Incoming And Outgoing": "Both",
-# }
 
 SUPPORTED_CLOUD_PROVIDERS = ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]
 SUPPORTED_CATEGORIES = [
@@ -154,38 +147,6 @@ SUPPORTED_CLOUD_ENVIRONMENTS = ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", 
 SUPPORTED_POLICY_SEVERITIES = ["HIGH", "MEDIUM", "LOW"]
 SUPPORTED_CATEGORY_TYPES = ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]
 
-# Define remediation steps for specific findings
-ASSET_REMEDIATION_DESCRIPTION = {
-    "Sensitive asset open to world": (
-        "To remediate this, 'aws-s3-put-public-access-block' command will be executed. "
-        "This will block public access to the specified S3 bucket containing sensitive data.\n\n"
-        #   "This will prevent unauthorized access and ensure data security.\n\n"
-    )
-}
-ASSET_REMEDIATION_STEPS = {
-    "Sensitive asset open to world": (
-        "If you prefer to remediate manually, follow these steps:\n"
-        "1. Log in to the AWS Management Console.\n"
-        "2. Navigate to the S3 service.\n"
-        "3. Select the bucket with sensitive data.\n"
-        "4. Go to the 'Permissions' tab.\n"
-        "5. Under 'Public access settings for this bucket', click 'Edit'.\n"
-        "6. Turn on 'Block all public access' and save the changes.\n"
-        "7. Review and confirm the changes to ensure the bucket is no longer publicly accessible."
-    ),
-    "Empty storage asset": "To remediate, consider deleting the asset to reduce the attack surface.",
-    "Sensitive asset without storage versioning": (
-        "To remediate, ensure all sensitive storage assets have versioning policies in place for "
-        "disaster recovery purposes. These policies can be configured on the asset level in the cloud provider console."
-    ),
-    "Stale Assets With Sensitive Data": (
-        "To remediate this risk, consider implementing a data retention policy for the asset. If it is feasible, "
-        "enable automatic deletion of data that has not been read or written to in the last 90 days. "
-        "If such a policy cannot be applied, we recommend to manually remove stale objects. "
-        "Not only does this approach helps maintaining compliance with data protection regulations, "
-        "it also minimizes the attack surface by reducing the amount of potentially exploitable data."
-    ),
-}
 """ CLIENT CLASS """
 
 
@@ -861,111 +822,10 @@ def get_list_of_alerts(
     return alerts_list
 
 
-""" FETCH INCIDENTS FUNCTION"""
-
-
-# def fetch_incidents(client: Client, mirror_direction):
-#     last_run = demisto.getLastRun()
-#     last_fetch = last_run.get("last_fetch")
-#     processed_ids = last_run.get("processed_ids", [])
-
-#     if last_fetch is None:
-#         last_fetch = "1970-01-01T00:00:00Z"
-
-#     incidents = []
-#     page = 0
-#     size = 1  # 50 is max size we can provide.
-#     findings = []
-
-#     while True:
-#         response = client.fetch_risk_findings(
-#             {
-#                 "page": page,
-#                 "size": size,
-#                 "ruleName.equals": "Sensitive asset open to world",
-#             }
-#         )
-#         new_findings = response
-#         if not new_findings or page == 1:
-#             break
-#         findings.extend(new_findings)
-#         page += 1
-
-#     demisto.debug(f"Total number of findings fetched: {len(findings)}")
-
-#     for finding in findings:
-#         finding_id = finding.get("id")
-#         occurred_time = datetime.utcnow().strftime(DATE_FORMAT)
-#         # finding.update(get_mirroring_fields(mirror_direction))
-
-#         if finding_id not in processed_ids:
-#             asset_id = finding.get("asset", {}).get("assetId", "")
-#             asset_details = {}
-#             if asset_id:
-#                 try:
-#                     asset_details = client.get_asset_details(asset_id)
-#                     demisto.debug("asset details :", asset_details)
-#                     finding["asset"]["details"] = asset_details
-#                 except Exception as e:
-#                     demisto.error(
-#                         f"Failed to fetch asset details for asset ID {asset_id}: {str(e)}"
-#                     )
-#                 # Define custom fields for the incident
-#                 custom_fields = {
-#                     "assetdetails": asset_details,
-#                     "remediationDescription": ASSET_REMEDIATION_DESCRIPTION.get(
-#                         finding.get("ruleName"), "N/A"
-#                     ),
-#                     "remediateSteps": ASSET_REMEDIATION_STEPS.get(
-#                         finding.get("ruleName"), "N/A"
-#                     ),
-#                     "riskFindingId": finding.get("id"),
-#                 }
-#                 incident = {
-#                     "name": finding.get("ruleName"),
-#                     "type": "DSPM Risk Findings",
-#                     "occurred": occurred_time,
-#                     "details": finding.get("asset", {}).get("name", ""),
-#                     "severity": severity_to_dbot_score(finding.get("severity")),
-#                     "status": map_status(finding.get("status")),
-#                     "assetDetails": json.dumps(asset_details),
-#                     "CustomFields": custom_fields,
-#                     "rawJSON": json.dumps(finding),
-#                 }
-#                 demisto.debug(f"incident details : {incident}")
-#                 incidents.append(incident)
-#             processed_ids.append(finding_id)  # type: ignore
-
-#     demisto.debug(f"Number of incidents created: {len(incidents)}")
-#     demisto.debug(f"Incident details: {incidents}")
-
-#     try:
-#         demisto.incidents(incidents)
-#         demisto.debug("Incidents successfully sent to demisto.incidents()")
-#     except Exception as e:
-#         demisto.error(f"Failed to create incidents: {str(e)}")
-
-#     if incidents:
-#         last_finding_time = incidents[-1]["occurred"]
-#         demisto.setLastRun(
-#             {"last_fetch": last_finding_time, "processed_ids": processed_ids}
-#         )
-#         demisto.debug(f"New last fetch time set: {last_finding_time}")
-#     else:
-#         demisto.setLastRun({"last_fetch": last_fetch, "processed_ids": processed_ids})
-#         demisto.debug("No new incidents created")
-
-
 def get_integration_config():
 
     integration_config = {
-        # "jiraEmail": demisto.params().get("jiraEmail"),
-        # "jiraServerUrl": demisto.params().get("jiraServerUrl"),
-        # "jiraApiToken": demisto.params().get("jiraApiToken", {}).get("password"),
-        # "azureStorageName": demisto.params().get("azureStorageName"),
-        # "azureSharedKey": demisto.params().get("azureSharedKey", {}).get("password"),
         "dspmApiKey": demisto.params().get("dspmApiKey", {}).get("password"),
-        # "GCPAccessToken": gcp_access_token,
         "slackMsgLifetime": demisto.params().get("slackMsgLifetime"),
         "defaultSlackUser": demisto.params().get("defaultSlackUser"),
     }
@@ -1015,7 +875,6 @@ def main() -> None:
     api_key = demisto.params().get("dspmApiKey", {}).get("password")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
-    # mirror_direction = demisto.params().get("mirror_direction", None)
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -1028,8 +887,6 @@ def main() -> None:
             return_results(result)
         elif demisto.command() == "dspm-get-integration-config":
             return_results(get_integration_config())
-        # elif demisto.command() == "fetch-incidents":
-        #     fetch_incidents(client, mirror_direction)
         elif demisto.command() == "dspm-get-risk-findings":
             page = 0
             while True:
