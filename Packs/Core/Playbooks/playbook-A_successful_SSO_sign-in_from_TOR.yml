@@ -589,7 +589,7 @@ tasks:
     task:
       id: eb1d3c97-e1f0-409b-8c2e-fc00c0254b81
       version: -1
-      name: Check if the user agent is suspicious
+      name: Extract suspicious user agent
       description: Extracts regex data from the provided text. The script supports groups and looping.
       scriptName: MatchRegexV2
       type: regular
