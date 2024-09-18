@@ -11,7 +11,7 @@ def convert_to_table():
     fields = incident.get('CustomFields', [])
 
     if fields:
-        tasks = fields.get('ibmqradartasks', [])
+        tasks = fields.get('ibmsecurityqradarsoartasks', [])
         for data in tasks:
             parsed_data = json.loads(data)
             new_task_entry = {

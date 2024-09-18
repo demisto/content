@@ -5,7 +5,7 @@ import demistomock as demisto
 def test_convert_to_table_no_artifacts(mocker):
     mock_incident = {
         'CustomFields': {
-            'ibmqradarartifacts': []
+            'ibmsecurityqradarsoarartifacts': []
         }
     }
     mocker.patch.object(demisto, 'incident', return_value=mock_incident)
@@ -16,7 +16,7 @@ def test_convert_to_table_no_artifacts(mocker):
 def test_convert_to_table_with_artifacts(mocker):
     mock_incident = {
         'CustomFields': {
-            'ibmqradarartifacts': [
+            'ibmsecurityqradarsoarartifacts': [
                 '{"type": "IP", "value": "192.168.1.1"}',
                 '{"type": "URL", "value": "https://example.com"}'
             ]

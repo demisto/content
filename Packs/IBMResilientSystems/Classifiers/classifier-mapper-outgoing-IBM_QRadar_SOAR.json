@@ -56,7 +56,7 @@
                     "simple": "displayname"
                 },
                 "reporter": {
-					"simple": "ibmqradarreportername"
+					"simple": "ibmsecurityqradarsoarreportername"
 				},
 				"severity_code": {
 					"complex": {

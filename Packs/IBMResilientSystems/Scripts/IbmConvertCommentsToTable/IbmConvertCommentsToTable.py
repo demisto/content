@@ -13,7 +13,7 @@ def convert_to_table():
     mirror_tags = incident.get('dbotMirrorTags', [])
 
     if fields:
-        ibm_qradar_notes = fields.get('ibmqradarnotes', [])
+        ibm_qradar_notes = fields.get('ibmsecurityqradarsoarnotes', [])
 
         for data in ibm_qradar_notes:
             parsed_data = json.loads(data)

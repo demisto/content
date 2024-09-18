@@ -3,7 +3,7 @@
 	"description": "",
 	"details": null,
 	"detailsV2": {
-		"tabs": [
+        "tabs": [
 			{
 				"id": "summary",
 				"name": "Legacy Summary",
@@ -30,9 +30,9 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarname",
+								"fieldId": "ibmsecurityqradarsoarname",
 								"height": 26,
-								"id": "186cc5b0-6095-11ef-a00d-d3f5a8c866c7",
+								"id": "35f3c630-75ba-11ef-bf13-4542c05a6165",
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -59,9 +59,9 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarphase",
+								"fieldId": "ibmsecurityqradarsoarphase",
 								"height": 26,
-								"id": "5809a6e0-4a63-11ef-a450-29f69179b85b",
+								"id": "3c5bf100-75ba-11ef-bf13-4542c05a6165",
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -77,30 +77,19 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarphase",
+								"fieldId": "ibmsecurityqradarsoarresolution",
 								"height": 26,
-								"id": "eefcaa70-6d1d-11ef-9e38-4186d90d9e91",
+								"id": "66e38b90-75ba-11ef-bf13-4542c05a6165",
 								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarresolution",
-								"height": 26,
-								"id": "f01e9ad0-4a63-11ef-a450-29f69179b85b",
-								"index": 7,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "ibmqradarresolutionsummary",
+								"fieldId": "ibmsecurityqradarsoarresolutionsummary",
 								"height": 52,
-								"id": "e0066d30-4a63-11ef-a450-29f69179b85b",
-								"index": 8,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"id": "69f07d70-75ba-11ef-bf13-4542c05a6165",
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -109,7 +98,7 @@
 								"fieldId": "owner",
 								"height": 26,
 								"id": "dd227990-62ed-11ef-9c1f-a7d53581a093",
-								"index": 9,
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -203,7 +192,7 @@
 								"fieldId": "closereason",
 								"height": 26,
 								"id": "incident-closeReason-field",
-								"index": 1,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -212,7 +201,7 @@
 								"fieldId": "closenotes",
 								"height": 52,
 								"id": "incident-closeNotes-field",
-								"index": 2,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -233,48 +222,46 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradardiscovereddate",
+								"fieldId": "ibmsecurityqradarsoardiscovereddate",
 								"height": 53,
-								"id": "c34a9f40-4a63-11ef-a450-29f69179b85b",
+								"id": "712f0b10-75ba-11ef-bf13-4542c05a6165",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarexposuretype",
+								"fieldId": "ibmsecurityqradarsoarexposuretype",
 								"height": 53,
-								"id": "c9422df0-4a63-11ef-a450-29f69179b85b",
+								"id": "7437de40-75ba-11ef-bf13-4542c05a6165",
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "ibmqradarnistattackvectors",
+								"fieldId": "ibmsecurityqradarsoarnistattackvectors",
 								"height": 53,
-								"id": "f94f5b80-4a63-11ef-a450-29f69179b85b",
+								"id": "7d318960-75ba-11ef-bf13-4542c05a6165",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "ibmsecurityqradarsoarcriminalactivity",
+								"height": 53,
+								"id": "82f4c1a0-75ba-11ef-bf13-4542c05a6165",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "ibmsecurityqradarsoarnegativepr",
+								"height": 26,
+								"id": "893c9330-75ba-11ef-bf13-4542c05a6165",
 								"index": 4,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "ibmqradarcriminalactivity",
-								"height": 53,
-								"id": "bed4ce90-4a63-11ef-a450-29f69179b85b",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "ibmqradarnegativepr",
-								"height": 53,
-								"id": "cea3be30-4a63-11ef-a450-29f69179b85b",
-								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -283,7 +270,7 @@
 								"fieldId": "details",
 								"height": 106,
 								"id": "incident-details-field",
-								"index": 7,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -304,9 +291,9 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarreportername",
+								"fieldId": "ibmsecurityqradarsoarreportername",
 								"height": 26,
-								"id": "b2202d90-62e9-11ef-9c1f-a7d53581a093",
+								"id": "62aa9cd0-75ba-11ef-bf13-4542c05a6165",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -408,33 +395,33 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 4,
 						"hideName": false,
 						"i": "caseinfoid-2c345b90-6d1e-11ef-9e38-4186d90d9e91",
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarcriminalactivity",
+								"fieldId": "ibmsecurityqradarsoarcriminalactivity",
 								"height": 26,
-								"id": "3d356290-6d1e-11ef-9e38-4186d90d9e91",
+								"id": "90ae17b0-75ba-11ef-bf13-4542c05a6165",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarexposuretype",
+								"fieldId": "ibmsecurityqradarsoarexposuretype",
 								"height": 26,
-								"id": "40b8e400-6d1e-11ef-9e38-4186d90d9e91",
+								"id": "946616a0-75ba-11ef-bf13-4542c05a6165",
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "ibmqradarnegativepr",
+								"fieldId": "ibmsecurityqradarsoarnegativepr",
 								"height": 26,
-								"id": "456729d0-6d1e-11ef-9e38-4186d90d9e91",
+								"id": "96eebd50-75ba-11ef-bf13-4542c05a6165",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -725,7 +712,8 @@
 					{
 						"displayType": "ROW",
 						"h": 3,
-						"i": "artifacts",
+						"i": "attachments-artifacts",
+						"maxW": 3,
 						"moved": false,
 						"name": "IBM Security QRadar SOAR SOAR Artifacts",
 						"query": "IbmConvertArtifactsToTable",
@@ -740,6 +728,7 @@
 						"displayType": "ROW",
 						"h": 5,
 						"i": "attachments",
+						"maxW": 3,
 						"moved": false,
 						"name": "IBM Security QRadar SOAR SOAR Attachments",
 						"query": "IbmConvertAttachmentsToTable",

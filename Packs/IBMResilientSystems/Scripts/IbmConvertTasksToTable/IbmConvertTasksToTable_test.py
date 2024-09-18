@@ -18,7 +18,7 @@ def test_no_custom_fields(mocker):
 
 
 def test_empty_tasks(mocker):
-    mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {'ibmqradartasks': []}})
+    mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {'ibmsecurityqradarsoartasks': []}})
     result = convert_to_table()
     assert result.readable_output == 'No tasks were found for this incident'
 
@@ -45,7 +45,7 @@ def test_multiple_tasks(mocker):
         'Owner': 'No Body',
         'Required': 'No'
     })
-    mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {'ibmqradartasks': [task_data1, task_data2]}})
+    mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {'ibmsecurityqradarsoartasks': [task_data1, task_data2]}})
     result = convert_to_table()
     assert '| Initial | 1 | Analyze Log | Open | Review logs | 2023-05-01 | No Body | Yes |' in result.readable_output
     assert ('| Custom | 2 | Isolate System | Completed | Isolate affected system | 2023-05-02 | No Body | No |'

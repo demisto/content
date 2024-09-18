@@ -20,6 +20,6 @@ def test_convert_to_table_no_attachments(mocker):
 
 def test_convert_to_table_with_attachments(mocker):
     mock_attachments = ['{"name": "file1.txt", "size": 1024}', '{"name": "file2.pdf", "size": 2048}']
-    mock_incident = {'CustomFields': {'ibmqradarattachments': mock_attachments}}
+    mock_incident = {'CustomFields': {'ibmsecurityqradarsoarattachments': mock_attachments}}
     mocker.patch.object(demisto, 'incident', return_value=mock_incident)
     convert_to_table()

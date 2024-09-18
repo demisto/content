@@ -11,7 +11,7 @@ def convert_to_table():
     fields = incident.get('CustomFields', [])
 
     if fields:
-        attachments = fields.get('ibmqradarattachments', [])
+        attachments = fields.get('ibmsecurityqradarsoarattachments', [])
         for attachment_data in attachments:
             parsed_data = json.loads(attachment_data)
             attachment_entries.append(parsed_data)

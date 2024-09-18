@@ -146,11 +146,11 @@ IBM_QRADAR_INCIDENT_FIELDS = {
         'description': 'The IDs of the incident types.'
     },
     'resolution_id': {
-        'xsoar_name': 'ibmqradarresolution',
+        'xsoar_name': 'ibmsecurityqradarsoarresolution',
         'description': ''
     },
     'resolution_summary': {
-        'xsoar_name': 'ibmqradarresolutionsummary',
+        'xsoar_name': 'ibmsecurityqradarsoarresolutionsummary',
         'description': ''
     },
     "owner_id": {
@@ -158,7 +158,7 @@ IBM_QRADAR_INCIDENT_FIELDS = {
         "description": "The principal ID of the incident owner.",
     },
     "reporter": {
-        "xsoar_name": "ibmqradarreportername",
+        "xsoar_name": "ibmsecurityqradarsoarreportername",
         "description": "Who reported the incident.",
     },
     "severity_code": {
@@ -656,7 +656,7 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
             else:
                 changes.append(get_field_changes_entry("plan_status", remote_status, "C"))
 
-        elif field == 'ibmqradarname':  # Excluding this field as the 'name' field is also used and read by XSOAR.
+        elif field == 'ibmsecurityqradarsoarname':  # Excluding this field as the 'name' field is also used and read by XSOAR.
             field = 'name'
 
         changes.append(

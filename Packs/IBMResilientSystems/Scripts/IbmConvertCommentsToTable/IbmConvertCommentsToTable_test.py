@@ -22,7 +22,7 @@ def test_convert_to_table_with_mirror_tags(mocker):
     import json
     mock_incident = {
         'CustomFields': {
-            'ibmqradarnotes': [
+            'ibmsecurityqradarsoarnotes': [
                 json.dumps({
                     'id': '1',
                     'text': {'content': 'Test comment with FROM XSOAR'},
@@ -43,7 +43,7 @@ def test_convert_to_table_multiple_comments(mocker):
     import json
     mock_incident = {
         'CustomFields': {
-            'ibmqradarnotes': [
+            'ibmsecurityqradarsoarnotes': [
                 json.dumps({
                     'id': '1',
                     'text': {'content': 'First comment FROM XSOAR'},

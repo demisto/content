@@ -11,7 +11,7 @@ def convert_to_table():
     fields = incident.get('CustomFields', [])
 
     if fields:
-        artifacts = fields.get('ibmqradarartifacts', [])
+        artifacts = fields.get('ibmsecurityqradarsoarartifacts', [])
         for artifact in artifacts:
             artifact_entry = json.loads(artifact)
             artifact_entries.append(artifact_entry)

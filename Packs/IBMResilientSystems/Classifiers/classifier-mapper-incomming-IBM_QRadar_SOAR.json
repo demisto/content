@@ -12,7 +12,7 @@
                 "Breach Confirmation": {
                     "simple": "confirmed"
                 },
-                "IBM QRadar Phase": {
+                "IBM Security QRadar SOAR Phase": {
                     "simple": "phase"
                 },
                 "City": {

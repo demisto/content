@@ -1180,7 +1180,7 @@ def test_process_raw_incident(_mocker):
 @pytest.mark.parametrize("incident_id, delta, expected_dto", [
     (
         "1000",
-        {"ibmqradarname": "Updated Incident Name", "description": "New description"},
+        {"ibmsecurityqradarsoarname": "Updated Incident Name", "description": "New description"},
         {'changes': [
             {
                 'field': 'name',
