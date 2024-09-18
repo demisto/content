@@ -118,12 +118,13 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
         time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
     current_time = datetime_to_string(datetime.now())
     events = client.get_events(time_of_last_event_str, current_time)
-    for field_names in events["fields"]:
-        outcome.append(field_names['name'])
-    for event in events["data"]:
+    events = {} if events is None else events
+    for field_names in events.get("fields"):
+        outcome.append(field_names.get('name'))
+    for event in events.get("data"):
         result = dict(zip(outcome, event))
         event_list.append(result)
-    event_list.sort(key=lambda item: (item["inc_mtime"], item["dg_guid"]))
+    event_list.sort(key=lambda item: (item.get("inc_mtime"), item.get("dg_guid")))
     return event_list
 
 
@@ -141,7 +142,10 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
     limit = int(args.get("limit", 1000))
     if limit:
         event_list = event_list[:limit]
-    hr = tableToMarkdown(name='Test Event', t=event_list)
+    if not event_list:
+        hr = "No events found."
+    else:
+        hr = tableToMarkdown(name='Test Event', t=event_list)
     demisto.debug(f'get events command that ran with the limit: {limit}')
     return event_list, CommandResults(readable_output=hr)
 
@@ -163,19 +167,21 @@ def create_events_for_push(event_list: list, last_time: str, id_list: list, limi
     event_list_for_push = []
     demisto.debug('Checking duplications and creating events for pushing to XSIAM')
     for event in event_list:
+        inc_time = event.get("inc_mtime")
         if last_time:
             last_time_date = arg_to_datetime(arg=last_time, required=True).date()   # type: ignore[union-attr]
-            event_date = arg_to_datetime(arg=event.get("inc_mtime"), required=True).date()   # type: ignore[union-attr]
-            if event.get("inc_mtime") < last_time or event.get("dg_guid") in id_list:
+            event_date = arg_to_datetime(arg=inc_time, required=True).date() if inc_time else None   # type: ignore[union-attr]
+            if (inc_time and inc_time < last_time) or event.get("dg_guid") in id_list:
                 continue
-            if last_time_date == event_date:
+            if last_time_date == event_date and event.get("dg_guid"):
                 id_list.append(event.get("dg_guid"))
-            else:
+            elif event.get("dg_guid"):
                 id_list = [event.get("dg_guid")]
         else:
-            id_list.append(event.get("dg_guid"))
+            if event.get("dg_guid"):
+                id_list.append(event.get("dg_guid"))
         event_list_for_push.append(event)
-        last_time = event.get("inc_mtime")
+        last_time = inc_time if inc_time else last_time
         index += 1
         if index == limit:
             break
@@ -216,7 +222,7 @@ def add_time_to_events(events: list[dict]) -> None:
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('inc_mtime'))
+            create_time = arg_to_datetime(arg=event.get('inc_mtime')) if event.get('inc_mtime') else None
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 

@@ -19,6 +19,7 @@ This is the default integration for this content pack when configured by the Dat
     | Use system proxy settings |  |  |
     | Event types to fetch |  | True |
     | Events Fetch Interval | Alerts and activity events. | False |
+    | Minutes to delay | Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). Default is 10 minutes but note a higher value might be needed for users with heavier traffic. | False |
     | Device Fetch Interval | Time between fetch of devices \(for example 12 hours, 60 minutes, etc.\). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.

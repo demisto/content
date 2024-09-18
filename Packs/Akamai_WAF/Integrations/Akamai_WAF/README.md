@@ -22,6 +22,7 @@ This is the modified version where a new command "akamai-update-network-list-ele
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -1075,10 +1076,12 @@ Acknowledge the warning message for uploading the certs and trust chains of enro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | change_path | The path of the changed certificate. | Required | 
+| allowed_input_type_param | Enum found as the last part of Change.allowedInput[].update hypermedia URL. Possible values are: change-management-ack, lets-encrypt-challenges-completed, post-verification-warnings-ack, pre-verification-warnings-ack. Default is post-verification-warnings-ack. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-modify-appsec-config-selected-hosts
 
 ***
@@ -1681,3 +1684,42 @@ Gets the status of a pending change.
               }
 }}}}
 ```
+### akamai-get-cps-enrollment-by-id
+
+***
+Get an enrollment in CPS by enrollment id
+
+#### Base Command
+
+`akamai-get-cps-enrollment-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enrollment_id | Enrollment on which to perform the desired operation. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-cancel-cps-change
+
+***
+Cancels a pending change on CPS.
+
+#### Base Command
+
+`akamai-cancel-cps-change`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| change_id | The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used. Default is 0. | Required | 
+| enrollment_id | Enrollment on which to perform the desired operation. Default is 0. "change_path" is used. Default is 0. | Required | 
+| change_path | Change path on which to perform the desired operation. Sample: /cps/v2/enrollments/100000/changes/88888888. Note: change_path is not listed in the reference as a parameter. However it can be extracted directly from "list_enrollments_command". This should be the most common useage when generate RestAPI's URL. | Optional | 
+| account_switch_key | For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

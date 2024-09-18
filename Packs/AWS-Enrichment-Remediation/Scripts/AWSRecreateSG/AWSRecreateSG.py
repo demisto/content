@@ -22,7 +22,7 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
     """
     res_list = []
     # Check if 'FromPort' is in rule, else it is an "all traffic rule".
-    if rule.get('FromPort'):
+    if 'FromPort' in rule:
         # Port of interest is in front of back of range, therefore, edit the original rule.
         if rule['FromPort'] == port:
             rule['FromPort'] = rule['FromPort'] + 1
@@ -77,7 +77,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
     for rule in info['IpPermissions']:
         if rule.get('IpRanges') and len(rule.get('IpRanges')) > 0:
             # Check if 'FromPort' is in rule, else it is an "all traffic rule".
-            if rule.get('FromPort'):
+            if 'FromPort' in rule:
                 # Don't recreate if it targets just the port of interest.
                 if (
                     rule['FromPort'] == port

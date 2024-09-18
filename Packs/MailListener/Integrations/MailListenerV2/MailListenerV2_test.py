@@ -340,33 +340,33 @@ def test_get_eml_attachments():
     # - private key is OpenSSL format
     # *** The cert and key below are not used in the real services, and only used for testing.
     ({
-        'password': '-----BEGIN CERTIFICATE----- '\
-                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '\
-                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '\
-                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '\
-                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '\
-                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '\
-                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '\
-                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '\
-                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '\
-                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '\
-                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '\
-                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '\
-                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '\
-                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '\
-                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '\
-                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '\
-                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '\
-                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '\
-                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '\
-                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '\
-                    'OzZEXmZyHr121wY= '\
-                    '-----END CERTIFICATE----- '\
-                    '-----BEGIN EC PRIVATE KEY----- '\
-                    'MIGkAgEBBDCUBWVfn8bslTSkoWyA47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2v '\
-                    'OCzaIX4lCIygBwYFK4EEACKhZANiAARFTRK4qjfOkK25NAssTni1/bKDTvEtmBFy '\
-                    '5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ '\
-                    'f8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
+        'password': '-----BEGIN CERTIFICATE----- '
+                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '
+                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '
+                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '
+                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '
+                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '
+                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '
+                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '
+                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '
+                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '
+                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '
+                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '
+                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '
+                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '
+                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '
+                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '
+                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '
+                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '
+                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '
+                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '
+                    'OzZEXmZyHr121wY= '
+                    '-----END CERTIFICATE----- '
+                    '-----BEGIN EC PRIVATE KEY----- '
+                    'MIGkAgEBBDCUBWVfn8bslTSkoWyA47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2v '
+                    'OCzaIX4lCIygBwYFK4EEACKhZANiAARFTRK4qjfOkK25NAssTni1/bKDTvEtmBFy '
+                    '5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzEREgtGiLBVZ '
+                    'f8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '
                     '-----END EC PRIVATE KEY-----'
     }
     ),
@@ -412,33 +412,33 @@ f8YrYOBPHc93tFiWs7+z1C63uNRUVGs=
     # - private key is PKCS#8 PEM
     # *** The cert and key below are not used in the real services, and only used for testing.
     ({
-        'password': '-----BEGIN CERTIFICATE----- '\
-                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '\
-                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '\
-                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '\
-                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '\
-                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '\
-                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '\
-                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '\
-                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '\
-                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '\
-                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '\
-                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '\
-                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '\
-                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '\
-                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '\
-                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '\
-                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '\
-                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '\
-                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '\
-                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '\
-                    'OzZEXmZyHr121wY= '\
-                    '-----END CERTIFICATE----- '\
-                    '-----BEGIN PRIVATE KEY----- '\
-                    'MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCUBWVfn8bslTSkoWyA '\
-                    '47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2vOCzaIX4lCIyhZANiAARFTRK4qjfO '\
-                    'kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx '\
-                    'dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '\
+        'password': '-----BEGIN CERTIFICATE----- '
+                    'MIIDlzCCAX+gAwIBAgIUbN3atZY05K7SilRtY78y2ZON28QwDQYJKoZIhvcNAQEN '
+                    'BQAwJTEjMCEGA1UEAwwaTWFpbCBMaXN0ZW5lciBUZXN0IFJvb3QgQ0EwHhcNMjMw '
+                    'NzExMDA1NzI4WhcNMzMwNzExMDA1NzI4WjAaMRgwFgYDVQQDDA90ZXN0IGNsaWVu '
+                    'dCBlY2MwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAARFTRK4qjfOkK25NAssTni1/bKD '
+                    'TvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHxdKJkOY6p/VFpzERE '
+                    'gtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGujeDB2MB8GA1UdIwQYMBaAFDh6 '
+                    'N1cbIXsS4uo15Ha9fKZrEbcHMB0GA1UdDgQWBBRFSQMsVOPCmzMbvjnrYMGF1ZNs '
+                    '8DAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIE8DAWBgNVHSUBAf8EDDAKBggr '
+                    'BgEFBQcDAjANBgkqhkiG9w0BAQ0FAAOCAgEAJKmlIV9Du9pnA98vw4GsurAeXU3Y '
+                    'KlzMyffzIVF+CGTpUFmXIGu1KccZREGQEZpxotYF71HCCqPBUcQD8rRoetxX3wa6 '
+                    'iqk6Q3Pm9Jt8/P365vydvcsKvTEeP8NTWKVip7U8xgAIjykBdnEPu9Uq7x+bePiG '
+                    'Pqd2Mpzr+mydbU/3mzrZXm/3B0aNiYZdXSpkF4qwZ7lakFvn0MI1M9+B2Am+rNdJ '
+                    'AoBBQTwS+1pUZoKV3gXMRWKCHj5cbltf1+Lzhh64A8s8k0o1cFyXfSFZ/PJI2rve '
+                    'ZOKGQ8qIeF3FPCaX5TVvla9J5Mxz5ETXv5zWpK/H4VgPbLf1cZPGFHnYatKkXMvM '
+                    '05UZ1FmdmJSS8CQQ7AwRsAyWOrbnfUf3Xv5UVFlgGYbsM1+ENbs9Mpn9mq0zq7+J '
+                    'ONxkmyrkP3Gi/ZK1k9fZuE+WGrnzkP6zUMA76Zr2uH8Gq5Bt89jTl9gAAYuaIDSe '
+                    'TQDQuO+Pb6XYiJaUg3LbkAnUSQHawZ6DfAMghevCPTIrTFLTUi8gILIpN2ghfv+z '
+                    'R2DE2xaKvNzNgEfPxR94haUGZy6eExteWFVbJAbQotux2poksrFqdgTW/7qntrpN '
+                    'l2AxOYvV/yu0yDjf/kyzt2aoWsbxClNv3jrbAj3m6raY/e6lcr6IuMYWMtO2F3n+ '
+                    'OzZEXmZyHr121wY= '
+                    '-----END CERTIFICATE----- '
+                    '-----BEGIN PRIVATE KEY----- '
+                    'MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCUBWVfn8bslTSkoWyA '
+                    '47lB8CwM/R5dlHrH4R52FkCmFFttnlotCt2vOCzaIX4lCIyhZANiAARFTRK4qjfO '
+                    'kK25NAssTni1/bKDTvEtmBFy5N0Qi+kisnUS05e9Okp2d8txhClwbjFbiunaNcHx '
+                    'dKJkOY6p/VFpzEREgtGiLBVZf8YrYOBPHc93tFiWs7+z1C63uNRUVGs= '
                     '-----END PRIVATE KEY-----'
     }
     ),
@@ -740,4 +740,26 @@ def test_fetch_mails__last_run_is_greater(mocker):
     mocker.patch.object(IMAPClient, 'fetch')
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=4)
+    assert next_uid_to_fetch_from == 4
+
+
+def test_fetch_mails__uid_is_str(mocker):
+    """
+    Given:
+        - The email UIDs returend from the client are strings ['1', '2', '3']
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the next_uid_to_fetch_from is 4 since it is greater than the greatest email UID
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=['1', '2', '3'])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from='4')
     assert next_uid_to_fetch_from == 4

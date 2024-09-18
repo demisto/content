@@ -48,6 +48,9 @@ jobs:
         if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
           echo "In docker auto update branch, pre commit on docker_autoupdate mode."
           demisto-sdk pre-commit -g --mode=docker_autoupdate --show-diff-on-failure --verbose
+        elif [[ "$BRANCH_NAME" =~ ^packwise/.* ]]; then
+          echo "In packwise branch, pre commit with ignore flag."
+          demisto-sdk pre-commit -g --mode=packwise --show-diff-on-failure --verbose
         else
           echo "Not in docker auto update branch, pre commit on CI mode."
           demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
@@ -68,7 +71,7 @@ jobs:
         files: ".report_pytest.xml"
 
     - name: Create pack-wise pytest report
-      run: poetry run python Utils/github_workflow_scripts/parse_junit_per_pack.py
+      run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 

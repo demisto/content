@@ -127,9 +127,9 @@
 						"name": "Notes",
 						"static": false,
 						"type": "notes",
-						"w": 1,
-						"x": 2,
-						"y": 2
+						"w": 2,
+						"x": 0,
+						"y": 10
 					},
 					{
 						"displayType": "ROW",
@@ -143,9 +143,65 @@
 						"type": "workplan",
 						"w": 1,
 						"x": 2,
-						"y": 0
+						"y": 6
 					},
 					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "indicator_type",
+								"width": 120
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "value",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "score",
+								"width": 120
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "firstSeen",
+								"width": 275
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "lastSeen",
+								"width": 275
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "timestamp",
+								"width": 190
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "relatedIncCount",
+								"width": 150
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "expirationStatus",
+								"width": 175
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "expiration",
+								"width": 190
+							}
+						],
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-s3rzsdyyl4-caseinfoid-s3rzsdyyl4-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
@@ -157,19 +213,19 @@
 						"queryType": "input",
 						"static": false,
 						"type": "indicators",
-						"w": 2,
+						"w": 3,
 						"x": 0,
-						"y": 4
+						"y": 8
 					},
 					{
-						"displayType": "CARD",
+						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-s3rzsdyyl4-caseinfoid-s3rzsdyyl4-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
 						"items": [
 							{
 								"endCol": 1,
 								"fieldId": "occurred",
-								"height": 22,
+								"height": 53,
 								"id": "incident-occurred-field",
 								"index": 0,
 								"sectionItemType": "field",
@@ -178,7 +234,7 @@
 							{
 								"endCol": 1,
 								"fieldId": "dbotmodified",
-								"height": 22,
+								"height": 53,
 								"id": "incident-modified-field",
 								"index": 1,
 								"sectionItemType": "field",
@@ -187,7 +243,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "dbotduedate",
-								"height": 22,
+								"height": 53,
 								"id": "incident-dueDate-field",
 								"index": 2,
 								"sectionItemType": "field",
@@ -196,7 +252,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "dbotcreated",
-								"height": 22,
+								"height": 53,
 								"id": "incident-created-field",
 								"index": 0,
 								"sectionItemType": "field",
@@ -205,7 +261,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "dbotclosed",
-								"height": 22,
+								"height": 53,
 								"id": "incident-closed-field",
 								"index": 1,
 								"sectionItemType": "field",
@@ -218,8 +274,9 @@
 						"name": "Timeline Information",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 2
+						"wrapLabels": true,
+						"x": 1,
+						"y": 6
 					},
 					{
 						"displayType": "ROW",
@@ -248,7 +305,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "closenotes",
-								"height": 22,
+								"height": 44,
 								"id": "incident-closeNotes-field",
 								"index": 2,
 								"sectionItemType": "field",
@@ -261,21 +318,79 @@
 						"name": "Closing Information",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 6
+						"x": 2,
+						"y": 10
 					},
 					{
-						"displayType": "CARD",
+						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-s3rzsdyyl4-caseinfoid-s3rzsdyyl4-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "details",
-								"height": 22,
-								"id": "incident-details-field",
+								"fieldId": "sentineloneaccountid",
+								"height": 53,
+								"id": "a8dba5a0-181d-11ef-aef1-e7781b7fb6ab",
 								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneaccountname",
+								"height": 53,
+								"id": "aaae42c0-181d-11ef-aef1-e7781b7fb6ab",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sentinelonesiteid",
+								"height": 53,
+								"id": "b482bd80-181d-11ef-aef1-e7781b7fb6ab",
+								"index": 2,
+								"listId": "caseinfoid-s3rzsdyyl4-caseinfoid-s3rzsdyyl4-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sentinelonesitename",
+								"height": 53,
+								"id": "b6915230-181d-11ef-aef1-e7781b7fb6ab",
+								"index": 3,
+								"listId": "caseinfoid-s3rzsdyyl4-caseinfoid-s3rzsdyyl4-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneclassificationsource",
+								"height": 53,
+								"id": "ac27c360-181d-11ef-aef1-e7781b7fb6ab",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonegroupid",
+								"height": 53,
+								"id": "b065e240-181d-11ef-aef1-e7781b7fb6ab",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonegroupname",
+								"height": 53,
+								"id": "b2d4e670-181d-11ef-aef1-e7781b7fb6ab",
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -286,11 +401,12 @@
 						"name": "Investigation Data",
 						"static": false,
 						"w": 1,
+						"wrapLabels": true,
 						"x": 1,
 						"y": 2
 					},
 					{
-						"displayType": "CARD",
+						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-cbe99420-9c9b-11ed-8844-a17be4688e73",
@@ -329,7 +445,1195 @@
 						"name": "SentinelOne Incident Mirrored Fields",
 						"static": false,
 						"w": 1,
+						"wrapLabels": true,
 						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-0ea82a62-1810-11ef-b608-9926681897e5",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "agentid",
+								"height": 22,
+								"id": "7cd211e0-1810-11ef-b608-9926681897e5",
+								"index": 0,
+								"listId": "caseinfoid-0ea82a62-1810-11ef-b608-9926681897e5",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "agentversion",
+								"height": 22,
+								"id": "84db1b70-1810-11ef-b608-9926681897e5",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "accountmemberof",
+								"height": 22,
+								"id": "94c708f0-1810-11ef-b608-9926681897e5",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "deviceid",
+								"height": 22,
+								"id": "a2ca3940-1810-11ef-b608-9926681897e5",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "deviceosname",
+								"height": 22,
+								"id": "ac2b0aa0-1810-11ef-b608-9926681897e5",
+								"index": 4,
+								"listId": "caseinfoid-0ea82a62-1810-11ef-b608-9926681897e5",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "deviceosversion",
+								"height": 22,
+								"id": "bacb1730-1810-11ef-b608-9926681897e5",
+								"index": 5,
+								"listId": "caseinfoid-0ea82a62-1810-11ef-b608-9926681897e5",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneagentnetworkstatus",
+								"height": 22,
+								"id": "141189b0-230f-11ef-95fc-1b9c4b27fdb7",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SentinelOne Agent Details",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-26ef6023-1810-11ef-b608-9926681897e5",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "threatname",
+								"height": 22,
+								"id": "263123c0-1811-11ef-b608-9926681897e5",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "filename",
+								"height": 22,
+								"id": "52dd24f0-1811-11ef-b608-9926681897e5",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sentinelonethreatstoryline",
+								"height": 22,
+								"id": "406d4340-18e3-11ef-89b6-151b8d6d43c9",
+								"index": 2,
+								"listId": "caseinfoid-26ef6023-1810-11ef-b608-9926681897e5",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "filepath",
+								"height": 22,
+								"id": "568bae00-1811-11ef-b608-9926681897e5",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "filesize",
+								"height": 22,
+								"id": "731dacd0-1811-11ef-b608-9926681897e5",
+								"index": 4,
+								"listId": "caseinfoid-26ef6023-1810-11ef-b608-9926681897e5",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "filemd5",
+								"height": 22,
+								"id": "7cbc4a80-1811-11ef-b608-9926681897e5",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "filesha1",
+								"height": 22,
+								"id": "81039120-1811-11ef-b608-9926681897e5",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "filesha256",
+								"height": 22,
+								"id": "82ff8830-1811-11ef-b608-9926681897e5",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SentinelOne Threat Details",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 6,
+						"hideName": false,
+						"i": "caseinfoid-5a8fe730-18cc-11ef-ab74-d74e442a39cc",
+						"items": [
+							{
+								"args": {
+									"agent_id": {
+										"simple": "${incident.agentid}"
+									}
+								},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "6ff66b30-18cc-11ef-ab74-d74e442a39cc",
+								"index": 0,
+								"name": "SentinelOne Disconnect Agent",
+								"scriptId": "SentinelOne V2|||sentinelone-disconnect-agent",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"agent_id": {
+										"simple": "${incident.agentid}"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "a2be24e0-18cc-11ef-ab74-d74e442a39cc",
+								"index": 1,
+								"name": "SentinelOne Reconnect Agent",
+								"scriptId": "SentinelOne V2|||sentinelone-connect-agent",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"action": {
+										"simple": "kill"
+									},
+									"threat_ids": {
+										"simple": "${incident.sentinelonethreatid}"
+									}
+								},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "09326610-18e5-11ef-89b6-151b8d6d43c9",
+								"index": 2,
+								"name": "SentinelOne Kill Threat",
+								"scriptId": "SentinelOne V2|||sentinelone-mitigate-threat",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"action": {
+										"simple": "quarantine"
+									},
+									"threat_ids": {
+										"simple": "${incident.sentinelonethreatid}"
+									}
+								},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "37197f50-18e5-11ef-89b6-151b8d6d43c9",
+								"index": 3,
+								"name": "SentinelOne Quarantine Threat",
+								"scriptId": "SentinelOne V2|||sentinelone-mitigate-threat",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"action": {
+										"simple": "un-quarantine"
+									},
+									"threat_ids": {
+										"simple": "${incident.sentinelonethreatid}"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "43083ca0-18e7-11ef-89b6-151b8d6d43c9",
+								"index": 4,
+								"name": "SentinelOne Un-Quarantine Threat",
+								"scriptId": "SentinelOne V2|||sentinelone-mitigate-threat",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"action": {
+										"simple": "remediate"
+									},
+									"threat_ids": {
+										"simple": "${incident.sentinelonethreatid}"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "8762b600-18e7-11ef-89b6-151b8d6d43c9",
+								"index": 5,
+								"name": "SentinelOne Remediate Threat",
+								"scriptId": "SentinelOne V2|||sentinelone-mitigate-threat",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"action": {
+										"simple": "rollback-remediation"
+									},
+									"threat_ids": {
+										"simple": "${incident.sentinelonethreatid}"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "a9a46510-18e7-11ef-89b6-151b8d6d43c9",
+								"index": 6,
+								"name": "SentinelOne Roll Back Threat",
+								"scriptId": "SentinelOne V2|||sentinelone-mitigate-threat",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"password": {
+										"simple": "Sentinel1!"
+									},
+									"threat_id": {
+										"simple": "${incident.sentinelonethreatid}"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "0a8994d0-18e9-11ef-89b6-151b8d6d43c9",
+								"index": 7,
+								"name": "SentinelOne Fetch Threat FIle",
+								"scriptId": "SentinelOne V2|||sentinelone-fetch-threat-file",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"agent_ids": {
+										"simple": "${incident.agentid}"
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "dc186e90-18e9-11ef-89b6-151b8d6d43c9",
+								"index": 8,
+								"name": "SentinelOne Initiate Endpoint Scan",
+								"scriptId": "SentinelOne V2|||sentinelone-initiate-endpoint-scan",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"global": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "1e0c9220-18f1-11ef-bb23-c36fb4725c79",
+								"index": 9,
+								"name": "SentinelOne Get Blocklist",
+								"scriptId": "SentinelOne V2|||sentinelone-get-blocklist",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"agents_ids": {
+										"simple": "${incident.agentid}",
+										"userMarkedRequired": false
+									}
+								},
+								"buttonClass": "error",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "72ef46a0-1cef-11ef-a286-5514d85dec6e",
+								"index": 10,
+								"listId": "caseinfoid-5a8fe730-18cc-11ef-ab74-d74e442a39cc",
+								"name": "sentinelOne Move Agent",
+								"scriptId": "SentinelOne V2|||sentinelone-move-agent",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"created_after": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"created_before": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"limit": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "b42ce200-18f1-11ef-bb23-c36fb4725c79",
+								"index": 11,
+								"name": "SentinelOne Get Activities",
+								"scriptId": "SentinelOne V2|||sentinelone-get-activities",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"hash": {
+										"simple": "${incident.filesha1}"
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sourceBrand"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "SentinelOne V2"
+												}
+											},
+											"type": "sourceBrand"
+										}
+									]
+								],
+								"height": 44,
+								"id": "3445a100-18f4-11ef-bb23-c36fb4725c79",
+								"index": 12,
+								"name": "SentinelOne Get Hash",
+								"scriptId": "SentinelOne V2|||sentinelone-get-hash",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Quick Actions",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-6f8c5c70-2198-11ef-b107-bb075755187f",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "sentinelonenetworkinterfacedetails",
+								"height": 106,
+								"id": "c0db1c40-219a-11ef-a7ab-2567ea336518",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SentinelOne Threat Network Interface Details",
+						"static": false,
+						"w": 2,
+						"wrapLabels": true,
+						"x": 1,
+						"y": 4
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"filters": [
+					[
+						{
+							"ignoreCase": false,
+							"left": {
+								"isContext": true,
+								"value": {
+									"simple": "sentinelonecloudprovideraccount"
+								}
+							},
+							"operator": "isNotEmpty",
+							"right": null,
+							"type": "shortText"
+						}
+					]
+				],
+				"hidden": false,
+				"id": "tab_threat_cloud_provider_details",
+				"name": "Threat Cloud Provider Details",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 7,
+						"hideName": false,
+						"i": "caseinfoid-1e0d91d0-27be-11ef-a722-fbfd7893420f",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudprovider",
+								"height": 22,
+								"id": "56b7f2a0-27be-11ef-a722-fbfd7893420f",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudprovideraccount",
+								"height": 22,
+								"id": "5a1ca170-27be-11ef-a722-fbfd7893420f",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudproviderimage",
+								"height": 22,
+								"id": "5d3b94b0-27be-11ef-a722-fbfd7893420f",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudproviderinstanceid",
+								"height": 22,
+								"id": "604f1640-27be-11ef-a722-fbfd7893420f",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudproviderinstancesize",
+								"height": 22,
+								"id": "65ba4370-27be-11ef-a722-fbfd7893420f",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudproviderlocation",
+								"height": 22,
+								"id": "6af9ccc0-27be-11ef-a722-fbfd7893420f",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudprovidertags",
+								"height": 22,
+								"id": "891eeeb0-27be-11ef-a722-fbfd7893420f",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudprovidernetwork",
+								"height": 22,
+								"id": "8de9e440-27be-11ef-a722-fbfd7893420f",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudproviderresourcegroup",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sentinelonecloudprovider"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "Azure"
+												}
+											},
+											"type": "shortText"
+										}
+									]
+								],
+								"height": 22,
+								"id": "97a95060-27be-11ef-a722-fbfd7893420f",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudprovidersecuritygroup",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sentinelonecloudprovider"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "AWS"
+												}
+											},
+											"type": "shortText"
+										}
+									]
+								],
+								"height": 22,
+								"id": "a00d4b30-27be-11ef-a722-fbfd7893420f",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudproviderserviceaccount",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sentinelonecloudprovider"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "GCP"
+												}
+											},
+											"type": "shortText"
+										}
+									]
+								],
+								"height": 22,
+								"id": "ad9027f0-27be-11ef-a722-fbfd7893420f",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudproviderrole",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sentinelonecloudprovider"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "AWS"
+												}
+											},
+											"type": "shortText"
+										}
+									]
+								],
+								"height": 22,
+								"id": "ba1a9af0-27be-11ef-a722-fbfd7893420f",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonecloudprovidersubnetid",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "sentinelonecloudprovider"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "AWS"
+												}
+											},
+											"type": "shortText"
+										}
+									]
+								],
+								"height": 22,
+								"id": "c3a3b4d0-27be-11ef-a722-fbfd7893420f",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SentinelOne Threat Cloud Provider Details",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"filters": [
+					[
+						{
+							"ignoreCase": false,
+							"left": {
+								"isContext": true,
+								"value": {
+									"simple": "sentinelonekubernetescluster"
+								}
+							},
+							"operator": "isNotEmpty",
+							"right": null,
+							"type": "shortText"
+						}
+					]
+				],
+				"hidden": false,
+				"id": "tab_threat_kubenetes_details",
+				"name": "Threat Kubernetes Details",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "caseinfoid-4f6cd4f0-18e3-11ef-89b6-151b8d6d43c9",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetescluster",
+								"height": 22,
+								"id": "d277e3d0-18e3-11ef-89b6-151b8d6d43c9",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetescontrollername",
+								"height": 22,
+								"id": "e62a7390-23d6-11ef-95fc-1b9c4b27fdb7",
+								"index": 1,
+								"listId": "caseinfoid-4f6cd4f0-18e3-11ef-89b6-151b8d6d43c9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetescontrollerkind",
+								"height": 22,
+								"id": "e420e7f0-23d6-11ef-95fc-1b9c4b27fdb7",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetescontrollerlabels",
+								"height": 22,
+								"id": "e539d200-23d6-11ef-95fc-1b9c4b27fdb7",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetesnamespace",
+								"height": 22,
+								"id": "e80463b0-23d6-11ef-95fc-1b9c4b27fdb7",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetesnamespacelabels",
+								"height": 22,
+								"id": "e8ca99e0-23d6-11ef-95fc-1b9c4b27fdb7",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetesiscontainerquarantine",
+								"height": 22,
+								"id": "e708c5a0-23d6-11ef-95fc-1b9c4b27fdb7",
+								"index": 6,
+								"listId": "caseinfoid-4f6cd4f0-18e3-11ef-89b6-151b8d6d43c9",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SentinelOne Threat Kubernetes Cluster Details",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "caseinfoid-8cef5f20-23c2-11ef-95fc-1b9c4b27fdb7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetesnode",
+								"height": 22,
+								"id": "f1ce32c0-18e3-11ef-89b6-151b8d6d43c9",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetesnodelabels",
+								"height": 22,
+								"id": "b3c0a870-23c2-11ef-95fc-1b9c4b27fdb7",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SentinelOne Threat Kubernetes  Node details",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "caseinfoid-68a01050-23c3-11ef-95fc-1b9c4b27fdb7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetespod",
+								"height": 22,
+								"id": "fb6dbad0-18e3-11ef-89b6-151b8d6d43c9",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentinelonekubernetespodlabels",
+								"height": 22,
+								"id": "b629ead0-23c3-11ef-95fc-1b9c4b27fdb7",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SentinelOne Threat Kubernetes Pod Details",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 2,
 						"y": 0
 					}
 				],
@@ -344,6 +1648,11 @@
 				"id": "workPlan",
 				"name": "Work Plan",
 				"type": "workPlan"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
 			}
 		]
 	},

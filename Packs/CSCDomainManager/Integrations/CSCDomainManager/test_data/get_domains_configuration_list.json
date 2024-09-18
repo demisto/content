@@ -1,0 +1,79 @@
+{
+    "meta": {
+        "numResults": 1,
+        "pages": 1
+    },
+    "configurations": [
+        {
+            "domain": "csc-panw.biz",
+            "domainLabel": "csc-panw",
+            "domainStatusCode": "ACT",
+            "dnsHostingType": "THIRDPARTY",
+            "extension": "biz",
+            "tld": "biz",
+            "country": "GTLD",
+            "adminEmail": "admin@internationaladmin.com",
+            "adminName": "Domain Administrator",
+            "adminOrg": "CSC Corporate Domains, Inc.",
+            "regEmail": "admin@internationaladmin.com",
+            "regName": "Domain Administrator",
+            "regOrg": "CSC Corporate Domains, Inc.",
+            "techEmail": "dns-admin@cscglobal.com",
+            "techName": "Domain Administrator",
+            "techOrg": "CSC Corporate Domains, Inc.",
+            "account": {
+                "accountNumber": "8601230",
+                "accountName": "Palo Alto Networks - Integration"
+            },
+            "businessUnit": "Cortex",
+            "dnsData": [
+                {
+                    "dnsDomain": "ns1.1-877namebid.com",
+                    "dnsProvider": "1-877NameBid.com LLC, (United States)"
+                },
+                {
+                    "dnsDomain": "ns2.1-877namebid.com",
+                    "dnsProvider": "1-877NameBid.com LLC, (United States)"
+                }
+            ],
+            "dnsTraffic12moAve": 790,
+            "hasCscUrlf": false,
+            "hasDkim": false,
+            "hasDmarc": false,
+            "hasDnssecDs": false,
+            "hasSpf": false,
+            "hasWww": false,
+            "isGtld": false,
+            "isLive": false,
+            "isLiveType": "Not Live",
+            "isMultilockEligible": true,
+            "isVital": false,
+            "multiLocked": false,
+            "numLiveMx": 0,
+            "numRootA": 0,
+            "numRootTxt": 0,
+            "numSslNetcraft": 0,
+            "numWwwA": 0,
+            "numWwwCname": 0,
+            "registryExpiryDate": "2025-04-22",
+            "rootHttpCode": 0,
+            "rootHttpUrl": null,
+            "rootIsUrlf": false,
+            "serverDeleteProhibited": null,
+            "serverTransferProhibited": null,
+            "serverUpdateProhibited": null,
+            "urlfTraffic12moAve": 0,
+            "valueRootA": null,
+            "valueRootMx": null,
+            "valueRootTxt": null,
+            "valueWwwA": null,
+            "valueWwwCname": null,
+            "wwwHttpCode": 0,
+            "wwwHttpUrl": null,
+            "wwwIsUrlf": true
+        }
+    ],
+    "links": {
+        "self": "https://apis-uat.cscglobal.com/dbs/api/v2/domains/configuration?filter=domain==%22csc-panw.biz%22"
+    }
+}

@@ -1,0 +1,78 @@
+{"data": {
+    "application": {
+        "brand": "Darktrace",
+        "comments": [
+            {
+            "id": "Q29tbWVudFR5cGU6OTc=",
+            "text": "Test comment"
+            }
+        ],
+        "createdAt": "2022-06-27 18:34:50.473256+00:00",
+        "discoverySources": [
+            {
+            "id": "RGlzY292ZXJ5U291cmNlVHlwZTo1NDc0Ng==",
+            "description": "Record retrieved from FQDN careers.darktrace.com"
+            },
+            {
+            "id": "RGlzY292ZXJ5U291cmNlVHlwZTo1NDc1Nw==",
+            "description": "Application from https://careers.darktrace.com/"
+            }
+        ],
+        "fqdns": [
+            {
+            "id": "RnFkblR5cGU6MjY2Mjc=",
+            "name": "careers.darktrace.com"
+            }
+        ],
+        "id": "QXBwbGljYXRpb25UeXBlOjI2NjI4",
+        "ipaddresses": [
+            {
+            "id": "SVBBZGRyZXNzVHlwZToxNTU3Njc=",
+            "address": "104.16.61.2"
+            },
+            {
+            "id": "SVBBZGRyZXNzVHlwZToxNTU3Njg=",
+            "address": "104.16.60.2"
+            }
+        ],
+        "isMalicious": false,
+        "risks": [
+            {
+            "id": "Umlza1R5cGU6NjYzNjA=",
+            "title": "Vulnerable software found - jquery ui/1.13.0 (highest CVE score 4.3)"
+            },
+            {
+            "id": "Umlza1R5cGU6MTU1ODQ=",
+            "title": "Excessive cookie lifetime (> 1 year)"
+            },
+            {
+            "id": "Umlza1R5cGU6MzQ4MzQ=",
+            "title": "Excessive cookie lifetime (> 1 year)"
+            }
+        ],
+        "screenshot": "https://storage.googleapis.com/asm-prod-1931-z5b5n7ow5w-copy/http_screenshot/screenshot_155822.jpg?Expires=1710617440&GoogleAccessId=asm-prod-1931-cyberweb%40dt-asm-prod.iam.gserviceaccount.com&Signature=Vbz1hBo%2Bo3ZYTRvg5p%2F%2F%2FTFFf4PHRgPaVUrcpaDG8Kp%2BOT2dSm8O2NC1HFJXQW420yD2zppJ5IbOCt46vJ6LZMvx5kcdm7IY1U6yKbedRGACfbpUQaXEjmXN1gLhVawnoET94CYqnmlYue6%2Fy4B6cS4fZwvH6sllm2OnbDZ%2FZacoSw9Xmf214R0M%2FgY3OjKuXapaAnu779r5c8fkjL8cSvX8E8PzkxToGF9ysTNuWVqZc46H05xxUtb8QSauiggAijBeSLg%2Blol1wVj0ZuMP%2Fb1kJvXNpCr6x0Dem6ITe4C%2FPrbiqcNMvwSZChptiDBhgoXGRAm%2FRJokWqktST19Nw%3D%3D",
+        "securityrating": "b",
+        "state": "Confirmed",
+        "tags": [
+            "MANAGED BY INTERNAL DEV"
+        ],
+        "updatedAt": "2023-08-21 00:31:57.299904+00:00",
+        "uri": "https://careers.darktrace.com",
+        "technologies": [
+            {
+            "id": "VGVjaG5vbG9neVR5cGU6MTU4MjY2",
+            "name": "Amazon ALB"
+            },
+            {
+            "id": "VGVjaG5vbG9neVR5cGU6MTU4MjY3",
+            "name": "Amazon Web Services"
+            },
+            {
+            "id": "VGVjaG5vbG9neVR5cGU6MTE1MjU3",
+            "name": "Bootstrap"
+            }
+        ],
+        "protocol": "HTTP"
+        }
+    }
+}

@@ -190,7 +190,7 @@ def blacklist_url(url):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": urls_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_urls = ""
     for url in urls_to_blacklist:
         list_of_urls += "- " + url + "\n"
@@ -213,7 +213,7 @@ def unblacklist_url(url):
 
     data = {"blacklistUrls": urls_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_urls = ""
     for url in urls_to_unblacklist:
         list_of_urls += "- " + url + "\n"
@@ -227,7 +227,7 @@ def blacklist_ip(ip):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": ips_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_ips = ""
     for ip in ips_to_blacklist:
         list_of_ips += "- " + ip + "\n"
@@ -251,7 +251,7 @@ def unblacklist_ip(ip):
         raise Exception("Given IP addresses are not blacklisted.")
     data = {"blacklistUrls": ips_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_ips = ""
     for ip in ips_to_unblacklist:
         list_of_ips += "- " + ip + "\n"
@@ -613,12 +613,11 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
         ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
-        added_data = ""
-        for item in data_list:
-            added_data += f"- {item}\n"
 
-        hr = f"Added the following {data_type.upper()} addresses to category {category_id}:\n{added_data}"
-
+        added_data = "\n".join(f"- {item}" for item in data_list) + \
+            "\n".join(f"- {item}" for item in retaining_parent_category_data_list)
+        hr = (f"Added the following {data_type.upper()}, retaining-parent-category-{data_type} "
+              f"addresses to category {category_id}:\n{added_data}\n")
         entry = {
             "Type": entryTypes["note"],
             "Contents": category_data,
@@ -756,6 +755,8 @@ def get_categories_command(args):
         }
         if raw_category.get("urls"):
             category["URL"] = raw_category["urls"]
+        if raw_category.get("dbCategorizedUrls"):
+            category["RetainingParentCategoryURL"] = raw_category["dbCategorizedUrls"]
         if "description" in raw_category:
             category["Description"] = raw_category["description"]
         if "configuredName" in raw_category:
@@ -763,7 +764,7 @@ def get_categories_command(args):
         categories.append(category)
     ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": categories}
     if display_urls and not ids_and_names_only:
-        headers = ["ID", "Description", "URL", "CustomCategory", "Name"]
+        headers = ["ID", "Description", "URL", "RetainingParentCategoryURL", "CustomCategory", "Name"]
     else:
         headers = ["ID", "Description", "CustomCategory", "Name"]
     title = "Zscaler Categories"
@@ -1308,8 +1309,8 @@ def main():  # pragma: no cover
     elif command == "zscaler-logout":
         return_results(logout_command())
     else:
-        login()
         try:
+            login()
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
@@ -1378,7 +1379,6 @@ def main():  # pragma: no cover
                 return_results(delete_ip_destination_groups(demisto.args()))
         except Exception as e:
             return_error(f"Failed to execute {command} command. Error: {str(e)}")
-            raise
         finally:
             try:
                 # activate changes only when required
@@ -1390,7 +1390,7 @@ def main():  # pragma: no cover
                 if demisto.params().get("auto_logout"):
                     logout()
             except Exception as err:
-                demisto.info("Zscaler error: " + str(err))
+                return_error("Zscaler error: " + str(err))
 
 
 # python2 uses __builtin__ python3 uses builtins

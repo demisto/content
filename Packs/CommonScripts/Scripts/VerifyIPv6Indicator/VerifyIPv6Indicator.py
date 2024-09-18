@@ -1,11 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
-import ipaddress
+from ipaddress import IPv6Address
 
 
 def is_valid_ipv6_address(address):
     try:
-        ipaddress.IPv6Address(address)
+        IPv6Address(address)
         return True
     except ValueError:
         return False
@@ -13,11 +13,16 @@ def is_valid_ipv6_address(address):
 
 def main():
     the_input = demisto.args().get('input')
-
     the_input = argToList(the_input)
     entries_list = []
 
     for item in the_input:
+
+        demisto.info(f'Got IPv6 {item}')
+        item = re.sub('[^a-f0-9:%th.]+', '', item)
+
+        demisto.info(f'Changed item to {str(item)}')
+
         if is_valid_ipv6_address(item):
             entries_list.append(item)
         else:
