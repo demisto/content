@@ -3,9 +3,9 @@ IBM QRadar SIEM helps security teams accurately detect and prioritize threats ac
 
 **This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.**
 
-# Supported Versions and license needed
+# Supported Versions and License Needed
 This integration was integrated and tested with version 14-20 of QRadar v3
-# Use cases
+# Use Cases
 ### Incident and Offense Management:
 Automate the fetching and management of security incidents (offenses) from QRadar into Cortex. This includes enrichment of offenses with additional data, calculating severity, assigning incidents to analysts, and even automating the closure of false positives.
 ### Threat Hunting:
@@ -20,7 +20,6 @@ The *Query to fetch offenses* feature enables defining a specific query for offe
 If you change the *Query to fetch offenses* value, it will not re-fetch offenses that have already been fetched. To re-fetch those offenses, run the ***qradar-reset-last-run*** command.  
 **Note:**  
 The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query. 
-
 
 <details><summary><h1 style={{display: 'inline'}}>Migration - from QradarV2 to V3</h1></summary>
 
@@ -3748,7 +3747,7 @@ To enable the execution of commands using QRadar on CLOUD, it is essential to ad
 
 </details>
 
-<details> <summary><h3 style={{display: 'inline'}}> Fetch command</h3> </summary>
+<details> <summary><h3 style={{display: 'inline'}}> Fetch Command</h3> </summary>
 
 When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
 Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
