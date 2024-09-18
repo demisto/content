@@ -151,7 +151,7 @@ SUPPORTED_STATUSES = [
     "INVESTIGATING",
 ]
 SUPPORTED_CLOUD_ENVIRONMENTS = ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"]
-SUPPORTED_POLICY_SEVERITIES = ["HIGH", "MEDIUM", "LOW" ]
+SUPPORTED_POLICY_SEVERITIES = ["HIGH", "MEDIUM", "LOW"]
 SUPPORTED_CATEGORY_TYPES = ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]
 
 # Define remediation steps for specific findings
@@ -804,14 +804,14 @@ def get_list_of_alerts(
     validate_parameter(
         "policySeverity", policySeverityIn, policySeverityEqual, SUPPORTED_POLICY_SEVERITIES
     )
-    
+
     # check supported category type
     categoryTypeIn = args.get("categoryTypeIn", "")
     categoryTypeEqual = args.get("categoryTypeEqual", "")
     validate_parameter(
         "categoryType", categoryTypeIn, categoryTypeEqual, SUPPORTED_CATEGORY_TYPES
     )
-    
+
     # check supported category type
     statusIn = args.get("statusIn", "")
     statusEqual = args.get("statusEqual", "")

@@ -488,18 +488,6 @@ script:
       name: sort
       required: false
       secret: false
-    - description: 'Page number, default is "0"'
-      isArray: false
-      isOptional: true
-      name: page
-      required: false
-      secret: false
-    - description: 'Number of results per page'
-      isArray: false
-      isOptional: true
-      name: size
-      required: false
-      secret: false
     description: Fetch list of alerts.
     name: dspm-get-list-of-alerts
     outputs:
