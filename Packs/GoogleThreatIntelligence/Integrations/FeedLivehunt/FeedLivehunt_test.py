@@ -106,7 +106,7 @@ FILE_ATTRIBUTES_MOCK = {
     'unique_sources': 1,
     'first_submission_date': 1635952526,
     'sha1': 'f13339bc7527261c3552cc37c619f33ca04c1321',
-    'ssdeep': '12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:VbLgdrgDdmMSirYbcMNgef0Xk+8',
+    'ssdeep': '12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:Vb+8',
     'bloom': 'eNozqDA0oC2glvlGBqOAjsBiNAhGwSgYisBkkGb10SJlJAEAAXSRWA==\n',
     'packers': {
         'PEiD': 'Microsoft Visual C++'
@@ -188,7 +188,7 @@ def test_fetch_indicators_command(mocker):
             assert fields['md5'] == '6a650da84adf6e3356227cc8890a9ee7'
             assert fields['sha1'] == 'f13339bc7527261c3552cc37c619f33ca04c1321'
             assert fields['sha256'] == '9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25'
-            assert fields['ssdeep'] == '12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:VbLgdrgDdmMSirYbcMNgef0Xk+8'
+            assert fields['ssdeep'] == '12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:Vb+8'
             assert fields['fileextension'] == 'exe'
             assert fields['filetype'] == 'peexe'
             assert fields['imphash'] == '9ecee117164e0b870a53dd187cdd7174'
