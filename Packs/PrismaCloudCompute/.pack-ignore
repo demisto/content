@@ -100,6 +100,9 @@ ignore=GR107
 [file:incidenttype-incidenttype-Prisma_Cloud_Compute_Audit_v2.jso]
 ignore=GR107
 
+[file:incidenttype-Prisma_Cloud_Compute_Audit_v2.json]
+ignore=GR107
+
 [known_words]
 resourceType
 resourceID
