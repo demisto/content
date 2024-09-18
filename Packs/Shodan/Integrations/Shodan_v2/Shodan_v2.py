@@ -8,7 +8,6 @@ import json
 import requests
 import urllib3
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -26,7 +25,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 VENDOR = 'shodan'
 PRODUCT = 'banner'
-MAX_EVENTS = 50_000
+DEFAULT_MAX_EVENTS = 50_000
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 handle_proxy()
@@ -510,7 +509,7 @@ def get_events_command(args: dict) -> tuple[str, list[dict]]:
     if isinstance(events, dict):
         events = [events]
 
-    limit = arg_to_number(args.get("max_fetch")) or MAX_EVENTS
+    limit = arg_to_number(args.get("max_fetch")) or DEFAULT_MAX_EVENTS
     start_date = arg_to_datetime(args.get("start_date")) or (datetime.now() - timedelta(days=1))
 
     filtered_events = filter_events(events, start_date, limit)
@@ -539,7 +538,7 @@ def fetch_events(last_run: dict[str, str], params) -> tuple[Dict, List[Dict]]:
     if start_date is None:  # If this is a first run
         start_date = datetime.now()
         demisto.debug('Last run data is missing. Fetching initial last_run and setting start_date to now')
-    limit = arg_to_number(params.get("max_fetch")) or MAX_EVENTS
+    limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_EVENTS
 
     filtered_events = filter_events(events, start_date, limit)
     demisto.debug(f'After filtering, {len(filtered_events)} events remain')

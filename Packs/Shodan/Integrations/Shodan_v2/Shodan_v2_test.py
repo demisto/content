@@ -5,13 +5,13 @@ from datetime import datetime
 
 from Shodan_v2 import get_events_command, filter_events
 
-with open('./test_data/respons.json') as f:
+with open('./test_data/response.json') as f:
     RESPONSE = json.load(f)
 
 
 def test_get_events_command(mocker):
     mock_http_request = mocker.patch('Shodan_v2.http_request', return_value=RESPONSE)
-    hr, events = get_events_command({'max_fetch': 2, 'start_date': '2024-08-10T12:46:18.012000'})
+    _, events = get_events_command({'max_fetch': 2, 'start_date': '2024-08-10T12:46:18.012000'})
 
     assert len(events) == 2
     assert events[0]["name"] == "test_alert2"
