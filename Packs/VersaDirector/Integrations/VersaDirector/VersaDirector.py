@@ -1698,6 +1698,7 @@ def create_client_header(
                                           'Content-Type': 'application/json'}
         else:
             return_error("Basic Authentication method chosen but Username or Password parameters are missing.")
+            return None
 
     elif not use_basic_auth:
         # Auth Token authentication using Auth token parameter
