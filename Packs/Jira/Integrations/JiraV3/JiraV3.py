@@ -1852,15 +1852,15 @@ def get_issue_forms(client: JiraBaseClient, issue_id: str) -> tuple[List, List]:
     outputs = []
     for form in response:
         questions = []
-        for q_id, q_data in form.get('design', {}).get('questions').items():
-            answer = form.get('state', {}).get('answers', {}).get(q_id)
+        for question_id, question_data in form.get('design', {}).get('questions').items():
+            answer = form.get('state', {}).get('answers', {}).get(question_id)
             name = form.get('design', {}).get('settings', {}).get('name')
             # Get choice details if the answer type was a choice
             if answer and answer.get('choices', ''):
                 final_answer: Dict[str, Any] = {
                     'choices': []
                 }
-                choices = q_data.get('choices')
+                choices = question_data.get('choices')
                 for choice in choices:
                     for answer_choice in answer.get('choices'):
                         if answer_choice == choice.get('id'):
@@ -1871,11 +1871,11 @@ def get_issue_forms(client: JiraBaseClient, issue_id: str) -> tuple[List, List]:
                 final_answer = {}
 
             questions.append({
-                'ID': q_id,
-                'Label': q_data.get('label'),
-                'Type': q_data.get('type'),
-                'Description': q_data.get('description'),
-                'Key': q_data.get('questionKey'),
+                'ID': question_id,
+                'Label': question_data.get('label'),
+                'Type': question_data.get('type'),
+                'Description': question_data.get('description'),
+                'Key': question_data.get('questionKey'),
                 'Answer': final_answer,
             })
         outputs.append({
