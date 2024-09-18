@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatConnect Feed
+  id: ThreatConnect Feed test
   version: -1
 configuration:
 - defaultvalue: https://api.threatconnect.com
@@ -186,8 +186,8 @@ configuration:
   hidden: true
   required: false
 description: This integration fetches indicators from ThreatConnect.
-display: ThreatConnect Feed
-name: ThreatConnect Feed
+display: ThreatConnect Feed test
+name: ThreatConnect Feed test
 script:
   commands:
   - arguments:

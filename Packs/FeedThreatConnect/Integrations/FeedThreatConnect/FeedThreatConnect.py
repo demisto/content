@@ -280,8 +280,8 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
         "fields": fields,
         "relationships": relationships
     }
-    if indicator_type == 'Domain':
-        demisto.debug(f"domain indicator returned: {indicator_obj}")
+    if indicator_type == 'Domain' and 'fakedomain' in indicator_obj.get("value"):
+        demisto.debug(f" fake domain indicator returned: {indicator_obj}")
     return indicator_obj
 
 
@@ -423,25 +423,23 @@ def module_test_command(client: Client, args):  # pragma: no cover # noqa
     Args:
         client: ThreatConnect client.
     Returns:
-        str: Human readable - 'ok' if succeed.
+        str: Human readable - 'ok' if success.
         dict: Operation entry context - Empty.
         dict: Operation raw response - Empty.
     """
-    url = '/api/v3/groups?resultLimit=2'
+    url = '/api/v3/groups?resultLimit=2'    # todo: consider changing to indicators
     try:
-        response, status = client.make_request(Method.GET, url)
+        client.make_request(Method.GET, '/api/v3/groups?resultLimit=2')
+        return "ok", {}, {}
+
+    except Exception as e:
+        response, status = client.make_request(Method.GET, '/api/v3/indicators?resultLimit=2')
         if status == 'Success':
             return "ok", {}, {}
         else:
             return_error('Error from the API: ' + response.get('message',
                                                                'An error has occurred, if it persist, please contact your '
                                                                'local help desk'))
-    except Exception as e:
-        exception_text = str(e).lower()
-        if 'resource not found' in exception_text:
-            return "ok", {}, {}
-        else:
-            return_error(str(e))
 
 
 def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tuple[
@@ -493,6 +491,7 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
                 groups.extend(groups_response)
                 groups_url = ''
 
+            demisto.debug(f"so far {len(indicators)} indicators and {len(groups)} groups")
             # Limit the number of results to not get an error from the API
             if ((len(indicators) + len(groups)) > int(demisto.params().get('fetch_limit', '2000'))) or (
                     not indicators_next_link and not groups_next_link):
@@ -500,8 +499,7 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
     except Exception as e:
         demisto.error(
             f'Got an error in the fetch loop. Returning {len(groups)} groups + {len(indicators)} indicators. error: {str(e)}')
-    demisto.debug(f"got {len(indicators)} indicators, they are: {indicators}")
-    demisto.debug(f"got {len(groups)} groups, they are: {groups}")
+    demisto.debug(f"finished the loop, got {len(indicators)} indicators, and {len(groups)} groups")
     return indicators, groups
 
 
@@ -513,20 +511,24 @@ def build_url_with_query_params(params: dict, endpoint: str, last_run: dict):
     last_run_date = last_run.get(endpoint, {}).get('from_date', '')
     demisto.debug('last run get: ' + str(last_run_date))
     from_date = ''
+    # last_run_date = "2024-05-11T16:35:13Z"
     if last_run_date:
-        from_date = f'AND (dateAdded > "{last_run_date}") '
+        from_date = f'AND (lastModified > "{last_run_date}") '
 
     fields = set_fields_query(params, endpoint)
     tql = params.get('indicator_query')
     if not tql:
         tql = set_tql_query(from_date, params, endpoint)
-        demisto.debug(f"query param was empty, now: {tql}")
+    demisto.debug(f"query is: {tql}")
 
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
     else:
         tql = ''
+
+    # url = f'/api/v3/{endpoint}{tql}{fields}&resultStart=0&resultLimit=20'
+
     url = f'/api/v3/{endpoint}{tql}{fields}&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC'
     if '?' not in url:
         # replacing only the first occurrence of & if ? is not present in url
@@ -562,7 +564,8 @@ def set_tql_query(from_date: str, params: dict, endpoint: str) -> str:
         threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
             if int(params.get("threat_assess_score")) != 0 else ''  # type: ignore
 
-    type_name_query = create_types_query(params, endpoint)
+    # type_name_query = create_types_query(params, endpoint)
+    type_name_query = ''
     type_names = f'AND {type_name_query}' if type_name_query else ''
 
     tql = f'{owners if owners != "AND () " else ""}' \
@@ -579,11 +582,13 @@ def get_updated_last_run(indicators: list, groups: list, previous_run: dict) -> 
 
     next_run = {}
     if indicators:
-        next_run['indicators'] = {'from_date': indicators[-1].get('dateAdded')}
+        next_run['indicators'] = {'from_date': indicators[-1].get('lastModified')}
+        # next_run['indicators'] = {'from_date': indicators[-1].get('dateAdded')}
     else:
         next_run['indicators'] = previous_run.get('indicators', {})
     if groups:
-        next_run['groups'] = {'from_date': groups[-1].get('dateAdded')}
+        next_run['groups'] = {'from_date': groups[-1].get('lastModified')}
+        # next_run['groups'] = {'from_date': groups[-1].get('dateAdded')}
     else:
         next_run['groups'] = previous_run.get('groups', {})
 
@@ -624,17 +629,18 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore 
 
         tql = active_only + confidence + threat_score + confidence + owners + query
         tql = tql.replace('AND ', '', 1)
-
+    demisto.debug(f"query before parsing: {tql}")
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
         tql = f'?tql={tql}'
 
+    # url = f'/api/v3/indicators{tql}&fields=threatAssess&resultStart={offset}&resultLimit={limit}'
     url = f'/api/v3/indicators{tql}&resultStart={offset}&resultLimit={limit}&fields=threatAssess'
     if '?' not in url:
         # replacing only the first occurrence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
 
-    demisto.debug("URL: " + url)
+    demisto.debug("URL for get-indicators command: " + url)
     response, status = client.make_request(Method.GET, url)
     if status == 'Success':
         t = [parse_indicator(indicator) for indicator in response]
@@ -687,7 +693,6 @@ def main():  # pragma: no cover # noqa
             indicators, groups = fetch_indicators_command(client, params, last_run)
             next_run = get_updated_last_run(indicators, groups, last_run)
             demisto.setLastRun(next_run)
-            demisto.debug(f"new lastrun: {next_run}")
 
             indicators = [parse_indicator(indicator) for indicator in indicators]
             demisto.debug(f'The number of new indicators: {len(indicators)}')
