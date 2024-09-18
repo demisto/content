@@ -221,7 +221,7 @@ def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.qu
             ioc_count += len(batch.get('iocs', []))
             for ioc in batch.get('iocs', []):
                 yield ioc
-            if stop_iteration and ioc_count >= MAX_INDICATORS_TO_SYNC:
+            if stop_iteration and ioc_count >= 10000:
                 update_integration_context(update_search_after_array=search_after_array)
                 raise StopIteration
         update_integration_context(update_search_after_array=search_after_array)
@@ -456,11 +456,7 @@ def sync_for_fetch(client: Client, batch_size: int = 200):
             demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
                           f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, with indicator {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
-            requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
-            path: str = 'tim_insert_jsons'
-            response = client.http_request(path, requests_kwargs)
-            if response.get('reply', {}).get('success') is not True:
-                raise DemistoException(f"Response status was not success, {response=}")
+            response = push_indicators_to_xdr_request(client, request_data)
             if validation_errors := response.get('reply', {}).get('validation_errors'):
                 errors = create_validation_errors_response(validation_errors)
                 demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', ''))
@@ -552,6 +548,17 @@ def push_iocs(client, iocs, path='tim_insert_jsons/'):
     return validation_errors
 
 
+def push_indicators_to_xdr_request(client, indicators, ):
+    path = 'tim_insert_jsons/'
+    demisto.info(f"pushing IOCs to XDR: pushing {len(indicators)} IOCs to the {path} endpoint")
+    requests_kwargs: dict = get_requests_kwargs(_json=indicators, validate=True)
+    response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+    if response.get('reply', {}).get('success') is not True:
+        raise DemistoException(f"Response status was not success, {response=}")
+    return response
+        
+
+
 def tim_insert_jsons(client: Client):
     # Retrieve iocs changes from xsoar and pushes to XDR
     indicators = demisto.args().get('indicator', '')
@@ -578,10 +585,7 @@ def tim_insert_jsons(client: Client):
                                                                     stop_iteration=True,
                                                                     query=query)))
             if iocs:
-                path = 'tim_insert_jsons/'
-                demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
-                requests_kwargs: dict = get_requests_kwargs(_json=iocs, validate=True)
-                response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+                response = push_indicators_to_xdr_request(client, iocs)
                 validation_errors.extend(response.get('reply', {}).get('validation_errors', []))
             else:
                 demisto.debug("pushing IOCs to XDR: No more recently modified indicators to push.")
