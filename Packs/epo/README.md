@@ -169,7 +169,7 @@ If you do not yet have a Broker VM configured, follow the instructions [here](ht
 
 #### Configure a Database Collector
 
-Activate a database a collector as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Activate-the-Database-Collector).
+Activate a database collector as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Activate-the-Database-Collector).
 
 * When configuring the *Database Query* section, set the following parameters:
    | Parameter         | Value    
