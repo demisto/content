@@ -550,7 +550,7 @@ def push_iocs(client, iocs, path='tim_insert_jsons/'):
 
 def push_indicators_to_xdr_request(client, indicators, ):
     path = 'tim_insert_jsons/'
-    demisto.info(f"pushing IOCs to XDR: pushing {len(indicators)} IOCs to the {path} endpoint")
+    demisto.debug(f"pushing IOCs to XDR: pushing {len(indicators)} IOCs to the {path} endpoint")
     requests_kwargs: dict = get_requests_kwargs(_json=indicators, validate=True)
     response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     if response.get('reply', {}).get('success') is not True:
