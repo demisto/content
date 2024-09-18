@@ -13,6 +13,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
+from typing import Tuple
 import tldextract
 import pytz
 
@@ -551,6 +552,24 @@ def analyze_incidents_campaign(incidents, fields_to_display):
         draw_canvas(incidents, indicators_df.head(MAX_INDICATORS_FOR_CANVAS_PLOTTING).to_dict(orient='records'))
 
 
+def split_non_content_entries(response: list) -> Tuple[dict, list]:
+    """
+    Args:
+        response: A response list from executeCommand.
+
+    Return: (dict: The last content entry, list: non content entries)
+    """
+    content_entry = response[0]
+    non_content_entries = []
+    for res_entry in response:
+        if res_entry.get('Contents'):
+            content_entry = res_entry
+        else:
+            non_content_entries.append(res_entry)
+
+    return content_entry, non_content_entries
+
+
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, SELF_IN_CONTEXT
 
@@ -569,13 +588,16 @@ def main():
     res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
     if is_error(res):
         return_error(get_error(res))
-    res = res[-1]
-    incidents = json.loads(res['Contents'])
-    if is_number_of_incidents_too_low(res, incidents):
-        return
-    if is_number_of_unique_recipients_is_too_low(incidents):
-        return
-    analyze_incidents_campaign(incidents, fields_to_display)
+
+    content_entry, non_content_entries = split_non_content_entries(res)
+    incidents = json.loads(content_entry['Contents'])
+    if incidents:
+        skip_analysis = is_number_of_incidents_too_low(content_entry, incidents) or \
+            is_number_of_unique_recipients_is_too_low(incidents)
+        if not skip_analysis:
+            analyze_incidents_campaign(incidents, fields_to_display)
+    if non_content_entries:
+        return_results(non_content_entries)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
