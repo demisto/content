@@ -5,40 +5,29 @@ args:
 
 - name: name
   description: Task name. Technically required, copy original task name if no changes are desired.
-  defaultvalue: '-'
   required: true
 
 - name: owner_id
   description: User ID of the new owner.
-  defaultvalue: '-'
-
 - name: due_date
   description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z". Empty date indicates that the task has no assigned due date.
-  defaultvalue: '-'
-
 - name: phase
   description: The phase to which this task belongs.
   auto: PREDEFINED
   predefined:
-    - Initial
-    - Engage
-    - Detect/Analyze
-    - Respond
-    - Post-Incident
-    - Custom
-    - Complete
-  defaultvalue: '-'
-
+  - Initial
+  - Engage
+  - Detect/Analyze
+  - Respond
+  - Post-Incident
+  - Custom
+  - Complete
 - name: status
   description: Changing the status field, completes or re-opens the task.
   auto: PREDEFINED
   predefined:
-    - Open
-    - Completed
-  defaultvalue: '-'
-
-
-
+  - Open
+  - Completed
 comment: Use this script to add a note entry in XSOAR, which will then be mirrored as a note to an IBM QRadar SOAR incident. This script should be run within an incident.
 commonfields:
   id: IbmUpdateTask
@@ -52,6 +41,6 @@ scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.11.10.111526
 runas: DBotWeakRole
-fromversion: 6.8.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
