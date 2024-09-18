@@ -246,7 +246,7 @@ class CoreClient(BaseClient):
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
             return decoder(response['data'])   # type: ignore[operator]
         except json.JSONDecodeError:
-            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response[v])}")
             return response['data']
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
@@ -1581,12 +1581,11 @@ class CoreClient(BaseClient):
             request_data["process_name"] = process_name
         if incident_id:
             request_data["incident_id"] = incident_id
-        response = self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix="/endpoints/terminate_process/",
             json_data={"request_data": request_data},
         )
-        return response.get('reply')
 
     def terminate_causality(self, agent_id: str, causality_id: str, process_name: Optional[str], incident_id: Optional[str]) -> dict[str, dict[str, str]]:
         request_data: Dict[str, Any] = {
@@ -1597,12 +1596,12 @@ class CoreClient(BaseClient):
             request_data["process_name"] = process_name
         if incident_id:
             request_data["incident_id"] = incident_id
-        response = self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix="/endpoints/terminate_causality/",
             json_data={"request_data": request_data},
         )
-        return response.get('reply')
+        
 
 
 class AlertFilterArg:

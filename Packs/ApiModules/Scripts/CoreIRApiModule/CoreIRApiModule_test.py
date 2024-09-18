@@ -4228,3 +4228,36 @@ def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
         assert res == test_bin_data
     except DemistoException as e:
         assert f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}' in str(e)
+
+
+@pytest.mark.parametrize('args, action_ids',
+                         [[{'agent_id': '1', 'instance_id':'instance_id_1'},
+                           {'agent_id': '1', 'instance_id':['instance_id_1','instance_id_2']}],
+                          [['action_id_1'], ['action_ids1', 'action_ids_2']]])
+def test_terminate_process_command(mocker, args, action_ids):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+        - case 1 - instance_id, agent_id
+        - case 2 - instance_id, agent_id_1, agent_id_1
+    When:
+        - Calling the terminate_process_command method.
+    Then:
+        - case 1 - Make sure the response are as expected (action_id).
+    """
+    from CoreIRApiModule import CoreClient, terminate_process_command
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", return_value=
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_causality',
+                                                           'status': 200,
+                                                           'data': json.dumps({'group_action_id': 1})}
+        
+    )
+    
+    result = terminate_process_command(client=client, args=args)
+    for index in range(action_ids):
+        assert action_ids[index] == result[index]
+    
