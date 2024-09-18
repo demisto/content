@@ -3173,28 +3173,33 @@
                 "Rasterize",
                 "Image OCR"
             ],
-            "playbookID": "Rasterize Test HTML"
+            "playbookID": "Rasterize Test HTML",
+            "timeout" : 300
         },
         {
             "integrations": [
                 "Rasterize",
                 "Image OCR"
             ],
-            "playbookID": "Rasterize Test Process Email"
+            "playbookID": "Rasterize Test Process Email",
+            "timeout" : 300
+
         },
         {
             "integrations": [
                 "Rasterize",
                 "Image OCR"
             ],
-            "playbookID": "Rasterize Test URL to PNG and OCR"
+            "playbookID": "Rasterize Test URL to PNG and OCR",
+            "timeout" : 300
         },
         {
             "integrations": [
                 "Rasterize",
                 "Image OCR"
             ],
-            "playbookID": "Rasterize Test URL"
+            "playbookID": "Rasterize Test URL",
+            "timeout" : 300
         },
         {
             "integrations": "Ipstack",
