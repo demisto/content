@@ -1513,6 +1513,12 @@ script:
     - contextPath: Jira.Users.Locale
       description: Locale setting for the user.
       type: Unknown
+    - contextPath: Jira.Users.AccountID
+      description: The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5. Required in requests.
+      type: Unknown
+    - contextPath: Jira.Users.AccountType
+      description: "The user account type. Can take the following values: atlassian, app, customer."
+      type: Unknown
   - arguments:
     - description: The remote incident ID.
       name: id

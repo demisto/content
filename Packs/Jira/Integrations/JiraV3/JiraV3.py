@@ -4035,12 +4035,12 @@ def get_user_info_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
             raise ValueError('No key or username specified for jira-get-user-info')
         key_field = "Key"
     else:
-        # Jira Cloud requires using accountId
+        # Jira Cloud requires using account_id
         demisto.debug("Cloud check")
-        accountId = args.get('accountId', '')
-        if not accountId:
-            raise ValueError('No accountId specified for jira-get-user-info')
-        identifier = f'accountId={accountId}'
+        account_id = args.get('account_id', '')
+        if not account_id:
+            raise ValueError('No account_id specified for jira-get-user-info')
+        identifier = f'accountId={account_id}'
         key_field = "AccountID"
 
     response = client.get_user_info(identifier)
