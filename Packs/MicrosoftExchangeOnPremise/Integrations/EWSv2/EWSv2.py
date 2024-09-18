@@ -403,12 +403,17 @@ def get_time_zone() -> EWSTimeZone | None:
     return time_zone
 
 
-def get_attachment_name(attachment_name, content_id="", is_inline=False):  # pragma: no cover
+def get_attachment_name(attachment_name, content_id="", is_inline=False, attachment_subject=""):  # pragma: no cover
+    demisto.debug(f"get_attachment_name called with attachment_name='{attachment_name}', content_id='{content_id}', "
+                  f"is_inline={is_inline}, attachment_subject='{attachment_subject}'")
+
     if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
         if attachment_name is None or attachment_name == "":
             return f'{content_id}-attachmentName-demisto_untitled_attachment'
         return f'{content_id}-attachmentName-{attachment_name}'
-    if attachment_name is None or attachment_name == "":
+    if not attachment_name  and attachment_subject:
+        return attachment_subject
+    if not attachment_name and not attachment_subject:
         return 'demisto_untitled_attachment'
     return attachment_name
 
@@ -1156,10 +1161,10 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                         except ValueError as err:
                                             if "There may be at most" not in str(err):
                                                 raise err
-                            demisto.debug(f"Attachment Name: {attachment.name}")
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
-                                                                         is_inline=attachment.is_inline) + ".eml",
+                                                                         is_inline=attachment.is_inline,
+                                                                         attachment_subject=attachment.item.subject) + ".eml",
                                                      attached_email.as_string())
 
                         if file_result:
@@ -1173,19 +1178,23 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 'path': file_result['FileID'],
                                 'name': get_attachment_name(attachment_name=attachment.name,
                                                             content_id=attachment.content_id,
-                                                            is_inline=attachment.is_inline) + ".eml",
+                                                            is_inline=attachment.is_inline,
+                                                            attachment_subject=attachment.item.subject) + ".eml",
                             })
 
                         else:
                             incident['attachment'].append({
                                 'name': get_attachment_name(attachment_name=attachment.name,
                                                             content_id=attachment.content_id,
-                                                            is_inline=attachment.is_inline) + ".eml",
+                                                            is_inline=attachment.is_inline,
+                                                            attachment_subject=attachment.item.subject) + ".eml",
                             })
 
                     labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment_name=attachment.name,
                                                                                                content_id=attachment.content_id,
-                                                                                               is_inline=attachment.is_inline)})
+                                                                                               is_inline=attachment.is_inline,
+                                   attachment_subject="" if isinstance(attachment, FileAttachment) else attachment.item.subject)})
+
                     labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
         # handle headers
@@ -1334,7 +1343,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
                 ATTACHMENT_ID: attachment.attachment_id.id,
                 'attachmentName': get_attachment_name(attachment_name=attachment.name,
                                                       content_id=attachment.content_id,
-                                                      is_inline=attachment.is_inline),
+                                                      is_inline=attachment.is_inline,
+                                                      attachment_subject="" if isinstance(attachment, FileAttachment)
+                                                      else attachment.item.subject),
                 'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
                 'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
@@ -1353,7 +1364,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
                 ATTACHMENT_ID: attachment.attachment_id.id,
                 'attachmentName': get_attachment_name(attachment_name=attachment.name,
                                                       content_id=attachment.content_id,
-                                                      is_inline=attachment.is_inline),
+                                                      is_inline=attachment.is_inline,
+                                                      attachment_subject="" if isinstance(attachment, FileAttachment)
+                                                      else attachment.item.subject),
                 'attachmentSize': attachment.size,
                 'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
                 'attachmentIsInline': attachment.is_inline,
@@ -1369,7 +1382,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
             ATTACHMENT_ID: attachment.attachment_id.id,
             'attachmentName': get_attachment_name(attachment_name=attachment.name,
                                                   content_id=attachment.content_id,
-                                                  is_inline=attachment.is_inline),
+                                                  is_inline=attachment.is_inline,
+                                                  attachment_subject="" if isinstance(attachment, FileAttachment)
+                                                  else attachment.item.subject),
             'attachmentSHA256': None,
             'attachmentContentType': attachment.content_type,
             'attachmentContentId': attachment.content_id,
@@ -1386,7 +1401,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
     title = (f'EWS get attachment got item for "{target_email}", '
-             f'"{get_attachment_name(attachment_name=attachment.name,content_id=attachment.content_id, is_inline=attachment.is_inline)}"')  # noqa: E501
+             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline, attachment_subject=attachment.item.subject)}"')   # noqa: E501
 
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                 dict_result)
@@ -1460,13 +1475,13 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
                 if str(e) != "must be string or buffer, not None":
                     raise
         else:
-            demisto.debug(f"Attachment Name: {attachment.name}")
             entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
             if attachment.item.mime_content:
                 attached_email = cast_mime_item_to_message(attachment.item)
                 entries.append(fileResult(get_attachment_name(attachment.name,
                                                               content_id=attachment.content_id,
-                                                              is_inline=attachment.is_inline) + ".eml",
+                                                              is_inline=attachment.is_inline,
+                                                              attachment_subject=attachment.item.subjcet) + ".eml",
                                           attached_email.as_string()))
 
     return entries

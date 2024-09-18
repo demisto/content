@@ -874,18 +874,20 @@ def test_parse_item_as_dict_return_json_serializable():
     assert '"item_id": {"id": "id123", "changekey": "change"}' in item_as_json
 
 
-@pytest.mark.parametrize("attachment_name, content_id, is_inline, expected_result", [
-    pytest.param('image1.png', "", False, "image1.png"),
-    pytest.param('image1.png', '123', True, "123-attachmentName-image1.png"),
-    pytest.param('image1.png', None, False, "image1.png"),
+@pytest.mark.parametrize("attachment_name, content_id, is_inline, attachment_subject, expected_result", [
+    pytest.param('image1.png', "", False, None, "image1.png"),
+    pytest.param('image1.png', '123', True, None, "123-attachmentName-image1.png"),
+    pytest.param('image1.png', None, False, None, "image1.png"),
+    pytest.param(None, None, False, "Re: test",  "Re: test"),
 
 ])
-def test_get_attachment_name(attachment_name, content_id, is_inline, expected_result):
+def test_get_attachment_name(attachment_name, content_id, is_inline, attachment_subject, expected_result):
     """
     Given:
         - case 1: attachment is not inline.
-        - case 1: attachment is inline.
+        - case 2: attachment is inline.
         - case 3: attachment is not inline.
+        - case 4: attachment with no name, only subject.
     When:
         - get_attachment_name is called with LEGACY_NAME=FALSE
     Then:
@@ -893,7 +895,7 @@ def test_get_attachment_name(attachment_name, content_id, is_inline, expected_re
 
     """
     assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
-                               is_inline=is_inline) == expected_result
+                               is_inline=is_inline, attachment_subject=attachment_subject) == expected_result
 
 
 @pytest.mark.parametrize("attachment_name, content_id, is_inline, expected_result", [
