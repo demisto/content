@@ -466,6 +466,7 @@ def sync_for_fetch(client: Client, batch_size: int = 200):
         else:
             demisto.debug("request_data is empty, no indicators to sync")
             update_integration_context(update_is_first_sync_phase='false')
+        set_new_iocs_to_keep_time()
     except Exception as e:
         raise DemistoException(f"Failed to sync indicators with error {e}.")
 
