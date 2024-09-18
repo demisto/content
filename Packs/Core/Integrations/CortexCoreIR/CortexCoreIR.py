@@ -26,6 +26,8 @@ PREVALENCE_COMMANDS = {
     'core-get-cmd-analytics-prevalence': 'cmd',
 }
 
+TERMINATE_BUILD_NUM = ''
+TERMINATE_SERVER_VERSION = '8.7.0'
 
 class Client(CoreClient):
 
@@ -468,6 +470,9 @@ def main():  # pragma: no cover
             return_outputs(*get_incidents_command(client, args))
 
         elif command == 'core-terminate-process':
+            if not is_demisto_version_ge(version=TERMINATE_BUILD_NUM,
+                                         build_number=TERMINATE_SERVER_VERSION):
+                return 'not available yet'
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-process",
@@ -485,6 +490,9 @@ def main():  # pragma: no cover
                                                                    "CANCELED"]))
 
         elif command == 'core-terminate-causality':
+            if not is_demisto_version_ge(version=TERMINATE_BUILD_NUM,
+                                         build_number=TERMINATE_SERVER_VERSION):
+                return 'not available yet'
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-causality",
