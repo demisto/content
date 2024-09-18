@@ -7047,7 +7047,7 @@ def test_http_request_get_token_request(mocker):
     retries = 5
     status_list_to_retry = [429]
     valid_status_codes = [200, 201, 202, 204]
-    int_timeout = 10
+    int_timeout = 60
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     method = 'POST'
     url_suffix = '/oauth2/token'
@@ -7523,3 +7523,21 @@ def test_fix_time_field():
     assert detection_1['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
     assert detection_2['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
     assert detection_3['created_timestamp'] == '2023-04-20T11:13:10.424Z'
+
+
+def test_enrich_groups_no_resources(mocker):
+    """
+    Given:
+        - A non exist group id.
+    When:
+        - Running enrich_groups.
+    Then:
+        - Validate that the result are empty and no exception raised.
+    """
+    import CrowdStrikeFalcon
+
+    group_ids = "test_group_id"
+
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value={"resources": None})
+
+    assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}
