@@ -877,6 +877,7 @@ def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
 
 def answer_question(text: str, question: dict, email: str = ''):
 
+    
     entitlement = question.get('entitlement', '')
     content, guid, incident_id, task_id = extract_entitlement(entitlement, text)
     try:
@@ -1492,7 +1493,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     :param req: SocketModeRequest: The request object which has been sent by Slack.
     :return: None
     """
-    demisto.debug("SV3: Starting to process message")
+    data_type: str = req.type
+    payload: dict = req.payload
+    demisto.debug(f"SV3: Starting to process message, Got {data_type=} and {payload=}")
     if req.envelope_id:
         response = SocketModeResponse(envelope_id=req.envelope_id)
         await client.send_socket_mode_response(response)
@@ -1503,8 +1506,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         else:
             demisto.debug(f"SV3: Slack is resending the message. Ignore retries is - {IGNORE_RETRIES} and the "
                           f"retry attempt is - {req.retry_attempt}. Continuing to process the event.")
-    data_type: str = req.type
-    payload: dict = req.payload
     if data_type == 'error':
         error = payload.get('error', {})
         error_code = error.get('code')
