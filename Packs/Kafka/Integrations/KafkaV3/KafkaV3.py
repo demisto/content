@@ -42,7 +42,7 @@ class KafkaCommunicator:
     POLL_TIMEOUT: float = 1.0
     MAX_POLLS_FOR_LOG: int = 100
 
-    def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
+    def __init__(self, consumer_only, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
@@ -60,7 +60,11 @@ class KafkaCommunicator:
             client_cert_key: The contents of the client certificate's key
             ssl_password: The password with which the client certificate is protected by.
         """
-        self.conf_producer = {'bootstrap.servers': brokers}
+        
+        if not consumer_only:
+            self.conf_producer = {'bootstrap.servers': brokers}
+            self.update_client_dict(self.conf_producer, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password)
+        
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
             raise DemistoException(f'General offset {offset} not found in supported offsets: '
@@ -71,14 +75,18 @@ class KafkaCommunicator:
                               'auto.offset.reset': offset,
                               'group.id': group_id,
                               'enable.auto.commit': False}
+        
+        self.update_client_dict(self.conf_consumer, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password)
 
         self.kafka_logger = kafka_logger
 
+        """
         if trust_any_cert:
             self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
                                        'enable.ssl.certificate.verification': False})
             self.conf_producer.update({'ssl.endpoint.identification.algorithm': 'none',
                                        'enable.ssl.certificate.verification': False})
+                                       """
 
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
@@ -86,6 +94,7 @@ class KafkaCommunicator:
         demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
         demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
 
+        """
         if ca_cert:
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
                 self.ca_path = ca_descriptor.name
@@ -109,6 +118,34 @@ class KafkaCommunicator:
         if ssl_password:
             self.conf_producer.update({'ssl.key.password': ssl_password})
             self.conf_consumer.update({'ssl.key.password': ssl_password})
+            """
+
+
+    def update_client_dict(self, client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password):
+        if trust_any_cert:
+            client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
+                                       'enable.ssl.certificate.verification': False})
+        if ca_cert:
+            with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
+                self.ca_path = ca_descriptor.name
+                ca_descriptor.write(ca_cert)
+            client_dict.update({'ssl.ca.location': self.ca_path})
+            
+        if client_cert:
+            with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_cert_descriptor:
+                self.client_cert_path = client_cert_descriptor.name
+                client_cert_descriptor.write(client_cert)
+            client_dict.update({'ssl.certificate.location': self.client_cert_path,
+                                       'security.protocol': 'ssl'})
+            
+        if client_cert_key:
+            with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
+                self.client_key_path = client_key_descriptor.name
+                client_key_descriptor.write(client_cert_key)
+            client_dict.update({'ssl.key.location': self.client_key_path})
+        
+        if ssl_password:
+            client_dict.update({'ssl.key.password': ssl_password})
 
     def get_kafka_consumer(self) -> KConsumer:
         if self.kafka_logger:
