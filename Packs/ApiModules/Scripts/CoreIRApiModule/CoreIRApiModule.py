@@ -246,7 +246,7 @@ class CoreClient(BaseClient):
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
             return decoder(response['data'])   # type: ignore[operator]
         except json.JSONDecodeError:
-            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response[v])}")
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
@@ -1601,7 +1601,6 @@ class CoreClient(BaseClient):
             url_suffix="/endpoints/terminate_causality/",
             json_data={"request_data": request_data},
         )
-        
 
 
 class AlertFilterArg:
@@ -4452,7 +4451,7 @@ def terminate_process_command(client, args) -> CommandResults:
         replies.append({"action_id": action_id})
 
     return CommandResults(
-        readable_output=tableToMarkdown(f'Action process causality created on instance ids: {", ".join(instance_ids)}', replies),
+        readable_output=tableToMarkdown(f'Action terminate process created on instance ids: {", ".join(instance_ids)}', replies),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)': replies},
         raw_response=replies
     )

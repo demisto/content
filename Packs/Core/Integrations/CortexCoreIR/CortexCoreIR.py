@@ -29,6 +29,7 @@ PREVALENCE_COMMANDS = {
 TERMINATE_BUILD_NUM = ''
 TERMINATE_SERVER_VERSION = '8.7.0'
 
+
 class Client(CoreClient):
 
     def test_module(self):
