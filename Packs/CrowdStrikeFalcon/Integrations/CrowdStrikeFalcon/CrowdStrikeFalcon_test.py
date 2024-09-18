@@ -88,7 +88,7 @@ def test_incident_to_incident_context():
 
 def test_detection_to_incident_context():
     from CrowdStrikeFalcon import detection_to_incident_context
-    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection")
+    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection", 'created_timestamp')
     assert res == input_data.context_idp_detection
 
 
@@ -2369,8 +2369,10 @@ class TestFetch:
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
         requests_mock.get(f'{SERVER_URL}/alerts/queries/alerts/v1', json={'resources': ['a:ind:1', 'a:ind:2']})
         requests_mock.post(f'{SERVER_URL}/alerts/entities/alerts/v1',
-                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z'},
-                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z'}]})
+                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z',
+                                                "created_timestamp": "2020-09-04T09:16:11.000Z"},
+                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z',
+                                                "created_timestamp": "2020-09-04T09:16:11.000Z"}]})
 
         mocker.patch.object(
             demisto,
@@ -7045,7 +7047,7 @@ def test_http_request_get_token_request(mocker):
     retries = 5
     status_list_to_retry = [429]
     valid_status_codes = [200, 201, 202, 204]
-    int_timeout = 10
+    int_timeout = 60
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     method = 'POST'
     url_suffix = '/oauth2/token'
@@ -7492,3 +7494,50 @@ def test_get_status(mocker):
                        '046761c46ec84f40b27b6f79ce7c6543': 'Online',
                        '8ed44198a6f64f9fabd0479c30989876': 'Online',
                        'd4210a0957e640f18c237a2fa1141122': 'Online'}
+
+
+def test_fix_time_field():
+    """
+    Given:
+        - A detection, a string representing the key of the time we want to fix.
+    When:
+        - Running fetch_incidents command
+    Then:
+        - Validate that the value of the given key in the detection was updated correctly.
+    """
+    from CrowdStrikeFalcon import fix_time_field
+    detection_1 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647194Z'
+    }
+    detection_2 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647Z'
+    }
+    detection_3 = {
+        'created_timestamp': '2023-04-20T11:13:10.424Z'
+    }
+
+    fix_time_field(detection_1, 'created_timestamp')
+    fix_time_field(detection_2, 'created_timestamp')
+    fix_time_field(detection_3, 'created_timestamp')
+
+    assert detection_1['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_2['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_3['created_timestamp'] == '2023-04-20T11:13:10.424Z'
+
+
+def test_enrich_groups_no_resources(mocker):
+    """
+    Given:
+        - A non exist group id.
+    When:
+        - Running enrich_groups.
+    Then:
+        - Validate that the result are empty and no exception raised.
+    """
+    import CrowdStrikeFalcon
+
+    group_ids = "test_group_id"
+
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value={"resources": None})
+
+    assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}
