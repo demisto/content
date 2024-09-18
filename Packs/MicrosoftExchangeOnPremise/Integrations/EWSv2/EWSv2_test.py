@@ -115,7 +115,7 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
 
     client = TestNormalCommands.MockClient()
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2021, 5, 23, 13, 18, 14, 901293,
-                                                                            datetime.timezone.utc))
+                                                                            datetime.UTC))
     mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
 
     mocker.patch.object(MockObject, 'filter')
@@ -878,7 +878,7 @@ def test_parse_item_as_dict_return_json_serializable():
     pytest.param('image1.png', "", False, None, "image1.png"),
     pytest.param('image1.png', '123', True, None, "123-attachmentName-image1.png"),
     pytest.param('image1.png', None, False, None, "image1.png"),
-    pytest.param(None, None, False, "Re: test",  "Re: test"),
+    pytest.param(None, None, False, "Re: test", "Re: test"),
 
 ])
 def test_get_attachment_name(attachment_name, content_id, is_inline, attachment_subject, expected_result):

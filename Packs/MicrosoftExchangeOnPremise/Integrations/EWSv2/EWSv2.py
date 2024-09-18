@@ -411,7 +411,7 @@ def get_attachment_name(attachment_name, content_id="", is_inline=False, attachm
         if attachment_name is None or attachment_name == "":
             return f'{content_id}-attachmentName-demisto_untitled_attachment'
         return f'{content_id}-attachmentName-{attachment_name}'
-    if not attachment_name  and attachment_subject:
+    if not attachment_name and attachment_subject:
         return attachment_subject
     if not attachment_name and not attachment_subject:
         return 'demisto_untitled_attachment'
