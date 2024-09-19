@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Username & password authentication is deprecated. API Key ID & Secret are now required to be configured if not configured already."
-}
