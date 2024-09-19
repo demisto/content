@@ -1105,7 +1105,7 @@ script:
   isremotesyncout: true
 fromversion: 5.0.0
 tests:
-- IBM_Security_QRadar_Soar_Test
+- IBM Resilient Systems Test
 defaultclassifier: IBM QRadar SOAR - Classifier
 defaultmapperin: IBM QRadar SOAR Incoming Mapper
 defaultmapperout: IBM QRadar SOAR Outgoing Mapper
