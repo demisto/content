@@ -1,7 +1,9 @@
 {
-    "COMMENT_FORMAT": {
-        "ALL_FIELDS": "The GitHub username",
-        "ON_CALL_DEVS": "The PANW account username",
+    "__comment__": {
+        "CONTRIBUTION_REVIEWERS": "A list of GitHub username for the contribution team reviewers pool",
+        "ON_CALL_DEVS": "A list of on-call users, Use PANW account username",
+        "DOC_REVIEWER": "The GitHub username for documentation reviews owner",
+        "TIM_REVIEWER": "The GitHub username for TIM reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
         "adi88d",
@@ -12,7 +14,6 @@
     "CONTRIBUTION_SECURITY_REVIEWER": ["tomer-pan"],
     "ON_CALL_DEVS": [
         "skidorball",
-        "ayousef",
         "ipolishuk"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
