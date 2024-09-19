@@ -2108,9 +2108,9 @@ def attachment_handler(message, attachments):
             message.attach(msg_base)
 
 
-def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
-              transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
-              templateParams, inReplyTo=None, references=None, force_handle_htmlBody=False):
+def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names,
+              attach_cid, transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
+              templateParams, sender_display_name, inReplyTo=None, references=None, force_handle_htmlBody=False):
     if templateParams:
         templateParams = template_params(templateParams)
         if body:
@@ -2143,9 +2143,12 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
     message['bcc'] = header(','.join(bcc))
-    message['from'] = header(emailfrom)
     message['subject'] = header(subject)
     message['reply-to'] = header(replyTo)
+    if sender_display_name:
+        message['from'] = header(sender_display_name + f' <{emailfrom}>')
+    else:
+        message['from'] = header(emailfrom)
 
     # The following headers are being used for the reply-mail command.
     if inReplyTo:
@@ -2223,10 +2226,11 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     template_param = args.get('templateParams')
     render_body = argToBoolean(args.get('renderBody', False))
     body_type = args.get('bodyType', 'Text').lower()
+    sender_display_name = args.get('senderDisplayName')
 
-    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
-                       attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
-                       additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
+    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to,
+                       attach_names, attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
+                       additional_headers, template_param, sender_display_name, in_reply_to, references, force_handle_htmlBody)
     rendering_body = html_body if body_type == "html" else body
 
     send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
