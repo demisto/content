@@ -25,7 +25,8 @@ FIELD_SKIP_REASON_DOESNT_EXIST = f"The '{{field}}' field does not exist in {INCI
 FIELD_SKIP_REASON_FALSY_VALUE = f"The '{{field}}' field has a falsy value in current {INCIDENT_ALIAS}: '{{val}}'"
 FIELD_SKIP_REASON_INVALID_TYPE = "Expected type of the '{field}' field is: {valid}, actual type is: {type}"
 FIELD_SKIP_REASON_TOO_SHORT = f"Value of the '{{field}}' field in {INCIDENT_ALIAS}: '{{val}}' has length of {{len}}"
-FIELD_SKIP_REASON_LIST_OF_FALSY_VALS = f"Value of '{{field}}' field in {INCIDENT_ALIAS}: '{{val}}' is a list with only falsy values"
+FIELD_SKIP_REASON_LIST_OF_FALSY_VALS = (
+    f"Value of '{{field}}' field in {INCIDENT_ALIAS}: '{{val}}' is a list with only falsy values")
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Reasons:\n{}"
 
 MESSAGE_NO_INCIDENT_FETCHED = f"- 0 {INCIDENT_ALIAS}s fetched with these exact match for the given dates."
