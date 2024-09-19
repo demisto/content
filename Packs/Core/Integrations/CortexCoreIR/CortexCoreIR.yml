@@ -2971,7 +2971,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-process
-    description: Terminate a process by it's instance id.
+    description: Terminate a process by it's instance id. Available only for XSIAM 2.4.
     polling: true
     outputs:
     - contextPath: Core.TerminateProcess.action_id
@@ -3003,7 +3003,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-causality
-    description: Stops a process by it's causality id.
+    description: Stops a process by it's causality id. Available only for XSIAM 2.4.
     polling: true
     outputs:
     - contextPath: Core.TerminateCausality.action_id

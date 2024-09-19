@@ -1573,6 +1573,24 @@ class CoreClient(BaseClient):
         )
 
     def terminate_process(self, agent_id, instance_id, process_name, incident_id) -> dict[str, dict[str, str]]:
+        """
+            Terminate a specific process on an agent.
+
+            :type agent_id: ``str``
+            :param agent_id: The ID of the agent.
+
+            :type instance_id: ``str``
+            :param instance_id: The ID of the instance.
+
+            :type process_name: ``Optional[str]``
+            :param process_name: The name of the process. Optional.
+
+            :type incident_id: ``Optional[str]``
+            :param incident_id: The ID of the incident. Optional.
+
+            :return: The response from the API.
+            :rtype: ``dict[str, dict[str, str]]``
+        """
         request_data: Dict[str, Any] = {
             "agent_id": agent_id,
             "instance_id": instance_id,
@@ -1588,6 +1606,24 @@ class CoreClient(BaseClient):
         )
 
     def terminate_causality(self, agent_id: str, causality_id: str, process_name: Optional[str], incident_id: Optional[str]) -> dict[str, dict[str, str]]:
+        """
+            Terminate the causality for a specific agent and causality ID.
+
+            :type agent_id: ``str``
+            :param agent_id: The ID of the agent.
+
+            :type causality_id: ``str``
+            :param causality_id: The ID of the causality.
+
+            :type process_name: ``Optional[str]``
+            :param process_name: The name of the process. Optional.
+
+            :type incident_id: ``Optional[str]``
+            :param incident_id: The ID of the incident. Optional.
+
+            :return: The response from the API.
+            :rtype: ``dict[str, dict[str, str]]``
+        """
         request_data: Dict[str, Any] = {
             "agent_id": agent_id,
             "causality_id": causality_id
@@ -4436,6 +4472,19 @@ def get_incidents_command(client, args):
 
 
 def terminate_process_command(client, args) -> CommandResults:
+    """
+    AVAILABLE ONLY TO XDR3.12 / XSIAM2.4
+    Terminate the process command for a specific agent and instance IDs.
+
+    :type client: ``Client``
+    :param client: The client to use for making API calls.
+
+    :type args: ``Dict[str, Any]``
+    :param args: The arguments for the command.
+
+    :return: The results of the command.
+    :rtype: ``CommandResults``
+    """
     agent_id = args.get('agent_id')
     instance_ids = argToList(args.get('instance_id'))
     process_name = args.get('process_name')
@@ -4458,6 +4507,19 @@ def terminate_process_command(client, args) -> CommandResults:
 
 
 def terminate_causality_command(client, args) -> CommandResults:
+    """
+    AVAILABLE ONLY TO XDR3.12 / XSIAM2.4
+    Terminate the causality command for a specific agent and causality IDs.
+
+    :type client: ``Client``
+    :param client: The client to use for making API calls.
+
+    :type args: ``Dict[str, Any]``
+    :param args: The arguments for the command.
+
+    :return: The results of the command.
+    :rtype: ``CommandResults``
+    """
     agent_id = args.get('agent_id')
     causality_ids = argToList(args.get('causality_id'))
     process_name = args.get('process_name')
