@@ -41,14 +41,14 @@ configuration:
   section: Collect
 - defaultvalue: 100
   section: Collect
-  display: The maximum number of audit events per fetch (Max. allowed - 1,000)
+  display: The maximum number of audit events per fetch
   name: max_audit_events_per_fetch
   required: false
   type: 0
   advanced: true
-- defaultvalue: 1000
+- defaultvalue: 5000
   section: Collect
-  display: The maximum number of networking events per fetch (Max. allowed - 5,000)
+  display: The maximum number of networking events per fetch
   name: max_networking_events_per_fetch
   required: false
   type: 0

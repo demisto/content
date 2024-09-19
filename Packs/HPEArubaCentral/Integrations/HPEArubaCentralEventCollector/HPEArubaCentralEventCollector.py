@@ -503,7 +503,8 @@ def push_events(audit_events: list | None, networking_events: list | None):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, first_fetch_time: int, fetch_networking_events: bool) -> str:
+def test_module(client: Client, first_fetch_time: int, fetch_networking_events: bool,
+                max_audit_events_per_fetch: int, max_networking_events_per_fetch: int) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -518,6 +519,13 @@ def test_module(client: Client, first_fetch_time: int, fetch_networking_events: 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
+
+    if not max_audit_events_per_fetch or max_audit_events_per_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
+        raise DemistoException('The maximum number of audit events per fetch should not exceed '
+                               f'{MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}.')
+    if not max_networking_events_per_fetch or max_networking_events_per_fetch > MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT:
+        raise DemistoException('The maximum number of networking events per fetch should not exceed '
+                               f'{MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}.')
 
     try:
         fetch_events(
@@ -553,9 +561,13 @@ def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tup
         networking_events (list[dict] | None): List of networking events fetched from Aruba Central API
         results (list[CommandResults]): List of CommandResults objects to be returned to the war-room.
     """
-    limit = arg_to_number(args.get('limit'))
-    audit_limit = limit or MAX_GET_AUDIT_LIMIT
-    networking_limit = limit or MAX_GET_EVENTS_LIMIT
+    limit = arg_to_number(args.get('limit'), required=True)
+    max_limit = max(MAX_GET_AUDIT_LIMIT * MAX_AUDIT_API_REQS, MAX_GET_EVENTS_LIMIT * MAX_EVENT_API_REQS)
+    if not limit or limit > max_limit:
+        raise DemistoException(f'Requested limit ({limit}) exceeds maximum allowed limit of {max_limit}')
+
+    audit_limit = limit or MAX_GET_AUDIT_LIMIT * MAX_AUDIT_API_REQS
+    networking_limit = limit or MAX_GET_EVENTS_LIMIT * MAX_EVENT_API_REQS
     if 'from_date' in args:
         start_time = int(date_to_timestamp(arg_to_datetime(args.get('from_date'))) / 1000)
     else:
@@ -603,6 +615,13 @@ def fetch_events(client: Client,
         audit_events(list): List of fetched audit events.
         networking_events(list): List of fetched networking events.
     """
+    if not num_audit_events_to_fetch or num_audit_events_to_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
+        raise DemistoException('The maximum number of audit events per fetch should not exceed '
+                               f'{MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}.')
+    if not num_networking_events_to_fetch or num_networking_events_to_fetch > MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT:
+        raise DemistoException('The maximum number of networking events per fetch should not exceed '
+                               f'{MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}.')
+
     audit_start_time = int(last_run.get('last_audit_ts', first_fetch_time))
     networking_start_time = int(last_run.get('last_networking_ts', first_fetch_time))
     end_time = int(time.time())
@@ -645,8 +664,8 @@ def main() -> None:  # pragma: no cover
     customer_id = params.get('customer_id', {}).get('password')
     base_url = params.get('url', '')
     fetch_networking_events = params.get('fetch_networking_events', False)
-    max_audit_events_per_fetch = arg_to_number(params.get('max_audit_events_per_fetch')) or MAX_GET_AUDIT_LIMIT
-    max_networking_events_per_fetch = arg_to_number(params.get('max_networking_events_per_fetch')) or MAX_GET_EVENTS_LIMIT
+    max_audit_events_per_fetch = arg_to_number(params.get('max_audit_events_per_fetch')) or 0
+    max_networking_events_per_fetch = arg_to_number(params.get('max_networking_events_per_fetch')) or 0
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -667,7 +686,9 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             result = test_module(client,
                                  first_fetch_time=first_fetch_time,
-                                 fetch_networking_events=fetch_networking_events)
+                                 fetch_networking_events=fetch_networking_events,
+                                 max_audit_events_per_fetch=max_audit_events_per_fetch,
+                                 max_networking_events_per_fetch=max_networking_events_per_fetch)
             return_results(result)
 
         elif command == 'aruba-central-get-events':
