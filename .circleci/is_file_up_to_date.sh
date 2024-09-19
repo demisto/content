@@ -27,7 +27,7 @@ if [[ $(git diff origin/master -G"." -- ${FILE_TO_CHECK}) ]]; then
             printf "ERROR: %s has been changed.\nMerge from master" "${FILE_TO_CHECK}" | /usr/games/cowsay -n -f "$(ls /usr/share/cowsay/cows | shuf | head -1)"
         else
             # workaround for docker issue in CirlceCI
-            printf "ERROR: %s has been changed.\nMerge from master" "${FILE_TO_CHECK}"
+            printf "ERROR: %s has been changed.\nMerge from master\n" "${FILE_TO_CHECK}"
         fi
 
         if [[ $BRANCH =~ pull/[0-9]+ ]]; then
