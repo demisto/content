@@ -8,7 +8,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, proxy: bool, verify: bool):
+    def __init__(self, base_url: str, proxy: bool, verify: bool, is_workflow: bool = True):
         """
         Client to use in the. Overrides BaseClient.
 
@@ -17,6 +17,7 @@ class Client(BaseClient):
 
         """
         self.base_url = base_url
+        self.is_workflow= is_workflow
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
     def send_teams_message(self, messagecard: dict, adaptive_cards_format: bool = False):
@@ -28,7 +29,9 @@ class Client(BaseClient):
             adaptive_cards_format (bool): Should the adaptive card url format be used?
         """
 
-        if adaptive_cards_format:
+        demisto.debug(f"{self.base_url=}")
+        demisto.debug(f"{messagecard=}")
+        if adaptive_cards_format or self.is_workflow:
             res = self._http_request(
                 method='POST',
                 json_data=messagecard,
@@ -41,12 +44,13 @@ class Client(BaseClient):
                 method='POST',
                 json_data=messagecard,
                 raise_on_status=True,
-                resp_type='text'
+                resp_type='text',
             )
+        demisto.debug(f"{res=}")
         demisto.info(f'completed post of message. response text: {res}')
 
 
-def create_teams_message(message: str, title: str, serverurls: str, adaptive_cards_format: bool = False) -> dict:
+def create_teams_message(message: str, title: str, serverurls: str, adaptive_cards_format: bool = False, is_workflow: bool = True) -> dict:
     """
     Creates the Teams message using the messageCard format, and returns the card
 
@@ -59,60 +63,85 @@ def create_teams_message(message: str, title: str, serverurls: str, adaptive_car
         Returns:
         messagecard (dict): dict the adaptive card to send to Teams.
     """
-
     messagecard: dict = {}
-    if adaptive_cards_format:
-        messagecard = {
-            "type": "message",
-            "attachments": [
-                {
+    if is_workflow:
+        if adaptive_cards_format:
+            messagecard = {
+                "type": "message",
+                "attachments": [
+                    {
                     "contentType": "application/vnd.microsoft.card.adaptive",
-                    "contentUrl": None,
                     "content": {
                         "type": "AdaptiveCard",
                         "body": [
-                            {
-                                "type": "TextBlock",
-                                "size": "Medium",
-                                "weight": "Bolder",
-                                "text": "Cortex XSOAR Notification"
-                            },
-                            {
-                                "type": "TextBlock",
-                                "text": message,
-                                "wrap": True
-                            }
-                        ],
-                        "actions": [
-                            {
-                                "type": "Action.OpenUrl",
-                                "title": title,
-                                "url": serverurls
-                            }
+                        {
+                            "type": "TextBlock",
+                            "text": "Message Text from Postman with AdaptiveCard (113)"
+                        }
                         ],
                         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                        "version": "1.6"
+                        "version": "1.0"
                     }
-                }
-            ]
-        }
+                    }
+                ]
+            }
+        else:
+            messagecard = {
+            "text": message
+          }
     else:
-        messagecard = {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "themeColor": "0076D7",
-            "summary": "Cortex XSOAR Notification",
-            "sections": [{
-                "activityTitle": "Cortex XSOAR Notification",
-                "activitySubtitle": message,
-                "markdown": True
-            }],
-            "potentialAction": [{
-                "@type": "OpenUri",
-                "name": title,
-                "targets": [{"os": "default", "uri": serverurls}]
-            }]
-        }
+        if adaptive_cards_format:
+            messagecard = {
+                "type": "message",
+                "attachments": [
+                    {
+                        "contentType": "application/vnd.microsoft.card.adaptive",
+                        "contentUrl": None,
+                        "content": {
+                            "type": "AdaptiveCard",
+                            "body": [
+                                {
+                                    "type": "TextBlock",
+                                    "size": "Medium",
+                                    "weight": "Bolder",
+                                    "text": "Cortex XSOAR Notification"
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "text": message,
+                                    "wrap": True
+                                }
+                            ],
+                            "actions": [
+                                {
+                                    "type": "Action.OpenUrl",
+                                    "title": title,
+                                    "url": serverurls
+                                }
+                            ],
+                            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                            "version": "1.6"
+                        }
+                    }
+                ]
+            }
+        else:
+            messagecard = {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": "0076D7",
+                "summary": "Cortex XSOAR Notification",
+                "sections": [{
+                    "activityTitle": "Cortex XSOAR Notification",
+                    "activitySubtitle": message,
+                    "markdown": True
+                }],
+                "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": title,
+                    "targets": [{"os": "default", "uri": serverurls}]
+                }]
+            }
 
     return messagecard
 
@@ -131,7 +160,8 @@ def test_module(client: Client, serverurls: str) -> str:
     try:
         message = "Successful test message from Cortex XSOAR"
         title = "Cortex XSOAR Notification"
-        test_message = create_teams_message(message, title, serverurls)
+        test_message = create_teams_message(message, title, serverurls, is_workflow=client.is_workflow)
+        demisto.debug(f"{test_message=}")
         client.send_teams_message(test_message)
         return 'ok'
     except DemistoException as e:
@@ -160,7 +190,7 @@ def send_teams_message_command(
         which contains the readable_output indicating the message was sent.
     """
 
-    messagecard = create_teams_message(message, title, serverurls, adaptive_cards_format)
+    messagecard = create_teams_message(message, title, serverurls, adaptive_cards_format, is_workflow=client.is_workflow)
     client.send_teams_message(messagecard, adaptive_cards_format)
     return CommandResults(readable_output='message sent successfully')
 
@@ -178,6 +208,7 @@ def main() -> None:    # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     adaptive_cards_format: bool = argToBoolean(args.get("adaptive_cards_format", False))
+    
 
     serverurls = demisto.demistoUrls()
 
@@ -185,13 +216,15 @@ def main() -> None:    # pragma: no cover
         serverurls = args.get('alternative_url')
     else:
         serverurls = serverurls.get("investigation", serverurls["server"])
+    demisto.debug(f"{serverurls=}")
 
     command = demisto.command()
     try:
         client = Client(
             base_url=webhook,
             verify=verify_certificate,
-            proxy=proxy
+            proxy=proxy,
+            is_workflow='workflow' in webhook
         )
 
         if command == 'test-module':
