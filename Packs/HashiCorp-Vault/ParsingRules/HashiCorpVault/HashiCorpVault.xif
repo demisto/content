@@ -1,0 +1,9 @@
+
+[INGEST:vendor="hashicorp", product="vault", target_dataset="hashicorp_vault_raw", no_hit=keep]
+/*  Supports RFC3339-compatible timestamps */
+alter tmp_time = _raw_log -> time
+| filter tmp_time ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:\d{2}|Z)"
+| alter _time = if(tmp_time ~= "Z$", 
+    parse_timestamp("%FT%H:%M:%E*SZ", tmp_time), // zulu time notation, e.g. "2024-09-27T11:18:59.123Z 
+    parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_time)) // numerical offset e.g. 2024-02-22T11:18:59.152+03:00
+| fields - tmp_time;

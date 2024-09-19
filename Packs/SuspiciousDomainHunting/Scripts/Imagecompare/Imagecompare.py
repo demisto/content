@@ -1,39 +1,39 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from cv2 import cv2
-from skimage.metrics import structural_similarity as compare_ssim
+import cv2
+from skimage import metrics
 
 
 def calculate_mse(image_path1, image_path2):
     # Load the images
-    img1 = cv2.imread(image_path1)
-    img2 = cv2.imread(image_path2)
+    img1 = cv2.imread(image_path1)  # pylint: disable=[E1101]
+    img2 = cv2.imread(image_path2)  # pylint: disable=[E1101]
 
     # Check if the images are loaded successfully
     if img1 is None or img2 is None:
         return None
 
     # Calculate Mean Squared Error (MSE)
-    mse = ((img1 - img2) ** 2).mean()
+    mse = ((img1 - img2) ** 2).mean()  # type: ignore[operator]
     return mse
 
 
 def calculate_ssim(image_path1, image_path2):
     # Load the images
-    img1 = cv2.imread(image_path1)
-    img2 = cv2.imread(image_path2)
+    img1 = cv2.imread(image_path1)  # pylint: disable=[E1101]
+    img2 = cv2.imread(image_path2)  # pylint: disable=[E1101]
 
     # Check if the images are loaded successfully
     if img1 is None or img2 is None:
         return None
 
     # Convert images to grayscale
-    img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)  # pylint: disable=[E1101]
+    img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)  # pylint: disable=[E1101]
 
     # Calculate Structural Similarity Index (SSIM)
-    ssim = compare_ssim(img1_gray, img2_gray)
+    ssim = metrics.structural_similarity(img1_gray, img2_gray)
     return ssim
 
 

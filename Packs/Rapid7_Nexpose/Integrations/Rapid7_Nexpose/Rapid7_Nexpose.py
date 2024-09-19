@@ -160,7 +160,7 @@ class Client(BaseClient):
             verify=verify,
         )
 
-    def _http_request(self, **kwargs):
+    def _http_request(self, **kwargs):  # type: ignore[override]
         """Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses."""
         for _time in range(1, self.connection_error_retries + 1):
             try:
