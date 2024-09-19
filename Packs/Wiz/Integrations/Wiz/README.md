@@ -44,19 +44,20 @@ Get the details for a Wiz Issue ID.
 
 ### wiz-get-issues
 ***
-Get the issues on cloud resources
+Get the issues on cloud resources.
 <h4> Base Command </h4>
 
 `wiz-get-issues`
 
 <h4> Input </h4>
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_type | The type of Issue to get. | Optional | 
-| resource_id | Get Issues of a specific resource_id.<br />Expected input: `providerId` | Optional | 
-| severity | Get Issues of a specific severuty.<br />Expected input: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `INFORMATIONAL`.<br />The chosen severity and above will be fetched  | Optional | 
-*Either `issue_type` or `resource_id` are required.*
+| **Argument Name** | **Description**                                                                                                                                                  | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| issue_type        | The type of Issue to get<br />Expected input: `TOXIC_COMBINATION`, `THREAT_DETECTION`, `CLOUD_CONFIGURATION`.<br />The chosen type will be fetched  .            | Optional | 
+| entity_type       | The type of entity to get issues for.                                                                                                                            | Optional | 
+| resource_id       | Get Issues of a specific resource_id.<br />Expected input: `providerId`                                                                                          | Optional | 
+| severity          | Get Issues of a specific severuty.<br />Expected input: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `INFORMATIONAL`.<br />The chosen severity and above will be fetched | Optional | 
+*`entity_type` and `resource_id` are mutually exclusive.*
 
 <h4> Context Output </h4>
 
@@ -67,14 +68,16 @@ Get the issues on cloud resources
 
 #### Command Example
 ```
-!wiz-get-issues issue_type="VIRTUAL_MACHINE"
+!wiz-get-issues entity_type="VIRTUAL_MACHINE"
+!wiz-get-issues issue_type="THREAT_DETECTION"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" severity=HIGH
 ```
 
 ### wiz-get-resource
 ***
-Get Details of a resource.
+Get Details of a resource. You should pass exactly one of `resource_id`, `resource_name`.
+When searching by name, results are limited to 500 records.
 
 <h4> Base Command </h4>
 
@@ -83,8 +86,9 @@ Get Details of a resource.
 <h4> Input </h4>
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_id | Resource provider id | Required | 
+|-------------------| --- |--------------|
+| resource_id       | Resource provider id | optional     | 
+| resource_name     | search by name or external ID | optional     | 
 
 
 <h4> Context Output </h4>
@@ -97,6 +101,8 @@ Get Details of a resource.
 #### Command Example
 ```
 !wiz-get-resource resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
+!wiz-get-resource resource_name="i-0g03j4h5gd123d456"
+!wiz-get-resource resource_name="test_vm"
 ```
 
 ### wiz-issue-in-progress
@@ -263,7 +269,7 @@ Get the evidence from an Issue.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Issue id | Required | 
+| issue_id | Issue id | Required |
 
 #### Command Example
 ```
@@ -272,22 +278,7 @@ Get the evidence from an Issue.
 
 ### wiz-rescan-machine-disk
 ***
-Rescan a VM disk in Wiz.
-
-<h4> Base Command </h4>
-
-`wiz-rescan-machine-disk`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| vm_id | VM Cloud Provider id | Required | 
-
-#### Command Example
-```
-!wiz-rescan-machine-disk vm_id="arn:aws:ec2:us-east-2:123456789098:instance/i-1234abcd123456789"
-```
+Deprecated
 
 ### wiz-set-issue-due-date
 ***
@@ -345,4 +336,24 @@ Clear a due date for an Issue.
 #### Command Example
 ```
 !wiz-get-project-team project_name="project1"
+```
+
+### wiz-copy-to-forensics-account
+***
+Copy VM's Volumes to a Forensics Account
+
+<h4> Base Command </h4>
+
+`wiz-copy-to-forensics-account`
+
+<h4> Input </h4>
+
+| **Argument Name** | **Description** | **Required** |
+| --- |-----------------| --- |
+| resource_id | Resource Id     | Required | 
+
+#### Command Example
+```
+!wiz-copy-to-forensics-account resource_id="12345678-1234-1234-1234-cc0a24716e0b"
+!wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:123455563321:instance/i-05r662bfb9708a4e8"
 ```
