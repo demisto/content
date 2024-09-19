@@ -11,6 +11,7 @@ import time
 import threading
 import pytest
 import requests
+import json
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -639,3 +640,57 @@ def test_is_mailto_urls(mocker: MockerFixture):
     res = screenshot_image(None, None, 'url', None, None)
 
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
+
+
+def test_write_json_file_add_content(mock_file_system):
+    from rasterize import write_json_file
+    new_content = {"5000": {"rasterize_count": 1}}
+    write_json_file(new_chrome_instance_content=new_content)
+
+    # Check that the file was opened in write mode and content was updated correctly
+    open(mock_file_system.mock_calls[0][1][0]).write.assert_called_once_with(
+        json.dumps({
+            "3000": {"rasterize_count": 1},
+            "4000": {"rasterize_count": 2},
+            "5000": {"rasterize_count": 1},
+        }, indent=4)
+    )
+
+
+def test_write_json_file_increase_counter(mock_file_system):
+    from rasterize import write_json_file
+    write_json_file(chrome_port="3000", increase_counter=True)
+
+    # Check that the counter was increased
+    open(mock_file_system.mock_calls[0][1][0]).write.assert_called_once_with(
+        json.dumps({
+            "3000": {"rasterize_count": 2},
+            "4000": {"rasterize_count": 2},
+        }, indent=4)
+    )
+
+
+def test_write_json_file_terminate_port(mock_file_system):
+    from rasterize import write_json_file
+    write_json_file(chrome_port="3000", terminate_port=True)
+
+    # Check that the port was terminated (removed from the JSON)
+    open(mock_file_system.mock_calls[0][1][0]).write.assert_called_once_with(
+        json.dumps({
+            "4000": {"rasterize_count": 2},
+        }, indent=4)
+    )
+
+
+def test_write_json_file_create_new_file(mocker):
+    from rasterize import write_json_file
+    """Test creating a new file when it doesn't exist."""
+    mocker.patch("os.path.exists", return_value=False)
+    new_content = {"5000": {"rasterize_count": 1}}
+
+    mock_file_system = write_json_file(new_chrome_instance_content=new_content)
+
+    # Check that the file was created with the correct content
+    open(mock_file_system.mock_calls[0][1][0]).write.assert_called_once_with(
+        json.dumps(new_content, indent=4)
+    )
