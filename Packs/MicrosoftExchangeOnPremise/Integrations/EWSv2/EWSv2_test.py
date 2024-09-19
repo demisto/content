@@ -115,7 +115,7 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
 
     client = TestNormalCommands.MockClient()
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2021, 5, 23, 13, 18, 14, 901293,
-                                                                            datetime.timezone.utc))
+                                                                            datetime.UTC))
     mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
 
     mocker.patch.object(MockObject, 'filter')
