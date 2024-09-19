@@ -75,6 +75,7 @@ def test_fetch_indicators_command(mocker):
                     'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
                 }
                 assert indicator['value'] == '9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25'
+                assert indicator['value'] == indicator['fields']['sha256']
             elif indicator['type'] == FeedIndicatorType.Domain:
                 assert set(indicator['fields'].keys()) == {
                     'admincountry', 'adminname', 'adminemail', 'adminphone', 'registrantcountry',
@@ -84,6 +85,9 @@ def test_fetch_indicators_command(mocker):
                     'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
                 }
                 assert indicator['value'] == 'account-facebook.com'
+                assert indicator['fields']['adminemail'] == 'c215fc66323f439as@knowbe4.com'
+                assert indicator['fields']['registrantcountry'] == 'US'
+                assert indicator['fields']['registrarabusephone'] == '+1.2024422253'
             elif indicator['type'] == FeedIndicatorType.URL:
                 assert set(indicator['fields'].keys()) == {
                     'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
@@ -91,6 +95,7 @@ def test_fetch_indicators_command(mocker):
                     'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
                 }
                 assert indicator['value'] == 'https://www.leparisien.wf/politique/Jupiter-et-une-bande-d'
+                assert indicator['fields']['firstseenbysource'] == 1722360511
             elif indicator['type'] == FeedIndicatorType.IP:
                 assert set(indicator['fields'].keys()) == {
                     'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
@@ -98,6 +103,7 @@ def test_fetch_indicators_command(mocker):
                     'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
                 }
                 assert indicator['value'] == '8.8.8.8'
+                assert indicator['fields']['countrycode'] == 'US'
             else:
                 raise ValueError(f'Unknown type: {indicator["type"]}')
 
