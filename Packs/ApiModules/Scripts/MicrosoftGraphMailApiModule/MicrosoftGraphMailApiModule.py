@@ -1622,7 +1622,7 @@ class GraphMailUtils:
         return message
 
     @staticmethod
-    def build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids):
+    def build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids, inline_attachments=[]):
         """
         Builds the reply message that includes recipients to reply and reply message.
 
@@ -1647,14 +1647,18 @@ class GraphMailUtils:
         return {
             'message': {
                 'toRecipients': GraphMailUtils.build_recipient_input(to_recipients),
-                'attachments': GraphMailUtils.build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
+                'attachments': GraphMailUtils.build_file_attachments_input(attach_ids,
+                                                                           attach_names,
+                                                                           attach_cids,
+                                                                           [],
+                                                                           inline_attachments)
             },
             'comment': comment
         }
 
     @staticmethod
     def build_message_to_reply(to_recipients, cc_recipients, bcc_recipients, subject, email_body, attach_ids,
-                               attach_names, attach_cids, reply_to):
+                               attach_names, attach_cids, reply_to, inline_from_layout=[]):
         """
         Builds a valid reply message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -1666,7 +1670,11 @@ class GraphMailUtils:
             'replyTo': GraphMailUtils.build_recipient_input(reply_to),
             'subject': subject,
             'bodyPreview': email_body[:255],
-            'attachments': GraphMailUtils.build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
+            'attachments': GraphMailUtils.build_file_attachments_input(attach_ids,
+                                                                       attach_names,
+                                                                       attach_cids,
+                                                                       [],
+                                                                       inline_from_layout)
         }
 
 
@@ -1996,10 +2004,10 @@ def reply_email_command(client: MsGraphMailBaseClient, args):
     html_body = args.get('htmlBody')
     attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
-    message_body = html_body or email_body
+    message_body, inline_from_layout = (GraphMailUtils.handle_html(html_body)) if html_body else (email_body, [])
 
     reply = GraphMailUtils.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body, attach_ids,
-                                                  attach_names, attach_cids, reply_to)
+                                                  attach_names, attach_cids, reply_to, inline_from_layout)
 
     less_than_3mb_attachments, more_than_3mb_attachments = GraphMailUtils.divide_attachments_according_to_size(
         attachments=reply.get('attachments')
