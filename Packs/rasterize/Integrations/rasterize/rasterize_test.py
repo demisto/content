@@ -502,7 +502,7 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
     }
 
     mock_file_content = read_json_file("test_data/chrome_instances.json")
-    
+
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
@@ -546,7 +546,7 @@ def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(moc
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
-    
+
     mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',

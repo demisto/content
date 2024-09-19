@@ -63,7 +63,7 @@ PAGES_LIMITATION = 20
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
-    MAX_RASTERIZATIONS_COUNT = 4 #int(env_max_rasterizations_count)
+    MAX_RASTERIZATIONS_COUNT = 4  # int(env_max_rasterizations_count)
 except Exception as e:
     demisto.info(f'Exception trying to parse MAX_RASTERIZATIONS_COUNT, {e}')
     MAX_RASTERIZATIONS_COUNT = 500
@@ -353,7 +353,7 @@ def write_json_file(new_chrome_instance_content: Optional[Dict] = {},
                             del existing_data[chrome_port]
                     file.seek(0)  # Move file pointer to the beginning
                     json.dump(existing_data, file, indent=4)
-                    file.truncate() # Remove remaining part of the file if new content is shorter
+                    file.truncate()  # Remove remaining part of the file if new content is shorter
                 except json.JSONDecodeError:
                     raise DemistoException('File is invalid JSON')
         else:
@@ -827,13 +827,14 @@ def perform_rasterize(path: str | list[str],
             demisto.info(
                 f"Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
 
-            previous_rasterizations_counter_from_file:dict = read_json_file()
+            previous_rasterizations_counter_from_file: dict = read_json_file()
             if previous_rasterizations_counter_from_file:
-                per_port_rasterizations_count = previous_rasterizations_counter_from_file[chrome_port]['rasterize_count'] + len(rasterization_threads)
+                per_port_rasterizations_count = previous_rasterizations_counter_from_file[chrome_port]['rasterize_count'] + len(
+                    rasterization_threads)
             else:
                 # check this else with Tal
                 per_port_rasterizations_count = len(rasterization_threads)
-            
+
             demisto.debug(f"checking if the {chrome_port=} should be deleted: {per_port_rasterizations_count=},"
                           f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
             if not chrome_port:
