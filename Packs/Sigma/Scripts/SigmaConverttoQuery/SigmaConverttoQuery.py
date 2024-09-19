@@ -37,21 +37,19 @@ def get_sigma_dictionary(indicator: str) -> str:
         DemistoException: If the indicator is not found or Sigma dictionary cannot be loaded.
     """
 
-    demisto.debug(f'Starting search for indicator: {indicator}')
-    search_result = demisto.executeCommand('findIndicators', {'value': indicator})
-
-    if isError(search_result):
-        return_error(f'Failed to find indicator {indicator}. Error: {get_error(search_result)}')
-
-    indicators = search_result[0]['Contents']
-
-    if not indicators:
-        return_error(f'No indicator found with value {indicator}.')
-
-    indicator = indicators[0]
-
     try:
+        demisto.debug(f'Starting search for indicator: {indicator}')
+        indicators = execute_command('findIndicators', {'value': indicator})
+
+        if not indicators:
+            return_error(f'No indicator found with value {indicator}.')
+
+        indicator = indicators[0]
+
         sigma = indicator.get('CustomFields', {}).get('sigmaruleraw', '')
+
+    except DemistoException as e:
+        return_error(f'XSOAR encountered an error - {e}')
 
     except Exception as e:
         return_error(f'Could not load Sigma dictionary - {e}')
@@ -64,28 +62,30 @@ def main() -> None:
     Main function to convert a Sigma rule indicator into a SIEM query.
     """
 
-    indicator = demisto.args().get('indicator', '')
+    args = demisto.args()
+    indicator = args.get('indicator', '')
 
     if not indicator:
         return_error('You must provide an indicator.')
 
     try:
-        siem_name = demisto.args()['SIEM'].lower()
+        siem_name = args['SIEM'].lower()
         siem = SIEMS[siem_name]
-        demisto.debug(f'SIEM selected: {demisto.args()["SIEM"].lower()}')
+        demisto.debug(f'SIEM selected: {args["SIEM"].lower()}')
 
-    except KeyError:
-        return_error(f'Unknown SIEM - "{demisto.callingContext["args"]["SIEM"]}"')
+        rule = SigmaRule.from_yaml(get_sigma_dictionary(indicator))   # Convert Sigma rule to SIEM query
 
-    # Convert Sigma rule to SIEM query
-    rule = SigmaRule.from_yaml(get_sigma_dictionary(indicator))
-
-    try:
         query = siem.convert_rule(rule)[0]
         demisto.debug('Successfully converted Sigma rule to SIEM query.')
 
     except exceptions.SigmaTransformationError as e:
         query = f'ERROR:\n{e}'
+
+    except KeyError:
+        return_error(f'Unknown SIEM - "{demisto.callingContext["args"]["SIEM"]}"')
+
+    except Exception as e:
+        return_error(f'Error - {e}')
 
     return_results(CommandResults(outputs_prefix="Sigma",
                                   outputs={"query": query, "name": rule.title, "format": f"{siem_name}"},

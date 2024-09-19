@@ -22,13 +22,13 @@ def get_mitre_technique_name(mitre_id: str) -> str:
         query = f'type:"Attack Pattern" and {mitre_id}'
         demisto.debug(f'Querying for {query} in TIM')
 
-        response = demisto.executeCommand("SearchIndicator", {"query": query})
+        success, response = execute_command(command="SearchIndicator", args={"query": query}, fail_on_error=False)
 
-        if is_error(response):
+        if not success:
             demisto.debug(f"Failed to execute findIndicators command: {get_error(response)}")
             return ""
 
-        indicator = response[0].get("Contents", [{}])[0].get("value", "")
+        indicator = response.get("value", "")
         demisto.debug(f'Found the indicator - {indicator}')
 
         return indicator
@@ -75,7 +75,8 @@ def create_relationship(indicator_value: str, entity_b: str, entity_b_type: str)
         relationship = EntityRelationship(
             entity_a=indicator_value,
             entity_a_type="Sigma Rule Indicator",
-            name="related-to",
+            name="detects",
+            reverse_name="detected-by",
             entity_b=entity_b,
             entity_b_type=entity_b_type
         )
@@ -177,7 +178,6 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
         "sigmarulestatus": rule.status.name,
         "author": rule.author,
         "sigmarulelevel": rule.level.name,
-        # "sigmarulelicense": rule_dict.get("license", ""),
         "description": rule.description,
         "category": rule.logsource.category,
         "product": rule.logsource.product,
@@ -192,11 +192,11 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
                           "date": f'{rule.date}'} for ref in rule.references]
     }
 
-    try:
+    if hasattr(rule.logsource, "custom_attributes"):
         indicator["definition"] = rule.logsource.custom_attributes["definition"]
 
-    except AttributeError:
-        pass
+    if rule.custom_attributes:
+        indicator["sigmarulelicense"] = rule.custom_attributes.get("license", None)
 
     techniques, cves, tags, tlp = parse_tags(rule.tags)
     indicator["tags"] = tags
@@ -218,9 +218,10 @@ def main() -> None:
 
     try:
         # Get the arguments
-        sigma_rule_str = demisto.args().get("sigma_rule_str", "")
-        entry_id = demisto.args().get("entry_id", "")
-        create_indicators = argToBoolean(demisto.args().get("create_indicators", ""))
+        args = demisto.args()
+        sigma_rule_str = args.get("sigma_rule_str", "")
+        entry_id = args.get("entry_id", "")
+        create_indicators = argToBoolean(args.get("create_indicators", ""))
 
         # Check if both arguments are empty
         if not sigma_rule_str and not entry_id:
@@ -236,19 +237,14 @@ def main() -> None:
                 sigma_rule_str = file.read()
 
         # Parse the sigma rule
-        try:
-            sigma_rule = SigmaRule.from_yaml(sigma_rule_str)
-
-        except SigmaError as e:
-            return_error(f"Failed to parse Sigma rule: {str(e)}")
-            return
+        sigma_rule = SigmaRule.from_yaml(sigma_rule_str)
 
         indicators.append(parse_and_create_indicator(sigma_rule, sigma_rule_str))
 
         if create_indicators:
             for indicator in indicators:
                 xsoar_indicator = indicator["indicator"]
-                demisto.executeCommand("createNewIndicator", xsoar_indicator)
+                execute_command("createNewIndicator", xsoar_indicator)
                 create_indicator_relationships(xsoar_indicator["value"],
                                                xsoar_indicator["product"],
                                                indicator["techniques"],
@@ -257,6 +253,9 @@ def main() -> None:
         else:
             for indicator in indicators:
                 return_results(f'{indicator["indicator"]}')
+
+    except SigmaError as e:
+        return_error(f"Failed to parse Sigma rule: {str(e)}")
 
     except Exception as e:
         return_error(f"Failed to import Sigma rule: {str(e)}")

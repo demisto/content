@@ -54,11 +54,14 @@ def test_parse_tags(mock_get_mitre_technique_name, input, expected_result):
     assert parse_tags(input) == expected_result
 
 
-@patch.object(demisto, "executeCommand")
-def test_get_mitre_technique_name(mock_SearchIndicator):
+@patch.object(CreateSigmaRuleIndicator, "execute_command")
+def test_get_mitre_technique_name(mock_execute_command):
+    mock_execute_command.return_value = True, {"value": "Command and Scripting Interpreter"}
     mitre_id = "T1059"
     get_mitre_technique_name(mitre_id)
-    mock_SearchIndicator.assert_called_with("SearchIndicator", {"query": f'type:"Attack Pattern" and {mitre_id}'})
+    mock_execute_command.assert_called_with(command='SearchIndicator',
+                                            args={'query': f'type:"Attack Pattern" and {mitre_id}'},
+                                            fail_on_error=False)
 
 
 @patch.object(CreateSigmaRuleIndicator, "create_relationship")
@@ -92,7 +95,7 @@ def test_parse_and_create_indicator():
 
 @patch.object(demisto, "args")
 @patch.object(CreateSigmaRuleIndicator, "return_results")
-@patch.object(demisto, "executeCommand")
+@patch.object(CreateSigmaRuleIndicator, "execute_command")
 def test_main(mock_executeCommand, mock_return_results, mock_args):
     with open("test_data/sigma_rule.yml") as f:
         rule = f.read()

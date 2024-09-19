@@ -25,26 +25,23 @@ def main():
     }
 
     args = demisto.callingContext["args"]
-
     indicator = args["indicator"]
 
     try:
         siem = siems[args["SIEM"].lower()]
-
-    except KeyError:
-        return_error(f"Unknown SIEM - \"{args['SIEM']}\"")
-
-    rule_str = indicator["CustomFields"]["sigmaruleraw"]
-    rule = SigmaRule.from_yaml(rule_str)
-
-    # Set the context
-    try:
+        rule_str = indicator["CustomFields"]["sigmaruleraw"]
+        rule = SigmaRule.from_yaml(rule_str)
         query = siem.convert_rule(rule)[0]
+        execute_command("setIndicator", {"sigmaconvertedquery": f"{query}", "value": indicator["value"]})
 
     except exceptions.SigmaTransformationError as e:
         query = f"ERROR:\n{e}"
 
-    demisto.executeCommand("setIndicator", {"sigmaconvertedquery": f"{query}", "value": indicator["value"]})
+    except KeyError:
+        return_error(f"Unknown SIEM - \"{args['SIEM']}\"")
+
+    except Exception as e:
+        return_error(f"Error: {e}")
 
     return_results(CommandResults(readable_output=f"{args['SIEM']} output created"))
 
