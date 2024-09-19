@@ -12,7 +12,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "mcafee",
+        "epo",
+        "trellix"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
