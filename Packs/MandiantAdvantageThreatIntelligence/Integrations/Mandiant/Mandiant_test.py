@@ -926,7 +926,8 @@ def config():
         "timeout": 60,
         "tlp_color": "RED",
         "reliability": "A - Completely reliable",
-        "tags": "tag1, tag2"
+        "tags": "tag1, tag2",
+        "map_to_mitre_attack": True
     }
 
 
@@ -1746,6 +1747,12 @@ def test_mati_threat_actor_build_attack_pattern_relationships(client, mocker):
     MOCK_THREATACTOR_RESPONSE["value"] = MOCK_THREATACTOR_RESPONSE.get("name")
     mock_attack_patterns_response = mocker.patch.object(Mandiant.MandiantClient, "get_attack_patterns", autospec=True)
     mock_attack_patterns_response.return_value = MOCK_THREATACTOR_ATTACKPATTERN_RESPONSE
+    mock_get_mitre_attack_patterns = mocker.patch.object(demisto, "searchIndicators", autospec=True)
+    mock_get_mitre_attack_patterns.return_value = {
+        "iocs": [
+            {"id": "", "value": "", "fields": {"mitreId": "T1529", "name": "ttp name"}}
+        ]
+    }
 
     for result in Mandiant.MatiThreatActor(client, MOCK_THREATACTOR_RESPONSE).build_attack_pattern_relationships():
         assert result.get("name") == "uses"

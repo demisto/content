@@ -206,31 +206,47 @@ def get_utc_now_timestamp() -> int:
     return int(datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp())
 
 
-def fetch_indicators_command(client: MandiantClient) -> List:
+def fetch_indicators_command(client: MandiantClient) -> tuple[int, int, int]:
     indicators_list = []
     end_time = get_utc_now_timestamp()
     start_time = calculate_start_time(end_time, client.first_fetch)
 
     processed = 0
     skipped = 0
-    pending_ingestion = 0
+    ingested = 0
+    ckpt_timestamp = end_time
 
+    demisto.info("MATI | Starting indicator feed")
     for i in client.yield_indicators(start_time, end_time, client.page_size, client.minimum_threat_score):
+        ckpt_timestamp = int(datetime.strptime(i.get("last_updated"), "%Y-%m-%dT%H:%M:%S.%fZ").timestamp())
         processed += 1
         if not include_in_feed(i, client.exclude_osint, client.minimum_threat_score):
             skipped += 1
             continue
         indicators_list.append(translate_indicator(i, client.tlp_color, client.feed_tags))
-        pending_ingestion += 1
 
-        if processed % 10000 == 0:
-            demisto.info(f"Stats: Processed: {processed}, Skipped: {skipped}, Pending Ingestion: {pending_ingestion}")
+        if len(indicators_list) == 2000:
+            for b in batch(indicators_list, batch_size=2000):
+                demisto.createIndicators(b)
 
-    demisto.info(f"Setting last run checkpoint to: {end_time}")
-    demisto.setLastRun({"last_run": end_time})
-    demisto.debug(f"Returning {len(indicators_list)} for ingestion")
+            ingested += len(indicators_list)
+            indicators_list.clear()
 
-    return indicators_list
+        if ingested > 25000:
+            demisto.info("MATI | Max inidcators to process in default docker timeout reached")
+            break
+
+    # Ingest remaining indicators
+    for b in batch(indicators_list, batch_size=2000):
+        demisto.createIndicators(b)
+
+    ingested += len(indicators_list)
+    indicators_list.clear()
+
+    demisto.info(f"MATI | Setting last run checkpoint to: {ckpt_timestamp}")
+    demisto.setLastRun({"last_run": ckpt_timestamp})
+
+    return processed, skipped, ingested
 
 
 def get_indicators_command(client: MandiantClient, args: Dict) -> List:
@@ -268,11 +284,8 @@ def main() -> None:
         client = MandiantClient(demisto.params())
 
         if command == "fetch-indicators":
-            indicators = fetch_indicators_command(client)
-
-            for b in batch(indicators, batch_size=2000):
-                demisto.info(f"Submitting batch of {len(b)} indicators for ingestion")
-                demisto.createIndicators(b)
+            processed, skipped, ingested = fetch_indicators_command(client)
+            demisto.info(f"MATI | Stats: Processed: {processed}, Skipped: {skipped}, Ingested: {ingested}")
 
         elif command == "test-module":
             return_results(test_module(client))

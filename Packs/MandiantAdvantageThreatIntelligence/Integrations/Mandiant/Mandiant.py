@@ -87,12 +87,19 @@ class MandiantClient(BaseClient):
             return {}
 
         response = demisto.searchIndicators(**{"query": "type:\"Attack Pattern\" and sourceBrands:\"MITRE ATT&CK v2\"",
-                                               "populateFields": "id,value,tags",
+                                               "populateFields": "name, tags",
                                                "size": 1000})
         res_dict = {}
 
         for ioc in response.get("iocs", []):
-            res_dict[ioc.get("CustomFields", {}).get("tags")] = ioc.get("CustomFields", {}).get("name")
+            tags = ioc.get("CustomFields", {}).get("tags", "")
+            if not isinstance(tags, list):
+                key_ = tags
+                name_ = ioc.get("CustomFields", {}).get("name")
+                res_dict[key_] = name_
+            else:
+                for t in tags:
+                    res_dict[t] = name_
 
         return res_dict
 

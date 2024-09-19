@@ -517,16 +517,16 @@ def test_build_indicator_relationships(value_, indicator, expected_relationships
 
 def test_fetch_indicators_command(client, mock_http_request):
     mock_http_request.return_value = MOCK_INDICATORS
-    result = FeedMandiantThreatIntelligence.fetch_indicators_command(client)
-    assert isinstance(result, List)
-    assert result[0].get("value") == "1.2.3.4"
-    assert "rawJSON" in result[0]
-    assert "fields" in result[0]
-    assert "relationships" in result[0]
-    assert result[0].get("fields", {}).get("STIX ID") == "ipv4--1526529a-8489-55f5-a2f1-603ec2576f6c"
-    assert result[0].get("fields", {}).get("Traffic Light Protocol") == "RED"
-    assert result[0].get("fields", {}).get("Mandiant First Seen") == "2024-06-07T20:30:44.000Z"
-    assert result[0].get("fields", {}).get("Mandiant Last Seen") == "2024-06-09T00:14:03.000Z"
-    assert result[0].get("fields", {}).get("Mandiant Threat Score") == 100
-    assert result[0].get("fields", {}).get("Mandiant Severity Level") == "high"
-    assert result[0].get("fields", {}).get("Tags") == ['tag1', 'tag2', 'control-server']
+    processed, skipped, ingested = FeedMandiantThreatIntelligence.fetch_indicators_command(client)
+    assert processed == 4
+    assert skipped == 3
+    assert ingested == 1
+
+
+def test_test_module(client, mock_http_request):
+    mock_response = {"entitlements": ["Entitlement1"]}
+    mock_http_request.return_value = mock_response
+
+    result = FeedMandiantThreatIntelligence.test_module(client)
+
+    assert result == "ok"
