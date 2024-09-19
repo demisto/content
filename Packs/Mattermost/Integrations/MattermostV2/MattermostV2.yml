@@ -36,7 +36,6 @@ configuration:
   required: false
   type: 0
   section: Connect - Advanced
-  defaultvalue: general
   additionalinfo: If Notifications Channel name is not specified, will send notification to incidentNotificationChannel channel.
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
