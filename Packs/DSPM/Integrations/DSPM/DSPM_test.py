@@ -6,11 +6,12 @@ from DSPM import (
     get_list_of_assets,
     get_asset_files_by_id,
     test_module,
-    get_risk_findings_command,
-    get_asset_details_command,
-    update_risk_finding_status_command,
-    get_data_types_command,
+    dspm_get_risk_findings,
+    get_asset_details,
+    update_risk_finding_status,
+    get_data_types,
     get_data_type_findings,
+    get_list_of_alerts
 )
 
 
@@ -54,9 +55,9 @@ def test_test_module(client, mocker):
     assert result == 'ok'
 
 
-def test_get_risk_findings_command(client):
+def test_dspm_get_risk_findings(client):
     args = {}
-    result = get_risk_findings_command(client, args, page=0)
+    result = dspm_get_risk_findings(client, args, page=0)
 
     assert isinstance(result, List)
     # assert 'DSPM.RiskFindings' in result.outputs_prefix
@@ -77,17 +78,17 @@ def test_get_risk_findings_command(client):
     assert 'Compliance Standards' in finding
 
 
-def test_get_risk_findings_command_with_valid_args(client):
+def test_dspm_get_risk_findings_with_valid_args(client):
     args = {"cloudProviderIn": "AWS,AZURE", "affectsIn": "SECURITY,COMPLIANCE",
             "statusIn": "OPEN,CLOSED", "sort": "records,asc"}
-    result = get_risk_findings_command(client, args, page=0)
+    result = dspm_get_risk_findings(client, args, page=0)
 
     assert isinstance(result, List)
     assert len(result) >= 1
 
     args = {"cloudProviderEqual": "AWS", "affectsEqual": "SECURITY",
             "statusEqual": "OPEN", "sort": "records,desc"}
-    result = get_risk_findings_command(client, args, page=0)
+    result = dspm_get_risk_findings(client, args, page=0)
 
     assert isinstance(result, List)
     assert len(result) >= 1
@@ -147,24 +148,79 @@ def test_get_data_type_findings_with_valid_args(client):
     assert len(result) == 4
 
 
+def test_get_list_of_alerts_with_valid_args(client):
+    mock_response = [
+        {
+            "id": "274314608",
+            "detectionTime": "2024-02-02T08:02:49.15636Z",
+            "policyName": "Data asset transferred to foreign project",
+            "assetName": "bpachauli-flowlog",
+            "assetLabels": [
+                {
+                    "label": {
+                        "id": 270802756,
+                        "name": "Sensitive",
+                                "description": "Sensitive information",
+                                "color": "34A49A",
+                                "prettyName": "Sensitive"
+                    },
+                    "connectedBy": "SYSTEM"
+                }
+            ],
+            "cloudProvider": "AWS",
+            "destinationProjects": {
+                "188619942792": "Redlock"
+            },
+            "cloudEnvironment": "PRODUCTION",
+            "policySeverity": "HIGH",
+            "policyCategoryType": "ATTACK",
+            "status": "UNIMPORTANT",
+            "eventActor": "PrismaCloudReadWriteRoleWithDLP",
+            "eventUserAgent": "[aws-sdk-java/1.12.565 Linux]",
+            "eventActionMedium": "SDK",
+            "eventSource": "*.**.**.***",
+            "policyFrameWorks": [
+                "MITRE-T1074",
+                "MITRE-T1537"
+            ],
+            "eventRawData": ""
+        }
+    ]
+    client.get_alerts_list = MagicMock(return_value=mock_response)
+
+    args = {"cloudProviderIn": "AWS,AZURE", "cloudEnvironmentIn": "DEVELOPMENT,STAGING",
+            "policySeverityIn": "MEDIUM,LOW", "categoryTypeIn": "", "ATTACK,FIRST_MOVE": "CLOSED,OPEN", "sort": "name,DESC"}
+    result = get_list_of_alerts(client, args, 0)
+
+    assert isinstance(result, List)
+    assert result[0].get('id') == "274314608"
+
+    args = {"cloudProviderEqual": "AWS", "cloudEnvironmentEqual": "STAGING",
+            "policySeverityEqual": "MEDIUM", "categoryTypeEqual": "FIRST_MOVE", "statusIn": "OPEN", "sort": "name,ASC"}
+    result = get_list_of_alerts(client, args, 0)
+
+    assert isinstance(result, List)
+    assert result[0].get('id') == "274314608"
+
+
 def test_get_asset_details_command(client, mocker):
     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
     args = {'asset_id': 'asset1'}
-    result = get_asset_details_command(client, args)
+    result = get_asset_details(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs['name'] == 'Test Asset'  # type: ignore
 
 
-def test_update_risk_finding_status_command_invalid_status(client):
+def test_update_risk_finding_status_invalid_status(client):
     args = {'findingId': '1', 'status': 'INVALID_STATUS'}
 
-    with pytest.raises(ValueError, match='This "INVALID_STATUS" cloud provider does not supported'):
-        update_risk_finding_status_command(client, args)
+    with pytest.raises(ValueError, match='This "INVALID_STATUS" cloud provider is not supported'):
+        update_risk_finding_status(client, args)
 
 
-def test_get_data_types_command(client):
-    result = get_data_types_command(client)
+def test_get_data_types(client):
+    result = get_data_types(client)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypes'
@@ -182,9 +238,9 @@ def test_get_data_types_command(client):
     assert result.readable_output == expected_human_readable
 
 
-def test_get_data_types_command_empty(client):
+def test_get_data_types_empty(client):
     client.get_data_types = MagicMock(return_value=[])  # Empty data types
-    result = get_data_types_command(client)
+    result = get_data_types(client)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypes'
@@ -200,9 +256,9 @@ def test_get_data_types_command_empty(client):
     assert result.readable_output == expected_human_readable
 
 
-def test_get_data_types_command_single_type(client):
+def test_get_data_types_single_type(client):
     client.get_data_types = MagicMock(return_value=["Type1"])  # Single data type
-    result = get_data_types_command(client)
+    result = get_data_types(client)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypes'
@@ -509,26 +565,7 @@ mock_assets_page_2 = [
                     {"digTagId": 1, "key": "tag1", "value": "value1"},
                     {"digTagId": 2, "key": "tag2", "value": "value2"}
                 ]
-            },
-            # {
-            #     'ID': 'asset2',
-            #     'Project ID': 'project2',
-            #     'Project Name': 'Project Two',
-            #     'Name': 'Asset Two',
-            #     'Cloud Provider': 'AWS',
-            #     'Cloud Environment': 'PRODUCTION',
-            #     'Service Type': 'UNMANAGED_AWS_AEROSPIKE',
-            #     'Lifecycle': 'DELETED',
-            #     'Open Risks Count': 2,
-            #     'Open Alerts Count': 1,
-            #     'Encrypted': False,
-            #     'Open To World': True,
-            #     'Tags': {"another_tag_key": "another_tag_value"},
-            #     'Asset Dig Tags': [
-            #         {"digTagId": 3, "key": "tag3", "value": "value3"},
-            #         {"digTagId": 4, "key": "tag4", "value": "value4"}
-            #     ]
-            # }
+            }
         ]
     )
 ])
@@ -555,6 +592,6 @@ def test_get_asset_details(mocker):
     client.get_asset_details.return_value = {"asset": {"id": "asset1", "name": "Asset One"}}
 
     args = {"asset_id": "asset1"}  # Ensure the argument is correct
-    result = get_asset_details_command(client, args)
+    result = get_asset_details(client, args)
 
     assert result.outputs == {"asset": {"id": "asset1", "name": "Asset One"}}  # Access 'outputs' attribute
