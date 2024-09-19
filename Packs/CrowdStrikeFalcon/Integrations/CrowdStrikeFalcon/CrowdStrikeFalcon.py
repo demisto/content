@@ -455,7 +455,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         demisto.debug(f'In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes')
 
     headers['User-Agent'] = 'PANW-XSOAR'
-    int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
+    int_timeout = int(timeout) if timeout else 60  # 60 is the default in generic_http_request
 
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
@@ -4073,7 +4073,7 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
     result = {}
     params = {'ids': all_group_ids}
     response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
-    for resource in response_json['resources']:
+    for resource in response_json['resources'] or []:
         try:
             result[resource['id']] = resource['name']
         except KeyError:
