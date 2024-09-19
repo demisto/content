@@ -1188,7 +1188,7 @@ script:
       - 'false'
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
-  dockerimage: devdemisto/pwsh-exchangev3:1.0.0.112297
+  dockerimage: demisto/pwsh-exchange:1.0.0.112381
   runonce: true
   script: ''
   type: powershell
