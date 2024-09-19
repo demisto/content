@@ -98,7 +98,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/url/basic/q={url}',
+            url_suffix=f'/_api/search/url/basic?q={url}',
             ok_codes=(200, 201, 400),
             resp_type='response'
         )
