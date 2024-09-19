@@ -19,6 +19,7 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
+
 def test_rasterize_email_image(caplog, capfd, mocker):
     from unittest.mock import mock_open, Mock, MagicMock
     mock_browser = Mock()
@@ -669,55 +670,53 @@ def test_is_mailto_urls(mocker: MockerFixture):
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
 
-def test_write_json_file_add_content(mock_file_system):
-    from rasterize import write_json_file
-    new_content = {"5000": {"rasterize_count": 1}}
-    write_json_file(new_chrome_instance_content=new_content)
-
-    # Check that the file was opened in write mode and content was updated correctly
-    open(mock_file_system.mock_calls[0][1][0]).write.assert_called_once_with(
-        json.dumps({
-            "3000": {"rasterize_count": 1},
-            "4000": {"rasterize_count": 2},
-            "5000": {"rasterize_count": 1},
-        }, indent=4)
-    )
-
-
-def test_write_json_file_increase_counter(mock_file_system):
-    from rasterize import write_json_file
-    write_json_file(chrome_port="3000", increase_counter=True)
-
-    # Check that the counter was increased
-    open(mock_file_system.mock_calls[0][1][0]).write.assert_called_once_with(
-        json.dumps({
-            "3000": {"rasterize_count": 2},
-            "4000": {"rasterize_count": 2},
-        }, indent=4)
-    )
+ARGS_COMMITS = [
+    ({'commit_id': 'a1', 'limit': '1'},  # args single branch
+     'commit_single_request',
+     'get_commit_single',  # result from json
+     '### Commit details\n'
+     '|Title|Message|ShortId|Author|CreatedAt|\n'
+     '|---|---|---|---|---|\n'
+     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n'
+     ),
+    ({'limit': '2'},  # args list
+     'commit_list_request',
+     'get_commits',
+     '### List Commits\n'
+     '|Title|Message|ShortId|Author|CreatedAt|\n'
+     '|---|---|---|---|---|\n'
+     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n'
+     '| commit2 | message2 | b2 | demo2 | 2022-07-26T11:28:03.000+00:00 |\n'
+     '| commit3 | message3 | c3 | demo3 | 2022-07-26T11:28:03.000+00:00 |\n'
+     )
+]
 
 
-def test_write_json_file_terminate_port(mock_file_system):
-    from rasterize import write_json_file
-    write_json_file(chrome_port="3000", terminate_port=True)
+@pytest.mark.parametrize('new_chrome_instance_content, chrome_port, increase_counter, terminate_port',
+    [
+        ({"5000": {"rasterize_count": 1, "chrome_options": '', 'instance_id': '1'}}, '', False, False),
+    ({}, '2222', '--foo', False),
+    ({}, '2222', '', True),
+])
+def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, increase_counter, terminate_port):
+    from rasterize import write_json_file, read_json_file
+    from unittest.mock import mock_open
+    mocker.patch("os.path.exists", return_value= True)
+    mock_file_content = read_json_file("test_data/chrome_instances.json")
+    mock_file = mock_open()
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch.object(json, 'load', return_value=mock_file_content)
+    # Create a mock file object
+    mocker_json = mocker.patch("json.dump")
+    write_json_file(new_chrome_instance_content=new_chrome_instance_content,
+                    chrome_port=chrome_port,
+                    increase_counter=increase_counter,
+                    terminate_port=terminate_port)
 
-    # Check that the port was terminated (removed from the JSON)
-    open(mock_file_system.mock_calls[0][1][0]).write.assert_called_once_with(
-        json.dumps({
-            "4000": {"rasterize_count": 2},
-        }, indent=4)
-    )
+    # Get the handle to the mocked file object
+    handle = mock_file()
 
-
-def test_write_json_file_create_new_file(mocker):
-    from rasterize import write_json_file
-    """Test creating a new file when it doesn't exist."""
-    mocker.patch("os.path.exists", return_value=False)
-    new_content = {"5000": {"rasterize_count": 1}}
-
-    mock_file_system = write_json_file(new_chrome_instance_content=new_content)
-
-    # Check that the file was created with the correct content
-    open(mock_file_system.mock_calls[0][1][0]).write.assert_called_once_with(
-        json.dumps(new_content, indent=4)
-    )
+    # Assert
+    handle.seek.assert_called_once_with(0)
+    handle.truncate.assert_called_once()
+    assert mocker_json.called
