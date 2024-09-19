@@ -1,4 +1,8 @@
 {
+    "COMMENT_FORMAT": {
+        "ALL_FIELDS": "The GitHub username",
+        "ON_CALL_DEVS": "The PANW account username",
+    },
     "CONTRIBUTION_REVIEWERS": [
         "adi88d",
         "israelpoli",
@@ -9,7 +13,7 @@
     "ON_CALL_DEVS": [
         "skidorball",
         "ayousef",
-        "israelpoli"
+        "ipolishuk"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1"
