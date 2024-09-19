@@ -81,9 +81,13 @@ def error_handler(res):
         and res.request.method == "PUT"
         and "/urlCategories/" in res.request.url
     ):
+        demisto.info(f"The request failed with the following error: {res.status_code}, \nMessage: {res.text}")
         raise Exception(
-            "Bad request, This could be due to reaching your organizations quota."
-            " For more info about your quota usage, run the command zscaler-url-quota."
+            f"The request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
+            f"This error might be due to an invalid URL or exceeding your organization's quota. "
+            f"For more information about URL formatting, refer to the Zscaler URL Format Guidelines: "
+            f"https://help.zscaler.com/zia/url-format-guidelines "
+            f"To check your quota usage, run the command `zscaler-url-quota`."
         )
     else:
         if res.status_code in ERROR_CODES_DICT:
