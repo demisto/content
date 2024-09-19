@@ -711,7 +711,7 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
                 else:
                     raise DemistoException(
                         f"Did not find channel with name {channel_name}. Make sure it exists or choose a "
-                        f"different one. Error: {e}")
+                        f"different one to send notifications to. Error: {e}")
 
     return channel_id
 
