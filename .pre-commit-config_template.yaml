@@ -107,7 +107,7 @@ repos:
 
   - id: mypy-in-docker
     name: mypy-in-docker
-    copy_files:  #TODO avoid
+    copy_files:
     - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py 
     - Tests/demistomock/demistomock.py
     description: Run mypy on the code in content packs
