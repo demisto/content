@@ -1,5 +1,5 @@
 Centralized Control and Monitoring of Privileged Access to Sensitive Assets.
-This integration was integrated and tested with version 10 of WALLIX Bastion.
+This integration was integrated and tested with version 12 of WALLIX Bastion.
 
 ## Configure WALLIX Bastion on Cortex XSOAR
 
@@ -16,6 +16,7 @@ This integration was integrated and tested with version 10 of WALLIX Bastion.
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
     | API version to use. Leave the field empty to use the latest API version available. | False |
+    | API requests timeout in seconds. The default value is 60 seconds. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -523,13 +524,15 @@ Get the applications.
 | WAB.application_get.category | String | The application category. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.application_get.last_connection | String | The last connection on this application \(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.application_get.parameters | String | The application parameters. Usable in the "q" parameter. Usable in the "sort" parameter. | 
-| WAB.application_get.local_domains.id | String | The domain id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.application_get.local_domains.id | String | The domain id. Usable in the "q" parameter. | 
 | WAB.application_get.local_domains.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.application_get.local_domains.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.application_get.local_domains.enable_password_change | Boolean | Enable the change of password on this domain. | 
 | WAB.application_get.local_domains.admin_account | String | The administrator account used to change passwords on this domain \(format: "account_name"\). | 
 | WAB.application_get.local_domains.password_change_policy | String | The name of password change policy for this domain. | 
 | WAB.application_get.local_domains.password_change_plugin | String | The name of plugin used to change passwords on this domain. | 
+| WAB.application_get.local_domains.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.application_get.local_domains.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.application_get.local_domains.url | String | The API URL to the resource. | 
 | WAB.application_get.tags.id | String | The tag id. | 
 | WAB.application_get.tags.key | String | The tag key. Must not start or end with a space. | 
@@ -563,13 +566,15 @@ Get the application.
 | WAB.application_get.category | String | The application category. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.application_get.last_connection | String | The last connection on this application \(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.application_get.parameters | String | The application parameters. Usable in the "q" parameter. Usable in the "sort" parameter. | 
-| WAB.application_get.local_domains.id | String | The domain id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.application_get.local_domains.id | String | The domain id. Usable in the "q" parameter. | 
 | WAB.application_get.local_domains.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.application_get.local_domains.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.application_get.local_domains.enable_password_change | Boolean | Enable the change of password on this domain. | 
 | WAB.application_get.local_domains.admin_account | String | The administrator account used to change passwords on this domain \(format: "account_name"\). | 
 | WAB.application_get.local_domains.password_change_policy | String | The name of password change policy for this domain. | 
 | WAB.application_get.local_domains.password_change_plugin | String | The name of plugin used to change passwords on this domain. | 
+| WAB.application_get.local_domains.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.application_get.local_domains.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.application_get.local_domains.url | String | The API URL to the resource. | 
 | WAB.application_get.tags.id | String | The tag id. | 
 | WAB.application_get.tags.key | String | The tag key. Must not start or end with a space. | 
@@ -647,7 +652,7 @@ Get the approvals.
 | --- | --- | --- |
 | WAB.approval_get.id | String | The approval id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.user_name | String | The user name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
-| WAB.approval_get.target_name | String | The target name.\(example: account@domain@device:service\). | 
+| WAB.approval_get.target_name | String | The target name.\(example: account@domain@device:service\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.creation | String | The creation date.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.begin | String | The start date/time for connection.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.end | String | The end date/time for connection.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -665,6 +670,11 @@ Get the approvals.
 | WAB.approval_get.timeout | Number | Timeout to initiate the first connection \(in minutes\). After that, the approval will be automatically closed. 0: no timeout. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.authorization_name | String | The authorization name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.is_active | Boolean | The approval is active. | 
+| WAB.approval_get.account | String | The account name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.domain | String | The domain name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.device | String | The device name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.application | String | The application name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.service | String | The service name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.url | String | The API URL to the resource. | 
 
 ### wab-get-approvals-for-all-approvers
@@ -692,7 +702,7 @@ Get the approvals for a given approver.
 | --- | --- | --- |
 | WAB.approval_get.id | String | The approval id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.user_name | String | The user name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
-| WAB.approval_get.target_name | String | The target name.\(example: account@domain@device:service\). | 
+| WAB.approval_get.target_name | String | The target name.\(example: account@domain@device:service\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.creation | String | The creation date.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.begin | String | The start date/time for connection.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.end | String | The end date/time for connection.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -710,6 +720,11 @@ Get the approvals for a given approver.
 | WAB.approval_get.timeout | Number | Timeout to initiate the first connection \(in minutes\). After that, the approval will be automatically closed. 0: no timeout. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.authorization_name | String | The authorization name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.is_active | Boolean | The approval is active. | 
+| WAB.approval_get.account | String | The account name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.domain | String | The domain name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.device | String | The device name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.application | String | The application name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.service | String | The service name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.url | String | The API URL to the resource. | 
 
 ### wab-reply-to-approval-request
@@ -730,6 +745,8 @@ Reply to an approval request (approve/reject it). Note: you can answer to an app
 | approval_assignment_post_duration | The allowed time range to connect (in minutes). | Optional | 
 | approval_assignment_post_timeout | Timeout to initiate the first connection (in minutes). After that, the approval will be automatically closed. 0: no timeout. | Optional | 
 | approval_assignment_post_approved | Approve/reject the request. | Required | 
+| approval_assignment_post_is_active | The approval is active. | Optional | 
+| approval_assignment_post_status | The approval status. | Optional | 
 
 #### Context Output
 
@@ -761,7 +778,7 @@ Get the approvals for a given approver.
 | --- | --- | --- |
 | WAB.approval_get.id | String | The approval id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.user_name | String | The user name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
-| WAB.approval_get.target_name | String | The target name.\(example: account@domain@device:service\). | 
+| WAB.approval_get.target_name | String | The target name.\(example: account@domain@device:service\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.creation | String | The creation date.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.begin | String | The start date/time for connection.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.end | String | The end date/time for connection.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -779,6 +796,11 @@ Get the approvals for a given approver.
 | WAB.approval_get.timeout | Number | Timeout to initiate the first connection \(in minutes\). After that, the approval will be automatically closed. 0: no timeout. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.authorization_name | String | The authorization name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.is_active | Boolean | The approval is active. | 
+| WAB.approval_get.account | String | The account name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.domain | String | The domain name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.device | String | The device name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.application | String | The application name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.service | String | The service name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.url | String | The API URL to the resource. | 
 
 ### wab-cancel-accepted-approval
@@ -800,6 +822,28 @@ Cancel an accepted approval. Note: you can cancel an approval only if you are in
 #### Context Output
 
 There is no context output for this command.
+
+### wab-notify-approvers-linked-to-approval-assignment
+
+***
+Notify approvers linked to an approval request by sending them an email.
+
+#### Base Command
+
+`wab-notify-approvers-linked-to-approval-assignment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| approval_assignment_notify_post_id | The approval id. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.approval_assignment_notify_post_response.emails_count | Number | Number of e-mails sent to approvers. | 
+| WAB.approval_assignment_notify_post_response.approval_assignment_notify_post_id | String | the approval_assignment_notify_post_id. | 
 
 ### wab-get-approval-request-pending-for-user
 
@@ -828,7 +872,7 @@ Get the approval request pending for this user (by default the user logged on th
 | --- | --- | --- |
 | WAB.approval_get.id | String | The approval id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.user_name | String | The user name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
-| WAB.approval_get.target_name | String | The target name.\(example: account@domain@device:service\). | 
+| WAB.approval_get.target_name | String | The target name.\(example: account@domain@device:service\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.creation | String | The creation date.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.begin | String | The start date/time for connection.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.end | String | The end date/time for connection.\(format: "yyyy-mm-dd hh:mm"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -846,6 +890,11 @@ Get the approval request pending for this user (by default the user logged on th
 | WAB.approval_get.timeout | Number | Timeout to initiate the first connection \(in minutes\). After that, the approval will be automatically closed. 0: no timeout. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.authorization_name | String | The authorization name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.is_active | Boolean | The approval is active. | 
+| WAB.approval_get.account | String | The account name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.domain | String | The domain name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.device | String | The device name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.application | String | The application name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.approval_get.service | String | The service name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.approval_get.url | String | The API URL to the resource. | 
 
 ### wab-make-new-approval-request-to-access-target
@@ -863,6 +912,11 @@ Make a new approval request to access a target. Note: depending on the authoriza
 | --- | --- | --- |
 | approval_request_post_target_name | The target name (example: account@domain@device:service). | Required | 
 | approval_request_post_authorization | The authorization name. | Optional | 
+| approval_request_post_account | The account name. | Optional | 
+| approval_request_post_domain | The domain name. | Optional | 
+| approval_request_post_device | The device name. | Optional | 
+| approval_request_post_application | The application name. | Optional | 
+| approval_request_post_service | The service name. | Optional | 
 | approval_request_post_ticket | The ticket reference. | Optional | 
 | approval_request_post_comment | The request comment. | Optional | 
 | approval_request_post_begin | The date/time for connection (format: "yyyy-mm-dd hh:mm"), default is now. | Optional | 
@@ -910,7 +964,10 @@ Notify approvers linked to an approval request by sending them an email.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.approval_request_notify_post_response.emails_count | Number | Number of e-mails sent to approvers. | 
+| WAB.approval_request_notify_post_response.approval_request_notify_post_id | String | the approval_request_notify_post_id. | 
 
 ### wab-check-if-approval-is-required-for-target
 
@@ -1887,7 +1944,7 @@ Get the devices.
 | WAB.device_get.alias | String | The device alias. \\ /:\*?"&lt;&gt;|@ and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.host | String | The device host address. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.last_connection | String | The last connection on this device.\(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
-| WAB.device_get.local_domains.id | String | The domain id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.device_get.local_domains.id | String | The domain id. Usable in the "q" parameter. | 
 | WAB.device_get.local_domains.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.local_domains.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.local_domains.enable_password_change | Boolean | Enable the change of password on this domain. | 
@@ -1970,7 +2027,7 @@ Get the device.
 | WAB.device_get.alias | String | The device alias. \\ /:\*?"&lt;&gt;|@ and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.host | String | The device host address. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.last_connection | String | The last connection on this device.\(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
-| WAB.device_get.local_domains.id | String | The domain id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.device_get.local_domains.id | String | The domain id. Usable in the "q" parameter. | 
 | WAB.device_get.local_domains.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.local_domains.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.local_domains.enable_password_change | Boolean | Enable the change of password on this domain. | 
@@ -2288,7 +2345,7 @@ Get the global domains.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| WAB.domain_get.id | String | The domain id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.domain_get.id | String | The domain id. Usable in the "q" parameter. | 
 | WAB.domain_get.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.domain_get.domain_real_name | String | The domain name used for connection to a target. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.domain_get.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -2325,7 +2382,7 @@ Get the global domain.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| WAB.domain_get.id | String | The domain id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.domain_get.id | String | The domain id. Usable in the "q" parameter. | 
 | WAB.domain_get.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.domain_get.domain_real_name | String | The domain name used for connection to a target. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.domain_get.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -2683,6 +2740,7 @@ Get the profiles.
 | --- | --- | --- |
 | WAB.profile_get.id | String | The profile id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.profile_get.profile_name | String | The profile name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.profile_get.editable | Boolean | Profile is editable. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.profile_get.description | String | The target group description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.profile_get.gui_features.wab_audit | String | wab audit. | 
 | WAB.profile_get.gui_features.system_audit | String | system audit. | 
@@ -2690,7 +2748,6 @@ Get the profiles.
 | WAB.profile_get.gui_features.user_groups | String | user groups. | 
 | WAB.profile_get.gui_features.devices | String | devices. | 
 | WAB.profile_get.gui_features.target_groups | String | target groups. | 
-| WAB.profile_get.gui_features.dashboards | String | dashboards. | 
 | WAB.profile_get.gui_features.authorizations | String | authorizations. | 
 | WAB.profile_get.gui_features.profiles | String | profiles. | 
 | WAB.profile_get.gui_features.wab_settings | String | wab settings. | 
@@ -2712,7 +2769,9 @@ Get the profiles.
 | WAB.profile_get.gui_transmission.credential_recovery | String | credential recovery. | 
 | WAB.profile_get.ip_limitation | String | The profile ip limitation. Format is an IPv4 address, subnet or host name, for example: 192.168.1.10/24 Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.profile_get.target_access | Boolean | Target access. | 
+| WAB.profile_get.dashboards | String | Ordered list of dashboards names. Usable in the "q" parameter. | 
 | WAB.profile_get.url | String | The API URL to the resource. | 
+| WAB.profile_get.gui_features.dashboards | String | deprecated: unused field. | 
 
 ### wab-get-profile
 
@@ -2736,6 +2795,7 @@ Get the profile.
 | --- | --- | --- |
 | WAB.profile_get.id | String | The profile id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.profile_get.profile_name | String | The profile name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.profile_get.editable | Boolean | Profile is editable. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.profile_get.description | String | The target group description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.profile_get.gui_features.wab_audit | String | wab audit. | 
 | WAB.profile_get.gui_features.system_audit | String | system audit. | 
@@ -2743,7 +2803,6 @@ Get the profile.
 | WAB.profile_get.gui_features.user_groups | String | user groups. | 
 | WAB.profile_get.gui_features.devices | String | devices. | 
 | WAB.profile_get.gui_features.target_groups | String | target groups. | 
-| WAB.profile_get.gui_features.dashboards | String | dashboards. | 
 | WAB.profile_get.gui_features.authorizations | String | authorizations. | 
 | WAB.profile_get.gui_features.profiles | String | profiles. | 
 | WAB.profile_get.gui_features.wab_settings | String | wab settings. | 
@@ -2765,7 +2824,9 @@ Get the profile.
 | WAB.profile_get.gui_transmission.credential_recovery | String | credential recovery. | 
 | WAB.profile_get.ip_limitation | String | The profile ip limitation. Format is an IPv4 address, subnet or host name, for example: 192.168.1.10/24 Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.profile_get.target_access | Boolean | Target access. | 
+| WAB.profile_get.dashboards | String | Ordered list of dashboards names. Usable in the "q" parameter. | 
 | WAB.profile_get.url | String | The API URL to the resource. | 
+| WAB.profile_get.gui_features.dashboards | String | deprecated: unused field. | 
 
 ### wab-get-scanjobs
 
@@ -2944,9 +3005,10 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| count | The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
-| q | Only a simple string to search is allowed in this resource (for example: 'q=windows'). The search is performed on the following fields only: account, account_description, device, device_alias, device_description, application, application_description, service_protocol, domain, domain_description, authorization, authorization_description. | Optional | 
-| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'account,domain,device,application'. | Optional | 
+| count | The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
+| last_connection | The default value is false. When set to true, the last connection date is returned for each authorizations. | Optional | 
+| q | Only a simple string to search is allowed in this resource (for exemple: 'q=windows'). The search is performed on the following fields only: account, account_description, device, device_alias, device_description, application, application_description, service_protocol, domain, domain_description, authorization, authorization_description. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'account,domain,device, ' 'application'. | Optional | 
 | offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
 | limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
 | fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
@@ -2969,6 +3031,8 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 | WAB.sessionrights_get.account_mapping_vault | Boolean | Account mapping with a vault account. | 
 | WAB.sessionrights_get.interactive_login | Boolean | Interactive login. | 
 | WAB.sessionrights_get.right_fingerprint | String | The fingerprint of the right \(hash of authorization and target uid\). | 
+| WAB.sessionrights_get.timeframes | String | The timeframes during which the user can access the target. | 
+| WAB.sessionrights_get.last_connection | String | The date of the last connection \(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "sort" parameter. | 
 
 ### wab-get-sessionrights-user-name
 
@@ -2984,7 +3048,8 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_name | If specified, the user_name session rights is returned. | Required | 
-| count | The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
+| count | The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
+| last_connection | The default value is false. When set to true, the last connection date is returned for each authorizations. | Optional | 
 | fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
 
 #### Context Output
@@ -3005,6 +3070,9 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 | WAB.sessionrights_get.account_mapping_vault | Boolean | Account mapping with a vault account. | 
 | WAB.sessionrights_get.interactive_login | Boolean | Interactive login. | 
 | WAB.sessionrights_get.right_fingerprint | String | The fingerprint of the right \(hash of authorization and target uid\). | 
+| WAB.sessionrights_get.timeframes | String | The timeframes during which the user can access the target. | 
+| WAB.sessionrights_get.last_connection | String | The date of the last connection \(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "sort" parameter. | 
+| WAB.sessionrights_get.user_name | String | the user_name. | 
 
 ### wab-get-sessions
 
@@ -3081,6 +3149,11 @@ Get the sessions.
 | WAB.session_get.approval.timeout | Number | Timeout to initiate the first connection \(in minutes\). After that, the approval will be automatically closed. 0: no timeout. | 
 | WAB.session_get.approval.authorization_name | String | The authorization name. | 
 | WAB.session_get.approval.is_active | Boolean | The approval is active. | 
+| WAB.session_get.approval.account | String | The account name. | 
+| WAB.session_get.approval.domain | String | The domain name. | 
+| WAB.session_get.approval.device | String | The device name. | 
+| WAB.session_get.approval.application | String | The application name. | 
+| WAB.session_get.approval.service | String | The service name. | 
 | WAB.session_get.approval.url | String | The API URL to the resource. | 
 | WAB.session_get.user_group | String | Name of the user group in authorization used to make the session. Usable in the "sort" parameter. | 
 | WAB.session_get.target_group | String | Name of the target group in authorization used to make the session. Usable in the "sort" parameter. | 
@@ -3542,6 +3615,8 @@ Get the user groups.
 | WAB.usergroups_get.description | String | The group description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.usergroups_get.timeframes | String | The group timeframe\(s\). | 
 | WAB.usergroups_get.users | String | The users in the group. | 
+| WAB.usergroups_get.language | String | Language of the notifications. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.usergroups_get.email_list | String | Approvers' email addresses, separated by semicolons ";". Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.usergroups_get.restrictions.id | String | The restriction id. | 
 | WAB.usergroups_get.restrictions.action | String | The restriction type. | 
 | WAB.usergroups_get.restrictions.rules | String | The restriction rules. | 
@@ -3574,6 +3649,8 @@ Get the user group.
 | WAB.usergroups_get.description | String | The group description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.usergroups_get.timeframes | String | The group timeframe\(s\). | 
 | WAB.usergroups_get.users | String | The users in the group. | 
+| WAB.usergroups_get.language | String | Language of the notifications. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.usergroups_get.email_list | String | Approvers' email addresses, separated by semicolons ";". Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.usergroups_get.restrictions.id | String | The restriction id. | 
 | WAB.usergroups_get.restrictions.action | String | The restriction type. | 
 | WAB.usergroups_get.restrictions.rules | String | The restriction rules. | 
@@ -3712,7 +3789,7 @@ Get the password for a given target.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_name | A target name: 'account@domain@device' for an account on a device, 'account@domain@application' for an account on an application or 'account@domain' for an account on a global domain. | Required | 
-| key_format | The format of the SSH private key returned: 'openssh' (by default) or 'putty'. | Optional | 
+| key_format | The format of the SSH private key returned: 'openssh' (by default), 'pkcs1','pkcs8' or 'putty'. | Optional | 
 | cert_format | The format of the returned certificate: 'openssh' (by default) or 'ssh.com'. | Optional | 
 | authorization | The name of the authorization (in case of multiple authorizations to access the target). | Optional | 
 | duration | Optional duration for the checkout (in seconds). It is used only in case of lock in the checkout policy, and it must be less than the checkout policy duration. | Optional | 
@@ -3722,13 +3799,17 @@ Get the password for a given target.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | WAB.targetpasswords_get_checkout.checkin_time | String | The date/time of automatic checkin on the account \(if no manual checkin is made until this date/time\). | 
+| WAB.targetpasswords_get_checkout.remaining_time | String | Remaining checkout time in seconds. | 
 | WAB.targetpasswords_get_checkout.locked | Boolean | True if the account has been locked \(a manual or automatic checkin is required\), False if the account is not locked \(checkin is then forbidden on this account\). | 
 | WAB.targetpasswords_get_checkout.checkin_change_password | Boolean | True if the password will be automatically changed on checkin, False if the password is unchanged. | 
 | WAB.targetpasswords_get_checkout.login | String | The account login. | 
+| WAB.targetpasswords_get_checkout.domain | String | The account domain real name. | 
 | WAB.targetpasswords_get_checkout.password | String | The account password. | 
 | WAB.targetpasswords_get_checkout.ssh_key | String | The account SSH private key. | 
+| WAB.targetpasswords_get_checkout.ssh_key_type | String | The type of the SSH private key \(either rsa, dsa, ecdsa or ed25519\). | 
 | WAB.targetpasswords_get_checkout.ssh_certificate | String | The account SSH signed certificate. | 
 | WAB.targetpasswords_get_checkout.deconnection_time | String | The date/time of automatic deconnection when the account is used in a proxy session. | 
+| WAB.targetpasswords_get_checkout.account_name | String | the account_name. | 
 
 ### wab-extend-duration-time-to-get-passwords-for-target
 
@@ -3805,3 +3886,125 @@ Get the target by type.
 | WAB.getTargetByType.device | String | The device name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.getTargetByType.service | String | The service name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.getTargetByType.application | String | The application name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+
+### wab-get-mappings-of-user-group
+
+***
+Get the mappings of a user group.
+
+#### Base Command
+
+`wab-get-mappings-of-user-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A user group id or name to retrieve. | Required | 
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'user_group'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.authdomain_mapping_get.id | String | The mapping id. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.domain | String | The name of the domain for which the mapping is defined. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.user_group | String | The name of the Bastion users group. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.external_group | String | The name of the external group \(LDAP/AD: Distinguished Name, Azure AD: name or ID\), "\*" means fallback mapping. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.url | String | The API URL to the resource. | 
+
+### wab-add-mapping-in-group
+
+***
+Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default.
+
+#### Base Command
+
+`wab-add-mapping-in-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A group id or name. | Required | 
+| usergroup_mapping_post_domain | The name of the domain for which the mapping is defined. | Required | 
+| usergroup_mapping_post_external_group | The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping. | Required | 
+| usergroup_mapping_post_profile | The name of the profile for which the mapping is defined. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-get-mapping-of-user-group
+
+***
+Get the mapping of a user group.
+
+#### Base Command
+
+`wab-get-mapping-of-user-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A user group id or name to retrieve. | Required | 
+| mapping_id | A mapping id to retrieve. If specified, only this mapping information will be retrieved. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.authdomain_mapping_get.id | String | The mapping id. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.domain | String | The name of the domain for which the mapping is defined. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.user_group | String | The name of the Bastion users group. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.external_group | String | The name of the external group \(LDAP/AD: Distinguished Name, Azure AD: name or ID\), "\*" means fallback mapping. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.url | String | The API URL to the resource. | 
+
+### wab-edit-mapping-of-user-group
+
+***
+Edit a mapping of a user group.
+
+#### Base Command
+
+`wab-edit-mapping-of-user-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A group id or name. | Required | 
+| mapping_id | A mapping id to edit. | Required | 
+| usergroup_mapping_post_domain | The name of the domain for which the mapping is defined. | Required | 
+| usergroup_mapping_post_external_group | The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping. | Required | 
+| usergroup_mapping_post_profile | The name of the profile for which the mapping is defined. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-mapping-of-user-group
+
+***
+Delete the mapping of the given user group.
+
+#### Base Command
+
+`wab-delete-mapping-of-user-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A group id or name. | Required | 
+| mapping_id | A mapping id. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
