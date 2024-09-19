@@ -283,7 +283,7 @@ class UpdatedTickets(TicketEvents):
             params['start_time'] = self._last_update
         return params
 
-    def tickets(self):
+    def tickets(self):  # type: ignore[override]
         def filter_created_ticket(ticket: dict):
             return ticket['created_at'] != ticket['updated_at']
 

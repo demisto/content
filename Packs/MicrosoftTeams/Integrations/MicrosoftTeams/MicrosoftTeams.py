@@ -2497,7 +2497,7 @@ def messages() -> Response:
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
-            request_body: dict = request.json
+            request_body: dict = request.json   # type: ignore[assignment]
             integration_context: dict = get_integration_context()
             service_url: str = request_body.get('serviceUrl', '')
             if service_url:

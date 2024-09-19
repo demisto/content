@@ -2536,6 +2536,97 @@ def test_filter_general_fields():
     }
 
 
+def test_filter_general_fields_with_stateful_raw_data():
+    """
+    Given:
+        - An alert dict with stateful_raw_data section
+    When
+        - Running filter_general_fields command once with events_from_decider_as_list as False and once as True.
+    Then
+        - Verify expected output
+    """
+    from CoreIRApiModule import filter_general_fields
+    alert = {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': {
+                "test_1": {
+                    "story_id": "test_1",
+                    "additional_info": "this is a test."
+                },
+                "test_2": {
+                    "story_id": "test_2",
+                    "additional_info": "this is a test."
+                }
+            }
+        }
+    }
+    assert filter_general_fields(alert, False, False) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': {
+                "test_1": {
+                    "story_id": "test_1",
+                    "additional_info": "this is a test."
+                },
+                "test_2": {
+                    "story_id": "test_2",
+                    "additional_info": "this is a test."
+                }
+            }
+        },
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+    assert filter_general_fields(alert, False, True) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': [{
+                "story_id": "test_1",
+                "additional_info": "this is a test."
+            }, {
+                "story_id": "test_2",
+                "additional_info": "this is a test."
+            }]
+        },
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+
+
 def test_filter_general_fields_no_event(mocker):
     """
     Given:
