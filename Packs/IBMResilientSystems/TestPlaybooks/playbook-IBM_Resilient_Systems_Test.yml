@@ -1389,5 +1389,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.10.0
 description: Tests IBM Security QRadar SOAR integration.
