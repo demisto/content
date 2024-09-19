@@ -26,7 +26,7 @@ PREVALENCE_COMMANDS = {
     'core-get-cmd-analytics-prevalence': 'cmd',
 }
 
-TERMINATE_BUILD_NUM = ''
+TERMINATE_BUILD_NUM = '1398786'
 TERMINATE_SERVER_VERSION = '8.7.0'
 
 
@@ -473,7 +473,7 @@ def main():  # pragma: no cover
         elif command == 'core-terminate-process':
             if not is_demisto_version_ge(version=TERMINATE_BUILD_NUM,
                                          build_number=TERMINATE_SERVER_VERSION):
-                return 'not available yet'
+                return 'This command is only available for XSIAM 2.4'
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-process",
@@ -493,7 +493,7 @@ def main():  # pragma: no cover
         elif command == 'core-terminate-causality':
             if not is_demisto_version_ge(version=TERMINATE_BUILD_NUM,
                                          build_number=TERMINATE_SERVER_VERSION):
-                return 'not available yet'
+                return 'This command is only available for XSIAM 2.4'
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-causality",
