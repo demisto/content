@@ -13,13 +13,15 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+UTC = timezone.utc  # noqa: UP017
+
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
 
     def parse_reputation(self, cybertotal_result: dict, resource: str) -> Dict[str, Any]:
-        scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], timezone.utc).isoformat()
+        scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], UTC).isoformat()
         permalink = cybertotal_result['url']
         url_path = urlparse(permalink).path
         (_, _, task_id) = url_path.rpartition('/')
@@ -188,19 +190,19 @@ class Client(BaseClient):
         result['task_id'] = task_id
         result['message'] = "search success"
         if 'createdAt' in result:
-            result['createdAt'] = datetime.fromtimestamp(result['createdAt'], timezone.utc).isoformat()
+            result['createdAt'] = datetime.fromtimestamp(result['createdAt'], UTC).isoformat()
         if 'updatedAt' in result:
-            result['updatedAt'] = datetime.fromtimestamp(result['updatedAt'], timezone.utc).isoformat()
+            result['updatedAt'] = datetime.fromtimestamp(result['updatedAt'], UTC).isoformat()
         if 'registrarCreatedAt' in result:
-            result['registrarCreatedAt'] = datetime.fromtimestamp(result['registrarCreatedAt'], timezone.utc).isoformat()
+            result['registrarCreatedAt'] = datetime.fromtimestamp(result['registrarCreatedAt'], UTC).isoformat()
         if 'registrarUpdatedAt' in result:
-            result['registrarUpdatedAt'] = datetime.fromtimestamp(result['registrarUpdatedAt'], timezone.utc).isoformat()
+            result['registrarUpdatedAt'] = datetime.fromtimestamp(result['registrarUpdatedAt'], UTC).isoformat()
         if 'registrarExpiresAt' in result:
-            result['registrarExpiresAt'] = datetime.fromtimestamp(result['registrarExpiresAt'], timezone.utc).isoformat()
+            result['registrarExpiresAt'] = datetime.fromtimestamp(result['registrarExpiresAt'], UTC).isoformat()
         if 'auditCreatedAt' in result:
-            result['auditCreatedAt'] = datetime.fromtimestamp(result['auditCreatedAt'], timezone.utc).isoformat()
+            result['auditCreatedAt'] = datetime.fromtimestamp(result['auditCreatedAt'], UTC).isoformat()
         if 'auditUpdatedAt' in result:
-            result['auditUpdatedAt'] = datetime.fromtimestamp(result['auditUpdatedAt'], timezone.utc).isoformat()
+            result['auditUpdatedAt'] = datetime.fromtimestamp(result['auditUpdatedAt'], UTC).isoformat()
         if 'rawResponse' in result:
             result.pop('rawResponse')
         return result
