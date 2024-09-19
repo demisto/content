@@ -1,17 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
-import json
 
 import urllib3
 from typing import Any
 import re
-from google.oauth2 import service_account
-from google.auth.transport.requests import Request
-import hashlib
-import hmac
-import base64
-from requests.exceptions import ConnectionError
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,7 +18,6 @@ GET_ASSET_DETAILS = "/v1/assets/id?id="
 GET_ASSET_FILES = "/v1/classification/asset-files/id"
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
-GET_CURRENT_JIRA_USER_ENDPOINT: str = "/rest/api/2/myself"
 GET_ALERTS_LIST: str = "/v1/alerts"
 GET_RISK_FINDING_BY_ID: str = "/v1/risk-findings/id/"
 INCIDENT_STATUS = {"OPEN": 1, "INVESTIGATING": 2, "HANDLED": 2, "CLOSED": 2}
@@ -237,109 +230,6 @@ def severity_to_dbot_score(severity):
     return 0
 
 
-def create_gcp_access_token(gcp_service_account_json):
-    # Remove extra escape char
-    gcp_service_account_json = gcp_service_account_json.encode().decode(
-        "unicode_escape"
-    )
-
-    # Parse the JSON string into a dictionary
-    service_account_info = json.loads(gcp_service_account_json, strict=False)
-
-    # Create credentials from the JSON dictionary
-    credentials = service_account.Credentials.from_service_account_info(
-        service_account_info
-    )
-
-    # Set the scope for the token
-    scoped_credentials = credentials.with_scopes(
-        ["https://www.googleapis.com/auth/cloud-platform"]
-    )
-
-    # Request an access token
-    scoped_credentials.refresh(Request())
-
-    # Get the access token
-    access_token = scoped_credentials.token
-
-    return access_token
-
-
-def check_azure_credentials():
-    try:
-        account_name = str(demisto.params().get("azureStorageName"))
-        account_key = str(demisto.params().get("azureSharedKey", {}).get("password"))
-        api_version = "2024-11-04"
-        request_url = f"https://{account_name}.blob.core.windows.net/?comp=list"
-        request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
-
-        # string for API signature
-        string_to_sign = (
-            f"GET\n"  # HTTP Verb
-            f"\n"  # Content-Encoding
-            f"\n"  # Content-Language
-            f"\n"  # Content-Length
-            f"\n"  # Content-MD5
-            f"\n"  # Content-Type
-            f"\n"  # Date
-            f"\n"  # If-Modified-Since
-            f"\n"  # If-Match
-            f"\n"  # If-None-Match
-            f"\n"  # If-Unmodified-Since
-            f"\n"  # Range
-            f"x-ms-date:{request_date}\n"
-            f"x-ms-version:{api_version}\n"
-            f"/{account_name}/\n"
-            "comp:list"
-        )
-
-        # create signature token for API auth
-        decoded_key = base64.b64decode(account_key)
-        signature = hmac.new(
-            decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256
-        ).digest()
-        encoded_signature = base64.b64encode(signature).decode("utf-8")
-
-        authorization_header = f"SharedKey {account_name}:{encoded_signature}"
-        headers = {
-            "x-ms-date": request_date,
-            "x-ms-version": api_version,
-            "Authorization": authorization_header,
-        }
-        response = requests.get(request_url, headers=headers)
-
-        if response.status_code == 200:
-            return True
-        else:
-            return_error(
-                f"The provided Azure shared Key is invalid, Status Code '{response.status_code}'."
-            )
-    except ConnectionError:
-        return_error(
-            f"The provided Azure Storage account name - '{account_name}' is invalid."
-        )
-    except Exception:
-        return_error("The provided Azure shared Key is invalid.")
-
-
-def check_gcp_json_credentials():
-    try:
-        # create GCP access token
-        gcp_service_account_json = demisto.params().get("serviceAccountJson")
-        access_token = create_gcp_access_token(gcp_service_account_json)
-
-        # validate the GCP access token
-        validation_url = (
-            f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={access_token}"
-        )
-        response = requests.get(validation_url)
-        return response.status_code == 200
-
-    except Exception as err:
-        return_error(f"Failed to validate the GCP credentials, Err: {err}")
-        return False
-
-
 def validate_parameter(
     param_name: str, param_in: str, param_equal: str, supported_list: list[str]
 ):
@@ -361,22 +251,6 @@ def test_module(client: Client) -> str:
     try:
         # validate dspm creds
         client.get_data_types()
-
-        # check Azure creds if provided
-        azure_storage_name = demisto.params().get("azureStorageName")
-        account_key = str(demisto.params().get("azureSharedKey", {}).get("password"))
-        if azure_storage_name or account_key:
-            is_valid = check_azure_credentials()
-            if not is_valid:
-                raise Exception("Invalid Azure credentials")
-
-        # check GCP creds if provided
-        gcp_service_account_json = demisto.params().get("serviceAccountJson")
-        if gcp_service_account_json:
-            is_valid = check_gcp_json_credentials()
-            if not is_valid:
-                raise Exception("Invalid GCP credentials")
-
         return "ok"
 
     except DemistoException as e:
@@ -829,16 +703,6 @@ def get_integration_config():
         "slackMsgLifetime": demisto.params().get("slackMsgLifetime"),
         "defaultSlackUser": demisto.params().get("defaultSlackUser"),
     }
-
-    # Update the dict with GCP and Azure credentials, if provided.
-    gcp_service_account_json = demisto.params().get("serviceAccountJson")
-    azure_shared_key = demisto.params().get("azureSharedKey", {}).get("password")
-    azure_storage_name = demisto.params().get("azureStorageName")
-    if gcp_service_account_json:
-        gcp_access_token = create_gcp_access_token(gcp_service_account_json)
-        integration_config.update({"GCPAccessToken": gcp_access_token})
-    if azure_storage_name:
-        integration_config.update({"azureSharedKey": azure_shared_key, "azureStorageName": azure_storage_name})
     demisto.debug(f" integration config : ${integration_config}")
 
     # Prepare data for table format
