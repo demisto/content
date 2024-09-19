@@ -13,6 +13,7 @@ ignore=BA101,BA110
 [file:Process_Email_-_Generic_v2.yml]
 ignore=PB118
 
+# GR103 is temporary, see CIAC-11705
 [file:Process_Email_-_Core_v2.yml]
 ignore=PB118,GR103
 
@@ -59,16 +60,16 @@ ignore=PB118
 ignore=LO107
 
 [known_words]
-checkemailauthenticity
-deletereportedemail
-getbranddeletereportedemail
-commontypes
-useoldhtmlfields
-qr
+CheckEmailAuthenticity
+DeleteReportedEmail
+GetBrandDeleteReportedEmail
+CommonTypes
+UseOldHTMLFields
+QR
 
 [file:LinkToPhishingCampaign.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
 [file:incidentfield-bclscore.json]
 ignore=GR103
-

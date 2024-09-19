@@ -9,4 +9,3 @@ ignore=GR107
 
 [file:playbook-Policy_Optimizer_-_Manage_Unused_Rules.yml]
 ignore=GR107
-

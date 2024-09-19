@@ -134,9 +134,8 @@ ignore=IF113
 ignore=PB105
 
 [known_words]
-ngfw
-seim
+NGFW
+SEIM
 
 [file:Quick_Start_Investigation.yml]
 ignore=GR107
-

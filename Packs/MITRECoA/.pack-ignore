@@ -160,6 +160,7 @@ ignore=BA124
 [file:1_0_4.md]
 ignore=RN116
 
+# GR103 is temporary, see CIAC-11705
 [file:playbook-PAN-OS_-_Enforce_URL_Filtering_Best_Practices_Profile.yml]
 ignore=GR103,GR107
 

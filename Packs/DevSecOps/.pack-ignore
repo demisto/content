@@ -31,6 +31,7 @@ ignore=RM112
 [file:1_1_8.md]
 ignore=RN116
 
+# GR103 is temporary, see CIAC-11656
 [file:DevSecOps_-_Fetch_PR_-_Triage.yml]
 ignore=GR103
 

@@ -1,3 +1,4 @@
+# GR103 is temporary, see CIAC-11705
 [file:AnalyzeMemImage.yml]
 ignore=GR103
 
@@ -21,4 +22,3 @@ ignore=GR107
 
 [file:VolConnscan.yml]
 ignore=GR107
-

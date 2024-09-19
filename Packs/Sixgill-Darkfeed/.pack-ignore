@@ -20,7 +20,7 @@ ignore=IM111
 ignore=IM111
 
 [known_words]
-sixgill
+Sixgill
 
 [file:Darkfeed_Threat_hunting_research.yml]
 ignore=GR107

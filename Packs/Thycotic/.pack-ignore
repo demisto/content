@@ -2,8 +2,9 @@
 ignore=IM111
 
 [known_words]
-delineass
+DelineaSS
 
+# GR103 is temporary, see CIAC-11656
 [file:Thycotic-Test.yml]
 ignore=GR103
 
@@ -18,4 +19,3 @@ ignore=GR107
 
 [file:Example-Thycotic-Folder_Operations.yml]
 ignore=GR107
-

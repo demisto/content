@@ -97,12 +97,12 @@ cc
 bcc
 referer
 m
-mechani
+Mechani
 l
 retrohunt
 retrohunts
 retohunts
-vpc
+VPC
 br
 gt
 lt
@@ -129,12 +129,12 @@ useragent
 entication
 xxx
 extentions
-neis
+Neis
 https
 x
 socprime
 fb
-yf
+Yf
 tdm
 j
 xh
@@ -145,18 +145,18 @@ versio
 h
 dm
 securityuser
-builtin
-uis
-aaaaabuc
+Builtin
+Uis
+AAAAABUC
 lp
-whubmx
-sysmon
+Whubmx
+Sysmon
 nt
 userid
 stackedpads
 activedir
-cmdb
-gce
+CMDB
+GCE
 v
 secretmanager
 grpc
@@ -164,12 +164,13 @@ principaluser
 exe
 apis
 googleapis
-appdata
+APPDATA
 txt
 retries
-registerserver
+Registerserver
 gcb
 
+# GR103 is temporary, see CIAC-11656
 [file:layoutscontainer-Chronicle_User_Alert_Incident.json]
 ignore=GR103
 
