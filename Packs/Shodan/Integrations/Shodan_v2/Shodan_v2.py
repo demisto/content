@@ -177,7 +177,7 @@ def test_module():
     http_request('GET', '/shodan/ports', {'query': 'test'})
 
     params = demisto.params()
-    if argToBoolean(params.get('isFetchEvents')):
+    if argToBoolean(params.get('isFetchEvents', False)):
         get_events_command({'max_fetch': 1, 'start_date': 'now'})
 
 

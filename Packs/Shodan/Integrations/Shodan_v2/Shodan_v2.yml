@@ -77,6 +77,8 @@ configuration:
   type: 0
   required: false
   section: Collect
+  hidden:
+  - xsoar
 description: A search engine used for searching Internet-connected devices.
 display: Shodan v2
 name: Shodan_v2
@@ -371,7 +373,7 @@ script:
       defaultValue: "3 days ago"
     - name: max_fetch
       description: The maximum amount of events to return.
-      defaultValue: 50_000
+      defaultValue: 50000
   dockerimage: demisto/python3:3.10.14.99865
   runonce: false
   script: '-'
