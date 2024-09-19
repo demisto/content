@@ -5812,7 +5812,7 @@
         },
         {
             "integrations": "IBM Resilient Systems",
-            "playbookID": "IBM_Security_QRadar_Soar_Test"
+            "playbookID": "IBM Resilient Systems Test"
         }
     ],
     "skipped_tests": {
