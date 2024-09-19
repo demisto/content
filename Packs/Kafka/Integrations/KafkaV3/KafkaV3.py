@@ -800,7 +800,7 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
                      log_stream: Optional[StringIO] = None) -> None:
     """Start command function according to demisto command."""
     kafka_kwargs['kafka_logger'] = kafka_logger
-    kafka = KafkaCommunicator(demisto_params.get('consumer_only'), **kafka_kwargs)
+    kafka = KafkaCommunicator(**kafka_kwargs)
 
     try:
         if demisto_command == 'test-module':
@@ -835,6 +835,7 @@ def main():  # pragma: no cover
     group_id = demisto_params.get('group_id', 'xsoar_group')
     offset = handle_empty(demisto_params.get('offset', 'earliest'), 'earliest')
     trust_any_cert = demisto_params.get('insecure', False)
+    consumer_only = demisto_params.get('consumer_only') or False
 
     # Should we use SSL
     use_ssl = demisto_params.get('use_ssl', False)
@@ -847,9 +848,9 @@ def main():  # pragma: no cover
         ssl_password = demisto_params.get('additional_password', None)
         kafka_kwargs = {'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
                         'client_cert_key': client_cert_key, 'ssl_password': ssl_password, 'offset': offset,
-                        'trust_any_cert': trust_any_cert, 'group_id': group_id}
+                        'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
     else:
-        kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert, 'group_id': group_id}
+        kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
 
     try:
         commands_manager(kafka_kwargs, demisto_params, demisto_args, demisto_command)
