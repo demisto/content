@@ -948,6 +948,7 @@ class STIX2XSOARParser(BaseClient):
             demisto.debug(f'Unable to parse {pattern=}, {error=}')
             return None
 
+    @staticmethod
     def get_supported_pattern_comparisons(parsed: PatternComparisons) -> PatternComparisons:
         """
         Get the only the patterns supported by XSOAR from a parsed pattern.
@@ -1015,7 +1016,7 @@ class STIX2XSOARParser(BaseClient):
         entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(
             indicator_obj.get('type', ''), STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
         if indicator_obj.get('type') == "indicator":
-            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern'))
+            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern', ''))
         elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
             _, entity_b_value = STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_obj)
         elif indicator_obj.get('type') == "report" and is_unit42_report:
@@ -1186,6 +1187,7 @@ class STIX2XSOARParser(BaseClient):
         comparisons = STIX2XSOARParser.get_supported_pattern_comparisons(comparisons)
         if comparisons:
             return dict_safe_get(tuple(comparisons.values()), [0, 0, -1], '', str).strip("'") or None
+        return None
 
     def parse_indicator(self, indicator_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -2070,7 +2072,7 @@ class STIX2XSOARParser(BaseClient):
         "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
         """
         ioc_value = ioc_obj.get(key, '')
-        comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value)
+        comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
         return next(
             (comp[-1].strip("'") for comp in comps.get('file', []) if ['hashes', 'SHA-256'] in comp), None)
 
