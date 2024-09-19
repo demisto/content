@@ -1,5 +1,5 @@
 # This file specifies the stub lib dependencies required for the mypy-in-docker hook.
-# These dependencies will be installed in the Docker container.
+# These dependencies will be installed in the Docker container, see `installation_scripts/python_image.sh` in the SDK.
 cachetools
 cffi
 cryptography
