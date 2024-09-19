@@ -4489,7 +4489,7 @@ def terminate_process_command(client, args) -> CommandResults:
     instance_ids = argToList(args.get('instance_id'))
     process_name = args.get('process_name')
     incident_id = args.get('incident_id')
-    replies = []
+    replies: List[Dict[str, Any]] = []
     for instance_id in instance_ids:
         reply_per_instance_id = client.terminate_process(agent_id=agent_id,
                                                          instance_id=instance_id,
@@ -4524,8 +4524,7 @@ def terminate_causality_command(client, args) -> CommandResults:
     causality_ids = argToList(args.get('causality_id'))
     process_name = args.get('process_name')
     incident_id = args.get('incident_id')
-    replies = []
-    action_ids = []
+    replies: List[Dict[str, Any]] = []
     for causality_id in causality_ids:
         reply_per_instance_id = client.terminate_causality(agent_id=agent_id,
                                                            causality_id=causality_id,
@@ -4537,7 +4536,6 @@ def terminate_causality_command(client, args) -> CommandResults:
 
     if not replies:
         raise DemistoException('Terminate causality failed')
-    demisto.debug(f'Action terminate causality succeeded with {action_ids=}')
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
