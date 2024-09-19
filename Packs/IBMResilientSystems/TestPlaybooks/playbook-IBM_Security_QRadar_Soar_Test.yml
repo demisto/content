@@ -1,15 +1,15 @@
 id: IBM_Security_QRadar_Soar_Test
 name: IBM_Security_QRadar_Soar_Test
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 'cee9b945-dd4f-4b24-866b-ceefe04904eb'
     type: start
     task:
-      id: '0'
+      id: 'cee9b945-dd4f-4b24-866b-ceefe04904eb'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: 'a5603d5a-c777-4e7e-9b00-cbcb217d9c0a'
     type: regular
     task:
-      id: '1'
+      id: 'a5603d5a-c777-4e7e-9b00-cbcb217d9c0a'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '2a6ef811-dc01-49ad-bc57-19628d459fb2'
     type: regular
     task:
-      id: '2'
+      id: '2a6ef811-dc01-49ad-bc57-19628d459fb2'
       version: -1
       name: update-remote-system
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: 3
-    taskid: '3'
+    taskid: 'd6f088cc-28ad-4895-9643-92e1f762ae44'
     type: regular
     task:
-      id: '3'
+      id: 'd6f088cc-28ad-4895-9643-92e1f762ae44'
       version: -1
       name: get-mapping-fields
       description: ''
@@ -96,10 +96,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: '4c58c30e-ae2d-45a7-9bd9-a18009a7d8a1'
     type: regular
     task:
-      id: '4'
+      id: '4c58c30e-ae2d-45a7-9bd9-a18009a7d8a1'
       version: -1
       name: get-remote-data
       description: ''
@@ -119,10 +119,10 @@ tasks:
     skipunavailable: false
   '5':
     id: 5
-    taskid: '5'
+    taskid: 'ad76938e-8b11-4e0a-8457-b7ea1d20d83f'
     type: regular
     task:
-      id: '5'
+      id: 'ad76938e-8b11-4e0a-8457-b7ea1d20d83f'
       version: -1
       name: get-modified-remote-data
       description: ''
@@ -142,10 +142,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: '971c1f45-d5d1-4394-92b9-32507c82f8cd'
     type: regular
     task:
-      id: '6'
+      id: '971c1f45-d5d1-4394-92b9-32507c82f8cd'
       version: -1
       name: rs-search-incidents
       description: ''
@@ -165,10 +165,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: '823e21da-0651-4e48-abc5-8633edd63d0d'
     type: condition
     task:
-      id: '7'
+      id: '823e21da-0651-4e48-abc5-8633edd63d0d'
       version: -1
       name: Verify Outputs
       type: condition
@@ -274,10 +274,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: '25aa28a3-df2b-4985-bacc-06f47344ff4d'
     type: regular
     task:
-      id: '8'
+      id: '25aa28a3-df2b-4985-bacc-06f47344ff4d'
       version: -1
       name: rs-update-incident
       description: ''
@@ -297,10 +297,10 @@ tasks:
     skipunavailable: false
   '9':
     id: 9
-    taskid: '9'
+    taskid: 'fd51fc96-d9bd-44d8-87c8-c763c2c92649'
     type: regular
     task:
-      id: '9'
+      id: 'fd51fc96-d9bd-44d8-87c8-c763c2c92649'
       version: -1
       name: rs-incidents-get-members
       description: ''
@@ -320,10 +320,10 @@ tasks:
     skipunavailable: false
   '10':
     id: '10'
-    taskid: '10'
+    taskid: '2b2a6857-b306-4ba7-b508-40996064e139'
     type: condition
     task:
-      id: '10'
+      id: '2b2a6857-b306-4ba7-b508-40996064e139'
       version: -1
       name: Verify Outputs
       type: condition
@@ -369,10 +369,10 @@ tasks:
     skipunavailable: false
   '11':
     id: 11
-    taskid: '11'
+    taskid: 'd221850a-6b00-412e-9fda-5136964b3ae4'
     type: regular
     task:
-      id: '11'
+      id: 'd221850a-6b00-412e-9fda-5136964b3ae4'
       version: -1
       name: rs-get-incident
       description: ''
@@ -392,10 +392,10 @@ tasks:
     skipunavailable: false
   '12':
     id: '12'
-    taskid: '12'
+    taskid: '25bc9b43-d265-450b-8ac0-001c636572de'
     type: condition
     task:
-      id: '12'
+      id: '25bc9b43-d265-450b-8ac0-001c636572de'
       version: -1
       name: Verify Outputs
       type: condition
@@ -501,10 +501,10 @@ tasks:
     skipunavailable: false
   '13':
     id: 13
-    taskid: '13'
+    taskid: '3d6d917c-2ec9-4f2d-934f-8268668dd6f8'
     type: regular
     task:
-      id: '13'
+      id: '3d6d917c-2ec9-4f2d-934f-8268668dd6f8'
       version: -1
       name: rs-incidents-update-member
       description: ''
@@ -524,10 +524,10 @@ tasks:
     skipunavailable: false
   '14':
     id: 14
-    taskid: '14'
+    taskid: '20cd2b7c-6f5f-446e-97c5-5359aa664eec'
     type: regular
     task:
-      id: '14'
+      id: '20cd2b7c-6f5f-446e-97c5-5359aa664eec'
       version: -1
       name: rs-get-users
       description: ''
@@ -547,10 +547,10 @@ tasks:
     skipunavailable: false
   '15':
     id: 15
-    taskid: '15'
+    taskid: 'e0e5c8a9-2ab5-4bfe-828a-ee385eab9e34'
     type: regular
     task:
-      id: '15'
+      id: 'e0e5c8a9-2ab5-4bfe-828a-ee385eab9e34'
       version: -1
       name: rs-close-incident
       description: ''
@@ -570,10 +570,10 @@ tasks:
     skipunavailable: false
   '16':
     id: 16
-    taskid: '16'
+    taskid: '20536372-c73a-4179-ac6a-ffc10b7baecb'
     type: regular
     task:
-      id: '16'
+      id: '20536372-c73a-4179-ac6a-ffc10b7baecb'
       version: -1
       name: rs-create-incident
       description: ''
@@ -593,10 +593,10 @@ tasks:
     skipunavailable: false
   '17':
     id: '17'
-    taskid: '17'
+    taskid: 'ecddfce1-ee8d-4c78-8175-62975a1e0e6a'
     type: condition
     task:
-      id: '17'
+      id: 'ecddfce1-ee8d-4c78-8175-62975a1e0e6a'
       version: -1
       name: Verify Outputs
       type: condition
@@ -627,10 +627,10 @@ tasks:
     skipunavailable: false
   '18':
     id: 18
-    taskid: '18'
+    taskid: '38067364-6483-4042-9d3a-51517ff3c330'
     type: regular
     task:
-      id: '18'
+      id: '38067364-6483-4042-9d3a-51517ff3c330'
       version: -1
       name: rs-incident-artifacts
       description: ''
@@ -650,10 +650,10 @@ tasks:
     skipunavailable: false
   '19':
     id: '19'
-    taskid: '19'
+    taskid: 'ead3a1eb-c178-44ff-8610-9306466f8fd8'
     type: condition
     task:
-      id: '19'
+      id: 'ead3a1eb-c178-44ff-8610-9306466f8fd8'
       version: -1
       name: Verify Outputs
       type: condition
@@ -744,10 +744,10 @@ tasks:
     skipunavailable: false
   '20':
     id: 20
-    taskid: '20'
+    taskid: '3e4ee043-9d7d-45eb-b662-e29160e9edf6'
     type: regular
     task:
-      id: '20'
+      id: '3e4ee043-9d7d-45eb-b662-e29160e9edf6'
       version: -1
       name: rs-incident-attachments
       description: ''
@@ -767,10 +767,10 @@ tasks:
     skipunavailable: false
   '21':
     id: '21'
-    taskid: '21'
+    taskid: 'f1e94b4a-e549-4c79-a568-75d292a59cf6'
     type: condition
     task:
-      id: '21'
+      id: 'f1e94b4a-e549-4c79-a568-75d292a59cf6'
       version: -1
       name: Verify Outputs
       type: condition
@@ -836,10 +836,10 @@ tasks:
     skipunavailable: false
   '22':
     id: 22
-    taskid: '22'
+    taskid: '48f114d1-89f8-4312-a151-9385292b65c9'
     type: regular
     task:
-      id: '22'
+      id: '48f114d1-89f8-4312-a151-9385292b65c9'
       version: -1
       name: rs-get-attachment
       description: ''
@@ -859,10 +859,10 @@ tasks:
     skipunavailable: false
   '23':
     id: 23
-    taskid: '23'
+    taskid: '7d7ff5ff-bf3e-4822-a5e9-c84376e5c309'
     type: regular
     task:
-      id: '23'
+      id: '7d7ff5ff-bf3e-4822-a5e9-c84376e5c309'
       version: -1
       name: rs-related-incidents
       description: ''
@@ -882,10 +882,10 @@ tasks:
     skipunavailable: false
   '24':
     id: '24'
-    taskid: '24'
+    taskid: 'e7a9c4c7-90c1-4b73-b0ce-ab4210e4e257'
     type: condition
     task:
-      id: '24'
+      id: 'e7a9c4c7-90c1-4b73-b0ce-ab4210e4e257'
       version: -1
       name: Verify Outputs
       type: condition
@@ -946,10 +946,10 @@ tasks:
     skipunavailable: false
   '25':
     id: 25
-    taskid: '25'
+    taskid: '6a9c22d0-79d2-40d7-80cd-65e9ab7e9453'
     type: regular
     task:
-      id: '25'
+      id: '6a9c22d0-79d2-40d7-80cd-65e9ab7e9453'
       version: -1
       name: rs-incidents-get-tasks
       description: ''
@@ -969,10 +969,10 @@ tasks:
     skipunavailable: false
   '26':
     id: '26'
-    taskid: '26'
+    taskid: 'b1dd2fca-8c51-4e89-b66f-4514af7ce5e9'
     type: condition
     task:
-      id: '26'
+      id: 'b1dd2fca-8c51-4e89-b66f-4514af7ce5e9'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1043,10 +1043,10 @@ tasks:
     skipunavailable: false
   '27':
     id: 27
-    taskid: '27'
+    taskid: '90a8e74f-da67-4849-880a-8286c09a2011'
     type: regular
     task:
-      id: '27'
+      id: '90a8e74f-da67-4849-880a-8286c09a2011'
       version: -1
       name: rs-add-note
       description: ''
@@ -1066,10 +1066,10 @@ tasks:
     skipunavailable: false
   '28':
     id: '28'
-    taskid: '28'
+    taskid: 'cbb6e4da-806f-475e-bb1b-26ffc4943ed4'
     type: condition
     task:
-      id: '28'
+      id: 'cbb6e4da-806f-475e-bb1b-26ffc4943ed4'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1230,10 +1230,10 @@ tasks:
     skipunavailable: false
   '29':
     id: 29
-    taskid: '29'
+    taskid: '0d60659f-54b7-4415-b865-b108584a5a5e'
     type: regular
     task:
-      id: '29'
+      id: '0d60659f-54b7-4415-b865-b108584a5a5e'
       version: -1
       name: rs-add-artifact
       description: ''
@@ -1253,10 +1253,10 @@ tasks:
     skipunavailable: false
   '30':
     id: '30'
-    taskid: '30'
+    taskid: 'cb48cd0d-9855-419d-a432-55c0649a3398'
     type: condition
     task:
-      id: '30'
+      id: 'cb48cd0d-9855-419d-a432-55c0649a3398'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1477,10 +1477,10 @@ tasks:
     skipunavailable: false
   '31':
     id: 31
-    taskid: '31'
+    taskid: '6657dbca-5a1f-4b38-b9cc-f88e7498d4d1'
     type: regular
     task:
-      id: '31'
+      id: '6657dbca-5a1f-4b38-b9cc-f88e7498d4d1'
       version: -1
       name: rs-list-scripts
       description: ''
@@ -1500,10 +1500,10 @@ tasks:
     skipunavailable: false
   '32':
     id: '32'
-    taskid: '32'
+    taskid: 'f5d10c59-1037-4631-9549-b079c80f9ab3'
     type: condition
     task:
-      id: '32'
+      id: 'f5d10c59-1037-4631-9549-b079c80f9ab3'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1529,10 +1529,10 @@ tasks:
     skipunavailable: false
   '33':
     id: 33
-    taskid: '33'
+    taskid: 'c7eb394c-0e0d-4491-b897-c9b145b552f5'
     type: regular
     task:
-      id: '33'
+      id: 'c7eb394c-0e0d-4491-b897-c9b145b552f5'
       version: -1
       name: rs-upload-incident-attachment
       description: ''
@@ -1552,10 +1552,10 @@ tasks:
     skipunavailable: false
   '34':
     id: 34
-    taskid: '34'
+    taskid: '50d4b947-8188-4547-96d7-a0690fac9efe'
     type: regular
     task:
-      id: '34'
+      id: '50d4b947-8188-4547-96d7-a0690fac9efe'
       version: -1
       name: rs-delete-incidents
       description: ''
@@ -1575,10 +1575,10 @@ tasks:
     skipunavailable: false
   '35':
     id: 35
-    taskid: '35'
+    taskid: 'bca4af6d-5c61-4f82-b1ba-aae52508bc51'
     type: regular
     task:
-      id: '35'
+      id: 'bca4af6d-5c61-4f82-b1ba-aae52508bc51'
       version: -1
       name: rs-list-incident-notes
       description: ''
@@ -1598,10 +1598,10 @@ tasks:
     skipunavailable: false
   '36':
     id: '36'
-    taskid: '36'
+    taskid: '77dcb3db-ddff-4da0-9302-411c4922d945'
     type: condition
     task:
-      id: '36'
+      id: '77dcb3db-ddff-4da0-9302-411c4922d945'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1627,10 +1627,10 @@ tasks:
     skipunavailable: false
   '37':
     id: 37
-    taskid: '37'
+    taskid: 'ac9a0219-b2c3-4c5c-a0ae-58b490199a93'
     type: regular
     task:
-      id: '37'
+      id: 'ac9a0219-b2c3-4c5c-a0ae-58b490199a93'
       version: -1
       name: rs-update-incident-note
       description: ''
@@ -1650,10 +1650,10 @@ tasks:
     skipunavailable: false
   '38':
     id: 38
-    taskid: '38'
+    taskid: 'b4c7b1fc-f261-4296-968c-d0580f70b366'
     type: regular
     task:
-      id: '38'
+      id: 'b4c7b1fc-f261-4296-968c-d0580f70b366'
       version: -1
       name: rs-add-custom-task
       description: ''
@@ -1673,10 +1673,10 @@ tasks:
     skipunavailable: false
   '39':
     id: 39
-    taskid: '39'
+    taskid: '4871ea3e-e2cc-406d-b304-779418a39ef3'
     type: regular
     task:
-      id: '39'
+      id: '4871ea3e-e2cc-406d-b304-779418a39ef3'
       version: -1
       name: rs-list-tasks
       description: ''
@@ -1696,10 +1696,10 @@ tasks:
     skipunavailable: false
   '40':
     id: '40'
-    taskid: '40'
+    taskid: '55bb00fa-5148-42bd-a8cb-606f84bfda81'
     type: condition
     task:
-      id: '40'
+      id: '55bb00fa-5148-42bd-a8cb-606f84bfda81'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1725,10 +1725,10 @@ tasks:
     skipunavailable: false
   '41':
     id: 41
-    taskid: '41'
+    taskid: '465d0db6-37d7-4664-bb5d-3606b830ddd4'
     type: regular
     task:
-      id: '41'
+      id: '465d0db6-37d7-4664-bb5d-3606b830ddd4'
       version: -1
       name: rs-update-task
       description: ''
@@ -1748,10 +1748,10 @@ tasks:
     skipunavailable: false
   '42':
     id: 42
-    taskid: '42'
+    taskid: '7bd9bd8c-b3d7-45c4-8bdd-0aed7dbd980f'
     type: regular
     task:
-      id: '42'
+      id: '7bd9bd8c-b3d7-45c4-8bdd-0aed7dbd980f'
       version: -1
       name: rs-get-task-members
       description: ''
@@ -1771,10 +1771,10 @@ tasks:
     skipunavailable: false
   '43':
     id: '43'
-    taskid: '43'
+    taskid: '7dbafae6-f0c1-455c-88cb-99748715bee4'
     type: condition
     task:
-      id: '43'
+      id: '7dbafae6-f0c1-455c-88cb-99748715bee4'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1800,10 +1800,10 @@ tasks:
     skipunavailable: false
   '44':
     id: 44
-    taskid: '44'
+    taskid: '1008030e-f8f2-4940-8648-9e647a0b733d'
     type: regular
     task:
-      id: '44'
+      id: '1008030e-f8f2-4940-8648-9e647a0b733d'
       version: -1
       name: rs-delete-tasks
       description: ''
@@ -1823,10 +1823,10 @@ tasks:
     skipunavailable: false
   '45':
     id: 45
-    taskid: '45'
+    taskid: 'cfcbb30d-c120-4888-9f2c-8a55646c1584'
     type: regular
     task:
-      id: '45'
+      id: 'cfcbb30d-c120-4888-9f2c-8a55646c1584'
       version: -1
       name: rs-delete-task-members
       description: ''
@@ -1846,10 +1846,10 @@ tasks:
     skipunavailable: false
   '46':
     id: 46
-    taskid: '46'
+    taskid: '13d8d559-ee4f-4b8c-9e16-ee3db08dc892'
     type: regular
     task:
-      id: '46'
+      id: '13d8d559-ee4f-4b8c-9e16-ee3db08dc892'
       version: -1
       name: rs-list-task-instructions
       description: ''
@@ -1869,10 +1869,10 @@ tasks:
     skipunavailable: false
   '47':
     id: '47'
-    taskid: '47'
+    taskid: 'fa847b96-7f6b-4c3a-a9f1-a91b0c4c0e59'
     type: condition
     task:
-      id: '47'
+      id: 'fa847b96-7f6b-4c3a-a9f1-a91b0c4c0e59'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1898,10 +1898,10 @@ tasks:
     skipunavailable: false
   '48':
     id: '48'
-    taskid: '48'
+    taskid: '7cea41b6-2fe4-4193-a18c-8fd3c4214cfe'
     type: title
     task:
-      id: '48'
+      id: '7cea41b6-2fe4-4193-a18c-8fd3c4214cfe'
       version: -1
       name: Test Done
       type: title
@@ -1917,3 +1917,4 @@ tasks:
 view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
 inputs: []
 outputs: []
+description: Test Playbook for IBM Security QRadar SOAR integration.

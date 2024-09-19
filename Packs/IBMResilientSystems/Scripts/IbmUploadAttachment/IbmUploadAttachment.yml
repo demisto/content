@@ -1,8 +1,7 @@
 args:
-  - name: entry_id
-    display: Entry ID
-    description: EntryID of the file to upload.
-    required: true
+- name: entry_id
+  description: EntryID of the file to upload.
+  required: true
 
 comment: Use this script to upload an attachment to an IBM QRadar SOAR incident. This script should be run within an incident.
 
@@ -18,6 +17,6 @@ scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.11.10.111526
 runas: DBotWeakRole
-fromversion: 6.8.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
