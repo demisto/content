@@ -29,7 +29,7 @@ configuration:
 - display: API key ID
   name: credentials_api_key
   type: 9
-  required: true
+  required: false
   displaypassword: API key secret
   section: Connect
 - display: Credentials (Deprecated - use API Key authentication instead)
