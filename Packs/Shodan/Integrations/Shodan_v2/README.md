@@ -9,17 +9,13 @@ A search engine used for searching Internet-connected devices.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | API Key |  | False |
-    | API Key |  | False |
     | Base url to Shodan API |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    |  |  | False |
-    |  |  | False |
     | The maximum number of events per fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 
 ## Commands
 

@@ -86,7 +86,10 @@ def alert_to_demisto_result(alert):
     })
 
 
-def format_record_keys(dict_list):
+def format_record_keys(dict_list: List[Dict]) -> List[Dict]:
+    """
+    Formats dictionary keys by replacing underscores with spaces and capitalizing each word.
+    """
     new_list = []
     for input_dict in dict_list:
         new_dict = {}
@@ -111,7 +114,7 @@ def add_time_to_events(events: list[dict]):
             event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
-def filter_events(events: List[Dict[str, str]], start_date: datetime, limit: int) -> List[Dict[str, str]]:
+def filter_events(events: List[Dict], start_date: datetime, limit: int) -> List[Dict]:
     """
     Filters and sorts events based on a start date and limit.
 
@@ -130,7 +133,10 @@ def filter_events(events: List[Dict[str, str]], start_date: datetime, limit: int
     return filtered_events[:limit]
 
 
-def parse_event_date(event: Dict[str, str]) -> datetime:
+def parse_event_date(event: Dict) -> datetime:
+    """
+    Parses the 'created' field from an event dictionary into a datetime object.
+    """
     return datetime.strptime(event['created'], DATE_FORMAT)
 
 
@@ -166,7 +172,7 @@ def get_scan_status(scan_id):
 
 def test_module():
     """
-    Performs basic get request to get item samples
+    Sends a basic GET request to verify API connectivity and performs a sample event fetch if event fetching is enabled.
     """
     http_request('GET', '/shodan/ports', {'query': 'test'})
 
@@ -504,9 +510,11 @@ def shodan_network_alert_remove_service_from_whitelist_command():
 
 
 def get_events_command(args: dict) -> tuple[str, list[dict]]:
+    '''
+    Get events command, used mainly for debugging
+    '''
     events = http_request('GET', '/shodan/alert/info')
-    demisto.debug(f'Got {len(events)} events from API before filtering and applying limit')
-    if isinstance(events, dict):
+    if not isinstance(events, list):
         events = [events]
 
     limit = arg_to_number(args.get("max_fetch")) or DEFAULT_MAX_EVENTS
@@ -518,7 +526,7 @@ def get_events_command(args: dict) -> tuple[str, list[dict]]:
     return hr, filtered_events
 
 
-def fetch_events(last_run: dict[str, str], params) -> tuple[Dict, List[Dict]]:
+def fetch_events(last_run: dict[str, str], params: dict[str, str]) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from an API and updates the last_run data with the latest event's date.
 
