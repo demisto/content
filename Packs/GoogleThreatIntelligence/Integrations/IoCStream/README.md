@@ -1,9 +1,9 @@
-Use the Google Threat Intelligence Livehunt Feed integration to fetch indicators from Livehunt rules or rulesets.
+Use the Google Threat Intelligence IoC Stream Feed integration to fetch indicators from IoC Stream rules or rulesets.
 
-## Configure Google Threat Intelligence Livehunt Feed on Cortex XSOAR
+## Configure Google Threat Intelligence IoC Stream Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Threat Intelligence Livehunt Feed.
+2. Search for Google Threat Intelligence IoC Stream Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -21,8 +21,8 @@ Use the Google Threat Intelligence Livehunt Feed integration to fetch indicators
 
 4. Click **Test** to validate the Google Threat Intelligence API Key, and connection.
 
-#### Livehunt Feed info:
-By default the Livehunt feed retrieve indicators based on all active rulesets in [livehunt](https://www.virustotal.com/gui/hunting/notifications), you have the option to get indicators only from one rule or ruleset using the filter parameter.
+#### IoC Stream Feed info:
+By default the IoC Stream Feed retrieve all indicators on [IoC Stream](https://www.virustotal.com/gui/ioc-notifications). You have the option to get files, domains, IP addresses or URLs only from LiveHunt, RetroHunt, Collections, Threat Actors, etc., using the filter parameter.
 
 
 ## Commands
@@ -31,17 +31,17 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### Get Indicators
 ***
-Gets the indicators from Google Threat Intelligence Livehunt.
+Gets the indicators from Google Threat Intelligence IoC Stream.
 
 ##### Base Command
 
-`gti-livehunt-get-indicators`
+`gti-iocstream-get-indicators`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. The default value is 10 and max 40. | Optional |
-| filter | Exact name of the rule or ruleset you want to filter on. | Optional |
+| filter | Filter your IoC Stream (e.g., "source_type:hunting_ruleset" for LiveHunt, "source_type:retrohunt_job" for RetroHunt). Leave empty to receive all. | Optional |
 
 
 ##### Context Output
@@ -49,11 +49,11 @@ Gets the indicators from Google Threat Intelligence Livehunt.
 There is no context output for this command.
 
 ##### Command Example
-```!gti-livehunt-get-indicators limit=1 filter=WannaCry_Ransomware```
+```!gti-iocstream-get-indicators limit=1 filter=source_type:hunting_ruleset```
 
 
 ##### Human Readable Output
-### Indicators from Google Threat Intelligence Livehunt:
-| Sha256 | Detections |Filetype | Rulesetname | Rulename |
-|---|---|---|---|---|
-f221425286c9073cbb2168f73120b6...|59/69|Win32 EXE|Wannacry Ransomware|WannaCry_Ransomware_Gen|
+### Indicators from Google Threat Intelligence IoC Stream:
+| Id | Detections | Origin | Sources | Gti Threat Score | Gti Severity | Gti Verdict | Malware Families | Threat Actors |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| f221425286c9073cbb2168f73120b6... | 59/69 | hunting | \[hunting_ruleset\] YARA ruleset | 80 | SEVERITY_LOW | VERDICT_MALICIOUS | beacon | SWEED |

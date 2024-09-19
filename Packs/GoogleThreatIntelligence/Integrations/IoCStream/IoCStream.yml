@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Google Threat Intelligence Livehunt Feed
+  id: Google Threat Intelligence IoC Stream Feed
   version: -1
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
@@ -12,13 +12,13 @@ configuration:
 - name: filter
   display: Filter
   type: 0
-  additionalinfo: Exact name of the rule or ruleset you want to filter on. Leave empty to receive all.
+  additionalinfo: Filter your IoC Stream (e.g., "source_type:hunting_ruleset" for LiveHunt, "source_type:retrohunt_job" for RetroHunt). Leave empty to receive all.
   required: false
 - display: Limit
   name: limit
   defaultvalue: '10'
   type: 0
-  additionalinfo: Limit of indicators to fetch from livehunt notification. Max 40.
+  additionalinfo: Limit of indicators to fetch from IoC Stream. Max 40.
   required: false
 - display: Fetch indicators
   name: feed
@@ -61,12 +61,12 @@ configuration:
   required: false
 - display: ""
   name: feedExpirationInterval
-  defaultvalue: "20160"
+  defaultvalue: '20160'
   type: 1
   required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "240"
+  defaultvalue: '240'
   type: 19
   required: false
 - name: feedMinimumGTIScore
@@ -74,7 +74,7 @@ configuration:
   display: Feed Minimum Google Threat Intelligence Score
   required: true
   defaultvalue: 80
-  additionalinfo: The minimum Google Threat Intelligence score to import as part of the feed
+  additionalinfo: The minimum Google Threat Intelligence score to import as part of the feed.
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
@@ -95,21 +95,21 @@ configuration:
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   required: false
-description: Use this feed integration to fetch Google Threat Intelligence Livehunt notifications as indicators.
-display: Google Threat Intelligence Livehunt Feed
-name: Google Threat Intelligence Livehunt Feed
+description: Use this feed integration to fetch Google Threat Intelligence IoC Stream notifications as indicators.
+display: Google Threat Intelligence IoC Stream Feed
+name: Google Threat Intelligence IoC Stream Feed
 script:
   commands:
   - arguments:
     - defaultValue: '10'
       description: The maximum number of results to return. The default value is 10. Max 40.
       name: limit
-    - description: Exact name of the rule or ruleset you want to filter on. Leave empty to receive all.
+    - description: Filter your IoC Stream (e.g., "source_type:hunting_ruleset" for LiveHunt, "source_type:retrohunt_job" for RetroHunt). Leave empty to receive all.
       name: filter
-    description: Gets the indicators from Google Threat Intelligence Livehunt.
-    name: gti-livehunt-get-indicators
-  - description: 'This command will reset your fetch history.'
-    name: gti-reset-fetch-indicators
+    description: Gets the indicators from Google Threat Intelligence IoC Stream.
+    name: gti-iocstream-get-indicators
+  - description: This command will reset your fetch history.
+    name: gti-iocstream-reset-fetch-indicators
   dockerimage: demisto/python3:3.11.10.111526
   feed: true
   runonce: false

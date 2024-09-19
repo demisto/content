@@ -1,0 +1,127 @@
+{
+    "id": "8.8.8.8",
+    "type": "ip_address",
+    "attributes": {
+        "last_modification_date": 1726781178,
+        "total_votes": {
+            "harmless": 203,
+            "malicious": 32
+        },
+        "last_analysis_stats": {
+            "malicious": 1,
+            "suspicious": 0,
+            "undetected": 31,
+            "harmless": 62,
+            "timeout": 0
+        },
+        "last_analysis_date": 1726758865,
+        "first_seen_itw_date": 1409607591,
+        "reputation": 535,
+        "tags": [],
+        "whois": "NetRange: 8.8.8.0 - 8.8.8.255\nCIDR: 8.8.8.0/24\nNetName: GOGL\nNetHandle: NET-8-8-8-0-2\nParent: NET8 (NET-8-0-0-0-0)\nNetType: Direct Allocation\nOriginAS: \nOrganization: Google LLC (GOGL)\nRegDate: 2023-12-28\nUpdated: 2023-12-28\nRef: https://rdap.arin.net/registry/ip/8.8.8.0\nOrgName: Google LLC\nOrgId: GOGL\nAddress: 1600 Amphitheatre Parkway\nCity: Mountain View\nStateProv: CA\nPostalCode: 94043\nCountry: US\nRegDate: 2000-03-30\nUpdated: 2019-10-31\nComment: Please note that the recommended way to file abuse complaints are located in the following links. \nComment: \nComment: To report abuse and illegal activity: https://www.google.com/contact/\nComment: \nComment: For legal requests: http://support.google.com/legal \nComment: \nComment: Regards, \nComment: The Google Team\nRef: https://rdap.arin.net/registry/entity/GOGL\nOrgAbuseHandle: ABUSE5250-ARIN\nOrgAbuseName: Abuse\nOrgAbusePhone: +1-650-253-0000 \nOrgAbuseEmail: network-abuse@google.com\nOrgAbuseRef: https://rdap.arin.net/registry/entity/ABUSE5250-ARIN\nOrgTechHandle: ZG39-ARIN\nOrgTechName: Google LLC\nOrgTechPhone: +1-650-253-0000 \nOrgTechEmail: arin-contact@google.com\nOrgTechRef: https://rdap.arin.net/registry/entity/ZG39-ARIN\n",
+        "continent": "NA",
+        "network": "8.8.8.0/24",
+        "threat_verdict": "VERDICT_UNDETECTED",
+        "country": "US",
+        "regional_internet_registry": "ARIN",
+        "asn": 15169,
+        "whois_date": 1726150884,
+        "as_owner": "GOOGLE",
+        "last_https_certificate_date": 1726758877,
+        "mandiant_ic_score": 0,
+        "attribution": {
+            "detailed_threat_actors": [
+                {
+                    "source": "MISPGalaxy",
+                    "name": "ToddyCat",
+                    "id": "threat-actor--091a0b69-74de-44b6-bb12-16b7a8fd078b"
+                },
+                {
+                    "source": "MISPGalaxy",
+                    "name": "SWEED",
+                    "id": "threat-actor--64ac8827-89d9-4738-9df3-cd955c628bee"
+                }
+            ],
+            "malware_families": [
+                {
+                    "source": "mandiant_backscatter",
+                    "family": "asyncrat"
+                },
+                {
+                    "source": "mandiant_backscatter_memdump_cape",
+                    "family": "metasploit"
+                },
+                {
+                    "source": "mandiant_backscatter_memdump_zenbox",
+                    "family": "metasploit"
+                },
+                {
+                    "source": "mandiant_backscatter",
+                    "family": "metasploit"
+                },
+                {
+                    "source": "mandiant_backscatter",
+                    "family": "meterpreter"
+                },
+                {
+                    "source": "mandiant_backscatter",
+                    "family": "quasarrat"
+                }
+            ],
+            "threat_actors": [
+                "ToddyCat",
+                "SWEED"
+            ],
+            "family": "asyncrat",
+            "family_pivot": "collection:None"
+        },
+        "last_seen_itw_date": 1726766855,
+        "jarm": "29d3fd00029d29d00042d43d00041d598ac0c1012db967bb1ad0ff2491b3ae",
+        "gti_assessment": {
+            "contributing_factors": {
+                "normalised_categories": [
+                    "infostealer",
+                    "malware",
+                    "control-server",
+                    "phishing",
+                    "malware",
+                    "phishing"
+                ],
+                "pervasive_indicator": true,
+                "mandiant_confidence_score": 0,
+                "mandiant_analyst_benign": true,
+                "google_malware_analysis": true
+            },
+            "severity": {
+                "value": "SEVERITY_NONE"
+            },
+            "threat_score": {
+                "value": 0
+            },
+            "verdict": {
+                "value": "VERDICT_BENIGN"
+            },
+            "description": "This indicator was determined as benign by a Mandiant analyst and likely poses no threat."
+        }
+    },
+    "context_attributes": {
+        "notification_id": "19104706970",
+        "origin": "hunting",
+        "notification_date": 1726761663,
+        "sources": [
+            {
+                "id": "19072418300",
+                "type": "hunting_ruleset",
+                "label": "Malware Families YARA ruleset"
+            }
+        ],
+        "tags": [
+            "malware_families_yara_ruleset",
+            "malwarefamilyagenttesla"
+        ],
+        "hunting_info": {
+            "rule_name": "MalwareFamilyAgentTesla",
+            "match_source": "ORIGINAL_FILE"
+        }
+    }
+}
