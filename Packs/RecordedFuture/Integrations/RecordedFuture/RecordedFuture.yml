@@ -165,7 +165,7 @@ script:
       isArray: true
       description: The domain for which to get the reputation.
     - name: collective_insights
-      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value).
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
       required: false
       default: false
       auto: PREDEFINED
@@ -240,7 +240,7 @@ script:
       isArray: true
       description: IP address for which to get the reputation.
     - name: collective_insights
-      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value).
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
       required: false
       default: false
       auto: PREDEFINED
@@ -315,7 +315,7 @@ script:
       default: true
       description: File hash for which to check the reputation. Can be an MD5, SHA1, SHA256, SHA512, CRC32 or CTPH.
     - name: collective_insights
-      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value).
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
       required: false
       default: false
       auto: PREDEFINED
@@ -405,7 +405,7 @@ script:
       isArray: true
       description: CVE for which to get the reputation.
     - name: collective_insights
-      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value).
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
       required: false
       default: false
       auto: PREDEFINED
@@ -474,7 +474,7 @@ script:
       isArray: true
       description: URL for which to get the reputation.
     - name: collective_insights
-      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value).
+      description: Save IOC to Collective Insights? If not specified - uses demisto param setting value.
       required: false
       default: false
       auto: PREDEFINED

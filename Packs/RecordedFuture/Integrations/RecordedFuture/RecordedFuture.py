@@ -391,7 +391,10 @@ class Actions:
             # 404 case.
             return
 
-        if response.get("incidents") is not None:
+        if (
+                response.get("incidents") is not None
+                and response.get("demisto_last_run")
+        ):
             incidents = response["incidents"]
             demisto_last_run = response["demisto_last_run"]
 
