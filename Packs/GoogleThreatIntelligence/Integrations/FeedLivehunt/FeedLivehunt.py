@@ -137,6 +137,7 @@ def fetch_indicators_command(client: Client,
         raw_data = {
             'value': value_,
             'type': type_,
+            'attributes': attributes,
         }
 
         detection_ratio = DetectionRatio(attributes.get('last_analysis_stats'))
@@ -179,6 +180,11 @@ def fetch_indicators_command(client: Client,
                 'displayname': attributes.get('meaningful_name'),
                 'name': attributes.get('meaningful_name'),
                 'size': attributes.get('size'),
+                'malwarefamily': malware_families or None,
+                'actor': threat_actors or None,
+                'gtithreatscore': gti_assessment.get('threat_score', {}).get('value'),
+                'gtiseverity': gti_assessment.get('severity', {}).get('value'),
+                'gtiverdict': gti_assessment.get('verdict', {}).get('value'),
             },
             # A dictionary of the raw data returned from the feed source about the indicator.
             'rawJSON': raw_data,
@@ -187,11 +193,6 @@ def fetch_indicators_command(client: Client,
             'fileType': attributes.get('type_description'),
             'rulesetName': context_attributes.get('ruleset_name'),
             'ruleName': context_attributes.get('rule_name'),
-            'gti_threat_score': gti_assessment.get('threat_score', {}).get('value'),
-            'gti_severity': gti_assessment.get('severity', {}).get('value'),
-            'gti_verdict': gti_assessment.get('verdict', {}).get('value'),
-            'malware_families': malware_families or None,
-            'threat_actors': threat_actors or None,
         }
 
         if feed_tags:
