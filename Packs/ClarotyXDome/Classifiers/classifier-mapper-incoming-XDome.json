@@ -23,6 +23,50 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
+                "MITRE Technique ID": {
+					"complex": {
+						"filters": [],
+						"root": "mitre_technique_ics_ids",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "mitre_technique_enterprise_ids"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
+				"MITRE Technique Name": {
+					"complex": {
+						"filters": [],
+						"root": "mitre_technique_ics_names",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "mitre_technique_enterprise_names"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
                 "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
