@@ -1054,6 +1054,7 @@ Deletes a specified list of tasks. Note that only custom tasks can be deleted.
 #### Context Output
 
 There is no context output for this command.
+
 ### rs-list-task-instructions
 
 ***
@@ -1095,6 +1096,8 @@ Updates an incident's note.
 #### Context Output
 
 There is no context output for this command.
+
+
 ### rs-upload-incident-attachment
 
 ***
@@ -1114,6 +1117,8 @@ Upload an attachment for an incident.
 #### Context Output
 
 There is no context output for this command.
+
+
 ### rs-get-task-members
 
 ***
@@ -1126,17 +1131,17 @@ Get the members of a task. Private tasks will have the returned "members" proper
 #### Input
 
 | **Argument Name** | **Description**                | **Required** |
-| --- |--------------------------------| --- |
-| task_id | ID of task to get its members. | Required | 
+|-------------------|--------------------------------|--------------|
+| task_id           | ID of task to get its members. | Required     | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Task | Dictionary | Task members. | 
+| **Path**       | **Type**   | **Description** |
+|----------------|------------|-----------------|
+| Resilient.Task | Dictionary | Task members.   | 
+
 
 ### rs-get-attachment
-
 ***
 Gets incident attachment's name and contents as a file by its ID.
 
@@ -1146,34 +1151,29 @@ Gets incident attachment's name and contents as a file by its ID.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to get attachments from. | Required | 
-| attachment_id | Attachment ID to get. | Required | 
+| **Argument Name** | **Description**                      | **Required** |
+|-------------------|--------------------------------------|--------------|
+| incident_id       | Incident ID to get attachments from. | Required     | 
+| attachment_id     | Attachment ID to get.                | Required     | 
 
 #### Context Output
 
 There is no context output for this command.
 
-`rs-update-incident-members`
+### rs-incidents-update-member
+***
+Updates incident's members.
+
+#### Base Command
+
+`rs-incidents-update-member`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident-id | ID of the incident for which to update its members. | Required |
-| members | A comma-separated list of members to add, e.g. 1,2,3. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-`rs-update-incident-members`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident-id | ID of the incident for which to update its members. | Required |
-| members | A comma-separated list of members to add, e.g. 1,2,3. | Required |
+| **Argument Name** | **Description**                                       | **Required** |
+|-------------------|-------------------------------------------------------|--------------|
+| incident-id       | ID of the incident for which to update its members.   | Required     |
+| members           | A comma-separated list of members to add, e.g. 1,2,3. | Required     |
 
 #### Context Output
 
