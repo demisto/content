@@ -305,7 +305,7 @@ def write_text_file(filename, contents, overwrite=False):
         demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
 
 
-def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict:
+def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict[str, Any]:
     """
     Read the content from a JSON file and return it as a Python dictionary or list.
     :param file_path: Path to the JSON file.
@@ -517,20 +517,22 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
     instance_id_dict = {}
-    for key, value in chrome_instances_contents.items():
-        instance_id_dict[value]['instance_id'] = {
+    instance_id_dict = {
+        value['instance_id']: {
             'chrome_port': key,
-            'chrome_options': instance_id_dict[value]['chrome_options']
+            'chrome_options': value['chrome_options']
         }
+        for key, value in chrome_instances_contents.items()
+    }
     if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_dict.get(instance_id, {}).get('chrome_options', ''):
         # If the current Chrome options differ from the saved options for this instance ID,
         # it terminates the existing Chrome instance and generates a new one with the new options.
-        chrome_port = instance_id_dict.get(instance_id, '')
+        chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
         # need to delete the port chrome_port from json.
-        # write_json_file(chrome_port=chrome_port, terminate_port=True)
+        write_json_file(chrome_port=chrome_port, terminate_port=True)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
