@@ -324,63 +324,44 @@ def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict:
         return {}
 
 
-def write_json_file(content: Optional[Dict] = {},
-                    overwrite: bool = True,
+def write_json_file(new_chrome_instance_content: Optional[Dict] = {},
                     chrome_port: str = '',
-                    chrome_instance_data_update: Dict[str, Any] = {},
                     increase_counter: bool = False,
                     terminate_port: bool = False,
-                    json_file_path: str = CHROME_INSTANCES_FILE_PATH):
+                    ):
     """
     Write to a JSON file with an option to overwrite or create an empty file.
 
-    :param content: Data to write to the file. If None, an empty file is created.
-    :param overwrite: If True, the file is overwritten. If False, data is appended.
+    :param new_chrome_instance_content: Data to write to the file. If None, an empty file is created.
     :param chrome_port: Port for Chrome instance.
-    :param chrome_instance_data_update: Data to update the Chrome instance.
     :param increase_counter: If True, increase the counter.
     :param terminate_port: If True, terminate the port.
-    :param json_file_path: Path to the JSON file.
     """
     try:
-        if content and overwrite:
-            # Overwrite the file with the new content
-            with open(json_file_path, 'w') as file:
-                json.dump(content, file, indent=4)
-
-        elif content and not overwrite:
-            # Append to the file (requires reading existing content)
-            if os.path.exists(json_file_path):
-                with open(json_file_path, 'r+') as file:
-                    try:
-                        existing_data: Dict = json.load(file)
-                        # chrome port , key to edit, counter increase
-                        if content:
-                            existing_data.update(content)
-                        elif chrome_port and chrome_port in existing_data:
-                            if increase_counter:
-                                existing_data[chrome_port]['chrome_rasterize_connections'] += 1
-                            for key_to_update, value_to_update in chrome_instance_data_update.items():
-                                existing_data[chrome_port][key_to_update] = value_to_update
-                            if terminate_port:
-                                del existing_data[chrome_port]
-                        file.seek(0)  # Move file pointer to the beginning
-                        json.dump(existing_data, file, indent=4)
-                        file.truncate()  # Remove remaining part of the file if new content is shorter
-                    except json.JSONDecodeError:
-                        # File is empty or invalid JSON; initialize with content
-                        file.seek(0)
-                        json.dump([content], file, indent=4)
-            else:
-                demisto.info(f"File '{json_file_path}' does not exist.")
-                # Create a new file with the content as a list
-                with open(json_file_path, 'w') as file:
-                    json.dump([content], file, indent=4)
+        # Append to the file (requires reading existing content)
+        if os.path.exists(CHROME_INSTANCES_FILE_PATH):
+            with open(CHROME_INSTANCES_FILE_PATH, 'r+') as file:
+                try:
+                    existing_data: Dict = json.load(file)
+                    # chrome port , key to edit, counter increase
+                    if new_chrome_instance_content:
+                        existing_data.update(new_chrome_instance_content)
+                    elif chrome_port and chrome_port in existing_data:
+                        if increase_counter:
+                            counter = int(existing_data[chrome_port]['rasterize_count']) + 1
+                            existing_data[chrome_port]['rasterize_count'] = counter
+                        elif terminate_port:
+                            del existing_data[chrome_port]
+                    file.seek(0)  # Move file pointer to the beginning
+                    json.dump(existing_data, file, indent=4)
+                    file.truncate() # Remove remaining part of the file if new content is shorter
+                except json.JSONDecodeError:
+                    raise DemistoException('File is invalid JSON')
         else:
-            # Create an empty file
-            with open(json_file_path, 'w') as file:
-
-                json.dump({}, file, indent=4)
+            demisto.info(f"File '{CHROME_INSTANCES_FILE_PATH}' does not exist.")
+            # Create a new file with the content as a list
+            with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+                json.dump(new_chrome_instance_content, file, indent=4)
 
     except Exception as e:
         demisto.debug(f"An error occurred: {e}")
@@ -443,10 +424,10 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
                     chrome_port: {
                         'instance_id': instance_id,
                         'chrome_options': chrome_options,
-                        'chrome_rasterize_connections': '1'
+                        'rasterize_count': 1
                     }
                 }
-                write_json_file(content=new_chrome_instance)
+                write_json_file(new_chrome_instance_content=new_chrome_instance)
             else:
                 process.kill()
                 return None, None
@@ -545,10 +526,11 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_dict.get(instance_id, {}).get('chrome_options', ''):
+        # If the current Chrome options differ from the saved options for this instance ID,
+        # it terminates the existing Chrome instance and generates a new one with the new options.
         chrome_port = instance_id_dict.get(instance_id, '')
-        write_json_file(chrome_port=chrome_port,
-                        chrome_instance_data_update={'chrome_options': chrome_options,
-                                                     'chrome_rasterize_connections': 1})
+        # need to delete the port chrome_port from json.
+        write_json_file(chrome_port=chrome_port, terminate_port=True)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
