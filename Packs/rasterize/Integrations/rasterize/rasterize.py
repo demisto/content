@@ -63,7 +63,7 @@ PAGES_LIMITATION = 20
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
-    MAX_RASTERIZATIONS_COUNT = int(env_max_rasterizations_count)
+    MAX_RASTERIZATIONS_COUNT = 4 #int(env_max_rasterizations_count)
 except Exception as e:
     demisto.info(f'Exception trying to parse MAX_RASTERIZATIONS_COUNT, {e}')
     MAX_RASTERIZATIONS_COUNT = 500
@@ -98,7 +98,6 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 CHROME_INSTANCES_FILE_PATH = '/var/chrome_instances.json'
-RASTERIZATIONS_COUNTER_FILE_PATH = '/var/rasterizations_counter.txt'
 
 
 class RasterizeType(Enum):
@@ -424,7 +423,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
                     chrome_port: {
                         'instance_id': instance_id,
                         'chrome_options': chrome_options,
-                        'rasterize_count': 1
+                        'rasterize_count': 0
                     }
                 }
                 write_json_file(new_chrome_instance_content=new_chrome_instance)
@@ -516,7 +515,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-    instance_id_dict = {}
     instance_id_dict = {
         value['instance_id']: {
             'chrome_port': key,
@@ -539,41 +537,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
     browser = get_chrome_browser(chrome_port)
     return browser, chrome_port
-
-
-def get_chrome_instances_contents_dictionaries(chrome_instances_contents: str) -> tuple[
-        Dict[str, str], Dict[str, str], List[str], List[str]]:
-    """
-    Parses the chrome instances content to extract and return two dictionaries and two lists.
-
-    Args:
-        chrome_instances_contents: The file content to be parsed.
-
-    Returns:
-        tuple: A tuple containing:
-            - instance_id_to_chrome_options (dict): A dictionary mapping instance ID to Chrome options.
-            - instance_id_to_port (dict): A dictionary mapping instance ID to port.
-            - instances_id (list): A list of instances ID extracted from instance_id_to_port keys.
-            - chromes_options (list): A list of Chrome options extracted from instance_id_to_chrome_options values.
-
-    The purpose of this method is to transform the file content into dictionaries and lists
-    for easier access and manipulation of the data.
-    """
-    instance_id_to_chrome_options = {}
-    instance_id_to_port = {}
-
-    if chrome_instances_contents:
-        splitted_chrome_instances_contents = chrome_instances_contents.strip().splitlines()
-        for line in splitted_chrome_instances_contents:
-            port, instance_id, chrome_options = line.strip().split('\t')
-            instance_id_to_chrome_options[instance_id] = chrome_options
-            instance_id_to_port[instance_id] = port
-
-    instances_id = list(instance_id_to_port.keys())
-    chromes_options = list(instance_id_to_chrome_options.values())
-    if instances_id and not chromes_options:
-        chromes_options.append('None')
-    return instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options
 
 
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
@@ -864,22 +827,22 @@ def perform_rasterize(path: str | list[str],
             demisto.info(
                 f"Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
 
-            previous_rasterizations_counter_from_file = read_text_file(RASTERIZATIONS_COUNTER_FILE_PATH)
+            previous_rasterizations_counter_from_file:dict = read_json_file()
             if previous_rasterizations_counter_from_file:
-                total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
+                per_port_rasterizations_count = previous_rasterizations_counter_from_file[chrome_port]['rasterize_count'] + len(rasterization_threads)
             else:
-                total_rasterizations_count = len(rasterization_threads)
-            demisto.debug(f"checking if the {chrome_port=} should be deleted: {total_rasterizations_count=},"
+                # check this else with Tal
+                per_port_rasterizations_count = len(rasterization_threads)
+            
+            demisto.debug(f"checking if the {chrome_port=} should be deleted: {per_port_rasterizations_count=},"
                           f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
             if not chrome_port:
                 demisto.debug('The chrome port eas not found')
-            elif total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"Terminating Chrome after {total_rasterizations_count=} rasterizations")
+            elif per_port_rasterizations_count >= MAX_RASTERIZATIONS_COUNT:
+                demisto.info(f"Terminating Chrome after {per_port_rasterizations_count=} rasterizations")
                 terminate_chrome(chrome_port=chrome_port)
                 write_json_file(chrome_port=chrome_port, terminate_port=True)
-                write_text_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count - 1), overwrite=True)
             else:
-                write_text_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
                 write_json_file(chrome_port=chrome_port, increase_counter=True)
 
             # Get the results

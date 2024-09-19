@@ -25,7 +25,7 @@ def util_read_tsv(filename):
 
 
 def util_generate_mock_info_file(info):
-    from rasterize import write_file
+    from rasterize import write_text_file
     write_file("test_data/info.tsv", info, overwrite=True)
 
 
@@ -402,8 +402,7 @@ def test_chrome_manager_case_chrome_instances_file_is_empty(mocker):
 
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(rasterize, 'read_file', return_value=None)
-    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries', return_value=[{}, {}, {}, {}])
+    mocker.patch.object(rasterize, 'read_json_file', return_value={})
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
@@ -444,7 +443,7 @@ def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mo
         get_chrome_instances_contents_dictionaries(mock_file_content_edited)
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
+    mocker.patch.object(rasterize, 'read_text_file', return_value=mock_file_content_edited)
     mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
                         return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
@@ -482,13 +481,10 @@ def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
 
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
+
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
-    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
-                        return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
@@ -525,16 +521,13 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
 
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
+    
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
-    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
-                        return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
+    mocker.patch.object(rasterize, 'read_text_file', return_value=mock_file_content_edited)
+
     mocker.patch.object(rasterize, 'get_chrome_browser', return_value=None)
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
-    mocker.patch.object(rasterize, 'delete_row_with_old_chrome_configurations_from_chrome_instances_file', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
     browser, chrome_port = chrome_manager()
