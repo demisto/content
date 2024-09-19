@@ -20,12 +20,39 @@ RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
 def test_rasterize_email_image(caplog, capfd, mocker):
+    from unittest.mock import mock_open, Mock, MagicMock
+    mock_browser = Mock()
+    mock_browser.list_tab.return_value = ["Tab1", "Tab2", "Tab3"]
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize, 'support_multithreading')
+        mocker.patch("builtins.open", mock_open())
+        mocker.patch('subprocess.Popen')
+        mocker.patch("time.sleep")
+        mocker.patch.object(rasterize, 'get_chrome_browser', return_value=mock_browser)
+        mocker.patch.object(rasterize, 'write_json_file')
+        #
+        # Mock ThreadPoolExecutor
+        mock_executor = mocker.patch('concurrent.futures.ThreadPoolExecutor')
+
+        # Mock ThreadPoolExecutor
+        mock_executor = mocker.patch('concurrent.futures.ThreadPoolExecutor')
+        
+        # Create a mock instance of the executor
+        mock_instance = MagicMock()
+        mock_executor.return_value.__enter__.return_value = mock_instance
+
+        # Mock the shutdown method to prevent it from running
+        mock_instance.shutdown = MagicMock()
+
+        # Define what the mock will return when submit is called
+        mock_future = MagicMock()
+        mock_future.result.return_value = "Task Result"
+        mock_instance.submit.return_value = mock_future
+        #
         perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         caplog.clear()
 
