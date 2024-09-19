@@ -18,10 +18,10 @@ class DetectionRatio:
     def __init__(self, last_analysis_stats: dict):
         self.malicious = last_analysis_stats.get('malicious', 0)
         self.total = (
-            last_analysis_stats.get('harmless', 0) +
-            last_analysis_stats.get('suspicious', 0) +
-            last_analysis_stats.get('undetected', 0) +
-            last_analysis_stats.get('malicious', 0)
+            last_analysis_stats.get('harmless', 0)
+            + last_analysis_stats.get('suspicious', 0)
+            + last_analysis_stats.get('undetected', 0)
+            + last_analysis_stats.get('malicious', 0)
         )
 
     def __repr__(self):
@@ -30,6 +30,7 @@ class DetectionRatio:
 
 class Client(BaseClient):
     """Class for GTI client."""
+
     def get_api_indicators(self,
                            filter_query: str = None,
                            limit: int = 10):
@@ -98,7 +99,7 @@ def test_module(client: Client, args: dict) -> str:
     return 'ok'
 
 
-def _add_gti_attributes(indicator_obj: dict[str, dict], attributes: dict):
+def _add_gti_attributes(indicator_obj: dict, attributes: dict):
     """Addes GTI attributes."""
 
     # GTI assessment
@@ -175,7 +176,7 @@ def _add_file_attributes(indicator_obj: dict, attributes: dict) -> dict:
 
 def _add_domain_attributes(indicator_obj: dict, attributes: dict) -> dict:
     """Adds domain attributes."""
-    whois = attributes.get('whois')
+    whois: str = attributes.get('whois', '')
 
     admin_country = re.search(r'Admin Country:\s*([^\n]+)', whois)
     admin_email = re.search(r'Admin Email:\s*([^\n]+)', whois)

@@ -18,6 +18,7 @@ def _mock_indicator(indicator_type, gti_score=None):
 
     return indicator_mock
 
+
 def _mock_file(gti_score=None):
     """Mocks file."""
     return _mock_indicator('file', gti_score)

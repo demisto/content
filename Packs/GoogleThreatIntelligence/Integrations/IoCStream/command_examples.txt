@@ -1,4 +1,4 @@
-!gti-livehunt-get-indicators
-!gti-livehunt-get-indicators limit=15
-!gti-livehunt-get-indicators limit=5 filter="WannaCry_Ransomware"
-!gti-livehunt-get-indicators filter="WannaCry_Ransomware"
+!gti-iocstream-get-indicators
+!gti-iocstream-get-indicators limit=15
+!gti-iocstream-get-indicators limit=5 filter="source_type:hunting_ruleset"
+!gti-iocstream-get-indicators filter="entity_type:file"
