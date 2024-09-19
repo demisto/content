@@ -144,11 +144,15 @@ def fetch_indicators_command(client: Client,
 
         # Google Threat Intelligence attributes
         gti_assessment = attributes.get('gti_assessment', {})
+        gti_threat_score = gti_assessment.get('threat_score', {}).get('value')
+        gti_severity = gti_assessment.get('severity', {}).get('value')
+        gti_verdict = gti_assessment.get('verdict', {}).get('value')
+
         attribution = attributes.get('attribution', {})
         malware_families = [x['family'] for x in attribution.get('malware_families', [])]
-        malware_families = list(set(malware_families))
+        malware_families = list(set(malware_families)) or None
         threat_actors = attribution.get('threat_actors', [])
-        threat_actors = list(set(threat_actors))
+        threat_actors = list(set(threat_actors)) or None
 
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys and values, as described blow.
@@ -180,19 +184,24 @@ def fetch_indicators_command(client: Client,
                 'displayname': attributes.get('meaningful_name'),
                 'name': attributes.get('meaningful_name'),
                 'size': attributes.get('size'),
-                'malwarefamily': malware_families or None,
-                'actor': threat_actors or None,
-                'gtithreatscore': gti_assessment.get('threat_score', {}).get('value'),
-                'gtiseverity': gti_assessment.get('severity', {}).get('value'),
-                'gtiverdict': gti_assessment.get('verdict', {}).get('value'),
+                'malwarefamily': malware_families,
+                'actor': threat_actors,
+                'gtithreatscore': gti_threat_score,
+                'gtiseverity': gti_severity,
+                'gtiverdict': gti_verdict,
             },
             # A dictionary of the raw data returned from the feed source about the indicator.
             'rawJSON': raw_data,
             'sha256': attributes['sha256'],
             'detections': str(detection_ratio),
-            'fileType': attributes.get('type_description'),
-            'rulesetName': context_attributes.get('ruleset_name'),
-            'ruleName': context_attributes.get('rule_name'),
+            'file_type': attributes.get('type_description'),
+            'ruleset_name': context_attributes.get('ruleset_name'),
+            'rule_name': context_attributes.get('rule_name'),
+            'gti_threat_score': gti_threat_score,
+            'gti_severity': gti_severity,
+            'gti_verdict': gti_verdict,
+            'malware_families': malware_families,
+            'threat_actors': threat_actors,
         }
 
         if feed_tags:
@@ -201,7 +210,7 @@ def fetch_indicators_command(client: Client,
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
-        if (indicator_obj['fields']['gtithreatscore'] or 0) >= minimum_score:
+        if int(indicator_obj['fields']['gtithreatscore'] or 0) >= minimum_score:
             indicators.append(indicator_obj)
         else:
             try:
@@ -246,9 +255,9 @@ def get_indicators_command(client: Client,
         headers=[
             'sha256',
             'detections',
-            'fileType',
-            'rulesetName',
-            'ruleName',
+            'file_type',
+            'ruleset_name',
+            'rule_name',
             'gti_threat_score',
             'gti_severity',
             'gti_verdict',
