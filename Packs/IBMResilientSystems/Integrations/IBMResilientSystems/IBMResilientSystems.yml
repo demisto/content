@@ -960,7 +960,7 @@ script:
       description: Incident ID to update.
       required: true
     outputs:
-    - contextPath: Resilient.IncidentNotes
+    - contextPath: Resilient.IncidentNote
       description: Top-level comments for incident.
       type: Dictionary
 

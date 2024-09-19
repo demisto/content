@@ -927,7 +927,7 @@ Gets all of the top-level comments for an incident.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Resilient.IncidentNotes | Dictionary | Top-level comments for incident. | 
+| Resilient.IncidentNote | Dictionary | Top-level comments for incident. | 
 
 ### rs-update-task
 

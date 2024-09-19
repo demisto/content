@@ -1634,7 +1634,7 @@ def list_incident_notes_command(client: SimpleClient, args: dict) -> CommandResu
     )
     demisto.debug(f"{response=}")
     return CommandResults(
-        outputs_prefix="Resilient.IncidentNotes",
+        outputs_prefix="Resilient.IncidentNote",
         outputs=response,
         readable_output=human_readable,
     )
@@ -1762,6 +1762,8 @@ def add_custom_task_command(client: SimpleClient, args: dict) -> CommandResults:
     demisto.debug(f"add_custom_task_command {response=}")
     if task_id := response.get('id'):
         return CommandResults(
+            outputs_prefix="Resilient.TaskId",
+            outputs=task_id,
             readable_output=f"Successfully created new task for incident with ID {incident_id}. Task ID: {task_id}")
     return CommandResults(readable_output=f"Could not create a new task: {response.get('message')}")
 

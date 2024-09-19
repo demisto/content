@@ -1618,7 +1618,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Resilient.IncidentNotes
+              simple: Resilient.IncidentNote
             iscontext: true
     view: '{"position":{"x":50,"y":7200}}'
     note: false
