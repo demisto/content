@@ -29,7 +29,8 @@ def test_create_relationship():
     result = EntityRelationship(
         entity_a="Sigma Rule",
         entity_a_type="Sigma Rule Indicator",
-        name="related-to",
+        name="detects",
+        reverse_name="detected-by",
         entity_b="Command and Scripting Interpreter",
         entity_b_type="Attack Pattern"
     )
