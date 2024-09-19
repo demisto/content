@@ -201,7 +201,7 @@ def fetch_indicators_command(client: Client,
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
-        if (indicator_obj.get('gti_threat_score') or 0) >= minimum_score:
+        if (indicator_obj['fields']['gtithreatscore'] or 0) >= minimum_score:
             indicators.append(indicator_obj)
         else:
             try:
