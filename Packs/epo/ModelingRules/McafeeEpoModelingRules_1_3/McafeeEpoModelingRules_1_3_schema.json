@@ -60,6 +60,10 @@
       "type": "string",
       "is_array": false
     },
+    "SourceHostName": {
+      "type": "string",
+      "is_array": false
+    },
     "SourceMAC": {
       "type": "string",
       "is_array": false
