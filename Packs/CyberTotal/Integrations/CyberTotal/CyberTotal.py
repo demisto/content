@@ -173,7 +173,7 @@ class Client(BaseClient):
         return self.parse_reputation(cybertotal_result, domain)
 
     def parse_whois(self, cybertotal_result: dict, resource: str) -> Dict[str, Any]:
-        scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], timezone.utc).isoformat()
+        scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], UTC).isoformat()
         permalink = cybertotal_result['url']
         url_path = urlparse(permalink).path
         (_, _, task_id) = url_path.rpartition('/')
