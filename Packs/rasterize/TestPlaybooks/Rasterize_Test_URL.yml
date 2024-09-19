@@ -83,7 +83,7 @@ tasks:
       type:
         simple: png
       url:
-        simple: https://en.wikipedia.org/wiki/Main_Page
+        simple: https://www.wikipedia.org/
       wait_time:
         simple: "5"
     separatecontext: false
