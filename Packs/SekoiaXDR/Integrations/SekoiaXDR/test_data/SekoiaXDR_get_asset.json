@@ -1,0 +1,39 @@
+{
+    "uuid": "015ea33b-a7a2-4e34",
+    "name": "cortex_asset_test",
+    "category": {
+        "uuid": "1c646cb3-54c3-44cb",
+        "name": "technical"
+    },
+    "description": null,
+    "criticity": {
+        "value": 10,
+        "display": "low"
+    },
+    "asset_type": {
+        "uuid": "65f8ebba-e400-4ef7",
+        "name": "computer"
+    },
+    "community_uuid": "52bd045f-4199-4361",
+    "owners": [],
+    "keys": [],
+    "attributes": [
+        {
+            "uuid": "50b7d40c-c052-4b66",
+            "name": "test_attr",
+            "value": "0"
+        },
+        {
+            "uuid": "52bfc48e-567c-45b9",
+            "name": "test_attr1",
+            "value": "1"
+        },
+        {
+            "uuid": "2237d15e-f9d4-463d",
+            "name": "test_attr2",
+            "value": "2"
+        }
+    ],
+    "created_at": "2024-04-17T15:29:49.464479Z",
+    "updated_at": null
+}
