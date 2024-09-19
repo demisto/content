@@ -1681,15 +1681,19 @@ class Client(BaseClient):
         }
         if next_page:
             params["id_min"] = next_page
+        try:
+            response = self._http_request(
+                method='GET',
+                url_suffix=urljoin(API_SUFFIX, 'asset/host/vm/detection/?action=list'),
+                resp_type='text',
+                params=params,
+                timeout=150,
+                error_handler=self.error_handler,
+            )
+        except requests.exceptions.ReadTimeout:
+            set_last_run_with_new_limit(limit)
+            raise TimeoutError("passed the defined timeout, we will lower the limit for the next run")
 
-        response = self._http_request(
-            method='GET',
-            url_suffix=urljoin(API_SUFFIX, 'asset/host/vm/detection/?action=list'),
-            resp_type='text',
-            params=params,
-            timeout=200,
-            error_handler=self.error_handler,
-        )
         return response
 
     def get_vulnerabilities(self, since_datetime) -> Union[str, bytes]:
@@ -2883,13 +2887,14 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(client, since_datetime, next_page='', limit=HOST_LIMIT) -> tuple:
+def get_host_list_detections_events(client, since_datetime, next_page='', limit=HOST_LIMIT, is_test=False) -> tuple:
     """ Get host list detections from qualys
     Args:
         client: Qualys client
         next_page: pagination marking
         since_datetime: The start fetch date.
         limit: The limit of the host list detections
+        is_test:
     Returns:
         Host list detections assets
     """
@@ -2899,7 +2904,7 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
 
     next_page = get_next_page_from_url(next_url, 'id_min')
 
-    assets = get_detections_from_hosts(host_list_assets) if host_list_assets else []
+    assets = get_detections_from_hosts(host_list_assets) if host_list_assets and not is_test else []
     demisto.debug(f'Parsed detections from hosts, got {len(assets)=} assets.')
 
     add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
@@ -2933,24 +2938,41 @@ def fetch_assets(client, assets_last_run):
         vulnerabilities: vulnerabilities to push to xsiam
     """
     demisto.debug('Starting fetch for assets')
+    start_time = time.time()
     since_datetime = assets_last_run.get('since_datetime', '')
     next_page = assets_last_run.get('next_page', '')
     total_assets = assets_last_run.get('total_assets', 0)
     snapshot_id = assets_last_run.get('snapshot_id', round(time.time() * 1000))
+    limit = assets_last_run.get('limit', HOST_LIMIT)
 
     if not since_datetime:
         since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
 
-    assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page)
+    assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page, limit)
+
+    if (time.time() - start_time) > 180:
+        demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
+                      'because there is not enough time left, and we will lower the limit for the next time')
+        set_last_run_with_new_limit(limit)
+        raise TimeoutError("passed the defined timeout, we will lower the limit for the next run")
+
     total_assets += len(assets)
     stage = 'assets' if next_run_page else 'vulnerabilities'
-    amount_to_send = 0 if next_run_page else str(total_assets)
+    amount_to_send = 1 if next_run_page else total_assets
 
     new_last_run = {'stage': stage, 'next_page': next_run_page, 'total_assets': total_assets,
                     'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
                     'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
 
     return assets, new_last_run, amount_to_send, snapshot_id
+
+
+def set_last_run_with_new_limit(limit):
+    new_limit = int(limit / 2) if limit > 1 else 1
+    demisto.debug(f'set limit to: {new_limit}')
+    last_run = demisto.getAssetsLastRun()
+    last_run['limit'] = new_limit
+    demisto.setAssetsLastRun(last_run)
 
 
 def fetch_vulnerabilities(client, last_run):
@@ -3076,7 +3098,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
             )
         if is_fetch_assets:
             since_datetime = arg_to_datetime('1 hour').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-            get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1)
+            get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, is_test=True)
     else:
         build_args_dict({'launched_after_datetime': TEST_FROM_DATE}, COMMANDS_ARGS_DATA["test-module"], False)
         client.command_http_request(COMMANDS_API_DATA["test-module"])
@@ -3154,7 +3176,7 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     base_url = params.get('url')
-    verify_certificate = not params.get("insecure", False)
+    verify_certificate = not params.get("insecure", True)
     proxy = params.get("proxy", False)
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
@@ -3460,8 +3482,8 @@ def main():  # pragma: no cover
                 assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
 
                 demisto.debug('sending assets to XSIAM.')
-                send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
-                                   items_count=total_assets, should_update_health_module=False)
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
+                                   snapshot_id=str(snapshot_id), items_count=total_assets, should_update_health_module=False)
                 demisto.setAssetsLastRun(last_run)
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
 
