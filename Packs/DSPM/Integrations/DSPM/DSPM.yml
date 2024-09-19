@@ -14,20 +14,6 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: Azure Storage Account name
-  name: azureStorageName
-  required: false
-  type: 0
-- displaypassword: Azure Storage Shared Key
-  additionalinfo: The shared API key available in the Azure Storage Account
-  name: azureSharedKey
-  required: false
-  hiddenusername: true
-  type: 9
-- display: GCP Service Account JSON
-  name: serviceAccountJson
-  required: false
-  type: 0
 - display: Default Slack user for notifications
   additionalinfo: the default user to receive Slack notifications in case of any errors.
   name: defaultSlackUser
@@ -507,5 +493,3 @@ script:
 fromversion: '6.12'
 tests:
 - No tests (auto formatted)
-defaultclassifier: DSPM Classifier
-# defaultmapperin: DSPM Incoming Mapper
