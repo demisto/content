@@ -9,7 +9,6 @@ args:
   - open-answer
 - description: Question (message) to send to the specified team member or channel.
   name: message
-  required: true
 - auto: PREDEFINED
   description: Indicates whether to use one-time entitlement or persistent entitlement.
   name: persistent
@@ -35,8 +34,6 @@ args:
   name: team
 - description: Adaptive card to send to the specified team member or channel.
   name: adaptive_card
-- description: Integration instance to use.
-  name: using_instance
 comment: Send a team member or channel a question with predefined response options on Microsoft Teams. The response can be used to close a task (might be conditional) in a playbook.
 commonfields:
   id: MicrosoftTeamsAsk

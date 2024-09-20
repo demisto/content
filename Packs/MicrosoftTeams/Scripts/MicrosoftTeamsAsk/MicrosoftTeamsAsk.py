@@ -16,7 +16,7 @@ def main():
     team_member: str = script_arguments.get('team_member', '')
     channel: str = script_arguments.get('channel', '')
     team: str = script_arguments.get('team', '')
-    using_instance: str = script_arguments.get('using_instance', '')
+    # using_instance: str = script_arguments.get('using_instance', '')
 
     if not (team_member or channel):
         raise ValueError('Either team member or channel must be provided.')
@@ -37,7 +37,7 @@ def main():
     adaptive_card: str = script_arguments.get('adaptive_card', '')
 
     if message_text and adaptive_card:
-        return_error('Provide either message or adaptive to send, not both.')
+        raise ValueError('Provide either message or adaptive to send, not both.')
 
     form_type = FormType(script_arguments.get('form_type', FormType.PREDEFINED_OPTIONS.value))
     first_option: str = script_arguments.get('option1', '')
@@ -53,7 +53,7 @@ def main():
             "task_id": task_id
         }
         command_arguments["adaptive_card"] = adaptive_card_object
-        command_arguments["using"] = using_instance
+        # command_arguments["using"] = using_instance
         command_arguments["using-brand"] = "Microsoft Teams"
     else:
         message: dict = {
@@ -71,7 +71,7 @@ def main():
             message["options"] = options
 
         command_arguments["message"] = json.dumps(message)
-        command_arguments["using"] = using_instance
+        # command_arguments["using"] = using_instance
         command_arguments["using-brand"] = "Microsoft Teams"
 
     if channel:
