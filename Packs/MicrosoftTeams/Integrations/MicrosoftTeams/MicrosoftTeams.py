@@ -2159,7 +2159,7 @@ def send_message():
                 'entities': entities
             }
     else:  # Adaptive card
-        entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get('entitlement'))
+        entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get('entitlement', ''))
         if entitlement_match_ac:
             adaptive_card_processed = process_adaptive_card(adaptive_card)
             conversation = {

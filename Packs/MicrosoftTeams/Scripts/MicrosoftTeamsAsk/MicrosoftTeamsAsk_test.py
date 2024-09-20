@@ -33,7 +33,8 @@ def execute_command(name, args=None):
         assert json_message.keys() == MS_TEAMS_ASK_MESSAGE_KEYS
         expected_script_arguments: dict = {
             'message': expected_message,
-            'using-brand': 'Microsoft Teams'
+            'using-brand': 'Microsoft Teams',
+            'using': "msteams"
         }
         if 'team_member' in args:
             expected_script_arguments['team_member'] = 'Shaq'
