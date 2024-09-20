@@ -189,18 +189,78 @@ def test_get_list_of_alerts_with_valid_args(client):
     client.get_alerts_list = MagicMock(return_value=mock_response)
 
     args = {"cloudProviderIn": "AWS,AZURE", "cloudEnvironmentIn": "DEVELOPMENT,STAGING",
-            "policySeverityIn": "MEDIUM,LOW", "categoryTypeIn": "", "ATTACK,FIRST_MOVE": "CLOSED,OPEN", "sort": "name,DESC"}
+            "policySeverityIn": "MEDIUM,LOW", "categoryTypeIn": "ATTACK,FIRST_MOVE", "statusIn": "CLOSED,OPEN", "sort": "name,DESC"}
     result = get_list_of_alerts(client, args, 0)
 
     assert isinstance(result, List)
     assert result[0].get('id') == "274314608"
 
     args = {"cloudProviderEqual": "AWS", "cloudEnvironmentEqual": "STAGING",
-            "policySeverityEqual": "MEDIUM", "categoryTypeEqual": "FIRST_MOVE", "statusIn": "OPEN", "sort": "name,ASC"}
+            "policySeverityEqual": "MEDIUM", "categoryTypeEqual": "FIRST_MOVE", "statusEqual": "OPEN", "sort": "name,ASC"}
     result = get_list_of_alerts(client, args, 0)
 
     assert isinstance(result, List)
     assert result[0].get('id') == "274314608"
+
+
+def test_get_list_of_alerts_with_invalid_args(client):
+    mock_response = [
+        {
+            "id": "274314608",
+            "detectionTime": "2024-02-02T08:02:49.15636Z",
+            "policyName": "Data asset transferred to foreign project",
+            "assetName": "bpachauli-flowlog",
+            "assetLabels": [
+                {
+                    "label": {
+                        "id": 270802756,
+                        "name": "Sensitive",
+                                "description": "Sensitive information",
+                                "color": "34A49A",
+                                "prettyName": "Sensitive"
+                    },
+                    "connectedBy": "SYSTEM"
+                }
+            ],
+            "cloudProvider": "AWS",
+            "destinationProjects": {
+                "188619942792": "Redlock"
+            },
+            "cloudEnvironment": "PRODUCTION",
+            "policySeverity": "HIGH",
+            "policyCategoryType": "ATTACK",
+            "status": "UNIMPORTANT",
+            "eventActor": "PrismaCloudReadWriteRoleWithDLP",
+            "eventUserAgent": "[aws-sdk-java/1.12.565 Linux]",
+            "eventActionMedium": "SDK",
+            "eventSource": "*.**.**.***",
+            "policyFrameWorks": [
+                "MITRE-T1074",
+                "MITRE-T1537"
+            ],
+            "eventRawData": ""
+        }
+    ]
+    client.get_alerts_list = MagicMock(return_value=mock_response)
+
+    # List of test cases with invalid args and expected error messages
+    test_cases = [
+        ({"cloudProviderIn": "AWS,AZURE12"}, 'This "AZURE12" cloudProvider is not supported'),
+        ({"cloudEnvironmentIn": "Wrong,AZURE1"}, 'This "Wrong" cloudEnvironment is not supported'),
+        ({"policySeverityIn": "AWS32"}, 'This "AWS32" policySeverity is not supported'),
+        ({"categoryTypeIn": "AWS,INVALID"}, 'This "AWS" categoryType is not supported'),
+        ({"statusIn": "IN,OPEN"}, 'This "IN" status is not supported'),
+        ({"cloudProviderEqual": "AZURE12"}, 'This "AZURE12" cloudProvider is not supported'),
+        ({"cloudEnvironmentEqual": "Wrong"}, 'This "Wrong" cloudEnvironment is not supported'),
+        ({"policySeverityEqual": "AWS32"}, 'This "AWS32" policySeverity is not supported'),
+        ({"categoryTypeEqual": "AWS"}, 'This "AWS" categoryType is not supported'),
+        ({"statusEqual": "IN"}, 'This "IN" status is not supported')
+    ]
+
+    # Iterate over the test cases
+    for args, expected_error in test_cases:
+        with pytest.raises(ValueError, match=expected_error):
+            get_list_of_alerts(client, args, 0)
 
 
 def test_get_asset_details_command(client, mocker):
