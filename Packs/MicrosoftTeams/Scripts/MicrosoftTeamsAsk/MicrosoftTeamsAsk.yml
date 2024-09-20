@@ -50,5 +50,8 @@ type: python
 dockerimage: demisto/python3:3.11.10.111526
 tests:
 - No test
+dependson:
+  must:
+  - Microsoft Teams|||send-notification
 subtype: python3
 fromversion: 5.0.0

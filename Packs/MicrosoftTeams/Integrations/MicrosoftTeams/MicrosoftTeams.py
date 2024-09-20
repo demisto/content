@@ -646,7 +646,7 @@ def process_adaptive_card(adaptive_card_obj: dict) -> dict:
     :return: Adaptive card with entitlement.
     """
 
-    adaptive_card: str = adaptive_card_obj.get('adaptive_card', '')
+    adaptive_card = adaptive_card_obj.get('adaptive_card', '')
     data_obj: dict = {}
     data_obj["entitlement"] = str(adaptive_card_obj.get('entitlement', ''))
     data_obj["investigation_id"] = str(adaptive_card_obj.get('investigation_id', ''))
@@ -2138,8 +2138,8 @@ def send_message():
     conversation: dict
 
     if message:
-        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match and is_teams_ask_message(message):
+        entitlement_match_msg: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
+        if entitlement_match_msg and is_teams_ask_message(message):
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
@@ -2159,8 +2159,8 @@ def send_message():
                 'entities': entities
             }
     else:  # Adaptive card
-        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card['entitlement'])
-        if entitlement_match:
+        entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get('entitlement'))
+        if entitlement_match_ac:
             adaptive_card_processed = process_adaptive_card(adaptive_card)
             conversation = {
                 'type': 'message',
@@ -2490,8 +2490,8 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     if not response:
         # Adaptive Card Response Received
         remove_keys = ['entitlement', 'investigation_id', 'task_id']
-        response = {key: value for key, value in value.items() if key not in remove_keys}
-        response = tableToMarkdown("Response", response, headers=list(response.keys()))
+        response_dict = {key: value for key, value in value.items() if key not in remove_keys}
+        response = tableToMarkdown("Response", response_dict, headers=list(response_dict.keys()))
 
     demisto.debug(f"Entitlement Response Received\n{value}")
     entitlement_guid: str = value.get('entitlement', '')

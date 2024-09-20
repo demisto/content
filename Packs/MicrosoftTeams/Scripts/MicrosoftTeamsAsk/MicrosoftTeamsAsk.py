@@ -43,7 +43,8 @@ def main():
     first_option: str = script_arguments.get('option1', '')
     second_option: str = script_arguments.get('option2', '')
     options: list = [first_option, second_option]
-
+    command_arguments: dict = {}
+    
     if adaptive_card:
         adaptive_card_object: dict = {
             "adaptive_card": json.loads(adaptive_card),
@@ -51,10 +52,9 @@ def main():
             "investigation_id": investigation_id,
             "task_id": task_id
         }
-        command_arguments: dict = {
-            "adaptive_card": adaptive_card_object,
-            "using": using_instance
-        }
+        command_arguments["adaptive_card"] = adaptive_card_object
+        command_arguments["using"] = using_instance
+        command_arguments["using-brand"] = "Microsoft Teams"
     else:
         message: dict = {
             "message_text": message_text,
@@ -70,10 +70,9 @@ def main():
             options.extend(additional_options)
             message["options"] = options
 
-        command_arguments: dict = {
-            "message": json.dumps(message),
-            "using": using_instance
-        }
+        command_arguments["message"] = json.dumps(message)
+        command_arguments["using"] = using_instance
+        command_arguments["using-brand"] = "Microsoft Teams"
 
     if channel:
         command_arguments["channel"] = channel
