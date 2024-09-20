@@ -76,6 +76,8 @@ def test_fetch_indicators_command(mocker):
                 }
                 assert indicator['value'] == '9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25'
                 assert indicator['value'] == indicator['fields']['sha256']
+                assert indicator['origin'] == 'hunting'
+                assert indicator['sources'] == '[hunting_ruleset] Malware Families YARA ruleset'
             elif indicator['type'] == FeedIndicatorType.Domain:
                 assert set(indicator['fields'].keys()) == {
                     'admincountry', 'adminname', 'adminemail', 'adminphone', 'registrantcountry',
