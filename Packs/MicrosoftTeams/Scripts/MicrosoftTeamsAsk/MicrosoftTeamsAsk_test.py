@@ -23,6 +23,21 @@ def execute_command(name, args=None):
     elif name == 'send-notification':
         json_message = {
             'message_text': 'How are you today?',
+            'adaptive_card': {"contentType": "application/vnd.microsoft.card.adaptive",
+                            "content": {
+                                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                                "type": "AdaptiveCard",
+                                "version": "1.0",
+                                "body": [
+                                    {
+                                        "type": "Container",
+                                        "items": [{
+                                            "type": "TextBlock",
+                                            "text": "What a pretty adaptive card"
+                                        }]
+                                    }]
+                                }
+                            },
             'options': ['Great', 'Wonderful', 'SSDD', 'Wooah'],
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8',
             'investigation_id': '32',
@@ -33,8 +48,8 @@ def execute_command(name, args=None):
         assert json_message.keys() == MS_TEAMS_ASK_MESSAGE_KEYS
         expected_script_arguments: dict = {
             'message': expected_message,
-            'using-brand': 'Microsoft Teams',
-            'using': "msteams"
+            'using-brand': 'Microsoft Teams', 
+            'using': 'msteams'
         }
         if 'team_member' in args:
             expected_script_arguments['team_member'] = 'Shaq'
@@ -59,12 +74,32 @@ def test_microsoft_teams_ask(mocker):
     )
     script_arguments: dict = {
         'message': 'How are you today?',
+        'adaptive_card': {"contentType": "application/vnd.microsoft.card.adaptive",
+                            "content": {
+                                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                                "type": "AdaptiveCard",
+                                "version": "1.0",
+                                "body": [
+                                    {
+                                        "type": "Container",
+                                        "items": [{
+                                            "type": "TextBlock",
+                                            "text": "What a pretty adaptive card"
+                                        }]
+                                    }]
+                                }
+                            },
         'option1': 'Great',
         'option2': 'Wonderful',
         'additional_options': 'SSDD,Wooah',
         'task_id': '44',
         'form_type': 'predefined-options',
+        'using_instance': 'msteams2'
     }
+    with pytest.raises(ValueError) as e:
+        main()
+    assert str(e.value) == 'Provide either message or adaptive to send, not both.'
+    script_arguments.pop('message')
     mocker.patch.object(
         demisto,
         'args',
@@ -93,3 +128,5 @@ def test_microsoft_teams_ask(mocker):
     )
     main()
     assert demisto.executeCommand.call_count == 2
+    
+    

@@ -640,7 +640,7 @@ def add_data_to_actions(card_json, data_value):
 def process_adaptive_card(adaptive_card_obj: dict) -> dict:
     """
     Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
-    of type Action.Submitwithin adaptive_card_obj['adaptive_card'] and add entitlement,
+    of type Action.Submit or Action.Execute within adaptive_card_obj['adaptive_card'] and add entitlement,
     investigation_id and task_id to them.
     :param adaptive_card_obj: The adaptive card object.
     :return: Adaptive card with entitlement.
