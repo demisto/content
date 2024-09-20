@@ -326,9 +326,9 @@ def build_custom_object(template_name: str, args: list[dict]):
 
             custom_obj = PYMISP.get_raw_object_template(template_name)
 
-            if not os.path.exists('/tmp/{}'.format(template_name)):
-                os.mkdir('/tmp/{}'.format(template_name))
-            open('/tmp/{}/definition.json'.format(template_name), 'w').write(json.dumps(custom_obj))
+            if not os.path.exists(f'/tmp/{template_name}'):
+                os.mkdir(f'/tmp/{template_name}')
+            open(f'/tmp/{template_name}/definition.json', 'w').write(json.dumps(custom_obj))
 
             misp_object = MISPObject(name=template_name, misp_objects_path_custom='/tmp')
 
@@ -418,7 +418,13 @@ def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
     return output, tag_set_ids
 
 
-def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicious_tag_ids, attributes_limit):
+def parse_response_reputation_command(
+    misp_response: dict,
+    malicious_tag_ids: set,
+    suspicious_tag_ids: set,
+    benign_tag_ids: set,
+    attributes_limit: int
+):
     """
     After getting all the attributes which match the required indicator value, this function parses the response.
     This function goes over all the attributes that found (after limit the attributes amount to the given limit)
@@ -448,6 +454,7 @@ def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicio
     attribute_in_event_with_bad_threat_level = found_event_with_bad_threat_level_id(found_related_events)
     score, found_tag = get_score(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
                                  malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids,
+                                 benign_tag_ids=benign_tag_ids,
                                  is_attribute_in_event_with_bad_threat_level=attribute_in_event_with_bad_threat_level)
     formatted_response = replace_keys_from_misp_to_context_data({'Attribute': attributes_list})
     return formatted_response, score, found_tag, found_related_events
@@ -492,7 +499,7 @@ def found_event_with_bad_threat_level_id(found_related_events):
     return any(event["Threat Level ID"] in bad_threat_level_ids for event in found_related_events.values())
 
 
-def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
+def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
               is_attribute_in_event_with_bad_threat_level):
     """
     Calculates the indicator score by following logic. Indicators of attributes and Events that:
@@ -514,6 +521,10 @@ def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_
     if is_attribute_tag_suspicious:
         return Common.DBotScore.SUSPICIOUS, found_tag
 
+    is_attribute_tag_benign = any((found_tag := tag) in attribute_tags_ids for tag in benign_tag_ids)
+    if is_attribute_tag_benign:
+        return Common.DBotScore.GOOD, found_tag
+
     is_event_tag_malicious = any((found_tag := tag) in event_tags_ids for tag in malicious_tag_ids)
     if is_event_tag_malicious:
         return Common.DBotScore.BAD, found_tag
@@ -521,6 +532,10 @@ def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_
     is_event_tag_suspicious = any((found_tag := tag) in event_tags_ids for tag in suspicious_tag_ids)
     if is_event_tag_suspicious:
         return Common.DBotScore.SUSPICIOUS, found_tag
+
+    is_event_tag_benign = any((found_tag := tag) in event_tags_ids for tag in benign_tag_ids)
+    if is_event_tag_benign:
+        return Common.DBotScore.GOOD, found_tag
 
     # no tag was found
     if is_attribute_in_event_with_bad_threat_level:
@@ -699,13 +714,13 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
     )
 
 
-def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids,
+def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
                                reliability, attributes_limit):
     reputation_value_list = argToList(demisto_args.get(reputation_type), ',')
     command_results = []
     for value in reputation_value_list:
         command_results.append(
-            get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability,
+            get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, reliability,
                                   attributes_limit))
     return command_results
 
@@ -726,7 +741,15 @@ def reputation_value_validation(value, dbot_type):
         raise DemistoException(f"Error: The given email address: {value} is not valid")
 
 
-def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability, attributes_limit):
+def get_indicator_results(
+    value: str,
+    dbot_type: str,
+    malicious_tag_ids: set,
+    suspicious_tag_ids: set,
+    benign_tag_ids: set,
+    reliability: DBotScoreReliability,
+    attributes_limit: int
+):
     """
     This function searches for the given attribute value in MISP and then calculates it's dbot score.
     The score is calculated by the tags ids (attribute tags and event tags).
@@ -735,6 +758,7 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
         dbot_type (str): Indicator type (file, url, domain, email or ip).
         malicious_tag_ids (set): Tag ids should be recognised as malicious.
         suspicious_tag_ids (set): Tag ids should be recognised as suspicious
+        benign_tag_ids (set): Tag ids should be recognised as benign
         reliability (DBotScoreReliability): integration reliability score.
         attributes_limit (int) : Limits the number of attributes that will be written to the context
 
@@ -760,6 +784,7 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
         outputs, score, found_tag, found_related_events = parse_response_reputation_command(misp_response,
                                                                                             malicious_tag_ids,
                                                                                             suspicious_tag_ids,
+                                                                                            benign_tag_ids,
                                                                                             attributes_limit)
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
@@ -1549,7 +1574,7 @@ def add_custom_object_command(demisto_args: dict):
         if obj is not False:
             return add_object(event_id, obj)
         else:
-            raise DemistoException('Unable to find custom template {}'. format(template))
+            raise DemistoException(f'Unable to find custom template {template}')
 
     except ValueError as e:
         raise DemistoException(
@@ -1589,15 +1614,17 @@ def add_ip_object(demisto_args: dict):
             f'None of required arguments presents. command {demisto.command()} requires one of {ip_object_args}')
 
 
-def handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids):
+def handle_tag_duplication_ids(malicious_tag_ids: list, suspicious_tag_ids: list, benign_tag_ids: list):
     """
     Gets 2 sets which include tag ids. If there is an id that exists in both sets, it will be removed from the
     suspicious tag ids set and will be stayed only in the malicious one (as a tag that was configured to be malicious is
     stronger than recognised as suspicious).
     """
-    common_ids = set(malicious_tag_ids) & set(suspicious_tag_ids)
+    common_ids = set(malicious_tag_ids) & set(suspicious_tag_ids) & set(benign_tag_ids)
+    common_ids_sus = set(suspicious_tag_ids) & set(benign_tag_ids)
     suspicious_tag_ids = {tag_id for tag_id in suspicious_tag_ids if tag_id not in common_ids}
-    return malicious_tag_ids, suspicious_tag_ids
+    benign_tag_ids = {tag_id for tag_id in suspicious_tag_ids if tag_id not in common_ids_sus}
+    return malicious_tag_ids, suspicious_tag_ids, benign_tag_ids
 
 
 def is_tag_list_valid(tag_ids):
@@ -1759,6 +1786,7 @@ def main():
     params = demisto.params()
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
+    benign_tag_ids = argToList(params.get('benign_tag_ids'))
     reliability = params.get('integrationReliability', 'B - Usually reliable')
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
@@ -1771,7 +1799,8 @@ def main():
 
     try:
 
-        malicious_tag_ids, suspicious_tag_ids = handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids)
+        malicious_tag_ids, suspicious_tag_ids, benign_tag_ids = handle_tag_duplication_ids(
+            malicious_tag_ids, suspicious_tag_ids, benign_tag_ids)
         if command == 'test-module':
             return_results(test(malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids,
                                 attributes_limit=attributes_limit))
@@ -1799,23 +1828,23 @@ def main():
             return_results(add_events_from_feed(demisto_args=args, use_ssl=VERIFY, proxies=PROXIES))
         elif command == 'file':
             return_results(
-                generic_reputation_command(args, 'file', 'FILE', malicious_tag_ids, suspicious_tag_ids, reliability,
-                                           attributes_limit))
+                generic_reputation_command(args, 'file', 'FILE', malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
+                                           reliability, attributes_limit))
         elif command == 'url':
             return_results(
-                generic_reputation_command(args, 'url', 'URL', malicious_tag_ids, suspicious_tag_ids, reliability,
+                generic_reputation_command(args, 'url', 'URL', malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, reliability,
                                            attributes_limit))
         elif command == 'ip':
             return_results(
-                generic_reputation_command(args, 'ip', 'IP', malicious_tag_ids, suspicious_tag_ids, reliability,
-                                           attributes_limit))
+                generic_reputation_command(args, 'ip', 'IP', malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
+                                           reliability, attributes_limit))
         elif command == 'domain':
             return_results(
                 generic_reputation_command(args, 'domain', 'DOMAIN', malicious_tag_ids, suspicious_tag_ids,
-                                           reliability, attributes_limit))
+                                           benign_tag_ids, reliability, attributes_limit))
         elif command == 'email':
             return_results(generic_reputation_command(args, 'email', 'EMAIL', malicious_tag_ids, suspicious_tag_ids,
-                                                      reliability, attributes_limit))
+                                                      benign_tag_ids, reliability, attributes_limit))
         elif command == 'misp-add-file-object':
             return_results(add_file_object(args))
         elif command == 'misp-add-email-object':
