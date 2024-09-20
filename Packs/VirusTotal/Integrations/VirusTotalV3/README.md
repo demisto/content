@@ -124,10 +124,10 @@ The following lists the changes in this version according to the commands from t
   additional information as *last_analysis_results* which contains the service name and its specific analysis.
 - Reputation commands can return relationships of the indicator.
   The relationships that are supported are defined as part of the instance configuration.
-  For more information regarding URL relationships, see: <https://developers.virustotal.com/v3.0/reference#url-object>
-  For more information regarding IP relationships, see: <https://developers.virustotal.com/v3.0/reference#ip-object>
-  For more information regarding Domain relationships, see: <https://developers.virustotal.com/v3.0/reference#domains-1>
-  For more information regarding File relationships, see: <https://developers.virustotal.com/v3.0/reference#files>
+  For more information regarding URL relationships, see: <https://docs.virustotal.com/reference/url-object>
+  For more information regarding IP relationships, see: <https://docs.virustotal.com/reference/ip-object>
+  For more information regarding Domain relationships, see: <https://docs.virustotal.com/reference/domains-object>
+  For more information regarding File relationships, see: <https://docs.virustotal.com/reference/files>
 
 - Starting with XSOAR version 6.8.0, You may monitor API usage via the *VirusTotal API Execution Metrics* dashboard.
 ### Comments

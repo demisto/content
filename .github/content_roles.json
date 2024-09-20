@@ -1,14 +1,20 @@
 {
+    "__comment__": {
+        "CONTRIBUTION_REVIEWERS": "A list of GitHub username for the contribution team reviewers pool",
+        "ON_CALL_DEVS": "A list of on-call users, Use PANW account username",
+        "DOC_REVIEWER": "The GitHub username for documentation reviews owner",
+        "TIM_REVIEWER": "The GitHub username for TIM reviews owner"
+    },
     "CONTRIBUTION_REVIEWERS": [
-        "barryyosi-panw",
-        "samuelFain",
-        "israelpoli"
+        "adi88d",
+        "israelpoli",
+        "rshunim"
     ],
     "CONTRIBUTION_TL": "thefrieddan1",
-    "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
+    "CONTRIBUTION_SECURITY_REVIEWER": ["tomer-pan"],
     "ON_CALL_DEVS": [
         "skidorball",
-        "ayousef"
+        "ipolishuk"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1"

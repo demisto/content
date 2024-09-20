@@ -184,6 +184,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
@@ -648,10 +654,6 @@ script:
     - deprecated: true
       description: Flag for rate limit retry.
       name: ran_once_flag
-    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
-      name: identifiers_filter
-      required: false
-      hidden: true
     outputs:
     - contextPath: File.Size
       description: The size of the file.

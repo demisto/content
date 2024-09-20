@@ -20,8 +20,8 @@ PROCESS_CASES = [
     (
         {'process_hash': '63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6',
          'process_name': None, 'event_id': None, 'query': None, 'limit': 20, 'start_time': '1 day'},  # args
-        {'criteria': {'process_hash': ['63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6']}, 'rows': 20,
-         'start': 0, 'time_range': {'end': '2020-11-04T13:34:14.758295Z', 'start': '2020-11-03T13:34:14.758295Z'}}
+        {'criteria': {'process_hash': ['63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6']},
+         'rows': 20, 'start': 0, 'time_range': {'end': '2020-11-04T13:34:14.758295Z', 'start': '2020-11-03T13:34:14.758295Z'}}
         # expected
     ),
     (
@@ -566,3 +566,31 @@ def test_check_getLastRun(last_run, expected_last_run):
 
     updated_last_run = check_get_last_run(last_run)
     assert updated_last_run == expected_last_run
+
+
+def test_search_alerts_request__empty_arguments(mocker):
+    """
+        Given:
+            - Empty arguments.
+        When:
+            - Running list-alerts command.
+        Then:
+            - The http request is called with no 'time_range' key in the body
+    """
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    CLIENT.search_alerts_request()
+    assert 'time_range' not in http_request.call_args.kwargs['json_data']
+
+
+def test_create_search_process_request__event_id_arg(mocker):
+    """
+        Given:
+            - An event_id arg
+        When:
+            - Running process-search command.
+        Then:
+            - The http request is called with the event_id in Square bars.
+    """
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    CLIENT.create_search_process_request(event_id=123, process_hash='', process_name='', query='', start_time='1 day')
+    assert http_request.call_args.kwargs['json_data']['criteria']['event_id'] == [123]

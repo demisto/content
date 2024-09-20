@@ -1,2 +1,5 @@
 [file:FeedSOCRadarThreatFeed_image.png]
 ignore=IM111
+
+[file:FeedSOCRadarThreatFeed.yml]
+ignore=IN122

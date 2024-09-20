@@ -15,7 +15,8 @@
         "updatedAt": "2023-06-29 06:40:41.007652+00:00",
         "securityrating": "f",
         "isMalicious": true,
-        "tags": []
+        "tags": [],
+        "asset_url": "None/app/#/detail/overview/22684"
     },
     "securityRating": "b",
     "mitigatedAt": "2023-06-06T09:59:49.344739+00:00",
