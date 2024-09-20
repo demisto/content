@@ -3,8 +3,8 @@ from CommonServerPython import *
 from CommonServerPython import DemistoException, Common
 from requests.models import Response
 
-TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [1, 2, 3], [4, 5]),
-                 ([1, 2, 3], [4, 5], [1, 2, 3], [4, 5])]
+TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [4, 6, 7], [1, 2, 3], [4, 5], [6, 7]),
+                 ([1, 2, 3], [4, 5], [6, 7], [1, 2, 3], [4, 5], [6, 7])]
 
 ATTRIBUTE_TAG_LIMIT = [{'ID': '1', 'Name': 'Tag1'}, {'ID': '2', 'Name': 'misp-galaxy:tag2'},
                        {'ID': '3', 'Name': 'misp-galaxy:tag3'}]
@@ -299,10 +299,11 @@ def test_is_tag_list_invalid(mocker):
             raise AssertionError
 
 
-@pytest.mark.parametrize('malicious_tag_ids, suspicious_tag_ids, return_malicious_tag_ids, return_suspicious_tag_ids',
+@pytest.mark.parametrize('malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, return_malicious_tag_ids, '
+                         'return_suspicious_tag_ids, return_benign_tag_ids',
                          TAG_IDS_LISTS)
-def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_ids, return_malicious_tag_ids,
-                                    return_suspicious_tag_ids):
+def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, return_malicious_tag_ids,
+                                    return_suspicious_tag_ids, return_benign_tag_ids):
     """
 
     Given:
@@ -316,8 +317,11 @@ def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_id
     """
     mock_misp(mocker)
     from MISPV3 import handle_tag_duplication_ids
-    assert return_malicious_tag_ids, return_suspicious_tag_ids == handle_tag_duplication_ids(malicious_tag_ids,
-                                                                                             suspicious_tag_ids)
+    assert (return_malicious_tag_ids, return_suspicious_tag_ids, return_benign_tag_ids) == handle_tag_duplication_ids(
+        malicious_tag_ids,
+        suspicious_tag_ids,
+        benign_tag_ids
+    )
 
 
 def test_convert_arg_to_misp_args(mocker):
@@ -381,9 +385,9 @@ def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_
     assert tag_list_id == expected_tag_list_ids
 
 
-@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, '
+@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids '
                          'expected_score, found_tag, is_attribute_in_event_with_bad_threat_level', TEST_TAG_SCORES)
-def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
+def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
                    expected_score, found_tag, is_attribute_in_event_with_bad_threat_level):
     """
 
@@ -392,7 +396,8 @@ def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids
         attribute_tags_ids : all tag ids of an attribute.
         event_tags_ids: all tag ids of an event.
         malicious_tag_ids: tag ids that defined to be recognized as malicious.
-        suspicious_tag_ids: tag ids that defined to be recognized as  suspicious.
+        suspicious_tag_ids: tag ids that defined to be recognized as suspicious.
+        benign_tag_ids: tag ids that defined to be recognized as benign.
 
     When:
     - Running a reputation command and want to get the dbot score.
@@ -404,7 +409,7 @@ def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids
     mock_misp(mocker)
     from MISPV3 import get_score
     score, tag = get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
-                           is_attribute_in_event_with_bad_threat_level)
+                           benign_tag_ids, is_attribute_in_event_with_bad_threat_level)
     assert score == expected_score
     assert tag == found_tag
 

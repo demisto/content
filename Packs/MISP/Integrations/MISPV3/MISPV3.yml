@@ -47,6 +47,11 @@ configuration:
   name: suspicious_tag_ids
   type: 12
   required: false
+- additionalinfo: Comma-separated list of event's or attribute's benign tag IDs. Malicious and suspicious tags are stronger than benign tags.
+  display: Benign tag IDs
+  name: benign_tag_ids
+  type: 12
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
