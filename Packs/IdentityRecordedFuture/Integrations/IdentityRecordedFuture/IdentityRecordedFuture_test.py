@@ -1265,7 +1265,7 @@ def test_main_general(
     # Mocking a known command to ensure that the 'else' block is not triggered
     mocked_demisto.command.return_value = "test-module"
     mocked_demisto.params.return_value = {
-        "server_url": "https://mockurl",
+        "server_url": "https://mockurl.com",
         "token": "mocktoken",
     }
 
