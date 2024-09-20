@@ -60,7 +60,7 @@ def execute_command(name, args=None):
             assert json_message.keys() == MS_TEAMS_ASK_AC_KEYS
             expected_script_arguments["adaptive_card"] = expected_message
             
-        expected_script_arguments['using-brand'] = 'Microsoft Teams', 
+        expected_script_arguments['using-brand'] = 'Microsoft Teams'
         
         if 'team_member' in args:
             expected_script_arguments['team_member'] = 'Shaq'
