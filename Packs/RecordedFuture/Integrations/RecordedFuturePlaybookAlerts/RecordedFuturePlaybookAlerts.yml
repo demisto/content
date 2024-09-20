@@ -516,7 +516,7 @@ script:
       description: Add comment to all alerts in alert_ids.
       required: false
     - name: reopen
-      description: 'Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used when new_status=resolved.'
+      description: 'Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used with new_status=resolved.'
       required: false
       auto: PREDEFINED
       predefined:
