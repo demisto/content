@@ -348,6 +348,7 @@ def get_indicators_command(client: Client,
     limit = int(args.get('limit', 10))
     filter_query = args.get('filter')
     minimum_score = int(params.get('feedMinimumGTIScore', 80))
+
     indicators = fetch_indicators_command(
         client,
         tlp_color,
@@ -396,12 +397,12 @@ def main():
     """
     Main function, parses params and runs command functions
     """
-
     params = demisto.params()
-    feed_tags = argToList(params.get('feedTags'))
+
     tlp_color = params.get('tlp_color')
+    feed_tags = argToList(params.get('feedTags', ''))
     limit = int(params.get('limit', 10))
-    filter_tag = params.get('filter')
+    filter_query = params.get('filter')
     minimum_score = int(params.get('feedMinimumGTIScore', 80))
 
     # If your Client class inherits from BaseClient, SSL verification is
@@ -450,7 +451,7 @@ def main():
                                                   tlp_color,
                                                   feed_tags,
                                                   limit,
-                                                  filter_tag,
+                                                  filter_query,
                                                   minimum_score,
                                                   fetch_command=True)
             for iter_ in batch(indicators, batch_size=2000):
