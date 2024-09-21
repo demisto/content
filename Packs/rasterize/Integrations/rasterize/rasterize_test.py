@@ -19,41 +19,13 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
-
 def test_rasterize_email_image(caplog, capfd, mocker):
-    from unittest.mock import mock_open, Mock, MagicMock
-    mock_browser = Mock()
-    mock_browser.list_tab.return_value = ["Tab1", "Tab2", "Tab3"]
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize, 'support_multithreading')
-        mocker.patch("builtins.open", mock_open())
-        mocker.patch('subprocess.Popen')
-        mocker.patch("time.sleep")
-        mocker.patch.object(rasterize, 'get_chrome_browser', return_value=mock_browser)
-        mocker.patch.object(rasterize, 'write_json_file')
-        #
-        # Mock ThreadPoolExecutor
-        mock_executor = mocker.patch('concurrent.futures.ThreadPoolExecutor')
-
-        # Mock ThreadPoolExecutor
-        mock_executor = mocker.patch('concurrent.futures.ThreadPoolExecutor')
-        
-        # Create a mock instance of the executor
-        mock_instance = MagicMock()
-        mock_executor.return_value.__enter__.return_value = mock_instance
-
-        # Mock the shutdown method to prevent it from running
-        mock_instance.shutdown = MagicMock()
-
-        # Define what the mock will return when submit is called
-        mock_future = MagicMock()
-        mock_future.result.return_value = "Task Result"
-        mock_instance.submit.return_value = mock_future
-        #
         perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         caplog.clear()
 
@@ -670,38 +642,16 @@ def test_is_mailto_urls(mocker: MockerFixture):
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
 
-ARGS_COMMITS = [
-    ({'commit_id': 'a1', 'limit': '1'},  # args single branch
-     'commit_single_request',
-     'get_commit_single',  # result from json
-     '### Commit details\n'
-     '|Title|Message|ShortId|Author|CreatedAt|\n'
-     '|---|---|---|---|---|\n'
-     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n'
-     ),
-    ({'limit': '2'},  # args list
-     'commit_list_request',
-     'get_commits',
-     '### List Commits\n'
-     '|Title|Message|ShortId|Author|CreatedAt|\n'
-     '|---|---|---|---|---|\n'
-     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n'
-     '| commit2 | message2 | b2 | demo2 | 2022-07-26T11:28:03.000+00:00 |\n'
-     '| commit3 | message3 | c3 | demo3 | 2022-07-26T11:28:03.000+00:00 |\n'
-     )
-]
-
-
 @pytest.mark.parametrize('new_chrome_instance_content, chrome_port, increase_counter, terminate_port',
-    [
-        ({"5000": {"rasterize_count": 1, "chrome_options": '', 'instance_id': '1'}}, '', False, False),
-    ({}, '2222', '--foo', False),
-    ({}, '2222', '', True),
-])
+                         [
+                             ({"5000": {"rasterize_count": 1, "chrome_options": '', 'instance_id': '1'}}, '', False, False),
+                             ({}, '2222', '--foo', False),
+                             ({}, '2222', '', True),
+                         ])
 def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, increase_counter, terminate_port):
     from rasterize import write_json_file, read_json_file
     from unittest.mock import mock_open
-    mocker.patch("os.path.exists", return_value= True)
+    mocker.patch("os.path.exists", return_value=True)
     mock_file_content = read_json_file("test_data/chrome_instances.json")
     mock_file = mock_open()
     mocker.patch("builtins.open", mock_file)
