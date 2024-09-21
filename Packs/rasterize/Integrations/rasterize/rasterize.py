@@ -63,7 +63,7 @@ PAGES_LIMITATION = 20
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
-    MAX_RASTERIZATIONS_COUNT = 4  # int(env_max_rasterizations_count)
+    MAX_RASTERIZATIONS_COUNT = int(env_max_rasterizations_count)
 except Exception as e:
     demisto.info(f'Exception trying to parse MAX_RASTERIZATIONS_COUNT, {e}')
     MAX_RASTERIZATIONS_COUNT = 500
