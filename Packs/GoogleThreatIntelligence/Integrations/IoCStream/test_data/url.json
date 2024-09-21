@@ -1,11 +1,8 @@
 {
-    "id": "c585abf839e48d49806972b62cf7f054dd1a1207368a87d067bda72a717f3137",
+    "id": "<sha256>",
     "type": "url",
-    "links": {
-        "self": "https://www.virustotal.com/api/v3/urls/c585abf839e48d49806972b62cf7f054dd1a1207368a87d067bda72a717f3137"
-    },
     "attributes": {
-        "last_final_url": "https://www.leparisien.wf/politique/Jupiter-et-une-bande-d",
+        "last_final_url": "<last_final_url>",
         "tags": [],
         "categories": {
             "Forcepoint ThreatSeeker": "elevated exposure"
@@ -18,7 +15,7 @@
             "harmless": 67,
             "timeout": 0
         },
-        "url": "https://www.leparisien.wf/politique/Jupiter-et-une-bande-d",
+        "url": "<url>",
         "threat_verdict": "VERDICT_UNDETECTED",
         "reputation": 0,
         "has_content": false,

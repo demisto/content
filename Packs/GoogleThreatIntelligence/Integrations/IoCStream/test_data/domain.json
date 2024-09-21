@@ -1,5 +1,5 @@
 {
-    "id": "account-facebook.com",
+    "id": "<domain>",
     "type": "domain",
     "attributes": {
         "last_modification_date": 1726690020,
@@ -9,7 +9,7 @@
         "mandiant_ic_score": 84,
         "registrar": "Amazon Registrar, Inc.",
         "last_dns_records_date": 1726675835,
-        "whois": "Admin City: Clearwater\nAdmin Country: US\nAdmin Email: c215fc66323f439as@knowbe4.com\nAdmin Organization: Knowbe4\nAdmin Postal Code: 33755\nAdmin State/Province: FL\nCreation Date: 2020-12-07T20:18:23Z\nDNSSEC: unsigned\nDomain Name: ACCOUNT-FACEBOOK.COM\nDomain Name: account-facebook.com\nDomain Status: ok https://icann.org/epp#ok\nName Server: NS-1381.AWSDNS-44.ORG\nName Server: NS-1693.AWSDNS-19.CO.UK\nName Server: NS-330.AWSDNS-41.COM\nName Server: NS-537.AWSDNS-03.NET\nRegistrant City: 9f17c16e0cbd11e5\nRegistrant Country: US\nRegistrant Email: c215fc66323f439as@knowbe4.com\nRegistrant Fax Ext: 3432650ec337c945\nRegistrant Fax: 3432650ec337c945\nRegistrant Name: 24277ff58446df8f\nRegistrant Organization: c25274193b9137ef\nRegistrant Phone Ext: 3432650ec337c945\nRegistrant Phone: 6099a769d1923d4a\nRegistrant Postal Code: f28adb1ee249d449\nRegistrant State/Province: 6eb233f5a5adbed8\nRegistrant Street: 7d57c43d3cfd7338\nRegistrar Abuse Contact Email: abuse@amazonaws.com\nRegistrar Abuse Contact Phone: +1.2024422253\nRegistrar IANA ID: 468\nRegistrar Registration Expiration Date: 2024-12-07T20:18:23Z\nRegistrar URL: http://registrar.amazon.com\nRegistrar URL: https://registrar.amazon.com\nRegistrar WHOIS Server: whois.registrar.amazon\nRegistrar WHOIS Server: whois.registrar.amazon.com\nRegistrar: Amazon Registrar, Inc.\nRegistry Admin ID: Not Available From Registry\nRegistry Domain ID: 2577160164_DOMAIN_COM-VRSN\nRegistry Expiry Date: 2024-12-07T20:18:23Z\nRegistry Registrant ID: Not Available From Registry\nRegistry Tech ID: Not Available From Registry\nTech City: Clearwater\nTech Country: US\nTech Email: c215fc66323f439as@knowbe4.com\nTech Organization: Knowbe4\nTech Postal Code: 33755\nTech State/Province: FL\nUpdated Date: 2023-11-03T22:57:14Z",
+        "whois": "Admin City: Clearwater\nAdmin Country: US\nAdmin Email: <admin_email>@google.com\nAdmin Organization: <Admin Org>\nAdmin Postal Code: 33755\nAdmin State/Province: FL\nCreation Date: 2020-12-07T20:18:23Z\nDNSSEC: unsigned\nDomain Name: <Domain Name>\nDomain Status: OK\nName Server: <Name Server>\nRegistrant City: 9f17c16e0cbd11e5\nRegistrant Country: US\nRegistrant Email: <registrant_email>@google.com\nRegistrant Fax Ext: 3432650ec337c945\nRegistrant Fax: 3432650ec337c945\nRegistrant Name: 24277ff58446df8f\nRegistrant Organization: c25274193b9137ef\nRegistrant Phone Ext: 3432650ec337c945\nRegistrant Phone: 6099a769d1923d4a\nRegistrant Postal Code: f28adb1ee249d449\nRegistrant State/Province: 6eb233f5a5adbed8\nRegistrant Street: 7d57c43d3cfd7338\nRegistrar Abuse Contact Email: <abuse>@google.com\nRegistrar Abuse Contact Phone: +34 600 000 000\nRegistrar IANA ID: <IANA ID>\nRegistrar Registration Expiration Date: 2024-12-07T20:18:23Z\nRegistrar URL: <Registrar URL>\nRegistrar URL: <Registrar URL>\nRegistrar WHOIS Server: <Registrar WHOIS Server>\nRegistrar: <Registrar>\nRegistry Admin ID: Not Available From Registry\nRegistry Domain ID: <Registry Domain ID>\nRegistry Expiry Date: 2024-12-07T20:18:23Z\nRegistry Registrant ID: Not Available From Registry\nRegistry Tech ID: Not Available From Registry\nTech City: Clearwater\nTech Country: US\nTech Email: <tech_email>@google.com\nTech Organization: <Tech Org>\nTech Postal Code: 33755\nTech State/Province: FL\nUpdated Date: 2023-11-03T22:57:14Z",
         "last_https_certificate_date": 1593568953,
         "threat_verdict": "VERDICT_UNDETECTED",
         "whois_date": 1724217310,
@@ -28,13 +28,13 @@
         "attribution": {
             "detailed_threat_actors": [
                 {
-                    "name": "UNC2710",
+                    "name": "<TA_name>",
                     "source": "Mandiant",
-                    "id": "threat-actor--31613362-0ea7-596b-8941-8ede904e98ac"
+                    "id": "<TA_id>"
                 }
             ],
             "threat_actors": [
-                "UNC2710"
+                "<TA_name>"
             ]
         },
         "total_votes": {

@@ -1,10 +1,10 @@
 {
-    "id": "9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25",
+    "id": "<sha256>",
     "type": "file",
     "attributes": {
         "type_description": "Win32 EXE",
-        "tlsh": "T155069E15A6D82B64E7F35FB2217B871007797E45885B929E1660A04F0C33F5CDEB2F29",
-        "vhash": "036046651d6510b8z201cpz31zd025z",
+        "tlsh": "<tlsh>",
+        "vhash": "<vhash>",
         "exiftool": {
             "MIMEType": "application/octet-stream",
             "Subsystem": "Windows GUI",
@@ -47,7 +47,7 @@
         ],
         "creation_date": 1290243788,
         "names": [
-            "6a650da84adf6e3356227cc8890a9ee7.virus"
+            "<name>.virus"
         ],
         "last_modification_date": 1635959808,
         "type_tag": "peexe",
@@ -57,43 +57,11 @@
             "malicious": 0
         },
         "size": 3723264,
-        "popular_threat_classification": {
-            "vhash_cluster_name": [
-                "forgiving",
-                "unhealthful",
-                "swordsmanship"
-            ],
-            "suggested_threat_label": "trojan.wannacry/wannacryptor",
-            "popular_threat_category": [
-                {
-                    "count": 23,
-                    "value": "trojan"
-                },
-                {
-                    "count": 21,
-                    "value": "ransomware"
-                }
-            ],
-            "popular_threat_name": [
-                {
-                    "count": 10,
-                    "value": "wannacry"
-                },
-                {
-                    "count": 7,
-                    "value": "wannacryptor"
-                },
-                {
-                    "count": 6,
-                    "value": "wannacrypt"
-                }
-            ]
-        },
-        "authentihash": "7adeabbcb861b786990dab55a6030a8b56ea2a2df7b2e38e09b6b3de747ce0f7",
+        "authentihash": "<authentihash>",
         "last_submission_date": 1635952526,
-        "meaningful_name": "6a650da84adf6e3356227cc8890a9ee7.virus",
+        "meaningful_name": "<name>.virus",
         "downloadable": true,
-        "sha256": "9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25",
+        "sha256": "<sha256>",
         "type_extension": "exe",
         "tags": [
             "peexe",
@@ -103,15 +71,15 @@
         "last_analysis_date": 1635952526,
         "unique_sources": 1,
         "first_submission_date": 1635952526,
-        "sha1": "f13339bc7527261c3552cc37c619f33ca04c1321",
-        "ssdeep": "12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:Vb+8",
-        "bloom": "eNozqDA0oC2glvlGBqOAjsBiNAhGwSgYisBkkGb10SJlJAEAAXSRWA==\n",
+        "sha1": "<sha1>",
+        "ssdeep": "<ssdeep>",
+        "bloom": "<bloom>",
         "packers": {
             "PEiD": "Microsoft Visual C++"
         },
-        "md5": "6a650da84adf6e3356227cc8890a9ee7",
+        "md5": "<md5>",
         "pe_info": {
-            "imphash": "9ecee117164e0b870a53dd187cdd7174"
+            "imphash": "<imphash>"
         },
         "magic": "PE32 executable for MS Windows (GUI) Intel 80386 32-bit",
         "last_analysis_stats": {

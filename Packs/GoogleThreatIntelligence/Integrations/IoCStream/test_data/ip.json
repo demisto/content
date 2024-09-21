@@ -1,5 +1,5 @@
 {
-    "id": "8.8.8.8",
+    "id": "X.X.X.X",
     "type": "ip_address",
     "attributes": {
         "last_modification_date": 1726781178,
@@ -18,9 +18,9 @@
         "first_seen_itw_date": 1409607591,
         "reputation": 535,
         "tags": [],
-        "whois": "NetRange: 8.8.8.0 - 8.8.8.255\nCIDR: 8.8.8.0/24\nNetName: GOGL\nNetHandle: NET-8-8-8-0-2\nParent: NET8 (NET-8-0-0-0-0)\nNetType: Direct Allocation\nOriginAS: \nOrganization: Google LLC (GOGL)\nRegDate: 2023-12-28\nUpdated: 2023-12-28\nRef: https://rdap.arin.net/registry/ip/8.8.8.0\nOrgName: Google LLC\nOrgId: GOGL\nAddress: 1600 Amphitheatre Parkway\nCity: Mountain View\nStateProv: CA\nPostalCode: 94043\nCountry: US\nRegDate: 2000-03-30\nUpdated: 2019-10-31\nComment: Please note that the recommended way to file abuse complaints are located in the following links. \nComment: \nComment: To report abuse and illegal activity: https://www.google.com/contact/\nComment: \nComment: For legal requests: http://support.google.com/legal \nComment: \nComment: Regards, \nComment: The Google Team\nRef: https://rdap.arin.net/registry/entity/GOGL\nOrgAbuseHandle: ABUSE5250-ARIN\nOrgAbuseName: Abuse\nOrgAbusePhone: +1-650-253-0000 \nOrgAbuseEmail: network-abuse@google.com\nOrgAbuseRef: https://rdap.arin.net/registry/entity/ABUSE5250-ARIN\nOrgTechHandle: ZG39-ARIN\nOrgTechName: Google LLC\nOrgTechPhone: +1-650-253-0000 \nOrgTechEmail: arin-contact@google.com\nOrgTechRef: https://rdap.arin.net/registry/entity/ZG39-ARIN\n",
+        "whois": "NetRange: X.X.X.0 - X.X.X.255\nCIDR: X.X.X.0/24\n",
         "continent": "NA",
-        "network": "8.8.8.0/24",
+        "network": "X.X.X.0/24",
         "threat_verdict": "VERDICT_UNDETECTED",
         "country": "US",
         "regional_internet_registry": "ARIN",
@@ -32,51 +32,35 @@
         "attribution": {
             "detailed_threat_actors": [
                 {
-                    "source": "MISPGalaxy",
-                    "name": "ToddyCat",
-                    "id": "threat-actor--091a0b69-74de-44b6-bb12-16b7a8fd078b"
+                    "source": "<TA_source_1>",
+                    "name": "<TA_name_1>",
+                    "id": "<TA_id_1>"
                 },
                 {
-                    "source": "MISPGalaxy",
-                    "name": "SWEED",
-                    "id": "threat-actor--64ac8827-89d9-4738-9df3-cd955c628bee"
+                    "source": "<TA_source_2>",
+                    "name": "<TA_name_2>",
+                    "id": "<TA_id_2>"
                 }
             ],
             "malware_families": [
                 {
-                    "source": "mandiant_backscatter",
-                    "family": "asyncrat"
+                    "source": "<MF_source_1>",
+                    "family": "<MF_family_1>"
                 },
                 {
-                    "source": "mandiant_backscatter_memdump_cape",
-                    "family": "metasploit"
-                },
-                {
-                    "source": "mandiant_backscatter_memdump_zenbox",
-                    "family": "metasploit"
-                },
-                {
-                    "source": "mandiant_backscatter",
-                    "family": "metasploit"
-                },
-                {
-                    "source": "mandiant_backscatter",
-                    "family": "meterpreter"
-                },
-                {
-                    "source": "mandiant_backscatter",
-                    "family": "quasarrat"
+                    "source": "<MF_source_2>",
+                    "family": "<MF_family_2>"
                 }
             ],
             "threat_actors": [
-                "ToddyCat",
-                "SWEED"
+                "<TA_name_1>",
+                "<TA_name_2>"
             ],
-            "family": "asyncrat",
+            "family": "<MF_family_1>",
             "family_pivot": "collection:None"
         },
         "last_seen_itw_date": 1726766855,
-        "jarm": "29d3fd00029d29d00042d43d00041d598ac0c1012db967bb1ad0ff2491b3ae",
+        "jarm": "<jarm>",
         "gti_assessment": {
             "contributing_factors": {
                 "normalised_categories": [

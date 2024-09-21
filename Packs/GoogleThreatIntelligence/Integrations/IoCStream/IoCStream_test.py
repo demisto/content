@@ -74,7 +74,7 @@ def test_fetch_indicators_command(mocker):
                     'detectionengines', 'positivedetections', 'displayname', 'name', 'size',
                     'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
                 }
-                assert indicator['value'] == '9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25'
+                assert indicator['value'] == '<sha256>'
                 assert indicator['value'] == indicator['fields']['sha256']
                 assert indicator['origin'] == 'hunting'
                 assert indicator['sources'] == '[hunting_ruleset] Malware Families YARA ruleset'
@@ -86,17 +86,17 @@ def test_fetch_indicators_command(mocker):
                     'tags', 'creationdate', 'updateddate', 'detectionengines', 'positivedetections',
                     'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
                 }
-                assert indicator['value'] == 'account-facebook.com'
-                assert indicator['fields']['adminemail'] == 'c215fc66323f439as@knowbe4.com'
+                assert indicator['value'] == '<domain>'
+                assert indicator['fields']['adminemail'] == '<admin_email>@google.com'
                 assert indicator['fields']['registrantcountry'] == 'US'
-                assert indicator['fields']['registrarabusephone'] == '+1.2024422253'
+                assert indicator['fields']['registrarabusephone'] == '+34 600 000 000'
             elif indicator['type'] == FeedIndicatorType.URL:
                 assert set(indicator['fields'].keys()) == {
                     'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
                     'detectionengines', 'positivedetections',
                     'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
                 }
-                assert indicator['value'] == 'https://www.leparisien.wf/politique/Jupiter-et-une-bande-d'
+                assert indicator['value'] == '<url>'
                 assert indicator['fields']['firstseenbysource'] == 1722360511
             elif indicator['type'] == FeedIndicatorType.IP:
                 assert set(indicator['fields'].keys()) == {
@@ -104,7 +104,7 @@ def test_fetch_indicators_command(mocker):
                     'detectionengines', 'positivedetections', 'countrycode',
                     'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
                 }
-                assert indicator['value'] == '8.8.8.8'
+                assert indicator['value'] == 'X.X.X.X'
                 assert indicator['fields']['countrycode'] == 'US'
             else:
                 raise ValueError(f'Unknown type: {indicator["type"]}')
