@@ -149,7 +149,7 @@ def _get_indicator_type(item: dict):
 def _get_indicator_id(item: dict):
     """Gets indicator ID."""
     if item['type'] == 'url':
-        return item.get('attributes', {}).get('url')
+        return item.get('attributes', {}).get('url') or item['id']
     return item['id']
 
 
@@ -158,7 +158,7 @@ def _add_file_attributes(indicator_obj: dict, attributes: dict) -> dict:
     indicator_obj['fields'].update({
         'md5': attributes.get('md5'),
         'sha1': attributes.get('sha1'),
-        'sha256': attributes['sha256'],
+        'sha256': attributes.get('sha256'),
         'ssdeep': attributes.get('ssdeep'),
         'fileextension': attributes.get('type_extension'),
         'filetype': attributes.get('type_tag'),
