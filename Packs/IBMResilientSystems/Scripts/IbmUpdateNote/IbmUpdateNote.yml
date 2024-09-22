@@ -13,7 +13,7 @@ args:
   required: true
   isArray: true
 
-comment: Use this script to add a note entry in XSOAR, which will then be mirrored as a note to an IBM QRadar SOAR incident. This script should be run within an incident.
+comment: Use this script to add a note entry in Cortex XSOAR, which will then be mirrored as a note to an IBM QRadar SOAR incident. This script should be run within an incident.
 commonfields:
   id: IbmUpdateNote
   version: -1

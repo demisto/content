@@ -1,4 +1,4 @@
-Use this script to add a note with a tag (the "Note tag to IBM" defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a note to a IBM QRadar SOAR incident. This script should be run within an incident.
+Use this script to add a note with a tag (the "Note tag to IBM" defined in the instance configuration) as an entry in Cortex XSOAR, which will then be mirrored as a note to a IBM QRadar SOAR incident. This script should be run within an incident.
 
 ## Script Data
 
@@ -15,7 +15,7 @@ Use this script to add a note with a tag (the "Note tag to IBM" defined in the i
 
 | **Argument Name** | **Description**                                                                                                        |
 |-------------------|------------------------------------------------------------------------------------------------------------------------|
-| note              | note to be added to the IBM QRadar SOAR incident.                                                                      |
+| note              | Note to be added to the IBM QRadar SOAR incident.                                                                      |
 | tags              | The note tag. Use the note entry tag \(defined in your instance configuration\) to mirror the note to IBM QRadar SOAR. |
 
 ## Outputs

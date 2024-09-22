@@ -1,4 +1,4 @@
-This script is used to format IBM QRadar SOAR tasks into a mark-down table.
+This script is used to format IBM QRadar SOAR tasks into a markdown table.
 
 ## Script Data
 

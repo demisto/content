@@ -10,7 +10,7 @@ args:
 - name: owner_id
   description: User ID of the new owner.
 - name: due_date
-  description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z". Empty date indicates that the task has no assigned due date.
+  description: Task due date in ISO format e.g., "2020-02-02T19:00:00Z". Empty date indicates that the task has no assigned due date.
 - name: phase
   description: The phase to which this task belongs.
   auto: PREDEFINED

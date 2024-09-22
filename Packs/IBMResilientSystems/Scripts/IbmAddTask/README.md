@@ -26,7 +26,7 @@ This script uses the following commands and scripts.
 | name | Task name. |
 | description | Task description. |
 | instructions | Textual instructions for the task. This will override the default instructions for the task. |
-| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. |
+| due_date | Task due date in ISO format e.g., "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. |
 | owner_id | The owner of the task \(ID or name as appears in IBM QRadar SOAR\). Leave empty if the task has no owner. |
 | phase | Task to be added to the IBM QRadar incident. |
 
