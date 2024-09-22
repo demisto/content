@@ -40,7 +40,6 @@ demisto_score_to_xdr: dict[int, str] = {
     2: 'SUSPICIOUS',
     3: 'BAD'
 }
-CURRENT_BATCH_LAST_MODIFIED_TIME: str = ''
 
 
 def create_validation_errors_response(validation_errors):
@@ -201,15 +200,25 @@ def create_file_sync(file_path, batch_size: int = 200):
             demisto.info("created sync file without any indicators")
 
 
+def info_log_for_fetch(last_modified_time: str | None,
+                       indicator_value: str | None,
+                       new_search_after: list[str] | None,
+                       ioc_count: int = 1):
+    demisto.info(f"Fetched {ioc_count} indicators from xsoar. last modified that was synced "
+                 f"{last_modified_time}, with indicator {indicator_value}, "
+                 f"search_after {new_search_after}")
+
+
 def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.query})', stop_iteration=False) -> Iterable:
     full_query = query or Client.query
     ioc_count = 0
+    last_fetched = {}
+    search_after_array = None
     try:
         filter_fields = ('value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,'
                          'comments,id,CustomFields'
                          if is_xsiam_or_xsoar_saas()
                          else None)
-        search_after_array = None
         search_after = get_integration_context().get('search_after', None)
         for batch in IndicatorsSearcher(size=size,
                                         query=full_query,
@@ -218,15 +227,20 @@ def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.qu
                                               {"field": "id", "asc": True}],
                                         filter_fields=filter_fields):
             search_after_array = batch.get('searchAfter', [])
-            ioc_count += len(batch.get('iocs', []))
-            for ioc in batch.get('iocs', []):
+            iocs = batch.get('iocs', [])
+            last_fetched = iocs[-1]
+            ioc_count += len(iocs)
+            for ioc in iocs:
                 yield ioc
             if stop_iteration and ioc_count >= MAX_INDICATORS_TO_SYNC:
                 update_integration_context(update_search_after_array=search_after_array)
+                info_log_for_fetch(ioc.get('modified'), ioc.get('value'), search_after_array, ioc_count)
                 raise StopIteration
         update_integration_context(update_search_after_array=search_after_array)
+        info_log_for_fetch(last_fetched.get('modified'), last_fetched.get('value'), search_after_array, ioc_count)
     except StopIteration:
         update_integration_context(update_search_after_array=search_after_array)
+        info_log_for_fetch(last_fetched.get('modified'), last_fetched.get('value'), search_after_array, ioc_count)
         pass
     except Exception as e:
         raise e
@@ -346,8 +360,6 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
         # demisto.debug(f'Raw outgoing IOC: {ioc=}')  # uncomment to debug, otherwise spams the log
-        global CURRENT_BATCH_LAST_MODIFIED_TIME
-        CURRENT_BATCH_LAST_MODIFIED_TIME = ioc.get('modified')
         xdr_ioc: dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,  # default, may be overwritten, see below
@@ -451,10 +463,6 @@ def sync_for_fetch(client: Client, batch_size: int = 200):
                                                                        stop_iteration=True,
                                                                        query=full_query)))
         if request_data:
-            last_run = get_integration_context()
-            demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
-                          f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, with indicator {request_data[-1].get('indicator')}, "
-                          f"search_after {last_run.get('search_after')}")
             response = push_indicators_to_xdr_request(client, request_data)
             if validation_errors := response.get('reply', {}).get('validation_errors'):
                 errors = create_validation_errors_response(validation_errors)
@@ -716,7 +724,7 @@ def xdr_iocs_sync_command(client: Client,
                           first_time: bool = False,
                           is_first_stage_sync: bool = False,
                           called_from_fetch: bool = False):
-    if first_time or not get_integration_context() or is_first_stage_sync:
+    if first_time or is_first_stage_sync or not get_integration_context():
         demisto.debug("first time, running sync")
         if called_from_fetch:
             sync_for_fetch(client, batch_size=BATCH_SIZE)

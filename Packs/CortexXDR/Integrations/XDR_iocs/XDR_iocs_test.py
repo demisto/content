@@ -656,7 +656,7 @@ class TestCommands:
 
     def test_tim_insert_jsons(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
-        http_request.return_value = {'reply':{'success': True}}
+        http_request.return_value = {'reply': {'success': True}}
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'time': '2020-06-03T00:00:00Z'})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', side_effect=[iocs, {"total": 0}])
