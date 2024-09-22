@@ -31,7 +31,6 @@ def util_load_json(path):
 
 
 def util_generate_mock_info_file(info):
-    from rasterize import write_text_file
     write_file("test_data/info.tsv", info, overwrite=True)
 
 
@@ -725,8 +724,8 @@ def test_read_text_file():
         - The function reads the log file and returns the correct content.
     """
     from rasterize import read_text_file
-    expected_result = util_read_tsv(file_path="test_data/example_log_file.log")
-    read_text_file_result = read_text_file(file_path="test_data/example_log_file.log")
+    expected_result = util_read_tsv(file_path="test_data/example_log_file.txt")
+    read_text_file_result = read_text_file(file_path="test_data/example_log_file.txt")
     assert read_text_file_result == expected_result
 
 
