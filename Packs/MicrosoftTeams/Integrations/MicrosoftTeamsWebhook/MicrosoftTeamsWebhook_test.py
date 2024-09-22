@@ -20,7 +20,7 @@ def test_create_teams_message_adaptive_cards():
 
 
 def test_create_teams_message():
-    message = create_teams_message(MESSAGE, TITLE, SERVERURLS["investigation"])
+    message = create_teams_message(MESSAGE, TITLE, SERVERURLS["investigation"], is_workflow=False)
     assert message
     assert message["sections"][0]["activitySubtitle"] == MESSAGE
     assert message["potentialAction"][0]["name"] == TITLE

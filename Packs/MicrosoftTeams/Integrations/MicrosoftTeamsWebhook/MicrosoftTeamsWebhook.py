@@ -17,7 +17,7 @@ class Client(BaseClient):
 
         """
         self.base_url = base_url
-        self.is_workflow= is_workflow
+        self.is_workflow = is_workflow
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
     def send_teams_message(self, messagecard: dict, adaptive_cards_format: bool = False):
@@ -58,69 +58,65 @@ def create_teams_message(message: str, title: str, serverurls: str, adaptive_car
         message (str): The message to send in the message card to Teams.
         title (str): The title of the message card.
         serverurls (str): The URL to send in the message card.
-        adaptive_cards_format (bool): Should the adaptive cards format be used?
+        adaptive_cards_format (bool): Should the adaptive cards format be used?.
+        is_workflow (bool): Is the Microsoft Webhook URL is a workflow.
 
         Returns:
         messagecard (dict): dict the adaptive card to send to Teams.
     """
     messagecard: dict = {}
-    if is_workflow:
-        if adaptive_cards_format:
-            messagecard = {
-                "type": "message",
-                "attachments": [
-                    {
+    if adaptive_cards_format:
+        messagecard = messagecard = {
+            "type": "message",
+            "attachments": [
+                {
                     "contentType": "application/vnd.microsoft.card.adaptive",
                     "content": {
                         "type": "AdaptiveCard",
                         "body": [
-                        {
-                            "type": "TextBlock",
-                            "text": "Message Text from Postman with AdaptiveCard (113)"
-                        }
+                            {
+                                "type": "TextBlock",
+                                "text": "Cortex XSOAR Notification",
+                                "weight": "bolder",
+                                "size": "medium",
+                                "color": "accent"
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": message,
+                                "wrap": True
+                            }
+                        ],
+                        "actions": [
+                            {
+                                "type": "Action.OpenUrl",
+                                "title": title,
+                                "url": serverurls
+                            }
                         ],
                         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
                         "version": "1.0"
                     }
-                    }
-                ]
-            }
-        else:
-            messagecard = {
-            "text": message
-          }
+                }
+            ]
+        }
     else:
-        if adaptive_cards_format:
+        if is_workflow:
             messagecard = {
                 "type": "message",
                 "attachments": [
                     {
                         "contentType": "application/vnd.microsoft.card.adaptive",
-                        "contentUrl": None,
                         "content": {
                             "type": "AdaptiveCard",
                             "body": [
                                 {
                                     "type": "TextBlock",
-                                    "size": "Medium",
-                                    "weight": "Bolder",
-                                    "text": "Cortex XSOAR Notification"
-                                },
-                                {
-                                    "type": "TextBlock",
-                                    "text": message,
-                                    "wrap": True
-                                }
-                            ],
-                            "actions": [
-                                {
-                                    "type": "Action.OpenUrl",
-                                    "title": title,
-                                    "url": serverurls
+                                    "text": message
                                 }
                             ],
                             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                            "version": "1.6"
+                            "version": "1.0"
                         }
                     }
                 ]
@@ -208,7 +204,6 @@ def main() -> None:    # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     adaptive_cards_format: bool = argToBoolean(args.get("adaptive_cards_format", False))
-    
 
     serverurls = demisto.demistoUrls()
 

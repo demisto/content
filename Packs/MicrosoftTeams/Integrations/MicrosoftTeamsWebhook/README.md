@@ -38,3 +38,18 @@ Send a message to Microsoft Teams via Incoming Webhook.
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+By default the message is being sent with a message template: `X Used a Workflow template to send this card`.
+In order to eliminate this line you can follow the following approach:
+- Navigate to Microsoft’s Power Automate portal and sign into your Microsoft Teams account where you’ve previously [set up](https://make.powerautomate.com/) the Flow.
+- Click on “My flows” from the left side menu.
+- Click on the newly created Flow to open its details page.
+- On the Flow’s details page, click on “Save As” button on top.
+- Give your new Flow a name and click on the “Save” button.
+- Navigate back to “My flows” from the left side menu.
+- Find the copy Flow and click its name to access its details page.
+- On the Flow’s details page, click on the “Turn On” button at the top.
+- In order to find the new url link navigate to the edit tab on the Flow’s details page.
+- Click on the action task and copy the HTTP URL.
+- Configure an instance of the integration and add the copied Workflow URL for the Teams channel.
