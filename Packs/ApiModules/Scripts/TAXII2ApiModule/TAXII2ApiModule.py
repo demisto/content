@@ -917,7 +917,7 @@ class STIX2XSOARParser(BaseClient):
         self.last_fetched_indicator__modified = None
 
     @staticmethod
-    def get_pattern_comparisons(pattern: str) -> Optional[PatternComparisons]:
+    def get_pattern_comparisons(pattern: str, supported_only: bool = True) -> Optional[PatternComparisons]:
         """
         Parses a pattern and comparison and extracts the comparisons as a dictionary.
         If the pattern is invalid, the return value will be "None".
@@ -938,12 +938,17 @@ class STIX2XSOARParser(BaseClient):
 
         Args:
             pattern: the pattern to extract the value from.
+            supported_only: Whether to remove comparisons that are not supported by Cortex XSOAR.
 
         Returns:
             Optional[PatternComparisons]. the value in the pattern.
         """
         try:
-            return cast(PatternComparisons, Pattern(pattern).inspect().comparisons)
+            comparisons = cast(PatternComparisons, Pattern(pattern).inspect().comparisons)
+            return (
+                STIX2XSOARParser.get_supported_pattern_comparisons(comparisons)
+                if supported_only else comparisons
+            )
         except Exception as error:
             demisto.debug(f'Unable to parse {pattern=}, {error=}')
         return None
@@ -959,12 +964,19 @@ class STIX2XSOARParser(BaseClient):
         Returns:
             PatternComparisons. the value in the pattern.
         """
+        def get_comparison_field(comparison: tuple[list[str], str, str]) -> str:
+            '''retrieves the field of a STIX comparison.'''
+            return cast(str, dict_safe_get(comparison, [0, 0]))
+
         supported_comparisons: PatternComparisons = {}
-        for field_type, comps in comparisons.items():
-            if field_type in STIX_SUPPORTED_TYPES:
-                for comp in comps:
-                    if dict_safe_get(comp, [0, 0]) in STIX_SUPPORTED_TYPES[field_type]:
-                        supported_comparisons.setdefault(field_type, []).append(comp)
+        for indicator_type, comps in comparisons.items():
+            if indicator_type in STIX_SUPPORTED_TYPES:
+                comparisons = [
+                    comp for comp in comps
+                    if (get_comparison_field(comp) in STIX_SUPPORTED_TYPES[indicator_type])
+                ]
+                if comparisons:
+                    supported_comparisons[indicator_type] = comparisons
         return supported_comparisons
 
     @staticmethod
@@ -1184,7 +1196,6 @@ class STIX2XSOARParser(BaseClient):
             str. the value in the pattern.
         """
         comparisons = STIX2XSOARParser.get_pattern_comparisons(pattern) or {}
-        comparisons = STIX2XSOARParser.get_supported_pattern_comparisons(comparisons)
         if comparisons:
             return dict_safe_get(tuple(comparisons.values()), [0, 0, -1], '', str).strip("'") or None
         return None
