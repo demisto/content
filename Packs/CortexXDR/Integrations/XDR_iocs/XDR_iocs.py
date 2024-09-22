@@ -575,8 +575,8 @@ def tim_insert_jsons(client: Client):
     else:
         demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
         current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-        integration_context: dict = get_integration_context()
         while True:
+            integration_context: dict = get_integration_context()
             query = (create_query_with_end_time(to_date=current_run)
                      if integration_context.get('search_after')
                      else create_last_iocs_query(from_date=integration_context.get('time'), to_date=current_run))
