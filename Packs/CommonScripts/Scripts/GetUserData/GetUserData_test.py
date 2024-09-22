@@ -413,7 +413,7 @@ def test_merge_accounts_with_no_conflicts(mocker: MockerFixture):
     mock_account = mocker.Mock()
     mock_account.to_context.return_value = {
         "Account": {
-            "id": {"Value": "123", "Source": "Okta v2"},
+            "id": [{"Value": "123", "Source": "Okta v2"}],
             "name": "John Doe",
             "email": "john@example.com",
         }
@@ -430,7 +430,7 @@ def test_merge_accounts_with_no_conflicts(mocker: MockerFixture):
     result = merge_accounts(accounts)
 
     assert result == {
-        "id": {"Value": "123", "Source": "Okta v2"},
+        "id": [{"Value": "123", "Source": "Okta v2"}],
         "name": "John Doe",
         "email": "john@example.com",
     }
