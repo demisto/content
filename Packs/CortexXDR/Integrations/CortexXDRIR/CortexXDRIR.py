@@ -1164,7 +1164,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
             demisto.info(f"[test] preparing to remove raw_incident from incidents, currently {current_non_created_incidents_len=}")
             non_created_incidents.remove(raw_incident)
             updated_non_created_incidents_len = len(non_created_incidents)
-            demisto.info(f"[test] after removing raw_incident from incidents, currently {len(updated_non_created_incidents_len)=}")
+            demisto.info(f"[test] after removing raw_incident from incidents, currently {updated_non_created_incidents_len=}")
             if updated_non_created_incidents_len != current_non_created_incidents_len:
                 demisto.info(f"[test], didn't remove incident, {raw_incident=}\n{non_created_incidents=}")
             count_incidents += 1
