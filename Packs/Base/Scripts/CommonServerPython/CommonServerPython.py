@@ -4971,9 +4971,10 @@ class Common(object):
             self.dbot_score = dbot_score
 
         def to_context(self):
-            account_context = {
-                'ID': self.id
-            }
+            account_context = {}
+
+            if self.id:
+                account_context['ID'] = self.id
 
             if self.type:
                 account_context['Type'] = self.type
