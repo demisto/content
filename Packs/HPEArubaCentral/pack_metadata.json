@@ -1,6 +1,6 @@
 {
     "name": "HPE Aruba Central",
-    "description": "This is the Aruba Central event collector for Cortex XSIAM",
+    "description": "Aruba Central helps manage and monitor your network infrastructure from a centralized platform.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
