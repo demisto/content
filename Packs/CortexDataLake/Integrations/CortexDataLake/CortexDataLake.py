@@ -395,8 +395,8 @@ def system_log_context_transformer(row_content):
         a dict with
     """
     return {
-        'EvenName': row_content.get('event_name'),
-        'EvenDescription': row_content.get('event_description'),
+        'EventName': row_content.get('event_name'),
+        'EventDescription': row_content.get('event_description'),
         'VendorSeverity': row_content.get('severity', ""),
         'LogTime': human_readable_time_from_epoch_time(row_content.get('log_time', 0)),
         'LogType': row_content.get('log_type', {}).get('value'),
