@@ -1195,3 +1195,4 @@ script:
 fromversion: 5.5.0
 tests:
 - O365-SecurityAndComplianceV2-Test
+autoUpdateDockerImage: false
