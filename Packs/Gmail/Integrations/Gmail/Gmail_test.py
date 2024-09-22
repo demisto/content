@@ -1029,3 +1029,38 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     monkeypatch.setattr('Gmail.LEGACY_NAME', True)
     result = parse_mail_parts(part)
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "display_name",
+    [
+        ("Sender Name"),
+        (None)
+    ]
+)
+def test_send_mail_sender_display_name(mocker, display_name):
+    """
+    Given:
+        - sender_display_name.
+    When:
+        - The send_mail function is called and the email message is constructed.
+    Then:
+        - Ensure that the encoded message contains the correct 'From' field with the sender_display_name.
+    """
+    import Gmail
+    from Gmail import send_mail
+    mocked_get_service = mocker.patch.object(Gmail, 'get_service')
+    mocked_get_service().users().messages().list().execute.return_value = {'id': 'mock_id'}
+    mock_b64encode = mocker.patch("base64.urlsafe_b64encode")
+    send_mail([], "sender@example.com", "", "", [], [], [], None, "", [],
+              [], [], [], None, [], [], None, display_name, None, None, False)
+
+    args, _ = mock_b64encode.call_args
+    encoded_bytes = args[0]  # This is the bytes before encoding
+    message_str = encoded_bytes.decode('utf-8')
+    if display_name:
+        expected_from_header = f"{display_name} <sender@example.com>"
+    else:
+        expected_from_header = "sender@example.com"
+
+    assert f"from: {expected_from_header}" in message_str
