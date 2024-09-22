@@ -9,7 +9,7 @@
     "closeForm": false,
     "editForm": true,
     "required": false,
-    "script": "CollectCampaignRecipients",
+    "script": "CollectCampaignRecipientsrrr",
     "fieldCalcScript": "GetCampaignLowerSimilarityIncidentsIdsAsOptions",
     "neverSetAsRequired": false,
     "isReadOnly": false,
