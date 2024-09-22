@@ -377,10 +377,8 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
 
 def reset_offset_command(client: Client):
     ctx = get_integration_context()
-    print(f"before removing ctx, {ctx=}")
     if "offset" in ctx:
         del ctx["offset"]
-    print(f"after removing ctx, {ctx=}")
     set_integration_context(ctx)
     return 'Offset was reset successfully.', {}, {}
 @logger
