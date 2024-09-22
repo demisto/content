@@ -1,7 +1,7 @@
 commonfields:
   id: IbmConvertTasksToTable
   version: -1
-comment: This script is used to convert IBM QRadar SOAR notes to a markdown table.
+comment: This script is used to convert IBM QRadar SOAR tasks to a markdown table.
 name: IbmConvertTasksToTable
 outputs: []
 script: '-'
