@@ -30,6 +30,11 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def util_generate_mock_info_file(info):
+    from rasterize import write_text_file
+    write_file("test_data/info.tsv", info, overwrite=True)
+
+
 def test_rasterize_email_image(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -725,3 +730,12 @@ def test_read_text_file():
     assert read_text_file_result == expected_result
 
 
+def test_write_file_new(mocker):
+    """Test writing to a new file."""
+    from rasterize import write_text_file
+    mock_open = mocker.patch("builtins.open", mocker.mock_open())
+    mock_info = mocker.patch.object(demisto, "info")
+    write_text_file('testfile.txt', 'Hello, World!', overwrite=False)
+    assert mock_info.call_args_list[0][0][0] == "Saving File 'testfile.txt' with Hello, World!."
+    assert mock_info.call_args_list[1][0][0] == "File 'testfile.txt' saved successfully with Hello, World!."
+    assert mock_open.call_args[0] == ('testfile.txt', 'a')
