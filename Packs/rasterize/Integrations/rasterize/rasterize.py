@@ -529,7 +529,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         # If the current Chrome options differ from the saved options for this instance ID,
         # it terminates the existing Chrome instance and generates a new one with the new options.
         chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
-        # need to delete the port chrome_port from json.
         write_json_file(chrome_port=chrome_port, terminate_port=True)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)

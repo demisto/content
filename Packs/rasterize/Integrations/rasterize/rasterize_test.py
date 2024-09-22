@@ -698,6 +698,33 @@ def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, incre
     assert mocker_json.called
 
 
+def test_write_json_file_new_file(mocker):
+    """
+    Given:
+        - A new Chrome instance content
+        - A valid Chrome port
+        - An increase counter
+        - A terminate port
+    When:
+        - Executing the write_json_file function
+    Then:
+        - The function writes to the correct file, truncates it, and calls json.dump with the expected arguments.
+    """
+    from rasterize import write_json_file
+    from unittest.mock import mock_open
+    mocker.patch("os.path.exists", return_value=False)
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    mock_file = mock_open()
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch.object(json, 'dump', return_value=mock_file_content)
+    mocker_json = mocker.patch("json.dump")
+    mock_info = mocker.patch.object(demisto, "info")
+    write_json_file(new_chrome_instance_content=mock_file_content)
+
+    assert mocker_json.call_count == 1
+    assert mock_info.call_args_list[0][0][0] == "File '/var/chrome_instances.json' does not exist."
+
+
 def test_read_json_file(mocker):
     """
     Given:
