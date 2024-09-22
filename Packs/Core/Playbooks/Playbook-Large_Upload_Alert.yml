@@ -73,8 +73,8 @@ tasks:
       id: 72d68f27-3f59-4b81-8e76-0672b557a892
       version: -1
       name: Find Similar Alerts
-      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
-      scriptName: DBotFindSimilarIncidents
+      description: Find past similar alerts based on alert fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarAlerts
       type: regular
       iscommand: false
       brand: ""
@@ -2067,10 +2067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: c32e7f2d-5b93-4f70-8305-43f704dfad02
+    taskid: 6ac7df05-8ed0-4ccb-8860-ea096895f627
     type: condition
     task:
-      id: c32e7f2d-5b93-4f70-8305-43f704dfad02
+      id: 6ac7df05-8ed0-4ccb-8860-ea096895f627
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the large upload Cortex XDR alerts.
@@ -2103,7 +2103,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2113,7 +2113,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.os_actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2123,7 +2123,7 @@ tasks:
                         simple: Core._all_events.actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2134,6 +2134,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "false"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -2144,7 +2152,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2154,7 +2162,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.dst_action_external_hostname
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2164,7 +2172,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2174,7 +2182,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.target_address
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2184,7 +2192,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.domain
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2195,6 +2203,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "false"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -2548,7 +2564,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2558,7 +2574,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.dst_action_external_hostname
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2568,7 +2584,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2578,7 +2594,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.target_address
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2588,7 +2604,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.target_address
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2598,7 +2614,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.domain
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2609,6 +2625,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -2651,7 +2675,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2661,7 +2685,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.os_actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2671,7 +2695,7 @@ tasks:
                         simple: Core.OriginalAlert._all_events.actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -2682,6 +2706,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
