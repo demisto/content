@@ -747,7 +747,6 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                 else:
                     demisto.debug("KAFKA DEBUG: Didn't get any message break the loop")
                     break
-                
 
     finally:
         if kafka_consumer:
