@@ -180,6 +180,7 @@ Activate a database collector as described [here](https://docs-cortex.paloaltone
    | `Collect Every`   | Select the requested polling time interval. This interval must be shorter than the time interval defined on the custom view SQL query (1 hour on the sample query above). 
    | `Vendor`          | Enter *McAfee*. 
    | `Product`         | Enter *ePO*. 
+
    
 * Under the SQL Query editor, enter the following query, replacing <CUSTOM_VIEW_NAME> with the actual custom view name created on the McAfee ePO database: 
    ```SQL
