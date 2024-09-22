@@ -83,7 +83,7 @@ tasks:
       type:
         simple: png
       url:
-        simple: https://www.wikipedia.org/
+        simple: https://www.google.com
       wait_time:
         simple: "5"
     separatecontext: false
