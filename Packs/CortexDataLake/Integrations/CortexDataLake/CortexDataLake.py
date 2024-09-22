@@ -390,9 +390,8 @@ def system_log_context_transformer(row_content):
     This function retrieves data from a row of raw data into context path locations
     Args:
         row_content: a dict representing raw data of a row
-
     Returns:
-        a dict with
+        a dict with context paths and their corresponding value
     """
     return {
         'EventName': row_content.get('event_name'),
