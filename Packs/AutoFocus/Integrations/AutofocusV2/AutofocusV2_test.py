@@ -716,23 +716,25 @@ def test_metrics(mocker: MockerFixture, autofocusv2_client):
     mocker.patch.object(demisto, 'command', return_value='autofocus-top-tags-search')
     mocker.patch.object(demisto, 'args', return_value={'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'true'})
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.9.0', 'buildNumber': '12345'})
-    mock_request = mocker.patch.object(requests, 'request', return_value=type(
-        'MockResponse', (), {'json': lambda: bucket_info, 'status_code': 503}
-    ))
+    response = ResMocker(bucket_info, 503)
+    mocker.patch.object(autofocusv2_client, '_http_request', return_value=response)
+    mocker.patch('AutofocusV2.Client', return_value=autofocusv2_client)
+
     return_results_mock = mocker.patch('AutofocusV2.return_results')
     AutofocusV2.EXECUTION_METRICS = ExecutionMetrics()
 
     AutofocusV2.main()
 
-    mock_request.assert_called_with(
+    autofocusv2_client._http_request.assert_called_with(
         method='POST',
-        url='https://autofocus.paloaltonetworks.com/api/v1.0/top-tags/search/',
         headers={'Content-Type': 'application/json'},
         data=json.dumps({
             "query": {"operator": "all", "children": [{"field": "sample.tag_class", "operator": "is", "value": "actor"}]},
             "scope": None, "tagScopes": ["unit42"], "apiKey": "1234"
         }),
-        verify=True
+        url_suffix='/top-tags/search/',
+        ok_codes=(200, 409, 503),
+        resp_type='response',
     )
     assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
     assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
