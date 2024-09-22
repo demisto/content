@@ -57,6 +57,8 @@ DEFAULT_OPTIONS: Dict[str, Any] = {
 }
 GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 ENTITLEMENT_REGEX = fr'{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b'
+PERMITTED_NOTIFICATION_TYPES: list[str]
+INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 ''' CLIENT CLASS '''
 
 
@@ -392,6 +394,7 @@ async def check_and_handle_entitlement(answer_text: str, root_id: str, user_name
         reply = message.get('reply')
         guid, incident_id, task_id = extract_entitlement(entitlement)
         demisto.handleEntitlementForUser(incident_id, guid, user_name, answer_text, task_id)
+        demisto.debug(f"MM: Handled entitlement for {incident_id=}, {task_id=} with {answer_text=}")
         message['remove'] = True
         set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
     return reply
@@ -475,7 +478,6 @@ def long_running_loop():  # pragma: no cover
 
 
 def check_for_unanswered_messages():
-    demisto.debug('MM: checking for unanswered messages')
     integration_context = fetch_context()
     messages = integration_context.get('messages')
     if messages:
@@ -611,6 +613,16 @@ def get_username_by_id(client: HTTPClient, user_id: str) -> str:
     return result.get('username', '')
 
 
+def get_team_id_from_team_name(client: HTTPClient, team_name: str):
+    """
+    Gets a id from the team_name
+    :param email: str: The email of the user
+    :return: str: The username of the user
+    """
+    result = client.get_team_request(team_name)
+    return result.get('id', '')
+
+
 def fetch_context(force_refresh: bool = False) -> dict:
     """
     Fetches the integration instance context from the server if the CACHE_EXPIRY is smaller than the current epoch time
@@ -680,7 +692,26 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
                 channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, channel_name)
                 channel_id = channel_details.get('id', '')
             except Exception as e:
-                raise DemistoException(f"Did not find channel with name {channel_name}. Error: {e}")
+                if channel_name == INCIDENT_NOTIFICATION_CHANNEL:
+                    try:
+                        demisto.debug(f'MM: Creating a {INCIDENT_NOTIFICATION_CHANNEL} channel to send notification to.')
+                        params = {'team_id': get_team_id_from_team_name(client, client.team_name),
+                                  'name': INCIDENT_NOTIFICATION_CHANNEL.lower(),
+                                  'display_name': INCIDENT_NOTIFICATION_CHANNEL,
+                                  'type': "O"}
+                        channel_details = client.create_channel_request(params)
+                        channel_id = channel_details.get('id', '')
+                    except Exception as sec_e:
+                        if 'Channel does not exist.' in str(sec_e):
+                            hr = 'Could not create a new channel. An archived channel with the same name may exist' \
+                                'in the provided team, choose a different name.'
+                            raise DemistoException(hr)
+                        else:
+                            raise sec_e
+                else:
+                    raise DemistoException(
+                        f"Did not find channel with name {channel_name}. Make sure it exists or choose a "
+                        f"different one to send notifications to. Error: {e}")
 
     return channel_id
 
@@ -829,7 +860,7 @@ async def handle_posts(payload):
         answer_text = post.get('message', '')
         root_id = post.get('root_id', '')
         entitlement_reply = await check_and_handle_entitlement(answer_text, root_id, username)
-        demisto.debug(f"MM: {entitlement_reply=}")
+        demisto.debug(f"MM: Got {entitlement_reply=}")
         if entitlement_reply:
             process_entitlement_reply(entitlement_reply, root_id, username, answer_text)
 
@@ -1118,7 +1149,7 @@ def test_module(client: HTTPClient) -> str:  # pragma: no cover
         if 'Unable to find the existing team' in str(e):
             raise DemistoException('Could not find the team, make sure it is valid and/or exists.')
         elif 'Channel does not exist' in str(e):
-            raise DemistoException('Channel does not exist.')
+            raise DemistoException('Channel does not exist or archived, choose a different channel to send notifications to')
         else:
             raise e
 
@@ -1512,7 +1543,7 @@ def send_notification(client: HTTPClient, **args):
     """
     Sends notification for a MatterMost channel
     """
-    demisto.debug(f'MM: {args=}')
+    demisto.debug(f'MM: Sending notification with {args=}')
     to = args.get('to', '')
     entry = args.get('entry')
     channel_name = args.get('channel', '')
@@ -1543,12 +1574,21 @@ def send_notification(client: HTTPClient, **args):
     if entry_object:
         investigation_id = entry_object.get('investigationId')  # From server, available from demisto v6.1 and above
 
-    if message_type and message_type != MIRROR_TYPE:
+    if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES) and message_type != MIRROR_TYPE:
+        demisto.debug(f'MM: Will not mirror the message type: {message_type}')
         return (f"Message type is not in permitted options. Received: {message_type}")
 
-    if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
+    if message_type and message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
         return ("Message already mirrored")
+
+    if channel_name == INCIDENT_NOTIFICATION_CHANNEL:
+        if client.notification_channel:
+            # change the notification channel to the one in the configuration
+            channel_name = client.notification_channel
+        else:
+            demisto.debug('MM: No notification channel was configured, '
+                          f'will send notification to {INCIDENT_NOTIFICATION_CHANNEL}')
 
     if not ignore_add_url:
         investigation = demisto.investigation()
@@ -1591,7 +1631,7 @@ def handle_global_parameters(params: dict):  # pragma: no cover
     # Initializing global variables
     global SECRET_TOKEN, LONG_RUNNING, MIRRORING_ENABLED, CACHE_EXPIRY, CACHED_INTEGRATION_CONTEXT, DEMISTO_URL
     global BASE_URL, PROXY, SSL_CONTEXT, VERIFY_CERT, PROXIES, ALLOW_INCIDENTS, INCIDENT_TYPE, PROXY_URL
-    global WEBSOCKET_URL, PORT
+    global WEBSOCKET_URL, PORT, PERMITTED_NOTIFICATION_TYPES
     LONG_RUNNING = params.get('longRunning', False)
     MIRRORING_ENABLED = params.get('mirroring', False)
     SECRET_TOKEN = personal_access_token
@@ -1603,6 +1643,9 @@ def handle_global_parameters(params: dict):  # pragma: no cover
     PROXY_URL = PROXIES.get('http', '')  # aiohttp only supports http proxy
     ALLOW_INCIDENTS = params.get('allow_incidents', True)
     INCIDENT_TYPE = params.get('incidentType', 'Unclassified')
+    default_permitted_notification_types = ['externalAskSubmit', 'externalFormSubmit']
+    custom_permitted_notification_types = demisto.params().get('permitted_notifications', [])
+    PERMITTED_NOTIFICATION_TYPES = default_permitted_notification_types + custom_permitted_notification_types
     VERIFY_CERT = not params.get('insecure', False)
     if not VERIFY_CERT:
         SSL_CONTEXT = ssl.create_default_context()
