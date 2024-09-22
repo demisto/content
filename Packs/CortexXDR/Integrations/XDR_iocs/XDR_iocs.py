@@ -407,15 +407,15 @@ def set_sync_time(timestamp: datetime) -> None:
 def update_integration_context(update_sync_time_with_datetime: datetime | None = None,
                                update_is_first_sync_phase: str | None = None,
                                update_search_after_array: List[Any] | None = None):
-    updated_integration_context = get_integration_context() or {}
+    last_run = get_integration_context() or {}
     if update_sync_time_with_datetime:
-        updated_integration_context['ts'] = int(update_sync_time_with_datetime.timestamp()) * 1000
-        updated_integration_context['time'] = update_sync_time_with_datetime.strftime(DEMISTO_TIME_FORMAT)
+        last_run['ts'] = int(update_sync_time_with_datetime.timestamp()) * 1000
+        last_run['time'] = update_sync_time_with_datetime.strftime(DEMISTO_TIME_FORMAT)
     if update_is_first_sync_phase:
-        updated_integration_context['is_first_sync_phase'] = argToBoolean(update_is_first_sync_phase)
+        last_run['is_first_sync_phase'] = argToBoolean(update_is_first_sync_phase)
     if update_search_after_array:
-        updated_integration_context['search_after'] = update_search_after_array
-    set_integration_context(updated_integration_context)
+        last_run['search_after'] = update_search_after_array
+    set_integration_context(last_run)
 
 
 def sync(client: Client, batch_size: int = 200):
@@ -435,13 +435,12 @@ def sync(client: Client, batch_size: int = 200):
         os.remove(temp_file_path)
 
     set_sync_time(sync_time)
-    set_new_iocs_to_keep_time()
     return_outputs("sync with XDR completed.")
 
 
 def sync_for_fetch(client: Client, batch_size: int = 200):
     """
-    Sync command runs in batches of 4,000 with total of 40,000 indicators in each sync.
+    Sync command, by default, runs in batches of 4,000 with total of 40,000 indicators in each sync.
     Syncs the data in xsoar to xdr.
     """
     demisto.info("executing sync")
@@ -452,10 +451,10 @@ def sync_for_fetch(client: Client, batch_size: int = 200):
                                                                        stop_iteration=True,
                                                                        query=full_query)))
         if request_data:
-            integration_context = get_integration_context()
+            last_run = get_integration_context()
             demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
                           f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, with indicator {request_data[-1].get('indicator')}, "
-                          f"search_after {integration_context.get('search_after')}")
+                          f"search_after {last_run.get('search_after')}")
             response = push_indicators_to_xdr_request(client, request_data)
             if validation_errors := response.get('reply', {}).get('validation_errors'):
                 errors = create_validation_errors_response(validation_errors)
@@ -466,34 +465,8 @@ def sync_for_fetch(client: Client, batch_size: int = 200):
         else:
             demisto.debug("request_data is empty, no indicators to sync")
             update_integration_context(update_is_first_sync_phase='false')
-        is_iocs_to_keep_time()
     except Exception as e:
         raise DemistoException(f"Failed to sync indicators with error {e}.")
-
-
-def iocs_to_keep(client: Client):
-    """
-    Creats a file of all the indicators from xsoar we want to keep in XDR.
-    All the indicators not send to XDR with the file will be deleted from XDR.
-    This is to sync the expired/deleted/no more under filter IOC.
-    """
-    demisto.info("Skipping iocs_to_keep due to an issue with the XDR API")
-    return
-
-    demisto.info("executing iocs_to_keep: this will send non-expired IOCs matching the query from XSOAR to XDR")  # noqa: suppress vulture on dead code
-    if datetime.utcnow().hour not in range(1, 3):
-        raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
-    temp_file_path: str = get_temp_file()
-    try:
-        create_file_iocs_to_keep(temp_file_path)  # can't be empty
-        requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
-        path = 'iocs_to_keep'
-        demisto.debug(f"calling endpoint {path}")
-        client.http_request(path, requests_kwargs)
-        set_new_iocs_to_keep_time()
-    finally:
-        os.remove(temp_file_path)
-    return_outputs('sync with XDR completed.')
 
 
 def get_iocs_to_keep_file():
@@ -576,10 +549,10 @@ def tim_insert_jsons(client: Client):
         demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
         current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
         while True:
-            integration_context: dict = get_integration_context()
+            last_run: dict = get_integration_context()
             query = (create_query_with_end_time(to_date=current_run)
-                     if integration_context.get('search_after')
-                     else create_last_iocs_query(from_date=integration_context.get('time'), to_date=current_run))
+                     if last_run.get('search_after')
+                     else create_last_iocs_query(from_date=last_run.get('time'), to_date=current_run))
             demisto.info(f"pushing IOCs to XDR: querying XSOAR's recently-modified IOCs with {query=}")
             iocs = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=BATCH_SIZE,
                                                                    stop_iteration=True,
@@ -689,16 +662,16 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
 
 def get_changes(client: Client):
     demisto.debug("pull XDR changes: starting")
-    integration_context: dict = get_integration_context()
-    if not integration_context:
+    last_run: dict = get_integration_context()
+    if not last_run:
         raise DemistoException('XDR is not synced.')
-    path, requests_kwargs = prepare_get_changes(integration_context['ts'])
+    path, requests_kwargs = prepare_get_changes(last_run['ts'])
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
     demisto.debug(f'pull XDR changes: calling endpoint {path}, {requests_kwargs=}')
     if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
-        integration_context['ts'] = iocs[-1].get('RULE_MODIFY_TIME', integration_context) + 1
-        set_integration_context(integration_context)
-        demisto.info(f'pull XDR changes: setting {integration_context} to integration context ')
+        last_run['ts'] = iocs[-1].get('RULE_MODIFY_TIME', last_run['ts']) + 1
+        set_integration_context(last_run)
+        demisto.info(f'pull XDR changes: setting {last_run} to integration context ')
         demisto.info(f"pull XDR changes: converting {len(iocs)} XDR IOCs to xsoar format, then creating indicators")
         demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
         demisto.createIndicators(demisto_indicators)
@@ -709,8 +682,8 @@ def get_changes(client: Client):
 
 def module_test(client: Client):
     params = demisto.params()
-    if params.get('feed') and params.get('feedFetchInterval') and arg_to_number(params.get('feedFetchInterval')) < 20:
-        raise DemistoException("'Feed Fetch Interval' parameter should be 20 or larger.")
+    if params.get('feed') and params.get('feedFetchInterval') and arg_to_number(params.get('feedFetchInterval')) < 15:
+        raise DemistoException("'Feed Fetch Interval' parameter should be 15 or larger.")
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
@@ -721,11 +694,11 @@ def module_test(client: Client):
 
 def fetch_indicators(client: Client, auto_sync: bool = False):
     demisto.debug("fetching IOCs: starting")
-    integration_context = get_integration_context()
-    demisto.debug(f"The integration context inside fetch_indicators is {integration_context=}")
-    if (((not integration_context) or (integration_context.get('is_first_sync_phase', False)))
+    last_run = get_integration_context()
+    demisto.debug(f"The integration context inside fetch_indicators is {last_run=}")
+    if (((not last_run) or (last_run.get('is_first_sync_phase', False)))
             and auto_sync):
-        if not integration_context:
+        if not last_run:
             sync_time = datetime.now(timezone.utc)
             update_integration_context(update_sync_time_with_datetime=sync_time, update_is_first_sync_phase='true')
         demisto.debug("fetching IOCs: running sync with is_first_stage_sync=True")
@@ -736,11 +709,6 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
         if auto_sync:
             demisto.debug("fetching IOCs from xsoar: auto_sync is on")
             tim_insert_jsons(client)
-            demisto.debug("checking if iocs_to_keep should run")
-            if is_iocs_to_keep_time():
-                # first_time=False, is_first_stage_sync=False so will call iocs_to_keep
-                demisto.debug("running sync with first_time=False")
-                xdr_iocs_sync_command(client, called_from_fetch=True)
         get_changes(client)
 
 
@@ -755,47 +723,6 @@ def xdr_iocs_sync_command(client: Client,
         else:
             # the sync is the large operation including the data and the get_integration_context is fill in the sync
             sync(client, batch_size=BATCH_SIZE)
-    else:
-        iocs_to_keep(client)
-
-
-def set_new_iocs_to_keep_time():
-    offset = secrets.randbelow(115)
-    hour, minute = divmod(offset, 60)
-    hour += 1
-    last_ioc_to_keep = datetime.now(timezone.utc)  # noqa: UP017
-    last_ioc_to_keep = last_ioc_to_keep.replace(hour=hour, minute=minute) + timedelta(
-        days=1
-    )
-    next_iocs_to_keep_time = last_ioc_to_keep.strftime(DEMISTO_TIME_FORMAT)
-    demisto.debug(f"Setting next iocs to keep time to {next_iocs_to_keep_time}.")
-    # This will set the new ioc to keep time in the integration context
-    set_integration_context(
-        get_integration_context()
-        | {"next_iocs_to_keep_time": next_iocs_to_keep_time}
-    )
-
-
-def is_iocs_to_keep_time():
-    """
-    This function checks if this is the time to run the iocs_to_keep command.
-    In order to remove deleted/expired/filtered indicators.
-    """
-    next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
-
-    if next_iocs_to_keep_time is None:
-        # This is supposed to happen only in the case of appliying the fixed version on a running instance.
-        set_new_iocs_to_keep_time()
-        next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
-
-    time_now = datetime.now(timezone.utc)  # noqa: UP017
-    if (
-        time_now.hour in range(1, 3)
-        and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT).replace(tzinfo=timezone.utc)  # noqa: UP017
-    ):
-        return True
-
-    return False
 
 
 def is_xdr_data(ioc):
@@ -886,9 +813,10 @@ def validate_fix_severity_value(severity: str, indicator_value: str | None = Non
 
 def main():  # pragma: no cover
     params = demisto.params()
-    if params.get('feed') and params.get('feedFetchInterval') and arg_to_number(params.get('feedFetchInterval')) < 20:
-        demisto.debug("If feedFetchInterval parameter is set to less then 15 minutes, it could lead to internal error from "
-                      "xdr side.")
+    feed_fetch_interval = arg_to_number(params.get('feedFetchInterval'))
+    if params.get('feed') and feed_fetch_interval and arg_to_number(feed_fetch_interval) < 15:
+        demisto.info(f"`Feed Fetch Interval` is set to {feed_fetch_interval}. Setting the `Feed Fetch Interval` to less then 15 "
+                     "minutes could lead to internal error from xdr side.")
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
     Client.override_severity = argToBoolean(params.get('override_severity', True))

@@ -122,7 +122,7 @@ configuration:
   defaultvalue: 'true'
   hidden: true
   required: false
-- defaultvalue: '20'
+- defaultvalue: '15'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
