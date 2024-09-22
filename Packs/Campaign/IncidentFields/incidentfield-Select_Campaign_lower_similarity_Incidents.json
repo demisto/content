@@ -4,7 +4,7 @@
     "modified": "2021-09-02T17:52:21.377521772Z",
     "name": "Select Low Similarity Incidents",
     "ownerOnly": false,
-    "cliName": "selectlowsimilarityincidents",
+    "cliName": "selectlowsimilarityincidentsrr",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
