@@ -255,7 +255,7 @@ def test_calculate_dbot_score_file():
 def test_connection_error(mocker, autofocusv2_client):
     import AutofocusV2
 
-    def raise_connection_error(url_suffix, method, ok_codes, headers, params, data={} , err_operation=None):
+    def raise_connection_error(url_suffix, method, ok_codes, headers, params, data={}, err_operation=None):
         assert url_suffix == '/tic'
         assert method == 'GET'
         assert headers == {
@@ -735,6 +735,8 @@ def test_metrics(mocker: MockerFixture, autofocusv2_client):
         url_suffix='/top-tags/search/',
         ok_codes=(200, 409, 503),
         resp_type='response',
+        retries=3,
+        params={}
     )
     assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
     assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
