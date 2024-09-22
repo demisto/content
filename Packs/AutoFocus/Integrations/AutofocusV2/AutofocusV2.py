@@ -283,25 +283,6 @@ class Client(BaseClient):
     def __init__(self, url: str, verify: bool = True):
         super().__init__(base_url=url, verify=verify)
 
-    def get_url_enrichment(self, headers: dict, params: dict, ok_codes: tuple) -> Response:
-        """ Get more information about a URL.
-        Args:
-            headers: dict - the headers of the request
-            params: dict - the parameters of the request
-            ok_codes: list - a list of status codes that we want to handle in the code and not raise automatic exception about.
-        Returns:
-            A response object.
-        """
-        return self._http_request(
-            method='GET',
-            url_suffix='/tic',
-            headers=headers,
-            params=params,
-            retries=3,
-            resp_type='response',
-            ok_codes=ok_codes
-        )
-
     def parse_response(self, resp: requests.Response, err_operation: str | None) -> dict:
         try:
             res_json = resp.json()
@@ -332,26 +313,35 @@ class Client(BaseClient):
             EXECUTION_METRICS.general_error += 1
             raise DemistoException(f'{err_operation}: {err}')
 
-    def http_request(self, url_suffix, method='POST', data={}, err_operation=None):
+    def http_request(self, url_suffix, method='POST', data={}, err_operation=None, ok_codes=(200, 409, 503), headers=HEADERS,
+                     params={}):
         """ A general http request.
         Args:
             method: str - the method to perform in the http request (GET, POST, etc.)
             url_suffix: str - the url_suffix for the http request.
             data: Any - the data for the request.
             err_operation: str - The string that will be in the exception in case one occurred.
+            ok_codes: tuple - a list of status codes that we want to handle in the code and not raise automatic exception about.
+            headers: dict - the headers of the request
+            params: dict - the parameters of the request
         Returns:
-            A response object.
+            A response object in case of a GET method (url, ip, domain, file), otherwise a dict.
         """
-        data.update({'apiKey': API_KEY})
+        # The GET method is used only in search_indicator commands (url, ip, domain, file), and they have the API key in
+        # the headers instead of data.
+        if method == 'POST':
+            data.update({'apiKey': API_KEY})
         try:
             demisto.debug('http_request: before the request')
             res = self._http_request(
                 method=method,
                 url_suffix=url_suffix,
                 data=json.dumps(data),
-                headers=HEADERS,
+                headers=headers,
                 resp_type='response',
-                ok_codes=(200, 409, 503)
+                ok_codes=ok_codes,
+                retries=3,
+                params=params
             )
             demisto.debug(f'http_request: {res=}')
         # Handle with connection error
@@ -359,6 +349,11 @@ class Client(BaseClient):
             demisto.debug('http_request in requests.exceptions.ConnectionError')
             EXECUTION_METRICS.connection_error += 1
             raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
+
+        # for the different search_indicator commands (url, ip, domain, file) the calling function handles the different
+        # status codes.
+        if method == 'GET':
+            return res
 
         return self.parse_response(res, err_operation)
 
@@ -1054,7 +1049,12 @@ def search_indicator(client, indicator_type, indicator_value):
         # 404, 409, 503 a list of status codes that we want to handle in the code and not raise automatic exception about.
         ok_codes = (200, 404, 409, 503)
         demisto.debug(f'search_indicator: using the client with {ok_codes=}')
-        result = client.get_url_enrichment(headers, params, ok_codes)
+        result = client.http_request(
+            method='GET',
+            url_suffix='/tic',
+            headers=headers,
+            params=params,
+            ok_codes=ok_codes)
         demisto.debug(f'search_indicator: {result.status_code=} {result=}')
 
         try:
