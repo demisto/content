@@ -210,6 +210,7 @@ def test_query_logs_command_transform_results_1():
     )
     assert results_noxform == {'CDL.Logging': cdl_records}
 
+
 def test_query_logs_command_transform_sysmtem_logs():
     """
     Given:
@@ -231,6 +232,7 @@ def test_query_logs_command_transform_sysmtem_logs():
     _, results_xform, _ = query_logs_command({'limit': '1', 'query': 'SELECT * FROM `log.system`'}, MockClient())
 
     assert results_xform == {'CDL.Logging': cdl_records_xform}
+
 
 class TestPagination:
     """
