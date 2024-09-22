@@ -43,3 +43,30 @@ def test_main(mocker, left, right, call_count, expected_result):
     for i in range(len(expected_result)):
         results = demisto.results.call_args_list[i][0][0]
         assert results == expected_result[i]
+
+
+def test_main_missing_arg(mocker):
+    """
+    Given:
+        Arguments missing a left or right arg.
+    When:
+        Running AnyMatch script.
+    Then:
+        Validate false is returned.
+    """
+    mocker.patch.object(demisto, 'args')
+    mocker.patch.object(demisto, 'results')
+
+    # Test left missing
+    demisto.args.return_value = {'right': 'some_value'}
+
+    main()
+
+    demisto.results.assert_called_with(False)
+
+    # Test right missing
+    demisto.args.return_value = {'left': 'some_value'}
+
+    main()
+
+    demisto.results.assert_called_with(False)

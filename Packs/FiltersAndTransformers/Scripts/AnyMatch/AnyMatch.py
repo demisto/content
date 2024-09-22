@@ -20,6 +20,9 @@ def main():
     leftArg = args.get("left")
     rightArg = args.get("right")
 
+    if not (leftArg and rightArg):
+        return_results(False)
+
     left_list = argToList(str(leftArg))
     right_list = argToList(str(rightArg))
 
