@@ -7,6 +7,14 @@ from typing import Any
 
 class Command:
     def __init__(self, brand: str, name: str, args: dict) -> None:
+        """
+        Initialize a Command object.
+
+        Args:
+            brand (str): The brand associated with the command.
+            name (str): The name of the command.
+            args (dict): A dictionary containing the command arguments.
+        """
         self.brand = brand
         self.name = name
         self.args = args
@@ -14,6 +22,18 @@ class Command:
 
 class Modules:
     def __init__(self, modules: dict[str, Any], brands_to_run: list[str]) -> None:
+        """
+        Initialize the Modules instance.
+
+        Args:
+            modules (dict[str, Any]): A dictionary containing module information.
+            brands_to_run (list[str]): A list of brands to run.
+
+        Attributes:
+            modules_context (dict[str, Any]): The modules dictionary.
+            _brands_to_run (list[str]): The list of brands to run.
+            _enabled_brands (set[str]): A set of active brands extracted from the modules.
+        """
         self.modules_context = modules
         self._brands_to_run = brands_to_run
         self._enabled_brands = {
@@ -33,7 +53,7 @@ class Modules:
             bool: True if the brand is in the list of brands to run, False otherwise.
         """
         is_in_brands_to_run = (
-            command.brand in self._enabled_brands if self._enabled_brands else True
+            command.brand in self._brands_to_run if self._brands_to_run else True
         )
 
         if not is_in_brands_to_run:
@@ -45,13 +65,13 @@ class Modules:
 
     def is_brand_available(self, command: Command) -> bool:
         """
-        Check if a brand is available (active) in the Modules instance.
+        Check if a brand is available and in the list of brands to run.
 
         Args:
-            brand_name (str): The name of the brand to check.
+            command (Command): The command object containing the brand to check.
 
         Returns:
-            bool: True if the brand is available, False otherwise.
+            bool: True if the brand is available and in the list of brands to run, False otherwise.
         """
         is_available = command.brand in self._enabled_brands
         if not is_available:
@@ -62,6 +82,28 @@ class Modules:
             is_available = False
 
         return is_available
+
+
+def is_valid_args(command: Command):
+    """
+    Validate if the command has valid arguments.
+
+    Args:
+        command (Command): The command object to validate.
+
+    Returns:
+        bool: True if the command has valid arguments, False otherwise.
+
+    Note:
+        If the command has no arguments, it is considered valid.
+    """
+    is_valid = any(command.args.values()) if command.args else True
+    if not is_valid:
+        demisto.debug(
+            f"Skipping command '{command.name}' since no required arguments were provided."
+        )
+
+    return is_valid
 
 
 def create_account(
@@ -105,8 +147,8 @@ def create_account(
     source_id = source_id if id else None
     account = {
         "id": {
-            "value": id,
-            "source": source_id,
+            "Value": id,
+            "Source": source_id,
         },
         "username": username,
         "display_name": display_name,
@@ -267,23 +309,20 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
         dict[str, Any]: A dictionary representation of the merged Common.Account object,
         or an empty dictionary if no accounts were provided.
     """
-    merged_account: dict[str, Any] = {"id": []}
+    merged_account: dict[str, Any] = {}
     for account in accounts:
         for key, value in account.items():
             if key == "id":
-                merged_account["id"].append(value)
+                if key not in merged_account:
+                    merged_account[key] = [value]
+                else:
+                    merged_account[key].append(value)
             elif key not in merged_account:
                 merged_account[key] = value
             elif merged_account[key] != value:
                 demisto.debug(
                     f"Conflicting values for key '{key}': '{merged_account[key]}' vs '{value}'"
                 )
-    if not merged_account["id"]:
-        demisto.debug(
-            f"No 'id' key found in merged account with keys: {list(merged_account.keys())}"
-        )
-        merged_account = {}
-
     return (
         Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH]
         if merged_account
@@ -292,7 +331,7 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
 
 
 def run_execute_command(
-    command_name: str, args: dict[str, Any], timeout: int = 5
+    command_name: str, args: dict[str, Any]
 ) -> tuple[list[dict], str, list[CommandResults]]:
     """
     Executes a command and processes its results.
@@ -311,7 +350,6 @@ def run_execute_command(
             - A list of CommandResults objects representing any errors that occurred.
     """
     demisto.debug(f"Executing command: {command_name}")
-    args.update({"execution-timeout": timeout})
     res = demisto.executeCommand(command_name, args)
     errors_command_results = []
     human_readable_list = []
@@ -571,6 +609,7 @@ def xdr_list_risky_users(
     )
     output_key = get_output_key("PaloAltoNetworksXDR.RiskyUser", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
+    # TODO : Add username
     account_output = create_account(
         id=outputs.get("id"),
         source_id=command.brand,
@@ -596,7 +635,7 @@ def iam_get_user_command(
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(
-        command_name, args, timeout=10
+        command_name, args
     )
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(
@@ -619,33 +658,10 @@ def iam_get_user_command(
     return readable_outputs_list, account_outputs
 
 
-def is_valid_args(command: Command):
-    """
-    Validate that at least one of the required arguments is provided for the command.
-
-    Args:
-        command_name (str): The name of the command.
-        user_id (str): The user ID.
-        user_name (str): The user name.
-        user_email (str): The user email.
-        domain (str): The domain.
-
-    Returns:
-        bool: True if at least one of the arguments is provided, False otherwise.
-    """
-    is_valid = any(command.args.values())
-    if not is_valid:
-        demisto.debug(
-            f"Skipping command '{command.name}' since no required arguments were provided."
-        )
-
-    return is_valid
-
-
 """ MAIN FUNCTION """
 
 
-def main():  # pragma: no cover
+def main():
     try:
         args = demisto.args()
         users_ids = argToList(args.get("user_id", []))
@@ -815,7 +831,7 @@ def main():  # pragma: no cover
 
             ### iam-get-user command implementation ###
             if modules.is_brand_in_brands_to_run(
-                Command(brand="", name="iam-get-user", args={})
+                Command(brand="iam-get-user", name="iam-get-user", args={})
             ):
                 readable_outputs, outputs = iam_get_user_command(
                     user_id, user_name, user_email, domain
