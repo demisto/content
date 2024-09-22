@@ -1776,7 +1776,7 @@ def run_polling_command(client: CoreClient,
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
     if values_raise_error and result in values_raise_error:
-        raise DemistoException(f"Command {cmd} didn't succeeded, received status {result}")
+        raise DemistoException(f"The command {cmd} failed. Received status {result}")
     if cond:
         # schedule next poll
         polling_args = {
