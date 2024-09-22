@@ -54,7 +54,7 @@ configuration:
   section: Collect
   required: false
 description: This integration fetches activities, threats, and alerts from SentinelOne.
-display: SentinelOne Activity and Alert Collector
+display: SentinelOne Activity and Alerts Collector
 name: SentinelOneEventCollector
 supportlevelheader: xsoar
 script:
