@@ -94,7 +94,7 @@ def test_module(client: Client, args: dict) -> str:
     try:
         client.fetch_indicators()
     except Exception:
-        raise Exception("Could not fetch Google Threat Intelligence Livehunt Feed\n"
+        raise Exception("Could not fetch Google Threat Intelligence IoC Stream Feed\n"
                         "\nCheck your API key and your connection to Google Threat Intelligence.")
     return 'ok'
 
@@ -359,7 +359,7 @@ def get_indicators_command(client: Client,
     )
 
     human_readable = tableToMarkdown(
-        'Indicators from Google Threat Intelligence Livehunt Feed:',
+        'Indicators from Google Threat Intelligence IoC Stream Feed:',
         indicators,
         headers=[
             'id',
@@ -425,7 +425,7 @@ def main():
             proxy=proxy,
             headers={
                 'x-apikey': params['credentials']['password'],
-                'x-tool': 'CortexGTILivehuntFeed',
+                'x-tool': 'CortexGTIIoCStreamFeed',
             }
         )
 
