@@ -693,6 +693,7 @@ def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, incre
     handle.truncate.assert_called_once()
     assert mocker_json.called
 
+
 def test_read_json_file(mocker):
     """
     Given:
@@ -708,6 +709,7 @@ def test_read_json_file(mocker):
     file_result = read_json_file("test_data/chrome_instances.json")
     assert file_result == mock_file_content
 
+
 def test_read_text_file():
     """
     Given:
@@ -718,6 +720,8 @@ def test_read_text_file():
         - The function reads the log file and returns the correct content.
     """
     from rasterize import read_text_file
-    expected_result =  util_read_tsv(file_path="test_data/example_log_file.log")
+    expected_result = util_read_tsv(file_path="test_data/example_log_file.log")
     read_text_file_result = read_text_file(file_path="test_data/example_log_file.log")
     assert read_text_file_result == expected_result
+
+

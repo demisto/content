@@ -564,7 +564,7 @@ def generate_chrome_port() -> str | None:
     return None
 
 
-def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:
+def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:  # pragma: no cover
     tab_ready_event = Event()
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
 
