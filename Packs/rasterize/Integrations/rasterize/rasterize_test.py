@@ -697,14 +697,11 @@ def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, incre
 def test_write_json_file_new_file(mocker):
     """
     Given:
-        - A new Chrome instance content
-        - A valid Chrome port
-        - An increase counter
-        - A terminate port
+        - A new Chrome instance content(first chrome instance).
     When:
         - Executing the write_json_file function
     Then:
-        - The function writes to the correct file, truncates it, and calls json.dump with the expected arguments.
+        - The function creates and writes to the correct file, calls json.dump with the expected arguments.
     """
     from rasterize import write_json_file
     from unittest.mock import mock_open
