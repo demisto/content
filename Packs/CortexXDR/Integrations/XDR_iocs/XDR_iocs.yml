@@ -226,5 +226,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- Cortex XDR - IOC - Test
 fromversion: 5.5.0
