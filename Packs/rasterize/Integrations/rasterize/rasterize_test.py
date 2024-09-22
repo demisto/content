@@ -19,6 +19,17 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
+def util_read_tsv(file_path):
+    with open(file_path) as file:
+        ret_value = file.read()
+        return ret_value
+
+
+def util_load_json(path):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
 def test_rasterize_email_image(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -649,10 +660,21 @@ def test_is_mailto_urls(mocker: MockerFixture):
                              ({}, '2222', '', True),
                          ])
 def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, increase_counter, terminate_port):
-    from rasterize import write_json_file, read_json_file
+    """
+    Given:
+        - A new Chrome instance content
+        - A valid Chrome port
+        - An increase counter
+        - A terminate port
+    When:
+        - Executing the write_json_file function
+    Then:
+        - The function writes to the correct file, truncates it, and calls json.dump with the expected arguments.
+    """
+    from rasterize import write_json_file
     from unittest.mock import mock_open
     mocker.patch("os.path.exists", return_value=True)
-    mock_file_content = read_json_file("test_data/chrome_instances.json")
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
     mock_file = mock_open()
     mocker.patch("builtins.open", mock_file)
     mocker.patch.object(json, 'load', return_value=mock_file_content)
@@ -670,3 +692,32 @@ def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, incre
     handle.seek.assert_called_once_with(0)
     handle.truncate.assert_called_once()
     assert mocker_json.called
+
+def test_read_json_file(mocker):
+    """
+    Given:
+        - A JSON file at 'test_data/chrome_instances.json'
+    When:
+        - Executing the read_json_file function
+    Then:
+        - The function reads the JSON file and returns the correct content.
+    """
+    from rasterize import read_json_file
+    mocker.patch("os.path.exists", return_value=True)
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    file_result = read_json_file("test_data/chrome_instances.json")
+    assert file_result == mock_file_content
+
+def test_read_text_file():
+    """
+    Given:
+        - A log file at 'test_data/example_log_file.json'
+    When:
+        - Executing the read_json_file function
+    Then:
+        - The function reads the log file and returns the correct content.
+    """
+    from rasterize import read_text_file
+    expected_result =  util_read_tsv(file_path="test_data/example_log_file.log")
+    read_text_file_result = read_text_file(file_path="test_data/example_log_file.log")
+    assert read_text_file_result == expected_result
