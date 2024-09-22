@@ -73,8 +73,8 @@ tasks:
       id: 72d68f27-3f59-4b81-8e76-0672b557a892
       version: -1
       name: Find Similar Alerts
-      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
-      scriptName: DBotFindSimilarIncidents
+      description: Find past similar alerts based on alert fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarAlerts
       type: regular
       iscommand: false
       brand: ""
@@ -2067,10 +2067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 6ac7df05-8ed0-4ccb-8860-ea096895f627
+    taskid: 026ac72a-bad2-4e5d-81a4-1175817a6305
     type: condition
     task:
-      id: 6ac7df05-8ed0-4ccb-8860-ea096895f627
+      id: 026ac72a-bad2-4e5d-81a4-1175817a6305
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the large upload Cortex XDR alerts.
@@ -2120,7 +2120,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Core._all_events.actor_process_image_sha256
+                        simple: Core.OriginalAlert._all_events.actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
                   - operator: containsGeneral
