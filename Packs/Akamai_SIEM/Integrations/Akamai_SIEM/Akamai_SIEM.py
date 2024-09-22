@@ -375,6 +375,14 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
+def reset_offset_command(client: Client):
+    ctx = get_integration_context()
+    print(f"before removing ctx, {ctx=}")
+    if "offset" in ctx:
+        del ctx["offset"]
+    print(f"after removing ctx, {ctx=}")
+    set_integration_context(ctx)
+    return 'Offset was reset successfully.', {}, {}
 @logger
 def fetch_events_command(
     client: Client,
@@ -461,7 +469,8 @@ def main():  # pragma: no cover
     )
     commands = {
         "test-module": test_module_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command
+        f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command,
+        f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
