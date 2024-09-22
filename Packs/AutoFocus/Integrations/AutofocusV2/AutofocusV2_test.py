@@ -255,7 +255,9 @@ def test_calculate_dbot_score_file():
 def test_connection_error(mocker, autofocusv2_client):
     import AutofocusV2
 
-    def raise_connection_error(headers, params, ok_codes):
+    def raise_connection_error(url_suffix, method, ok_codes, headers, params, data={} , err_operation=None):
+        assert url_suffix == '/tic'
+        assert method == 'GET'
         assert headers == {
             'Content-Type': 'application/json',
             'apiKey': '1234'
@@ -268,7 +270,7 @@ def test_connection_error(mocker, autofocusv2_client):
         assert ok_codes == (200, 404, 409, 503)
         raise requests.exceptions.ConnectionError
 
-    mocker.patch.object(autofocusv2_client, 'get_url_enrichment', side_effect=raise_connection_error)
+    mocker.patch.object(autofocusv2_client, 'http_request', side_effect=raise_connection_error)
 
     with pytest.raises(
         AutofocusV2.DemistoException,
@@ -456,7 +458,7 @@ def test_search_url_command(mocker, autofocusv2_client):
 
     status_code = 200
     response = ResMocker(mock_response, status_code)
-    mocker.patch.object(autofocusv2_client, 'get_url_enrichment', return_value=response)
+    mocker.patch.object(autofocusv2_client, 'http_request', return_value=response)
 
     result = search_url_command(autofocusv2_client, "www.こんにちは.com", 'B - Usually reliable', True)
 
@@ -489,6 +491,7 @@ def test_search_url_command_args(mocker, autofocusv2_client):
 
     http_request.assert_called_with(method='GET',
                                     url_suffix='/tic',
+                                    data=json.dumps({}),
                                     headers=expected_headers,
                                     params=expected_params,
                                     retries=3,
@@ -538,7 +541,7 @@ def test_search_file_command(mocker, mock_response, file_hash, expected_results,
 
     status_code = 200
     response = ResMocker(response_json, status_code)
-    mocker.patch.object(autofocusv2_client, 'get_url_enrichment', return_value=response)
+    mocker.patch.object(autofocusv2_client, 'http_request', return_value=response)
 
     results = search_file_command(autofocusv2_client, file_hash, None, False)
 
@@ -567,7 +570,7 @@ def test_search_domain_command(mock_response, domain, mocker, autofocusv2_client
 
     status_code = 200
     response = ResMocker(response_json, status_code)
-    mocker.patch.object(autofocusv2_client, 'get_url_enrichment', return_value=response)
+    mocker.patch.object(autofocusv2_client, 'http_request', return_value=response)
 
     results = search_domain_command(autofocusv2_client, domain, None, False)
 
@@ -604,7 +607,7 @@ def test_search_indicator_command__no_indicator(mocker, autofocusv2_client, ioc_
 
     status_code = 200
     response = ResMocker(no_indicator_response, status_code)
-    mocker.patch.object(autofocusv2_client, 'get_url_enrichment', return_value=response)
+    mocker.patch.object(autofocusv2_client, 'http_request', return_value=response)
 
     # run
     result = ioc_type_to_command[ioc_type](autofocusv2_client, ioc_val, 'B - Usually reliable', True)
@@ -632,7 +635,7 @@ def test_search_url_command__no_indicator(mocker, autofocusv2_client):
     }
     status_code = 200
     response = ResMocker(no_indicator_response, status_code)
-    mocker.patch.object(autofocusv2_client, 'get_url_enrichment', return_value=response)
+    mocker.patch.object(autofocusv2_client, 'http_request', return_value=response)
 
     # run
     result = search_url_command(autofocusv2_client, 'test_url', 'B - Usually reliable', True)
