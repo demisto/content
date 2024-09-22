@@ -7,17 +7,17 @@ This playbook is designed to handle the following alerts:
 
 Playbook Stages:
 
-- Early Containment:
-To terminate the connection from the Tor exit node, the playbook will clear/revoke the user's sessions and force re-authentication. Depending on the alert source, the playbook will use either MS-Graph or G-Suite to clear the user sessions.
+Early Containment:
+- To terminate the connection from the Tor exit node, the playbook will clear/revoke the user's sessions and force re-authentication. Depending on the alert source, the playbook will use either MS-Graph or G-Suite to clear the user sessions.
 
-- Investigation:
-The playbook will assess the risk score of the user connected from the Tor exit node and examine the legitimacy of the user agent.
+Investigation:
+- The playbook will assess the risk score of the user connected from the Tor exit node and examine the legitimacy of the user agent.
 
-- Containment:
-If the user's risk score is high or the user agent is detected as suspicious, the playbook will recommend blocking the account connected from the Tor exit node. The playbook will use MS-Graph, G-Suite, or AWS-IAM, depending on the alert source.
+Containment:
+- If the user's risk score is high or the user agent is detected as suspicious, the playbook will recommend blocking the account connected from the Tor exit node. The playbook will use MS-Graph, G-Suite, or AWS-IAM, depending on the alert source.
 
-- Eradication:
-For users with PAN-OS enabled, the playbook will recommend blocking all IPs from the Palo Alto Intelligence-based external dynamic list that contains Tor exit nodes. The goal is to prevent the use of Tor within the organization.
+Eradication:
+- For users with PAN-OS enabled, the playbook will recommend blocking all IPs from the Palo Alto Intelligence-based external dynamic list that contains Tor exit nodes. The goal is to prevent the use of Tor within the organization.
 
 Requirements:
 
@@ -36,7 +36,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* CortexCoreIR
+* Cortex Core - IR
 * Azure Active Directory Users
 * Google Workspace Admin
 * AWS IAM
@@ -47,15 +47,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* msgraph-user-list
+* core-list-risky-users
+* msgraph-user-account-disable
+* core-get-cloud-original-alerts
+* closeInvestigation
+* msgraph-user-session-revoke
+* aws-iam-delete-login-profile
 * gsuite-user-signout
 * gsuite-user-update
-* core-get-cloud-original-alerts
-* core-list-risky-users
-* closeInvestigation
-* msgraph-user-account-disable
-* aws-iam-delete-login-profile
-* msgraph-user-session-revoke
-* msgraph-user-list
 
 ## Playbook Inputs
 
