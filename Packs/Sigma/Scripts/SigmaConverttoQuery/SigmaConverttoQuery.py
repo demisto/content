@@ -23,7 +23,7 @@ SIEMS = {
 }
 
 
-def get_sigma_dictionary(indicator: str) -> str:
+def get_sigma_dictionary(indicator_name: str) -> str:
     """
     Find the Sigma rule dictionary for a given indicator value.
 
@@ -38,15 +38,13 @@ def get_sigma_dictionary(indicator: str) -> str:
     """
 
     try:
-        demisto.debug(f'Starting search for indicator: {indicator}')
-        indicators = execute_command('findIndicators', {'value': indicator})
+        demisto.debug(f'Starting search for indicator: {indicator_name}')
+        indicator = execute_command('findIndicators', {'query': f'value:"{indicator_name}" and type:"Sigma Rule"'})
 
-        if not indicators:
-            return_error(f'No indicator found with value {indicator}.')
+        if not indicator:
+            return_error(f'No indicator found with value "{indicator_name}".')
 
-        indicator = indicators[0]
-
-        sigma = indicator.get('CustomFields', {}).get('sigmaruleraw', '')
+        sigma = indicator[0].get('CustomFields', {}).get('sigmaruleraw', '')  # type: ignore
 
     except DemistoException as e:
         return_error(f'XSOAR encountered an error - {e}')
