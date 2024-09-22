@@ -249,6 +249,7 @@ def create_msg():
     html_body = demisto.getArg('htmlBody') or ''
     reply_to = demisto.getArg('replyTo')
     template_params = parse_template_params()
+    demisto.debug(f'create_msg, {to=} {body=} {html_body=}')
     if template_params:
         body = body.format(**template_params)
         html_body = html_body.format(**template_params)
@@ -264,6 +265,7 @@ def create_msg():
     # Let's see what type of message we are talking about
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
+        demisto.debug('create_msg, no html_body')
         if len(attachments) > 0:
             # This is multipart - default is mixed
             msg: Message = MIMEMultipart()
@@ -274,8 +276,11 @@ def create_msg():
         else:
             # Just text, how boring
             msg = MIMEText(body, 'plain', UTF_8)
+        demisto.debug(f'create_msg, {msg=}')
     else:
+        demisto.debug('create_msg, there is an html body.')
         html_body, html_attachments = handle_html(html_body)
+        demisto.debug(f'create_msg, after handle_html, {html_body=}')
         attachments += html_attachments
         if len(attachments) > 0:
             msg = MIMEMultipart()
@@ -297,6 +302,7 @@ def create_msg():
                 msg.attach(MIMEText(html_body, 'html', UTF_8))
             else:
                 msg = MIMEText(html_body, 'html', UTF_8)
+            demisto.debug(f'create_msg, after handling the body {msg=}')
 
     # Add the relevant headers to the most outer message
     msg['Subject'] = header(subject)
@@ -387,6 +393,7 @@ def main():
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
             raw_message = demisto.getArg('raw_message')
+            demisto.debug(f'The command is send-mail and {raw_message=}')
             if raw_message:
                 to = argToList(demisto.getArg('to'))
                 cc = argToList(demisto.getArg('cc'))
@@ -394,8 +401,10 @@ def main():
                 str_msg = raw_message
                 html_body = raw_message
             else:
+                demisto.debug('The command is send-mail and raw_message is None. calling create_msg()')
                 (_, html_body, str_msg, to, cc, bcc) = create_msg()
 
+            demisto.debug(f'send-mail before sending the email {str_msg=} {html_body=}')
             SERVER.sendmail(from_email, to + cc + bcc, str_msg)  # type: ignore[union-attr]
             SERVER.quit()
             render_body = argToBoolean(demisto.getArg('renderBody') or False)
