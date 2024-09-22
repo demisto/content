@@ -946,12 +946,12 @@ class STIX2XSOARParser(BaseClient):
             return cast(PatternComparisons, Pattern(pattern).inspect().comparisons)
         except Exception as error:
             demisto.debug(f'Unable to parse {pattern=}, {error=}')
-            return None
+        return None
 
     @staticmethod
     def get_supported_pattern_comparisons(parsed: PatternComparisons) -> PatternComparisons:
         """
-        Get the only the patterns supported by XSOAR from a parsed pattern.
+        Get only the patterns supported by XSOAR from a parsed pattern.
 
         Args:
             parsed: The parsed pattern to extract the supported values from.
