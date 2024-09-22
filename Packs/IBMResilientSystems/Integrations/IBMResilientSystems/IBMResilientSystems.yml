@@ -116,7 +116,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient
+  additionalinfo: When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient.
 
 - display: Tag from IBM Qradar SOAR
   name: tag_from_ibm
@@ -129,7 +129,7 @@ configuration:
 
 - display: Tag to IBM QRadar SOAR
   name: tag_to_ibm
-  additionalinfo: Add this tag to an entry to mirror it as to IBM Qradar SOAR.
+  additionalinfo: Add this tag to an entry to mirror it to IBM Qradar SOAR.
   defaultvalue: 'FROM XSOAR'
   type: 0
   required: false
@@ -169,7 +169,7 @@ script:
     - description: Indicates the starting point for the first record in the dataset. Starting from 1.
       name: page
       defaultValue: 0
-    - description: The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0. An error will be thrown if the length is greater than the server-configured maximum limit.
+    - description: The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0., an error will be thrown if the length is greater than the server-configured maximum limit.
       name: page_size
       defaultValue: 0
     - name: limit
@@ -178,22 +178,22 @@ script:
     - name: severity
       description: Comma-separated list of incident severity, e.g., Low,Medium,High.
     - name: date-created-before
-      description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z.
+      description: Created date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
     - name: date-created-after
-      description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z.
+      description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
     - name: date-created-within-the-last
-      description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
+      description: Created date of the incident within the last timeframe (days/hours/minutes). Should be given a number, along with the timeframe argument.
     - name: timeframe
-      description: 'Time frame to search within for incident. Should be given with within-the-last/due-in argument. Possible values: "days", "hours", "minutes".'
+      description: 'Timeframe to search within for incident. Should be given with within-the-last/due-in argument. Possible values: "days", "hours", "minutes".'
       auto: PREDEFINED
       predefined:
       - days
       - hours
       - minutes
     - name: date-occurred-within-the-last
-      description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
+      description: Occurred date of the incident within the last timeframe (days/hours/minutes). Should be given a number, along with the timeframe argument.
     - name: date-occurred-before
-      description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z.
+      description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
     - name: date-occurred-after
       description: Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
     - name: incident-type
@@ -238,7 +238,7 @@ script:
       - Active
       - Closed
     - name: due-in
-      description: Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
+      description: Due date of the incident in given timeframe (days/hours/minutes). Should be given a number, along with the timeframe argument.
     - name: return_level
       description: The incident data structure returned ("partial", "normal", "full").'
       auto: PREDEFINED
@@ -1000,7 +1000,7 @@ script:
       required: true
 
     - name: due_date
-      description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
+      description: Task due date in ISO format e.g., "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
       required: true
 
     - name: owner_id
@@ -1039,7 +1039,7 @@ script:
     - name: owner_id
       description: User ID of the new owner.
     - name: due_date
-      description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
+      description: Task due date in ISO format e.g., "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
     - name: phase
       description: The phase to which this task belongs.
       auto: PREDEFINED
