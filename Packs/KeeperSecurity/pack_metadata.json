@@ -9,9 +9,9 @@
     "categories": [
         "Authentication & Identity Management"
     ],
-    "tags": [],
+    "tags": ["Security"],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["keeper", "security", "secret"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
