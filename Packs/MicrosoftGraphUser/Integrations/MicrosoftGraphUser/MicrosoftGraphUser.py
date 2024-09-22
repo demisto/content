@@ -107,6 +107,7 @@ class MsGraphClient:
             'certificate_thumbprint': certificate_thumbprint,
             'private_key': private_key,
             'azure_ad_endpoint': azure_cloud.endpoints.active_directory,
+            'azure_cloud': azure_cloud,
             'managed_identities_client_id': managed_identities_client_id,
             'managed_identities_resource_uri': Resources.graph,
             'command_prefix': "msgraph-user",
