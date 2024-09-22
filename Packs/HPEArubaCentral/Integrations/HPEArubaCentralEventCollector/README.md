@@ -15,8 +15,8 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
     | Username || True |
     | Password || True |
     | Fetch networking events | Whether to fetch networking events or only audit | False |
-    | The maximum number of audit events per fetch (Max. allowed - 1,000) | Default - 100 | False |
-    | The maximum number of networking events per fetch (Max. allowed - 5,000) | Default - 1000 | False |
+    | The maximum number of audit events per fetch | Default - 100 | False |
+    | The maximum number of networking events per fetch | Default - 5000 | False |
     | Trust any certificate (not secure) || False |
     | Use system proxy settings || False |
 
