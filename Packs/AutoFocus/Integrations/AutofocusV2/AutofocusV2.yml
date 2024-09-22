@@ -219,7 +219,7 @@ script:
       description: ID of sample search.
       type: String
     - contextPath: AutoFocus.Quota.minute_points
-      description: Total number of AutoFocus API points alloted per minute.
+      description: Total number of AutoFocus API points alloted per minute
       type: Number
     - contextPath: AutoFocus.Quota.daily_points
       description: Total number of AutoFocus API points alloted per day.
@@ -1356,7 +1356,7 @@ script:
       description: The domain name.
       type: String
     polling: true
-  dockerimage: demisto/python3:3.10.14.98471
+  dockerimage: demisto/python3:3.10.13.86272
   runonce: false
   script: '-'
   subtype: python3

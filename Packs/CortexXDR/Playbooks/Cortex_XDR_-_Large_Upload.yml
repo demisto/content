@@ -1707,7 +1707,7 @@ tasks:
       version: -1
       name: Set Incident Verdict - Malicious
       description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
+      script: Builtin|||setIncidente
       type: regular
       iscommand: true
       brand: Builtin

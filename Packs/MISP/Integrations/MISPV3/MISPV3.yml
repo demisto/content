@@ -111,10 +111,10 @@ script:
     description: Search for events in MISP. This search command will return only information about the matched events. To get information about attributes, use the misp-search-attributes command.
     name: misp-search-events
     outputs:
-    - contextPath: MISP.Event.ID
-      description: MISP event ID.
+    - contextPath: MISP.Event.I
+      description: MISP event ID
       type: string
-    - contextPath: MISP.Event.Distribution
+    - contextPath: MISP.Event.Distributio
       description: MISP event distribution.
       type: string
     - contextPath: MISP.Event.ThreatLevelID
@@ -619,7 +619,7 @@ script:
       description: MISP event distribution.
       type: string
     - contextPath: MISP.Attribute.Event.Info
-      description: MISP event name.
+      description: MISP event nam
       type: string
     - contextPath: MISP.Attribute.Event.LastChanged
       description: Last change event timestamp.
@@ -2701,7 +2701,7 @@ script:
     description: Display role names and role IDs.
     name: misp-get-role-info
     outputs:
-    - contextPath: MISP.Role.role_id
+    - contextPath: MISP.Role.role_i
       description: MISP role ID.
       type: string
     - contextPath: MISP.Role.role_name
