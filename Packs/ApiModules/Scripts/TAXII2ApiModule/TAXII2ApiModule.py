@@ -949,18 +949,18 @@ class STIX2XSOARParser(BaseClient):
         return None
 
     @staticmethod
-    def get_supported_pattern_comparisons(parsed: PatternComparisons) -> PatternComparisons:
+    def get_supported_pattern_comparisons(comparisons: PatternComparisons) -> PatternComparisons:
         """
         Get only the patterns supported by XSOAR from a parsed pattern.
 
         Args:
-            parsed: The parsed pattern to extract the supported values from.
+            comparisons: The comparisons of the pattern to extract the supported values from.
 
         Returns:
             PatternComparisons. the value in the pattern.
         """
         supported_comparisons: PatternComparisons = {}
-        for field_type, comps in parsed.items():
+        for field_type, comps in comparisons.items():
             if field_type in STIX_SUPPORTED_TYPES:
                 for comp in comps:
                     if dict_safe_get(comp, [0, 0]) in STIX_SUPPORTED_TYPES[field_type]:
