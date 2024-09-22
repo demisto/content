@@ -731,7 +731,15 @@ def test_read_text_file():
 
 
 def test_write_file_new(mocker):
-    """Test writing to a new file."""
+    """
+        Given:
+            - A file named 'testfile.txt' does not exist yet.
+        When:
+            - Executing the write_text_file function with 'Hello, World!' as contents and overwrite set to False.
+        Then:
+            - The function opens the file in append mode and writes 'Hello, World!' to it.
+            - The correct log messages are generated indicating the file is being saved and successfully saved.
+        """
     from rasterize import write_text_file
     mock_open = mocker.patch("builtins.open", mocker.mock_open())
     mock_info = mocker.patch.object(demisto, "info")
