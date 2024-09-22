@@ -30,10 +30,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def util_generate_mock_info_file(info):
-    write_file("test_data/info.tsv", info, overwrite=True)
-
-
 def test_rasterize_email_image(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
