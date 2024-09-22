@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: FireEyeHX v2
+  id: FireEyeHX v2 test
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1:3000)
@@ -57,8 +57,8 @@ configuration:
   section: Collect
   required: false
 description: FireEye Endpoint Security is an integrated solution that detects and protects endpoints against known and unknown threats. This integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. You can extract critical data and effectively operate the security operations automated playbook.
-display: FireEye Endpoint Security (HX) v2
-name: FireEyeHX v2
+display: FireEye Endpoint Security (HX) v2 test
+name: FireEyeHX v2 test
 script:
   commands:
   - arguments:

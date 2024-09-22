@@ -2999,7 +2999,7 @@ def search_stop_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     if not args.get("searchId"):
         raise ValueError("Search Id is must be")
-    demisto.debug(f"in get search results command with search id: {args.get("searchId")}")
+    demisto.debug(f"in get search results command with search id: {args.get('searchId')}")
     searches_ids = argToList(str(args.get("searchId")))
     results: List[List[Dict]] = []
     for search_id in searches_ids:
