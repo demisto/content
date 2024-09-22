@@ -27,9 +27,9 @@ Case management that enables visibility across your tools for continual IR impro
     | Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 1000. | False |
     | Incident Mirroring Direction |  | False |
     | Close Mirrored XSOAR Incidents | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
-    | Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient | False |
+    | Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient. | False |
     | Tag from IBM Qradar SOAR | Add this tag to an entry to mirror it from IBM Qradar SOAR. | False |
-    | Tag to IBM QRadar SOAR | Add this tag to an entry to mirror it as to IBM Qradar SOAR. | False |
+    | Tag to IBM QRadar SOAR | Add this tag to an entry to mirror it to IBM Qradar SOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -50,20 +50,20 @@ Query for incidents
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page | Indicates the starting point for the first record in the dataset. Starting from 1. | Optional | 
-| page_size | The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0. An error will be thrown if the length is greater than the server-configured maximum limit. | Optional | 
+| page_size | The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0, an error will be thrown if the length is greater than the server-configured maximum limit. | Optional | 
 | limit | Maximum number of incidents to retrieve. Default is 1000. | Optional | 
 | severity | Comma-separated list of incident severity, e.g., Low,Medium,High. | Optional | 
-| date-created-before | Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z. | Optional | 
-| date-created-after | Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z. | Optional | 
-| date-created-within-the-last | Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument. | Optional | 
-| timeframe | Time frame to search within for incident. Should be given with within-the-last/due-in argument. Possible values: "days", "hours", "minutes". Possible values are: days, hours, minutes. | Optional | 
-| date-occurred-within-the-last | Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
-| date-occurred-before | Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z. | Optional | 
+| date-created-before | Created date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
+| date-created-after | Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
+| date-created-within-the-last | Created date of the incident within the last timeframe (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
+| timeframe | Timeframe to search within for incident. Should be given with within-the-last/due-in argument. Possible values: "days", "hours", "minutes". Possible values are: days, hours, minutes. | Optional | 
+| date-occurred-within-the-last | Occurred date of the incident within the last timeframe (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
+| date-occurred-before | Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
 | date-occurred-after | Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
 | incident-type | Incident type. Possible values are: CommunicationError, DenialOfService, ImproperDisposal:DigitalAsset, ImproperDisposal:documents/files, LostDocuments/files/records, LostPC/laptop/tablet, LostPDA/smartphone, LostStorageDevice/media, Malware, NotAnIssue, Other, Phishing, StolenDocuments/files/records, StolenPC/laptop/tablet, StolenPDA/Smartphone, StolenStorageDevice/media, SystemIntrusion, TBD/Unknown, Vendor/3rdPartyError. | Optional | 
 | nist | NIST Attack Vectors. Possible values: "Attrition", "E-mail", "External/RemovableMedia", "Impersonation", "ImproperUsage", "Loss/TheftOfEquipment", "Other", "Web". Possible values are: Attrition, E-mail, External/RemovableMedia, Impersonation, ImproperUsage, Loss/TheftOfEquipment, Other, Web. | Optional | 
 | status | Incident status. Possible values: "Active" and "Closed". Possible values are: Active, Closed. | Optional | 
-| due-in | Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
+| due-in | Due date of the incident in given timeframe (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
 | return_level | The incident data structure returned ("partial", "normal", "full").'. Possible values are: partial, normal, full. | Optional | 
 
 #### Context Output
@@ -945,7 +945,7 @@ Update an incident's task fields.
 | task_id | ID of task to update. | Required | 
 | name | Task name. Technically required, copy original task name if no changes are desired. | Required | 
 | owner_id | User ID of the new owner. | Optional | 
-| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Optional | 
+| due_date | Task due date in ISO format e.g,. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Optional | 
 | phase | The phase to which this task belongs. Possible values are: Initial, Engage, Detect/Analyze, Respond, Post-Incident, Custom, Complete. | Optional | 
 | status | Changing the status field, completes or re-openes the task. Possible values are: Open, Completed. | Optional | 
 
@@ -969,7 +969,7 @@ Adds a custom task to the specified incident.
 | name | Task name. | Required | 
 | description | Task description. | Required | 
 | instructions | Textual instructions for the task. This will override the default instructions for the task. | Required | 
-| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Required | 
+| due_date | Task due date in ISO format e.g., "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Required | 
 | owner_id | The owner of the task (ID or name as appears in IBM QRadar SOAR). Leave empty if the task has no owner. | Optional | 
 | phase | Task to be added to the IBM QRadar incident. Possible values are: Initial, Engage, Detect/Analyze, Respond, Post-Incident, Custom, Complete. Default is task. | Required | 
 
@@ -1173,7 +1173,7 @@ Updates incident's members.
 | **Argument Name** | **Description**                                       | **Required** |
 |-------------------|-------------------------------------------------------|--------------|
 | incident-id       | ID of the incident for which to update its members.   | Required     |
-| members           | A comma-separated list of members to add, e.g. 1,2,3. | Required     |
+| members           | A comma-separated list of members to add, e.g., 1,2,3. | Required     |
 
 #### Context Output
 
