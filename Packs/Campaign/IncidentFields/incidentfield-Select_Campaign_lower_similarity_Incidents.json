@@ -26,6 +26,6 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "xxx",
+    "fromVersion": "5.5.0",
     "openEnded": true
 }
