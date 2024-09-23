@@ -2753,8 +2753,7 @@ def main():
             proxy=params.get('proxy', False),
             reliability=reliability,
             should_create_relationships=params.get('create_relationships', True),
-            remote_api=argToBoolean(params.get('remote_api', 'false')),
-            is_on_prem=
+            remote_api=argToBoolean(params.get('remote_api', 'false'))
         )
         args = prepare_args(demisto.args(), command, params)
         if command == 'test-module':
