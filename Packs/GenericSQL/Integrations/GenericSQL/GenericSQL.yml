@@ -173,4 +173,5 @@ script:
 fromversion: 5.0.0
 tests:
 - generic-sql
+- generic-sql-oracle
 defaultclassifier: GenericSQL Classifier

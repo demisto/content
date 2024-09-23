@@ -1,0 +1,29 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Veeam One Incidents Classifier",
+    "keyTypeMap": {
+        "314": "Virtual Machine Backup",
+        "316": "Job Disabling",
+        "331": "Virtual Machine Replica",
+        "342": "Possible Malware Activity",
+        "364": "Incremental Backup Size",
+        "365": "Backup Copy Creation Time",
+        "369": "Job Duration",
+        "370": "Physical Machine Backup",
+        "376": "Immutability State",
+        "377": "Immutability Change Tracking",
+        "381": "Job Duration Deviation (Veeam Backup for Microsoft 365)",
+        "391": "Enterprise Application Backup",
+        "395": "Backup Server Security Status",
+        "403": "Malware Detection Change Tracking",
+        "Incident Fetch Error": "Incident Fetch Error"
+    },
+    "name": "Veeam One Incidents Classifier",
+    "transformer": {
+        "simple": "incident_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
