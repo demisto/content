@@ -34,6 +34,7 @@ Send a message to Microsoft Teams via Incoming Webhook.
 | alternative_url | The alternative URL to send in place of the link to the XSOAR Investigation. | Optional | 
 | url_title | The title for the link, defaults to "Cortex XSOAR URL". Default is Cortex XSOAR URL. | Optional | 
 | adaptive_cards_format | Should the adaptive cards format be used?. | Optional | 
+| overwrite_adaptive_card_json | JSON object overwriting the default adaptive card JSON. | Optional | 
 
 #### Context Output
 
