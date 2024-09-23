@@ -50,6 +50,8 @@ def http_request(method, uri, params=None, data=None, headers=None):
                            verify=USE_SSL)
     if res.status_code == 404:
         return {}
+    if res.status_code == 401:
+        return_error('Error: the Shodan API key is invalid. Please check your API key.')
     if res.status_code != 200:
         error_msg = f'Error in API call {url} [{res.status_code}] - {res.reason}'
         if 'application/json' in res.headers['content-type'] and 'error' in res.json():
@@ -174,11 +176,16 @@ def test_module():
     """
     Sends a basic GET request to verify API connectivity and performs a sample event fetch if event fetching is enabled.
     """
-    http_request('GET', '/shodan/ports', {'query': 'test'})
-
     params = demisto.params()
-    if argToBoolean(params.get('isFetchEvents', False)):
-        get_events_command({'max_fetch': 1, 'start_date': 'now'})
+    is_fetch_events = argToBoolean(params.get('isFetchEvents', False))
+
+    if is_fetch_events and not API_KEY:
+        return_error("Missing API key")
+
+    if API_KEY:
+        http_request('GET', '/shodan/alert/info')  # Checking with API key
+    else:
+        http_request('GET', '/shodan/ports', {'query': 'test'})  # Checking without API key
 
 
 def search_command():
@@ -542,20 +549,20 @@ def fetch_events(last_run: dict[str, str], params: dict[str, str]) -> tuple[Dict
         events = [events]
     demisto.debug(f'Before filtering, {len(events)} events')
 
-    start_date = arg_to_datetime(last_run.get("start_date"))
-    if start_date is None:  # If this is a first run
-        start_date = datetime.now()
+    last_fetch_time = arg_to_datetime(last_run.get("start_date"))
+    if last_fetch_time is None:  # If this is a first run
+        last_fetch_time = datetime.now()
         demisto.debug('Last run data is missing. Fetching initial last_run and setting start_date to now')
     limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_EVENTS
 
-    filtered_events = filter_events(events, start_date, limit)
+    filtered_events = filter_events(events, last_fetch_time, limit)
     demisto.debug(f'After filtering, {len(filtered_events)} events remain')
 
     if filtered_events:
         latest_event = max(filtered_events, key=parse_event_date)
-        start_date = parse_event_date(latest_event)
+        last_fetch_time = parse_event_date(latest_event)
 
-    last_run["start_date"] = start_date.strftime(DATE_FORMAT)
+    last_run["start_date"] = last_fetch_time.strftime(DATE_FORMAT)
     return last_run, filtered_events
 
 
