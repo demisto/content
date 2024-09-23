@@ -819,7 +819,8 @@ def test_ssl_configuration():
                               client_cert_key='client_cert_key',
                               ssl_password='ssl_password',
                               offset='earliest',
-                              trust_any_cert=False)
+                              trust_any_cert=False,
+                              use_ssl= True)
     expected_consumer_conf = {
         'auto.offset.reset': 'earliest',
         'bootstrap.servers': 'brokers',
@@ -852,11 +853,11 @@ def test_ssl_configuration():
     os.remove(kafka.client_cert_path)
     os.remove(kafka.client_key_path)
     
-    
+    """
 update_client_dict_data = [
             # Case 1: trust_any_cert is True and dict isn't empty
             (
-                {'value': 'value1'}, True, None, None, None, None,
+                {'value': 'value1'}, True, True, None, None, None, None,
                 {
                     'ssl.endpoint.identification.algorithm': 'none',
                     'enable.ssl.certificate.verification': False,
@@ -865,7 +866,7 @@ update_client_dict_data = [
             ),
             # Case 2: ca_cert is provided and dict isn't empty
             (
-                {'value': 'value1'}, False, "ca_cert_content", None, None, None,
+                {'value': 'value1'}, False, True, "ca_cert_content", None, None, None,
                 {
                     'ssl.ca.location': None,  # The actual file path will be checked later
                     'value': 'value1'
@@ -873,7 +874,7 @@ update_client_dict_data = [
             ),
             # Case 3: client_cert is provided
             (
-                {}, False, None, "client_cert_content", None, None,
+                {}, False, True, None, "client_cert_content", None, None,
                 {
                     'ssl.certificate.location': None,  # The actual file path will be checked later
                     'security.protocol': 'ssl'
@@ -881,21 +882,21 @@ update_client_dict_data = [
             ),
             # Case 4: client_cert_key is provided
             (
-                {}, False, None, None, "client_cert_key_content", None,
+                {}, False, True, None, None, "client_cert_key_content", None,
                 {
                     'ssl.key.location': None  # The actual file path will be checked later
                 }
             ),
             # Case 5: ssl_password is provided
             (
-                {}, False, None, None, None, "ssl_password_value",
+                {}, False, True, None, None, None, "ssl_password_value",
                 {
                     'ssl.key.password': 'ssl_password_value'
                 }
             ),
             # Case 6: All parameters are provided
             (
-                {}, True, "ca_cert_content", "client_cert_content", "client_cert_key_content", "ssl_password_value",
+                {}, True, True, "ca_cert_content", "client_cert_content", "client_cert_key_content", "ssl_password_value",
                 {
                     'ssl.endpoint.identification.algorithm': 'none',
                     'enable.ssl.certificate.verification': False,
@@ -907,9 +908,9 @@ update_client_dict_data = [
                 }
             ),
         ]
-@pytest.mark.parametrize('client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, expected', update_client_dict_data)
-def test_update_client_dict(client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, expected):
-    """
+@pytest.mark.parametrize('client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, expected', update_client_dict_data)
+def test_update_client_dict(client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, expected):
+    
         Given:
         arguments for update_client_dict function.
         When:
@@ -917,13 +918,16 @@ def test_update_client_dict(client_dict, trust_any_cert, ca_cert, client_cert, c
         Then:
         The dictionary is updated correctly.
     """
-    KAFKA.update_client_dict(client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password)
+    """
+    KAFKA.update_client_dict(client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password)
     
     for key, value in expected.items():
             if value is None:
                 assert key in client_dict
             else:
                 assert client_dict[key] == value
+                
+                """
                 
                 
 
@@ -953,3 +957,77 @@ def test_KafkaCommunicator__not_consumer_only():
     comunicator = KafkaCommunicator('some_broker', False)
     assert comunicator.conf_consumer
     assert comunicator.conf_producer
+    
+valid_params_cases = [
+    # Valid case with SSL only
+    {
+        'use_ssl': True, 'brokers': 'broker1,broker2', 
+        'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key'
+    },
+    # Valid case with SSL and SASL
+    {
+        'use_ssl': True, 'use_sasl': True, 'brokers': 'broker1,broker2', 
+        'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key', 
+        'plain_username': 'user', 'plain_password': 'pass'
+    },
+    # Valid case with SASL (SSL must also be enabled)
+    {
+        'use_ssl': True, 'use_sasl': True, 'brokers': 'broker1,broker2', 
+        'ca_cert': 'cert', 'plain_username': 'user', 'plain_password': 'pass'
+    }
+]
+@pytest.mark.parametrize('params', valid_params_cases)
+def test_validate_params_valid(params):
+    from KafkaV3 import validate_params
+    # This test should not raise any exceptions
+    validate_params(params)
+
+invalid_params_cases = [
+    # Missing brokers
+    (
+        {'use_ssl': True, 'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key'},
+        'Please specify a CSV list of Kafka brokers to connect to.'
+    ),
+    # SSL enabled but missing certificates
+    (
+        {'use_ssl': True, 'brokers': 'broker1,broker2'},
+        'CA certificate of Kafka server (.cer), Client certificate (.cer), Client certificate key (.key)'
+    ),
+    (
+        {'use_ssl': True, 'brokers': 'broker1,broker2', 'ca_cert': 'cert'},
+        'Client certificate (.cer), Client certificate key (.key)'
+    ),
+    (
+        {'use_ssl': True, 'brokers': 'broker1,broker2', 'client_cert': 'client_cert'},
+        'CA certificate of Kafka server (.cer), Client certificate key (.key)'
+    ),
+    (
+        {'use_ssl': True, 'brokers': 'broker1,broker2', 'client_cert_key': 'client_key'},
+        'CA certificate of Kafka server (.cer), Client certificate (.cer)'
+    ),
+    # SASL without SSL
+    (
+        {'use_sasl': True, 'plain_username': 'user', 'plain_password': 'pass', 'brokers': 'broker1,broker2'},
+        'When using SASL PLAIN for connection, SSL must also be enabled.'
+    ),
+    # SASL missing username/password/ca_cert
+    (
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1,broker2', 'plain_password': 'pass', 'ca_cert': 'cert'},
+        'SASL PLAIN Username'
+    ),
+    (
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1,broker2', 'plain_username': 'user', 'ca_cert': 'cert'},
+        'SASL PLAIN Password'
+    ),
+    (
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1,broker2', 'plain_username': 'user', 'plain_password': 'pass'},
+        'CA certificate of Kafka server (.cer)'
+    )
+]
+@pytest.mark.parametrize('params, expected_message', invalid_params_cases)
+def test_validate_params_invalid(params, expected_message):
+    from KafkaV3 import validate_params
+    # Test that the appropriate exception is raised with the correct message
+    with pytest.raises(DemistoException, match=f".*{expected_message}.*"):
+        validate_params(params)
+

@@ -42,7 +42,7 @@ class KafkaCommunicator:
     POLL_TIMEOUT: float = 1.0
     MAX_POLLS_FOR_LOG: int = 100
 
-    def __init__(self, brokers: str, plain_password: Optional[str] = None, plain_username: Optional[str] = None,
+    def __init__(self, brokers: str, use_ssl: bool, plain_password: Optional[str] = None, plain_username: Optional[str] = None,
                  use_sasl: bool = False,  consumer_only: bool = False, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
@@ -63,8 +63,7 @@ class KafkaCommunicator:
         """
         
         if not consumer_only:
-            self.conf_producer = {'bootstrap.servers': brokers}
-            self.update_client_dict(self.conf_producer, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl, plain_username, plain_password)
+            self.update_client_dict(self.conf_producer, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl, plain_username, plain_password, brokers)
         
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
@@ -77,7 +76,7 @@ class KafkaCommunicator:
                               'group.id': group_id,
                               'enable.auto.commit': False}
         
-        self.update_client_dict(self.conf_consumer, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl, plain_username, plain_password)
+        self.update_client_dict(self.conf_consumer, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl, plain_username, plain_password, brokers)
 
         self.kafka_logger = kafka_logger
 
@@ -122,32 +121,37 @@ class KafkaCommunicator:
             """
 
 
-    def update_client_dict(self, client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl,
-                           plain_username, plain_password):
+    def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl,
+                           plain_username, plain_password, brokers):
+        
+        client_dict.update({'bootstrap.servers': brokers})
+        
         if trust_any_cert:
             client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
                                        'enable.ssl.certificate.verification': False})
-        if ca_cert:
+            
+        elif use_ssl:
+            # ca_cert
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
                 self.ca_path = ca_descriptor.name
                 ca_descriptor.write(ca_cert)
             client_dict.update({'ssl.ca.location': self.ca_path})
             
-        if client_cert:
+            # client_cert
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_cert_descriptor:
                 self.client_cert_path = client_cert_descriptor.name
                 client_cert_descriptor.write(client_cert)
             client_dict.update({'ssl.certificate.location': self.client_cert_path,
                                        'security.protocol': 'ssl'})
             
-        if client_cert_key:
+            # client_cert_key
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
                 self.client_key_path = client_key_descriptor.name
                 client_key_descriptor.write(client_cert_key)
             client_dict.update({'ssl.key.location': self.client_key_path})
         
-        if ssl_password:
-            client_dict.update({'ssl.key.password': ssl_password})
+            if ssl_password:
+                client_dict.update({'ssl.key.password': ssl_password})
         
         if use_sasl:
             client_dict.update({'security.protocol': 'SASL_SSL', 'sasl.mechanism': 'PLAIN', 'sasl.username': plain_username,
@@ -378,6 +382,52 @@ class KafkaCommunicator:
 
 ''' HELPER FUNCTIONS '''
 
+
+def validate_params(params: dict):
+    use_sasl = params.get('use_sasl')
+    plain_username = params.get('plain_username')
+    plain_password = params.get('plain_password')
+    brokers = params.get('brokers')
+    use_ssl = params.get('use_ssl')
+    ca_cert = params.get('ca_cert')
+    client_cert = params.get('client_cert')
+    client_cert_key = params.get('client_cert_key')
+    
+    # Check if brokers are provided
+    if not brokers:
+        raise DemistoException('Please specify a CSV list of Kafka brokers to connect to.')
+    
+    # Check SSL requirements
+    if use_ssl:
+        missing = []
+        if not ca_cert:
+            missing.append('CA certificate of Kafka server (.cer)')
+        if not client_cert:
+            missing.append('Client certificate (.cer)')
+        if not client_cert_key:
+            missing.append('Client certificate key (.key)')
+        if missing:
+            missing_items = ', '.join(missing)
+            raise DemistoException(
+                f"When using SSL, the following are required: {missing_items}. Please provide them.")
+    
+    # SASL requires SSL
+    if use_sasl and not use_ssl:
+        raise DemistoException('When using SASL PLAIN for connection, SSL must also be enabled.')
+    
+    # Check SASL requirements
+    if use_sasl:
+        missing = []
+        if not plain_username:
+            missing.append('SASL PLAIN Username')
+        if not plain_password:
+            missing.append('SASL PLAIN Password')
+        if not ca_cert:
+            missing.append('CA certificate of Kafka server (.cer)')
+        if missing:
+            missing_items = ', '.join(missing)
+            raise DemistoException(
+                f"When using SASL PLAIN, the following are required: {missing_items}. Please provide them.")
 
 def capture_logs(func: Callable):
     """Capture confluent kafka logs and add them when raising exceptions.
@@ -837,6 +887,7 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
 def main():  # pragma: no cover
     demisto_command = demisto.command()
     demisto_params = demisto.params()
+    validate_params(demisto_params)
     demisto_args = demisto.args()
     demisto.debug(f'Command being called is {demisto_command}')
     brokers = demisto_params.get('brokers')
@@ -854,7 +905,7 @@ def main():  # pragma: no cover
         client_cert = demisto_params.get('client_cert', None)
         client_cert_key = demisto_params.get('client_cert_key', None)
         ssl_password = demisto_params.get('additional_password', None)
-        kafka_kwargs = {'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
+        kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
                         'client_cert_key': client_cert_key, 'ssl_password': ssl_password, 'offset': offset,
                         'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
     
