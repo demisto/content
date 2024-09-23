@@ -1113,8 +1113,8 @@ class TestGetIndicators:
 
         _ = get_indicators(client, limit='7000')
 
-        assert not http_request.call_args[0].kwargs["without_credentials"]
-        assert http_request.call_args[1].kwargs["without_credentials"]
+        assert not http_request.call_args_list[0].kwargs.get("without_credentials")
+        assert http_request.call_args_list[1].kwargs["without_credentials"]
 
 
 def test_search_intelligence(mocker):
