@@ -4259,7 +4259,8 @@ def test_terminate_process_command(mocker):
     )
 
     result = terminate_process_command(client=client, args={'agent_id': '1', 'instance_id': ['instance_id_1', 'instance_id_2']})
-    assert result.readable_output == '### Action terminate process created on instance ids: instance_id_1, instance_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n'
+    assert result.readable_output == ('### Action terminate process created on instance ids:'
+                                      ' instance_id_1, instance_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
     assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
 
 
@@ -4292,7 +4293,8 @@ def test_terminate_causality_command(mocker):
 
     result = terminate_causality_command(client=client, args={'agent_id': '1', 'causality_id': [
                                          'causality_id_1', 'causality_id_2']})
-    assert result.readable_output == '### Action terminate causality created on causality_id_1,causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n'
+    assert result.readable_output == ('### Action terminate causality created on causality_id_1,'
+                                      'causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
     assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
 
 

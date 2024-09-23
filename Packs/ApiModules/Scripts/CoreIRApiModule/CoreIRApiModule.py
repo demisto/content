@@ -4486,7 +4486,8 @@ def terminate_process_command(client, args) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown(f'Action terminate process created on instance ids: {", ".join(instance_ids)}', replies),
         outputs={
-            f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId && val.actionId == obj.actionId)': replies},
+            f'{args.get("integration_context_brand", "CoreApiModule")}'
+            f'.TerminateProcess(val.actionId && val.actionId == obj.actionId)': replies},
         raw_response=replies
     )
 
@@ -4526,6 +4527,7 @@ def terminate_causality_command(client, args) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
         outputs={
-            f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateCausality(val.actionId && val.actionId == obj.actionId)': replies},
+            f'{args.get("integration_context_brand", "CoreApiModule")}'
+            f'.TerminateCausality(val.actionId && val.actionId == obj.actionId)': replies},
         raw_response=replies
     )
