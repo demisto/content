@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: sf-test-1
+  CURRENT_BRANCH_NAME: sf-move-sdk-to-new-docker-proxy
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: sf-test-1
+    ref: sf-move-sdk-to-new-docker-proxy
     project: "${CI_PROJECT_NAMESPACE}/infra"
