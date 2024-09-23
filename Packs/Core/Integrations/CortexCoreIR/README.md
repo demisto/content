@@ -1259,9 +1259,9 @@ Retrieves the status of the requested actions according to the action ID.
 >**No entries.**
 
 
-### core-run-script
+### core-run-script (Deprecated)
 ***
-This command will soon be deprecated; run core-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
+Deprecated. Use core-script-run instead. 
 
 #### Base Command
 
