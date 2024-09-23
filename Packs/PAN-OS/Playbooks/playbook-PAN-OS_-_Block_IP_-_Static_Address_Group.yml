@@ -306,8 +306,10 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      description:
+        simple: ${inputs.IPDescription}
       ip_netmask:
-        simple: 255.255.255.255
+        simple: ${inputs.IP}
       name:
         complex:
           root: inputs.IP
