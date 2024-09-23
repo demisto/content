@@ -2537,7 +2537,7 @@ def get_indicators(client: Client, **kwargs):
         next_page = res.get('meta', {}).get('next', None)
         while len(iocs_context) < limit and next_page:
             next_page = next_page.replace('api/', '')
-            res = client.http_request("GET", next_page)
+            res = client.http_request("GET", next_page, without_credentials="api_key" in next_page)
             iocs_list = res.get('objects', None)
             next_page = res.get('meta', {}).get('next', None)
             if iocs_list:
@@ -2753,7 +2753,8 @@ def main():
             proxy=params.get('proxy', False),
             reliability=reliability,
             should_create_relationships=params.get('create_relationships', True),
-            remote_api=argToBoolean(params.get('remote_api', 'false'))
+            remote_api=argToBoolean(params.get('remote_api', 'false')),
+            is_on_prem=
         )
         args = prepare_args(demisto.args(), command, params)
         if command == 'test-module':
