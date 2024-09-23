@@ -4294,3 +4294,48 @@ def test_terminate_causality_command(mocker):
                                          'causality_id_1', 'causality_id_2']})
     assert result.readable_output == '### Action terminate causality created on causality_id_1,causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n'
     assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
+
+
+def test_run_polling_command_values_raise_error(mocker):
+    """
+    Given -
+        - run_polling_command arguments.
+        -
+
+    When -
+        - Running the run_polling_command
+
+    Then
+        - Make sure that an error is raised with the correct output.
+    """
+    from CoreIRApiModule import run_polling_command
+    from CommonServerPython import DemistoException, ScheduledCommand
+    from unittest.mock import Mock
+
+    polling_args = {
+        'endpoint_ids': '1', 'command_decision_field': 'action_id', 'action_id': '1', 'hide_polling_output': True
+    }
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    client = Mock()
+    mock_command_results = Mock()
+    mock_command_results.raw_response = {"status": "TIMEOUT"}
+    mock_command_results.return_value = mock_command_results
+    client.get_command_results.return_value = mock_command_results
+
+    with pytest.raises(DemistoException) as e:
+        run_polling_command(client=client,
+                            args=polling_args,
+                            cmd="core-terminate-causality",
+                            command_function=Mock(),
+                            command_decision_field="action_id",
+                            results_function=mock_command_results,
+                            polling_field="status",
+                            polling_value=["PENDING",
+                                           "IN_PROGRESS",
+                                           "PENDING_ABORT"],
+                            values_raise_error=["FAILED",
+                                                "TIMEOUT",
+                                                "ABORTED",
+                                                "CANCELED"]
+                            )
+    assert str(e.value) == 'The command core-terminate-causality failed. Received status TIMEOUT'

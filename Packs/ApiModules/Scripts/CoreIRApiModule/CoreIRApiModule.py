@@ -1572,15 +1572,27 @@ class CoreClient(BaseClient):
             }},
         )
 
-    def terminate_process(self, agent_id, instance_id, process_name, incident_id) -> dict[str, dict[str, str]]:
+    def terminate_on_agent(self,
+                           url_suffix_endpoint: str,
+                           id_key: str,
+                           id_value: str,
+                           agent_id: str,
+                           process_name: Optional[str],
+                           incident_id: Optional[str]) -> dict[str, dict[str, str]]:
         """
-            Terminate a specific process on an agent.
+            Terminate a specific process or a the causality on an agent.
+
+            :type url_suffix_endpoint: ``str``
+            :param agent_id: The endpoint of the command(terminate_causality or terminate_process).
 
             :type agent_id: ``str``
             :param agent_id: The ID of the agent.
 
-            :type instance_id: ``str``
-            :param instance_id: The ID of the instance.
+            :type id_key: ``str``
+            :param id_key: The key name ID- causality_id or process_id.
+
+            :type id_key: ``str``
+            :param id_key: The ID data- causality_id or process_id.
 
             :type process_name: ``Optional[str]``
             :param process_name: The name of the process. Optional.
@@ -1593,7 +1605,7 @@ class CoreClient(BaseClient):
         """
         request_data: Dict[str, Any] = {
             "agent_id": agent_id,
-            "instance_id": instance_id,
+            id_key: id_value,
         }
         if process_name:
             request_data["process_name"] = process_name
@@ -1601,40 +1613,7 @@ class CoreClient(BaseClient):
             request_data["incident_id"] = incident_id
         return self._http_request(
             method='POST',
-            url_suffix="/endpoints/terminate_process/",
-            json_data={"request_data": request_data},
-        )
-
-    def terminate_causality(self, agent_id: str, causality_id: str, process_name: Optional[str], incident_id: Optional[str]) -> dict[str, dict[str, str]]:
-        """
-            Terminate the causality for a specific agent and causality ID.
-
-            :type agent_id: ``str``
-            :param agent_id: The ID of the agent.
-
-            :type causality_id: ``str``
-            :param causality_id: The ID of the causality.
-
-            :type process_name: ``Optional[str]``
-            :param process_name: The name of the process. Optional.
-
-            :type incident_id: ``Optional[str]``
-            :param incident_id: The ID of the incident. Optional.
-
-            :return: The response from the API.
-            :rtype: ``dict[str, dict[str, str]]``
-        """
-        request_data: Dict[str, Any] = {
-            "agent_id": agent_id,
-            "causality_id": causality_id
-        }
-        if process_name:
-            request_data["process_name"] = process_name
-        if incident_id:
-            request_data["incident_id"] = incident_id
-        return self._http_request(
-            method='POST',
-            url_suffix="/endpoints/terminate_causality/",
+            url_suffix=f'/endpoints/{url_suffix_endpoint}/',
             json_data={"request_data": request_data},
         )
 
@@ -1731,6 +1710,7 @@ def run_polling_command(client: CoreClient,
     polling_value: list of values of the polling_field we want to check. The list can contain values to stop or
     continue polling on, not both.
     stop_polling: True - polling_value stops the polling. False - polling_value does not stop the polling.
+    values_raise_error: list of polling values that require raising an error.
 
     Return:
     command_results(CommandResults)
@@ -4491,17 +4471,22 @@ def terminate_process_command(client, args) -> CommandResults:
     incident_id = args.get('incident_id')
     replies: List[Dict[str, Any]] = []
     for instance_id in instance_ids:
-        reply_per_instance_id = client.terminate_process(agent_id=agent_id,
-                                                         instance_id=instance_id,
-                                                         process_name=process_name,
-                                                         incident_id=incident_id)
+        reply_per_instance_id = client.terminate_on_agent(
+            url_suffix_endpoint='terminate_process',
+            id_key='instance_id',
+            id_value=instance_id,
+            agent_id=agent_id,
+            process_name=process_name,
+            incident_id=incident_id
+        )
         action_id = reply_per_instance_id.get("group_action_id")
         demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
         replies.append({"action_id": action_id})
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Action terminate process created on instance ids: {", ".join(instance_ids)}', replies),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId && val.actionId == obj.actionId)': replies},
+        outputs={
+            f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId && val.actionId == obj.actionId)': replies},
         raw_response=replies
     )
 
@@ -4526,19 +4511,21 @@ def terminate_causality_command(client, args) -> CommandResults:
     incident_id = args.get('incident_id')
     replies: List[Dict[str, Any]] = []
     for causality_id in causality_ids:
-        reply_per_instance_id = client.terminate_causality(agent_id=agent_id,
-                                                           causality_id=causality_id,
-                                                           process_name=process_name,
-                                                           incident_id=incident_id)
+        reply_per_instance_id = client.terminate_on_agent(
+            url_suffix_endpoint='terminate_causality',
+            id_key='causality_id',
+            id_value=causality_id,
+            agent_id=agent_id,
+            process_name=process_name,
+            incident_id=incident_id
+        )
         action_id = reply_per_instance_id.get("group_action_id")
         demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
         replies.append({"action_id": action_id})
 
-    if not replies:
-        raise DemistoException('Terminate causality failed')
-
     return CommandResults(
         readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateCausality(val.actionId == obj.actionId)': replies},
+        outputs={
+            f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateCausality(val.actionId && val.actionId == obj.actionId)': replies},
         raw_response=replies
     )
