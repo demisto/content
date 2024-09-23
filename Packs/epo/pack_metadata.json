@@ -10,7 +10,10 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Malware"
+    ],
     "useCases": [],
     "keywords": [
         "mcafee",
