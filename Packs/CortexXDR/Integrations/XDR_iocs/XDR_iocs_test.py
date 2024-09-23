@@ -1197,7 +1197,8 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
     xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
     mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
     debug_calls = [call.args[0] for call in mock_demisto_debug.call_args_list]
-    expected_debug_message = 'pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: error1.456: error2.'
+    expected_debug_message = ('pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: error1.456:'
+                              ' error2.')
     assert any(expected_debug_message in call for call in debug_calls), \
         f"Expected debug message not found in: {debug_calls}"
 

@@ -236,7 +236,6 @@ def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.qu
             for ioc in iocs:
                 yield ioc
             if stop_iteration and ioc_count >= MAX_INDICATORS_TO_SYNC:
-                update_integration_context(update_search_after_array=search_after_array)
                 info_log_for_fetch(ioc.get('modified'), ioc.get('value'), search_after_array, ioc_count)
                 raise StopIteration
         update_integration_context(update_search_after_array=search_after_array)
