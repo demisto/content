@@ -22,11 +22,12 @@ configuration:
   section: Connect
   advanced: true
 - defaultvalue: https://graph.microsoft.com
-  display: Host URL (e.g., https://graph.microsoft.com)
+  display: Server URL (e.g., https://graph.microsoft.com)
   name: host
   required: true
   type: 0
   section: Connect
+  additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - name: creds_auth_id
   type: 9
   displaypassword: ID / client ID

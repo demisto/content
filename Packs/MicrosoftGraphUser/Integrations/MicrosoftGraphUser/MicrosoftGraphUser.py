@@ -106,7 +106,6 @@ class MsGraphClient:
             'resource': resource,
             'certificate_thumbprint': certificate_thumbprint,
             'private_key': private_key,
-            'azure_ad_endpoint': azure_cloud.endpoints.active_directory,
             'azure_cloud': azure_cloud,
             'managed_identities_client_id': managed_identities_client_id,
             'managed_identities_resource_uri': Resources.graph,
@@ -489,8 +488,7 @@ def revoke_user_session_command(client: MsGraphClient, args: dict):
 def main():
     params: dict = demisto.params()
     azure_cloud = get_azure_cloud(params, 'MicrosoftGraphUser')
-    url = azure_cloud.endpoints.microsoft_graph_resource_id.rstrip(
-        "/") if azure_cloud.endpoints.microsoft_graph_resource_id else None
+    url = azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/") + '/v1.0/'
     tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
     auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id', '')
     enc_key = params.get('creds_enc_key', {}).get('password', '') or params.get('enc_key', '')
