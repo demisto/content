@@ -19,10 +19,10 @@ REPUTATION_COMMANDS_ERROR_LIST = [
 
 CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], ['5'], Common.DBotScore.BAD, '1', False)
 CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.SUSPICIOUS, '1', False)
-CASE_OF_BENIGN_ATTRIBUTE = (['5'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.GOOD, '1', False)
+CASE_OF_BENIGN_ATTRIBUTE = (['5'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.GOOD, '5', False)
 CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.BAD, '2', False)
 CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], ['5'], Common.DBotScore.SUSPICIOUS, '2', False)
-CASE_OF_BENIGN_EVENT = (['8'], ['5'], ['3'], ['3'], ['5'], Common.DBotScore.GOOD, '2', False)
+CASE_OF_BENIGN_EVENT = (['8'], ['5'], ['3'], ['3'], ['5'], Common.DBotScore.GOOD, '5', False)
 CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], ['5'], Common.DBotScore.NONE, None, False)
 CASE_OF_BAD_THREAT_LEVEL_ID = (['1'], ['2'], ['3'], ['4'], ['5'], Common.DBotScore.BAD, None, True)
 TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_BENIGN_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
@@ -514,9 +514,10 @@ def test_parse_response_reputation_command(mocker):
     reputation_expected = util_load_json("test_data/reputation_command_outputs.json")
     malicious_tag_ids = ['279', '131']
     suspicious_tag_ids = ['104']
+    benign_tag_ids = []
     attribute_limit = 3
     outputs, _, _, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids,
-                                                         attribute_limit)
+                                                         benign_tag_ids, attribute_limit)
     assert outputs == reputation_expected
 
 

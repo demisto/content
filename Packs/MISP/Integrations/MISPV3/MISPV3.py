@@ -1626,10 +1626,11 @@ def handle_tag_duplication_ids(malicious_tag_ids: list, suspicious_tag_ids: list
     suspicious tag ids set and will be stayed only in the malicious one (as a tag that was configured to be malicious is
     stronger than recognised as suspicious).
     """
-    common_ids = set(malicious_tag_ids) & set(suspicious_tag_ids) & set(benign_tag_ids)
+    common_ids = set(malicious_tag_ids) & set(suspicious_tag_ids)
     common_ids_sus = set(suspicious_tag_ids) & set(benign_tag_ids)
-    suspicious_tag_ids = {tag_id for tag_id in suspicious_tag_ids if tag_id not in common_ids}
-    benign_tag_ids = {tag_id for tag_id in suspicious_tag_ids if tag_id not in common_ids_sus}
+    common_ids_mal = set(malicious_tag_ids) & set(benign_tag_ids)
+    suspicious_tag_ids = list({tag_id for tag_id in suspicious_tag_ids if tag_id not in common_ids})
+    benign_tag_ids = list({tag_id for tag_id in benign_tag_ids if tag_id not in common_ids_sus and tag_id not in common_ids_mal})
     return malicious_tag_ids, suspicious_tag_ids, benign_tag_ids
 
 
