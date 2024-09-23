@@ -187,7 +187,7 @@ script:
       name: remove_ports
     description: Gets the feed indicators.
     name: json-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.86899
+  dockerimage: demisto/py3-tools:1.0.0.112434
   feed: true
   runonce: false
   script: '-'
