@@ -385,7 +385,7 @@ def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_
     assert tag_list_id == expected_tag_list_ids
 
 
-@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids '
+@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, '
                          'expected_score, found_tag, is_attribute_in_event_with_bad_threat_level', TEST_TAG_SCORES)
 def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
                    expected_score, found_tag, is_attribute_in_event_with_bad_threat_level):
