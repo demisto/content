@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from FeedTAXII import TAXIIClient, fetch_indicators_command
+from FeedTAXII import TAXIIClient, fetch_indicators_command, Taxii11
 
 """ helper functions """
 
@@ -153,8 +153,8 @@ def test_client_headers():
     Then:
     - Validate the headers contain the Accept header
     """
-    client = TAXIIClient(collection='a collection')
-    headers = client.headers
-    
+    client = Taxii11()
+    headers = client.headers()
+
     assert 'Accept' in headers
     assert headers['Accept'] == 'application/xml'
