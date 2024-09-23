@@ -9,7 +9,7 @@ import urllib3
 import incydr
 import py42.sdk
 import py42.settings
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 from py42.sdk.queries.fileevents.v2.file_event_query import FileEventQuery as FileEventQueryV2
 
@@ -366,7 +366,8 @@ class Code42Client(BaseClient):
         return None
 
     def _process_alert(self, alert):
-        # some important alert information is not returned directly by the API and must be inferred or queried. This helper method does this for incoming sessions.
+        # some important alert information is not returned directly by the API and must be inferred or queried.
+        # This helper method does this for incoming sessions.
         alert.riskSeverity = SESSION_SEVERITY_LIST[max(alert.scores, key=lambda x: x.severity).severity]
         alert.state = max(alert.states, key=lambda x: x.source_timestamp).state
         alert.actor = self.incydr_sdk.actors.v1.get_actor_by_id(alert.actor_id).name
@@ -581,7 +582,7 @@ def alert_update_state_command(client, args):
 
     # Retrieve new alert details
     alert_details = client.get_alert_details(alert_id)
-    code42_context = map_to_code42_alert_context(alert_details)
+    code42_context = map_to_code42_alert_context(alert_details.dict())
     code42_securityalert_context.append(code42_context)
     readable_outputs = tableToMarkdown(
         "Code42 Security Alert Updated",
@@ -593,7 +594,7 @@ def alert_update_state_command(client, args):
         outputs_key_field="ID",
         outputs=code42_securityalert_context,
         readable_output=readable_outputs,
-        raw_response=alert_details,
+        raw_response=alert_details.dict(),
     )
 
 
@@ -964,7 +965,7 @@ class Code42SecurityIncidentFetcher:
         start_query_time = self._get_start_query_time()
         alerts = self._fetch_alerts(start_query_time)
         incidents = [self._create_incident_from_alert(a) for a in alerts]
-        save_time = datetime.utcnow().timestamp()
+        save_time = datetime.now(timezone.utc).timestamp()
         next_run = {"last_fetch": save_time}
         return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
@@ -1012,9 +1013,12 @@ class Code42SecurityIncidentFetcher:
 
     def _relate_files_to_alert(self, alert_details):
         observations = self._client.get_alert_file_events(alert_details["sessionId"])
-        alert_details["exfiltrationSummary"] = "{} {}".format(observations.total_count, alert_details["exfiltrationSummary"])
-        # it is necessary to dump to/load from json here because otherwise we will get "datetime" string representations instead of
-        # isoformat timestamps.
+        alert_details["exfiltrationSummary"] = "{} {}".format(
+            observations.total_count,
+            alert_details["exfiltrationSummary"]
+        )
+        # it is necessary to dump to/load from json here because otherwise we will get "datetime" string representations
+        # instead of isoformat timestamps.
         alert_details["fileevents"] = [json.loads(e.json()) for e in observations.file_events]
         return alert_details
 
