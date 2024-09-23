@@ -1800,3 +1800,30 @@ def test_update_firewall_policy_command_error(mock_client: FortiGate.Client):
         FortiGate.update_firewall_policy_command(mock_client, {"keep_original_data": "true"})
 
     assert str(exc_info.value) == "If 'keep_original_data' is set to True, 'add_or_remove' must also be set."
+
+
+def test_list_firewall_policies_return_all_policy_name(mock_client: FortiGate.Client, requests_mock):
+    """
+        Given: Args to run list_firewall_policies command with policyName to filter by which does not match any policy.
+        When: Running list_firewall_policies command.
+        Then: Validate no results are returned.
+    """
+
+    args = {
+        "vdom": "Pokemon",
+        "filter_field": "Lior",
+        "filter_value": "SB",
+        "format_fields": ["I", "Choose", "You"],
+        "policyName": "Non-exist-policy"
+    }
+
+    response = load_mock_response("policy_response.json")
+
+    requests_mock.get(
+        url=CommonServerPython.urljoin(API_URL, FortiGate.Client.POLICY_ENDPOINT),
+        json=response,
+    )
+
+    command_results = FortiGate.list_firewall_policies_command(mock_client, args)
+
+    assert len(command_results.outputs) == 0

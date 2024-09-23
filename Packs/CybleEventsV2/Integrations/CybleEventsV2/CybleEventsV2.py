@@ -2,9 +2,12 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
-from datetime import datetime, timezone
+from datetime import datetime
+import pytz
 import urllib3
 import json
+
+UTC = pytz.UTC
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -113,9 +116,9 @@ def validate_input(args, is_iocs=False):
                 _start_date = datetime(1, 1, 1, 0, 0)
                 _end_date = datetime(1, 1, 1, 0, 0)
 
-            if limit <= 0 or limit > 1000:
+            if limit <= 0 or limit > 100:
                 raise ValueError(
-                    f"The limit argument should contain a positive number, up to 1000, limit: {limit}")
+                    f"The limit argument should contain a positive number, up to 100, limit: {limit}")
 
             if _start_date > datetime.utcnow():
                 raise ValueError(
@@ -132,10 +135,10 @@ def validate_input(args, is_iocs=False):
             if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
                 raise ValueError(f"The limit argument should contain a positive number, up to 1000, limit: {limit}")
 
-            if _start_date > datetime.now(tz=timezone.utc):
+            if _start_date > datetime.now(tz=UTC):
                 raise ValueError(
-                    f"Start date must be a date before or equal to {datetime.now(tz=timezone.utc).strftime(date_format)}")
-            if _end_date > datetime.now(tz=timezone.utc):
+                    f"Start date must be a date before or equal to {datetime.now(tz=UTC).strftime(date_format)}")
+            if _end_date > datetime.now(tz=UTC):
                 raise ValueError(
                     f"End date must be a date before or equal to {args.get('end_date')}")
             if _start_date > _end_date:
@@ -229,6 +232,11 @@ def format_incidents(alerts, hide_cvv_expiry):
                 alert['data_message']['data']['bank']['card']['cvv'] = "xxx"
                 alert['data_message']['data']['bank']['card']['expiry'] = "xx/xx/xxxx"
 
+            keyword = ""
+            if alert.get('metadata') and alert['metadata'].get('entity'):
+                if alert['metadata']['entity'].get('keyword') and alert['metadata']['entity']['keyword']['tag_name']:
+                    keyword = alert['metadata']['entity']['keyword']['tag_name']
+
             alert_details = {
                 "name": "Cyble Vision Alert on {}".format(alert['service']),
                 "event_type": "{}".format(alert['service']),
@@ -236,7 +244,7 @@ def format_incidents(alerts, hide_cvv_expiry):
                 "alert_group_id": "{}".format(alert['alert_group_id']),
                 "event_id": "{}".format(alert['id']),
                 "data_message": json.dumps(alert['data_message']),
-                "keyword": "{}".format(alert['metadata']['entity']['keyword']['tag_name']),
+                "keyword": "{}".format(keyword),
                 "created_at": "{}".format(alert['created_at']),
                 "status": "{}".format(alert['status']),
                 "mirrorInstance": demisto.integrationInstance()
@@ -710,32 +718,64 @@ def cyble_fetch_iocs(client, method, token, args, url):
     if args.get('end_date'):
         input_params_alerts_iocs['endDate'] = args.get('end_date')
 
-    iocs = set_request(client, method, token, input_params_alerts_iocs, url)
+    response = set_request(client, method, token, input_params_alerts_iocs, url)
 
     try:
         lst_iocs = []
-        for ioc in iocs['result']:
+        for ioc in response['iocs']:
 
-            lst_attack = []
-            lst_tags = []
+            sources = []
+            behaviour_tags = []
+            target_countries = []
+            target_regions = []
+            target_industries = []
+            related_malwares = []
+            related_threat_actors = []
 
-            for attack_details in ioc['attack_id']:
-                lst_attack.append(attack_details['attack_id'])
+            if ioc.get('sources'):
+                for source in ioc.get('sources'):
+                    sources.append(source)
 
-            for ioc_tags in ioc['ioc_tags']:
-                lst_tags.append(ioc_tags['name'])
+            if ioc.get('behaviour_tags'):
+                for behaviour_tag in ioc.get('behaviour_tags'):
+                    behaviour_tags.append(behaviour_tag)
+
+            if ioc.get('target_countries'):
+                for target_country in ioc.get('target_countries'):
+                    target_countries.append(target_country)
+
+            if ioc.get('target_regions'):
+                for target_region in ioc.get('target_regions'):
+                    target_regions.append(target_region)
+
+            if ioc.get('target_industries'):
+                for target_industry in ioc.get('target_industries'):
+                    target_industries.append(target_industry)
+
+            if ioc.get('related_malware'):
+                for related_malware in ioc.get('related_malware'):
+                    related_malwares.append(related_malware)
+
+            if ioc.get('related_threat_actors'):
+                for related_threat_actor in ioc.get('related_threat_actors'):
+                    related_threat_actors.append(related_threat_actor)
 
             lst_iocs.append({'ioc': "{}".format(ioc['ioc']),
+                             'ioc_type': "{}".format(ioc['ioc_type']),
                              'first_seen': "{}".format(ioc['first_seen']),
                              'last_seen': "{}".format(ioc['last_seen']),
-                             'risk_rating': "{}".format(ioc['risk_rating']),
-                             'confident_rating': "{}".format(ioc['confident_rating']),
-                             'ioc_type': "{}".format(ioc['ioc_type']['name']),
-                             'attack': f"{lst_attack}",
-                             'tags': f"{lst_tags}"
+                             'risk_score': "{}".format(ioc['risk_score']),
+                             'confidence_rating': "{}".format(ioc['confidence_rating']),
+                             'sources': f"{sources}",
+                             'behaviour_tags': f"{behaviour_tags}",
+                             'target_countries': f"{target_countries}",
+                             'target_regions': f"{target_regions}",
+                             'target_industries': f"{target_industries}",
+                             'related_malware': f"{related_malwares}",
+                             'related_threat_actors': f"{related_threat_actors}",
                              })
     except Exception as e:
-        raise Exception(f"Error: [{e}] for response [{iocs}]")
+        raise Exception(f"Error: [{e}] for response [{response}]")
 
     markdown = tableToMarkdown('Indicator of Compromise:', lst_iocs, )
 

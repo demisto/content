@@ -15,10 +15,8 @@ import requests
 import dateparser
 
 from MicrosoftApiModule import *
-import urllib3
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+MAX_FETCH = 100
 DEFAULT_FROM_FETCH_PARAMETER = '3 days'
 
 
@@ -84,7 +82,7 @@ class IntegrationHTTPRequest(BaseModel):
 
     _normalize_headers = validator('headers', pre=True, allow_reuse=True)(
         load_json
-    )
+    )  # type: ignore[type-var]
 
 
 class Credentials(BaseModel):
@@ -111,7 +109,7 @@ class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
     proxy: bool | None = False
-    limit: int | None = Field(None, ge=1)
+    limit: int | None = Field(None, ge=1, le=MAX_FETCH)
 
 
 class IntegrationEventsClient(ABC):
@@ -272,7 +270,7 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
 
     _normalize_url = validator('url', pre=True, allow_reuse=True)(
         lambda base_url: f'{base_url}/api/v1/'
-    )
+    )  # type: ignore[type-var]
 
 
 class DefenderClient(IntegrationEventsClient):

@@ -5,12 +5,8 @@ from CommonServerPython import *  # noqa: F401
 import json
 from datetime import datetime
 import dateparser
-from typing import List, Dict
 from math import floor
-import urllib3
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS/GLOBALS '''
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -90,8 +86,9 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp() * 1000)
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         return arg
+    return None
 
 
 # helper function gets incident ids from Respond into array format
@@ -527,7 +524,7 @@ def test_module(client):
 
 def get_max_number_of_ids_by_least_recently_created(all_ids, max_fetch):
     sorted_ids = sorted(all_ids, key=lambda x: x['dateCreated'])
-    for i in range(0, len(all_ids) - max_fetch):
+    for _i in range(0, len(all_ids) - max_fetch):
         sorted_ids.pop()
 
     return list(map(extract_id, sorted_ids))
@@ -561,16 +558,16 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
     assets = []
     external_systems = []
     lc_assets = []
-    lc_external_systems: List[Dict[str, str]] = []
+    lc_external_systems: list[dict[str, str]] = []
     if raw_incident.get('allSystems'):
         assets = list(
             filter(lambda system: system['isInternal'] is True, raw_incident['allSystems']))
         for asset in assets:
-            lc_assets.append(dict((k.lower(), v) for k, v in asset.items()))
+            lc_assets.append({k.lower(): v for k, v in asset.items()})
         external_systems = list(
             filter(lambda system: system['isInternal'] is False, raw_incident['allSystems']))
         for es in external_systems:
-            lc_external_systems.append(dict((k.lower(), v) for k, v in es.items()))
+            lc_external_systems.append({k.lower(): v for k, v in es.items()})
 
     # aggregate accounts
     accounts = []
@@ -1039,7 +1036,7 @@ def fetch_incidents(rest_client, last_run):
         incidents: Incidents that will be created in Demisto
     """
     if last_run is None:
-        last_run = dict()
+        last_run = {}
 
     # get tenant ids
     tenant_mappings = rest_client.get_tenant_mappings()

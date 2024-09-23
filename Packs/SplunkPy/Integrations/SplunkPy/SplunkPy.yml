@@ -673,7 +673,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.103333
+  dockerimage: demisto/splunksdk-py3:1.0.0.108075
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -687,4 +687,8 @@ tests:
 - Splunk-Test_default_handler
 - SplunkPy_KV_commands_default_handler
 - SplunkPy parse-raw - Test
+- Splunk-Test_requests_handler
+- SplunkPy_KV_commands_requests_handler
+- SplunkPy-Test-V2_requests_handler
+- SplunkPySearch_Test_requests_handler
 fromversion: 5.0.0

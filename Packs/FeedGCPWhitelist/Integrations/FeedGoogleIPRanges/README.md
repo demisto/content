@@ -18,6 +18,7 @@ Use the Google IP Ranges Feed integration to get GCP and Google global IP ranges
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedTags | Tags | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
+| Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
