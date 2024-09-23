@@ -361,6 +361,18 @@ script:
       name: destination_object_name
     description: Copies a file (object) from one bucket to another.
     name: gcs-copy-file
+    name: gcs-set-public-access-prevention
+    arguments:
+    - name: bucket_name
+      required: true
+      description: Name of the bucket in which to modify the public access prevention.
+        If not specified, operation will be performed on the default bucket parameter.
+    - name: public_access_prevention_status
+      required: false
+      description: When you set public access prevention to inherited for an individual bucket,
+        the bucket might still be subject to public access prevention due to an organization policy.
+        To ensure that public access prevention is disabled for a bucket with an inherited setting,
+        make sure public access prevention is also disabled for its parent project.
   dockerimage: demisto/google-cloud-storage:1.0.0.89308
   runonce: false
   script: ''
