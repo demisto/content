@@ -4029,7 +4029,7 @@ def test_rtr_read_registry_keys_command(mocker):
     assert "reg-1key" in parsed_result[0].readable_output
 
 
-detections = {'resources': [
+detections_legacy = {'resources': [
     {'behavior_id': 'example_behavior_1',
      'detection_ids': ['example_detection'],
      'incident_id': 'example_incident_id',
@@ -4039,25 +4039,27 @@ detections = {'resources': [
      'detection_ids': ['example_detection2'],
      'incident_id': 'example_incident_id',
      'some_field': 'some_example2',
-     },
-    {'behavior_id': 'example_behavior_3',
-     'alert_ids': ['example_detection3'],
+     }
+]}
+
+detections_new = {'resources': [
+    {'behavior_id': 'example_behavior',
+     'alert_ids': ['example_detection'],
      'incident_id': 'example_incident_id',
-     'some_field': 'some_example3',
+     'some_field': 'some_example',
      }
 ]}
 
 DETECTION_FOR_INCIDENT_CASES = [
     (
-        detections,
+        detections_legacy,
+        True,
         ['a', 'b'],
         [
             {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
              'detection_ids': ['example_detection']},
             {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
-             'detection_ids': ['example_detection2']},
-            {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_3',
-             'detection_ids': ['example_detection3']}
+             'detection_ids': ['example_detection2']}
         ],
         [
             {'behavior_id': 'example_behavior_1',
@@ -4067,35 +4069,48 @@ DETECTION_FOR_INCIDENT_CASES = [
             {'behavior_id': 'example_behavior_2',
              'detection_ids': ['example_detection2'],
              'incident_id': 'example_incident_id',
-             'some_field': 'some_example2'},
-            {'behavior_id': 'example_behavior_3',
-             'alert_ids': ['example_detection3'],
-             'incident_id': 'example_incident_id',
-             'some_field': 'some_example3'}
+             'some_field': 'some_example2'}
         ],
         'CrowdStrike.IncidentDetection',
         '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
         '\n| example_behavior_1 | example_detection | example_incident_id |\n'
-        '| example_behavior_2 | example_detection2 | example_incident_id |\n'
-        '| example_behavior_3 | example_detection3 | example_incident_id |\n'),
-    ({'resources': []}, [], None, None, None, 'Could not find behaviors for incident zz')
+        '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
+    (
+        detections_new,
+        False,
+        ['a', 'b'],
+        [{'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior',
+          'detection_ids': ['example_detection']}
+         ],
+        [
+            {'behavior_id': 'example_behavior',
+             'alert_ids': ['example_detection'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example'}
+        ],
+        'CrowdStrike.IncidentDetection',
+        '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
+        '\n| example_behavior | example_detection | example_incident_id |\n',
+    ),
+    ({'resources': []}, False, [], None, None, None, 'Could not find behaviors for incident zz')
 ]
 
 
 @pytest.mark.parametrize(
-    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
+    'detections, use_legacy, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
     DETECTION_FOR_INCIDENT_CASES)
-def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
+def test_get_detection_for_incident_command(mocker, detections, use_legacy, resources, expected_outputs, expected_raw,
                                             expected_prefix,
                                             expected_md):
     """
     Given: An incident ID.
-    the detection_ids are in 'detection_ids' key or in 'alert_ids' key see XSUP-41622
-    When: When running cs-falcon-get-detections-for-incident command
+    When: When running cs-falcon-get-detections-for-incident command in legacy and new API.
     Then: validates the created command result contains the correct data (whether found or not).
     """
 
     from CrowdStrikeFalcon import get_detection_for_incident_command
+
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', new=use_legacy)
 
     mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
                  return_value={'resources': resources, 'meta': {'pagination': {'total': len(resources)}}})
