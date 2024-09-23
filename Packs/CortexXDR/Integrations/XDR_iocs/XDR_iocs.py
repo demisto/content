@@ -41,6 +41,9 @@ demisto_score_to_xdr: dict[int, str] = {
     3: 'BAD'
 }
 
+def extensive_log(message):
+    if demisto.params().get('extensive_logs', False):
+        demisto.debug(message)
 
 def create_validation_errors_response(validation_errors):
     if not validation_errors:
@@ -359,7 +362,7 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str
 
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
-        # demisto.debug(f'Raw outgoing IOC: {ioc=}')  # uncomment to debug, otherwise spams the log
+        extensive_log(f'Raw outgoing IOC: {ioc=}')
         xdr_ioc: dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,  # default, may be overwritten, see below
@@ -567,7 +570,9 @@ def tim_insert_jsons(client: Client):
                                                                    query=query)))
             if iocs:
                 response = push_indicators_to_xdr_request(client, iocs)
-                validation_errors.extend(response.get('reply', {}).get('validation_errors', []))
+                current_validation_errors = response.get('reply', {}).get('validation_errors', [])
+                validation_errors.extend(current_validation_errors)
+                demisto.debug(f"Validation errors of the current loop: {current_validation_errors}")
             else:
                 demisto.debug("pushing IOCs to XDR: No more recently modified indicators to push.")
                 break
@@ -631,7 +636,7 @@ def list_of_single_to_str(values: Sequence[str]) -> list[str] | str:
 
 
 def xdr_ioc_to_demisto(ioc: dict) -> dict:
-    # demisto.debug(f'Raw incoming IOC: {ioc}') # uncomment to debug, otherwise spams the log
+    extensive_log(f'Raw incoming IOC: {ioc=}')
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)

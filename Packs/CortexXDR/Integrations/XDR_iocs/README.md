@@ -44,11 +44,11 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Sync IOCs with Cortex XDR.
 Run this command manually only when configuring the instance integration with fetch indicators disabled (run this only once).
-Recommended to run this manually only when there are no more than 40,000 indicators.
+It is not recommended to run this manually when there are more then 40,000 indicators.
 
 When `fetch indicators` is enabled, the sync mechanism is used by default. This sets the current time as the last sync time and fetches IOCs from XSOAR to XDR, sorted by modification time, in batches of 40,000, up to that time. Upon reaching the last sync point, the synchronization becomes bi-directional, first from XSOAR to XDR, then from XDR to XSOAR.
 
-As a result, the duration of the first sync depends on the number of IOCs in the XSOAR tenant. For example, if there are 800,000 indicators in XSOAR and the `Feed Fetch Interval` is set to 20 minutes as recommended, the initial sync process will take approximately 7 hours.
+As a result, the duration of the first sync depends on the number of IOCs in the XSOAR tenant and the Feed Fetch Interval. For example, if there are 800,000 indicators in XSOAR and the `Feed Fetch Interval` is set to 20 minutes as recommended, the initial sync process will take approximately 7 hours.
   
 #### Base Command  
   
