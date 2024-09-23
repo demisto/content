@@ -164,7 +164,7 @@ def test_fetch_assets_command(requests_mock):
                     )
     assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run={})
     assert len(assets) == 8
-    assert total_assets == '8'
+    assert total_assets == 8
     assert snapshot_id
     assert last_run['stage'] == 'vulnerabilities'
 

@@ -30,6 +30,7 @@ HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
 HOST_LIMIT = 2000
 TEST_FROM_DATE = 'one day'
+FETCH_ASSETS_COMMAND_TIME_OUT = 180
 
 ASSETS_DATE_FORMAT = '%Y-%m-%d'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -1679,6 +1680,7 @@ class Client(BaseClient):
             "truncation_limit": limit,
             "vm_scan_date_after": since_datetime,
         }
+        timeout = 150
         if next_page:
             params["id_min"] = next_page
         try:
@@ -1687,13 +1689,14 @@ class Client(BaseClient):
                 url_suffix=urljoin(API_SUFFIX, 'asset/host/vm/detection/?action=list'),
                 resp_type='text',
                 params=params,
-                timeout=150,
+                timeout=timeout,
                 error_handler=self.error_handler,
             )
         except requests.exceptions.ReadTimeout:
-            set_last_run_with_new_limit(limit)
-            raise TimeoutError("passed the defined timeout, we will lower the limit for the next run")
-
+            new_limit = set_last_run_with_new_limit(limit)
+            raise TimeoutError(f"Request to get host_list_detection exceeded the defined timeout ({timeout} secs). "
+                               f"The integration will automatically reduce the request host limit from {limit} "
+                               f"to {new_limit} in the next iteration")
         return response
 
     def get_vulnerabilities(self, since_datetime) -> Union[str, bytes]:
@@ -2894,7 +2897,7 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
         next_page: pagination marking
         since_datetime: The start fetch date.
         limit: The limit of the host list detections
-        is_test:
+        is_test: Indicates whether it's test-module run or regular run.
     Returns:
         Host list detections assets
     """
@@ -2937,24 +2940,16 @@ def fetch_assets(client, assets_last_run):
         assets: assets to push to xsiam
         vulnerabilities: vulnerabilities to push to xsiam
     """
-    demisto.debug('Starting fetch for assets')
-    start_time = time.time()
     since_datetime = assets_last_run.get('since_datetime', '')
     next_page = assets_last_run.get('next_page', '')
     total_assets = assets_last_run.get('total_assets', 0)
-    snapshot_id = assets_last_run.get('snapshot_id', round(time.time() * 1000))
+    snapshot_id = assets_last_run.get('snapshot_id', str(round(time.time() * 1000)))
     limit = assets_last_run.get('limit', HOST_LIMIT)
 
     if not since_datetime:
         since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
 
     assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page, limit)
-
-    if (time.time() - start_time) > 180:
-        demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
-                      'because there is not enough time left, and we will lower the limit for the next time')
-        set_last_run_with_new_limit(limit)
-        raise TimeoutError("passed the defined timeout, we will lower the limit for the next run")
 
     total_assets += len(assets)
     stage = 'assets' if next_run_page else 'vulnerabilities'
@@ -2967,12 +2962,21 @@ def fetch_assets(client, assets_last_run):
     return assets, new_last_run, amount_to_send, snapshot_id
 
 
+def check_fetch_duration_time(start_time, limit):
+    if (time.time() - start_time) > FETCH_ASSETS_COMMAND_TIME_OUT:
+        demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
+                      'because there is not enough time left, and we will lower the limit for the next time')
+        new_limit = set_last_run_with_new_limit(limit)
+        raise TimeoutError(f"passed the defined timeout, we will lower the limit {limit=} for the next run {new_limit}")
+
+
 def set_last_run_with_new_limit(limit):
     new_limit = int(limit / 2) if limit > 1 else 1
-    demisto.debug(f'set limit to: {new_limit}')
+    demisto.debug(f'Setting host limit to: {new_limit}')
     last_run = demisto.getAssetsLastRun()
     last_run['limit'] = new_limit
     demisto.setAssetsLastRun(last_run)
+    return new_limit
 
 
 def fetch_vulnerabilities(client, last_run):
@@ -3176,7 +3180,7 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     base_url = params.get('url')
-    verify_certificate = not params.get("insecure", True)
+    verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
@@ -3479,19 +3483,22 @@ def main():  # pragma: no cover
             fetch_stage = last_run.get('stage', 'assets')
 
             if fetch_stage == 'assets':
-                assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
+                start_time = time.time()
+                demisto.debug(f'Starting fetch for assets, {start_time=}')
+                assets, new_last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
+                check_fetch_duration_time(start_time, last_run.get('limit'))
 
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
-                                   snapshot_id=str(snapshot_id), items_count=total_assets, should_update_health_module=False)
-                demisto.setAssetsLastRun(last_run)
+                                   snapshot_id=snapshot_id, items_count=total_assets, should_update_health_module=False)
+                demisto.setAssetsLastRun(new_last_run)
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
 
             elif fetch_stage == 'vulnerabilities':
-                vulnerabilities, last_run = fetch_vulnerabilities(client=client, last_run=last_run)
+                vulnerabilities, new_last_run = fetch_vulnerabilities(client=client, last_run=last_run)
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
-                demisto.setAssetsLastRun(last_run)
+                demisto.setAssetsLastRun(new_last_run)
 
             demisto.debug('finished fetch assets run')
         else:
