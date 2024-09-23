@@ -329,7 +329,16 @@ def write_json_file(new_chrome_instance_content: Optional[Dict] = {},
                     terminate_port: bool = False,
                     ):
     """
-    Write to a JSON file with an option to overwrite or create an empty file.
+    To clarify the steps for writing to a JSON file with overwrite or create options and considering the different cases:
+        1. If the JSON file "CHROME_INSTANCES_FILE_PATH" does not exist,
+        the function will create a new file and add the "new_chrome_instance_content."
+
+        2. If the file "CHROME_INSTANCES_FILE_PATH" exists and the "new_chrome_instance_content" is not empty,
+        the function will add the new content to the end of the file.
+
+        3. If the file "CHROME_INSTANCES_FILE_PATH" exists and "chrome_port" is not empty:
+           a. If "increase_counter" is not empty, the function will increase the counter of the port "chrome_port."
+           b. If "terminate_port" is true, the function will delete the chrome port from the file.
 
     :param new_chrome_instance_content: Data to write to the file. If None, an empty file is created.
     :param chrome_port: Port for Chrome instance.
@@ -359,7 +368,7 @@ def write_json_file(new_chrome_instance_content: Optional[Dict] = {},
         else:
             demisto.info(f"File '{CHROME_INSTANCES_FILE_PATH}' does not exist.")
             # Create a new file with the content as a list
-            with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+            with open(CHROME_INSTANCES_FILE_PATH, 'w+') as file:
                 json.dump(new_chrome_instance_content, file, indent=4)
 
     except Exception as e:
