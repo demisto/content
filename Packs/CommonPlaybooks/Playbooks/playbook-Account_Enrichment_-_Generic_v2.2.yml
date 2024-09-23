@@ -1178,6 +1178,7 @@ tasks:
         complex:
           root: Usernames
           transformers:
+          - operator: Stringify
           - operator: RegexReplace
             args:
               action_dt: {}

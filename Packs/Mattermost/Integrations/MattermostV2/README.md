@@ -15,14 +15,16 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Bot Access Token | The Bot Access Token to use for connection. | True |
     | Personal Access Token | The Personal Access Token to use for connection. | True |
     | Team Name |  | True |
-    | Default Notifications Channel |  | False |
+    | Default Notifications Channel | If Notifications Channel name is not specified, will send notification to incidentNotificationChannel channel. | False |
     | Enable Incident Mirroring |  | False |
     | Allow external users to create incidents via DM. |  | False |
+    | Types of Notifications to Send | Notifications of type 'externalAskSubmit' or 'externalFormSubmit' are not configurable because they are required to allow Ask tasks to be sent correctly. | False |
     | Long running instance. Required for investigation mirroring and direct messages. |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
