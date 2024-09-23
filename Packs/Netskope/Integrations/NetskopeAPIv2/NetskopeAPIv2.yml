@@ -20,6 +20,7 @@ configuration:
     type: 8
   - displaypassword: API token
     name: credentials
+    defaultvalue: ""
     required: true
     hiddenusername: true
     type: 9
