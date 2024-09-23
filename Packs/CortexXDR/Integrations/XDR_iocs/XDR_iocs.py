@@ -41,9 +41,11 @@ demisto_score_to_xdr: dict[int, str] = {
     3: 'BAD'
 }
 
+
 def extensive_log(message):
     if demisto.params().get('extensive_logs', False):
         demisto.debug(message)
+
 
 def create_validation_errors_response(validation_errors):
     if not validation_errors:
@@ -419,8 +421,8 @@ def set_sync_time(timestamp: datetime) -> None:
 
 
 def update_integration_context_override(update_sync_time_with_datetime: datetime | None = None,
-                               update_is_first_sync_phase: str | None = None,
-                               update_search_after_array: List[Any] | None = None):
+                                        update_is_first_sync_phase: str | None = None,
+                                        update_search_after_array: List[Any] | None = None):
     last_run = get_integration_context() or {}
     if update_sync_time_with_datetime:
         last_run['ts'] = int(update_sync_time_with_datetime.timestamp()) * 1000
