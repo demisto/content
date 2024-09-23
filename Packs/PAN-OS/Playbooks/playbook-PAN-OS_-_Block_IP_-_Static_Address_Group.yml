@@ -260,6 +260,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      description:
+        simple: ${inputs.IPDescription}
       element_to_add:
         complex:
           root: inputs.IP
