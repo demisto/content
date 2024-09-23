@@ -3,10 +3,10 @@ This integration was integrated and tested with API version 2.1 of SentinelOne.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure SentinelOne Event Collector on Cortex XSIAM
+## Configure SentinelOne Activity and Alerts on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for SentinelOne Event Collector.
+2. Search for SentinelOne Activity and Alerts.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
