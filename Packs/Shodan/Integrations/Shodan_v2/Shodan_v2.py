@@ -116,7 +116,7 @@ def add_time_to_events(events: list[dict]):
             event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
-def filter_events(events: List[Dict], start_date: datetime, limit: int) -> List[Dict]:
+def filter_events(events: List[Dict], limit: int, last_fetch_time: Optional[datetime] = None):
     """
     Filters and sorts events based on a start date and limit.
 
@@ -124,15 +124,13 @@ def filter_events(events: List[Dict], start_date: datetime, limit: int) -> List[
         events (List[Dict[str, str]]): List of events where each event is represented as a dictionary.
         start_date (datetime): The start date as a datetime object.
         limit (int): The maximum number of events to return.
-
-    Returns:
-        List[Dict[str, str]]: A list of filtered events sorted by date, up to the specified limit.
     """
     events.sort(key=parse_event_date)
 
-    filtered_events = [event for event in events if parse_event_date(event) > start_date]
+    if last_fetch_time:
+        events[:] = [event for event in events if parse_event_date(event) > last_fetch_time]
 
-    return filtered_events[:limit]
+    events[:] = events[:limit]
 
 
 def parse_event_date(event: Dict) -> datetime:
@@ -525,12 +523,10 @@ def get_events_command(args: dict) -> tuple[str, list[dict]]:
         events = [events]
 
     limit = arg_to_number(args.get("max_fetch")) or DEFAULT_MAX_EVENTS
-    start_date = arg_to_datetime(args.get("start_date")) or (datetime.now() - timedelta(days=1))
+    filter_events(events, limit)
 
-    filtered_events = filter_events(events, start_date, limit)
-
-    hr = tableToMarkdown(f"{VENDOR.title()} - {PRODUCT.title()} Events:", format_record_keys(filtered_events))
-    return hr, filtered_events
+    hr = tableToMarkdown(f"{VENDOR.title()} - {PRODUCT.title()} Events:", format_record_keys(events))
+    return hr, events
 
 
 def fetch_events(last_run: dict[str, str], params: dict[str, str]) -> tuple[Dict, List[Dict]]:
@@ -555,15 +551,15 @@ def fetch_events(last_run: dict[str, str], params: dict[str, str]) -> tuple[Dict
         demisto.debug('Last run data is missing. Fetching initial last_run and setting start_date to now')
     limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_EVENTS
 
-    filtered_events = filter_events(events, last_fetch_time, limit)
-    demisto.debug(f'After filtering, {len(filtered_events)} events remain')
+    filter_events(events, limit, last_fetch_time)
+    demisto.debug(f'After filtering, {len(events)} events remain')
 
-    if filtered_events:
-        latest_event = max(filtered_events, key=parse_event_date)
+    if events:
+        latest_event = max(events, key=parse_event_date)
         last_fetch_time = parse_event_date(latest_event)
 
     last_run["start_date"] = last_fetch_time.strftime(DATE_FORMAT)
-    return last_run, filtered_events
+    return last_run, events
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

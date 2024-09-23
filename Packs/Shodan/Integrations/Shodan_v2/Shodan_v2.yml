@@ -368,9 +368,6 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - name: start_date
-      description: 'Fetch events created after this date. You can also use relative terms like "3 days ago".'
-      defaultValue: "3 days ago"
     - name: max_fetch
       description: The maximum amount of events to return.
       defaultValue: 50000
@@ -380,6 +377,7 @@ script:
   subtype: python3
   type: python
   isfetchevents: true
+  isfetchevents:xsoar: false
 tests:
 - Test-Shodan_v2
 fromversion: 5.0.0
