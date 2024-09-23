@@ -641,10 +641,10 @@ def main():     # pragma: no cover
                                            _limit=limit))
             elif demisto.command() == 'mail-listener-get-email':
                 return_results(get_email(client=client,
-                                         message_id=args.get('message-id')))
+                                         message_id=arg_to_number(args.get('message-id'))))
             elif demisto.command() == 'mail-listener-get-email-as-eml':
                 return_results(get_email_as_eml(client=client,
-                                                message_id=args.get('message-id')))
+                                                message_id=arg_to_number(args.get('message-id'))))
             elif demisto.command() == 'fetch-incidents':
                 next_run, incidents = fetch_incidents(client=client, last_run=demisto.getLastRun(),
                                                       first_fetch_time=first_fetch_time,
