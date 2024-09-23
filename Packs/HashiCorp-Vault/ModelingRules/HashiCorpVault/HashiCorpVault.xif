@@ -19,8 +19,7 @@ alter
     roles = arraycreate(_raw_log -> auth.metadata.role, _raw_log -> auth.metadata.role_name),
     service_account_name = _raw_log -> auth.metadata.service_account_name,
     service_account_uid = _raw_log -> auth.metadata.service_account_uid,
-    vault_version = arraystring(arraydistinct(arraycreate(_raw_log -> request.mount_running_version, _raw_log -> response.mount_running_plugin_version)), ","),
-    client_ipv4_array = arraycreate(client_ipv4)
+    vault_version = arraystring(arraydistinct(arraycreate(_raw_log -> request.mount_running_version, _raw_log -> response.mount_running_plugin_version)), ",")
 | alter 
     client_ipv4 = if(client_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", client_ip), 
     client_ipv6 = if(client_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", client_ip)
@@ -40,12 +39,12 @@ alter
     xdm.source.host.ipv4_addresses = if(client_ipv4 != null, arraycreate(client_ipv4)),
     xdm.source.host.ipv4_public_addresses = if(
         client_ipv4 = null, null,
-        incidr(client_ipv4, "10.0.0.0/8"), client_ipv4_array, 
-        incidr(client_ipv4, "192.168.0.0/16"), client_ipv4_array,
-        incidr(client_ipv4, "172.16.0.0/12"), client_ipv4_array,
-        incidr(client_ipv4, "127.0.0.0/8"), client_ipv4_array,
-        incidr(client_ipv4, "169.254.0.0/16"), client_ipv4_array,
-        incidr(client_ipv4, "100.64.0.0/10"), client_ipv4_array),
+        incidr(client_ipv4, "10.0.0.0/8"), null, 
+        incidr(client_ipv4, "192.168.0.0/16"), null,
+        incidr(client_ipv4, "172.16.0.0/12"), null,
+        incidr(client_ipv4, "127.0.0.0/8"), null,
+        incidr(client_ipv4, "169.254.0.0/16"), null,
+        incidr(client_ipv4, "100.64.0.0/10"), null, arraycreate(client_ipv4)),
     xdm.source.host.ipv6_addresses = if(client_ipv6 != null, arraycreate(client_ipv6)),
     xdm.source.ipv4 = client_ipv4,
     xdm.source.ipv6 = client_ipv6,
