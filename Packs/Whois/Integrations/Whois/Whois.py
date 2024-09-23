@@ -8118,7 +8118,7 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    demisto.debug(e)
+                    demisto.debug(f'{e}')
         try:
             if year > 0:
                 if month > 12:
