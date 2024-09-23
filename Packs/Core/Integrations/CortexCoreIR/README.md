@@ -2755,6 +2755,23 @@ Terminate a process by it's instance id.
 ***
 Stops a process by it's causality id.
 
+##### Command Example
+
+```!core-terminate-process agent_id=1 instance_id=1 process_name=process incident_id=2```
+
+##### Context Example
+
+```
+{
+    "Core.TerminateProcess": [
+        {
+            "action_id": "1",
+        }
+       
+    ]
+}
+```
+
 #### Base Command
 
 `core-terminate-causality`
@@ -2776,3 +2793,20 @@ Stops a process by it's causality id.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.TerminateCausality.action_id | String | The action id. | 
+
+##### Command Example
+
+```!core-terminate-causality agent_id=1 causality_id=1 process_name=process incident_id=2```
+
+##### Context Example
+
+```
+{
+    "Core.TerminateCausality": [
+        {
+            "action_id": "1",
+        }
+       
+    ]
+}
+```
