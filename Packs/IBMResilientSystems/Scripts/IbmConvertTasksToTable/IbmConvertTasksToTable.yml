@@ -1,0 +1,16 @@
+commonfields:
+  id: IbmConvertTasksToTable
+  version: -1
+comment: This script is used to convert IBM QRadar SOAR tasks to a markdown table.
+name: IbmConvertTasksToTable
+outputs: []
+script: '-'
+tags:
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.111526
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
