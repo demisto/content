@@ -9,6 +9,8 @@ from typing import Dict, Any
 
 from AWSApiModule import *  # noqa: E402
 
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import argToBoolean
+
 SERVICE = 'secretsmanager'
 
 # Disable insecure warnings
@@ -263,6 +265,7 @@ def main():  # pragma: no cover:
         aws_access_key_id = params.get('credentials').get('identifier')
         aws_secret_access_key = params.get('credentials').get('password')
         verify_certificate = not argToBoolean(params.get('insecure'))
+        disable_sensitive_commands = argToBoolean(params.get('disable_sensitive_commands'))
         timeout = params.get('timeout')
         retries = int(params.get('retries')) if params.get('retries') else 5
 
@@ -280,6 +283,8 @@ def main():  # pragma: no cover:
         elif demisto.command() == 'aws-secrets-manager-secret-list':
             aws_secrets_manager_secret_list_command(aws_client, args)
         elif demisto.command() == 'aws-secrets-manager-secret–value-get':
+            if disable_sensitive_commands:
+                raise ValueError('Sensitive commands are disabled. You can reenable them in the integration settings.')
             aws_secrets_manager_secret_value_get_command(aws_client, args)
         elif demisto.command() == 'aws-secrets-manager-secret–delete':
             aws_secrets_manager_secret_delete_command(aws_client, args)
