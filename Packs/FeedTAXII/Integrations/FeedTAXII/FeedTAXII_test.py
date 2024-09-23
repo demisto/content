@@ -142,3 +142,19 @@ def test_tags_parameter(mocker, tags):
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)
         assert tags == list(res[0]['fields'].keys())
+
+
+def test_client_headers():
+    """
+    Given:
+    - TAXII1 client
+    When:
+    - Getting the client headers
+    Then:
+    - Validate the headers contain the Accept header
+    """
+    client = TAXIIClient(collection='a collection')
+    headers = client.headers
+    
+    assert 'Accept' in headers
+    assert headers['Accept'] == 'application/xml'
