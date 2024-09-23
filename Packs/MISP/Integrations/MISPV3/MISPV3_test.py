@@ -17,14 +17,15 @@ REPUTATION_COMMANDS_ERROR_LIST = [
     ("EMAIL", "invalid_email", "Error: The given invalid_email address: example is not valid"),  # invalid EMAIL,
 ]
 
-CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], Common.DBotScore.BAD, '1', False)
-CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], Common.DBotScore.SUSPICIOUS, '1', False)
-CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], Common.DBotScore.BAD, '2', False)
-CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], Common.DBotScore.SUSPICIOUS, '2', False)
-CASE_OF_BENIGN_EVENT = (['8'], ['2'], ['3'], ['3'], Common.DBotScore.GOOD, '2', False)
-CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.NONE, None, False)
-CASE_OF_BAD_THREAT_LEVEL_ID = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.BAD, None, True)
-TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
+CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], ['5'], Common.DBotScore.BAD, '1', False)
+CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.SUSPICIOUS, '1', False)
+CASE_OF_BENIGN_ATTRIBUTE = (['5'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.GOOD, '1', False)
+CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.BAD, '2', False)
+CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], ['5'], Common.DBotScore.SUSPICIOUS, '2', False)
+CASE_OF_BENIGN_EVENT = (['8'], ['5'], ['3'], ['3'], ['5'], Common.DBotScore.GOOD, '2', False)
+CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], ['5'], Common.DBotScore.NONE, None, False)
+CASE_OF_BAD_THREAT_LEVEL_ID = (['1'], ['2'], ['3'], ['4'], ['5'], Common.DBotScore.BAD, None, True)
+TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_BENIGN_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
                    CASE_OF_SUSPICIOUS_EVENT, CASE_OF_BENIGN_EVENT, CASE_OF_UNKNOWN, CASE_OF_BAD_THREAT_LEVEL_ID]
 
 VALID_DISTRIBUTION_LIST = [(0, 0), ("1", 1), ("Your_organization_only", 0)]
