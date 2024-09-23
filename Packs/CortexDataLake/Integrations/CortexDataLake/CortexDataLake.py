@@ -385,6 +385,24 @@ def common_context_transformer(row_content):
     }
 
 
+def system_log_context_transformer(row_content):
+    """
+    This function retrieves data from a row of raw data into context path locations
+    Args:
+        row_content: a dict representing raw data of a row
+    Returns:
+        a dict with context paths and their corresponding value
+    """
+    return {
+        'EventName': row_content.get('event_name'),
+        'EventDescription': row_content.get('event_description'),
+        'VendorSeverity': row_content.get('severity', ""),
+        'LogTime': human_readable_time_from_epoch_time(row_content.get('log_time', 0)),
+        'LogType': row_content.get('log_type', {}).get('value'),
+        'LogSourceName': row_content.get('log_source_name')
+    }
+
+
 def traffic_context_transformer(row_content: dict) -> dict:
     """
     This function retrieves data from a row of raw data into context path locations
@@ -951,7 +969,11 @@ def query_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[
     records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     table_name = get_table_name(query)
-    output_results = records if not transform_results else [common_context_transformer(record) for record in records]
+    output_results = records
+    if transform_results:
+        output_results = [
+            system_log_context_transformer(record) if 'log.system' in query else common_context_transformer(record) for
+            record in records]
     human_readable = tableToMarkdown('Logs ' + table_name + ' table', output_results, removeNull=True)
     ec = {
         'CDL.Logging': output_results
