@@ -29,12 +29,6 @@ configuration:
     name: first_fetch
     type: 0
     required: false
-  - additionalinfo: First incident updated date to fetch. e.g., "1 min ago". Maximum recommended time should be no earlier than “3 day”.
-    defaultvalue: 3 day
-    display: First fetch timestamp for DLP incidents
-    name: dlp_incidents_first_fetch
-    type: 0
-    required: false
   - additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
     defaultvalue: "50"
     display: Maximum incidents per fetch

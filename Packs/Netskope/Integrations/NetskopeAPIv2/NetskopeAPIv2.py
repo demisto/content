@@ -1597,7 +1597,7 @@ def get_last_run(
         last_run_id = ticket_last_run.get("id")
     else:
         if incident_type == "dlp_incident":
-            last_run_time = args.get("dlp_incidents_first_fetch", "1 Day")
+            last_run_time = "1 Day"
         else:
             last_run_time = args.get("first_fetch", "3 Days")
 

@@ -568,7 +568,6 @@ def test_fetch_incidents(client, requests_mock):
             "fetch_events": True,
             "fetch_dlp_incidents": True,
             "first_fetch": "2023-01-01 15:00",
-            "dlp_incidents_first_fetch": "2023-01-01 15:00",
             "max_events_fetch": 10,
             "max_dlp_incidents_fetch": 10,
             "event_types": ["application", "page"],
