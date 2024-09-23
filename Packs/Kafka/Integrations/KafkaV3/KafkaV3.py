@@ -42,7 +42,8 @@ class KafkaCommunicator:
     POLL_TIMEOUT: float = 1.0
     MAX_POLLS_FOR_LOG: int = 100
 
-    def __init__(self, brokers: str, consumer_only: bool = False, offset: str = 'earliest', group_id: str = 'xsoar_group',
+    def __init__(self, brokers: str, plain_password: Optional[str] = None, plain_username: Optional[str] = None,
+                 use_sasl: bool = False,  consumer_only: bool = False, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
@@ -63,7 +64,7 @@ class KafkaCommunicator:
         
         if not consumer_only:
             self.conf_producer = {'bootstrap.servers': brokers}
-            self.update_client_dict(self.conf_producer, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password)
+            self.update_client_dict(self.conf_producer, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl, plain_username, plain_password)
         
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
@@ -76,7 +77,7 @@ class KafkaCommunicator:
                               'group.id': group_id,
                               'enable.auto.commit': False}
         
-        self.update_client_dict(self.conf_consumer, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password)
+        self.update_client_dict(self.conf_consumer, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl, plain_username, plain_password)
 
         self.kafka_logger = kafka_logger
 
@@ -121,7 +122,8 @@ class KafkaCommunicator:
             """
 
 
-    def update_client_dict(self, client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password):
+    def update_client_dict(self, client_dict, trust_any_cert, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl,
+                           plain_username, plain_password):
         if trust_any_cert:
             client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
                                        'enable.ssl.certificate.verification': False})
@@ -146,6 +148,11 @@ class KafkaCommunicator:
         
         if ssl_password:
             client_dict.update({'ssl.key.password': ssl_password})
+        
+        if use_sasl:
+            client_dict.update({'security.protocol': 'SASL_SSL', 'sasl.mechanism': 'PLAIN', 'sasl.username': plain_username,
+                                'sasl.password': plain_password})
+            
 
     def get_kafka_consumer(self) -> KConsumer:
         if self.kafka_logger:
@@ -174,7 +181,7 @@ class KafkaCommunicator:
         else:
             raise DemistoException('Kafka consumer was not yet initialized.')
 
-    def test_connection(self, log_stream: Optional[StringIO] = None) -> str:
+    def test_connection(self, log_stream: Optional[StringIO] = None, consumer_only: bool = False) -> str:
         """Test getting topics with the consumer and producer configurations."""
         error_msg = ''
         consumer: Optional[KConsumer] = None
@@ -201,27 +208,28 @@ class KafkaCommunicator:
                 if error_msg:
                     raise DemistoException(error_msg)
 
-        try:
-            producer = self.get_kafka_producer()
-
-            producer_topics = producer.list_topics(timeout=self.REQUESTS_TIMEOUT)
-            producer_topics.topics
-
-        except Exception as e:
-            error_msg = f'Error connecting to kafka using producer: {str(e)}\n{traceback.format_exc()}'
-        finally:
+        if not consumer_only:
             try:
-                if error_msg and producer:
-                    demisto.debug('Polling producer for debug logs')
-                    producer.flush()  # For the logger to updated with producer errors.
-                    if log_stream:
-                        polls = 0
-                        while not log_stream.getvalue() and polls < self.MAX_POLLS_FOR_LOG:
-                            polls += 1
-                            producer.flush()
+                producer = self.get_kafka_producer()
+
+                producer_topics = producer.list_topics(timeout=self.REQUESTS_TIMEOUT)
+                producer_topics.topics
+
+            except Exception as e:
+                error_msg = f'Error connecting to kafka using producer: {str(e)}\n{traceback.format_exc()}'
             finally:
-                if error_msg:
-                    raise DemistoException(error_msg)
+                try:
+                    if error_msg and producer:
+                        demisto.debug('Polling producer for debug logs')
+                        producer.flush()  # For the logger to updated with producer errors.
+                        if log_stream:
+                            polls = 0
+                            while not log_stream.getvalue() and polls < self.MAX_POLLS_FOR_LOG:
+                                polls += 1
+                                producer.flush()
+                finally:
+                    if error_msg:
+                        raise DemistoException(error_msg)
 
         return 'ok'
 
@@ -459,7 +467,7 @@ def command_test_module(kafka: KafkaCommunicator, demisto_params: dict, log_stre
 
     Return 'ok' if everything went well, raise relevant exception otherwise
     """
-    kafka.test_connection(log_stream=log_stream)
+    kafka.test_connection(log_stream=log_stream, consumer_only=demisto_params.get('consumer_only'))
     if demisto_params.get('isFetch', False):
         check_params(kafka=kafka,
                      topic=demisto_params.get('topic', None),
@@ -849,6 +857,17 @@ def main():  # pragma: no cover
         kafka_kwargs = {'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
                         'client_cert_key': client_cert_key, 'ssl_password': ssl_password, 'offset': offset,
                         'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
+    
+    # Should we use SASL (with SSL and PLAIN)
+    use_sasl = demisto_params.get('use_sasl', False)
+    
+    if use_sasl:
+        plain_username = demisto_params.get('plain_username')
+        plain_password = demisto_params.get('plain_password')
+        kafka_kwargs['use_sasl'] = use_sasl
+        kafka_kwargs['plain_username'] = plain_username
+        kafka_kwargs['plain_password'] = plain_password
+    
     else:
         kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
 

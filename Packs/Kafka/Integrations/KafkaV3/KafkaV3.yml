@@ -3,6 +3,15 @@ commonfields:
   id: KafkaV3 dev
   version: -1
 configuration:
+- display: Use SASL PLAIN for connection
+  name: use_sasl
+  type: 8
+- display: SASL PLAIN Username
+  name: plain_username
+  type: 0
+- display: SASL PLAIN Password
+  name: plain_password
+  type: 0
 - display: CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093
   name: brokers
   required: true
