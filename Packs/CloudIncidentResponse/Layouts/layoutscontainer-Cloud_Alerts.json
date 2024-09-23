@@ -73,33 +73,6 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "case_id",
-                                "height": 26,
-                                "id": "11c20380-7655-11ef-a783-df0b9a7eeed4",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "case_id",
-                                "height": 26,
-                                "id": "101b7f70-7655-11ef-a783-df0b9a7eeed4",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "case_id",
-                                "height": 26,
-                                "id": "1845a590-7655-11ef-a783-df0b9a7eeed4",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "categoryname",
