@@ -97,6 +97,11 @@ script:
       name: cloudProviderIn
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'AWS'
+      - 'AZURE'
+      defaultValue: 'AWS'
     - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]'
       isArray: false
       isOptional: true
