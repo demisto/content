@@ -854,5 +854,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": ""
+    "description": "Out of the box layout for the Sigma Rule indicator."
 }
