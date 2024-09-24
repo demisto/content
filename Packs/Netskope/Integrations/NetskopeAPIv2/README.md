@@ -1030,7 +1030,6 @@ Fetch DLP incidents.
 | Netskope.Incident.zip_file_id                                      | String   |                 |
 | Netskope.Incident.referer                                          | String   |                 |
 | Netskope.Incident.destination_instance_id                          | String   |                 |
-| Netskope.Incident.wait_time                                        | Unknown  |                 |
 
 #### Command example
 
