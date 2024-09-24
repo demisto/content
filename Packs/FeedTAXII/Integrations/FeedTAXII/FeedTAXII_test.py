@@ -155,6 +155,19 @@ def test_client_headers():
     """
     client = Taxii11()
     headers = client.headers()
+    
+    PROTOCOLS = {
+        'http': 'urn:taxii.mitre.org:protocol:http:1.0',
+        'https': 'urn:taxii.mitre.org:protocol:https:1.0'
+    }
 
-    assert 'Accept' in headers
     assert headers['Accept'] == 'application/xml'
+    assert headers['X-TAXII-Content-Type'] == client.MESSAGE_BINDING
+    assert headers['X-TAXII-Accept'] == client.MESSAGE_BINDING
+    assert headers['X-TAXII-Services'] == client.SERVICES
+    assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:http:1.0'
+    
+    headers = client.headers(protocol='https')
+    
+    assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:https:1.0'
+    
