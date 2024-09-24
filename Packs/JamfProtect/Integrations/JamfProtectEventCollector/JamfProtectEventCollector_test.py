@@ -3,25 +3,26 @@ import datetime
 from freezegun import freeze_time
 import json
 import pytest
-
+from pytest_mock import MockerFixture
+from pathlib import Path
 MOCK_BASEURL = "https://example.protect.jamfcloud.com"
 MOCK_CLIENT_ID = "example_client_id"
 MOCK_CLIENT_PASSWORD = "example_pass"
-MOCK_TIME_UTC_NOW = "2024-01-01T00:00:00Z"
+MOCK_TIME_UTC_NOW = "2024-01-01T00:00:00.000000Z"
 
 
-def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
-        return json.loads(f.read())
+def util_load_json(path: str) -> dict:
+    return json.loads(Path(path).read_text())
 
 
 @pytest.fixture(autouse=True)
-def client(mocker, with_alert_next_page=False, with_audit_next_page=False):
+def client(mocker: MockerFixture, with_alert_next_page=False, with_audit_next_page=False, with_computer_next_page=False):
     from JamfProtectEventCollector import Client
     mocked_alerts = util_load_json('test_data/raw_alerts.json')
     mocked_audits = util_load_json('test_data/raw_audits.json')
+    mocked_computers = util_load_json('test_data/raw_computers.json')
     mocker.patch.object(Client, '_http_request',
-                        side_effect=[mocked_alerts, mocked_audits])
+                        side_effect=[mocked_alerts, mocked_audits, mocked_computers])
     mocker.patch.object(Client, '_login', return_value="ExampleToken")
     return Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
                   client_password=MOCK_CLIENT_PASSWORD)
@@ -44,6 +45,7 @@ def test_get_events_with_limit(client):
     _, events = get_events_command(client=client, args=args)
     assert len(events[0].raw_response) == limit
     assert len(events[1].raw_response) == limit
+    assert len(events[2].raw_response) == limit
 
 
 def test_get_events_wrong_dates(client):
@@ -85,7 +87,7 @@ def test_calculate_fetch_dates_with_arguments(client):
 
 
 @freeze_time(MOCK_TIME_UTC_NOW)
-@pytest.mark.parametrize("last_run_key", ["alert", "audit"])
+@pytest.mark.parametrize("last_run_key", ["alert", "audit", "computers"])
 def test_calculate_fetch_dates_with_last_run(client, last_run_key):
     """
     Given: A mock JamfProtect client and last run key.
@@ -118,40 +120,49 @@ def test_calculate_fetch_dates_without_arguments(client):
     assert end_date == MOCK_TIME_UTC_NOW
 
 
-@pytest.mark.parametrize("with_alert_next_page, with_audit_next_page",
-                         [(False, False), (True, False), (False, True), (True, True)],
-                         ids=["Case 1: No next pages for alerts and audits",
-                              "Case 2: Next page for alerts, no next page for audits",
-                              "Case 3: No next page for alerts, next page for audits",
-                              "Case 4: Next pages for both alerts and audits"]
-                         )
-def test_nextTrigger(with_alert_next_page, with_audit_next_page, mocker):
+@pytest.mark.parametrize("with_alert_next_page", [True, False])
+@pytest.mark.parametrize("with_audit_next_page", [True, False])
+@pytest.mark.parametrize("with_computer_next_page", [True, False])
+def test_nextTrigger(
+    with_alert_next_page: bool,
+    with_audit_next_page: bool,
+    with_computer_next_page: bool,
+    mocker: MockerFixture
+):
     """
     Given: A mock JamfProtect client.
-    When: Running fetch_events with different next pages for alerts and audits.
+    When: Running fetch_events with different next pages for alerts, audits and computers.
     Then: Ensure the nextTrigger is set to 0 when there are no next pages, and the next page is set when there are next pages.
     """
     from JamfProtectEventCollector import fetch_events, Client
     mocked_alerts = util_load_json('test_data/raw_alerts.json')
     mocked_audits = util_load_json('test_data/raw_audits.json')
+    mocked_computers = util_load_json('test_data/raw_computers.json')
     if with_alert_next_page:
         mocked_alerts["data"]["listAlerts"]["pageInfo"]["next"] = "example_next_page"
     if with_audit_next_page:
         mocked_audits["data"]["listAuditLogsByDate"]["pageInfo"]["next"] = "example_next_page"
+    if with_computer_next_page:
+        mocked_computers["data"]["listComputers"]["pageInfo"]["next"] = "example_next_page"
     mocker.patch.object(Client, '_http_request',
-                        side_effect=[mocked_alerts, mocked_audits])
+                        side_effect=[mocked_alerts, mocked_audits, mocked_computers])
     mocker.patch.object(Client, '_login', return_value="ExampleToken")
     client = Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
                     client_password=MOCK_CLIENT_PASSWORD)
 
-    _, _, next_run = fetch_events(client, 1, 1)
+    _, _, _, next_run = fetch_events(client, 1, 1, 1)
     if with_alert_next_page:
         assert next_run.get("nextTrigger") == "0"
         assert next_run.get("alert").get("next_page") == "example_next_page"
-    else:
+    if not with_alert_next_page:
         assert not next_run.get("alert").get("next_page")
     if with_audit_next_page:
         assert next_run.get("nextTrigger") == "0"
         assert next_run.get("audit").get("next_page") == "example_next_page"
-    else:
+    if not with_audit_next_page:
         assert not next_run.get("audit").get("next_page")
+    if with_computer_next_page:
+        assert next_run.get("nextTrigger") == "0"
+        assert next_run.get("computer").get("next_page") == "example_next_page"
+    if not with_computer_next_page:
+        assert not next_run.get("computer").get("next_page")

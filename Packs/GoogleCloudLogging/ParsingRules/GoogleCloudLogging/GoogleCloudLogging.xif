@@ -1,0 +1,15 @@
+[INGEST:vendor="Google", product="Cloud Logging", target_dataset="google_cloud_logging_raw", no_hit = keep]
+call GOOGLE_CLOUD_LOGGING_PARSE_TIMESTAMP;
+
+[INGEST:vendor="Google", product="Cloud_Logging", target_dataset="google_cloud_logging_raw", no_hit = keep]
+call GOOGLE_CLOUD_LOGGING_PARSE_TIMESTAMP;
+
+[INGEST:vendor="Google", product="DNS", target_dataset="google_dns_raw", no_hit = keep]
+call GOOGLE_CLOUD_LOGGING_PARSE_TIMESTAMP;
+
+// https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry
+[RULE: GOOGLE_CLOUD_LOGGING_PARSE_TIMESTAMP]
+alter tmp_ts = to_string(coalesce(timestamp, receiveTimestamp)) 
+| filter tmp_ts ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{0,9})?Z"
+| alter _time = parse_timestamp("%FT%H:%M:%E*SZ", tmp_ts)
+| fields - tmp_ts;

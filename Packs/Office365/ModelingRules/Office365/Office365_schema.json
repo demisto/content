@@ -276,10 +276,6 @@
             "type": "string",
             "is_array": false
         },
-        "requestsource": {
-            "type": "string",
-            "is_array": false
-        },
         "eventdeeplink": {
             "type": "string",
             "is_array": false
@@ -674,5 +670,47 @@
             "type": "int",
             "is_array": false
         }        
-    }    
+    },
+    "msft_o365_emails_raw": {
+        "InternetMessageId": {
+            "type": "string",
+            "is_array": false
+        },
+        "sender": {
+            "type": "string",
+            "is_array": false
+        },
+        "From": {
+            "type": "string",
+            "is_array": false
+        },
+        "webLink": {
+            "type": "string",
+            "is_array": false
+        },
+        "toRecipients": {
+            "type": "string",
+            "is_array": false
+        },
+        "ccRecipients": {
+            "type": "string",
+            "is_array": false
+        },
+        "bccRecipients": {
+            "type": "string",
+            "is_array": false
+        },
+        "attachments": {
+            "type": "string",
+            "is_array": false
+        },
+        "internetMessageHeaders": {
+            "type": "string",
+            "is_array": false
+        },
+        "importance": {
+            "type": "string",
+            "is_array": false
+        }        
+    }            
 }        

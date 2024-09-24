@@ -72,7 +72,7 @@ class IntegrationHTTPRequest(BaseModel):
 
     _normalize_headers = validator('headers', pre=True, allow_reuse=True)(
         load_json
-    )
+    )  # type: ignore[type-var]
 
 
 class Credentials(BaseModel):
@@ -240,7 +240,7 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
 
     _normalize_url = validator('url', pre=True, allow_reuse=True)(
         lambda base_url: f'{base_url}/api/alerts'
-    )
+    )  # type: ignore[type-var]
 
 
 class DefenderClient(IntegrationEventsClient):

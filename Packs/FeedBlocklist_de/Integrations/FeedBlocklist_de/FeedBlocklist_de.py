@@ -6,7 +6,7 @@ def main():
 
     services = ['all', 'ssh', 'mail', 'apache', 'imap', 'ftp', 'sip', 'bots', 'strongips', 'bruteforcelogin']
 
-    feed_types = dict()
+    feed_types = {}
 
     for service in services:
         feed_types[F'https://lists.blocklist.de/lists/{service}.txt'] = {
@@ -18,7 +18,7 @@ def main():
     # Automatically infer the indicator type
     params['auto_detect_type'] = True
 
-    chosen_services = list()
+    chosen_services = []
     for service in argToList(demisto.params().get('services', [])):
         chosen_services.append(F'https://lists.blocklist.de/lists/{service}.txt')
 

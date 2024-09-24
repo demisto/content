@@ -687,3 +687,7 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)
+description: Deprecated. No available replacement.
