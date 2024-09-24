@@ -254,7 +254,7 @@ Command performs Group IB event lookup in compromised/account collection with pr
 ### gibtia-get-compromised-card-info
 
 ***
-Command performs Group IB event lookup in compromised/card collection with provided ID.
+Command performs Group IB event lookup in compromised/card collection with provided ID (DEPR).
 
 
 #### Base Command
@@ -728,7 +728,7 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 ### gibtia-get-compromised-imei-info
 
 ***
-Command performs Group IB event lookup in compromised/imei collection with provided ID.
+Command performs Group IB event lookup in compromised/imei collection with provided ID (DEPR).
 
 
 #### Base Command
@@ -1322,7 +1322,7 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
 ### gibtia-get-phishing-kit-info
 
 ***
-Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit collections with provided ID.
+Command performs Group IB event lookup in bp/phishing_kit (DEPR) and attacks/phishing_kit collections with provided ID.
 
 
 #### Base Command
@@ -1440,7 +1440,7 @@ Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_k
 ### gibtia-get-phishing-info
 
 ***
-Command performs Group IB event lookup in bp/phishing and attacks/phishing collections with provided ID.
+Command performs Group IB event lookup in bp/phishing and attacks/phishing collections with provided ID (DEPR).
 
 
 #### Base Command
@@ -2642,7 +2642,7 @@ Command performs Group IB event lookup in suspicious_ip/socks_proxy collection w
 ### gibtia-get-malware-targeted-malware-info
 
 ***
-Command performs Group IB event lookup in malware/targeted_malware collection with provided ID.
+Command performs Group IB event lookup in malware/targeted_malware collection with provided ID (DEPR).
 
 
 #### Base Command

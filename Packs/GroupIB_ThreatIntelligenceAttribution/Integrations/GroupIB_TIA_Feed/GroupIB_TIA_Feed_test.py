@@ -8,7 +8,7 @@ with open('test_data/example.json') as examples:
 with open('test_data/results.json') as results:
     RESULTS = load(results)
 COLLECTION_NAMES = [
-    'compromised/mule', 'compromised/imei', 'attacks/ddos', 'attacks/deface',
+    'compromised/mule', 'attacks/ddos', 'attacks/deface',
     'attacks/phishing', 'attacks/phishing_kit', 'apt/threat',
     'suspicious_ip/tor_node', 'suspicious_ip/open_proxy', 'suspicious_ip/socks_proxy',
     'malware/cnc', 'osi/vulnerability', 'ioc/common'
