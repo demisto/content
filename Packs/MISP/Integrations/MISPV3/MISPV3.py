@@ -5,7 +5,7 @@ import urllib3
 import copy
 
 from urllib.parse import urlparse
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute, MISPUser
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute, MISPUser, MISPServerError
 from pymisp.tools import GenericObjectGenerator, EMailObject
 from pymisp.tools import FileObject
 from base64 import b64decode
@@ -1462,7 +1462,10 @@ def add_object(event_id: str, obj: MISPObject):
         obj: object to add to MISP
         event_id: ID of event
     """
-    response = PYMISP.add_object(event_id, misp_object=obj)
+    try:
+        response = PYMISP.add_object(event_id, misp_object=obj)
+    except MISPServerError as error:
+        raise DemistoException(f'Error in `{demisto.command()}` error: {error}')
     if 'errors' in response:
         raise DemistoException(f'Error in `{demisto.command()}` command: {response}')
     for ref in obj.ObjectReference:

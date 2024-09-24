@@ -677,7 +677,9 @@ def test_add_email_object(file_path, expected_output_key, mock_response_key, moc
     mocker.patch.object(demisto, "getFilePath", return_value={
                         "path": file_path
                         })
-    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(200, mocker, mock_response_key))
+    mocked_response = get_response(200, mocker, mock_response_key)
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=mocked_response)
+    mocker.patch.object(pymisp.api.PyMISP, "_check_response", return_value=mocked_response.json())
     pymisp.ExpandedPyMISP.global_pythonify = False
     output = add_email_object(demisto_args).outputs
     expected_output = util_load_json("test_data/response_mock_add_email_object_test.json")[expected_output_key]
@@ -701,11 +703,12 @@ def test_fail_to_add_email_object(mocker):
     mocker.patch.object(demisto, "getFilePath", return_value={
                         "path": "test_data/test_add_email_object_case_1.eml"
                         })
-    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(404, mocker, "response_mock_case_1"))
+    mocked_response = get_response(404, mocker, "response_mock_case_1")
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=mocked_response)
     pymisp.ExpandedPyMISP.global_pythonify = True
     with pytest.raises(DemistoException) as exception_info:
         add_email_object(demisto_args)
-    assert "'errors': (404" in str(exception_info.value)
+    assert "404" in str(exception_info.value)
 
 
 def test_add_msg_email_object(mocker):
