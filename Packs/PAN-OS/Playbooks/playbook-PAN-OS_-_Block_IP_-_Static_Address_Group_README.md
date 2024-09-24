@@ -21,9 +21,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* pan-os-get-address-group
-* pan-os-edit-address-group
 * pan-os-create-address
+* pan-os-edit-address-group
+* pan-os-get-address-group
 
 ## Playbook Inputs
 
@@ -34,6 +34,7 @@ This playbook does not use any scripts.
 | IP | IP address to block | IP.Address | Optional |
 | AddressGroupName | Static address group name | Demisto Remediation - Static Address Group | Optional |
 | AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
+| IPDescription | The description of the IP in case it will get created by the playbook. | Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in XSOAR. | Optional |
 
 ## Playbook Outputs
 
@@ -44,4 +45,4 @@ There are no outputs for this playbook.
 
 ---
 
-![PAN-OS - Block IP - Static Address Group](../doc_files/PAN-OS_Block_IP_Static_Address_Group.png)
+![PAN-OS - Block IP - Static Address Group](../doc_files/PAN-OS_-_Block_IP_-_Static_Address_Group.png)
