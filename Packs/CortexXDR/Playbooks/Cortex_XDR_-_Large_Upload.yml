@@ -453,10 +453,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: aadafb00-7daa-4149-82de-c0b89edd8faf
+    taskid: 646c747d-c9dd-4cab-8f26-8e33d2e2b1ca
     type: playbook
     task:
-      id: aadafb00-7daa-4149-82de-c0b89edd8faf
+      id: 646c747d-c9dd-4cab-8f26-8e33d2e2b1ca
       version: -1
       name: Block Indicators - Generic v3
       description: |-
@@ -556,7 +556,164 @@ tasks:
       UserVerification:
         complex:
           root: inputs.BlockIndicators_UserVerification
-    separatecontext: true
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -615,10 +772,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: fb72c0dc-c54b-4097-8a82-608e23e1eb46
+    taskid: 960aef0d-4e78-4477-8ec0-5f22652fadb0
     type: playbook
     task:
-      id: fb72c0dc-c54b-4097-8a82-608e23e1eb46
+      id: 960aef0d-4e78-4477-8ec0-5f22652fadb0
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -734,7 +891,7 @@ tasks:
           - operator: uniq
       timeRange:
         simple: 2 hours ago
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -757,10 +914,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 98db4730-e7e9-4d8e-8722-1b2fe9704f3d
+    taskid: 504aae19-26b2-405c-8264-807d40ed9766
     type: playbook
     task:
-      id: 98db4730-e7e9-4d8e-8722-1b2fe9704f3d
+      id: 504aae19-26b2-405c-8264-807d40ed9766
       version: -1
       name: TIM - Indicator Relationships Analysis
       description: |-
@@ -786,7 +943,7 @@ tasks:
           - operator: uniq
       LimitResults:
         simple: "200"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -809,10 +966,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 09d0928b-9634-43c9-8b72-377241818a67
+    taskid: a1c9ce53-50cd-4c1b-812d-032cfe8bf059
     type: playbook
     task:
-      id: 09d0928b-9634-43c9-8b72-377241818a67
+      id: a1c9ce53-50cd-4c1b-812d-032cfe8bf059
       version: -1
       name: User Investigation - Generic
       description: |-
@@ -859,7 +1016,7 @@ tasks:
         simple: "True"
       XDRUsernameField:
         simple: actor_effective_username
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -882,13 +1039,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 020df797-a905-4c06-8b81-7cd6479666cf
+    taskid: 57618799-f857-43ca-8392-153966ec18b5
     type: playbook
     task:
-      id: 020df797-a905-4c06-8b81-7cd6479666cf
+      id: 57618799-f857-43ca-8392-153966ec18b5
       version: -1
       name: Command-Line Analysis
-      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
+      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
       playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
@@ -911,7 +1068,7 @@ tasks:
           - operator: uniq
       StringSimilarityThreshold:
         simple: "0.5"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1284,13 +1441,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: db9478b5-07bc-4c3a-81ba-8dbcabdd41a3
+    taskid: 7bef3000-9e7a-418e-89f6-009ce5e93f42
     type: playbook
     task:
-      id: db9478b5-07bc-4c3a-81ba-8dbcabdd41a3
+      id: 7bef3000-9e7a-418e-89f6-009ce5e93f42
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex Data Lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -1510,7 +1667,7 @@ tasks:
                   simple: RelatedURLs
                 iscontext: true
           - operator: uniq
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -2278,14 +2435,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: f5330d0d-0165-4d04-814c-241a7cc190fd
+    taskid: aa6729c8-a34a-4695-81f0-68c3b842bd32
     type: playbook
     task:
-      id: f5330d0d-0165-4d04-814c-241a7cc190fd
+      id: aa6729c8-a34a-4695-81f0-68c3b842bd32
       version: -1
       name: Cortex XDR - Search and Compare Process Executions - XDR Alerts
       description: |-
-        This playbook is a generic playbook that receives a process name and command-line argument. It uses the "Cortex XDR IR" integration to search for the given process executions inside XDR alerts and compares the command-line argument from the results to the command-line argument received from the playbook input.
+        This playbook is a generic playbook that receives a process name and command-line argument. It uses the "Cortex XDR IR" integration to search for the given process executions inside Cortex XDR alerts and compares the command-line argument from the results to the command-line argument received from the playbook input.
 
         Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
         - value: *process name*
@@ -2308,7 +2465,7 @@ tasks:
         simple: "True"
       StringSimilarityThreshold:
         simple: "0.5"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -2985,10 +3142,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 95e865d5-ec80-49d2-8982-b1db90c547a6
+    taskid: d8dce25e-2340-4844-88e3-e2549b4739c1
     type: condition
     task:
-      id: 95e865d5-ec80-49d2-8982-b1db90c547a6
+      id: d8dce25e-2340-4844-88e3-e2549b4739c1
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the 'large upload HTTPS' Cortex XDR alerts.
@@ -3023,7 +3180,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3033,7 +3190,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.dst_action_external_hostname
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3043,7 +3200,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.ssl_req_chello_sni_sample
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3053,7 +3210,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.target_address
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3063,7 +3220,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.domain
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3074,6 +3231,12 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending: {}
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -3084,7 +3247,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3094,7 +3257,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.os_actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3104,7 +3267,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3115,6 +3278,12 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending: {}
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -3477,7 +3646,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3487,7 +3656,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.dst_action_external_hostname
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3497,7 +3666,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.ssl_req_chello_sni_sample
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3507,7 +3676,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.target_address
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3517,7 +3686,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.domain
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3528,6 +3697,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -3570,7 +3747,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3580,7 +3757,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.os_actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3590,7 +3767,7 @@ tasks:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.actor_process_image_sha256
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -3601,6 +3778,14 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: Score
+                transformers:
+                - operator: uniq
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: LastArrayElement
             iscontext: true
           right:
             value:
@@ -3712,10 +3897,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: a31ec1c6-bd93-4101-8aef-1f66cb5931f8
+    taskid: 75c58da8-fcca-40bb-80e1-c8c0c33a7343
     type: playbook
     task:
-      id: a31ec1c6-bd93-4101-8aef-1f66cb5931f8
+      id: 75c58da8-fcca-40bb-80e1-c8c0c33a7343
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -3826,7 +4011,35 @@ tasks:
           accessor: username
           transformers:
           - operator: uniq
-    separatecontext: true
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
