@@ -10,7 +10,7 @@ alter
     target_process_name = arrayindex(regextract(TargetProcessName, "\\([^\\]+)$"), 0),
     target_process_signer = arrayindex(regextract(TargetSigner, "CN=([^,]+)"), 0),
     threat_event_id = to_string(ThreatEventID),
-    threat_name = if(ThreatName != "-", ThreatName)
+    threat_name = if(ThreatName != "_", ThreatName)
 | alter
     xdm.alert.category = ThreatCategory,
     xdm.alert.name = threat_name,
