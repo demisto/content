@@ -12,13 +12,13 @@ To create an instance of the Microsoft Teams Webhook in Cortex XSOAR, complete t
 ​
 ## Support for Multiple Teams
 ​
-This integration supports sending messages to additional Teams via an incoming webhook.  There are 2 methods for this:
+This integration supports sending messages to additional Teams via a workflow.  There are 2 methods for this:
 ​
-- Configure additional integration instances, adding the webhook URL for each Team. You can then send notifications to multiple teams at once, or select the integration instance to use via the playbook task editor.
+- Configure additional integration instances, adding the workflow URL for each Team. You can then send notifications to multiple teams at once, or select the integration instance to use via the playbook task editor.
 ​
-- The ***ms-teams-message*** command includes the *team_webhook* argument, which allows you to pass an alternative webhook URL to override the one from the integration settings.  
+- The ***ms-teams-message*** command includes the *team_webhook* argument, which allows you to pass an alternative workflow URL to override the one from the integration settings.  
 ​
-You can store the additional webhooks in a Cortex XSOAR list, and use a transformer on the task in a playbook to send to a specific team.  
+You can store the additional workflow in a Cortex XSOAR list, and use a transformer on the task in a playbook to send to a specific team.  
 ​
 For example, create a list containing a dictionary where the **Key** is the Team, and the **Value** is the webhook for that team.
 ​

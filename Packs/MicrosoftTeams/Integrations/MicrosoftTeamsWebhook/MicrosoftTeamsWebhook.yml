@@ -24,7 +24,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
+description: Integration for sending notifications to a Microsoft Teams channel via workflow of type `Post to a channel when a webhook request is received`.
 display: Microsoft Teams via Webhook
 name: Microsoft Teams via Webhook
 script:
