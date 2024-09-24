@@ -3,7 +3,7 @@
 Secure backup is critical to your cyber resilience. [Veeam Data Platform](https://www.veeam.com/products/veeam-data-platform.html) provides comprehensive capabilities to extend the principles of Zero Trust to data backup and recovery including Proactive Threat Hunting, Immutability Everywhere, and Secure Access.
 
 <~XSOAR>
-Using the data received from Veeam Backup & Replication and Veeam ONE REST APIs, the App creates custom incidents related to malware detection and the health state of the backup infrastructure components. These incidents can be managed through the built-in Veeam Incident Dashboard and resolved manually or automatically with built-in Veeam playbooks.
+Using the data received from Veeam Backup & Replication and Veeam ONE REST APIs, the app creates custom incidents related to malware detection and the health state of the backup infrastructure components. These incidents can be managed through the built-in Veeam Incident dashboard and resolved manually or automatically with built-in Veeam playbooks.
 
 The content pack includes:
 
