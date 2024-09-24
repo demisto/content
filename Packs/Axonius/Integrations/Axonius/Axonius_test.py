@@ -18,6 +18,10 @@ class DummyDevices:
     def get_by_hostname(value: str, max_rows: int, fields: list):
         return DUMMY_DEVICES
 
+    @staticmethod
+    def get(query: str, max_rows: int, fields: list):
+        return DUMMY_DEVICES
+
 
 class DummyDevicesSavedQueries:
     @staticmethod
@@ -89,7 +93,7 @@ def test_get_tags():
     client = DummyConnect()
     args: dict = {"type": "devices"}
     result = run_command(client=client, args=args, command="axonius-get-tags")
-    assert EXPECTED_DEVICE_TAGS == result.outputs
+    assert result.outputs == EXPECTED_DEVICE_TAGS
 
 
 def test_add_tags():
@@ -111,3 +115,17 @@ def test_get_device():
     args: dict = {"value": "DESKTOP-Gary-Gaither"}
     result = run_command(client=client, args=args, command="axonius-get-devices-by-hostname")
     assert EXPECTED_DEVICE["internal_axon_id"] == result.outputs["internal_axon_id"]
+
+
+def test_get_by_aql():
+    client = DummyConnect()
+    args: dict = {"query": "(\"specific_data.data.name\" == regex(\"john\", \"i\"))"}
+    result = run_command(client=client, args=args, command="axonius-get-devices-by-aql")
+    assert EXPECTED_DEVICE["internal_axon_id"] == result.outputs["internal_axon_id"]
+
+
+def test_add_note():
+    client = DummyConnect()
+    args: dict = {"type": "devices", "ids": DUMMY_DEVICES_IDS, "note": "note1"}
+    result = run_command(client=client, args=args, command="axonius-add-note")
+    assert result.outputs == 0
