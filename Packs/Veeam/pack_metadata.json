@@ -16,5 +16,6 @@
         "xsoar",
         "marketplacev2"
     ],
+    "defaultDataSource": "VBR REST API",
     "githubUser": []
 }

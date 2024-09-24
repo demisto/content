@@ -162,6 +162,7 @@
         "metadata": "{\"params\": []}"
       }
     ],
+    "fromVersion": "8.4.0",
     "widgets_data": [
       {
         "widget_key": "xql_1719488295523",

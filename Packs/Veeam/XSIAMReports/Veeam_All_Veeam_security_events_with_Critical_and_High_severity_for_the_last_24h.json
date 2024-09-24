@@ -104,5 +104,6 @@
         "metadata": "{\"params\": []}"
       }
     ],
+    "fromVersion": "8.4.0",
     "widgets_data": []
   }
