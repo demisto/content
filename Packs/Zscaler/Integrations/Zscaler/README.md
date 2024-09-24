@@ -382,7 +382,8 @@ Added the following IP addresses to the block list successfully:
 ### zscaler-category-add-url
 
 ***
-Adds URLs to the specified category.
+Adds URLs to the specified category.  
+Ensure that the URLs are properly formatted according to Zscaler's guidelines. For more information on valid URL formats, refer to the (Zscaler URL Format Guidelines)[https://help.zscaler.com/zia/url-format-guidelines].
 
 #### Base Command
 
