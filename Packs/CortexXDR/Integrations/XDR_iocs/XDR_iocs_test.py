@@ -1217,3 +1217,53 @@ def test_xdr_iocs_sync_command_from_fetch(mock_sync_for_fetch, mock_integration_
     mock_integration_context.return_value = {}
     xdr_iocs_sync_command(client, called_from_fetch=True)
     mock_sync_for_fetch.assert_called_with(client, batch_size=4000)
+
+
+@pytest.mark.parametrize("indicators_input, search_results, expected_iocs, expected_warning, expected_info", [
+    ('indicator1,indicator2',
+     [{'iocs': ['ioc1']}, {'iocs': ['ioc2']}],
+     ['ioc1', 'ioc2'],
+     None,
+     'get_indicators found 2 IOCs'),
+    ('indicator1,indicator2',
+     [{'iocs': ['ioc1']}, {'iocs': []}],
+     ['ioc1'],
+     '1 indicators were not found: indicator2',
+     'get_indicators found 1 IOCs'),
+    ('indicator1,indicator2',
+     [{'iocs': None}, {'iocs': None}],
+     [],
+     '2 indicators were not found: indicator1,indicator2',
+     '2 indicators were not found: indicator1,indicator2'),
+    ('',
+     [],
+     [],
+     None,
+     None)
+])
+@patch('XDR_iocs.demisto.debug')
+@patch('XDR_iocs.demisto.info')
+@patch('XDR_iocs.return_warning')
+@patch('XDR_iocs.IndicatorsSearcher')
+def test_get_indicators(mock_IndicatorsSearcher,
+                        mock_return_warning,
+                        mock_info,
+                        mock_debug,
+                        indicators_input,
+                        search_results,
+                        expected_iocs,
+                        expected_warning,
+                        expected_info):
+    mock_searcher_instance = MagicMock()
+    mock_searcher_instance.search_indicators_by_version.side_effect = search_results
+    mock_IndicatorsSearcher.return_value = mock_searcher_instance
+    result = get_indicators(indicators_input)
+    assert result == expected_iocs
+    if expected_warning:
+        mock_return_warning.assert_called_with(expected_warning)
+    else:
+        mock_return_warning.assert_not_called()
+    if expected_info:
+        mock_info.assert_called_with(expected_info)
+    else:
+        mock_info.assert_not_called()

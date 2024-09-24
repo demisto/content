@@ -514,7 +514,7 @@ def get_indicators(indicators: str) -> list:
             warning_message = f'{len(not_found)} indicators were not found: {",".join(not_found)}'
             demisto.info(warning_message)
             return_warning(warning_message)
-        else:
+        if iocs:
             demisto.info(f"get_indicators found {len(iocs)} IOCs")
             return iocs
     demisto.debug("get_indicators found 0 IOCs")
