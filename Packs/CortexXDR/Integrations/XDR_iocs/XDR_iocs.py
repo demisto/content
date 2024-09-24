@@ -6,7 +6,7 @@ import hashlib
 import secrets
 import string
 import tempfile
-from datetime import timezone, datetime, UTC
+from datetime import datetime, UTC
 from collections.abc import Sequence, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
@@ -245,7 +245,6 @@ def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.qu
     except StopIteration:
         update_integration_context_override(update_search_after_array=search_after_array)
         info_log_for_fetch(last_fetched.get('modified'), last_fetched.get('value'), search_after_array, ioc_count)
-        pass
     except Exception as e:
         raise e
 
