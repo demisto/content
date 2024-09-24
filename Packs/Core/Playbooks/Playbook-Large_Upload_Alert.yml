@@ -506,7 +506,7 @@ tasks:
           accessor: username
           transformers:
           - operator: uniq
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1383,7 +1383,7 @@ tasks:
         simple: Blocked Indicator In Systems
       UserVerification:
         simple: ${inputs.BlockIndicators_UserVerification}
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1835,7 +1835,7 @@ tasks:
         simple: "True"
       StringSimilarityThreshold:
         simple: "0.5"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
