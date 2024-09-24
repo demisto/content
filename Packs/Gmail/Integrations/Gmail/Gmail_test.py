@@ -618,7 +618,7 @@ def test_no_date_mail():
     from email.utils import format_datetime
 
     from Gmail import get_email_context
-    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.UTC)
     context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
     # check that the x-received date was usd
     assert occurred.timestamp() == expected_date.timestamp()
@@ -740,15 +740,15 @@ def test_last_run_after_fetch_incidents(mocker):
 
 
 EMAIL_NO_INTERNALDATE = input_data.email_without_date
-EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.UTC)
 EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
-EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.UTC)
 EMAIL_HEADER_EARLY = input_data.email_with_internalDate_header_early
-EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.UTC)
 EMAIL_NO_HEADER = input_data.email_no_header
-EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.UTC)
 EMAIL_NO_DATE = input_data.email_no_date
-EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.UTC)
 
 
 @pytest.mark.parametrize("email_data, expected_occurred, expected_occurred_is_valid",
@@ -838,7 +838,7 @@ def test_parse_date_isoformat_server():
     """
     from Gmail import parse_date_isoformat_server
     date = parse_date_isoformat_server('2017-10-24T14:13:20Z')
-    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=datetime.timezone.utc)
+    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=datetime.UTC)
     assert str(date) == '2017-10-24 14:13:20+00:00'
 
 
@@ -1029,3 +1029,38 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     monkeypatch.setattr('Gmail.LEGACY_NAME', True)
     result = parse_mail_parts(part)
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "display_name",
+    [
+        ("Sender Name"),
+        (None)
+    ]
+)
+def test_send_mail_sender_display_name(mocker, display_name):
+    """
+    Given:
+        - sender_display_name.
+    When:
+        - The send_mail function is called and the email message is constructed.
+    Then:
+        - Ensure that the encoded message contains the correct 'From' field with the sender_display_name.
+    """
+    import Gmail
+    from Gmail import send_mail
+    mocked_get_service = mocker.patch.object(Gmail, 'get_service')
+    mocked_get_service().users().messages().list().execute.return_value = {'id': 'mock_id'}
+    mock_b64encode = mocker.patch("base64.urlsafe_b64encode")
+    send_mail([], "sender@example.com", "", "", [], [], [], None, "", [],
+              [], [], [], None, [], [], None, display_name, None, None, False)
+
+    args, _ = mock_b64encode.call_args
+    encoded_bytes = args[0]  # This is the bytes before encoding
+    message_str = encoded_bytes.decode('utf-8')
+    if display_name:
+        expected_from_header = f"{display_name} <sender@example.com>"
+    else:
+        expected_from_header = "sender@example.com"
+
+    assert f"from: {expected_from_header}" in message_str
