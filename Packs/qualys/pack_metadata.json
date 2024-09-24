@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Asset Collection"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

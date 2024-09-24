@@ -57,6 +57,7 @@
 
 # SDK Related
 .pre-commit-config_template.yaml @SamuelFain @YuvHayun
+validation_config.toml @YuvHayun
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @maimorag

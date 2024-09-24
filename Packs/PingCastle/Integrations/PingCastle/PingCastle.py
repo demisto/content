@@ -32,7 +32,7 @@ class PingCastleHTTPServer(BaseHTTPRequestHandler):
         Handle POST requests - Login and SendReport
         """
         try:
-            content_length = int(self.headers.get('Content-Length'))
+            content_length = int(self.headers.get('Content-Length'))  # type: ignore[arg-type]
             post_data = self.rfile.read(content_length)
             try:
                 request_json = json.loads(post_data)
