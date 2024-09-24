@@ -11,11 +11,11 @@ from typing import Any
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -25,15 +25,15 @@ class Client(BaseClient):
         try:
             ipaddress.ip_address(ip)
         except ValueError:
-            raise ValueError(f'Invalid IP address: {ip}')
+            raise ValueError(f"Invalid IP address: {ip}")
         encoded_ip = urllib.parse.quote(ip)
         full_url = urljoin(self._base_url, "/v2/context")
         full_url = urljoin(full_url, encoded_ip)
-        demisto.debug(f'SpurContextAPI full_url: {full_url}')
+        demisto.debug(f"SpurContextAPI full_url: {full_url}")
 
         # Make the request
         response = self._http_request(
-            method='GET',
+            method="GET",
             full_url=full_url,
             headers=self._headers,
         )
@@ -41,19 +41,12 @@ class Client(BaseClient):
         return response
 
 
-''' SPUR IP Indicator '''
+""" SPUR IP INDICATOR CLASS """
 
 
 class SpurIP(Common.IP):
-    """Spur IP Indicator"""
 
-    def __init__(
-        self,
-        client_types=None,
-        risks=None,
-        tunnels=None,
-        **kwargs
-    ) -> None:
+    def __init__(self, client_types=None, risks=None, tunnels=None, **kwargs) -> None:
 
         super().__init__(**kwargs)
 
@@ -67,18 +60,18 @@ class SpurIP(Common.IP):
         context_path = context[super().CONTEXT_PATH]
 
         if self.risks:
-            context_path['Risks'] = self.risks
+            context_path["Risks"] = self.risks
 
         if self.client_types:
-            context_path['ClientTypes'] = self.client_types
+            context_path["ClientTypes"] = self.client_types
 
         if self.tunnels:
-            context_path['Tunnels'] = self.tunnels
+            context_path["Tunnels"] = self.tunnels
 
         return context
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def fix_nested_client(data):
@@ -97,7 +90,7 @@ def fix_nested_client(data):
     return new_dict
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -114,93 +107,96 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message: str = ""
     try:
-        full_url = urljoin(client._base_url, 'status')
-        demisto.debug(f'SpurContextAPI full_url: {full_url}')
+        full_url = urljoin(client._base_url, "status")
+        demisto.debug(f"SpurContextAPI full_url: {full_url}")
 
         client._http_request(
-            method='GET',
+            method="GET",
             full_url=full_url,
             headers=client._headers,
             raise_on_status=True,
         )
-        message = 'ok'
+        message = "ok"
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e) or "Authorization" in str(
+            e
+        ):  # TODO: make sure you capture authentication errors
+            message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
     return message
 
 
 def enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    ip = args.get('ip', None)
+    ip = args.get("ip", None)
     if not ip:
-        raise ValueError('IP not specified')
+        raise ValueError("IP not specified")
 
     response = client.ip(ip)
 
     if not isinstance(response, dict):
-        raise ValueError(f'Invalid response from API: {response}')
+        raise ValueError(f"Invalid response from API: {response}")
 
     response = fix_nested_client(response)
     return CommandResults(
-        outputs_prefix='SpurContextAPI.Context',
-        outputs_key_field='',
+        outputs_prefix="SpurContextAPI.Context",
+        outputs_key_field="",
         outputs=response,
         raw_response=response,
+    )
+
+
+def _build_dbot_score(ip: str) -> Common.DBotScore:
+    reliability = demisto.params().get("reliability")
+    return Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="SpurContextAPI",
+        score=Common.DBotScore.NONE,
+        reliability=reliability,
+    )
+
+
+def _build_spur_indicator(ip: str, response: dict) -> SpurIP:
+    response_as = response.get("as", {})
+    response_location = response.get("location", {})
+    return SpurIP(
+        ip=ip,
+        asn=response_as.get("number"),
+        as_owner=response_as.get("organization"),
+        dbot_score=_build_dbot_score(ip),
+        organization_name=response.get("organization"),
+        geo_country=response_location.get("country"),
+        risks=response.get("risks"),
+        client_types=response.get("client_types"),
+        tunnels=response.get("tunnels"),
     )
 
 
 def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    ip = args.get('ip', None)
-    reliability = demisto.params().get('reliability')
+    ip = args.get("ip", None)
+    if not ip:
+        raise ValueError("IP not specified")
 
     response = client.ip(ip)
 
     if not isinstance(response, dict):
-        raise ValueError(f'Invalid response from API: {response}')
+        raise ValueError(f"Invalid response from API: {response}")
 
     response = fix_nested_client(response)
 
-    dbot_score = Common.DBotScore(
-        indicator=ip,
-        indicator_type=DBotScoreType.IP,
-        integration_name='SpurContextAPI',
-        score=Common.DBotScore.NONE,
-        reliability=reliability
-    )
-    asn = response.get('as', {}).get('number')
-    as_owner = response.get('as', {}).get('organization', '') 
-    organization = response.get('organization', '')
-    geo_country = response.get('location', {}).get('country')
-    risks = response.get('risks')
-    client_types = response.get('client_types')
-    tunnels = response.get('tunnels', {})
-
-    ip_output = SpurIP(
-        ip=ip,
-        asn=asn,
-        as_owner=as_owner,
-        dbot_score=dbot_score,
-        organization_name=organization,
-        geo_country=geo_country,
-        risks=risks,
-        client_types=client_types,
-        tunnels=tunnels
-    )
-
     return CommandResults(
-        outputs_prefix='SpurContextAPI.Context',
-        outputs_key_field='',
+        outputs_prefix="SpurContextAPI.Context",
+        outputs_key_field="",
         outputs=response,
         raw_response=response,
-        indicator=ip_output
+        indicator=_build_spur_indicator(ip, response),
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -210,42 +206,39 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get('credentials', {}).get('password')
-    base_url = demisto.params().get('base_url')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-    demisto.debug(f'Command being called is {demisto.command()}')
+    api_key = demisto.params().get("credentials", {}).get("password")
+    base_url = demisto.params().get("base_url")
+    verify_certificate = not demisto.params().get("insecure", False)
+    proxy = demisto.params().get("proxy", False)
+    demisto.debug(f"Command being called is {demisto.command()}")
 
     try:
 
-        headers: dict = {
-            "TOKEN": api_key
-        }
+        headers: dict = {"TOKEN": api_key}
 
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+        )
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+        match demisto.command():
+            case 'test-module':
+                result = test_module(client)
+            case "ip":
+                result = ip_command(client, demisto.args())
+            case "spur-context-api-enrich":
+                result = enrich_command(client, demisto.args())
+            case _:
+                result = "Invalid command"
 
-        elif demisto.command() == 'ip':
-            return_results(ip_command(client, demisto.args()))
-
-        elif demisto.command() == 'spur-context-api-enrich':
-            return_results(enrich_command(client, demisto.args()))
+        return_results(result)
 
     # Log exceptions and return errors
     except Exception:
-        return_error(f'Error: {traceback.format_exc()}')
+        return_error(f"Error: {traceback.format_exc()}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
