@@ -86,8 +86,8 @@ IP reputation command using the Spur Context API.
 | IP.ClientTypes | array | The organization name. | 
 | IP.Geo.Country | string | The country in which the IP address is located. | 
 | IP.Organization.Name | string | The organization name. | 
-| IP.Risks | array | Risky associated with the IP | 
-| IP.Tunnels | array | The organization name. | 
+| IP.Risks | array | Risks that we have determined based on our collection of data. | 
+| IP.Tunnels | array | The different types of proxy or VPN services that are running on this IP address. | 
 | SpurContextAPI.Context.ip | string | IP that was enriched. | 
 | SpurContextAPI.Context.as | object | Autonomous System details for an IP Address. | 
 | SpurContextAPI.Context.organization | string | The organization using this IP address. | 
@@ -103,3 +103,4 @@ IP reputation command using the Spur Context API.
 | SpurContextAPI.Context.client_count | number | The average number of clients we observe on this IP address. | 
 | SpurContextAPI.Context.client_behaviors | array | An array of behavior tags for an IP Address. | 
 | SpurContextAPI.Context.client_types | array | The different type of client devices that we have observed on this IP address. | 
+
