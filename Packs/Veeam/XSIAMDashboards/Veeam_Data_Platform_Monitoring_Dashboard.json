@@ -1229,8 +1229,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715776054053",
@@ -1277,8 +1276,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780123485",
@@ -1356,8 +1354,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780383232",
@@ -1435,8 +1432,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780485921",
@@ -1475,8 +1471,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780632686",
@@ -1535,8 +1530,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780719907",
@@ -1595,8 +1589,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780786267",
@@ -1649,8 +1642,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780875011",
@@ -1703,8 +1695,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780917449",
@@ -1757,8 +1748,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715780965590",
@@ -1811,8 +1801,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715781014094",
@@ -1865,8 +1854,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715781071150",
@@ -1919,8 +1907,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715781165935",
@@ -1973,8 +1960,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715781224440",
@@ -2015,8 +2001,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-      "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     },
     {
       "widget_key": "xql_1715781311118",
@@ -2273,8 +2258,7 @@
       "additional_info": {
         "query_tables": [ "veeam_*" ],
         "query_uses_library": false
-      },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+      }
     }
   ],
   "fromVersion": "8.4.0"
