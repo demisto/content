@@ -616,7 +616,8 @@ def test_send_message_with_entitlement(mocker, requests_mock):
                 ],
                 'body': [{
                     'text': 'is this really working?',
-                    'type': 'TextBlock'
+                    'type': 'TextBlock',
+                    'wrap': True
                 }],
                 'type': 'AdaptiveCard',
                 'msteams': {
