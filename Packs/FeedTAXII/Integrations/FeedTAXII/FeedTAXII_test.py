@@ -161,8 +161,7 @@ def test_client_headers():
     assert headers['X-TAXII-Accept'] == client.MESSAGE_BINDING
     assert headers['X-TAXII-Services'] == client.SERVICES
     assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:http:1.0'
-    
+
     headers = client.headers(protocol='https')
-    
+
     assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:https:1.0'
-    
