@@ -32,7 +32,7 @@ The content pack includes:
 ![Veeam - Start Instant VM Recovery Automatically](doc_files/Veeam_XSOAR_Playbooks.png)
 </~XSOAR>
 <~XSIAM>
-This App allows Veeam Data Platform Advanced and Premium users to monitor various security activities in their Veeam backup infrastructure for:
+This app allows Veeam Data Platform Advanced and Premium users to monitor various security activities in their Veeam backup infrastructure for:
 
 - Veeam Backup & Replication events
 - Alarms triggered by Veeam ONE
