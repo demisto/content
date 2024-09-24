@@ -128,6 +128,14 @@
       "type": "string",
       "is_array": false
     },
+    "TargetURL": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetUserName": {
+      "type": "string",
+      "is_array": false
+    },
     "ThreatActionTaken": {
       "type": "string",
       "is_array": false

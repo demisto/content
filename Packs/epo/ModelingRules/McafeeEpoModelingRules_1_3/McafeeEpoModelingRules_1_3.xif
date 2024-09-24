@@ -56,4 +56,6 @@ alter
     xdm.target.process.executable.filename = target_process_name,
     xdm.target.process.executable.is_signed = to_boolean(TargetSigned),
     xdm.target.process.executable.path = TargetProcessName, 
-    xdm.target.process.executable.signer = target_process_signer;
+    xdm.target.process.executable.signer = target_process_signer,
+    xdm.target.url = TargetURL,
+    xdm.target.user.username = TargetUserName;
