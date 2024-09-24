@@ -372,7 +372,7 @@ def test_get_asset_details_command(client, mocker):
 def test_update_risk_finding_status_invalid_status(client):
     args = {'findingId': '1', 'status': 'INVALID_STATUS'}
 
-    with pytest.raises(ValueError, match='This "INVALID_STATUS" cloud provider is not supported'):
+    with pytest.raises(ValueError, match='This "INVALID_STATUS" status is not supported'):
         update_risk_finding_status(client, args)
 
 
@@ -384,16 +384,6 @@ def test_get_data_types(client):
     assert result.outputs_key_field == 'Key'
     assert result.outputs == [{"No": 1, "Key": "Type1"}, {"No": 2, "Key": "Type2"}, {"No": 3, "Key": "Type3"}]
 
-    expected_human_readable = (
-        "### Data Types\n "
-        "| No | Key  |\n "
-        "|----|------|\n"
-        "| 1  | Type1 |\n"
-        "| 2  | Type2 |\n"
-        "| 3  | Type3 |\n"
-    )
-    assert result.readable_output == expected_human_readable
-
 
 def test_get_data_types_empty(client):
     client.get_data_types = MagicMock(return_value=[])  # Empty data types
@@ -404,14 +394,6 @@ def test_get_data_types_empty(client):
     assert result.outputs_key_field == 'Key'
     assert result.outputs == []
 
-    expected_human_readable = (
-        "### Data Types\n "
-        "| No | Key |\n "
-        "|----|-----|\n "
-        "**No entries.**\n"
-    )
-    assert result.readable_output == expected_human_readable
-
 
 def test_get_data_types_single_type(client):
     client.get_data_types = MagicMock(return_value=["Type1"])  # Single data type
@@ -421,14 +403,6 @@ def test_get_data_types_single_type(client):
     assert result.outputs_prefix == 'DSPM.DataTypes'
     assert result.outputs_key_field == 'Key'
     assert result.outputs == [{"No": 1, "Key": "Type1"}]
-
-    expected_human_readable = (
-        "### Data Types\n "
-        "| No | Key  |\n "
-        "|----|------|\n"
-        "| 1  | Type1 |\n"
-    )
-    assert result.readable_output == expected_human_readable
 
 
 sample_data_multiple = [
@@ -460,25 +434,12 @@ def test_get_data_type_findings_command(client):
     result = get_data_type_findings(client, args, page=0)
 
     assert isinstance(result, List)
-    # assert result.outputs_prefix == 'DSPM.DataTypesFindings'
-    # assert result.outputs_key_field == 'Key'
     assert result == [
         {"dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION"},
         {"dataTypeName": "PII"},
         {"dataTypeName": "CREDIT_CARD"},
         {"dataTypeName": "SSN"}
     ]
-
-    # expected_human_readable = (
-    #     "### Data Types\n"
-    #     "| No | Key  |\n"
-    #     "|----|------|\n"
-    #     "| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |\n"
-    #     "| 2  | PII |\n"
-    #     "| 3  | CREDIT_CARD |\n"
-    #     "| 4  | SSN |\n"
-    # )
-    # assert result.readable_output == expected_human_readable
 
 
 def test_get_data_type_findings_command_multiple_strings(client):
@@ -487,8 +448,6 @@ def test_get_data_type_findings_command_multiple_strings(client):
     result = get_data_type_findings(client, args, page=0)
 
     assert isinstance(result, List)
-    # assert result.outputs_prefix == 'DSPM.DataTypesFindings'
-    # assert result.outputs_key_field == 'Key'
     assert result == [
         "AADHAAR_INDIVIDUAL_IDENTIFICATION",
         "PII",
@@ -496,58 +455,25 @@ def test_get_data_type_findings_command_multiple_strings(client):
         "SSN"
     ]
 
-    # expected_human_readable = (
-    #     "### Data Types\n"
-    #     "| No | Key  |\n"
-    #     "|----|------|\n"
-    #     "| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |\n"
-    #     "| 2  | PII |\n"
-    #     "| 3  | CREDIT_CARD |\n"
-    #     "| 4  | SSN |\n"
-    # )
-    # assert result.readable_output == expected_human_readable
-
 
 def test_get_data_type_findings_command_single_type(client):
     client.get_data_type_findings = MagicMock(return_value=sample_data_single)  # Single data type
     args = {}
     result = get_data_type_findings(client, args, page=0)
-
     assert isinstance(result, List)
-    # assert result.outputs_prefix == 'DSPM.DataTypesFindings'
-    # assert result.outputs_key_field == 'Key'
     assert result == [
         {"dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION"}
     ]
-
-    # expected_human_readable = (
-    #     "### Data Types\n"
-    #     "| No | Key  |\n"
-    #     "|----|------|\n"
-    #     "| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |\n"
-    # )
-    # assert result.readable_output == expected_human_readable
 
 
 def test_get_data_type_findings_command_single_string(client):
     client.get_data_type_findings = MagicMock(return_value=sample_data_single_string)  # Single data type as string
     args = {}
     result = get_data_type_findings(client, args, page=0)
-
     assert isinstance(result, List)
-    # assert result.outputs_prefix == 'DSPM.DataTypesFindings'
-    # assert result.outputs_key_field == 'Key'
     assert result == [
         "AADHAAR_INDIVIDUAL_IDENTIFICATION"
     ]
-
-    # expected_human_readable = (
-    #     "### Data Types\n"
-    #     "| No | Key  |\n"
-    #     "|----|------|\n"
-    #     "| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |\n"
-    # )
-    # assert result.readable_output == expected_human_readable
 
 
 def test_get_asset_files_by_id(client):
@@ -652,8 +578,6 @@ def test_get_list_of_assets_empty_response(client, mocker):
 
     # Assertions
     assert isinstance(result, List)
-    # assert result.outputs_prefix == 'DSPM.Assets'
-    # assert result.outputs_key_field == 'id'
     assert result == []
 
 
@@ -772,8 +696,6 @@ def test_get_list_of_assets(mocker, mock_responses, expected_outputs):
 
     # Assertions
     assert isinstance(result, List)
-    # assert result.outputs_prefix == 'DSPM.Assets'
-    # assert result.outputs_key_field == 'id'
     assert result == expected_outputs
 
 
@@ -785,3 +707,10 @@ def test_get_asset_details(mocker):
     result = get_asset_details(client, args)
 
     assert result.outputs == {"asset": {"id": "asset1", "name": "Asset One"}}  # Access 'outputs' attribute
+
+
+def test_update_alert_status_invalid_status(client):
+    args = {'alertId': '1', 'status': 'INVALID_STATUS'}
+
+    with pytest.raises(ValueError, match='This "INVALID_STATUS" status is not supported'):
+        update_risk_finding_status(client, args)

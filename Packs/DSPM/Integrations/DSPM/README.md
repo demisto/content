@@ -651,3 +651,50 @@ Fetch list of alerts.
 >| Alert ID | Detection Time | Policy Name | Asset Name | Cloud Provider | Cloud Environment | Policy Severity | Policy Category | Status | Event Actor | Event Action Medium | Event Source | Policy Frameworks | eventRawData |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 340256006 | 2024-08-07T18:55:50.64996Z | Asset made public | mikeys3 | AWS | TESTING | HIGH | ATTACK | OPEN | dummy_email | CONSOLE | ***.**.**.***.*** | MITRE-T1098 | "{\"eventVersion\":\"1.09\",\"userIdentity\":{\"type\":\"AssumedRole\",\"principalId\":\"AROASI3QR4HKUAIEPBICG:dummy_email\",\"arn\":\"arn:aws:sts::576847873638:assumed-role/sso_admin-tac-nam/dummy_email\",\"accountId\":\"576847873638\",\"accessKeyId\":\"ASIASI3QR4HK2LDI5JMN\",\"sessionContext\":{\"sessionIssuer\":{\"type\":\"Role\",\"principalId\":\"AROASI3QR4HKUAIEPBICG\",\"arn\":\"arn:aws:iam::576847873638:role/sso_admin-tac-nam\",\"accountId\":\"576847873638\",\"userName\":\"sso_admin-tac-nam\"},\"attributes\":{\"creationDate\":\"2024-08-07T18:51:51Z\",\"mfaAuthenticated\":\"false\"}}},\"eventTime\":\"2024-08-07T18:55:37Z\",\"eventSource\":\"s3.amazonaws.com\",\"eventName\":\"PutBucketPolicy\",\"awsRegion\":\"us-east-1\",\"sourceIPAddress\":\"***.**.**.***.***\",\"userAgent\":\"[S3Console/0.4, aws-internal/3 aws-sdk-java/1.12.488 Linux/5.10.220-187.867.amzn2int.x86_64 OpenJDK_64-Bit_Server_VM/25.372-b08 java/1.8.0_372 vendor/Oracle_Corporation cfg/retry-mode/standard]\",\"requestParameters\":{\"bucketPolicy\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"Statement1\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":[\"s3:AbortMultipartUpload\",\"s3:DeleteObject\",\"s3:GetObject\",\"s3:ListBucketMultipartUploads\",\"s3:ListMultipartUploadParts\",\"s3:PutObject\"],\"Resource\":[\"arn:aws:s3:::mikeys3\",\"arn:aws:s3:::mikeys3/*\"]}]},\"bucketName\":\"mikeys3\",\"Host\":\"s3.amazonaws.com\",\"policy\":\"\"},\"responseElements\":null,\"additionalEventData\":{\"SignatureVersion\":\"SigV4\",\"CipherSuite\":\"TLS_AES_128_GCM_SHA256\",\"bytesTransferredIn\":568,\"AuthenticationMethod\":\"AuthHeader\",\"x-amz-id-2\":\"KXHYo+o2TWL/Gnk0pmKY+gV+0YufF6uGyD3GRwK+FXEJ7eai772ytOzbV9CwwoBq+pezhB5PPR/6RxZyhOyZltIBowBOyQih\",\"bytesTransferredOut\":0},\"requestID\":\"CJ3J7M851NAGAF58\",\"eventID\":\"df06b9ad-79dc-4a17-ae0e-82ecff9cfa5e\",\"readOnly\":false,\"resources\":[{\"accountId\":\"576847873638\",\"type\":\"AWS::S3::Bucket\",\"ARN\":\"arn:aws:s3:::mikeys3\"}],\"eventType\":\"AwsApiCall\",\"managementEvent\":true,\"recipientAccountId\":\"576847873638\",\"vpcEndpointId\":\"vpce-f40dc59d\",\"eventCategory\":\"Management\",\"tlsDetails\":{\"tlsVersion\":\"TLSv1.3\",\"cipherSuite\":\"TLS_AES_128_GCM_SHA256\",\"clientProvidedHostHeader\":\"s3.amazonaws.com\"}}"
+
+
+### dspm-update-alert-status
+
+***
+Updates the status of a alert.
+
+#### Base Command
+
+`dspm-update-alert-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert ID. | Required | 
+| status | Updated Status. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DSPM.AlertStatusUpdate | String | The updated alert. | 
+
+#### Command example
+```!dspm-update-alert-status alertId="000000608" status=INVESTIGATING```
+#### Context Example
+```json
+{
+    "DSPM": {
+        "AlertStatusUpdate": {
+            "newStatus": "INVESTIGATING",
+            "oldStatus": "INVESTIGATING",
+            "riskFindingId": "000000608"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alert Status Update
+>|Alert ID|Old Status|New Status|
+>|---|---|---|
+>| 000000608 | INVESTIGATING | INVESTIGATING |
+
+----------------
