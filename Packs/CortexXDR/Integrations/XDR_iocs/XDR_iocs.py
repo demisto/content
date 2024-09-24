@@ -6,7 +6,7 @@ import hashlib
 import secrets
 import string
 import tempfile
-from datetime import timezone, datetime
+from datetime import timezone, datetime, UTC
 from collections.abc import Sequence, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
@@ -128,7 +128,7 @@ def get_headers(params: dict) -> dict:
     api_key: str = params.get('apikey_creds', {}).get('password', '') or str(params.get('apikey'))
     api_key_id: str = params.get('apikey_id_creds', {}).get('password', '') or str(params.get('apikey_id'))
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
-    timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)  # noqa: UP017
+    timestamp: str = str(int(datetime.now(UTC).timestamp()) * 1000)
     auth_key = f"{api_key}{nonce}{timestamp}"
     auth_key = auth_key.encode("utf-8")
     api_key_hash: str = hashlib.sha256(auth_key).hexdigest()
@@ -255,7 +255,7 @@ def demisto_expiration_to_xdr(expiration) -> int:
         try:
             expiration_date = parse(expiration)
             assert expiration_date is not None, f'could not parse {expiration}'
-            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)  # noqa: UP017
+            return int(expiration_date.astimezone(UTC).timestamp() * 1000)
         except (ValueError, AssertionError):
             pass
     return -1
@@ -442,7 +442,7 @@ def sync(client: Client, batch_size: int = 200):
     demisto.info("executing sync")
     temp_file_path: str = get_temp_file()
     try:
-        sync_time = datetime.now(timezone.utc)  # noqa: UP017
+        sync_time = datetime.now(UTC)
         create_file_sync(temp_file_path)  # may end up empty
         requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
         path: str = 'sync_tim_iocs'
@@ -698,7 +698,7 @@ def module_test(client: Client):
     params = demisto.params()
     if params.get('feed') and params.get('feedFetchInterval') and arg_to_number(params.get('feedFetchInterval')) < 15:
         raise DemistoException("'Feed Fetch Interval' parameter should be 15 or larger.")
-    ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
+    ts = int(datetime.now(UTC).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
     demisto.debug(f"calling endpoint {path} with {requests_kwargs=}")
@@ -713,7 +713,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     if (((not last_run) or (last_run.get('is_first_sync_phase', False)))
             and auto_sync):
         if not last_run:
-            sync_time = datetime.now(timezone.utc)
+            sync_time = datetime.now(UTC)
             update_integration_context_override(update_sync_time_with_datetime=sync_time, update_is_first_sync_phase='true')
         demisto.debug("fetching IOCs: running sync with is_first_stage_sync=True")
         xdr_iocs_sync_command(client=client, is_first_stage_sync=True, called_from_fetch=True)
@@ -772,7 +772,7 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
 def get_sync_file(set_time: bool = False, zip: bool = False) -> None:
     temp_file_path = get_temp_file()
 
-    timestamp = datetime.now(timezone.utc)  # noqa: UP017
+    timestamp = datetime.now(UTC)
     demisto.debug(f"creating sync file with {timestamp=!s}")
     try:
         create_file_sync(temp_file_path)
