@@ -238,7 +238,7 @@ def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.qu
             for ioc in iocs:
                 yield ioc
             if stop_iteration and ioc_count >= MAX_INDICATORS_TO_SYNC:
-                info_log_for_fetch(ioc.get('modified'), ioc.get('value'), search_after_array, ioc_count)
+                # info_log_for_fetch(ioc.get('modified'), ioc.get('value'), search_after_array, ioc_count)
                 raise StopIteration
         update_integration_context_override(update_search_after_array=search_after_array)
         info_log_for_fetch(last_fetched.get('modified'), last_fetched.get('value'), search_after_array, ioc_count)
@@ -563,7 +563,7 @@ def tim_insert_jsons(client: Client):
             last_run: dict = get_integration_context()
             query = (create_query_with_end_time(to_date=current_run)
                      if last_run.get('search_after')
-                     else create_last_iocs_query(from_date=last_run.get('time'), to_date=current_run))
+                     else create_last_iocs_query(from_date=last_run.get('time', current_run), to_date=current_run))
             demisto.info(f"pushing IOCs to XDR: querying XSOAR's recently-modified IOCs with {query=}")
             iocs = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=BATCH_SIZE,
                                                                    stop_iteration=True,
@@ -695,8 +695,10 @@ def get_changes(client: Client):
 
 def module_test(client: Client):
     params = demisto.params()
-    if params.get('feed') and params.get('feedFetchInterval') and arg_to_number(params.get('feedFetchInterval')) < 15:
-        raise DemistoException("'Feed Fetch Interval' parameter should be 15 or larger.")
+    feed_fetch_interval = arg_to_number(params.get('feedFetchInterval'))
+    if (params.get('feed') and feed_fetch_interval and feed_fetch_interval < 15):
+        raise DemistoException(f"`Feed Fetch Interval` is set to {feed_fetch_interval}. Setting `Feed Fetch Interval` to less "
+                               "then 15 minutes could lead to internal error from xdr side.")
     ts = int(datetime.now(UTC).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
@@ -827,8 +829,8 @@ def validate_fix_severity_value(severity: str, indicator_value: str | None = Non
 def main():  # pragma: no cover
     params = demisto.params()
     feed_fetch_interval = arg_to_number(params.get('feedFetchInterval'))
-    if params.get('feed') and feed_fetch_interval and arg_to_number(feed_fetch_interval) < 15:
-        demisto.info(f"`Feed Fetch Interval` is set to {feed_fetch_interval}. Setting the `Feed Fetch Interval` to less then 15 "
+    if params.get('feed') and feed_fetch_interval and feed_fetch_interval < 15:
+        demisto.info(f"`Feed Fetch Interval` is set to {feed_fetch_interval}. Setting `Feed Fetch Interval` to less then 15 "
                      "minutes could lead to internal error from xdr side.")
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')

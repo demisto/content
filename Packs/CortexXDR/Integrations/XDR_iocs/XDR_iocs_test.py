@@ -1058,12 +1058,13 @@ def test_module_fail_with_fetch_interval(mocker):
     """
     Given   The demisto.params() returns parameters with feed set to True and feedFetchInterval set to '15'.
     When    The module_test() function is called.
-    Then    Raise a DemistoException with the message: "'Feed Fetch Interval' parameter should be 20 or larger."
+    Then    Raise a DemistoException with the message: "'Feed Fetch Interval' parameter should be 15 or larger."
     """
     from XDR_iocs import module_test
     with pytest.raises(DemistoException) as e:
         module_test(client)
-    assert e.value.message == "'Feed Fetch Interval' parameter should be 15 or larger."
+    assert e.value.message == ("`Feed Fetch Interval` is set to 14. Setting `Feed Fetch Interval` to less "
+                               "then 15 minutes could lead to internal error from xdr side.")
 
 
 ioc_example = {
