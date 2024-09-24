@@ -37,7 +37,7 @@ This app allows Veeam Data Platform Advanced and Premium users to monitor variou
 - Veeam Backup & Replication events
 - Alarms triggered by Veeam ONE
 
-The App gets information from the event forwarding capabilities via syslog servers integrated with Veeam Backup & Replication and Veeam ONE, parses the data and displays it on the Veeam Data Platform Monitoring dashboard. For events and alarms with Medium, High and Critical severity, the app generates alerts and displays them on the Veeam Security Activities dashboard.
+The app gets information from the event forwarding capabilities via syslog servers integrated with Veeam Backup & Replication and Veeam ONE, parses the data and displays it on the Veeam Data Platform Monitoring dashboard. For events and alarms with Medium, High and Critical severity, the app generates alerts and displays them on the Veeam Security Activities dashboard.
 
 The content pack includes:
 
