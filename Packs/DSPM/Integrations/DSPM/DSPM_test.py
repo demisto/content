@@ -785,4 +785,3 @@ def test_get_asset_details(mocker):
     result = get_asset_details(client, args)
 
     assert result.outputs == {"asset": {"id": "asset1", "name": "Asset One"}}  # Access 'outputs' attribute
-
