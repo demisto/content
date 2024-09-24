@@ -47,7 +47,11 @@ class Client(BaseClient):
         demisto.info(f'completed post of message. response text: {res}')
 
 
-def create_teams_message(message: str, title: str, serverurls: str, adaptive_cards_format: bool = False, is_workflow: bool = True) -> dict:
+def create_teams_message(message: str,
+                         title: str,
+                         serverurls: str,
+                         adaptive_cards_format: bool = False,
+                         is_workflow: bool = True) -> dict:
     """
     Creates the Teams message using the messageCard format, and returns the card
 
