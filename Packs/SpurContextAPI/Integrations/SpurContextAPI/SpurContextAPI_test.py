@@ -53,7 +53,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import pytest
-from SpurContextAPI import Client, enrich_command, test_module, main
+from SpurContextAPI import Client, SpurIP, enrich_command, ip_command, test_module, main
 
 # Sample API response for testing
 MOCK_HTTP_RESPONSE = {
@@ -109,6 +109,13 @@ def test_enrich_command(client):
     args = {'ip': '1.1.1.1'}
     result = enrich_command(client, args)
     assert result.outputs['ip'] == MOCK_HTTP_RESPONSE['ip']
+
+
+def test_ip_command(client):
+    args = {'ip': '1.1.1.1'}
+    results = ip_command(client, args)
+    assert isinstance(results.indicator, SpurIP)
+    assert results.indicator.risks == MOCK_HTTP_RESPONSE['risks']
 
 
 def test_test_module(client):
