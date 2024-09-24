@@ -116,7 +116,7 @@ script:
       isArray: true
       name: exchange_location
       defaultValue: 'All'
-    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. Deprecated since Microsoft is supporting it only on-premise.
       isArray: true
       deprecated: true
       name: exchange_location_exclusion
