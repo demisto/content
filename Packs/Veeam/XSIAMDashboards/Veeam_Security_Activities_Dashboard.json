@@ -880,8 +880,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1715782110514",
@@ -925,8 +924,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1715782213232",
@@ -966,8 +964,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1715782276516",
@@ -1007,8 +1004,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1715782338600",
@@ -1048,8 +1044,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1715782419912",
@@ -1127,8 +1122,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1715782512114",
@@ -1159,8 +1153,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1719413377594",
@@ -1191,8 +1184,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1719484549012",
@@ -1276,8 +1268,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1719488295523",
@@ -1348,8 +1339,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1719493861066",
@@ -1396,8 +1386,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       },
       {
         "widget_key": "xql_1721205591354",
@@ -1516,8 +1505,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       }
     ],
   "fromVersion": "8.4.0"

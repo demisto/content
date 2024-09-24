@@ -167,8 +167,7 @@
         "additional_info": {
           "query_tables": [ "veeam_*" ],
           "query_uses_library": false
-        },
-        "creator_mail": "paloaltoappsupport@veeam.com"
+        }
       }
     ]
   }
