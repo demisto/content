@@ -3681,7 +3681,7 @@ tasks:
     task:
       id: 370de85c-8fbc-4c5b-8fff-84a66629234c
       version: -1
-      name: Found Related Indicators to Hunt?
+      name: Endpoint auto-isolation enabled?
       description: Determine whether the endpoint should be isolated automatically.
       type: condition
       iscommand: false
