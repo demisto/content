@@ -42,7 +42,7 @@ class Client(BaseClient):
                 method='POST',
                 json_data=messagecard,
                 raise_on_status=True,
-                resp_type='text',
+                resp_type='text'
             )
         demisto.info(f'completed post of message. response text: {res}')
 
