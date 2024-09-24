@@ -5,11 +5,8 @@ from http import HTTPStatus
 from typing import Any, NamedTuple
 from collections.abc import Callable
 
-import time
-from functools import wraps
-
 MAX_IDS_NUMBER = 289262
-
+DEFAULT_WAIT_TIME = 5
 MIN_PAGE_NUM = 1
 MAX_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 1
@@ -129,63 +126,6 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming and Outgoing": "Both",
 }
-
-
-def retry_on_rate_limit(max_retries: int = 10):
-
-    def decorator(func: Callable):
-
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            retry_count = 0
-            while retry_count < max_retries:
-                try:
-                    response = func(*args, **kwargs)
-                    return response
-
-                except DemistoException as exc:
-
-                    if (exc.res.status_code == HTTPStatus.TOO_MANY_REQUESTS
-                            or exc.res.status_code == HTTPStatus.CONFLICT):
-                        demisto.debug(
-                            f"{exc}, Status code: {exc.res.status_code}. Increase retry count."
-                        )
-                        retry_after = _get_retry_after(exc.res.headers)
-                        if retry_after:
-                            time.sleep(retry_after)
-                            retry_count += 1
-                            continue
-
-                    else:
-                        raise exc
-
-            raise Exception(f"Max retries ({max_retries}) exceeded")
-
-        return wrapper
-
-    return decorator
-
-
-def _get_retry_after(headers: dict[str, Any]) -> int:
-    """ Get the retry count after a request execution.
-
-    Args:
-        headers (dict[str, Any]): The response headers.
-
-    Returns:
-        int: The retry after value.
-    """
-    retry_after = headers.get("Retry-After")
-    if retry_after is not None and retry_after.isdigit():
-        return int(retry_after)
-
-    if headers.get("X-RateLimit-Remaining-Second") == "0":
-        return int(headers.get("X-RateLimit-Limit-Second", 5))
-
-    if headers.get("RateLimit-Remaining") == "0":
-        return int(headers.get("RateLimit-Reset", 5))
-
-    return 5  # Default wait time if no valid header is found
 
 
 class Pagination(NamedTuple):
@@ -482,7 +422,6 @@ class Client(BaseClient):
             "api/v2/policy/urllist/deploy",
         )
 
-    @retry_on_rate_limit(max_retries=10)
     def list_dlp_incident(self, timestamp: int) -> dict[str, Any]:
         """Fetch DLP incidents.
 
@@ -496,6 +435,9 @@ class Client(BaseClient):
             "GET",
             url_suffix="api/v2/events/dataexport/events/incident",
             params={"operation": timestamp},
+            retries=10,
+            status_list_to_retry=[409, 429],
+            backoff_factor=DEFAULT_WAIT_TIME,
         )
 
     def update_dlp_incident(
@@ -579,6 +521,8 @@ def list_alert_command(
         alert["alert_id"] = alert["_id"]
         alert["timestamp"] = timestamp_to_datestring(alert["timestamp"] * 1000)
 
+    output = update_keys(output)
+
     readable_output = tableToMarkdown(
         name="Alert List",
         metadata=pagination_message,
@@ -643,6 +587,8 @@ def list_event_command(
         event["event_id"] = event["_id"]
         event["timestamp"] = timestamp_to_datestring(event["timestamp"] * 1000)
 
+    output = update_keys(output)
+
     readable_output = tableToMarkdown(
         name="Event List",
         metadata=pagination_message,
@@ -656,7 +602,7 @@ def list_event_command(
         outputs_prefix="Netskope.Event",
         outputs_key_field="id",
         outputs=output,
-        raw_response=response,
+        raw_response=output,
     )
 
 
@@ -960,6 +906,7 @@ def list_dlp_incident_command(
             incidents += dlp_incidents
 
     incidents = remove_duplicates(incidents, "object_id")
+    incidents = update_keys(incidents)
 
     readable_output = tableToMarkdown(
         name="DLP Incident List:",
@@ -1242,6 +1189,23 @@ def get_remote_data_command(
 
 
 # HELPERS FUNCTIONS #
+
+
+def update_keys(data_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Updates keys in a list of dictionaries by removing the leading underscore ('_')
+    from any key that starts with it.
+
+    Args:
+        data_list (list[dict[str, Any]]): A list of dictionaries to be updated.
+
+    Returns:
+        list[dict[str, Any]]: A new list of dictionaries with updated keys.
+    """
+    return [{
+        key.lstrip('_'): value
+        for key, value in item.items()
+    } for item in data_list]
 
 
 def get_hourly_timestamps(start_time: int, end_time: int) -> list[int]:
