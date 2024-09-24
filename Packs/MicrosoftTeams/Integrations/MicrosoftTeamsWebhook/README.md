@@ -42,6 +42,7 @@ There is no context output for this command.
 ## Troubleshooting
 By default the message is being sent with a message template: `X Used a Workflow template to send this card`.
 In order to eliminate this line you can follow the following approach:
+
 - Navigate to Microsoft’s Power Automate portal and sign into your Microsoft Teams account where you’ve previously [set up](https://make.powerautomate.com/) the Flow.
 - Click on “My flows” from the left side menu.
 - Click on the newly created Flow to open its details page.

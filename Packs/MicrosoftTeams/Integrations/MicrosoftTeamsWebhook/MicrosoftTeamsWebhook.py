@@ -29,8 +29,6 @@ class Client(BaseClient):
             adaptive_cards_format (bool): Should the adaptive card url format be used?
         """
 
-        demisto.debug(f"{self.base_url=}")
-        demisto.debug(f"{messagecard=}")
         if adaptive_cards_format or self.is_workflow:
             res = self._http_request(
                 method='POST',
@@ -46,7 +44,6 @@ class Client(BaseClient):
                 raise_on_status=True,
                 resp_type='text',
             )
-        demisto.debug(f"{res=}")
         demisto.info(f'completed post of message. response text: {res}')
 
 
@@ -66,7 +63,7 @@ def create_teams_message(message: str, title: str, serverurls: str, adaptive_car
     """
     messagecard: dict = {}
     if adaptive_cards_format:
-        messagecard = messagecard = {
+        messagecard = {
             "type": "message",
             "attachments": [
                 {
@@ -157,7 +154,6 @@ def test_module(client: Client, serverurls: str) -> str:
         message = "Successful test message from Cortex XSOAR"
         title = "Cortex XSOAR Notification"
         test_message = create_teams_message(message, title, serverurls, is_workflow=client.is_workflow)
-        demisto.debug(f"{test_message=}")
         client.send_teams_message(test_message)
         return 'ok'
     except DemistoException as e:
@@ -211,7 +207,6 @@ def main() -> None:    # pragma: no cover
         serverurls = args.get('alternative_url')
     else:
         serverurls = serverurls.get("investigation", serverurls["server"])
-    demisto.debug(f"{serverurls=}")
 
     command = demisto.command()
     try:
