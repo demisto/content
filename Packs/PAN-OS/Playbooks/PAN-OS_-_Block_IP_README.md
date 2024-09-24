@@ -18,7 +18,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* Panorama
+Panorama
 
 ### Scripts
 
