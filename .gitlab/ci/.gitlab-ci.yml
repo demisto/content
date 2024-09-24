@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: pre-post-instance-testing
+  CURRENT_BRANCH_NAME: cont-stat-failed-packs
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: pre-post-instance-testing
+    ref: cont-stat-failed-packs
     project: "${CI_PROJECT_NAMESPACE}/infra"
