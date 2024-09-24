@@ -182,7 +182,7 @@ tasks:
         This task will define the action which will be done on the enumerating IPs. Note that chosen actions will be automatically committed.
         1. Do nothing - the playbook will continue without blocking the enumerating IP.
         2. Add IP to static group - Choosing this option also requires you to choose the relevant address group in the 3rd question. The playbook will add the internal IP to the chosen address group. Make sure to choose an address group that is configured in a relevant policy rule.
-        3. Tag the IP - Choosing this also requires to choose the relevant tag in the 3rd question. The playbook will create the IP address object (in case it doesn't exist) and will tag it with the chosen tag. Please make sure to choose a tag which is configured in a relevant dynamic address group or any other method which depends on the relevant tag.
+        3. Tag the IP - Choosing this option also requires you to choose the relevant tag in the 3rd question. The playbook will create the IP address object (in case it doesn't exist) and will tag it with the chosen tag. Please make sure to choose a tag which is configured in a relevant dynamic address group or any other method that depends on the relevant tag.
       sender: Your SOC team
       expired: false
       totalanswers: 0
