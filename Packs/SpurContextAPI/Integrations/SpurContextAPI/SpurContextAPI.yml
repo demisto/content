@@ -95,7 +95,6 @@ script:
     - name: ip
       required: true
       description: IP address to enrich.
-
     outputs:
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -112,7 +111,6 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-
     - contextPath: IP.Address
       description: IP address.
       type: string
@@ -137,7 +135,6 @@ script:
     - contextPath: IP.Tunnels
       description: The different types of proxy or VPN services that are running on this IP address.
       type: array
-
     - contextPath: SpurContextAPI.Context.ip
       type: string
       description: IP that was enriched.

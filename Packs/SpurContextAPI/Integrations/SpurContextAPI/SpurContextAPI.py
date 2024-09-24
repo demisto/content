@@ -221,7 +221,7 @@ def main() -> None:
         )
 
         match demisto.command():
-            case 'test-module':
+            case "test-module":
                 result = test_module(client)
             case "ip":
                 result = ip_command(client, demisto.args())
