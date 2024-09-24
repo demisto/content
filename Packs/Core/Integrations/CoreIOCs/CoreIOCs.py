@@ -7,7 +7,7 @@ from datetime import timezone
 from dateparser import parse
 from urllib3 import disable_warnings
 from math import ceil
-from google.cloud import storage
+from google.cloud import storage  # type: ignore[attr-defined]
 from CoreIRApiModule import *
 
 disable_warnings()
