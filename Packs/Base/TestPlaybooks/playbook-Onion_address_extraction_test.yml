@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3c95b3f3-a345-496d-8504-2a1e56e5736b
+    taskid: a34e3850-dc7f-4a05-82a9-202a90cbc200
     type: regular
     task:
-      id: 3c95b3f3-a345-496d-8504-2a1e56e5736b
+      id: a34e3850-dc7f-4a05-82a9-202a90cbc200
       version: -1
       name: 'Set Valid Onion Addresses '
       description: Set a value in context under the key you entered.
@@ -58,7 +58,7 @@ tasks:
       key:
         simple: valid_addresses
       value:
-        simple: '"abcdefghijklmnop.onio", "pqrstuvwx2yzabcdefghijklmnopqrstufffwx2yzabcde2jklmnopqw.onion"'
+        simple: '"abcdefghijklmnop.onion", "pqrstuvwx2yzabcdefghijklmnopqrstufffwx2yzabcde2jklmnopqw.onion"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
