@@ -1148,7 +1148,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             try:
                                 formatted_message = attached_email.as_string()
                             except UnicodeEncodeError:
-                                formatted_message = attached_email.as_bytes()
+                                formatted_message = attached_email.as_bytes()  # type: ignore[assignment]
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
                                                                          is_inline=attachment.is_inline) + ".eml",
