@@ -132,10 +132,10 @@ script:
       description: The organization name.
       type: string
     - contextPath: IP.Risks
-      description: Risky associated with the IP
+      description: Risks that we have determined based on our collection of data.
       type: array
     - contextPath: IP.Tunnels
-      description: The organization name.
+      description: The different types of proxy or VPN services that are running on this IP address.
       type: array
 
     - contextPath: SpurContextAPI.Context.ip
