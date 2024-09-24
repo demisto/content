@@ -5809,6 +5809,10 @@
             "integrations": "XQL Query Engine",
             "playbookID": "XQL Query Engine - Test",
             "timeout": 500
+        },
+        {
+            "integrations": "IBM Resilient Systems",
+            "playbookID": "IBM Resilient Systems Test"
         }
     ],
     "skipped_tests": {
@@ -6136,6 +6140,15 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated."
     },
+    "native_nightly_packs":[
+        "Palo_Alto_Networks_WildFire",
+        "ipinfo",
+        "Slack",
+        "CortexXDR",
+        "MailSenderNew",
+        "CommonScripts",
+        "FiltersAndTransformers"
+    ],
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
