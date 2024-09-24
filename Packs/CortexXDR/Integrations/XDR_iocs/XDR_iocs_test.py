@@ -644,16 +644,6 @@ class TestCommands:
         get_sync_file(zip=zip_value)
         assert return_results_mock.call_args[0][0]['File'] == expected_file_name
 
-    @pytest.mark.xfail(reason="Until API issue is fixed (XSUP-33235)")
-    @freeze_time('2020-06-03T02:00:00Z')
-    def test_iocs_to_keep(self, mocker):
-        http_request = mocker.patch.object(Client, 'http_request')
-        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, 'txt')
-        mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
-        mocker.patch('XDR_iocs.return_outputs')
-        iocs_to_keep(client)
-        assert http_request.call_args.args[0] == 'iocs_to_keep', 'iocs_to_keep command url changed'
-
     def test_tim_insert_jsons(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
         http_request.return_value = {'reply': {'success': True}}
@@ -742,9 +732,7 @@ def test_file_deleted_for_create_file_sync(mocker):
 
 
 data_test_test_file_deleted = [
-    (sync, 'create_file_sync'),
-    pytest.param(iocs_to_keep, 'create_file_iocs_to_keep', marks=pytest.mark.xfail(
-        reason="Until API issue is fixed (XSUP-33235)"))
+    (sync, 'create_file_sync')
 ]
 
 
@@ -1007,43 +995,6 @@ def test_create_validation_errors_response(validation_errors, expected_str):
     assert expected_str in create_validation_errors_response(validation_errors)
 
 
-@pytest.mark.parametrize('current_time,next_iocs_to_keep_time,should_run_iocs_to_keep', [
-    ('2020-01-01T02:00:00Z', '2020-01-01T01:00:00Z', True),
-    ('2020-01-01T01:05:00Z', '2020-01-01T02:00:00Z', False),
-    ('2020-01-01T04:00:00Z', '2020-01-01T01:00:00Z', False),
-    ('2020-01-02T02:00:00Z', '2020-01-01T01:00:00Z', True),
-    ('2020-01-02T04:00:00Z', '2020-01-01T01:00:00Z', False),
-])
-def test_is_iocs_to_keep_time(current_time, next_iocs_to_keep_time, should_run_iocs_to_keep, mocker):
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"next_iocs_to_keep_time": next_iocs_to_keep_time})
-    with freeze_time(current_time):
-        assert is_iocs_to_keep_time() == should_run_iocs_to_keep
-
-
-def test_is_iocs_to_keep_time_without_integration_context(mocker):
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=[{"next_iocs_to_keep_time": None},
-                                                                       {"next_iocs_to_keep_time": None},
-                                                                       {"next_iocs_to_keep_time": '2020-01-02T01:05:00Z'}])
-    with freeze_time('2020-01-02T04:00:00Z'):
-        assert not is_iocs_to_keep_time()
-
-
-@pytest.mark.parametrize('random_int,expected_next_time', [
-    (0, '2023-11-16T01:00:00Z'),
-    (40, '2023-11-16T01:40:00Z'),
-    (60, '2023-11-16T02:00:00Z'),
-    (100, '2023-11-16T02:40:00Z'),
-    (115, '2023-11-16T02:55:00Z'),
-])
-@freeze_time('2023-11-15T18:00:00')
-def test_set_new_iocs_to_keep_time(random_int, expected_next_time, mocker):
-    mocker.patch('XDR_iocs.secrets.randbelow', return_value=random_int)
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
-    set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
-    set_new_iocs_to_keep_time()
-    set_integration_context_mock.assert_called_once_with({'next_iocs_to_keep_time': expected_next_time})
-
-
 def test_parse_demisto_comments_url_xsoar_6_default(mocker):
     """
     Given:
@@ -1102,7 +1053,7 @@ def test_parse_demisto_list_of_comments_default(mocker):
     ) == [f'url/#/indicator/{inc_id}, {comment_value}']
 
 
-@patch('XDR_iocs.demisto.params', return_value={'feed': True, 'feedFetchInterval': '15'})
+@patch('XDR_iocs.demisto.params', return_value={'feed': True, 'feedFetchInterval': '14'})
 def test_module_fail_with_fetch_interval(mocker):
     """
     Given   The demisto.params() returns parameters with feed set to True and feedFetchInterval set to '15'.
@@ -1112,7 +1063,7 @@ def test_module_fail_with_fetch_interval(mocker):
     from XDR_iocs import module_test
     with pytest.raises(DemistoException) as e:
         module_test(client)
-    assert e.value.message == "'Feed Fetch Interval' parameter should be 20 or larger."
+    assert e.value.message == "'Feed Fetch Interval' parameter should be 15 or larger."
 
 
 ioc_example = {
@@ -1137,8 +1088,8 @@ ioc_example = {
 @patch('XDR_iocs.get_iocs_generator', return_value=[ioc_example])
 @patch('XDR_iocs.Client.http_request', return_value={'reply': {'success': True}})
 @patch('XDR_iocs.set_integration_context', return_value={})
-@patch('XDR_iocs.update_integration_context', return_value={})
-def test_xdr_iocs_sync_command_sync_for_fetch(mock_update_integration_context,
+@patch('XDR_iocs.update_integration_context_override', return_value={})
+def test_xdr_iocs_sync_command_sync_for_fetch(mock_update_integration_context_override,
                                               mock_set_integration_context,
                                               mock_http_request,
                                               mock_get_iocs_generator,
@@ -1149,7 +1100,7 @@ def test_xdr_iocs_sync_command_sync_for_fetch(mock_update_integration_context,
     Then   the update_integration_context function should be called with update_is_first_sync_phase='false'
     """
     xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
-    mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
+    mock_update_integration_context_override.assert_called_with(update_is_first_sync_phase='false')
 
 
 @patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z'})
@@ -1179,11 +1130,11 @@ def test_xdr_iocs_sync_command_sync_for_fetch_fails(mock_update_integration_cont
     {'indicator': '123', 'error': 'error1'},
     {'indicator': '456', 'error': 'error2'}]}})
 @patch('XDR_iocs.set_integration_context', return_value={})
-@patch('XDR_iocs.update_integration_context', return_value={})
+@patch('XDR_iocs.update_integration_context_override', return_value={})
 @patch('XDR_iocs.demisto.debug')
 def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
         mock_demisto_debug,
-        mock_update_integration_context,
+        mock_update_integration_context_override,
         mock_set_integration_context,
         mock_http_request,
         mock_get_iocs_generator,
@@ -1195,7 +1146,7 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
         and a debug message should be logged indicating the validation errors.
     """
     xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
-    mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
+    mock_update_integration_context_override.assert_called_with(update_is_first_sync_phase='false')
     debug_calls = [call.args[0] for call in mock_demisto_debug.call_args_list]
     expected_debug_message = ('pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: error1.456:'
                               ' error2.')
@@ -1215,9 +1166,9 @@ def test_update_integration_context(mock_set_integration_context, mock_get_integ
     Then  The integration context is being changed
     """
     fixed_datetime = datetime(2024, 9, 10, 12, 0, 0, tzinfo=timezone.utc)
-    update_integration_context(update_sync_time_with_datetime=fixed_datetime,
-                               update_is_first_sync_phase='false',
-                               update_search_after_array=['765', '000'])
+    update_integration_context_override(update_sync_time_with_datetime=fixed_datetime,
+                                        update_is_first_sync_phase='false',
+                                        update_search_after_array=['765', '000'])
     mock_set_integration_context.assert_called_with({'time': '2024-09-10T12:00:00Z',
                                                      'ts': 1725969600000,
                                                      'is_first_sync_phase': False,
