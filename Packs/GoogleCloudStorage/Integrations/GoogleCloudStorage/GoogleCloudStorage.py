@@ -445,9 +445,9 @@ def gcs_delete_bucket_policy(client, default_bucket, args):
     })
 
 
-def set_public_access_prevention(client, default_bucket, args):
+def gcs_block_public_access_bucket(client, default_bucket, args):
         bucket_name = get_bucket_name(args, default_bucket)
-        public_access_prevention = args.get('public_access_prevention_status', 'enforced')
+        public_access_prevention = args.get('public_access_prevention', 'enforced')
 
         if public_access_prevention not in ['enforced', 'inherited']:
             raise ValueError('Invalid value for public_access_prevention. Accepted values are "enforced" and "inherited".')
@@ -613,8 +613,8 @@ def main():
         elif command == 'gcs-delete-bucket-policy':
             gcs_delete_bucket_policy(client, default_bucket, args)
         
-        elif command == 'gcs-set-public-access-prevention':
-            set_public_access_prevention(client, default_bucket, args)
+        elif command == 'gcs-block-public-access-bucket':
+            gcs_block_public_access_bucket(client, default_bucket, args)
 
         #
         # Object policy (ACL)
