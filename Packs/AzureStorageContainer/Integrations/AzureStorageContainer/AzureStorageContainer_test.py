@@ -1,13 +1,12 @@
 import pytest
 import defusedxml.ElementTree as defused_ET
 
-from CommonServerPython import *
 
 ACCOUNT_NAME = "test"
 BASE_URL = f'https://{ACCOUNT_NAME}.blob.core.windows.net/'
 SAS_TOKEN = "XXXX"
 API_VERSION = "2020-10-02"
-
+SHARED_KEY = "XXXX"
 
 def load_mock_response(file_name: str, file_type: str = "json"):
     """
@@ -282,6 +281,30 @@ def test_azure_storage_get_blob_tags_command(requests_mock):
     assert result.outputs.get('Blob').get('Tag')[0].get('Key') == 'Name'
     assert result.outputs.get('Blob').get('Tag')[0].get('Value') == 'Azure'
 
+def test_block_public_accesss(requests_mock):
+    from AzureStorageContainer import Client, block_public_access_command
+
+    container_name = "test"
+    url = f'{BASE_URL}{container_name}?restype=container&comp=acl'
+    request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+    requests_mock.put(url, text="")
+    authorization_header = f"SharedKey {ACCOUNT_NAME}:{SHARED_KEY}"
+    headers = {
+            "x-ms-date": request_date,
+            "Authorization": authorization_header,
+            'x-ms-version': API_VERSION,
+        }
+    client = Client(server_url=BASE_URL, verify=False, proxy=False,
+                    account_sas_token=SAS_TOKEN,
+                    storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
+    result = block_public_access_command(client, {'request_url': url, 
+                                                  'headers': headers})
+
+    expected_response = f"Public access to container '{container_name}' has been successfully blocked"
+    assert result.outputs is None
+    assert result.outputs_prefix is None
+    assert result.readable_output == expected_response
 
 def test_azure_storage_set_blob_tags_command(requests_mock):
     """
@@ -436,8 +459,7 @@ def test_generate_sas_signature():
     from AzureStorageContainer import generate_sas_signature
     assert generate_sas_signature('test', 'test', 'test', 'test', 'test', 'test', 'test',
                                   'test', ) == 'sp=test&st=test&se=test&sip=test&spr=https&sv=test&sr=test&sig=pyUQ25%2BIijJ2TstI5Q6Sre3jJWI0b4qwvRg2LtD9uhc%3D'  # noqa
-
-
+    
 def test_check_valid_permission():
     from AzureStorageContainer import check_valid_permission
     assert check_valid_permission('cr', 'c')

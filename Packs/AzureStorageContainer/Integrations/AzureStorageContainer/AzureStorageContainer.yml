@@ -31,6 +31,10 @@ configuration:
   name: key
   type: 0
   required: false
+- display: Shared Key
+  name: shared_key
+  type: 4
+  required: false
 description: Create and Manage Azure Storage Container services.
 display: Azure Storage Container
 name: Azure Storage Container
@@ -287,6 +291,12 @@ script:
       name: lease_id
     description: Set Blob properties.
     name: azure-storage-container-blob-property-set
+  - arguments:
+    - description: Name of a container.
+      name: container_name
+      required: true
+    description: Block public access to a container.
+    name: azure-storage-container-block-public-access
   - arguments:
     - description: Name of a container.
       name: container_name
