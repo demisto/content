@@ -34,8 +34,8 @@ The content pack includes:
 <~XSIAM>
 This app allows Veeam Data Platform Advanced and Premium users to monitor various security activities in their Veeam backup infrastructure for:
 
-- Veeam Backup & Replication events
-- Alarms triggered by Veeam ONE
+- Veeam Backup & Replication events.
+- Alarms triggered by Veeam ONE.
 
 The app gets information from the event forwarding capabilities via syslog servers integrated with Veeam Backup & Replication and Veeam ONE, parses the data and displays it on the Veeam Data Platform Monitoring dashboard. For events and alarms with Medium, High and Critical severity, the app generates alerts and displays them on the Veeam Security Activities dashboard.
 
