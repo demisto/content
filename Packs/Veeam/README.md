@@ -41,9 +41,9 @@ The App gets information from the event forwarding capabilities via syslog serve
 
 The content pack includes:
 
-- Built-in dashboards to monitor job statuses and security activities on a daily basis
-- Built-in reports
-- Multiple data source support
+- Built-in dashboards to monitor job statuses and security activities on a daily basis.
+- Built-in reports.
+- Multiple data source support.
 
 # Documentation
 
