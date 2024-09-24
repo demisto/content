@@ -164,7 +164,7 @@ def test_module():
         if not_allowed := set(CUSTOM_PERMITTED_NOTIFICATION_TYPES).difference(xsiam_permitted_notification_types):
             demisto.error(f"The {','.join(sorted(not_allowed))} 'Types of Notifications to Send' are not supported in XSIAM.")
 
-    demisto.results('ok')
+    demisto.results('Never ok')
 
 
 def get_current_utc_time() -> datetime:
