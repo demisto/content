@@ -385,14 +385,6 @@ def get_indicators_command(client: Client,
     )
 
 
-def reset_last_run():
-    """
-    Reset the last run from the integration context
-    """
-    demisto.setIntegrationContext({})
-    return CommandResults(readable_output='Fetch history deleted successfully')
-
-
 def main():
     """
     Main function, parses params and runs command functions

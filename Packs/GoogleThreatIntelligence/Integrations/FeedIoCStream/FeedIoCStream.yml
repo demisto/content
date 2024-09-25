@@ -108,8 +108,6 @@ script:
       name: filter
     description: Gets the indicators from Google Threat Intelligence IoC Stream.
     name: gti-iocstream-get-indicators
-  - description: This command will reset your fetch history.
-    name: gti-iocstream-reset-fetch-indicators
   dockerimage: demisto/python3:3.11.10.111526
   feed: true
   runonce: false
