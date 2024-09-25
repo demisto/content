@@ -319,7 +319,6 @@ repos:
     - --ignore-entropy
     pass_filenames: false
     language: system
-    skip:ci: true
     skip:nightly: true
 
   - id: merge-pytest-reports
