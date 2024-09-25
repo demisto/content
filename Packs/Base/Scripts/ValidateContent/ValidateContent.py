@@ -178,13 +178,13 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         os.makedirs(tests_dir)
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
-    v_manager = ValidateManager(
+    old_validate_manager = ValidateManager(
         is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
-        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
-        validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
+        print_ignored_files=True, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
+        validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=True,
         silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
         staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
-    v_manager.run_validation()
+    old_validate_manager.run_validation()
 
 
 def run_lint(file_path: str, json_output_file: str) -> None:
@@ -283,6 +283,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
             all_outputs = []
             with open(json_output_path, 'r') as json_outputs:
                 outputs_as_json = json.load(json_outputs)
+                demisto.debug(f'validate_content {outputs_as_json=}')
                 if outputs_as_json:
                     if type(outputs_as_json) == list:
                         all_outputs.extend(outputs_as_json)
@@ -431,12 +432,16 @@ def main():
         result = validate_content(filename, file_contents, content_tmp_dir.name)
         outputs = []
         for validation in result:
+            demisto.debug(f'main validation tested: {json.dumps(validation, indent=4)}')
             if validation.get('ui') or validation.get('fileType') in {'py', 'ps1', 'yml'}:
                 outputs.append({
                     'Name': validation.get('name'),
                     'Error': validation.get('message'),
                     'Line': validation.get('row'),
                 })
+                demisto.debug(f'main validation output added: {json.dumps(outputs[-1], indent=4)}')
+
+        demisto.debug(f'main {outputs=}')
         return_results(CommandResults(
             readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Line']),
             outputs_prefix='ValidationResult',

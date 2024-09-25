@@ -3,11 +3,11 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Teams via Webhook
+  id: Microsoft Teams via Webhook TEST-VALIDATE-CONTENT
   version: -1
 configuration:
 - additionalinfo: The webhook URL in the Teams channel.
-  display: Microsoft Webhook URL
+  display: Microsoft Webhook URL TEST-VALIDATE-CONTENT
   name: webhookurl
   required: true
   type: 0
