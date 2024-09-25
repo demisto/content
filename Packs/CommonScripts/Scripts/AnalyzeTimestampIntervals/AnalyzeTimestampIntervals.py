@@ -13,6 +13,7 @@ def calculate_interval_differences(timestamps):
     demisto.debug(f"Calculated intervals: {intervals}")
     return intervals
 
+
 def check_high_frequency(timestamps, max_intervals_per_window, time_window=60):
     """ Check if there is a high number of intervals within a short time window (in seconds). """
     timestamps.sort()
@@ -31,12 +32,14 @@ def check_high_frequency(timestamps, max_intervals_per_window, time_window=60):
 
     return count_exceeds_threshold
 
+
 def calculate_statistics(intervals):
     mean_interval = sum(intervals) / len(intervals)
     median_interval = statistics.median(intervals)
     std_deviation = statistics.stdev(intervals) if len(intervals) > 1 else 0
 
     return mean_interval, median_interval, std_deviation
+
 
 def analyze_intervals(timestamps, verbose, max_intervals_per_window=30, interval_consistency_threshold=0.15):
     intervals = calculate_interval_differences(timestamps)
@@ -73,6 +76,7 @@ def analyze_intervals(timestamps, verbose, max_intervals_per_window=30, interval
 
     return result
 
+
 def create_human_readable(result, verbose):
     headers = [
         "TimestampCount",
@@ -91,6 +95,7 @@ def create_human_readable(result, verbose):
         headers=headers,
         headerTransform=pascalToSpace,
     )
+
 
 def main():  # pragma: no cover
     try:
@@ -123,6 +128,7 @@ def main():  # pragma: no cover
 
     except Exception as e:
         return_error(f"An error occurred: {str(e)}")
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

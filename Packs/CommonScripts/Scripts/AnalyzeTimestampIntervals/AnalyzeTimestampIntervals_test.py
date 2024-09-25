@@ -16,7 +16,7 @@ random_intervals = [3000 + random.randint(-1500, 1500) for _ in range(90)]
 inconsistent_timestamps = [
     1609459200000, 1609459205000, 1609459210000, 1609459215000, 1609459220000,
     1609459227000, 1609459234000, 1609459241000, 1609459248000, 1609459255000
-] + [1609459255000 + sum(random_intervals[:i+1]) for i in range(90)]
+] + [1609459255000 + sum(random_intervals[:i + 1]) for i in range(90)]
 
 
 def test_consistent_intervals():
