@@ -120,9 +120,9 @@ def _add_gti_attributes(indicator_obj: dict, attributes: dict):
     # Attribution
     attribution = attributes.get('attribution', {})
     malware_families = [x['family'] for x in attribution.get('malware_families', [])]
-    malware_families = list(set(malware_families)) or None
+    malware_families = list(set(malware_families))
     threat_actors = attribution.get('threat_actors', [])
-    threat_actors = list(set(threat_actors)) or None
+    threat_actors = list(set(threat_actors))
 
     indicator_obj['fields'].update({
         'gtithreatscore': gti_threat_score,
@@ -138,6 +138,25 @@ def _add_gti_attributes(indicator_obj: dict, attributes: dict):
         'gti_verdict': gti_verdict,
         'malware_families': malware_families,
         'threat_actors': threat_actors,
+        'relationships': [
+            EntityRelationship(
+                name=EntityRelationship.Relationships.PART_OF,
+                entity_a=indicator_obj['value'],
+                entity_a_type=indicator_obj['type'],
+                entity_b=malware_family.title(),
+                entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
+                reverse_name=EntityRelationship.Relationships.CONTAINS,
+            ).to_indicator() for malware_family in malware_families
+        ] + [
+            EntityRelationship(
+                name=EntityRelationship.Relationships.ATTRIBUTED_BY,
+                entity_a=indicator_obj['value'],
+                entity_a_type=indicator_obj['type'],
+                entity_b=threat_actor.title(),
+                entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                reverse_name=EntityRelationship.Relationships.ATTRIBUTED_TO,
+            ).to_indicator() for threat_actor in threat_actors
+        ],
     })
 
     return indicator_obj
