@@ -10,7 +10,6 @@ def buildWidget(totalDropped):
         "Type": 17,
         "ContentsFormat": "number",
         "Contents": {
-            # "stats": stats[0]["Contents"]["response"]["total"],
             "stats": totalDropped,
             "params": {
                 "timeFrame": "minutes",
@@ -27,7 +26,7 @@ def buildWidget(totalDropped):
 
 def createActionItem(totalDropped):
     actionItems = []
-    # if stats[0]["Contents"]["response"]["total"] > thresholds["NumberOfDroppedIncidents"]:
+
     if totalDropped > thresholds["NumberOfDroppedIncidents"]:
         actionItems.append(
             {
@@ -40,8 +39,7 @@ def createActionItem(totalDropped):
         CommandResults(
             readable_output="HealthCheckFileSysLog Done", outputs_prefix="HealthCheck.ActionableItems", outputs=actionItems
         )
-    # print(actionItems)
-    # return results
+    return actionItems
 
 
 def str_to_bool(s):
@@ -81,23 +79,7 @@ if demisto_version.startswith("6"):  # xsoar 6
         return_results(data)
     else:
         results = createActionItem(totalDropped)
-        # actionItems = []
-        # if stats[0]["Contents"]["response"]["total"] > thresholds["NumberOfDroppedIncidents"]:
-        #     actionItems.append(
-        #         {
-        #             "category": "Incidents Analysis",
-        #             "severity": "Low",
-        #             "description": "Too many dropped incidents",
-        #             "resolution": "Consider tuning the defined query to avoid fetching unneeded incidents",
-        #         }
-        #     )
-
-        #     results = CommandResults(
-        #         readable_output="HealthCheckFileSysLog Done", outputs_prefix="HealthCheck.ActionableItems", outputs=actionItems
-        #     )
-
         return_results(results)
-
         demisto.results(
             {
                 "Type": entryTypes["note"],
@@ -109,33 +91,6 @@ if demisto_version.startswith("6"):  # xsoar 6
             }
         )
 else:  # XSOAR V8
-    # actionItems = []
-    # if stats[0]["Contents"]["response"]["total"] > thresholds["NumberOfDroppedIncidents"]:
-    #     actionItems.append(
-    #         {
-    #             "category": "Incidents Analysis",
-    #             "severity": "Low",
-    #             "description": "Too many dropped incidents",
-    #             "resolution": "Consider tuning the defined query to avoid fetching unneeded incidents",
-    #         }
-    #     )
-
-    #     results = CommandResults(
-    #         readable_output="HealthCheckFileSysLog Done", outputs_prefix="HealthCheck.ActionableItems", outputs=actionItems
-    #     )
-
-    #     return_results(results)
-
-    # demisto.results(
-    #     {
-    #         "Type": entryTypes["note"],
-    #         "Contents": stats[0]["Contents"]["response"]["total"],
-    #         "ContentsFormat": formats["text"],
-    #         "HumanReadable": stats[0]["Contents"]["response"]["total"],
-    #         "ReadableContentsFormat": formats["text"],
-    #         "EntryContext": {"NumberOfDroppedIncidents": stats[0]["Contents"]["response"]["total"]},
-    #     }
-    # )
     uri = "/public_api/v1/audits/management_logs"
     page_num = 1
     size = 100
@@ -161,10 +116,3 @@ else:  # XSOAR V8
     else:
         results = createActionItem(totalDropped)
         return_results(results)
-
-
-# if isWidget is True:
-#     data = buildWidget(stats)
-#     return_results(data)
-# if is_error(res):
-#    raise DemistoException(f"error occurred when trying to retrieve the audit logs using {args=}, error: {res}")

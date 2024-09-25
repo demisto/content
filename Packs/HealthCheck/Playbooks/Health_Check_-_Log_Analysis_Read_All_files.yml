@@ -6,12 +6,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: ""
-  key: Health Check Thresholds
-  playbookInputQuery:
-  required: false
-  value:
-    simple: ${Health Check Thresholds}
+
 name: Health Check - Log Analysis Read All files
 outputs:
 - contextPath: HealthCheck.ActionableItems

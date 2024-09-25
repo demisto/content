@@ -1,4 +1,4 @@
-comment: Widget Script to present the number of large incidents
+comment: Widget Script to present the number of large incidents.
 commonfields:
   id: HealthCheckNumberOfLargeIncidents
   version: -1

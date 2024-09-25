@@ -3,12 +3,12 @@ args:
   name: Thresholds
 - auto: PREDEFINED
   defaultValue: 'False'
-  description: 'Append to existing data in grid field , Default: False'
+  description: 'Append to existing data in grid field , Default: False.'
   name: Append
   predefined:
   - 'True'
   - 'False'
-comment: Analyze large incidents
+comment: Analyze large incidents.
 commonfields:
   id: HealthCheckAnalyzeLargeInvestigations
   version: -1
