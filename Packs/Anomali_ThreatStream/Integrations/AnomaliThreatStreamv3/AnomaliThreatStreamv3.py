@@ -2537,7 +2537,7 @@ def get_indicators(client: Client, **kwargs):
         next_page = res.get('meta', {}).get('next', None)
         while len(iocs_context) < limit and next_page:
             next_page = next_page.replace('api/', '')
-            res = client.http_request("GET", next_page, without_credentials=True)
+            res = client.http_request("GET", next_page, without_credentials="api_key" in next_page)
             iocs_list = res.get('objects', None)
             next_page = res.get('meta', {}).get('next', None)
             if iocs_list:
