@@ -117,6 +117,32 @@ class AWSClient:
         demisto.debug(f'{kwargs=}')
         self.sts_endpoint_url = self.sts_endpoint_url or STS_ENDPOINTS.get(region) or STS_ENDPOINTS.get(self.aws_default_region)
 
+        sts_client = boto3.client(
+            service_name='sts',
+            region_name=region or self.aws_default_region,
+            aws_access_key_id=self.aws_access_key_id,
+            aws_secret_access_key=self.aws_secret_access_key,
+            verify=self.verify_certificate,
+            config=self.config,
+            endpoint_url=self.sts_endpoint_url
+        )
+        kwargs.update({
+            'RoleArn': role_arn or self.aws_role_arn,
+            'RoleSessionName': role_session_name or self.aws_role_session_name,
+        })
+        sts_response = sts_client.assume_role(**kwargs)
+        client = boto3.client(
+            service_name=service,
+            region_name=region or self.aws_default_region,
+            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+            aws_session_token=sts_response['Credentials']['SessionToken'],
+            verify=self.verify_certificate,
+            config=self.config,
+            endpoint_url=self.endpoint_url
+        )
+        return client
+
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
             sts_client = boto3.client(
                 service_name='sts',

@@ -9,8 +9,6 @@ from typing import Dict, Any
 
 from AWSApiModule import *  # noqa: E402
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import argToBoolean
-
 SERVICE = 'secretsmanager'
 
 # Disable insecure warnings
@@ -262,8 +260,8 @@ def main():  # pragma: no cover:
         aws_role_session_name = params.get('roleSessionName')
         aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
-        aws_access_key_id = params.get('credentials').get('identifier')
-        aws_secret_access_key = params.get('credentials').get('password')
+        aws_access_key_id = params.get('credentials', {}).get('identifier')
+        aws_secret_access_key = params.get('credentials', {}).get('password')
         aws_external_id = params.get('externalId')
         verify_certificate = not argToBoolean(params.get('insecure'))
         disable_sensitive_commands = argToBoolean(params.get('disable_sensitive_commands'))
