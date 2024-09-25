@@ -209,9 +209,10 @@ def info_log_for_fetch(last_modified_time: str | None,
                        indicator_value: str | None,
                        new_search_after: list[str] | None,
                        ioc_count: int = 1):
-    demisto.info(f"Fetched {ioc_count} indicators from xsoar. last modified that was synced "
-                 f"{last_modified_time}, with indicator {indicator_value}, "
-                 f"search_after {new_search_after}")
+    if new_search_after:
+        demisto.info(f"Fetched {ioc_count} indicators from xsoar. last modified that was synced "
+                    f"{last_modified_time}, with indicator {indicator_value}, "
+                    f"search_after {new_search_after}")
 
 
 def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.query})', stop_iteration=False) -> Iterable:
@@ -533,55 +534,60 @@ def push_iocs(client, iocs, path='tim_insert_jsons/'):
     return validation_errors
 
 
-def push_indicators_to_xdr_request(client, indicators, ):
+def push_indicators_to_xdr_request(client, indicators):
     path = 'tim_insert_jsons/'
     demisto.debug(f"pushing IOCs to XDR: pushing {len(indicators)} IOCs to the {path} endpoint")
     requests_kwargs: dict = get_requests_kwargs(_json=indicators, validate=True)
     response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     if response.get('reply', {}).get('success') is not True:
+        were_not_pushed = [indicator.get('indicator') for indicator in indicators]
+        demisto.debug(f"The following indicators were not pushed: {','.join(were_not_pushed)}")
         raise DemistoException(f"Response status was not success, {response=}")
     return response
 
 
 def tim_insert_jsons(client: Client):
-    # Retrieve iocs changes from xsoar and pushes to XDR
-    indicators = demisto.args().get('indicator', '')
-    validation_errors: list = []
-    # If tim_insert_jsons is called from xdr-iocs-push is called
-    if indicators:
-        demisto.info(f"pushing IOCs to XDR: querying with input {indicators}")
-        iocs = get_indicators(indicators)
-        if iocs:
-            validation_errors = push_iocs(client, iocs)
-        else:
-            demisto.info("pushing IOCs to XDR: found no matching IOCs")
-    # If tim_insert_jsons is called from fetch_indicators
-    else:
-        demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
-        current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-        while True:
-            last_run: dict = get_integration_context()
-            query = (create_query_with_end_time(to_date=current_run)
-                     if last_run.get('search_after')
-                     else create_last_iocs_query(from_date=last_run.get('time', current_run), to_date=current_run))
-            demisto.info(f"pushing IOCs to XDR: querying XSOAR's recently-modified IOCs with {query=}")
-            iocs = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=BATCH_SIZE,
-                                                                   stop_iteration=True,
-                                                                   query=query)))
+    try:
+        # Retrieve iocs changes from xsoar and pushes to XDR
+        indicators = demisto.args().get('indicator', '')
+        validation_errors: list = []
+        # If tim_insert_jsons is called from xdr-iocs-push is called
+        if indicators:
+            demisto.info(f"pushing IOCs to XDR: querying with input {indicators}")
+            iocs = get_indicators(indicators)
             if iocs:
-                response = push_indicators_to_xdr_request(client, iocs)
-                current_validation_errors = response.get('reply', {}).get('validation_errors', [])
-                validation_errors.extend(current_validation_errors)
-                demisto.debug(f"Validation errors of the current loop: {current_validation_errors}")
+                validation_errors = push_iocs(client, iocs)
             else:
-                demisto.debug("pushing IOCs to XDR: No more recently modified indicators to push.")
-                break
-        demisto.debug("pushing IOCs to XDR: completed.")
-    if validation_errors:
-        errors = create_validation_errors_response(validation_errors)
-        demisto.info('pushing IOCs to XDR:' + errors.replace('\n', '. '))
-        return_warning(errors)
-    return_outputs('pushing IOCs to XDR: complete.')
+                demisto.info("pushing IOCs to XDR: found no matching IOCs")
+        # If tim_insert_jsons is called from fetch_indicators
+        else:
+            demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
+            current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
+            while True:
+                last_run: dict = get_integration_context()
+                query = (create_query_with_end_time(to_date=current_run)
+                        if last_run.get('search_after')
+                        else create_last_iocs_query(from_date=last_run.get('time', current_run), to_date=current_run))
+                demisto.info(f"pushing IOCs to XDR: querying XSOAR's recently-modified IOCs with {query=}")
+                iocs = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=BATCH_SIZE,
+                                                                    stop_iteration=True,
+                                                                    query=query)))
+                if iocs:
+                    response = push_indicators_to_xdr_request(client, iocs)
+                    current_validation_errors = response.get('reply', {}).get('validation_errors', [])
+                    validation_errors.extend(current_validation_errors)
+                    demisto.debug(f"Validation errors of the current loop: {current_validation_errors}")
+                else:
+                    demisto.debug("pushing IOCs to XDR: No more recently modified indicators to push.")
+                    break
+            demisto.debug("pushing IOCs to XDR: completed.")
+        if validation_errors:
+            errors = create_validation_errors_response(validation_errors)
+            demisto.info('pushing IOCs to XDR:' + errors.replace('\n', '. '))
+            return_warning(errors)
+        return_outputs('pushing IOCs to XDR: complete.')
+    except DemistoException as e:
+        raise DemistoException(f"Can not push to xdr with error: {e}")
 
 
 def iocs_command(client: Client):
@@ -674,23 +680,26 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
 
 
 def get_changes(client: Client):
-    demisto.debug("pull XDR changes: starting")
-    last_run: dict = get_integration_context()
-    if not last_run:
-        raise DemistoException('XDR is not synced.')
-    path, requests_kwargs = prepare_get_changes(last_run['ts'])
-    requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
-    demisto.debug(f'pull XDR changes: calling endpoint {path}, {requests_kwargs=}')
-    if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
-        last_run['ts'] = iocs[-1].get('RULE_MODIFY_TIME', last_run['ts']) + 1
-        set_integration_context(last_run)
-        demisto.info(f'pull XDR changes: setting {last_run} to integration context ')
-        demisto.info(f"pull XDR changes: converting {len(iocs)} XDR IOCs to xsoar format, then creating indicators")
-        demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
-        demisto.createIndicators(demisto_indicators)
-        demisto.debug("pull XDR changes: done")
-    else:
-        demisto.info("pull XDR changes:Got 0 IOCs from XDR")
+    try:
+        demisto.debug("pull XDR changes: starting")
+        last_run: dict = get_integration_context()
+        if not last_run:
+            raise DemistoException('XDR is not synced.')
+        path, requests_kwargs = prepare_get_changes(last_run['ts'])
+        requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
+        demisto.debug(f'pull XDR changes: calling endpoint {path}, {requests_kwargs=}')
+        if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
+            last_run['ts'] = iocs[-1].get('RULE_MODIFY_TIME', last_run['ts']) + 1
+            set_integration_context(last_run)
+            demisto.info(f'pull XDR changes: setting {last_run} to integration context ')
+            demisto.info(f"pull XDR changes: converting {len(iocs)} XDR IOCs to xsoar format, then creating indicators")
+            demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
+            demisto.createIndicators(demisto_indicators)
+            demisto.debug("pull XDR changes: done")
+        else:
+            demisto.info("pull XDR changes:Got 0 IOCs from XDR")
+    except DemistoException as e:
+        raise DemistoException(f"Can not get changes from xdr with error {e}")
 
 
 def module_test(client: Client):
