@@ -211,8 +211,8 @@ def info_log_for_fetch(last_modified_time: str | None,
                        ioc_count: int = 1):
     if new_search_after:
         demisto.info(f"Fetched {ioc_count} indicators from xsoar. last modified that was synced "
-                    f"{last_modified_time}, with indicator {indicator_value}, "
-                    f"search_after {new_search_after}")
+                     f"{last_modified_time}, with indicator {indicator_value}, "
+                     f"search_after {new_search_after}")
 
 
 def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.query})', stop_iteration=False) -> Iterable:
@@ -566,12 +566,12 @@ def tim_insert_jsons(client: Client):
             while True:
                 last_run: dict = get_integration_context()
                 query = (create_query_with_end_time(to_date=current_run)
-                        if last_run.get('search_after')
-                        else create_last_iocs_query(from_date=last_run.get('time', current_run), to_date=current_run))
+                         if last_run.get('search_after')
+                         else create_last_iocs_query(from_date=last_run.get('time', current_run), to_date=current_run))
                 demisto.info(f"pushing IOCs to XDR: querying XSOAR's recently-modified IOCs with {query=}")
                 iocs = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=BATCH_SIZE,
-                                                                    stop_iteration=True,
-                                                                    query=query)))
+                                                                       stop_iteration=True,
+                                                                       query=query)))
                 if iocs:
                     response = push_indicators_to_xdr_request(client, iocs)
                     current_validation_errors = response.get('reply', {}).get('validation_errors', [])
