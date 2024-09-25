@@ -53,7 +53,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import pytest
-from SpurContextAPI import Client, SpurIP, enrich_command, ip_command, test_module, main
+from SpurContextAPI import Client, SpurIP, enrich_command, ip_command, test_module, main, Common, DBotScoreType
 
 # Sample API response for testing
 MOCK_HTTP_RESPONSE = {
@@ -121,6 +121,44 @@ def test_ip_command(client):
 def test_test_module(client):
     result = test_module(client)
     assert result == 'ok'
+
+def test_spur_ip_to_context():
+    ip = '1.1.1.1'
+    asn = 'AS12345'
+    as_owner = 'Test AS'
+    client_types = ['MOBILE', 'DESKTOP']
+    risks = ['WEB_SCRAPING', 'TUNNEL']
+    tunnels = {
+        'type': 'VPN',
+        'operator': 'NORD_VPN',
+        'anonymous': True,
+        'entries': ['1.1.1.1'],
+        'exits': ['1.1.1.1']
+    }
+    ip_indicator = SpurIP(
+        ip=ip,
+        asn=asn,
+        as_owner=as_owner,
+        client_types=client_types,
+        dbot_score=Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name="SpurContextAPI",
+            score=Common.DBotScore.NONE,
+        ),
+        risks=risks,
+        tunnels=tunnels
+    )
+
+    context = ip_indicator.to_context()
+    context_path = context[Common.IP.CONTEXT_PATH]
+
+    assert context_path['Address'] == ip
+    assert context_path['ASN'] == asn
+    assert context_path['ASOwner'] == as_owner
+    assert context_path['Risks'] == risks
+    assert context_path['ClientTypes'] == client_types
+    assert context_path['Tunnels'] == tunnels
 
 
 def test_main_enrich_command(mocker):
