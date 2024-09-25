@@ -2674,7 +2674,8 @@ class TestJiraIssueGetForms:
     @pytest.mark.parametrize(
         'issue_id',
         [
-            ("TES-2")
+            ("TES-2"),
+            ("")
         ]
     )
     def test_issue_get_forms_command(self, mocker, issue_id):
@@ -2700,28 +2701,33 @@ class TestJiraIssueGetForms:
         expected_command_results_context = util_load_json(parsed_result_path)
         mock_request = mocker.patch.object(client, 'issue_get_forms', return_value=issue_get_forms_response)
 
-        command_results = issue_get_forms_command(client=client, args=args)
-        for command_result in command_results:
-            assert expected_command_results_context == command_result.to_context()
-        mock_request.assert_called_with(issue_id=issue_id)
+        if issue_id:
+            command_results = issue_get_forms_command(client=client, args=args)
+            for command_result in command_results:
+                assert expected_command_results_context == command_result.to_context()
+            mock_request.assert_called_with(issue_id=issue_id)
+        else:
+            with pytest.raises(ValueError):
+                issue_get_forms_command(client=client, args=args)
 
 
 class TestJiraGetUserInfo:
     @pytest.mark.parametrize(
-        'key, username, accountId, raw_response_path, parsed_result_path',
+        'key, username, account_id, raw_response_path, parsed_result_path',
         [
             ("JIRAUSER10000", None, None, "test_data/get_user_info_test/onprem_raw_response.json",
              "test_data/get_user_info_test/onprem_parsed_result.json"),
             (None, "firstlast", None, "test_data/get_user_info_test/onprem_raw_response.json",
              "test_data/get_user_info_test/onprem_parsed_result.json"),
             (None, None, "user@example.com", "test_data/get_user_info_test/cloud_raw_response.json",
-             "test_data/get_user_info_test/cloud_parsed_result.json")
+             "test_data/get_user_info_test/cloud_parsed_result.json"),
+            (None, None, None, None, None)
         ]
     )
-    def test_get_user_info_command(self, mocker, key, username, accountId, raw_response_path, parsed_result_path):
+    def test_get_user_info_command(self, mocker, key, username, account_id, raw_response_path, parsed_result_path):
         """
         Given:
-            - key, username or accountId for cloud/server jira
+            - key, username or account_id for cloud/server jira
         When
             - Running the get_user_info_command
         Then
@@ -2732,23 +2738,29 @@ class TestJiraGetUserInfo:
         args = {
             'key': key,                 # For Jira OnPrem
             'username': username,       # For Jira OnPrem
-            'accountId': accountId,     # For Jira Cloud
+            'account_id': account_id,     # For Jira Cloud
         }
         client: JiraBaseClient = jira_base_client_mock()
-        if accountId:
+        if account_id:
             client = jira_cloud_client_mock()
-            identifier = f"accountId={accountId}"
-        else:
+            identifier = f"accountId={account_id}"
+        elif key or username:
             client = jira_onprem_client_mock()
             if key:
                 identifier = f"key={key}"
             else:
                 identifier = f"username={username}"
+        else:
+            identifier = ""
 
-        get_user_info_response = util_load_json(raw_response_path)
-        expected_command_results_context = util_load_json(parsed_result_path)
-        mock_request = mocker.patch.object(client, 'get_user_info', return_value=get_user_info_response)
+        if identifier:
+            get_user_info_response = util_load_json(raw_response_path)
+            expected_command_results_context = util_load_json(parsed_result_path)
+            mock_request = mocker.patch.object(client, 'get_user_info', return_value=get_user_info_response)
 
-        command_results = get_user_info_command(client=client, args=args)
-        assert expected_command_results_context == command_results.to_context()
-        mock_request.assert_called_with(identifier)
+            command_results = get_user_info_command(client=client, args=args)
+            assert expected_command_results_context == command_results.to_context()
+            mock_request.assert_called_with(identifier)
+        else:
+            with pytest.raises(ValueError):
+                get_user_info_command(client=client, args=args)
