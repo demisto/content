@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: sf-add-pre-commit-logs-in-ci
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: sf-add-pre-commit-logs-in-ci
     project: "${CI_PROJECT_NAMESPACE}/infra"
