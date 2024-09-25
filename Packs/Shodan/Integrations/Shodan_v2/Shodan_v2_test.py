@@ -24,7 +24,7 @@ def test_get_events_command(mocker: MockerFixture):
     from Shodan_v2 import get_events_command
 
     mock_http_request = mocker.patch("Shodan_v2.http_request", return_value=RESPONSE)
-    _, events = get_events_command({"max_fetch": 2, "start_date": "2024-08-10T12:46:18.012000"})
+    _, events = get_events_command({"max_fetch": 2})
 
     assert len(events) == 2
     assert events[0]["name"] == "test_alert2"
@@ -34,8 +34,7 @@ def test_get_events_command(mocker: MockerFixture):
 
 def test_filter_events(mocker: MockerFixture):
     from Shodan_v2 import filter_events
-    start_date = datetime.strptime("2024-08-10T12:46:18.012000", "%Y-%m-%dT%H:%M:%S.%f")
-    filtered_events = filter_events(events=RESPONSE, start_date=start_date, limit=3)
+    filtered_events = filter_events(events=RESPONSE, limit=3, last_run={'last_fetch_time': '2024-08-10T12:46:18.012000'})
     assert len(filtered_events) == 3
     assert filtered_events[0]["name"] == "test_alert2"
 
@@ -64,8 +63,8 @@ def test_parse_event_date():
 def test_fetch_events(mocker):
     from Shodan_v2 import fetch_events
     mock_http_request = mocker.patch("Shodan_v2.http_request", return_value=RESPONSE)
-    last_run, filtered_events = fetch_events({"start_date": "2024-08-10T12:46:18.012000"}, {'max_fetch': '2'})
+    last_run, filtered_events = fetch_events({"last_fetch_time": "2024-08-10T12:46:18.012000"}, {'max_fetch': '2'})
 
     assert len(filtered_events) == 2
-    assert last_run == {"start_date": "2024-08-12T08:46:18.012000"}
+    assert last_run == {'last_fetch_time': '2024-08-12T08:46:18.012000', 'last_event_ids': ['6789']}
     mock_http_request.assert_called_once_with("GET", "/shodan/alert/info")
