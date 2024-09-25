@@ -161,7 +161,7 @@
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/45535078/53808136-24e36680-3f5a-11e9-923b-9a98353a3c38.png" alt="image"></p>
+<p><img src="../../doc_files/53808136-24e36680-3f5a-11e9-923b-9a98353a3c38.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-results-and-status-of-a-compliance-search">2. Get the results and status of a compliance search</h3>
@@ -249,7 +249,7 @@
 <h5 id="human-readable-output-1">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/45535078/53808179-3e84ae00-3f5a-11e9-9009-d2eea842c2d2.png" alt="image"></p>
+<p><img src="../../doc_files/53808179-3e84ae00-3f5a-11e9-9009-d2eea842c2d2.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="remove-a-compliance-search">3. Remove a compliance search</h3>
@@ -337,7 +337,7 @@
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/45535078/53808542-31b48a00-3f5b-11e9-993c-8c2e83b8759a.png" alt="image"></p>
+<p><img src="../../doc_files/53808542-31b48a00-3f5b-11e9-993c-8c2e83b8759a.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="purge-the-results-of-a-compliance-search">4. Purge the results of a compliance search</h3>
@@ -407,7 +407,7 @@
 <h5 id="human-readable-output-3">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/45535078/53808212-552b0500-3f5a-11e9-8866-cc2cce045131.png" alt="image"></p>
+<p><img src="../../doc_files/53808212-552b0500-3f5a-11e9-8866-cc2cce045131.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-status-of-a-purge-operation">5. Get the status of a purge operation</h3>
@@ -477,5 +477,5 @@
 <h5 id="human-readable-output-4">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/45535078/53808250-696f0200-3f5a-11e9-99d8-bbc86c3fc971.png" alt="image"></p>
+<p><img src="../../doc_files/53808250-696f0200-3f5a-11e9-99d8-bbc86c3fc971.png" alt="image"></p>
 </div>
