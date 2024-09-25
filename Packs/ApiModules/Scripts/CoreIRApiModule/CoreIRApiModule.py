@@ -3343,7 +3343,10 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
 
         return PollResult(
             response=get_script_execution_results_command(
-                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+                client, {'action_id': action_id,
+                         'integration_context_brand': 'Core'
+                         if argToBoolean(args.get('is_core', False))
+                         else 'PaloAltoNetworksXDR'}
             ),
             continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
         )
