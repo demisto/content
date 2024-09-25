@@ -16,8 +16,6 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from uvicorn.logging import AccessFormatter
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import argToBoolean
-
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
