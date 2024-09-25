@@ -220,19 +220,21 @@ def main() -> None:
             base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
 
-        match demisto.command():
-            case "test-module":
-                result = test_module(client)
-            case "ip":
-                result = ip_command(client, demisto.args())
-            case "spur-context-api-enrich":
-                result = enrich_command(client, demisto.args())
-            case _:
-                result = "Invalid command"
+        command = demisto.command()
 
-        return_results(result)
+        if command == "test-module":
+            return_results(test_module(client))
+        else:
+            match command:
+                case "ip":
+                    result = ip_command(client, demisto.args())
+                case "spur-context-api-enrich":
+                    result = enrich_command(client, demisto.args())
+                case default:
+                    raise DemistoException(f"Invalid Command: {default}")
 
-    # Log exceptions and return errors
+            return_results(result)
+
     except Exception:
         return_error(f"Error: {traceback.format_exc()}")
 
