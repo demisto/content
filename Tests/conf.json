@@ -1723,6 +1723,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Onion address extraction test",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "Domain extraction test",
             "fromversion": "5.5.0"
         },
@@ -6439,6 +6443,7 @@
         "IPv4 extraction test",
         "IPv4 CIDR extraction test",
         "IPv6 CIDR extraction test",
-        "IPv6 extraction test"
+        "IPv6 extraction test",
+        "Onion address extraction test"
     ]
 }
