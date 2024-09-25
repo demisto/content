@@ -21,10 +21,6 @@ from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
 
-# CR NOTES
-# split write_chrome_instances_file to 4 functions
-# move the call to write json file to terminate_chrome
-# add json files keys constants.
 
 # region constants and configurations
 
@@ -65,6 +61,12 @@ TAB_CLOSE_WAIT_TIME = 1
 DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
+
+# chrome instance data keys
+INSTANCE_ID = "instance_id"
+CHROME_OPTIONS = "chrome_options"
+RASTERIZETION_COUNT = "rasteriztion_count"
+
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
@@ -305,57 +307,67 @@ def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict[str
         demisto.debug(f"Error decoding JSON from the file '{json_file_path}'.")
         return {}
 
+
+def increase_counter_chrome_instances_file(chrome_port: str = ''):
+    """
+    he function will increase the counter of the port "chrome_port"ץ
+    If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
+
+    :param chrome_port: Port for Chrome instance.
+    """
+    existing_data = read_json_file()
+    
+    if chrome_port in existing_data:
+        existing_data[chrome_port][ RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
+        write_chrome_instances_file(existing_data)
+    else:
+        demisto.info(f"Chrome port '{chrome_port}' not found.")
+
+
+def terminate_port_chrome_instances_file(chrome_port: str = ''):
+    """
+    he function will increase the counter of the port "chrome_port"ץ
+    If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
+
+    :param chrome_port: Port for Chrome instance.
+    """
+    existing_data = read_json_file()
+
+    if chrome_port in existing_data:
+        del existing_data[chrome_port]
+        write_chrome_instances_file(existing_data)
+    else:
+        demisto.info(f"Chrome port '{chrome_port}' not found.")
+
+
+def add_new_chrome_instance(new_chrome_instance_content: Optional[Dict] = None) -> None:
+    """Add new Chrome instance content to the JSON file.
+    
+    :param new_chrome_instance_content: Data to write to the file. If None, an empty file is created.
+    
+    """
+    existing_data = read_json_file()
+    
+    if new_chrome_instance_content:
+        existing_data.update(new_chrome_instance_content)
+    
+    write_chrome_instances_file(existing_data)
+
+
 # split this function to increase counter, terminate chrome, add new chrome
-def write_chrome_instances_file(new_chrome_instance_content: Optional[Dict] = {},
-                    chrome_port: str = '',
-                    increase_counter: bool = False,
-                    terminate_port: bool = False,
+def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}
                     ):
     """
-    To clarify the steps for writing to a JSON file with overwrite or create options and considering the different cases:
-        1. If the JSON file "CHROME_INSTANCES_FILE_PATH" does not exist,
-        the function will create a new file and add the "new_chrome_instance_content."
+    Add new Chrome instance content to the JSON file.
 
-        2. If the file "CHROME_INSTANCES_FILE_PATH" exists and the "new_chrome_instance_content" is not empty,
-        the function will add the new content to the end of the file.
+    :param new_chrome_content: Data to write to the file. If None, an empty file is created.
 
-        3. If the file "CHROME_INSTANCES_FILE_PATH" exists and "chrome_port" is not empty:
-           a. If "increase_counter" is not empty, the function will increase the counter of the port "chrome_port."
-           b. If "terminate_port" is true, the function will delete the chrome port from the file.
-
-    :param new_chrome_instance_content: Data to write to the file. If None, an empty file is created.
-    :param chrome_port: Port for Chrome instance.
-    :param increase_counter: If True, increase the counter.
-    :param terminate_port: If True, terminate the port.
     """
     try:
-        # Append to the file (requires reading existing content)
-        if os.path.exists(CHROME_INSTANCES_FILE_PATH):
-            with open(CHROME_INSTANCES_FILE_PATH, 'r+') as file:
-                try:
-                    existing_data: Dict = json.load(file)
-                    # chrome port , key to edit, counter increase
-                    if new_chrome_instance_content:
-                        existing_data.update(new_chrome_instance_content)
-                    elif chrome_port and chrome_port in existing_data:
-                        if increase_counter:
-                            counter = int(existing_data[chrome_port]['rasteriztion_count']) + 1
-                            existing_data[chrome_port]['rasteriztion_count'] = counter
-                        elif terminate_port:
-                            del existing_data[chrome_port]
-                    file.seek(0)  # Move file pointer to the beginning
-                    json.dump(existing_data, file, indent=4)
-                    file.truncate()  # Remove remaining part of the file if new content is shorter
-                except json.JSONDecodeError:
-                    raise DemistoException('File is invalid JSON')
-        else:
-            demisto.info(f"File '{CHROME_INSTANCES_FILE_PATH}' does not exist.")
-            # Create a new file with the content as a list
-            with open(CHROME_INSTANCES_FILE_PATH, 'w+') as file:
-                json.dump(new_chrome_instance_content, file, indent=4)
-
+        with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
+            json.dump(new_chrome_content, file, indent=4)
     except Exception as e:
-        demisto.debug(f"An error occurred: {e}")
+        demisto.debug(f"An error occurred while writing to the file: {e}")
 
 
 def opt_name(opt):
@@ -398,7 +410,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
         default_chrome_options = CHROME_OPTIONS
         default_chrome_options.append(f"--remote-debugging-port={chrome_port}")
         subprocess_options = [chrome_binary]
-        user_chrome_options = demisto.params().get('chrome_options', "")
+        user_chrome_options = demisto.params().get(CHROME_OPTIONS, "")
         subprocess_options.extend(get_chrome_options(default_chrome_options, user_chrome_options))
         demisto.debug(f"Starting Chrome with {subprocess_options=}")
 
@@ -418,7 +430,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
                         'rasteriztion_count': 0
                     }
                 }
-                write_chrome_instances_file(new_chrome_instance_content=new_chrome_instance)
+                add_new_chrome_instance(new_chrome_instance_content=new_chrome_instance)
             else:
                 process.kill()
                 return None, None
@@ -478,7 +490,7 @@ def terminate_chrome(chrome_port: str = '', killall: bool = False) -> None:  # p
                 process.kill()
             except Exception as e:
                 demisto.info(f"Exception when trying to kill chrome with {pid=}, {e}")
-
+    terminate_port_chrome_instances_file(chrome_port=chrome_port)
     demisto.debug('terminate_chrome, Finish')
 
 
@@ -505,12 +517,12 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
     # it can compare between the fetched 'None' string and the 'None' that assigned.
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
-    chrome_options = demisto.params().get('chrome_options', 'None')
+    chrome_options = demisto.params().get(CHROME_OPTIONS, 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
     instance_id_dict = {
-        value['instance_id']: {
+        value[INSTANCE_ID]: {
             'chrome_port': key,
-            'chrome_options': value['chrome_options']
+            'chrome_options': value[CHROME_OPTIONS]
         }
         for key, value in chrome_instances_contents.items()
     }
@@ -521,7 +533,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         # If the current Chrome options differ from the saved options for this instance ID,
         # it terminates the existing Chrome instance and generates a new one with the new options.
         chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
-        write_chrome_instances_file(chrome_port=chrome_port, terminate_port=True) #move it to terminate chrome
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
@@ -819,7 +830,7 @@ def perform_rasterize(path: str | list[str],
                 f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
 
             chrome_instances_file_content: dict = read_json_file() # CR fix name
-            rasterizations_count = chrome_instances_file_content.get(chrome_port, {}).get('rasteriztion_count', 0) + len(
+            rasterizations_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZETION_COUNT, 0) + len(
                 rasterization_threads)
 
             demisto.debug(f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
@@ -829,9 +840,8 @@ def perform_rasterize(path: str | list[str],
             elif rasterizations_count >= MAX_RASTERIZATIONS_COUNT:
                 demisto.info(f"perform_rasterize: terminating Chrome after {rasterizations_count=} rasterizations")
                 terminate_chrome(chrome_port=chrome_port)
-                write_chrome_instances_file(chrome_port=chrome_port, terminate_port=True)
             else:
-                write_chrome_instances_file(chrome_port=chrome_port, increase_counter=True)
+                increase_counter_chrome_instances_file(chrome_port=chrome_port)
 
             # Get the results
             for current_thread in rasterization_threads:
