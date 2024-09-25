@@ -5,7 +5,7 @@ from CommonServerPython import FeedIndicatorType  # noqa: F401
 import json
 from unittest import mock
 
-from IoCStream import Client, fetch_indicators_command, get_indicators_command, main
+from FeedIoCStream import Client, fetch_indicators_command, get_indicators_command, main
 
 
 def _mock_indicator(indicator_type, gti_score=None):

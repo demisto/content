@@ -438,9 +438,6 @@ def main():
             # from the feed source and displays them in the war room.
             return_results(get_indicators_command(client, params, demisto.args()))
 
-        elif command == 'gti-iocstream-reset-fetch-indicators':
-            return_results(reset_last_run())
-
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint
             # and create new indicators objects from the data fetched. If the
