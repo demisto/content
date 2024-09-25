@@ -971,12 +971,12 @@ class STIX2XSOARParser(BaseClient):
         supported_comparisons: PatternComparisons = {}
         for indicator_type, comps in comparisons.items():
             if indicator_type in STIX_SUPPORTED_TYPES:
-                comparisons = [
+                field_comparisons = [
                     comp for comp in comps
                     if (get_comparison_field(comp) in STIX_SUPPORTED_TYPES[indicator_type])
                 ]
-                if comparisons:
-                    supported_comparisons[indicator_type] = comparisons
+                if field_comparisons:
+                    supported_comparisons[indicator_type] = field_comparisons
         return supported_comparisons
 
     @staticmethod
