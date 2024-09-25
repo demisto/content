@@ -1,8 +1,8 @@
-Enrich entities using one or more integrations.
+Enrich entities using one or more integrations
 
 ## Dependencies
 
-This playbook uses the following sub-playbooks, integrations, and scripts.
+This playbook uses the following sub-playbooks, integrations, and scripts
 
 ### Sub-playbooks
 
