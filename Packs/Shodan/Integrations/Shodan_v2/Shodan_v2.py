@@ -537,13 +537,13 @@ def fetch_events(last_run: dict, params: dict[str, str]) -> tuple[Dict, List[Dic
     Fetches events from an API, filters them, and updates the last_run data with the latest event's date.
 
     Args:
-        last_run (dict): A dictionary containing data from the last run. It should include 'last_fetch_time' 
+        last_run (dict): A dictionary containing data from the last run. It should include 'last_fetch_time'
                          and 'last_event_ids', which represent the last fetch time and IDs of the last events processed.
-        params (dict[str, str]): Dictionary of parameters. It should include 'max_fetch' to define the maximum number 
+        params (dict[str, str]): Dictionary of parameters. It should include 'max_fetch' to define the maximum number
                                  of events to fetch.
 
     Returns:
-        tuple[Dict, List[Dict]]: A tuple where the first item is the updated last_run data, including the latest fetch 
+        tuple[Dict, List[Dict]]: A tuple where the first item is the updated last_run data, including the latest fetch
                                  time and event IDs, and the second item is a list of filtered events.
     """
     if not last_run.get("last_fetch_time"):  # If this is a first run
