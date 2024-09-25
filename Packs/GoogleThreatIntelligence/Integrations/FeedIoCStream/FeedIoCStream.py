@@ -73,7 +73,7 @@ class Client(BaseClient):
         current_time = datetime.now()
         current_timestamp = datetime.timestamp(current_time)
         timestamp = str(int(current_timestamp))
-        demisto.setIntegrationContext({'last_run': timestamp})
+        demisto.setLastRun({'last_run': timestamp})
 
     @staticmethod
     def get_last_run() -> str:
@@ -81,7 +81,7 @@ class Client(BaseClient):
         Returns:
             last run in timestamp, or '' if no last run
         """
-        if last_run := demisto.getIntegrationContext().get('last_run'):
+        if last_run := (demisto.getLastRun() or {}).get('last_run'):
             demisto.info(f'get last_run: {last_run}')
             params = f'date:{last_run}+'
         else:
@@ -97,6 +97,15 @@ def test_module(client: Client, args: dict) -> str:
         raise Exception("Could not fetch Google Threat Intelligence IoC Stream Feed\n"
                         "\nCheck your API key and your connection to Google Threat Intelligence.")
     return 'ok'
+
+
+def _gti_verdict_to_dbot_score(gti_verdict: str):
+    """Parses GTI verdict to DBotScore."""
+    return {
+        'VERDICT_BENIGN': 1,
+        'VERDICT_SUSPICIOUS': 2,
+        'VERDICT_MALICIOUS': 3,
+    }.get(gti_verdict, 0)
 
 
 def _add_gti_attributes(indicator_obj: dict, attributes: dict):
@@ -123,6 +132,7 @@ def _add_gti_attributes(indicator_obj: dict, attributes: dict):
         'actor': threat_actors,
     })
     indicator_obj.update({
+        'score': _gti_verdict_to_dbot_score(gti_verdict),
         'gti_threat_score': gti_threat_score,
         'gti_severity': gti_severity,
         'gti_verdict': gti_verdict,

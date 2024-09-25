@@ -78,6 +78,8 @@ def test_fetch_indicators_command(mocker):
                 assert indicator['value'] == indicator['fields']['sha256']
                 assert indicator['origin'] == 'hunting'
                 assert indicator['sources'] == '[hunting_ruleset] Malware Families YARA ruleset'
+                assert indicator['fields']['gtiverdict'] == 'VERDICT_MALICIOUS'
+                assert indicator['score'] == 3
             elif indicator['type'] == FeedIndicatorType.Domain:
                 assert set(indicator['fields'].keys()) == {
                     'admincountry', 'adminname', 'adminemail', 'adminphone', 'registrantcountry',
@@ -90,6 +92,8 @@ def test_fetch_indicators_command(mocker):
                 assert indicator['fields']['adminemail'] == '<admin_email>@google.com'
                 assert indicator['fields']['registrantcountry'] == 'US'
                 assert indicator['fields']['registrarabusephone'] == '+34 600 000 000'
+                assert indicator['fields']['gtiverdict'] == 'VERDICT_MALICIOUS'
+                assert indicator['score'] == 3
             elif indicator['type'] == FeedIndicatorType.URL:
                 assert set(indicator['fields'].keys()) == {
                     'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
@@ -98,6 +102,8 @@ def test_fetch_indicators_command(mocker):
                 }
                 assert indicator['value'] == '<url>'
                 assert indicator['fields']['firstseenbysource'] == 1722360511
+                assert indicator['fields']['gtiverdict'] == 'VERDICT_UNDETECTED'
+                assert indicator['score'] == 0
             elif indicator['type'] == FeedIndicatorType.IP:
                 assert set(indicator['fields'].keys()) == {
                     'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
@@ -106,6 +112,8 @@ def test_fetch_indicators_command(mocker):
                 }
                 assert indicator['value'] == 'X.X.X.X'
                 assert indicator['fields']['countrycode'] == 'US'
+                assert indicator['fields']['gtiverdict'] == 'VERDICT_BENIGN'
+                assert indicator['score'] == 1
             else:
                 raise ValueError(f'Unknown type: {indicator["type"]}')
 
@@ -210,11 +218,9 @@ def test_main_default_command(mocker):
     )
     create_indicators_mock = mocker.patch.object(demisto, 'createIndicators')
 
-    Client.set_last_run()  # Emulate previous execution with saving last run
-
     main()
 
-    assert get_api_indicators_mock.call_args == mock.call(f'entity_type:file {Client.get_last_run()}', 7)
+    assert get_api_indicators_mock.call_args == mock.call('entity_type:file', 7)
     assert len(create_indicators_mock.call_args[0][0]) == 3
 
 
@@ -227,7 +233,14 @@ def test_main_test_command(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='test-module')
     get_api_indicators_mock = mocker.patch.object(
-        Client, 'get_api_indicators', return_value={'data': [_mock_file()]})
+        Client,
+        'get_api_indicators',
+        return_value={
+            'data': [
+                _mock_file(),
+            ],
+        },
+    )
 
     main()
 
