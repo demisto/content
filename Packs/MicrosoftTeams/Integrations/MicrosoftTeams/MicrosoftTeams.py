@@ -2,23 +2,24 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from enum import Enum
 import re
 import time
+import urllib.parse
 from distutils.util import strtobool
+from enum import Enum
+from re import Match
+from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLError
 from tempfile import NamedTemporaryFile
 from threading import Thread
 from traceback import format_exc
 from typing import Any, cast
-from re import Match
 
 import jwt
 import requests
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -56,6 +57,8 @@ MESSAGE_TYPES: dict = {
     'incident_opened': 'incidentOpened',
     'status_changed': 'incidentStatusChanged'
 }
+
+NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>.\nView it on: <incident_link>"
 
 if '@' in BOT_ID:
     demisto.debug("setting tenant id in the integration context")
@@ -316,8 +319,21 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
         server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
-        data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
-               f"View it on: {server_link}/WarRoom/{created_incident.get('id', '')}"
+        newIncidentWelcomeMessage = demisto.params().get('new_incident_welcome_message', '')
+        if not newIncidentWelcomeMessage:
+            newIncidentWelcomeMessage = NEW_INCIDENT_WELCOME_MESSAGE
+        elif newIncidentWelcomeMessage == "no_welcome_message":
+            newIncidentWelcomeMessage = ""
+
+        if (
+            newIncidentWelcomeMessage
+            and ("<incident_name>" in newIncidentWelcomeMessage)
+            and ("<incident_link>" in newIncidentWelcomeMessage)
+        ):
+            newIncidentWelcomeMessage = newIncidentWelcomeMessage.replace(
+                "<incident_name>", f"{created_incident.get('name', '')}"
+            ).replace("<incident_link>", f"{server_link}/WarRoom/{created_incident.get('id', '')}")
+        data = newIncidentWelcomeMessage
 
     return data
 
@@ -537,6 +553,7 @@ def process_ask_user(message: str) -> dict:
         body.append({
             'type': 'TextBlock',
             'text': text,
+            'wrap': True
         })
 
         for option in options:
@@ -561,7 +578,8 @@ def process_ask_user(message: str) -> dict:
                 'horizontalAlignment': 'Center',
                 'size': 'Medium',
                 'weight': 'Bolder',
-                'color': 'Accent'
+                'color': 'Accent',
+                'wrap': True
             },
             {
                 'type': 'Container',
@@ -947,8 +965,8 @@ def get_team_aad_id(team_name: str) -> str:
         for team in teams:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
-    url: str = f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{team_name}' " \
-               "and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    url: str = (f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{urllib.parse.quote(team_name)}' "
+                f"and resourceProvisioningOptions/Any(x:x eq 'Team')")
     response: dict = cast(dict[Any, Any], http_request('GET', url))
     demisto.debug(f'Response {response}')
     teams = response.get('value', [])
@@ -2483,6 +2501,12 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                         return
 
 
+@APP.route('/health', methods=['GET'])
+def health_check():
+    demisto.debug("Microsoft Teams Integration received a local health check")
+    return Response('Microsoft Teams long running integration server is up.', status=200, mimetype='text/plain')
+
+
 @APP.route('/', methods=['POST'])
 def messages() -> Response:
     """
@@ -2496,7 +2520,7 @@ def messages() -> Response:
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
-            request_body: dict = request.json
+            request_body: dict = request.json   # type: ignore[assignment]
             integration_context: dict = get_integration_context()
             service_url: str = request_body.get('serviceUrl', '')
             if service_url:

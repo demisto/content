@@ -16,6 +16,8 @@
 
 ### Mirroring
 
+**XDR mirroring delay in minutes**: In case of missing updates in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the delay period. However, be aware that this may result in increased latency when updating incidents.
+
 **Close-reason default mapping XSOAR -> XDR**: _Other=Other, Duplicate=Duplicate Incident, False Positive=False Positive, Resolved=True Positive_
 
 **Close-reason default mapping XDR -> XSOAR**: _Known Issue=Other, Duplicate Incident=Duplicate, False Positive=False Positive, True Positive=Resolved, Other=Other, Auto=Resolved_

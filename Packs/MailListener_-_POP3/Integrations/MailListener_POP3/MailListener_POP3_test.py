@@ -55,4 +55,4 @@ def test_base64_mail_decode(mocker):
     parts = [part]
 
     body, html, attachments = parse_mail_parts(parts)
-    assert body.replace(u'\uFFFD', '?') == 'Foo?Bar=='
+    assert body.replace('\uFFFD', '?') == 'Foo?Bar=='

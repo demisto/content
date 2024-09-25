@@ -283,6 +283,8 @@ There is no context output for this command.
 Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if
 the channel exists).
 
+**Note:** Command slack-send-file isn't available for newly created apps (from May 8, 2024) and will get an error in case of use, due to changes from the Slack API side.
+
 #### Base Command
 
 `slack-send-file`
