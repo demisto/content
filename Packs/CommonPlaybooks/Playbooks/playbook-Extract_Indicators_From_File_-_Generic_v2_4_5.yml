@@ -2130,7 +2130,7 @@ tasks:
   "28":
     id: "28"
     taskid: ff1834e4-8544-4395-86e4-81f108cf6920
-    description: ''
+    description: ""
     type: condition
     task:
       id: ff1834e4-8544-4395-86e4-81f108cf6920
