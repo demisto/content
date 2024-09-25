@@ -24,7 +24,16 @@ from demisto_sdk.commands.init.contribution_converter import (
     ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager as ValidateManager
+from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from demisto_sdk.commands.validate.validation_results import (
+    ResultWriter,
+)
+from demisto_sdk.commands.validate.config_reader import (
+    ConfigReader,
+)
+from demisto_sdk.commands.validate.initializer import Initializer
+
 from ruamel.yaml import YAML
 
 
@@ -178,15 +187,26 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         os.makedirs(tests_dir)
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
-    old_validate_manager = ValidateManager(
-        is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
-        print_ignored_files=True, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
-        validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=True,
-        silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
-    old_validate_manager.run_validation()
+    # old_validate_manager = OldValidateManager(
+    #     is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
+    #     print_ignored_files=True, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
+    #     validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=True,
+    #     silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
+    #     staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
+    # old_validate_manager.run_validation()
 
-
+    result_writer = ResultWriter(json_file_path=json_output_file)
+    config_reader = ConfigReader(category="xsoar_best_practices_path_based_validations")
+    initializer = Initializer(
+        staged=False,
+        committed_only=False,
+        prev_ver="origin/master",
+        file_path=file_path,
+        # execution_mode=ExecutionMode.SPECIFIC_FILES
+        execution_mode='-i'
+    )
+    new_validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False, )
+    new_validate_manager.run_validations()
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
     lint_manager = LintManager(
