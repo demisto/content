@@ -103,7 +103,7 @@ async def handle_post(
         store = {'creds': incidents}
         set_integration_context(store)
 
-        return f'added total stored {store}'
+        return f'Added {len(incidents)} credentials.'
 
     incidents = [{
         'name': incident.get('name') or 'Generic webhook triggered incident',
