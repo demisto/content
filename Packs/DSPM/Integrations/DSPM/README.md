@@ -684,7 +684,7 @@ Updates the status of a alert.
         "AlertStatusUpdate": {
             "newStatus": "INVESTIGATING",
             "oldStatus": "INVESTIGATING",
-            "riskFindingId": "000000608"
+            "alertId": "000000608"
         }
     }
 }

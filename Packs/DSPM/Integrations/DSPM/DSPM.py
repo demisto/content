@@ -490,14 +490,13 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
         raise ValueError("Asset ID not specified")
 
     page_number = 1
-    page_size = MAX_PAGE_SIZE  # You can adjust the page size as needed
     all_files = []
 
     while True:
         params = {
             "id": asset_id,
             "page": page_number,
-            "size": page_size
+            "size": MAX_PAGE_SIZE
         }
 
         # Fetch the asset files for the current page
@@ -623,7 +622,7 @@ def update_risk_finding_status(client, args):
             readable_output=markdown,
             outputs_prefix="DSPM.RiskFindingStatusUpdate",
             outputs_key_field="riskFindingId",
-            outputs=response,
+            outputs=data,
         )
     except Exception as e:
         return_error(
@@ -734,7 +733,7 @@ def update_dspm_alert_status(client, args):
             readable_output=markdown,
             outputs_prefix="DSPM.AlertStatusUpdate",
             outputs_key_field="alertId",
-            outputs=response,
+            outputs=data,
         )
     except Exception as e:
         return_error(
@@ -770,6 +769,150 @@ def get_integration_config():
     )
 
 
+def dspm_get_risk_findings_command(client, args):
+    page = 0
+    headers = ["ID", "Rule Name", "Severity", "Asset Name", "Asset ID", "Status", "Project ID",
+               "Cloud Provider", "Cloud Environment", "First Discovered", "Compliance Standards"]
+    while True:
+        findings = dspm_get_risk_findings(client, args, page)
+        if not findings:
+            if page == 0:
+                demisto.info("No risks were fetched")
+                readable_output = tableToMarkdown("Risk Findings", [], headers=headers, headerTransform=pascalToSpace)
+
+                return_results(
+                    CommandResults(
+                        outputs_prefix="DSPM.RiskFindings",
+                        outputs_key_field="id",
+                        readable_output=readable_output,
+                    )
+                )
+            break  # No more findings to fetch
+
+        readable_output = tableToMarkdown("Risk Findings", findings, headers=headers, headerTransform=pascalToSpace)
+        return_results(
+            CommandResults(
+                outputs_prefix="DSPM.RiskFindings",
+                outputs_key_field="id",
+                outputs=findings,
+                readable_output=readable_output,
+            )
+        )
+        page += 1
+
+
+def dspm_get_list_of_assets_command(client, args):
+    page = 0
+    headers = ["ID", "Project ID", "Project Name", "Name", "Cloud Provider", "Cloud Environment", "Service Type",
+               "Lifecycle", "Open Risks Count", "Open Alerts Count", "Encrypted", "Open To World",
+               "Tags", "Asset Dig Tags"]
+    while True:
+        assets = get_list_of_assets(client, args, page)
+        if not assets:
+            if page == 0:
+                readable_output = tableToMarkdown("List of assets", [], headers=headers, headerTransform=pascalToSpace)
+
+                return_results(
+                    CommandResults(
+                        outputs_prefix="DSPM.Assets",
+                        outputs_key_field="id",
+                        outputs=[],
+                        readable_output=readable_output,
+                    )
+                )
+            break
+
+        readable_output = tableToMarkdown("List of assets", assets, headers=headers, headerTransform=pascalToSpace)
+
+        return_results(
+            CommandResults(
+                outputs_prefix="DSPM.Assets",
+                outputs_key_field="id",
+                outputs=assets,
+                readable_output=readable_output,
+            )
+        )
+        page += 1
+
+
+def dspm_get_data_types_findings_command(client, args):
+    page = 0
+    all_data_type_findings = []
+    headers = ['No', 'Key']
+
+    while True:
+        data_type_findings = get_data_type_findings(
+            client, args, page
+        )
+
+        if not data_type_findings:
+            if page == 0:
+                readable_output = tableToMarkdown("Data Types", [], headers=headers)
+                return_results(
+                    CommandResults(
+                        outputs_prefix="DSPM.DataTypesFindings",
+                        outputs_key_field="Key",
+                        outputs=[],
+                        readable_output=readable_output,
+                    )
+                )
+            break
+
+        all_data_type_findings.extend(data_type_findings)
+
+        data_type_findings_formatted = [
+            {
+                "No": index + 1 + (page * MAX_PAGE_SIZE),
+                "Key": dt["dataTypeName"],
+            }
+            for index, dt in enumerate(data_type_findings)
+        ]
+
+        readable_output = tableToMarkdown("Data Types", data_type_findings_formatted, headers=headers)
+        return_results(
+            CommandResults(
+                outputs_prefix="DSPM.DataTypesFindings",
+                outputs_key_field="Key",
+                outputs=data_type_findings_formatted,
+                readable_output=readable_output,
+            )
+        )
+        page += 1
+
+
+def dspm_get_list_of_alerts_command(client, args):
+    page = 0
+    headers = ["id", "detectionTime", "policyName", "assetName", "assetLabels", "cloudProvider", "destinationProjects",
+               "cloudEnvironment", "policySeverity", "policyCategoryType", "status", "eventActor", "eventUserAgent",
+               "eventActionMedium", "eventSource", "policyFrameWorks", "eventRawData"]
+    while True:
+        alerts = get_list_of_alerts(client, args, page)
+        if not alerts:
+            if page == 0:
+                readable_output = tableToMarkdown("List Of Alerts", [], headers=headers, headerTransform=pascalToSpace)
+
+                return_results(
+                    CommandResults(
+                        outputs_prefix="DSPM.Alerts",
+                        outputs_key_field="Key",
+                        outputs=[],
+                        readable_output=readable_output,
+                    )
+                )
+            break
+
+        readable_output = tableToMarkdown("List Of Alerts", alerts, headers=headers, headerTransform=pascalToSpace)
+        return_results(
+            CommandResults(
+                outputs_prefix="DSPM.Alerts",
+                outputs_key_field="id",
+                outputs=alerts,
+                readable_output=readable_output,
+            )
+        )
+        page += 1
+
+
 """ MAIN FUNCTION """
 
 
@@ -798,69 +941,11 @@ def main() -> None:
         elif demisto.command() == "dspm-get-integration-config":
             return_results(get_integration_config())
         elif demisto.command() == "dspm-get-risk-findings":
-            page = 0
-            headers = ["ID", "Rule Name", "Severity", "Asset Name", "Asset ID", "Status", "Project ID",
-                       "Cloud Provider", "Cloud Environment", "First Discovered", "Compliance Standards"]
-            while True:
-                findings = dspm_get_risk_findings(client, demisto.args(), page)
-                if not findings:
-                    if page == 0:
-                        demisto.info("No risks were fetched")
-                        readable_output = tableToMarkdown("Risk Findings", [], headers=headers, headerTransform=pascalToSpace)
-
-                        return_results(
-                            CommandResults(
-                                outputs_prefix="DSPM.RiskFindings",
-                                outputs_key_field="id",
-                                readable_output=readable_output,
-                            )
-                        )
-                    break  # No more findings to fetch
-
-                readable_output = tableToMarkdown("Risk Findings", findings, headers=headers, headerTransform=pascalToSpace)
-                return_results(
-                    CommandResults(
-                        outputs_prefix="DSPM.RiskFindings",
-                        outputs_key_field="id",
-                        outputs=findings,
-                        readable_output=readable_output,
-                    )
-                )
-                page += 1
+            return_results(dspm_get_risk_findings_command(client, demisto.args()))
         elif demisto.command() == "dspm-get-risk-finding-by-id":
             return_results(get_risk_finding_by_id(client, demisto.args()))
         elif demisto.command() == "dspm-get-list-of-assets":
-            page = 0
-            headers = ["ID", "Project ID", "Project Name", "Name", "Cloud Provider", "Cloud Environment", "Service Type",
-                       "Lifecycle", "Open Risks Count", "Open Alerts Count", "Encrypted", "Open To World",
-                       "Tags", "Asset Dig Tags"]
-            while True:
-                assets = get_list_of_assets(client, demisto.args(), page)
-                if not assets:
-                    if page == 0:
-                        readable_output = tableToMarkdown("List of assets", [], headers=headers, headerTransform=pascalToSpace)
-
-                        return_results(
-                            CommandResults(
-                                outputs_prefix="DSPM.Assets",
-                                outputs_key_field="id",
-                                outputs=[],
-                                readable_output=readable_output,
-                            )
-                        )
-                    break
-
-                readable_output = tableToMarkdown("List of assets", assets, headers=headers, headerTransform=pascalToSpace)
-
-                return_results(
-                    CommandResults(
-                        outputs_prefix="DSPM.Assets",
-                        outputs_key_field="id",
-                        outputs=assets,
-                        readable_output=readable_output,
-                    )
-                )
-                page += 1
+            return_results(dspm_get_list_of_assets_command(client, demisto.args()))
         elif demisto.command() == "dspm-get-asset-details":
             return_results(get_asset_details(client, demisto.args()))
         elif demisto.command() == "dspm-get-asset-files-by-id":
@@ -868,84 +953,13 @@ def main() -> None:
         elif demisto.command() == "dspm-get-data-types":
             return_results(get_data_types(client))
         elif demisto.command() == "dspm-get-data-types-findings":
-            page = 0
-            all_data_type_findings = []
-            headers = ['No', 'Key']
-
-            while True:
-                data_type_findings = get_data_type_findings(
-                    client, demisto.args(), page
-                )
-
-                if not data_type_findings:
-                    if page == 0:
-                        readable_output = tableToMarkdown("Data Types", [], headers=headers)
-                        return_results(
-                            CommandResults(
-                                outputs_prefix="DSPM.DataTypesFindings",
-                                outputs_key_field="Key",
-                                outputs=[],
-                                readable_output=readable_output,
-                            )
-                        )
-                    break
-
-                all_data_type_findings.extend(data_type_findings)
-
-                data_type_findings_formatted = [
-                    {
-                        "No": index + 1 + (page * MAX_PAGE_SIZE),
-                        "Key": dt["dataTypeName"],
-                    }
-                    for index, dt in enumerate(data_type_findings)
-                ]
-
-                readable_output = tableToMarkdown("Data Types", data_type_findings_formatted, headers=headers)
-                return_results(
-                    CommandResults(
-                        outputs_prefix="DSPM.DataTypesFindings",
-                        outputs_key_field="Key",
-                        outputs=data_type_findings_formatted,
-                        readable_output=readable_output,
-                    )
-                )
-
-                page += 1
+            return_results(dspm_get_data_types_findings_command(client, demisto.args()))
         elif demisto.command() == "dspm-update-risk-finding-status":
             return_results(update_risk_finding_status(client, demisto.args()))
         elif demisto.command() == "dspm-update-alert-status":
             return_results(update_dspm_alert_status(client, demisto.args()))
         elif demisto.command() == "dspm-get-list-of-alerts":
-            page = 0
-            headers = ["id", "detectionTime", "policyName", "assetName", "assetLabels", "cloudProvider", "destinationProjects",
-                       "cloudEnvironment", "policySeverity", "policyCategoryType", "status", "eventActor", "eventUserAgent",
-                       "eventActionMedium", "eventSource", "policyFrameWorks", "eventRawData"]
-            while True:
-                alerts = get_list_of_alerts(client, demisto.args(), page)
-                if not alerts:
-                    if page == 0:
-                        readable_output = tableToMarkdown("List Of Alerts", [], headers=headers, headerTransform=pascalToSpace)
-
-                        return_results(
-                            CommandResults(
-                                outputs_prefix="DSPM.Alerts",
-                                outputs_key_field="Key",
-                                outputs=[],
-                                readable_output=readable_output,
-                            )
-                        )
-                    break
-
-                readable_output = tableToMarkdown("List Of Alerts", alerts, headers=headers, headerTransform=pascalToSpace)
-                return_results(
-                    CommandResults(
-                        outputs_prefix="DSPM.Alerts",
-                        outputs_key_field="id",
-                        outputs=alerts,
-                        readable_output=readable_output,
-                    )
-                )
-                page += 1
+            return_results(dspm_get_list_of_alerts_command(client, demisto.args()))
 
     except Exception as e:
         return_error(

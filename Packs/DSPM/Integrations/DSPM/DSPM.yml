@@ -574,11 +574,20 @@ script:
       isOptional: false
       name: riskFindingId
       required: true
-    - description: Updated Status.
+    - description: 'List of supported status [ "OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING" ]'
       isArray: false
       isOptional: false
       name: status
       required: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'OPEN'
+      - 'CLOSED'
+      - 'UNIMPORTANT'
+      - 'WRONG'
+      - 'HANDLED'
+      - 'INVESTIGATING'
     description: Updates the status of a risk finding.
     name: dspm-update-risk-finding-status
     outputs:
@@ -597,11 +606,19 @@ script:
       isOptional: false
       name: alertId
       required: true
-    - description: Updated Status.
+    - description: 'List of supported status [ "OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING" ].'
       isArray: false
       isOptional: false
       name: status
       required: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'OPEN'
+      - 'UNIMPORTANT'
+      - 'WRONG'
+      - 'HANDLED'
+      - 'INVESTIGATING'
     description: Updates the status of a alert.
     name: dspm-update-alert-status
     outputs:

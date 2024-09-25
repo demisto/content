@@ -12,7 +12,10 @@ from DSPM import (
     get_data_types,
     get_data_type_findings,
     get_list_of_alerts,
-    get_integration_config
+    get_integration_config,
+    update_dspm_alert_status,
+    get_risk_finding_by_id,
+    validate_parameter,
 )
 
 
@@ -709,8 +712,110 @@ def test_get_asset_details(mocker):
     assert result.outputs == {"asset": {"id": "asset1", "name": "Asset One"}}  # Access 'outputs' attribute
 
 
+def test_update_risk_status_with_valid_status(client):
+    args = {'riskFindingId': '1', 'status': 'INVESTIGATING'}
+
+    mock_response = {
+        "riskFindingId": '1',
+        "oldStatus": 'OPEN',
+        "newStatus": 'INVESTIGATING',
+    }
+
+    expected_output = {
+        "Risk Finding ID": '1',
+        "Old Status": 'OPEN',
+        "New Status": 'INVESTIGATING',
+    }
+    client = MagicMock()
+    client.update_risk_status.return_value = mock_response
+    result = update_risk_finding_status(client, args)
+
+    assert result.outputs == expected_output
+
+
 def test_update_alert_status_invalid_status(client):
     args = {'alertId': '1', 'status': 'INVALID_STATUS'}
 
     with pytest.raises(ValueError, match='This "INVALID_STATUS" status is not supported'):
-        update_risk_finding_status(client, args)
+        update_dspm_alert_status(client, args)
+
+
+def test_update_alert_status_valid_status(client):
+    args = {'alertId': '1', 'status': 'INVESTIGATING'}
+
+    mock_response = {
+        "alertId": '1',
+        "oldStatus": 'OPEN',
+        "newStatus": 'INVESTIGATING',
+    }
+
+    expected_output = {
+        "Alert ID": '1',
+        "Old Status": 'OPEN',
+        "New Status": 'INVESTIGATING',
+    }
+    client = MagicMock()
+    client.update_alert_status.return_value = mock_response
+    result = update_dspm_alert_status(client, args)
+
+    assert result.outputs == expected_output
+
+
+def test_get_risk_finding_by_id_with_missing_id(client):
+    args = {}
+
+    with pytest.raises(ValueError, match='finding_id argument is required'):
+        get_risk_finding_by_id(client, args)
+
+
+def test_risk_finding_by_id_with_valid_id(client):
+    mock_response = {
+        "id": "7e9a3891-8970-4c08-961a-03f49e239d68",
+        "ruleName": "Sensitive asset without storage versioning",
+        "severity": "MEDIUM",
+        "asset": {
+            "name": "****",
+            "assetId": "****",
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-04-25T17:08:11.020304Z",
+        "complianceStandards": {}
+    }
+    expected_output = {
+        "ID": "7e9a3891-8970-4c08-961a-03f49e239d68",
+        "Rule Name": "Sensitive asset without storage versioning",
+        "Severity": "MEDIUM",
+        "Asset Name": "****",
+        "Asset ID": "****",
+        "Status": "OPEN",
+        "Project ID": "****",
+        "Cloud Provider": "AZURE",
+        "Cloud Environment": "DEVELOPMENT",
+        "First Discovered": "2024-04-25T17:08:11.020304Z",
+        "Compliance Standards": {}
+    }
+    client = MagicMock()
+    client.get_risk_information.return_value = mock_response
+    args = {'finding_id': '7e9a3891-8970-4c08-961a-03f49e239d68'}
+    result = get_risk_finding_by_id(client, args)
+
+    assert result.outputs == expected_output
+
+
+def test_validate_parameter_valid_and_invalid():
+    supported_list = ["AWS", "AZURE"]
+    param_name = "parameter"
+
+    # with valid param_in and param_equal
+    validate_parameter(param_name, "AWS,AZURE", "AWS", supported_list)
+
+    # with invalid param_in
+    with pytest.raises(ValueError, match='This "AWS1" parameter is not supported'):
+        validate_parameter(param_name, "AWS,AWS1", None, supported_list)
+
+    # with invalid param_equal
+    with pytest.raises(ValueError, match='This "AWS1" parameter is not supported'):
+        validate_parameter(param_name, None, "AWS1", supported_list)
