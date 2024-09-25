@@ -526,6 +526,8 @@ tasks:
           root: inputs.LastSeenEndDate
       status:
         simple: disconnected,lost
+      use_hr_timestamps:
+        simple: "true"
     separatecontext: false
     skipunavailable: false
     task:
