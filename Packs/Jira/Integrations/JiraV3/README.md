@@ -133,11 +133,11 @@ Write
 
 ##### Authenticating using custom callback URL
 
-![Custom callback URL](../../doc_files/jira-oauth-custom-callback-url.gif)
+![Custom callback URL](https://github.com/demisto/content-assets/raw/master/Assets/Jira/jira-oauth-custom-callback-url.gif)
 
 ##### Authenticating using the oproxy callback URL
 
-![Oproxy callback URL](../../doc_files/jira-oauth-oproxy-callback-url.gif)
+![Oproxy callback URL](https://github.com/demisto/content-assets/raw/master/Assets/Jira/jira-oauth-oproxy-callback-url.gif)
 
 ## Fetch Incidents
 

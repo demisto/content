@@ -1359,7 +1359,7 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
  4. click **Add Server Configuration**.
  6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
  8. Set the **value** field to the desired time limit for the command to run (in minutes).
-  ![](https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/FireEyeHX_mceclip0.png)
+  ![](../../doc_files/FireEyeHX_mceclip0.png)
 
   
 
