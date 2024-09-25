@@ -98,7 +98,7 @@ class Client(BaseClient):
         Updates fields in a feature/idea from AHA
         Args:
             aha_object_name: str idea to update
-            aha_type: determine what to edit ideas or features using AHA_TYPE Enum.
+            aha_type: determine what to edit ideas or features using AHA_TYPE Enum.jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
             fields: Dict fields to update
         """
         payload = build_edit_idea_req_payload() if aha_type == AHA_TYPE.IDEAS else build_edit_feature_req_payload(fields=fields)
