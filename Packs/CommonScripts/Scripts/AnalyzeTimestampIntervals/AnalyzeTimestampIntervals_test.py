@@ -1,6 +1,6 @@
 import pytest
 from AnalyzeTimestampIntervals import analyze_intervals
-import numpy as np
+import random
 
 
 # Consistent intervals (10,000 ms apart, i.e., 1 event every 10 seconds)
@@ -10,8 +10,8 @@ consistent_timestamps = [1609459200000 + i * 10000 for i in range(100)]
 high_freq_timestamps = [1609459200000 + i * 100 for i in range(100)]
 
 # Random intervals with +-1500 ms variation
-np.random.seed(42)  # Ensures reproducibility for tests
-random_intervals = [3000 + np.random.randint(-1500, 1500) for _ in range(90)]
+random.seed(42)  # Ensures reproducibility for tests
+random_intervals = [3000 + random.randint(-1500, 1500) for _ in range(90)]
 
 inconsistent_timestamps = [
     1609459200000, 1609459205000, 1609459210000, 1609459215000, 1609459220000,
