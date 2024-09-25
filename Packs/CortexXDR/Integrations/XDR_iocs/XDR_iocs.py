@@ -686,7 +686,7 @@ def get_changes(client: Client):
         if not last_run:
             raise DemistoException('XDR is not synced.')
         path, requests_kwargs = prepare_get_changes(last_run['ts'])
-        requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
+        requests_kwargs = get_requests_kwargs(_json=requests_kwargs)
         demisto.debug(f'pull XDR changes: calling endpoint {path}, {requests_kwargs=}')
         if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
             last_run['ts'] = iocs[-1].get('RULE_MODIFY_TIME', last_run['ts']) + 1
