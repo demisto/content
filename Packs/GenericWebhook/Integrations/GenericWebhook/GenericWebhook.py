@@ -16,6 +16,8 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from uvicorn.logging import AccessFormatter
 
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import argToBoolean
+
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
@@ -29,6 +31,13 @@ async def parse_incidents(request: Request) -> list[dict]:
     demisto.debug(f'received body {sys.getsizeof(json_body)=}')
     incidents = json_body if isinstance(json_body, list) else [json_body]
     demisto.debug(f'received create incidents request of length {len(incidents)}')
+    if is_fetch_creds():
+        return incidents
+    for incident in incidents:
+        raw_json = incident.get('rawJson') or incident.get('raw_json') or copy(incident)
+        if not incident.get('rawJson'):
+            incident.pop('raw_json', None)
+            incident['rawJson'] = raw_json
     return incidents
 
 
@@ -49,8 +58,8 @@ class GenericWebhookAccessFormatter(AccessFormatter):
         return super().formatMessage(recordcopy)
 
 
-def merge_creds(pre_existing, incidents):
-    return [cred for cred in pre_existing if cred.get('name','') not in [inc.get('name') for inc in incidents]] + incidents
+def is_fetch_creds():
+    return argToBoolean(demisto.params().get('isFetchCredentials'))
 
 
 @app.post('/')
@@ -59,46 +68,68 @@ async def handle_post(
     credentials: HTTPBasicCredentials = Depends(basic_auth),
     token: APIKey = Depends(token_auth)
 ):
+    demisto.debug('generic webhook handling request')
     try:
+        incidents = await parse_incidents(request)
+    except JSONDecodeError as e:
+        demisto.error(f'could not decode request {e}')
+        return Response(status_code=status.HTTP_400_BAD_REQUEST,
+                        content='Request, and rawJson field if exists must be in JSON format')
+    header_name = None
+    request_headers = dict(request.headers)
 
-        demisto.debug('generic webhook handling request')
-        try:
-            incidents = await parse_incidents(request)
-        except JSONDecodeError as e:
-            demisto.error(f'could not decode request {e}')
-            return Response(status_code=status.HTTP_400_BAD_REQUEST,
-                            content='Request, and rawJson field if exists must be in JSON format')
-        header_name = None
-        request_headers = dict(request.headers)
+    credentials_param = demisto.params().get('credentials')
 
-        credentials_param = demisto.params().get('credentials')
-
-        if credentials_param and (username := credentials_param.get('identifier')):
-            password = credentials_param.get('password', '')
-            auth_failed = False
-            if username.startswith('_header'):
-                header_name = username.split(':')[1]
-                if not token or not compare_digest(token, password):
-                    auth_failed = True
-            elif (not credentials) or (not (compare_digest(credentials.username, username)
-                                            and compare_digest(credentials.password, password))):
+    if credentials_param and (username := credentials_param.get('identifier')):
+        password = credentials_param.get('password', '')
+        auth_failed = False
+        if username.startswith('_header'):
+            header_name = username.split(':')[1]
+            if not token or not compare_digest(token, password):
                 auth_failed = True
-            if auth_failed:
-                secret_header = (header_name or 'Authorization').lower()
-                if secret_header in request_headers:
-                    request_headers[secret_header] = '***'
-                demisto.debug(f'Authorization failed - request headers {request_headers}')
-                return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
+        elif (not credentials) or (not (compare_digest(credentials.username, username)
+                                        and compare_digest(credentials.password, password))):
+            auth_failed = True
+        if auth_failed:
+            secret_header = (header_name or 'Authorization').lower()
+            if secret_header in request_headers:
+                request_headers[secret_header] = '***'
+            demisto.debug(f'Authorization failed - request headers {request_headers}')
+            return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
-        secret_header = (header_name or 'Authorization').lower()
-        request_headers.pop(secret_header, None)
-
+    secret_header = (header_name or 'Authorization').lower()
+    request_headers.pop(secret_header, None)
+    if is_fetch_creds():
         store = {'creds': incidents}
         set_integration_context(store)
 
         return f'added total stored {store}'
-    except Exception as e:
-        return f'error {e}'
+
+    incidents = [{
+        'name': incident.get('name') or 'Generic webhook triggered incident',
+        'type': incident.get('type') or demisto.params().get('incidentType'),
+        'occurred': incident.get('occurred'),
+        'rawJSON': json.dumps(incident.get('rawJson'))
+    } for incident in incidents]
+
+    demisto.debug('creating incidents')
+    return_incidents = demisto.createIncidents(incidents)
+    demisto.debug('created incidents')
+    if demisto.params().get('store_samples'):
+        try:
+            sample_events_to_store.extend(incidents)
+            demisto.debug(f'old events {len(sample_events_to_store)=}')
+            integration_context = get_integration_context()
+            sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+            sample_events += sample_events_to_store
+            demisto.debug(f'new events {len(sample_events_to_store)=}')
+            integration_context['sample_events'] = list(sample_events)
+            set_to_integration_context_with_retries(integration_context)
+            demisto.debug('finished setting sample events')
+        except Exception as e:
+            demisto.error(f'Failed storing sample events - {e}')
+
+    return return_incidents
 
 
 def setup_credentials():
