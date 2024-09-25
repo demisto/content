@@ -530,11 +530,16 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     fetch_limit = client.max_indicator_to_fetch
     total_fetched_indicators = 0
     query = params.get('query', None)
-    last_run = demisto.getLastRun().get('timestamp') or ""
-    params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run) if query else\
-        build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT, page=1, from_timestamp=last_run)
+    last_run_timestamp = demisto.getLastRun().get('timestamp') or ""
+    last_run_page = demisto.getLastRun().get('page') or 1
+
+    params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp) if query else \
+        build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT,
+                          page=last_run_page, from_timestamp=last_run_timestamp)
+
     search_query_per_page = client.search_query(params_dict)
     demisto.debug(f'params_dict: {params_dict}')
+
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
@@ -544,16 +549,18 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
-        last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
+
+        last_run_timestamp = search_query_per_page['response']['Attribute'][-1]['timestamp']
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.
         if fetch_limit and fetch_limit <= total_fetched_indicators:
             demisto.debug(f"Reached the limit of indicators to fetch. The number of indicators fetched is: {len(indicators)}")
-            break
+            demisto.setLastRun({'timestamp': last_run_timestamp, 'page': params_dict['page']})
+            return
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    demisto.setLastRun({'timestamp': last_run})
+    demisto.setLastRun({'timestamp': last_run_timestamp})
 
 
 def main():  # pragma: no cover
