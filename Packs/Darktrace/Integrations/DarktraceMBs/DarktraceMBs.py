@@ -40,6 +40,8 @@ DARKTRACE_API_ERRORS = {
     'FAILED_TO_PARSE': 'N/A'
 }
 
+DARKTRACE_LOGIN = '<title>Log In | Darktrace</title>'
+
 
 """*****CLIENT CLASS*****
 Wraps all the code that interacts with the Darktrace API."""
@@ -96,6 +98,11 @@ class Client(BaseClient):
                                 + '. Response Status code: ' + str(res.status_code))
         except Exception as e:
             raise Exception(e)
+
+        res_str = res.content.decode('utf-8')
+        if DARKTRACE_LOGIN in res_str:
+            raise Exception(DARKTRACE_API_ERRORS['PRIVILEGE_ERROR'])
+
         try:
             return res.json()
         except Exception as e:
@@ -216,7 +223,7 @@ class Client(BaseClient):
         query_uri = f"{MODEL_BREACH_ENDPOINT}/{pbid}{UNACK_BREACH}"
         return self.post(query_uri, data={"unacknowledge": "true"})
 
-    def post_comment_to_model_breach(self, pbid: str, comment: str) -> list[dict[str, Any]]:
+    def post_comment_to_model_breach(self, pbid: str, comment: str) -> dict[str, Any]:
         """Posts a comment to a model breach'
         :type pbid: ``str``
         :param pbid: Model breach ID
@@ -771,8 +778,8 @@ def post_comment_to_model_breach_command(client: Client, args: dict[str, Any]) -
 
     post_comment_response = client.post_comment_to_model_breach(pbid=pbid, comment=comment)
 
-    output_response = {}
-    if isinstance(post_comment_response, list) and post_comment_response[0].get("message", False):
+    output_response: dict[str, str | int] = {}
+    if post_comment_response.get("message", False):
         output_response['response'] = 'Successfully posted comment.'
         output_response['pbid'] = int(pbid)
         output_response['message'] = str(comment)
