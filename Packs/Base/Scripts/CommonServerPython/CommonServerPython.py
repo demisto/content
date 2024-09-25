@@ -11622,7 +11622,7 @@ def xsiam_api_call_with_retries(
             raise DemistoException(error_msg + response.get('error'))
     return response
 
-def validate_no_oversize_chunks(data: list):
+def validate_no_oversize_chunks(data):
     """
     This function validates that the received data does not have an item bigger than the limit defined in
     XSIAM_EVENT_CHUNK_SIZE_LIMIT. In such a case we will raise an error.
@@ -11632,11 +11632,22 @@ def validate_no_oversize_chunks(data: list):
     """
 
     for data_part in data:
-        if oversize_item_size := sys.getsizeof(data_part) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
-            # We fail the submission process as it will cause errors on the BE side.
-            raise DemistoException(
-                f'ERROR: failed splitting data to chunks. Chunk size limit is {XSIAM_EVENT_CHUNK_SIZE_LIMIT} '
-                f'but data contains an item of size: {oversize_item_size}')
+        if (oversize_item_size := sys.getsizeof(data_part)) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            try:
+                parsed_data = json.loads(data_part)
+                for key, val in parsed_data.items():
+                    if (val_size := sys.getsizeof(val)) > (2 ** 10):  # 1 MB
+                        demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
+                                      f'{str(val[:1000])}...')
+            finally:
+                with open(f'oversize_data_part', 'w') as f:
+                    f.write(data_part)
+                    demisto.debug(f'Wrote file: oversize_data_part')
+                # We fail the submission process as it will cause errors on the BE side.
+                raise DemistoException(
+                    f'ERROR: failed splitting data to chunks. Chunk size limit is {XSIAM_EVENT_CHUNK_SIZE_LIMIT} Bytes '
+                    f'but data contains an item of size: {oversize_item_size} bytes'
+                    f'\n{str(data_part)[:10000]}')
 
 
 def split_data_to_chunks(data, target_chunk_size):
@@ -11662,13 +11673,14 @@ def split_data_to_chunks(data, target_chunk_size):
     validate_no_oversize_chunks(data)
 
     for data_part in data:
-        if chunk_size >= target_chunk_size:
+        current_part_size = sys.getsizeof(data_part)
+        if chunk_size + current_part_size > target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []
             chunk_size = 0
         chunk.append(data_part)
-        chunk_size += sys.getsizeof(data_part)
+        chunk_size += current_part_size
     if chunk_size != 0:
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
@@ -11966,7 +11978,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
-    data_chunks = split_data_to_chunks(data, chunk_size)
+    data_chunks = \
+        split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         data_size += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
