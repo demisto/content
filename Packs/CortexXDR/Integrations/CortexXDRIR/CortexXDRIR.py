@@ -1,11 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Cortex XDR by Palo Alto Networks, pack version = 6.1.74')
+
+
 import hashlib
 import secrets
 import string
 from itertools import zip_longest
 from datetime import datetime, timedelta
 import pytz
+
 
 from CoreIRApiModule import *
 
@@ -1735,3 +1739,4 @@ def main():  # pragma: no cover
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
