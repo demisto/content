@@ -135,11 +135,21 @@ Retrieves the details of a risk for the provided risk ID.
 | --- | --- | --- |
 | finding_id | ID of the risk for which to retrieve details. | Required | 
 
-#### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| DSPM.RiskFinding | String | Details of the risk finding for the provided ID. | 
+### Context Outputs
+
+- **DSPM.RiskFinding.ID**: The unique identifier of the risk finding.
+- **DSPM.RiskFinding.AssetID**: The asset associated with the risk finding.
+- **DSPM.RiskFinding.FirstDiscovered**: The date when the risk was first discovered.
+- **DSPM.RiskFinding.Status**: The current status of the risk finding.
+- **DSPM.RiskFinding.CloudProvider**: The cloud provider associated with the risk finding.
+- **DSPM.RiskFinding.RuleName**: The name of the rule that triggered the risk finding.
+- **DSPM.RiskFinding.ProjectID**: The ID of the project linked to the risk finding.
+- **DSPM.RiskFinding.AssetName**: The name of the asset related to the risk finding.
+- **DSPM.RiskFinding.ComplianceStandards**: Compliance standards associated with the risk.
+- **DSPM.RiskFinding.Severity**: Severity level of the risk finding.
+- **DSPM.RiskFinding.CloudEnvironment**: The cloud environment in which the risk exists.
+
 
 #### Command example
 ```!dspm-get-risk-finding-by-id finding_id="00000000-0000-4f99-0000-616843b6b19e"```
@@ -194,11 +204,24 @@ Retrieves a list of assets for the company.
 | lifecycleEqual | Exact Life Cycle ['RUNNING', 'STOPPED', 'DELETED']. | Optional | 
 | sort | Sorting criteria in the format: property,(asc\|desc). Default sort order is ascending. Multiple sort criteria are supported. | Optional | 
 
-#### Context Output
+### Context Outputs
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| DSPM.Assets | String | List of assets for the company. | 
+
+- **DSPM.Assets.ProjectID**: The ID of the project associated with the asset.
+- **DSPM.Assets.OpenAlertsCount**: The count of open alerts for the asset.
+- **DSPM.Assets.AssetDigTags**: Digital tags associated with the asset.
+- **DSPM.Assets.OpenToWorld**: Indicates if the asset is open to the world.
+- **DSPM.Assets.OpenRisksCount**: The count of open risks for the asset.
+- **DSPM.Assets.Lifecycle**: Lifecycle status of the asset.
+- **DSPM.Assets.ServiceType**: The type of service associated with the asset.
+- **DSPM.Assets.Tags**: Tags related to the asset.
+- **DSPM.Assets.ProjectName**: The name of the project associated with the asset.
+- **DSPM.Assets.CloudEnvironment**: The cloud environment in which the asset exists.
+- **DSPM.Assets.ID**: The unique identifier of the asset.
+- **DSPM.Assets.CloudProvider**: The cloud provider for the asset.
+- **DSPM.Assets.Encrypted**: Indicates if the asset is encrypted.
+- **DSPM.Assets.Name**: The name of the asset.
+
 
 #### Command example
 ```!dspm-get-list-of-assets cloudProviderEqual=AWS serviceTypeEqual=S3```
