@@ -2601,7 +2601,7 @@ def main():
             issue_result = get_issue(
                 issue_id=issue_id,
             )
-            command_result = CommandResults(readable_output=issue_result, raw_response=issue_result, outputs=issue_result, outputs_key_field='Wiz.Issue', outputs_prefix='Wiz.Issue')
+            command_result = CommandResults(readable_output=issue_result, raw_response=issue_result, outputs=issue_result, outputs_key_field='Wiz.Issue', outputs_prefix=f'Wiz.Issue.{issue_id}')
             return_results(command_result)
 
         elif command == 'wiz-issue-in-progress':
@@ -2639,7 +2639,7 @@ def main():
             issue_response = get_issue_evidence(
                 issue_id=issue_id
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response, outputs=issue_response, outputs_key_field='Wiz.Evidence', outputs_prefix='Wiz.Evidence')
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response, outputs=issue_response, outputs_key_field='Wiz.Evidence', outputs_prefix=f'Wiz.Evidence.{issue_id}')
             return_results(command_result)
 
         elif command == 'wiz-set-issue-due-date':
