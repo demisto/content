@@ -31,6 +31,7 @@ configuration:
   name: key
   type: 0
   required: false
+  hidden: true
 - display: Shared Key
   name: shared_key
   type: 4
