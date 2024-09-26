@@ -1120,7 +1120,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                         # other item attachment
                         label_attachment_type = 'attachmentItems'
                         label_attachment_id_type = 'attachmentItemsId'
-
+                        formatted_message: str | bytes
                         # save the attachment
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
                             # Some items arrive with bytes attachemnt
@@ -1148,7 +1148,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             try:
                                 formatted_message = attached_email.as_string()
                             except UnicodeEncodeError:
-                                formatted_message = attached_email.as_bytes()  # type: ignore[assignment]
+                                formatted_message = attached_email.as_bytes()
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
                                                                          is_inline=attachment.is_inline) + ".eml",
