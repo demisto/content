@@ -10,22 +10,22 @@ def check_for_phishing_indicators(html_content):
         "suspicious_links": bool(re.search(r'href=["\'](.*?(login|signin|account).*?)["\']', html_content, re.IGNORECASE)),
         "pop-up_forms": bool(re.search(r'<input[^>]*type=["\']?text["\']?.*?name=["\'](.*?(username|email).*?)["\']?', html_content, re.IGNORECASE)),  # noqa: E501
         # Additional checks
-        "meta_tags_phishing_keywords": bool(re.search(  \
-            r'<meta[^>]*name=["\']?(keywords|description)["\']?[^>]*content=["\']?(phishing|login|password)["\']?',     \
+        "meta_tags_phishing_keywords": bool(re.search(
+            r'<meta[^>]*name=["\']?(keywords|description)["\']?[^>]*content=["\']?(phishing|login|password)["\']?',
             html_content, re.IGNORECASE)),
-        "javascript_phishing_code": bool(re.search(r'<script[^>]*>\s*function.*?(submit|login|password).*?</script>',   \
+        "javascript_phishing_code": bool(re.search(r'<script[^>]*>\s*function.*?(submit|login|password).*?</script>',
                                                    html_content, re.DOTALL | re.IGNORECASE)),
         "suspicious_iframes": bool(re.search(r'<iframe[^>]*src=["\']?(https?|ftp):', html_content, re.IGNORECASE)),
         # You can add more checks for additional indicators here
-        "payment_form_elements": bool(re.search(    \
-            r'<input[^>]*type=["\']?(text|password)["\']?.*?name=["\'](.*?(credit|card|cvv|exp|security|cardNumber).*?)["\']?',  \
+        "payment_form_elements": bool(re.search(
+            r'<input[^>]*type=["\']?(text|password)["\']?.*?name=["\'](.*?(credit|card|cvv|exp|security|cardNumber).*?)["\']?',
             html_content, re.IGNORECASE)),
-        "suspicious_js_functions": bool(re.search(r'<script[^>]*>\s*(submit|validate|sendData).*?</script>', html_content,      \
+        "suspicious_js_functions": bool(re.search(r'<script[^>]*>\s*(submit|validate|sendData).*?</script>', html_content,
                                                   re.DOTALL | re.IGNORECASE)),
-        "hidden_fields": bool(re.search(    \
-            r'<input[^>]*type=["\']?hidden["\']?.*?name=["\'](.*?(credit|card|bank|account|payment).*?)["\']?',     \
+        "hidden_fields": bool(re.search(
+            r'<input[^>]*type=["\']?hidden["\']?.*?name=["\'](.*?(credit|card|bank|account|payment).*?)["\']?',
             html_content, re.IGNORECASE)),
-        "payment_keywords": bool(re.search(r'(credit|card|debit|bank|account|payment|paypal|bitcoin|crypto)', html_content,     \
+        "payment_keywords": bool(re.search(r'(credit|card|debit|bank|account|payment|paypal|bitcoin|crypto)', html_content,
                                            re.IGNORECASE)),
     }
 

@@ -2,12 +2,12 @@
     "name": "WALLIX Bastion",
     "description": "Integrations for WALLIX Bastion appliances",
     "support": "partner",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.1.0",
     "author": "WALLIX",
     "url": "https://www.wallix.com/privileged-access-management/",
     "email": "",
     "categories": [
-        "Authentication & Identity Management"
+        "Identity and Access Management"
     ],
     "tags": [
         "Compliance",

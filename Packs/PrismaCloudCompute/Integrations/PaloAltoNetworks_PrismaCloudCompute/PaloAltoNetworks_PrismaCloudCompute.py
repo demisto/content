@@ -54,7 +54,7 @@ class PrismaCloudComputeClient(BaseClient):
             super().__init__(base_url, True, proxy, ok_codes, headers, auth)
             self._verify = verify
 
-    def _http_request(self, method, url_suffix, full_url=None, headers=None,
+    def _http_request(self, method, url_suffix, full_url=None, headers=None,  # type: ignore[override]
                       auth=None, json_data=None, params=None, data=None, files=None,
                       timeout=30, resp_type='json', ok_codes=None, **kwargs):
         """
@@ -2537,7 +2537,7 @@ def archive_audit_incident_command(client: PrismaCloudComputeClient, args: dict)
             string: A string that indicates success or failure
     """
     incident_id = args.get("incident_id") or ""
-    data = {'acknowledged': True if args.get("action") == "archive" else False}
+    data = {'acknowledged': args.get('action') == 'archive'}
     client.archive_audit_incident(incident_id=incident_id, data=json.dumps(data))
     return f'Incident {incident_id} was successfully {"archived" if args.get("action") == "archive" else "unarchived"}'
 

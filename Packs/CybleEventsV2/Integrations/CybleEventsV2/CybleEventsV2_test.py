@@ -11,11 +11,14 @@ you are implementing with your integration
 """
 
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
+import pytz
 
 import pytest
 
 import demistomock as demisto
+
+UTC = pytz.UTC
 
 
 def util_load_json(path):
@@ -120,10 +123,10 @@ def test_get_iocs(requests_mock, offset):
     assert isinstance(response, list)
     assert isinstance(response[0], dict)
     assert response[0]['ioc'] == 'Indicator'
-    assert response[0]['last_seen'] == '2023-02-20 21:00:55'
-    assert response[0]['first_seen'] == '2023-02-20 21:00:55'
-    assert response[0]['ioc_type'] == 'some indicator type'
-    assert response[0]['risk_rating'] == 'Some Risk Rating'
+    assert response[0]['ioc_type'] == 'Some IOC Type'
+    assert response[0]['first_seen'] == '1722227702'
+    assert response[0]['last_seen'] == '1722472568'
+    assert response[0]['risk_score'] == '70'
 
 
 def test_get_alert_group(requests_mock):
@@ -238,8 +241,8 @@ def test_limit_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '-1',
     }
@@ -260,7 +263,7 @@ def test_limit_validate_ioc_input(capfd):
     }
     with capfd.disabled(), pytest.raises(ValueError,
                                          match="The limit argument should contain a positive number,"
-                                               f" up to 1000, limit: {args.get('limit', '50')}"):
+                                               f" up to 100, limit: {args.get('limit', '50')}"):
         validate_input(args=args, is_iocs=True)
 
 
@@ -284,8 +287,8 @@ def test_edate_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': (datetime.now(tz=timezone.utc) + timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': (datetime.now(tz=UTC) + timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '1'
     }
@@ -300,8 +303,8 @@ def test_date_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': (datetime.now(tz=UTC) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '1'
     }
@@ -337,8 +340,8 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
     args = {
         'from': '-1',
         'limit': 1,
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z")
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
@@ -368,8 +371,8 @@ def test_get_alert_fetch(requests_mock):
     args = {
         'from': 1,
         'limit': 1,
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z")
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
@@ -400,8 +403,8 @@ def test_get_alert_fetch2(requests_mock):
     args = {
         'from': 1,
         'limit': 1,
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z")
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
@@ -451,8 +454,8 @@ def test_data_alert_invalidate_date(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
-        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M"),
+        'end_date': (datetime.now(tz=UTC) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
         'from': '0',
         'limit': '1'
     }
@@ -467,8 +470,8 @@ def test_data_alert_iocs_date(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
-        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M"),
+        'end_date': (datetime.now(tz=UTC) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
         'from': '0',
         'limit': '1'
     }

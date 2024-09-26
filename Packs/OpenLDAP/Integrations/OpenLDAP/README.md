@@ -221,3 +221,43 @@ There is no context output for this command.
     ]
 }
 ```
+
+### ad-entries-search
+
+***
+A generic LDAP search command.
+
+#### Base Command
+
+`ad-entries-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_base | The location in the DIT where the search will start. Default is the provided Base DN in the configuration. | Optional | 
+| search_filter | A string that describes what you are searching for. When provided with additional filter arguments, the OR join operator is used. If not provided, and no other filter arguments are present, all entries are returned. Search filters are based on assertions. One assertion is a bracketed expression that affirms something about an attribute and its values, as (givenName=John) or (maxRetries&gt;=10). On the server, each assertion resolves to True, False, or Undefined (which is treated as False) for one or more entries in the DIT. Assertions can be grouped in boolean groups where all assertions (and group, specified with &amp;) or at least one assertion (or group, specified with \|) must be True. A single assertion can be negated (not group, specified with !). Each group must be bracketed, allowing for recursive filters. Operators allowed in an assertion are = (equal), &lt;= (less than or equal), &gt;= (greater than or equal), =* (present), ~= (approximate), and := (extensible). Surprisingly the less than and the greater than operators don’t exist in the LDAP filter syntax. The aproximate and the extensible operators are obscure and seldom used. In an equality filter you can use the * character as a wildcard. | Optional | 
+| search_scope | Specifies how broad the search context. 'BASE'- retrieves attributes of the entry specified in the search_base. 'LEVEL'- retrieves attributes of the entries contained in the search_base. The base must reference a container object. 'SUBTREE' - retrieves attributes of the entries specified in the search_base and all subordinate containers downward. Possible values are: BASE, LEVEL, SUBTREE. Default is SUBTREE. | Optional | 
+| attributes | A comma-separated list of attributes to return in the response. If attributes is 'none', no attributes will be returned except the dn. If attributes is 'all_user_attributes' or 'all_operational_attributes', all user attributes or all operational attributes are returned. If attributes is 'all', both user and operational attributes are returned. Possible values are: none, all_user_attributes, all_operational_attributes, all. Default is all. | Optional | 
+| cn | A comma-separated list of CNs to filter the search by (AND operator is used to join them). | Optional | 
+| uid | A comma-separated list of UIDs to filter the search by (AND operator is used to join them). | Optional | 
+| object_class | A comma-separated list of objectClasses to filter the search by (AND operator is used to join them). | Optional | 
+| description | A comma-separated list of descriptions to filter the search by (AND operator is used to join them). | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
+| limit | The maximum number of entries to return. Default is 50. | Optional | 
+
+#### Context Output
+
+The context output will vary depending on the LDAP server scheme configuration and the attributes provided in the command.
+
+
+#### Command Example
+
+`!ad-entries-search base_dn="dc=openldap,dc=demisto,dc=int" object_class=top,posixAccount search_filter="(creatorsName=cn=ldapadm,dc=openldap,dc=demisto,dc=int)"  attributes=all_operational_attributes page=1 page_size=2`
+#### Human Readable Output
+
+| createTimestamp           | creatorsName                             | dn                                       | entryCSN                             | entryUUID                            | hasSubordinates   | modifiersName                            | modifyTimestamp           | structuralObjectClass   | subschemaSubentry   |
+|:--------------------------|:-----------------------------------------|:-----------------------------------------|:-------------------------------------|:-------------------------------------|:------------------|:-----------------------------------------|:--------------------------|:------------------------|:--------------------|
+| 2019-12-03 11:23:40+00:00 | cn=ldapadm,dc=openldap,dc=demisto,dc=int | dc=openldap,dc=demisto,dc=int            | 20191203112340.454387Z#000000#000, # | 19f7dd04-aa0b-1039-811c-25103214a95a | True              | cn=ldapadm,dc=openldap,dc=demisto,dc=int | 2019-12-03 11:23:40+00:00 | domain                  | cn=Subschema        |
+| 2019-12-03 11:23:40+00:00 | cn=ldapadm,dc=openldap,dc=demisto,dc=int | cn=ldapadm,dc=openldap,dc=demisto,dc=int | 20240708140845.283421Z#000000#000, # | 19f8d2c2-aa0b-1039-811d-25103214a95a | False             | cn=ldapadm,dc=openldap,dc=demisto,dc=int | 2024-07-08 14:08:45+00:00 | organizationalRole      | cn=Subschema        |

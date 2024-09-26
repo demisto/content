@@ -1,0 +1,515 @@
+id: Arcanna-Generic-Investigation
+version: -1
+name: Arcanna-Generic-Investigation
+description: |-
+  Playbook takes incident data and sends it to Arcanna.Ai for ML inference and automated decision. Once decision is retrieved, manual input ( in this case )
+  from analyst is added in as feedback and sent back to Arcanna.ai. Once Feedback is provided in the final steps of the playbook, an automated AI Training
+  is triggered and finally the full record, that contains all Arcanna.ai added metadata, is retrieved back into the context
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a8581242-fbdd-4b93-8ea6-c61a0ef0ba2d
+    type: start
+    task:
+      id: a8581242-fbdd-4b93-8ea6-c61a0ef0ba2d
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6aa24b25-002e-42cf-8cd1-0ba1339ae5f4
+    type: regular
+    task:
+      id: 6aa24b25-002e-42cf-8cd1-0ba1339ae5f4
+      version: -1
+      name: arcanna-send-event
+      description: Sends a raw event to Arcanna
+      script: Arcanna.AI|||arcanna-send-event
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      event_json:
+        simple: ${incident_json}
+      id_value:
+        simple: ${incident.id}
+      job_id:
+        simple: ${Arcanna.Jobs.job_id}
+      severity:
+        simple: ${incident.severity}
+      title:
+        simple: ${incident.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 9369019c-105a-44f8-86fe-e0bbb3c6d051
+    type: regular
+    task:
+      id: 9369019c-105a-44f8-86fe-e0bbb3c6d051
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      onCall: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ed845cf6-c602-4601-8f2b-0f43f43fead6
+    type: regular
+    task:
+      id: ed845cf6-c602-4601-8f2b-0f43f43fead6
+      version: -1
+      name: arcanna-send-event-feedback
+      description: Send Arcanna feedback for a previous inferred event.
+      script: Arcanna.AI|||arcanna-send-event-feedback
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      close_reason:
+        simple: ${Closure_Reason_Survey.Answers.0}
+      closing_notes: {}
+      decision_set:
+        simple: ${Arcanna.Event.decision_set}
+      event_id:
+        simple: ${Arcanna.Event.event_id}
+      feedback:
+        simple: ${Closure_Reason_Survey.Answers.0}
+      indicators: {}
+      job_id:
+        simple: ${Arcanna.Jobs.job_id}
+      label:
+        simple: 'Deprecated'
+      username:
+        simple: ${Closure_Reason_Survey.Answers.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: a197a05c-ecfd-4d7f-83bc-ce48c70db205
+    type: title
+    task:
+      id: a197a05c-ecfd-4d7f-83bc-ce48c70db205
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: e3d733d6-67be-4a33-860a-2b8eb32e2703
+    type: regular
+    task:
+      id: e3d733d6-67be-4a33-860a-2b8eb32e2703
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: incident_json
+      stringify:
+        simple: "true"
+      value:
+        simple: '{"incident":${incident}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 88219779-96d8-4ba6-8891-569679366e6c
+    type: regular
+    task:
+      id: 88219779-96d8-4ba6-8891-569679366e6c
+      version: -1
+      name: arcanna-get-jobs
+      description: Get jobs list
+      script: Arcanna.AI|||arcanna-get-jobs
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 5d0cde5b-fe6c-477e-8aff-4b54804b8b23
+    type: regular
+    task:
+      id: 5d0cde5b-fe6c-477e-8aff-4b54804b8b23
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 43c7e10e-c504-4b95-892e-7b478ce632a7
+    type: regular
+    task:
+      id: 43c7e10e-c504-4b95-892e-7b478ce632a7
+      version: -1
+      name: arcanna-get-decision-set
+      script: Arcanna.AI|||arcanna-get-decision-set
+      description: "" 
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      job_id:
+        simple: ${Arcanna.Jobs.job_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 1d6a0553-0636-4190-831b-3fc9ff3e1e50
+    type: regular
+    task:
+      id: 1d6a0553-0636-4190-831b-3fc9ff3e1e50
+      version: -1
+      name: arcanna-trigger-train
+      description: Trigger AI Train for specified Arcanna.ai Job
+      script: Arcanna.AI|||arcanna-trigger-train
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      job_id:
+        simple: ${Arcanna.Jobs.job_id}
+      username:
+        simple: ${Closure_Reason_Survey.Answers.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 44f90572-7536-408d-8d95-7a8f9420d81f
+    type: collection
+    task:
+      id: 44f90572-7536-408d-8d95-7a8f9420d81f
+      version: -1
+      name: Get Analyst Input and add Closing Information
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Input Analyst investigation result.
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please input the Feedback   ( ${Arcanna.Event.decision_set}  ) '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Closure_Reason_Survey
+      description: Get Analyst Input and add Closing Information
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 0ea58fcb-b4f4-4773-8a31-54657afa5fc0
+    type: regular
+    task:
+      id: 0ea58fcb-b4f4-4773-8a31-54657afa5fc0
+      version: -1
+      name: arcanna-export-event
+      description: ""
+      script: Arcanna.AI|||arcanna-export-event
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      event_id:
+        simple: ${Arcanna.Event.event_id}
+      job_id:
+        simple: ${Arcanna.Jobs.job_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 68db7d25-a9e8-4deb-8ce1-6bbef756a45c
+    type: regular
+    task:
+      id: 68db7d25-a9e8-4deb-8ce1-6bbef756a45c
+      version: -1
+      name: arcanna-get-event-status
+      description: Retrieves Arcanna Inference result.
+      script: Arcanna.AI|||arcanna-get-event-status
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      event_id:
+        simple: ${Arcanna.Event.event_id}
+      job_id:
+        simple: ${Arcanna.Event.job_id}
+      polling:
+        simple: 'true'
+      interval:
+        simple: 10
+      timeout:
+        simple: 60
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2055,
+        "width": 380,
+        "x": 70,
+        "y": -530
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+

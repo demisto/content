@@ -3538,14 +3538,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### azure-rm-webapp
+
 ***
 Manage Web App instances
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html
-
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html
 
 #### Base Command
 
 `azure-rm-webapp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3553,12 +3554,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | resource_group | Name of the resource group to which the resource belongs. | Required | 
 | name | Unique name of the app to create or update. To create or update a deployment slot, use the {slot} parameter. | Required | 
 | location | Resource location. If not set, location from the resource group will be used as default. | Optional | 
-| plan | App service plan. Required for creation.<br/>Can be name of existing app service plan in same resource group as web app.<br/>Can be the resource ID of an existing app service plan. For example /subscriptions/&lt;subs_id&gt;/resourceGroups/&lt;resource_group&gt;/providers/Microsoft.Web/serverFarms/&lt;plan_name&gt;.<br/>Can be a dict containing five parameters, defined below.<br/>`name`, name of app service plan.<br/>`resource_group`, resource group of the app service plan.<br/>`sku`, SKU of app service plan, allowed values listed on `https://azure.microsoft.com/en-us/pricing/details/app-service/linux/`.<br/>`is_linux`, whether or not the app service plan is Linux. defaults to `False`.<br/>`number_of_workers`, number of workers for app service plan. | Optional | 
-| frameworks | Set of run time framework settings. Each setting is a dictionary.<br/>See `https://docs.microsoft.com/en-us/azure/app-service/app-service-web-overview` for more info. | Optional | 
+| plan | App service plan. Required for creation. Can be name of existing app service plan in same resource group as web app. Can be the resource ID of an existing app service plan. For example /subscriptions/&lt;subs_id&gt;/resourceGroups/&lt;resource_group&gt;/providers/Microsoft.Web/serverFarms/&lt;plan_name&gt;. Can be a dict containing five parameters, defined below. `name`, name of app service plan. `resource_group`, resource group of the app service plan. `sku`, SKU of app service plan, allowed values listed on `https://azure.microsoft.com/en-us/pricing/details/app-service/linux/`. `is_linux`, whether or not the app service plan is Linux. defaults to `False`. `number_of_workers`, number of workers for app service plan. | Optional | 
+| frameworks | Set of run time framework settings. Each setting is a dictionary. See `https://docs.microsoft.com/en-us/azure/app-service/app-service-web-overview` for more info. | Optional | 
 | container_settings | Web app container settings. | Optional | 
-| scm_type | Repository type of deployment source, for example `LocalGit`, `GitHub`.<br/>List of supported values maintained at `https://docs.microsoft.com/en-us/rest/api/appservice/webapps/createorupdate#scmtype`. | Optional | 
+| scm_type | Repository type of deployment source, for example `LocalGit`, `GitHub`. List of supported values maintained at `https://docs.microsoft.com/en-us/rest/api/appservice/webapps/createorupdate#scmtype`. | Optional | 
 | deployment_source | Deployment source for git. | Optional | 
-| startup_file | The web's startup file.<br/>Used only for Linux web apps. | Optional | 
+| startup_file | The web's startup file. Used only for Linux web apps. | Optional | 
 | client_affinity_enabled | Whether or not to send session affinity cookies, which route client requests in the same session to the same instance. Possible values are: Yes, No. Default is Yes. | Optional | 
 | https_only | Configures web site to accept only https requests. | Optional | 
 | dns_registration | Whether or not the web app hostname is registered with DNS on creation. Set to `false` to register. | Optional | 
@@ -3567,11 +3568,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | app_settings | Configure web app application settings. Suboptions are in key value pair format. | Optional | 
 | purge_app_settings | Purge any existing application settings. Replace web app application settings with app_settings. | Optional | 
 | app_state | Start/Stop/Restart the web app. Possible values are: started, stopped, restarted. Default is started. | Optional | 
-| state | State of the Web App.<br/>Use `present` to create or update a Web App and `absent` to delete it. Possible values are: absent, present. Default is present. | Optional | 
+| state | State of the Web App. Use `present` to create or update a Web App and `absent` to delete it. Possible values are: absent, present. Default is present. | Optional | 
 | subscription_id | Your Azure subscription Id. | Optional | 
-| tags | Dictionary of string:string pairs to assign as metadata to the object.<br/>Metadata tags on the object will be updated with any provided values.<br/>To remove tags set append_tags option to false. | Optional | 
-| append_tags | Use to control if tags field is canonical or just appends to existing tags.<br/>When canonical, any tags not found in the tags parameter will be removed from the object's metadata. Possible values are: Yes, No. Default is Yes. | Optional | 
-
+| tags | Dictionary of string:string pairs to assign as metadata to the object. Metadata tags on the object will be updated with any provided values. To remove tags set append_tags option to false. | Optional | 
+| append_tags | Use to control if tags field is canonical or just appends to existing tags. When canonical, any tags not found in the tags parameter will be removed from the object's metadata. Possible values are: Yes, No. Default is Yes. | Optional | 
 
 #### Context Output
 
@@ -3579,6 +3579,28 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | --- | --- | --- |
 | Azure.AzureRmWebapp.azure_webapp | string | ID of current web app. | 
 
+#### Command example
+```!azure-rm-webapp name=test resource_group=resource_group plan="{{{'name': 'testing', 'resource_group': 'resource_group', 'sku': 'mySkuName', 'is_linux': 'true', 'number_of_workers': '1'}}}"```
+#### Context Example
+```json
+{
+    "Azure": {
+        "AzureRmWebapp": [
+            {
+                "changed": true,
+                "id": "ID",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>#  CHANGED 
+>  * changed: True
+>  * id: ID
 
 
 ### azure-rm-webapp-info

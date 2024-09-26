@@ -7,7 +7,7 @@ comment: Read the license_data.log file extracted from the log bundle
 commonfields:
   id: HealthCheckLicenseData
   version: -1
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.10.14.100715
 enabled: true
 name: HealthCheckLicenseData
 outputs:

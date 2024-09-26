@@ -1,0 +1,859 @@
+[
+    {
+        "ip": "0.0.0.1",
+        "sections": [
+            "identity",
+            "comms",
+            "pdns",
+            "open_ports",
+            "x509",
+            "fingerprints",
+            "whois",
+            "summary"
+        ],
+        "identity": {
+            "asn": 15133,
+            "as_name": "test_name",
+            "net_name": "test_name-data-03",
+            "org_name": "test_name Inc."
+        },
+        "whois": {
+            "modified": "2012-06-22",
+            "asn": 15133,
+            "cidr": "0.0.0.1/24",
+            "as_name": "test_name",
+            "bgp_asn": 15133,
+            "bgp_asn_name": "test_name, US",
+            "net_name": "test_name-data-03",
+            "net_handle": "",
+            "description": "[\"data-03-EU-93-184-216-0-24\"]",
+            "cc": "EU",
+            "city": "",
+            "address": "",
+            "abuse_contact_id": "",
+            "about_contact_role": "",
+            "about_contact_person": "",
+            "about_contact_email": "",
+            "about_contact_phone": "",
+            "about_contact_country": "",
+            "about_contact_city": "",
+            "about_contact_address": "",
+            "admin_contact_id": "DS7892-RIPE",
+            "admin_contact_role": "",
+            "admin_contact_person": "Derrick Sawyer",
+            "admin_contact_email": "",
+            "admin_contact_phone": "+18123456789",
+            "admin_contact_country": "",
+            "admin_contact_city": "",
+            "admin_contact_address": "[\"11811 N. Tatum Blvd, Suite 3031, Phoenix, AZ 85028\"]",
+            "tech_contact_id": "DS7892-RIPE",
+            "tech_contact_role": "",
+            "tech_contact_person": "Derrick Sawyer",
+            "tech_contact_email": "",
+            "tech_contact_phone": "+18987654321",
+            "tech_contact_country": "",
+            "tech_contact_city": "",
+            "tech_contact_address": "[\"11811 N. Tatum Blvd, Suite 3031, Phoenix, AZ 85028\"]",
+            "org_id": "",
+            "org_name": "test_name Inc.",
+            "org_email": "",
+            "org_phone": "",
+            "org_country": "",
+            "org_city": "",
+            "org_address": "",
+            "mnt_by_email": "",
+            "mnt_lower_email": "",
+            "mnt_router_email": ""
+        },
+        "communications": {
+            "event_count": 33264,
+            "peers": [
+                {
+                    "proto": 6,
+                    "proto_text": "TCP",
+                    "local": {
+                        "ip": "0.0.0.1",
+                        "min_port": 80,
+                        "max_port": 80,
+                        "country_codes": [
+                            "US"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 15133,
+                                "as_name": "test_name, US"
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "id": 176,
+                                "name": "cdn",
+                                "children": [
+                                    {
+                                        "id": 206,
+                                        "name": "test_name"
+                                    }
+                                ]
+                            }
+                        ],
+                        "unique_ports": 1,
+                        "top_services": [
+                            {
+                                "service_name": "http",
+                                "port": 80,
+                                "proto_number": 6,
+                                "description": "World Wide Web HTTP"
+                            }
+                        ]
+                    },
+                    "peer": {
+                        "ip": "0.0.0.2",
+                        "min_port": 52049,
+                        "max_port": 64552,
+                        "country_codes": [
+                            "ZA"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 327983,
+                                "as_name": "Interworks-Wireless-Solutions, ZA"
+                            }
+                        ],
+                        "unique_ports": 3669,
+                        "top_services": [
+                            {
+                                "service_name": "",
+                                "port": 64552,
+                                "proto_number": 6,
+                                "description": ""
+                            }
+                        ]
+                    },
+                    "event_count": 6040,
+                    "first_seen": "2024-06-04",
+                    "last_seen": "2024-06-04"
+                },
+                {
+                    "proto": 6,
+                    "proto_text": "TCP",
+                    "local": {
+                        "ip": "0.0.0.1",
+                        "min_port": 80,
+                        "max_port": 80,
+                        "country_codes": [
+                            "US"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 15133,
+                                "as_name": "test_name, US"
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "id": 176,
+                                "name": "cdn",
+                                "children": [
+                                    {
+                                        "id": 206,
+                                        "name": "test_name"
+                                    }
+                                ]
+                            }
+                        ],
+                        "unique_ports": 1,
+                        "top_services": [
+                            {
+                                "service_name": "http",
+                                "port": 80,
+                                "proto_number": 6,
+                                "description": "World Wide Web HTTP"
+                            }
+                        ]
+                    },
+                    "peer": {
+                        "ip": "0.0.0.3",
+                        "min_port": 55262,
+                        "max_port": 60230,
+                        "country_codes": [
+                            "IT"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 206476,
+                                "as_name": "IPTECHNOLOGY, IT"
+                            }
+                        ],
+                        "unique_ports": 2767,
+                        "top_services": [
+                            {
+                                "service_name": "",
+                                "port": 60230,
+                                "proto_number": 6,
+                                "description": ""
+                            }
+                        ]
+                    },
+                    "event_count": 5536,
+                    "first_seen": "2024-06-20",
+                    "last_seen": "2024-06-21"
+                },
+                {
+                    "proto": 6,
+                    "proto_text": "TCP",
+                    "local": {
+                        "ip": "0.0.0.1",
+                        "min_port": 80,
+                        "max_port": 80,
+                        "country_codes": [
+                            "US"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 15133,
+                                "as_name": "test_name, US"
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "id": 176,
+                                "name": "cdn",
+                                "children": [
+                                    {
+                                        "id": 206,
+                                        "name": "test_name"
+                                    }
+                                ]
+                            }
+                        ],
+                        "unique_ports": 1,
+                        "top_services": [
+                            {
+                                "service_name": "http",
+                                "port": 80,
+                                "proto_number": 6,
+                                "description": "World Wide Web HTTP"
+                            }
+                        ]
+                    },
+                    "peer": {
+                        "ip": "0.0.0.4",
+                        "min_port": 49160,
+                        "max_port": 65533,
+                        "country_codes": [
+                            "SE"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 57630,
+                                "as_name": "AS-84GRAMS 84 Grams AB, SE"
+                            }
+                        ],
+                        "unique_ports": 4606,
+                        "top_services": [
+                            {
+                                "service_name": "",
+                                "port": 65533,
+                                "proto_number": 6,
+                                "description": ""
+                            }
+                        ]
+                    },
+                    "event_count": 5418,
+                    "first_seen": "2024-06-17",
+                    "last_seen": "2024-06-20"
+                },
+                {
+                    "proto": 1,
+                    "proto_text": "ICMP",
+                    "local": {
+                        "ip": "0.0.0.1",
+                        "min_port": 0,
+                        "max_port": 0,
+                        "country_codes": [
+                            "US"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 15133,
+                                "as_name": "test_name, US"
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "id": 176,
+                                "name": "cdn",
+                                "children": [
+                                    {
+                                        "id": 206,
+                                        "name": "test_name"
+                                    }
+                                ]
+                            }
+                        ],
+                        "unique_ports": 1,
+                        "top_services": [
+                            {
+                                "service_name": "",
+                                "port": 0,
+                                "proto_number": 1,
+                                "description": ""
+                            }
+                        ]
+                    },
+                    "peer": {
+                        "ip": "0.0.0.5",
+                        "min_port": 0,
+                        "max_port": 0,
+                        "country_codes": [
+                            "BR"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 262954,
+                                "as_name": "VirtuaServer Informatica Ltda, BR"
+                            }
+                        ],
+                        "unique_ports": 1,
+                        "top_services": [
+                            {
+                                "service_name": "",
+                                "port": 0,
+                                "proto_number": 1,
+                                "description": ""
+                            }
+                        ]
+                    },
+                    "event_count": 4070,
+                    "first_seen": "2024-05-27",
+                    "last_seen": "2024-06-25"
+                },
+                {
+                    "proto": 6,
+                    "proto_text": "TCP",
+                    "local": {
+                        "ip": "0.0.0.1",
+                        "min_port": 80,
+                        "max_port": 80,
+                        "country_codes": [
+                            "US"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 15133,
+                                "as_name": "test_name, US"
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "id": 176,
+                                "name": "cdn",
+                                "children": [
+                                    {
+                                        "id": 206,
+                                        "name": "test_name"
+                                    }
+                                ]
+                            }
+                        ],
+                        "unique_ports": 1,
+                        "top_services": [
+                            {
+                                "service_name": "http",
+                                "port": 80,
+                                "proto_number": 6,
+                                "description": "World Wide Web HTTP"
+                            }
+                        ]
+                    },
+                    "peer": {
+                        "ip": "0.0.0.6",
+                        "min_port": 56774,
+                        "max_port": 62320,
+                        "country_codes": [
+                            "CZ"
+                        ],
+                        "as_info": [
+                            {
+                                "asn": 25512,
+                                "as_name": "CDT-AS The Czech Republic, CZ"
+                            }
+                        ],
+                        "unique_ports": 1963,
+                        "top_services": [
+                            {
+                                "service_name": "",
+                                "port": 62320,
+                                "proto_number": 6,
+                                "description": ""
+                            }
+                        ]
+                    },
+                    "event_count": 3888,
+                    "first_seen": "2024-06-08",
+                    "last_seen": "2024-06-08"
+                }
+            ]
+        },
+        "pdns": {
+            "event_count": 1338,
+            "pdns": [
+                {
+                    "ip": "0.0.0.1",
+                    "domain": "test1.aaa",
+                    "root": "test1.aaa",
+                    "tld": "aaa",
+                    "type": "A",
+                    "registrar": "PDR Ltd. d/b/a test1.com",
+                    "domain_created": "2023-03-03",
+                    "domain_expires": "2025-03-03",
+                    "nameservers": [
+                        {
+                            "root": "test1.com.br",
+                            "nameservers": [
+                                "ns1036.test1.com.br",
+                                "ns1037.test1.com.br"
+                            ]
+                        }
+                    ],
+                    "country_codes": [
+                        "US"
+                    ],
+                    "as_info": [
+                        {
+                            "asn": 15133,
+                            "as_name": ""
+                        }
+                    ],
+                    "distinct_ips": 1,
+                    "active_days": 20,
+                    "event_count": 78,
+                    "first_seen": "2024-05-27",
+                    "last_seen": "2024-06-25"
+                },
+                {
+                    "ip": "0.0.0.1",
+                    "domain": "test2.bb",
+                    "root": "test2.bb",
+                    "tld": "bb",
+                    "type": "A",
+                    "registrar": "Key-Systems GmbH",
+                    "domain_created": "2020-05-20",
+                    "domain_expires": "2025-05-20",
+                    "country_codes": [
+                        "US"
+                    ],
+                    "as_info": [
+                        {
+                            "asn": 15133,
+                            "as_name": ""
+                        }
+                    ],
+                    "distinct_ips": 1,
+                    "active_days": 17,
+                    "event_count": 40,
+                    "first_seen": "2024-05-30",
+                    "last_seen": "2024-06-25"
+                },
+                {
+                    "ip": "0.0.0.1",
+                    "domain": "test3.as",
+                    "root": "test3.as",
+                    "tld": "as",
+                    "type": "A",
+                    "registrar": "",
+                    "domain_created": "",
+                    "domain_expires": "",
+                    "country_codes": [
+                        "US"
+                    ],
+                    "as_info": [
+                        {
+                            "asn": 15133,
+                            "as_name": ""
+                        }
+                    ],
+                    "distinct_ips": 1,
+                    "active_days": 27,
+                    "event_count": 27,
+                    "first_seen": "2024-05-27",
+                    "last_seen": "2024-06-25"
+                },
+                {
+                    "ip": "0.0.0.1",
+                    "domain": "test4.com",
+                    "root": "test4.com",
+                    "tld": "com",
+                    "type": "A",
+                    "registrar": "RegistryGate GmbH",
+                    "domain_created": "2010-12-11",
+                    "domain_expires": "2024-12-11",
+                    "nameservers": [
+                        {
+                            "root": "test4.com",
+                            "nameservers": [
+                                "ns5.test4.com",
+                                "ns6.test4.com"
+                            ]
+                        }
+                    ],
+                    "country_codes": [
+                        "US"
+                    ],
+                    "as_info": [
+                        {
+                            "asn": 15133,
+                            "as_name": ""
+                        }
+                    ],
+                    "distinct_ips": 1,
+                    "active_days": 24,
+                    "event_count": 24,
+                    "first_seen": "2024-05-27",
+                    "last_seen": "2024-06-24"
+                },
+                {
+                    "ip": "0.0.0.1",
+                    "domain": "test5.ovh",
+                    "root": "test5.ovh",
+                    "tld": "ovh",
+                    "type": "A",
+                    "registrar": "OVH",
+                    "domain_created": "2024-05-06",
+                    "domain_expires": "2025-05-06",
+                    "nameservers": [
+                        {
+                            "root": "test5.ca",
+                            "nameservers": [
+                                "dns10.test5.ca",
+                                "ns10.test5.ca"
+                            ]
+                        }
+                    ],
+                    "country_codes": [
+                        "US"
+                    ],
+                    "as_info": [
+                        {
+                            "asn": 15133,
+                            "as_name": ""
+                        }
+                    ],
+                    "distinct_ips": 1,
+                    "active_days": 23,
+                    "event_count": 23,
+                    "first_seen": "2024-05-27",
+                    "last_seen": "2024-06-25"
+                }
+            ]
+        },
+        "fingerprints": {
+            "event_count": 5,
+            "fingerprints": [
+                {
+                    "ip": "0.0.0.1",
+                    "type": "jarm",
+                    "fingerprint": "testsignature",
+                    "port": 443,
+                    "first_seen": "2024-05-30",
+                    "last_seen": "2024-06-21",
+                    "distinct_ips": 830,
+                    "active_days": 5,
+                    "event_count": 5
+                }
+            ]
+        },
+        "open_ports": {
+            "event_count": 2,
+            "unique_ports": 2,
+            "open_ports": [
+                {
+                    "ip": "0.0.0.1",
+                    "port": 443,
+                    "protocol": 6,
+                    "protocol_text": "TCP",
+                    "service": "https",
+                    "banner": "TLS/1.1 cipher:0xc013, www.example.org, www.example.org, example.net, example.edu, example.com, example.org, www.example.com, www.example.edu, www.example.net",
+                    "banner_sha1": "test_sha1",
+                    "first_seen": "2024-05-30",
+                    "last_seen": "2024-06-21",
+                    "country_codes": [
+                        "US"
+                    ],
+                    "as_info": [
+                        {
+                            "asn": 15133,
+                            "as_name": "test_name, US"
+                        }
+                    ],
+                    "tags": [
+                        {
+                            "id": 176,
+                            "name": "cdn",
+                            "children": [
+                                {
+                                    "id": 206,
+                                    "name": "test_name"
+                                }
+                            ]
+                        }
+                    ],
+                    "event_count": 5
+                },
+                {
+                    "ip": "0.0.0.1",
+                    "port": 80,
+                    "protocol": 6,
+                    "protocol_text": "TCP",
+                    "service": "http",
+                    "banner": "404 - Not Found",
+                    "banner_sha1": "test_sha1",
+                    "first_seen": "2024-05-30",
+                    "last_seen": "2024-06-21",
+                    "country_codes": [
+                        "US"
+                    ],
+                    "as_info": [
+                        {
+                            "asn": 15133,
+                            "as_name": "test_name, US"
+                        }
+                    ],
+                    "tags": [
+                        {
+                            "id": 176,
+                            "name": "cdn",
+                            "children": [
+                                {
+                                    "id": 206,
+                                    "name": "test_name"
+                                }
+                            ]
+                        }
+                    ],
+                    "event_count": 5
+                }
+            ]
+        },
+        "x509": {
+            "event_count": 5,
+            "x509": [
+                {
+                    "ip": "0.0.0.1",
+                    "issuer": "CN=DigiCert Global G2 TLS RSA SHA256 2020 CA1, O=DigiCert Inc, C=US",
+                    "issuer_common_name": "DigiCert Global G2 TLS RSA SHA256 2020 CA1",
+                    "common_name": "www.example.org",
+                    "altnames": [
+                        "example.com",
+                        "example.edu",
+                        "example.net",
+                        "example.org",
+                        "www.example.com",
+                        "www.example.edu",
+                        "www.example.net",
+                        "www.example.org"
+                    ],
+                    "serial": "testserial",
+                    "subject": "CN=www.example.org, O=Internet Corporation for Assigned Names and Numbers.",
+                    "not_after": "2025-03-01",
+                    "not_before": "2024-01-30",
+                    "validity_period": "397 Days",
+                    "md5": "testmd5",
+                    "sha1": "testsha1",
+                    "sha256": "testsha256",
+                    "first_seen": "2024-05-30",
+                    "last_seen": "2024-06-21",
+                    "port": 443,
+                    "self_signed": false,
+                    "country_codes": [
+                        "US"
+                    ],
+                    "as_info": [
+                        {
+                            "asn": 15133,
+                            "as_name": "test_name, US"
+                        }
+                    ],
+                    "tags": [
+                        {
+                            "id": 176,
+                            "name": "cdn",
+                            "children": [
+                                {
+                                    "id": 206,
+                                    "name": "test_name"
+                                }
+                            ]
+                        }
+                    ],
+                    "count": 5
+                }
+            ]
+        },
+        "summary": {
+            "total": 1,
+            "ip": "0.0.0.1",
+            "start_date": "2024-05-27",
+            "end_date": "2024-06-25",
+            "geo_ip_cc": "US",
+            "tags": [
+                {
+                    "id": 176,
+                    "name": "cdn",
+                    "children": [
+                        {
+                            "id": 206,
+                            "name": "test_name"
+                        }
+                    ]
+                }
+            ],
+            "bgp_asn": 15133,
+            "bgp_asname": "test_name, US",
+            "whois": {
+                "asn": 15133,
+                "as_name": "test_name",
+                "net_name": "test_name-data-03",
+                "org_name": "test_name Inc."
+            },
+            "pdns": {
+                "total": 1338,
+                "top_pdns": [
+                    {
+                        "event_count": 78,
+                        "domain": "test1.aaa",
+                        "first_seen": "2024-05-27",
+                        "last_seen": "2024-06-25",
+                        "css_color": "#a6abb7"
+                    },
+                    {
+                        "event_count": 40,
+                        "domain": "test2.io",
+                        "first_seen": "2024-05-30",
+                        "last_seen": "2024-06-25",
+                        "css_color": "#f2d561"
+                    },
+                    {
+                        "event_count": 27,
+                        "domain": "test3.as",
+                        "first_seen": "2024-05-27",
+                        "last_seen": "2024-06-25",
+                        "css_color": "#99a1ff"
+                    },
+                    {
+                        "event_count": 24,
+                        "domain": "test4.com",
+                        "first_seen": "2024-05-27",
+                        "last_seen": "2024-06-24",
+                        "css_color": "#e57ea1"
+                    },
+                    {
+                        "event_count": 23,
+                        "domain": "test5.io",
+                        "first_seen": "2024-05-28",
+                        "last_seen": "2024-06-25",
+                        "css_color": "#f2d561"
+                    }
+                ]
+            },
+            "open_ports": {
+                "total": 2,
+                "unique_ports": 2,
+                "top_open_ports": [
+                    {
+                        "event_count": 53,
+                        "port": 80,
+                        "protocol": 6,
+                        "protocol_text": "TCP",
+                        "service": "http",
+                        "first_seen": "2024-05-27",
+                        "last_seen": "2024-06-25",
+                        "css_color": "#a6abb7"
+                    },
+                    {
+                        "event_count": 43,
+                        "port": 443,
+                        "protocol": 6,
+                        "protocol_text": "TCP",
+                        "service": "https",
+                        "first_seen": "2024-05-27",
+                        "last_seen": "2024-06-25",
+                        "css_color": "#99a1ff"
+                    }
+                ]
+            },
+            "certs": {
+                "top_certs": [
+                    {
+                        "issuer": "CN=DigiCert Global G2 TLS RSA SHA256 2020 CA1, O=DigiCert Inc, C=US",
+                        "issuer_common_name": "DigiCert Global G2 TLS RSA SHA256 2020 CA1",
+                        "common_name": "www.example.org",
+                        "subject": "CN=www.example.org, O=Internet Corporation for Assigned Names and Numbers.",
+                        "port": 443,
+                        "first_seen": "2024-05-30",
+                        "last_seen": "2024-06-21",
+                        "self_signed": false,
+                        "not_before": "2024-01-30",
+                        "not_after": "2025-03-01",
+                        "valid_days": 397,
+                        "md5": "testmd5",
+                        "sha1": "testsha1",
+                        "sha256": "testsha256",
+                        "css_color": "#b382d9"
+                    }
+                ]
+            },
+            "tag_timeline": {
+                "data": [
+                    {
+                        "tag": {
+                            "id": 176,
+                            "name": "cdn",
+                            "description": "The CDN tag characterizes IP addresses associated with Content Delivery Networks (CDNs).",
+                            "css_color": "#8A532C"
+                        },
+                        "first_seen": "2024-05-27",
+                        "last_seen": "2024-06-25"
+                    }
+                ]
+            },
+            "insights": {
+                "overall_rating": "suspicious",
+                "total": 8,
+                "insights": [
+                    {
+                        "rating": "no_rating",
+                        "message": "x509 subject \"CN=www.example.org, O=Internet Corporation for Assigned Names and Numbers."
+                    }
+                ]
+            },
+            "fingerprints": {
+                "top_fingerprints": [
+                    {
+                        "type": "jarm",
+                        "signature": "testsignature",
+                        "port": 443,
+                        "first_seen": "2024-05-30",
+                        "last_seen": "2024-06-21",
+                        "count": 5
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "command_name": "ip",
+        "foundation_api_usage": {
+            "query_limit": 0,
+            "remaining_queries": 0,
+            "used_queries": 15
+        },
+        "query_limit": 50000,
+        "remaining_queries": 49739,
+        "request_id": "test_id",
+        "size": 1000,
+        "start_date": "2024-05-27",
+        "end_date": "2024-06-25",
+        "used_queries": 261
+    }
+]

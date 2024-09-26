@@ -1,0 +1,4 @@
+!csc-domains-search domain_name=csc-panw.biz
+!csc-domains-availability-check domain_name=csc-panw.biz
+!csc-domains-configuration-list domain_name=csc-panw.biz
+!domain domain=csc-panw.biz

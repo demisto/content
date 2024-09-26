@@ -129,6 +129,14 @@ Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
 
 
+### API Call Metrics
+
+This feature collects metadata on QRadar API calls and their success status.
+
+API Call metrics are not available for long-running commands such as `fetch incidents`.
+
+API Metrics are shown in the built-in **API Execution Metrics** dashboard, and are available to use in custom widgets.
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -1487,6 +1495,40 @@ Retrieves search results.
 | --- | --- | --- |
 | QRadar.Search.Result | Unknown | The result of the search. | 
 
+### qradar-search-delete
+
+***
+Deleted search from Qradar, based on the search ID.
+
+#### Base Command
+
+`qradar-search-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The identifier for an Ariel search. | Required | 
+
+
+### qradar-reference-sets-list
+
+### qradar-search-cancel
+
+***
+Cancelled search in QRadar based on search_id.
+
+#### Base Command
+
+`qradar-search-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The identifier for an Ariel search. | Required | 
+
+
 ### qradar-reference-sets-list
 
 ***
@@ -1667,6 +1709,7 @@ Adds or updates an element in a reference set.
 | source | An indication of where the data originated. Default is reference data api. | Optional | 
 | date_value | True if the specified value  type was date. Possible values are: true, false. | Optional | 
 | fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-name-POST.html. | Optional | 
+| quiet_mode | If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large. Possible values are: true, false. | Optional | 
 
 #### Context Output
 

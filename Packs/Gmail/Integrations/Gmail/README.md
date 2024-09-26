@@ -20,15 +20,15 @@ You need to do the following in Google before configuring your integration insta
     2.  Click **CREATE**.
 4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.    
 
-    ![gmail_section1_step4](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step4.png)
+    ![gmail_section1_step4](../../doc_files/gmail_section1_step4.png)
 5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.  
  
-    ![gmail_section1_step5](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step5.png)
+    ![gmail_section1_step5](../../doc_files/gmail_section1_step5.png)
 6.  In the **Grant this service account access to project** section,click **Continue**.
 7.  In the **Grant users access to this service account** section, click **DONE**.  
 8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.  
     
-    ![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
+    ![gmail_section1_step8](../../doc_files/gmail_section1_step8.png)   
 9. Click the **ADD KEY** dropdown, and select **Create new key**.
 10. Select Key type **JSON** and click **CREATE**.  
     This will generate a json **Private key** file that will be downloaded and saved locally.
@@ -61,7 +61,7 @@ To revoke or fetch a user role, you need an Immutable Google Apps ID.
 2. Navigate to **Security** -> **Authentication** -> **SSO with SAML applications**.
 3. Copy the **idpid** value from the **SSO URL**, this is the Immutable Google Apps ID.
 
-![gmail_section4_step3](https://raw.githubusercontent.com/demisto/content-docs/d8ca78236562702cd1347af133fbba09972a8160/docs/doc_imgs/integrations/gmail_section4_step3.png)
+![gmail_section4_step3](../../doc_files/gmail_section4_step3.png)
 
 ## Required Scopes
 
@@ -4752,6 +4752,7 @@ Sends mail using Gmail.
 | --- | --- | --- |
 | to | The email addresses of the receiver. | Required | 
 | from | The email address of the sender. | Optional | 
+| senderDisplayName | The sender Name that appears on the receiver side. | Optional |
 | body | The content (body) of the email to be sent in plain text. | Optional | 
 | subject | The subject for the email to be sent. | Required | 
 | attachIDs | A comma-separated list of IDs of War Room entries that contain the files that need be attached to the email. | Optional | 
