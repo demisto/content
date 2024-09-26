@@ -71,7 +71,7 @@ configuration:
   type: 0
   required: false
 description: Kafka is an open source distributed streaming platform.
-display: Kafka v3
+display: KafkaV3
 name: KafkaV3
 script:
   commands:
@@ -148,7 +148,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.112045
+  dockerimage: devdemisto/vendors-sdk:1.0.0.112489
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test

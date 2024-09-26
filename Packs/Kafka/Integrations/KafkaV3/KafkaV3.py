@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE, Message
+from kafka import KafkaProducer, KafkaConsumer, TopicPartition, KafkaAdminClient
 from typing import Tuple, Union, Dict, Callable
 from io import StringIO
 
@@ -9,7 +10,7 @@ import tempfile
 import urllib3
 import traceback
 import logging
-
+import ssl
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -28,6 +29,16 @@ class KProducer(Producer):
     pass
 
 
+class KConsumer2(KafkaConsumer):
+    """Empty inheritance class for C-typed class in order to make mocking work."""
+    pass
+
+
+class KProducer2(KafkaProducer):
+    """Empty inheritance class for C-typed class in order to make mocking work."""
+    pass
+
+
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
     conf_producer: Optional[Dict[str, Any]] = None
@@ -37,12 +48,12 @@ class KafkaCommunicator:
     client_key_path: Optional[str] = None
     kafka_logger: Optional[logging.Logger] = None
 
-    SESSION_TIMEOUT: int = 10000
+    SESSION_TIMEOUT: int = 100000
     REQUESTS_TIMEOUT: float = 10.0
     POLL_TIMEOUT: float = 1.0
     MAX_POLLS_FOR_LOG: int = 100
 
-    def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
+    def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = '4564',
                  message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
@@ -76,9 +87,11 @@ class KafkaCommunicator:
 
         if trust_any_cert:
             self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})
+                                       'enable.ssl.certificate.verification': False,
+                                       'context': ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)})
             self.conf_producer.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})
+                                       'enable.ssl.certificate.verification': False,
+                                       'context': ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)})
 
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
@@ -97,9 +110,9 @@ class KafkaCommunicator:
                 self.client_cert_path = client_cert_descriptor.name
                 client_cert_descriptor.write(client_cert)
             self.conf_producer.update({'ssl.certificate.location': self.client_cert_path,
-                                       'security.protocol': 'ssl'})
+                                       'security.protocol': 'SSL'})
             self.conf_consumer.update({'ssl.certificate.location': self.client_cert_path,
-                                       'security.protocol': 'ssl'})
+                                       'security.protocol': 'SSL'})
         if client_cert_key:
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
                 self.client_key_path = client_key_descriptor.name
@@ -110,17 +123,52 @@ class KafkaCommunicator:
             self.conf_producer.update({'ssl.key.password': ssl_password})
             self.conf_consumer.update({'ssl.key.password': ssl_password})
 
-    def get_kafka_consumer(self) -> KConsumer:
-        if self.kafka_logger:
-            return KConsumer(self.conf_consumer, logger=self.kafka_logger)
-        else:
-            return KConsumer(self.conf_consumer)
+    def get_kafka_consumer(self) -> KConsumer2:
+        if self.kafka_logger and self.conf_consumer:
+            return KConsumer2(
+                bootstrap_servers=self.conf_consumer.get("bootstrap.servers"),
+                group_id=self.conf_consumer.get('group.id'),
+                ssl_cafile=self.conf_consumer.get('ssl.ca.location'),
+                ssl_certfile=self.conf_consumer.get('ssl.certificate.location'),
+                ssl_keyfile=self.conf_consumer.get('ssl.key.location'),
+                ssl_password= self.conf_consumer.get('ssl.key.password'),
+                request_timeout_ms = self.conf_consumer.get('session.timeout.ms'),
+                ssl_check_hostname = self.conf_consumer.get('enable.ssl.certificate.verification'),
+            )
+        if self.conf_consumer:
+            return KConsumer2(
+                bootstrap_servers=self.conf_consumer.get("bootstrap.servers"),
+                group_id=self.conf_consumer.get('group.id'),
+                ssl_cafile=self.conf_consumer.get('ssl.ca.location'),
+                ssl_certfile=self.conf_consumer.get('ssl.certificate.location'),
+                ssl_keyfile=self.conf_consumer.get('ssl.key.location'),
+                ssl_password= self.conf_consumer.get('ssl.key.password'),
+                request_timeout_ms = self.conf_consumer.get('session.timeout.ms'),
+                ssl_check_hostname = self.conf_consumer.get('enable.ssl.certificate.verification'),
+            )
+            
+        return None
 
-    def get_kafka_producer(self) -> KProducer:
-        if self.kafka_logger:
-            return KProducer(self.conf_producer, logger=self.kafka_logger)
-        else:
-            return KProducer(self.conf_producer)
+    def get_kafka_producer(self) -> KProducer2:
+        if self.kafka_logger and self.conf_producer:
+            return KProducer2(bootstrap_servers=self.conf_producer.get('bootstrap.servers'))
+                        #   security_protocol=self.conf_producer.get('security.protocol'),
+                        #   ssl_cafile=self.conf_producer.get('ssl.ca.location'),
+                        #   ssl_certfile=self.conf_producer.get('ssl.certificate.location'),
+                        #   ssl_keyfile=self.conf_producer.get('ssl.key.location'),
+                        #   ssl_password=self.conf_producer.get('ssl.key.password'),
+                        #   ssl_check_hostname = self.conf_producer.get('enable.ssl.certificate.verification'))
+        if self.conf_producer:
+            return KProducer2(
+                bootstrap_servers=self.conf_producer.get("bootstrap.servers")
+                # security_protocol=self.conf_producer.get("security.protocol"),
+                # ssl_cafile=self.conf_producer.get("ssl.ca.location"),
+                # ssl_certfile=self.conf_producer.get("ssl.certificate.location"),
+                # ssl_keyfile=self.conf_producer.get("ssl.key.location"),
+                # ssl_password=self.conf_producer.get("ssl.key.password"),
+                # ssl_check_hostname = self.conf_producer.get('enable.ssl.certificate.verification')
+            )
+        return None
 
     def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
         """Update consumer configurations for fetching messages
@@ -140,13 +188,13 @@ class KafkaCommunicator:
     def test_connection(self, log_stream: Optional[StringIO] = None) -> str:
         """Test getting topics with the consumer and producer configurations."""
         error_msg = ''
-        consumer: Optional[KConsumer] = None
-        producer: Optional[KProducer] = None
+        consumer: Optional[KConsumer2] = None
+        producer: Optional[KProducer2] = None
 
         try:
             consumer = self.get_kafka_consumer()
-            consumer_topics = consumer.list_topics(timeout=self.REQUESTS_TIMEOUT)
-            consumer_topics.topics
+            consumer_topics = consumer.topics()
+            # consumer_topics.topics
 
         except Exception as e:
             error_msg = f'Error connecting to kafka using consumer: {str(e)}\n{traceback.format_exc()}'
@@ -167,8 +215,8 @@ class KafkaCommunicator:
         try:
             producer = self.get_kafka_producer()
 
-            producer_topics = producer.list_topics(timeout=self.REQUESTS_TIMEOUT)
-            producer_topics.topics
+            producer_topics = producer.metrics()
+            # producer_topics.topics
 
         except Exception as e:
             error_msg = f'Error connecting to kafka using producer: {str(e)}\n{traceback.format_exc()}'
@@ -198,7 +246,7 @@ class KafkaCommunicator:
             return_results(f'Message was successfully produced to '
                            f'topic \'{msg.topic()}\', partition {msg.partition()}')
 
-    def get_topics(self, consumer: bool = False) -> dict:
+    def get_topics(self, consumer: bool = True) -> dict:
         """Get Kafka topics
 
         Args:
@@ -206,12 +254,17 @@ class KafkaCommunicator:
 
         Return topics metadata object as described in confluent-kafka API
         """
-        if consumer:
-            client = self.get_kafka_consumer()
-        else:
-            client = self.get_kafka_producer()
-        cluster_metadata = client.list_topics(timeout=self.REQUESTS_TIMEOUT)
-        return cluster_metadata.topics
+        client2=KafkaAdminClient(
+                bootstrap_servers=self.conf_consumer.get("bootstrap.servers"),
+                security_protocol=self.conf_consumer.get("security.protocol"),
+                ssl_cafile=self.conf_consumer.get("ssl.ca.location"),
+                ssl_certfile=self.conf_consumer.get("ssl.certificate.location"),
+                ssl_keyfile=self.conf_consumer.get("ssl.key.location"),
+                ssl_password=self.conf_consumer.get("ssl.key.password"),
+                ssl_check_hostname = self.conf_consumer.get('enable.ssl.certificate.verification')
+        )
+        topics=client2.list_topics()
+        return topics
 
     def get_partition_offsets(self, topic: str, partition: int) -> Tuple[int, int]:
         """Get earliest and latest offsets for the specified partition in the specified topic.
@@ -281,7 +334,7 @@ class KafkaCommunicator:
                                        f'[{earliest_offset}, {oldest_offset})')
             return number_offset
 
-    @logger
+    # @logger
     def get_topic_partitions(self, topic: str, partition: Union[int, list],
                              offset: Union[str, int], consumer: bool = False) -> list:
         """Get relevant TopicPartiton structures to specify for the consumer.
@@ -315,7 +368,7 @@ class KafkaCommunicator:
 
         else:
             topics = self.get_topics(consumer=consumer)
-            topic_metadata = topics[topic]
+            topic_metadata = client.partitions_for_topic(topic)
             demisto.debug(f"Got no partition, getting all partitions and offsets with offset {offset}")
             for metadata_partition in topic_metadata.partitions.values():
                 try:
@@ -590,9 +643,9 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
     """
     checkable_offset = False
     numerical_offset = 0
-    topics = kafka.get_topics(consumer=consumer)
-    if topic not in topics.keys():
-        raise DemistoException(f"Did not find topic {topic} in kafka topics.")
+    topics = kafka.get_topics()
+    if topic not in topics:
+        raise DemistoException(f"Did not find topic {topic} in kafka topics {topics}.")
 
     if offset and str(offset).lower() not in SUPPORTED_GENERAL_OFFSETS:
         if offset.isdigit():
@@ -682,13 +735,8 @@ def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Uni
     return topic_partitions_in_system + all_topic_partitions
 
 
-def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
-    """Fetch incidents as kafka messages from a specific topic.
-
-    Args:
-        kafka: initialized KafkaCommunicator object to preform actions with.
-        demisto_params: The demisto parameters.
-    """
+def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict):
+    
     topic = demisto_params.get('topic', '')
     partitions = handle_empty(argToList(demisto_params.get('partition', '')), [])
     offset = handle_empty(demisto_params.get('first_fetch', 'earliest'), 'earliest')
@@ -697,72 +745,123 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     last_fetched_offsets = demisto.getLastRun().get('last_fetched_offsets', {})
     last_topic = demisto.getLastRun().get('last_topic', '')
 
-    demisto.debug(f"Starting fetch incidents with:\n last_topic: {last_topic}, "
-                  f"last_fetched_offsets: {last_fetched_offsets}, "
-                  f"topic: {topic}, partitions: {partitions}, offset: {offset}, "
-                  f"message_max_bytes: {message_max_bytes}, max_messages: {max_messages}\n")
+    consumer = kafka.get_kafka_consumer()
+    topics = kafka.get_topics()
+    bootstrap_connected = consumer.bootstrap_connected()
+    demisto.debug(f"KAFKA DEBUG: {consumer.bootstrap_connected()=}")
+    kafka_topic_result_list = []
     incidents = []
-
-    kafka.update_conf_for_fetch(message_max_bytes=message_max_bytes)
-
-    kafka_consumer = kafka.get_kafka_consumer()
-    demisto.debug('Checking params')
-    check_params(kafka, topic, partitions, offset, True, False)
-
-    if topic != last_topic:
-        demisto.debug(f'Topic changed from {last_topic} to {topic}, resetting last fetched offsets from '
-                      f'{last_fetched_offsets} to empty dict.')
-        last_fetched_offsets = {}
-
-    if offset.isdigit():
-        offset = int(offset)
-
-    topic_partitions = []
-    for partition in partitions:
-        specific_offset = last_fetched_offsets.get(partition, offset) if partition in last_fetched_offsets else offset
-        topic_partitions += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
-
-    if not partitions:
-        if isinstance(offset, int):
-            offset += 1
-        demisto.debug(f'No partitions were set, getting all available partitions for topic {topic}')
-        topic_partitions = get_fetch_topic_partitions(kafka, topic, offset, last_fetched_offsets)
-
     try:
-        demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
+        consumer = kafka.get_kafka_consumer()
+        consumer.subscribe([topic])
+        topics2 = consumer.topics()
+        sub = consumer.subscription()
 
-        if topic_partitions:
-            kafka_consumer.assign(topic_partitions)
+        demisto.debug(f"KAFKA DEBUG: list_partitons")
+        demisto.debug(f"KAFKA DEBUG: list_partitons {consumer.partitions_for_topic(topic)=}")
+        list_partitons = list(consumer.partitions_for_topic(topic) or [])
+        demisto.debug(f"KAFKA DEBUG: list_partitons {list_partitons}")
+        demisto.debug(f"KAFKA DEBUG: consumer.assign")
+        demisto.debug(f"KAFKA DEBUG: seek_to_beginning")
+        # consumer.seek_to_beginning()
+        partitions = consumer.assignment()
+        demisto.debug(f"KAFKA DEBUG: poll")
+        polling_results = consumer.poll(max_records=1)
+        result = polling_results if polling_results else []
+        kafka_topic_result_list.append(result)
 
-            demisto.debug("Beginning to poll messages from kafka")
+        for incident in kafka_topic_result_list:
+            incidents.append(create_incident(message=incident, topic=topic))
+            last_fetched_offsets[f'{incident.partition()}'] = incident.offset()
+            
+        last_run = {'last_fetched_offsets': last_fetched_offsets, 'last_topic': topic}
+        demisto.debug(f"Fetching finished, setting last run to {last_run}")
+        demisto.setLastRun(last_run)
+        demisto.incidents(incidents)
+    except Exception as err:
+        raise DemistoException(f"{err}")
 
-            for i in range(max_messages):
-                demisto.debug(f"KAFKA DEBUG: poll: {i+1} message")
-                polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT)
-                demisto.debug(f"KAFKA DEBUG: finish to poll: {i+1} message")
-                if polled_msg:
-                    demisto.debug("Received a message from Kafka.")
-                    incidents.append(create_incident(message=polled_msg, topic=topic))
-                    last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
-                else:
-                    demisto.debug("KAFKA DEBUG: Didn't get any message break the loop")
-                    break
+# def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
+#     """Fetch incidents as kafka messages from a specific topic.
 
-    finally:
-        if kafka_consumer:
-            kafka_consumer.close()
+#     Args:
+#         kafka: initialized KafkaCommunicator object to preform actions with.
+#         demisto_params: The demisto parameters.
+#     """
+#     topic = demisto_params.get('topic', '')
+#     partitions = handle_empty(argToList(demisto_params.get('partition', '')), [])
+#     offset = handle_empty(demisto_params.get('first_fetch', 'earliest'), 'earliest')
+#     message_max_bytes = int(handle_empty(demisto_params.get("max_bytes_per_message", 1048576), 1048576))
+#     max_messages = int(handle_empty(demisto_params.get('max_fetch', 50), 50))
+#     last_fetched_offsets = demisto.getLastRun().get('last_fetched_offsets', {})
+#     last_topic = demisto.getLastRun().get('last_topic', '')
 
-    last_run = {'last_fetched_offsets': last_fetched_offsets, 'last_topic': topic}
-    demisto.debug(f"Fetching finished, setting last run to {last_run}")
-    demisto.setLastRun(last_run)
+#     demisto.debug(f"Starting fetch incidents with:\n last_topic: {last_topic}, "
+#                   f"last_fetched_offsets: {last_fetched_offsets}, "
+#                   f"topic: {topic}, partitions: {partitions}, offset: {offset}, "
+#                   f"message_max_bytes: {message_max_bytes}, max_messages: {max_messages}\n")
+#     incidents = []
 
-    demisto.incidents(incidents)
+#     # kafka.update_conf_for_fetch(message_max_bytes=message_max_bytes)
+
+#     kafka_consumer = kafka.get_kafka_consumer()
+#     demisto.debug('Checking params')
+#     check_params(kafka, topic, partitions, offset, True, False)
+
+#     if topic != last_topic:
+#         demisto.debug(f'Topic changed from {last_topic} to {topic}, resetting last fetched offsets from '
+#                       f'{last_fetched_offsets} to empty dict.')
+#         last_fetched_offsets = {}
+
+#     if offset.isdigit():
+#         offset = int(offset)
+
+#     topic_partitions = []
+#     for partition in partitions:
+#         specific_offset = last_fetched_offsets.get(partition, offset) if partition in last_fetched_offsets else offset
+#         topic_partitions += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
+
+#     if not partitions:
+#         if isinstance(offset, int):
+#             offset += 1
+#         demisto.debug(f'No partitions were set, getting all available partitions for topic {topic}')
+#         topic_partitions = get_fetch_topic_partitions(kafka, topic, offset, last_fetched_offsets)
+
+#     try:
+#         demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
+
+#         if topic_partitions:
+#             kafka_consumer.assign(topic_partitions)
+
+#             demisto.debug("Beginning to poll messages from kafka")
+
+#             for i in range(max_messages):
+#                 demisto.debug(f"KAFKA DEBUG: poll: {i+1} message")
+#                 polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT)
+#                 demisto.debug(f"KAFKA DEBUG: finish to poll: {i+1} message")
+#                 if polled_msg:
+#                     demisto.debug("Received a message from Kafka.")
+#                     incidents.append(create_incident(message=polled_msg, topic=topic))
+#                     last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
+#                 else:
+#                     demisto.debug("KAFKA DEBUG: Didn't get any message break the loop")
+#                     break
+
+#     finally:
+#         if kafka_consumer:
+#             kafka_consumer.close()
+
+#     last_run = {'last_fetched_offsets': last_fetched_offsets, 'last_topic': topic}
+#     demisto.debug(f"Fetching finished, setting last run to {last_run}")
+#     demisto.setLastRun(last_run)
+
+#     demisto.incidents(incidents)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-@capture_logs
+# @capture_logs
 def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dict,  # pragma: no cover
                      demisto_command: str, kafka_logger: Optional[logging.Logger] = None,
                      log_stream: Optional[StringIO] = None) -> None:
