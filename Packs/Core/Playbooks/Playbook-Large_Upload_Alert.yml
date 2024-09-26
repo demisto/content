@@ -73,8 +73,8 @@ tasks:
       id: 72d68f27-3f59-4b81-8e76-0672b557a892
       version: -1
       name: Find Similar Alerts
-      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
-      scriptName: DBotFindSimilarIncidents
+      description: Find past similar alerts based on alert fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarAlerts
       type: regular
       iscommand: false
       brand: ""
@@ -2069,10 +2069,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 2d42a79a-15bd-4851-8ce1-16e874ea4567
+    taskid: 63f72aae-3079-4852-88ac-40c4323eb491
     type: condition
     task:
-      id: 2d42a79a-15bd-4851-8ce1-16e874ea4567
+      id: 63f72aae-3079-4852-88ac-40c4323eb491
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the large upload Cortex XDR alerts.
@@ -2472,12 +2472,12 @@ tasks:
           left:
             value:
               complex:
-                root: Core.Incident.alerts
+                root: Core.OriginalAlert
                 filters:
                 - - operator: inList
                     left:
                       value:
-                        simple: Core.Incident.alerts.host_name
+                        simple: Core.OriginalAlert._all_events.agent_hostname
                       iscontext: true
                     right:
                       value:
@@ -2487,13 +2487,13 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Core.Incident.alerts.name
+                        simple: Core.OriginalAlert.alert_name
                       iscontext: true
                     right:
                       value:
                         simple: Large Upload (FTP)
                     ignorecase: true
-                accessor: host_name
+                accessor: _all_events.agent_hostname
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -2520,12 +2520,12 @@ tasks:
           left:
             value:
               complex:
-                root: Core.Incident.alerts
+                root: Core.OriginalAlert
                 filters:
                 - - operator: inList
                     left:
                       value:
-                        simple: Core.Incident.alerts.host_name
+                        simple: Core.OriginalAlert._all_events.agent_hostname
                       iscontext: true
                     right:
                       value:
@@ -2535,13 +2535,13 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Core.Incident.alerts.name
+                        simple: Core.OriginalAlert.alert_name
                       iscontext: true
                     right:
                       value:
                         simple: Large Upload (SMTP)
                     ignorecase: true
-                accessor: host_name
+                accessor: _all_events.agent_hostname
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -2803,7 +2803,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "10"
     scriptarguments:
       alert_ids:
         complex:
