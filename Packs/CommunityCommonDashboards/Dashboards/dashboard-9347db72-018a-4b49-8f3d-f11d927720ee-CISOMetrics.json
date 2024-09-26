@@ -1,7 +1,7 @@
 {
     "fromDate": "0001-01-01T00:00:00Z",
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "id": "CISOMetrics_copy",
+    "id": "CISOMetrics",
     "layout": [
         {
             "forceRange": false,
@@ -1482,7 +1482,7 @@
             "y": 7
         }
     ],
-    "name": "CISOMetrics_copy",
+    "name": "CISOMetrics",
     "period": {
         "by": "",
         "byFrom": "days",
