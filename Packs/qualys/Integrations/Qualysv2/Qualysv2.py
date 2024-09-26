@@ -3496,7 +3496,9 @@ def main():  # pragma: no cover
 
             # saves next_run for the time fetch-events is invoked
             demisto.setLastRun(logs_next_run)
-
+        elif command == 'qualys-reset-fetch-assets':
+            demisto.setAssetsLastRun({})
+            return_results('Cache was cleared')
         elif command == 'fetch-assets':
             last_run = demisto.getAssetsLastRun()
             demisto.debug(f'saved lastrun assets: {last_run}')
