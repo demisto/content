@@ -3221,7 +3221,6 @@ def qualys_command_flow_manager(
 
 
 def main():  # pragma: no cover
-    demisto.debug(f'last_run = {demisto.getLastRun()}')
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

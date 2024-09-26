@@ -59,8 +59,6 @@ display: Qualys VMDR
 name: QualysV2
 script:
   commands:
-  - name: qualys-reset-fetch-assets
-    description: Command to reset the fetch assets cache
   - arguments:
     - description: Show only certain IP addresses/ranges.
       name: ips
