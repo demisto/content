@@ -1480,7 +1480,7 @@ script:
     - description: The user's key (On-prem only).
       name: key
       required: false
-    - description: The user's username (On Prem only).
+    - description: The user's username (On-prem only).
       name: username
       required: false
     - description: The user's accountId (Cloud only).
