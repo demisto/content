@@ -68,7 +68,6 @@ configuration:
   type: 0
   required: false
   section: Collect
-  advanced: true
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -151,18 +150,21 @@ configuration:
   type: 0
   required: false
   section: Collect
+  advanced: true
 - additionalinfo: Source field that contains the indicator type in the index
   display: Indicator Type Field
   name: src_type
   type: 0
   required: false
   section: Collect
+  advanced: true
 - additionalinfo: Default indicator type used in case no "Indicator Type Field" was provided
   display: Indicator Type
   name: default_type
   type: 0
   required: false
   section: Collect
+  advanced: true
 - display: Index from Which To Fetch Indicators
   name: fetch_index
   type: 0

@@ -81,7 +81,6 @@ configuration:
   - json
   additionalinfo: The extension of the file names to target.
   section: Collect
-  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability

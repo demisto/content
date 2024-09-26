@@ -110,7 +110,7 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
-  section: Connect
+  section: Collect
   advanced: true
 - additionalinfo: Python regular expression for lines to ignore.
   display: Ignore Regex
