@@ -1,5 +1,6 @@
 [MODEL: dataset=msft_graph_security_alerts_raw]
 filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alerts_v2"
+// This is a TEST made by Eido
 | alter 
     alertEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null)), ""),
     analyzedMessageEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)), ""),
