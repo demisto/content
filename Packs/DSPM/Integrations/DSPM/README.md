@@ -75,7 +75,6 @@ Retrieves risk findings matching the input criteria.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.RiskFindings | String | List of risk findings matching the input criteria. | 
 | DSPM.RiskFindings.ID |String |The unique ID of the risk finding.
 | DSPM.RiskFindings.AssetID |String |The ID of the asset associated with the risk finding.
 | DSPM.RiskFindings.AssetName |String |The name of the asset associated with the risk finding.
@@ -136,19 +135,21 @@ Retrieves the details of a risk for the provided risk ID.
 | finding_id | ID of the risk for which to retrieve details. | Required | 
 
 
-### Context Outputs
+#### Context Outputs
 
-- **DSPM.RiskFinding.ID**: The unique identifier of the risk finding.
-- **DSPM.RiskFinding.AssetID**: The asset associated with the risk finding.
-- **DSPM.RiskFinding.FirstDiscovered**: The date when the risk was first discovered.
-- **DSPM.RiskFinding.Status**: The current status of the risk finding.
-- **DSPM.RiskFinding.CloudProvider**: The cloud provider associated with the risk finding.
-- **DSPM.RiskFinding.RuleName**: The name of the rule that triggered the risk finding.
-- **DSPM.RiskFinding.ProjectID**: The ID of the project linked to the risk finding.
-- **DSPM.RiskFinding.AssetName**: The name of the asset related to the risk finding.
-- **DSPM.RiskFinding.ComplianceStandards**: Compliance standards associated with the risk.
-- **DSPM.RiskFinding.Severity**: Severity level of the risk finding.
-- **DSPM.RiskFinding.CloudEnvironment**: The cloud environment in which the risk exists.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DSPM.RiskFindings.ID |String |The unique ID of the risk finding.
+| DSPM.RiskFindings.AssetID |String |The ID of the asset associated with the risk finding.
+| DSPM.RiskFindings.AssetName |String |The name of the asset associated with the risk finding.
+| DSPM.RiskFindings.ComplianceStandards |String |The compliance standards relevant to the risk finding.
+| DSPM.RiskFindings.Severity |String |The severity of the risk finding (e.g., Low, Medium, High).
+| DSPM.RiskFindings.RuleName |String |The rule name associated with the risk finding.
+| DSPM.RiskFindings.FirstDiscovered |Date |The date the risk finding was first discovered.
+| DSPM.RiskFindings.CloudProvider |String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP).
+| DSPM.RiskFindings.Status |String |The current status of the risk finding (e.g., Open, Closed).
+| DSPM.RiskFindings.CloudEnvironment |String |The cloud environment (public or private) associated with the risk finding.
+| DSPM.RiskFindings.ProjectID |String |The project ID where the asset resides.
 
 
 #### Command example
@@ -204,23 +205,24 @@ Retrieves a list of assets for the company.
 | lifecycleEqual | Exact Life Cycle ['RUNNING', 'STOPPED', 'DELETED']. | Optional | 
 | sort | Sorting criteria in the format: property,(asc\|desc). Default sort order is ascending. Multiple sort criteria are supported. | Optional | 
 
-### Context Outputs
+#### Context Outputs
 
-
-- **DSPM.Assets.ProjectID**: The ID of the project associated with the asset.
-- **DSPM.Assets.OpenAlertsCount**: The count of open alerts for the asset.
-- **DSPM.Assets.AssetDigTags**: Digital tags associated with the asset.
-- **DSPM.Assets.OpenToWorld**: Indicates if the asset is open to the world.
-- **DSPM.Assets.OpenRisksCount**: The count of open risks for the asset.
-- **DSPM.Assets.Lifecycle**: Lifecycle status of the asset.
-- **DSPM.Assets.ServiceType**: The type of service associated with the asset.
-- **DSPM.Assets.Tags**: Tags related to the asset.
-- **DSPM.Assets.ProjectName**: The name of the project associated with the asset.
-- **DSPM.Assets.CloudEnvironment**: The cloud environment in which the asset exists.
-- **DSPM.Assets.ID**: The unique identifier of the asset.
-- **DSPM.Assets.CloudProvider**: The cloud provider for the asset.
-- **DSPM.Assets.Encrypted**: Indicates if the asset is encrypted.
-- **DSPM.Assets.Name**: The name of the asset.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DSPM.Assets.ProjectID | String | The ID of the project associated with the asset. |
+| DSPM.Assets.OpenAlertsCount | Number | The count of open alerts for the asset. |
+| DSPM.Assets.AssetDigTags | String | Digital tags associated with the asset. |
+| DSPM.Assets.OpenToWorld | Boolean | Indicates if the asset is open to the world. |
+| DSPM.Assets.OpenRisksCount | Number | The count of open risks for the asset. |
+| DSPM.Assets.Lifecycle | String | Lifecycle status of the asset. |
+| DSPM.Assets.ServiceType | String | The type of service associated with the asset. |
+| DSPM.Assets.Tags | String | Tags related to the asset. |
+| DSPM.Assets.ProjectName | String | The name of the project associated with the asset. |
+| DSPM.Assets.CloudEnvironment | String | The cloud environment in which the asset exists. |
+| DSPM.Assets.ID | String | The unique identifier of the asset. |
+| DSPM.Assets.CloudProvider | String | The cloud provider for the asset. |
+| DSPM.Assets.Encrypted | Boolean | Indicates if the asset is encrypted. |
+| DSPM.Assets.Name | String | The name of the asset. |
 
 
 #### Command example
@@ -271,11 +273,27 @@ Retrieves details for the specified asset ID
 | --- | --- | --- |
 | asset_id | ID of the asset for which to retrieve details. | Required | 
 
-#### Context Output
+
+#### Context Outputs
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.AssetDetails | String | Details of the asset for the provided ID. | 
+| DSPM.AssetDetails.assetDigTags | Unknown | The digital tags associated with the asset. |
+| DSPM.AssetDetails.cloudEnvironment | String | The cloud environment in which the asset exists. |
+| DSPM.AssetDetails.cloudProvider | String | The cloud provider for the asset (e.g., AWS, Azure, GCP). |
+| DSPM.AssetDetails.dataTypeGroups | Unknown | Groups of data types associated with the asset. |
+| DSPM.AssetDetails.dataTypes | Unknown | The data types related to the asset. |
+| DSPM.AssetDetails.encrypted | Boolean | Indicates if the asset is encrypted. |
+| DSPM.AssetDetails.id | String | The unique identifier of the asset. |
+| DSPM.AssetDetails.lifecycle | String | The lifecycle status of the asset. |
+| DSPM.AssetDetails.name | String | The name of the asset. |
+| DSPM.AssetDetails.openAlertsCount | Number | The count of open alerts for the asset. |
+| DSPM.AssetDetails.openRisksCount | Number | The count of open risks for the asset. |
+| DSPM.AssetDetails.openToWorld | Boolean | Indicates if the asset is open to the world. |
+| DSPM.AssetDetails.projectId | String | The ID of the project associated with the asset. |
+| DSPM.AssetDetails.projectName | String | The name of the project associated with the asset. |
+| DSPM.AssetDetails.serviceType | String | The type of service associated with the asset. |
+| DSPM.AssetDetails.tags | Unknown | Tags related to the asset. |
 
 #### Command example
 ```!dspm-get-asset-details asset_id="arn:aws:s3:::dummyS3-cifp-us-east-1"```
