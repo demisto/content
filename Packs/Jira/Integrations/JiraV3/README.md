@@ -2698,7 +2698,7 @@ There is no context output for this command.
 ### jira-get-user-info
 
 ***
-Retrieves information about a specified Jira user. For On-Premises instances, you should use the user's key and username to retrieve their details. For Cloud instances, user's `account_id` is required. if no identifier is supplied, information for the user the API credentials belong to is returned.
+Retrieves information about a specified Jira user. For on-prem instances, you should use the user's key and username to retrieve their details. For Cloud instances, user's `account_id` is required. If no identifier is supplied, information for the user the API credentials belong to is returned.
 
 #### Base Command
 
