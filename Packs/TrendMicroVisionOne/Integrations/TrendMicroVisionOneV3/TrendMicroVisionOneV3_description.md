@@ -66,4 +66,4 @@ You can then create a user account and generate an API key to be used for the Co
 4. Click **Test** to validate the URLs, token, and connection.
 
 ***
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one)
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one-v3)

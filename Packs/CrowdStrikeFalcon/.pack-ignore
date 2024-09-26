@@ -22,6 +22,7 @@ IOA
 enrichments
 cspm
 ioarules
+checkbox
 
 [file:classifier-CrowdStrike_Falcon_Incident_Classifier.json]
 ignore=BA101

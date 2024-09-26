@@ -834,6 +834,9 @@
                         },
                         "type": "above"
                     },
+                    "keys": [
+                        "sum|droppedCount"
+                    ],
                     "valuesFormat": "abbreviated"
                 },
                 "category": ""
@@ -972,7 +975,7 @@
                 "prevName": "Use Case Adoption Coverage",
                 "dataType": "scripts",
                 "widgetType": "text",
-                "query": "UseCaseAdoptionMetrics",
+                "query": "AdoptionMetrics",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",

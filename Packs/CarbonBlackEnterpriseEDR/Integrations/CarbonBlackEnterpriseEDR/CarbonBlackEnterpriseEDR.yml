@@ -65,6 +65,7 @@ configuration:
   type: 0
   section: Collect
   required: false
+  additionalinfo: If the API returns duplicates, the duplicates will be dropped, causing the total number of alerts fetched to potentially be fewer than the set limit.
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -226,6 +227,7 @@ script:
       description: Maximum number of rows to return.
       name: limit
     - auto: PREDEFINED
+      defaultValue: last_contact_time
       description: Sort Fields.
       name: sort_field
       predefined:
@@ -1475,7 +1477,7 @@ script:
       description: Threat ID.
     - contextPath: CarbonBlackEEDR.Threat.Tags
       description: Threat tags.
-  dockerimage: demisto/python3:3.10.14.101217
+  dockerimage: demisto/python3:3.11.9.105369
   isfetch: true
   runonce: false
   script: ''
@@ -1483,4 +1485,6 @@ script:
   type: python
 tests:
 - Carbon Black Enterprise EDR Test
+- Carbon Black Enterprise EDR process search with polling Test
+- Carbon Black Enterprise EDR alert-workflow-update Test
 fromversion: 5.0.0

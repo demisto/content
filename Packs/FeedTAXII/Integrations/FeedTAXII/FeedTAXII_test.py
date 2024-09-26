@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from FeedTAXII import TAXIIClient, fetch_indicators_command
+from FeedTAXII import TAXIIClient, fetch_indicators_command, Taxii11
 
 """ helper functions """
 
@@ -142,3 +142,26 @@ def test_tags_parameter(mocker, tags):
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)
         assert tags == list(res[0]['fields'].keys())
+
+
+def test_client_headers():
+    """
+    Given:
+    - TAXII1 client
+    When:
+    - Getting the client headers
+    Then:
+    - Validate the headers contain the Accept header
+    """
+    client = Taxii11()
+    headers = client.headers()
+
+    assert headers['Accept'] == 'application/xml'
+    assert headers['X-TAXII-Content-Type'] == client.MESSAGE_BINDING
+    assert headers['X-TAXII-Accept'] == client.MESSAGE_BINDING
+    assert headers['X-TAXII-Services'] == client.SERVICES
+    assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:http:1.0'
+
+    headers = client.headers(protocol='https')
+
+    assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:https:1.0'

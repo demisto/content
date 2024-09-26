@@ -2,7 +2,7 @@ import copy
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 from functools import partial
 from http import HTTPStatus
 from typing import Any
@@ -77,14 +77,14 @@ class PrefixToResponse(AddToOutput):
     id_key: str
 
 
-class RequestAction(str, Enum):
+class RequestAction(StrEnum):
     GET = "GET"
     PUT = "PUT"
     POST = "POST"
     DELETE = "DELETE"
 
 
-class ReadableOutputs(str, Enum):
+class ReadableOutputs(StrEnum):
     VULNERABILITY = "Vulnerability"
     SCAN = "Scan"
     SCAN_ACTION = "Scan action"
@@ -96,7 +96,7 @@ class ReadableOutputs(str, Enum):
     CHANGED = 'changed to "{0}"'
 
 
-class Headers(list, Enum):
+class Headers(list, Enum):  # type: ignore[misc]
     ATTACK = ["id", "module_id", "type", "class", "description"]
     VULNERABILITY = [
         "id",
@@ -141,7 +141,7 @@ class Headers(list, Enum):
     ]
 
 
-class UrlPrefix(str, Enum):
+class UrlPrefix(StrEnum):
     VULNERABILITY = "vulnerabilities"
     MODULE = "modules"
     SCAN = "scans"
@@ -152,7 +152,7 @@ class UrlPrefix(str, Enum):
     ENGINE = "engines"
 
 
-class OutputPrefix(str, Enum):
+class OutputPrefix(StrEnum):
     VULNERABILITY = "Vulnerability"
     VULNERABILITY_HISTORY = "VulnerabilityHistory"
     VULNERABILITY_COMMENT = "VulnerabilityComment"
@@ -170,7 +170,7 @@ class OutputPrefix(str, Enum):
     ENGINE = "Engine"
 
 
-class XsoarArgKey(str, Enum):
+class XsoarArgKey(StrEnum):
     VULNERABILITY = "vulnerability_id"
     SCAN = "scan_id"
     COMMENT = "comment_id"
@@ -1136,7 +1136,7 @@ def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     return list_handler(
         obj_id=args.get(XsoarArgKey.ATTACK),
-        request_command=partial(client.get_attack, args.get(XsoarArgKey.MODULE)),
+        request_command=partial(client.get_attack, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
         title="Attack metadata",
         headers=Headers.ATTACK.value,
         obj_type=OutputPrefix.ATTACK,
@@ -1162,7 +1162,7 @@ def get_attack_documentation_command(
     return list_handler(
         obj_id=args.get(XsoarArgKey.ATTACK),
         request_command=partial(
-            client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),
+            client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
         obj_type=OutputPrefix.ATTACK_DOCUMENTATION,
         use_flatten_dict=False,
         add_to_output=AddToOutput(

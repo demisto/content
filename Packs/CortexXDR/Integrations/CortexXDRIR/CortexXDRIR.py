@@ -4,11 +4,11 @@ import hashlib
 import secrets
 import string
 from itertools import zip_longest
+from datetime import datetime, timedelta
+import pytz
 
 from CoreIRApiModule import *
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
@@ -130,6 +130,64 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
     return filtered_incidents
 
 
+def get_xsoar_close_reasons():
+    """
+     Get the default XSOAR close-reasons in addition to custom close-reasons from server configuration.
+    """
+    default_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
+    custom_close_reasons: List[str] = []
+    try:
+        server_config = get_server_config()
+        demisto.debug(f'get_xsoar_close_reasons server-config: {str(server_config)}')
+        if server_config:
+            custom_close_reasons = argToList(server_config.get('incident.closereasons', ''))
+    except Exception as e:
+        demisto.error(f"Could not get server configuration: {e}")
+    return default_xsoar_close_reasons + custom_close_reasons
+
+
+def validate_custom_close_reasons_mapping(mapping: str, direction: str):
+    """ Check validity of provided custom close-reason mappings. """
+
+    xdr_statuses = [status.replace("resolved_", "").replace("_", " ").title() for status in XDR_RESOLVED_STATUS_TO_XSOAR]
+    xsoar_statuses = get_xsoar_close_reasons()
+
+    exception_message = ('Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
+                         '{xsoar_or_xdr} close-reason. Valid Cortex {xsoar_or_xdr} close-reasons are: {statuses}')
+
+    def to_xdr_status(status):
+        return "resolved_" + "_".join(status.lower().split(" "))
+
+    custom_mapping = comma_separated_mapping_to_dict(mapping)
+
+    valid_key = valid_value = True  # If no mapping was provided.
+
+    for key, value in custom_mapping.items():
+        if direction == XSOAR_TO_XDR:
+            xdr_close_reason = to_xdr_status(value)
+            valid_key = key in xsoar_statuses
+            valid_value = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
+        elif direction == XDR_TO_XSOAR:
+            xdr_close_reason = to_xdr_status(key)
+            valid_key = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
+            valid_value = value in xsoar_statuses
+
+        if not valid_key:
+            raise DemistoException(
+                exception_message.format(direction=direction,
+                                         key_or_value=key,
+                                         xsoar_or_xdr="XSOAR" if direction == XSOAR_TO_XDR else "XDR",
+                                         statuses=xsoar_statuses
+                                         if direction == XSOAR_TO_XDR else xdr_statuses))
+        elif not valid_value:
+            raise DemistoException(
+                exception_message.format(direction=direction,
+                                         key_or_value=value,
+                                         xsoar_or_xdr="XDR" if direction == XSOAR_TO_XDR else "XSOAR",
+                                         statuses=xdr_statuses
+                                         if direction == XSOAR_TO_XDR else xsoar_statuses))
+
+
 class Client(CoreClient):
     def __init__(self, base_url, proxy, verify, timeout, params=None):
         if not params:
@@ -157,54 +215,12 @@ class Client(CoreClient):
                 raise
 
         # XSOAR -> XDR
-        self.validate_custom_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
-                                     direction=XSOAR_TO_XDR)
+        validate_custom_close_reasons_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
+                                              direction=XSOAR_TO_XDR)
 
         # XDR -> XSOAR
-        self.validate_custom_mapping(mapping=self._params.get("custom_xdr_to_xsoar_close_reason_mapping"),
-                                     direction=XDR_TO_XSOAR)
-
-    def validate_custom_mapping(self, mapping: str, direction: str):
-        """ Check validity of provided custom close-reason mappings. """
-
-        xdr_statuses_to_xsoar = [status.replace("resolved_", "").replace("_", " ").title()
-                                 for status in XDR_RESOLVED_STATUS_TO_XSOAR]
-        xsoar_statuses_to_xdr = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
-
-        exception_message = ('Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
-                             '{xsoar_or_xdr} close-reason. Valid Cortex {xsoar_or_xdr} close-reasons are: {statuses}')
-
-        def to_xdr_status(status):
-            return "resolved_" + "_".join(status.lower().split(" "))
-
-        custom_mapping = comma_separated_mapping_to_dict(mapping)
-
-        valid_key = valid_value = True  # If no mapping was provided.
-
-        for key, value in custom_mapping.items():
-            if direction == XSOAR_TO_XDR:
-                xdr_close_reason = to_xdr_status(value)
-                valid_key = key in XSOAR_RESOLVED_STATUS_TO_XDR
-                valid_value = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
-            elif direction == XDR_TO_XSOAR:
-                xdr_close_reason = to_xdr_status(key)
-                valid_key = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
-                valid_value = value in XSOAR_RESOLVED_STATUS_TO_XDR
-
-            if not valid_key:
-                raise DemistoException(
-                    exception_message.format(direction=direction,
-                                             key_or_value=key,
-                                             xsoar_or_xdr="XSOAR" if direction == XSOAR_TO_XDR else "XDR",
-                                             statuses=xsoar_statuses_to_xdr
-                                             if direction == XSOAR_TO_XDR else xdr_statuses_to_xsoar))
-            elif not valid_value:
-                raise DemistoException(
-                    exception_message.format(direction=direction,
-                                             key_or_value=value,
-                                             xsoar_or_xdr="XDR" if direction == XSOAR_TO_XDR else "XSOAR",
-                                             statuses=xdr_statuses_to_xsoar
-                                             if direction == XSOAR_TO_XDR else xsoar_statuses_to_xdr))
+        validate_custom_close_reasons_mapping(mapping=self._params.get("custom_xdr_to_xsoar_close_reason_mapping"),
+                                              direction=XDR_TO_XSOAR)
 
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: dict) -> List:
         """
@@ -369,8 +385,8 @@ class Client(CoreClient):
         return reply.get('reply', {})
 
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
-                                          status=None, starred=None, starred_incidents_fetch_window=None,
-                                          page_number=0, limit=100):
+                                          statuses=[], starred=None, starred_incidents_fetch_window=None,
+                                          page_number=0, limit=100, offset=0):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -378,16 +394,23 @@ class Client(CoreClient):
         Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
         """
         global ALERTS_LIMIT_PER_INCIDENTS
-        request_data = {}
+        request_data = {
+            'search_from': offset,
+            'search_to': offset + limit,
+            'sort': {
+                'field': 'creation_time',
+                'keyword': 'asc',
+            }
+        }
         filters: List[Any] = []
         if incident_id_list:
-            incident_id_list = argToList(incident_id_list, transform=lambda x: str(x))
+            incident_id_list = argToList(incident_id_list, transform=str)
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
-        if status:
+        if statuses:
             filters.append({
                 'field': 'status',
-                'operator': 'eq',
-                'value': status
+                'operator': 'in',
+                'value': statuses
             })
         if exclude_artifacts:
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
@@ -416,7 +439,7 @@ class Client(CoreClient):
             })
         if len(filters) > 0:
             request_data['filters'] = filters
-
+        demisto.debug(f'Before sending get_multiple_incidents_extra_data request: {request_data=}')
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -789,6 +812,7 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
     :param xdr_close_reason: XDR raw status/close reason e.g. 'resolved_false_positive'.
     :return: XSOAR close reason.
     """
+    possible_xsoar_close_reasons = get_xsoar_close_reasons()
 
     # Check if incoming XDR close-reason has a non-default mapping to XSOAR close-reason.
     if demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping"):
@@ -802,7 +826,7 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
             xdr_close_reason.replace("resolved_", "").replace("_", " ").title()
         )
         xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping.get(title_cased_xdr_close_reason)
-        if xsoar_close_reason in XSOAR_RESOLVED_STATUS_TO_XDR:
+        if xsoar_close_reason in possible_xsoar_close_reasons:
             demisto.debug(
                 f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
             )
@@ -865,25 +889,32 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args):
+def get_modified_remote_data_command(client, args, mirroring_last_update: str = '', xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
-
-    demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
-
+    last_update: str = mirroring_last_update or remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
-                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
+
     if last_update_utc:
-        last_update_without_ms = last_update_utc.isoformat().split('.')[0]
-
-    raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
-
+        gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
+        lte_modification_time_milliseconds = gte_modification_time_milliseconds + timedelta(minutes=1)
+    demisto.debug(
+        f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
+        f'{lte_modification_time_milliseconds=}'
+    )
+    raw_incidents = client.get_incidents(
+        gte_modification_time_milliseconds=gte_modification_time_milliseconds,
+        lte_modification_time_milliseconds=lte_modification_time_milliseconds,
+        limit=100)
+    last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
+    # Format with milliseconds as string, truncate microseconds
+    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
+        '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
-
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
+    return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring_str
 
 
 def get_remote_data_command(client, args):
@@ -1042,14 +1073,16 @@ def update_related_alerts(client: Client, args: dict):
         return_results(update_alerts_in_xdr_command(client, args_for_command))
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict = None,
-                    max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
+def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict,
+                    max_fetch: int = 10, statuses: list = [], starred: Optional[bool] = None,
                     starred_incidents_fetch_window: str = None):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-    incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
-                                                                                                dict) else []
+    last_fetch = last_run.get('time')
+    incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
+
+    offset = int(last_run.get('offset', 0))
+
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -1057,38 +1090,24 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     if starred:
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 
-    incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
-        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1) if isinstance(last_run, dict) else -1
+        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1)
     else:
-        if statuses:
-            raw_incidents = []
-            for status in statuses:
-                raw_incident_status = client.get_multiple_incidents_extra_data(
-                    gte_creation_time_milliseconds=last_fetch,
-                    status=status,
-                    limit=max_fetch, starred=starred,
-                    starred_incidents_fetch_window=starred_incidents_fetch_window,
-                    exclude_artifacts=exclude_artifacts)
-                raw_incidents.extend(raw_incident_status)
-            raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
-        else:
-            raw_incidents = client.get_multiple_incidents_extra_data(
-                gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                starred=starred,
-                starred_incidents_fetch_window=starred_incidents_fetch_window,
-                exclude_artifacts=exclude_artifacts)
+        raw_incidents = client.get_multiple_incidents_extra_data(
+            gte_creation_time_milliseconds=last_fetch,
+            statuses=statuses, limit=max_fetch, starred=starred,
+            starred_incidents_fetch_window=starred_incidents_fetch_window,
+            exclude_artifacts=exclude_artifacts, offset=offset
+        )
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
 
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
-    next_run = {}
     try:
-        count_incidents = 0
-
+        incidents = []
         for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
@@ -1099,43 +1118,49 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
-                                                                     None)
-            incident_data['mirror_instance'] = integration_instance
-            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
+            incident_data |= {
+                'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None')),
+                'mirror_instance': integration_instance,
+                'last_mirrored_in': int(datetime.now().timestamp() * 1000),
+            }
             description = incident_data.get('description')
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
-            incident: Dict[str, Any] = {
+            incident: dict[str, Any] = {
                 'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+                incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
+                demisto.debug(f'updating last_fetch, setting offset = 1; {incident_id=}')
                 last_fetch = incident_data['creation_time']
+                offset = 1
+            elif incident_data.get('creation_time') == last_fetch:
+                demisto.debug(f'updating offset += 1; {incident_id=}')
+                offset += 1
+            else:
+                demisto.debug(f"{incident_data['creation_time']=} < last_fetch; {incident_id=}")
+
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
-
-            count_incidents += 1
-            if count_incidents == max_fetch:
-                break
 
     except Exception as e:
         if "Rate limit exceeded" in str(e):
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
-                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
+                         f"{len(non_created_incidents)!r}.\n The incidents will be created in the next fetch")
         else:
             raise
 
-    if non_created_incidents:
-        next_run['incidents_from_previous_run'] = non_created_incidents
-        next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
-    else:
-        next_run['incidents_from_previous_run'] = []
+    next_run = {
+        'incidents_from_previous_run': non_created_incidents,
+        'time': last_fetch,
+        'offset': str(offset),
+    }
 
-    next_run['time'] = last_fetch + 1
+    if non_created_incidents:
+        next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
 
     return next_run, incidents
 
@@ -1269,7 +1294,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
-
     # using two different credentials object as they both fields need to be encrypted
     first_fetch_time = params.get('fetch_time', '3 days')
     base_url = urljoin(params.get('url'), '/public_api/v1')
@@ -1279,7 +1303,7 @@ def main():  # pragma: no cover
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
-
+    xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
@@ -1302,7 +1326,6 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
-
     try:
         if command == 'test-module':
             client.test_module(first_fetch_time)
@@ -1310,17 +1333,17 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
+            last_run_obj = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client=client,
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
                                                   exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run'),
+                                                  last_run=demisto.getLastRun().get('next_run', {}),
                                                   max_fetch=max_fetch,
                                                   statuses=statuses,
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
                                                   )
-            last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
@@ -1536,7 +1559,17 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, demisto.args()))
+            last_run_mirroring: Dict[str, Any] = demisto.getLastRun()
+
+            modified_incidents, next_mirroring_time = get_modified_remote_data_command(
+                client=client,
+                args=demisto.args(),
+                mirroring_last_update=last_run_mirroring.get('mirroring_last_update', ''),
+                xdr_delay=xdr_delay,
+            )
+            last_run_mirroring['mirroring_last_update'] = next_mirroring_time
+            demisto.setLastRun(last_run_mirroring)
+            return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
             return_results(script_run_polling_command(args, client))

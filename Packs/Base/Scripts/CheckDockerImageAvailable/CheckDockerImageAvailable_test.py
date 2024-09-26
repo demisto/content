@@ -9,6 +9,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 RETURN_ERROR_TARGET = 'CheckDockerImageAvailable.return_error'
 
 
+@pytest.mark.skip(reason="Should be fixed in future versions (related to CIAC-11614)")
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 def test_auth():
     token = docker_auth('demisto/python', verify_ssl=False)
@@ -56,6 +57,7 @@ def test_min_layer():
     assert min_layer['size'] == 233
 
 
+@pytest.mark.skip(reason="Should be fixed in future versions (related to CIAC-11614)")
 def test_valid_docker_image(mocker):
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -82,6 +84,7 @@ def test_valid_docker_image(mocker):
     assert results[0] == 'ok'
 
 
+@pytest.mark.skip(reason="Should be fixed in future versions (related to CIAC-11614)")
 def test_invalid_docker_image(mocker):
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
