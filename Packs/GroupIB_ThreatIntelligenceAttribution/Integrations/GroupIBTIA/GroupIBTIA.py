@@ -459,7 +459,8 @@ MAPPING = {
     "osi/git_repository": {  # GIB Source:sourceType, severity:systemSeverity
         # Information from GIB
         "id": "id",  # GIB ID
-        "name": "name",  # GIB Leaked File Name
+        "name": "name",
+        "leaked_file_name": "name",  # GIB Leaked File Name
         "source": "source",  # GIB GIT Source
         "dateDetected": "dateDetected",  # GIB Date of Detection
         "dateCreated": "dateCreated",  # GIB Date Created
@@ -915,7 +916,8 @@ MAPPING = {
     "malware/malware": {  # GIB Source:sourceType
         # Information from GIB
         "id": "id",  # GIB ID
-        "name": "name",  # GIB Malware Name
+        "name":"name",
+        "malware_name": "name",  # GIB Malware Name
         "updatedAt": "updatedAt",  # GIB Date Updated At
         "aliases": "aliases",  # GIB Malware Aliases
         "category": "category",  # GIB Malware Categories
@@ -1016,6 +1018,7 @@ MAPPING = {
     },
     "apt/threat_actor": {  # GIB Source:sourceType, severity:systemSeverity
         # Information from GIB
+        "name": "name",
         "id": "id",  # GIB ID
         "aliases": "aliases",  # GIB Nation-State Cybercriminals Threat Actor Aliases
         "country": "country",  # GIB Nation-State Cybercriminals Threat Actor Country
@@ -1023,7 +1026,7 @@ MAPPING = {
         "goals": "goals",  # GIB Nation-State Cybercriminals Threat Actor Goals
         "isAPT": "isAPT",  # GIB Threat Actor is APT
         "labels": "labels",  # GIB Nation-State Cybercriminals Threat Actor Labels
-        "name": "name",  # GIB Threat Actor Name
+        "threat_actor_name": "name",  # GIB Threat Actor Name
         "langs": "langs",  # GIB Nation-State Cybercriminals Threat Actor Langs
         "roles": "roles",  # GIB Nation-State Cybercriminals Threat Actor Roles
         "cve": "stat.cve",  # GIB Nation-State Cybercriminals Threat Actor CVE

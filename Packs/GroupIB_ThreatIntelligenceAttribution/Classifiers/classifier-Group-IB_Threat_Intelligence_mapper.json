@@ -1457,7 +1457,7 @@
 					"simple": "langs"
 				},
 				"GIB Malware Name": {
-					"simple": "name"
+					"simple": "malware_name"
 				},
 				"GIB Malware Platforms": {
 					"simple": "platform"
@@ -1682,7 +1682,7 @@
 					"simple": "sourceType"
 				},
 				"GIB Threat Actor Name": {
-					"simple": "name"
+					"simple": "threat_actor_name"
 				},
 				"GIB Threat Actor is APT": {
 					"simple": "isAPT"
@@ -1734,7 +1734,7 @@
 				"GIB Leaked File Name": {
 					"complex": {
 						"filters": [],
-						"root": "name",
+						"root": "leaked_file_name",
 						"transformers": []
 					}
 				},
