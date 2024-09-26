@@ -17,6 +17,9 @@
 	"Utilities",
 	"Vulnerability Management",
 	"Authentication & Identity Management",
-	"Email"
+	"Email",
+    "Cloud Service Provider",
+    "Code Repositories",
+    "CI/CD"
     ]
 }

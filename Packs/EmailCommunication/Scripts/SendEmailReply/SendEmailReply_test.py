@@ -807,7 +807,7 @@ def test_multi_thread_reply(scenario, mocker):
         thread_details = (
             True, 'AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJXBb0'
                   'sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=', False, '87692312',
-            'Re: <87692312> Test Email 4', 'end_user@company.com, soc_sender@company.com',
+            'RE: <87692312> Test Email 4', 'end_user@company.com, soc_sender@company.com',
             'soc_sender@company.com', '', '', 2)
         mocker.patch.object(SendEmailReply, 'collect_thread_details', return_value=thread_details)
         # Return all email thread entries
