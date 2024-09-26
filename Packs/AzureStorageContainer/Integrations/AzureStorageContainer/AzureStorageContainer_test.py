@@ -284,6 +284,16 @@ def test_azure_storage_get_blob_tags_command(requests_mock):
 
 
 def test_block_public_accesss(requests_mock):
+    """
+    Scenario: Block public access for the specified container.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - azure-storage-container-block-public-access called.
+    Then:
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
+    """
     from AzureStorageContainer import Client, block_public_access_command
 
     container_name = "test"

@@ -615,3 +615,28 @@ Retrieve Blob properties.
 
 #### Command Example
 ```!azure-storage-container-sas-create account_key="TestAccountKey" expiry_time="1" signed_resources="test signed_permissions="test signed_ip="127.0.0.1"```
+
+### azure-storage-container-block-public-access
+***
+Block public access to a container..
+
+
+#### Base Command
+
+`azure-storage-container-block-public-access`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| container_name | The name of the Blob Container. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!azure-storage-container-block-public-access container_name="xsoar"```
+
+#### Human Readable Output
+
+>xsoar.txt Public access to container '{container_name}' has been successfully blocked.
