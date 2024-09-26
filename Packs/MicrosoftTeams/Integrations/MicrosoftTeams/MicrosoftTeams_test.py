@@ -997,8 +997,11 @@ def test_is_investigation_mirrored():
     ("Link: https://xsoar.pan.dev/page?parametized=true",
      "Link: [https://xsoar.pan.dev/page?parametized=true](https://xsoar.pan.dev/page?parametized=true)"),
     ("This is a link https://paloaltonetworks.com/. This is a [Custom URL](https://paloaltonetworks.com/)",
-     "This is a link [https://paloaltonetworks.com/](https://paloaltonetworks.com/). This is a [Custom URL]("
+     "This is a link [https://paloaltonetworks.com/.](https://paloaltonetworks.com/.) This is a [Custom URL]("
      "https://paloaltonetworks.com/)"),
+    ("This is a [Custom URL](https://paloaltonetworks.com/), This is a link https://paloaltonetworks.com/",
+     "This is a [Custom URL](https://paloaltonetworks.com/), "
+     "This is a link [https://paloaltonetworks.com/](https://paloaltonetworks.com/)"),
 ])
 def test_urlify_hyperlinks(message: str, expected_result: str):
     from MicrosoftTeams import urlify_hyperlinks
