@@ -36,3 +36,5 @@ ignore=RN116
 ignore=GR103
 [file:DevSecOps_-_LGTM_-_Analysis_-_SubPB.yml]
 ignore=GR103
+[file:GitLab-test-playbook.yml]
+ignore=GR103

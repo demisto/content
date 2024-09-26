@@ -9,7 +9,8 @@ ignore=IF100,GR103
 ignore=IF100,GR103
 
 [file:incidentfields_Armis_Alert_Status.json]
-ignore=IF100,BA113
+ignore=IF100,BA113,GR103
+
 
 [file:incidentfields_Armis_Alert_Type.json]
 ignore=IF100,GR103
