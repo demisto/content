@@ -1,4 +1,4 @@
-Shodan is a search engine for Internet-connected devices. Unlike traditional search engines that index websites, Shodan indexes information about the devices connectedש to the internet, such as servers, routers, webcams, and other IoT devices.
+Shodan is a search engine for Internet-connected devices. Unlike traditional search engines that index websites, Shodan indexes information about the devices connected to the internet, such as servers, routers, webcams, and other IoT devices.
 
 ## Configure Shodan v2 on Cortex XSOAR
 
@@ -9,7 +9,7 @@ Shodan is a search engine for Internet-connected devices. Unlike traditional sea
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | API Key |  | False |
-    | Base url to Shodan API |  | True |
+    | Base URL to Shodan API |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
@@ -781,7 +781,7 @@ There is no context output for this command.
 Fetch process returns a listing of all the network alerts that are currently active on the account.
 
 To enable the Shodan integration you need to have an API key, which you can get for free by creating a Shodan account <https://account.shodan.io/register>
-Once you have an API key you insert it into the API Key field and click the Test button.
+Once you have an API key, you insert it into the *API Key* field and click the **Test** button.
 
 
 ## Rate Limits

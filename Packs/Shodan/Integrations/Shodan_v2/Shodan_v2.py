@@ -181,7 +181,7 @@ def test_module():
     is_fetch_events = argToBoolean(params.get('isFetchEvents', False))
 
     if is_fetch_events and not API_KEY:
-        return_error("Missing API key")
+        return_error("Missing API key - You must provide API KEY parameter.")
 
     if API_KEY:
         http_request('GET', '/shodan/alert/info')  # Checking with API key
