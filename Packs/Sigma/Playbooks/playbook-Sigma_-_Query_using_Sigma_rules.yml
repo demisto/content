@@ -1,6 +1,6 @@
-id: Sigma - Query using Sigma rules
+id: Query using Sigma rules
 version: -1
-name: Sigma - Query using Sigma rules
+name: Query using Sigma rules
 description: An example playbook on how to query Sigma rules from within TIM and query a SIEM/EDR.
 tags:
 - Sigma
