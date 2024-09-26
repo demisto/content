@@ -696,10 +696,12 @@ MAPPING = {
         "status": "status",  # GIB Phishing Status
         "phishing_domain_domain": "domainInfo.domain",  # GIB Phishing Domain
         "phishing_domain_registrar": "domainInfo.registrar",  # GIB Phishing Registrar
-        "blocked": "date.blocked",  # GIB Phishing Date Blocked
-        "added": "date.added",  # GIB Phishing Date Added
-        "detected": "date.detected",  # GIB Phishing Date Detected
-        "updated": "date.updated",  # GIB Phishing Date Updated
+        "date":{
+            "blocked": "date.blocked",  # GIB Phishing Date Blocked
+            "added": "date.added",  # GIB Phishing Date Added
+            "detected": "date.detected",  # GIB Phishing Date Detected
+            "updated": "date.updated",  # GIB Phishing Date Updated
+        },
         # End Information from GIB
         # GIB Evaluation
         "evaluation": {

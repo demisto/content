@@ -241,9 +241,6 @@
 				"GIB Date Last Seen": {
 					"simple": "dateLastSeen"
 				},
-				"GIB Date of Detection": {
-					"simple": "dateDetected"
-				},
 				"GIB ID": {
 					"simple": "id"
 				},
@@ -251,16 +248,16 @@
 					"simple": "brand"
 				},
 				"GIB Phishing Date Added": {
-					"simple": "added"
+					"simple": "date.added"
 				},
 				"GIB Phishing Date Blocked": {
-					"simple": "blocked"
+					"simple": "date.blocked"
 				},
 				"GIB Phishing Date Detected": {
-					"simple": "detected"
+					"simple": "date.detected"
 				},
 				"GIB Phishing Date Updated": {
-					"simple": "updated"
+					"simple": "date.updated"
 				},
 				"GIB Phishing Domain": {
 					"simple": "phishing_domain_domain"
