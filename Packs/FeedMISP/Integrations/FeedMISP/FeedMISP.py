@@ -532,7 +532,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     query = params.get('query', None)
     last_run_timestamp = demisto.getLastRun().get('timestamp') or ""
     last_run_page = demisto.getLastRun().get('page') or 1
-
+    last_run_value = demisto.getLastRun().get('last_indicator_value') or ""
     params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp) if query else \
         build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT,
                           page=last_run_page, from_timestamp=last_run_timestamp)
@@ -545,12 +545,24 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
         indicators = build_indicators(client, search_query_per_page, attribute_types,
                                       tlp_color, params.get('url'), reputation, feed_tags)
+
         total_fetched_indicators += len(indicators)
+        latest_indicator = search_query_per_page['response']['Attribute']
+        latest_indicator_timestamp = latest_indicator[-1]['timestamp']
+        latest_indicator_value = latest_indicator[-1]['value']
+
+        if last_run_timestamp == latest_indicator_timestamp and latest_indicator_value == last_run_value:
+            # No new indicators since last run, no need to fetch again
+            demisto.debug("No new indicators found since last run")
+            return
+
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
+        # If the indicators created successfully , update the last run information
+        last_run_timestamp = latest_indicator_timestamp
+        last_run_value = latest_indicator_value
 
-        last_run_timestamp = search_query_per_page['response']['Attribute'][-1]['timestamp']
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.
         if fetch_limit and fetch_limit <= total_fetched_indicators:
@@ -560,7 +572,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    demisto.setLastRun({'timestamp': last_run_timestamp})
+    demisto.setLastRun({'timestamp': last_run_timestamp, 'last_indicator_value': last_run_value})
 
 
 def main():  # pragma: no cover
