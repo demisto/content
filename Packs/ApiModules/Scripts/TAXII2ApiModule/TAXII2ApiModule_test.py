@@ -2386,7 +2386,7 @@ def test_get_supported_pattern_comparisons():
     - Retrieve only the supported patterns.
     """
     parsed_pattern = {
-        'ipv4-addr': [(['value'], '=', "'1.51.100.1/32'"), (['non-supported-type'], '=', "'203.0.113.33/32'")],
+        'ipv4-addr': [(['value'], '=', "'1.1.1.1/32'"), (['non-supported-type'], '=', "'8.8.8.8/32'")],
         'domain-name': [(['value'], '=', "'example.com'")],
         'non-supported-field': [(['value'], '=', "'example.com'")]
     }
@@ -2394,7 +2394,7 @@ def test_get_supported_pattern_comparisons():
     res = STIX2XSOARParser.get_supported_pattern_comparisons(parsed_pattern)
 
     assert res == {
-        'ipv4-addr': [(['value'], '=', "'1.51.100.1/32'")],
+        'ipv4-addr': [(['value'], '=', "'1.1.1.1/32'")],
         'domain-name': [(['value'], '=', "'example.com'")]
     }
 
