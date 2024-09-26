@@ -166,6 +166,7 @@ def test_client_headers():
 
     assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:https:1.0'
 
+
 def test_fetch_enrichment_excluded(mocker):
     """
     Given:
@@ -187,4 +188,3 @@ def test_fetch_enrichment_excluded(mocker):
             ind['enrichmentExcluded'] = True
 
         assert res == expected
-
