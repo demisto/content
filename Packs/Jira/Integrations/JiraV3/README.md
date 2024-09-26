@@ -2708,8 +2708,8 @@ Retrieves information about a specified Jira user. For on-prem instances, you sh
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key | The user's key (On Prem only). | Optional | 
-| username | The user's username (On Prem only). | Optional | 
+| key | The user's key (On-prem only). | Optional | 
+| username | The user's username (On-prem only). | Optional | 
 | account_id | The user's accountId (Cloud only). | Optional | 
 
 #### Context Output
