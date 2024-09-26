@@ -1,7 +1,7 @@
 {
     "fromDate": "0001-01-01T00:00:00Z",
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "id": "CISOMetrics2",
+    "id": "CISOMetrics",
     "layout": [
         {
             "forceRange": false,
