@@ -1477,7 +1477,7 @@ script:
       description: Questions for the form.
       type: Unknown
   - arguments:
-    - description: The user's key (On Prem only).
+    - description: The user's key (On-prem only).
       name: key
       required: false
     - description: The user's username (On Prem only).
