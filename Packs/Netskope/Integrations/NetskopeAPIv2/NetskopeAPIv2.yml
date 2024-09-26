@@ -410,7 +410,7 @@ script:
           description: A numeric value representing the source epoch.
           type: Number
         - contextPath: Netskope.Alert.access_method
-          description: Cloud app traffic can be steered to the Netskope cloud using different deployment methods such as Client (Netskope Client), Secure Forwarder etc. Administrators can also upload firewall and/or proxy logs for log analytics. This field shows the actual access method that triggered the event. For log uploads this shows the actual log type such as PAN, Websense, etc.
+          description: Cloud app traffic can be steered to the Netskope cloud using different deployment methods such as Client (Netskope Client), Secure Forwarder, etc. Administrators can also upload firewall and/or proxy logs for log analytics. This field shows the actual access method that triggered the event. For log uploads, this shows the actual log type such as PAN, Websense, etc.
           type: String
         - contextPath: Netskope.Alert.acked
           description: Whether the user acknowledged the alert or not.
@@ -476,22 +476,22 @@ script:
           description: Application’s two-letter country code as determined by Maxmind or IP2Location Geodatabase.
           type: String
         - contextPath: Netskope.Alert.dst_latitude
-          description: Latitude of the application as determined by Maxmind or IP2Location Geodatabase.
+          description: Latitude of the application as determined by MaxMind or IP2Location Geolocation database.
           type: Number
         - contextPath: Netskope.Alert.dst_location
-          description: Application’s city as determined by maxmind or IP2Location Geodatabase.
+          description: Application’s city as determined by MaxMind or IP2Location Geolocation database.
           type: String
         - contextPath: Netskope.Alert.dst_longitude
-          description: Longitude of the application as determined by Maxmind or IP2Location Geodatabase.
+          description: Longitude of the application as determined by MaxMind or IP2Location Geolocation database.
           type: Number
         - contextPath: Netskope.Alert.dst_region
-          description: Application’s state or region as determined by Maxmind or IP2Location Geodatabase.
+          description: Application’s state or region as determined by MaxMind or IP2Location Geolocation database.
           type: String
         - contextPath: Netskope.Alert.dst_timezone
           description: Destination timezone.
           type: String
         - contextPath: Netskope.Alert.dst_zipcode
-          description: Application’s zip code as determined by Maxmind or IP2Location Geodatabase.
+          description: Application’s zip code as determined by MaxMind or IP2Location Geolocation database.
           type: String
         - contextPath: Netskope.Alert.dstip
           description: IP address where the destination app is hosted.
@@ -563,19 +563,19 @@ script:
           description: For traffic_type = CloudApp, site = app, and for traffic_type = Web, it will be the second-level domain name + top-level domain name. For example, in “www.cnn.com”, it is “cnn.com”.
           type: String
         - contextPath: Netskope.Alert.src_country
-          description: User’s country’s two-letter country code as determined by Maxmind or IP2Location Geodatabase.
+          description: User’s country’s two-letter country code as determined by MaxMind or IP2Location Geolocation database.
           type: String
         - contextPath: Netskope.Alert.src_latitude
-          description: Latitude of the user as determined by Maxmind or IP2Location Geodatabase.
+          description: Latitude of the user as determined by MaxMind or IP2Location Geolocation database.
           type: Number
         - contextPath: Netskope.Alert.src_location
-          description: User’s city as determined by Maxmind or IP2Location Geodatabase.
+          description: User’s city as determined by MaxMind or IP2Location Geolocation database.
           type: String
         - contextPath: Netskope.Alert.src_longitude
-          description: Longitude of the user as determined by Maxmind or IP2Location Geodatabase.
+          description: Longitude of the user as determined by MaxMind or IP2Location Geolocation database.
           type: Number
         - contextPath: Netskope.Alert.src_region
-          description: Source state or region as determined by Maxmind or IP2Location Geodatabase.
+          description: Source state or region as determined by MaxMind or IP2Location Geolocation database.
           type: String
         - contextPath: Netskope.Alert.src_time
           description: A timestamp associated with the source or event.
@@ -584,7 +584,7 @@ script:
           description: Source timezone. Shows the long-format timezone designation.
           type: String
         - contextPath: Netskope.Alert.src_zipcode
-          description: Source zip code as determined by Maxmind or IP2Location Geodatabase.
+          description: Source zip code as determined by MaxMind or IP2Location Geolocation database.
           type: String
         - contextPath: Netskope.Alert.srcip
           description: IP address of the source/user.
@@ -641,10 +641,10 @@ script:
           description: Retransmission information for NSP on the front end.
           type: Number
         - contextPath: Netskope.Alert.nsp_rtt_back
-          description: Round-trip time information for NSP on the back end.
+          description: Roundtrip time information for NSP on the back end.
           type: Number
         - contextPath: Netskope.Alert.nsp_rtt_front
-          description: Round-trip time information for NSP on the front end.
+          description: Roundtrip time information for NSP on the front end.
           type: Number
         - contextPath: Netskope.Alert.resource_name
           description: The name associated with a resource.
@@ -976,7 +976,7 @@ script:
         - description: The updated URL list name.
           name: name
           required: true
-        - description: The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line).
+        - description: The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by a new line).
           isArray: true
           name: urls
           required: true
@@ -1035,7 +1035,7 @@ script:
         - description: The unique name for the URL list.
           name: name
           required: true
-        - description: The URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line).
+        - description: The URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by a new line).
           isArray: true
           name: urls
           required: true
@@ -1182,7 +1182,7 @@ script:
         - description: The URL list ID to update (use netskope-url-list-list command to get URL list ID).
           name: url_list_id
           required: true
-        - description: The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line).
+        - description: The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by a new line).
           isArray: true
           name: urls
           required: true
