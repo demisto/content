@@ -3343,7 +3343,10 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
 
         return PollResult(
             response=get_script_execution_results_command(
-                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+                client, {'action_id': action_id,
+                         'integration_context_brand': 'Core'
+                         if argToBoolean(args.get('is_core', False))
+                         else 'PaloAltoNetworksXDR'}
             ),
             continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
         )
@@ -3624,7 +3627,7 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             decode_dict_values(alert)
         except Exception as e:
             demisto.debug("encountered the following while decoding dictionary values, skipping")
-            demisto.debug(e)
+            demisto.debug(f'{e}')
             continue
 
         # Remove original_alert_json field and add its content to the alert body.
