@@ -14,6 +14,7 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | Account SAS Token | False |
     | Use Azure Managed Identities | False |
     | Azure Managed Identities Client ID | False |   
+    | Shared Key | False |
     | Use system proxy settings | False |
     | Trust any certificate (not secure) | False |
 
@@ -29,6 +30,8 @@ please make sure your SAS token contains the following permissions:
   2. 'Service', 'Container' and 'Object' resource types.
   3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
   4. 'Blob versioning permissions'
+## Shared Key Permissions
+To set the AllowSharedKeyAccess property for an Azure Storage account, a user needs to have the permissions to create and manage storage accounts.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

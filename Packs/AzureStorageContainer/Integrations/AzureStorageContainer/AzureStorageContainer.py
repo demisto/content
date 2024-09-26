@@ -69,8 +69,8 @@ class Client:
 
     def block_public_access(self, url, headers):
         return self.ms_client.http_request(method='PUT', headers=headers, full_url=url,
-                                               return_empty_response=True)
-    
+                                           return_empty_response=True)
+
     def get_container_properties_request(self, container_name: str) -> Response:
         """
         Retrieve properties for the specified Container.
@@ -981,7 +981,20 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  #
     else:
         raise DemistoException("Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\'")
 
+
 def block_public_access_command(client: Client, args: Dict[str, Any]):
+    """
+    Block container's public access.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs and raw response for XSOAR.
+
+    """
+
     try:
         account_key = demisto.params().get("shared_key")
         account_name = storage_account_name
@@ -989,7 +1002,7 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
         api_version = client.get_api_version()
         request_url = f"https://{account_name}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
         request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
-        
+
         # string for API signature
         string_to_sign = (
             f"PUT\n"  # HTTP Verb
@@ -1012,11 +1025,14 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
         )
 
         # create signature token for API auth
-        decoded_key = base64.b64decode(account_key)
-        signature = hmac.new(
+        try:
+            decoded_key = base64.b64decode(account_key)
+            signature = hmac.new(
                 decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256
-        ).digest()
-        encoded_signature = base64.b64encode(signature).decode("utf-8")
+            ).digest()
+            encoded_signature = base64.b64encode(signature).decode("utf-8")
+        except Exception:
+            raise Exception("Incorrect shared key provided")
         authorization_header = f"SharedKey {account_name}:{encoded_signature}"
         headers = {
             "x-ms-date": request_date,
@@ -1035,6 +1051,7 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
         return command_results
     except Exception as ex:
         raise Exception(f"Error while blocking public access:- {str(ex)}")
+
 
 def test_module(client: Client) -> None:
     """
