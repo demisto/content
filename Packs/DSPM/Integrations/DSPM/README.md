@@ -349,7 +349,20 @@ Retrieves file details for the specified asset ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.AssetFiles | String | File Details of the asset for the provided ID. | 
+| DSPM.AssetFiles.filename | String | Asset file name. | 
+| DSPM.AssetFiles.path | String | Asset file path. | 
+| DSPM.AssetFiles.type | String | Asset file type. | 
+| DSPM.AssetFiles.size | String | Asset file size. | 
+| DSPM.AssetFiles.openToWorld | Boolean | Asset open to world. | 
+| DSPM.AssetFiles.isDeleted | Boolean | Asset is deleted. | 
+| DSPM.AssetFiles.isMalicious | Boolean | Asset is malicious. | 
+| DSPM.AssetFiles.dataTypes.name | String | Asset file data types name. |
+| DSPM.AssetFiles.dataTypes.label | String | Asset file data types label. |
+| DSPM.AssetFiles.dataTypes.count | Number | Asset file data types count. |
+| DSPM.AssetFiles.dataTypes.valueDetails.masked_value | String | Asset file data types value detail masked value. | 
+| DSPM.AssetFiles.dataTypes.valueDetails.line | Number | Asset file data types value detail line. | 
+| DSPM.AssetFiles.labels | String | Asset file labels. | 
+| DSPM.AssetFiles.isDbDump | Boolean| Asset file isDbDump. | 
 
 #### Command example
 ```!dspm-get-asset-files-by-id asset_id="arn:aws:s3:::dummyS3-cifp-us-east-1"```
@@ -477,7 +490,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.DataTypes | String | List of data types for company. | 
+| DSPM.DataTypes.Key | String | Data types key. |
+| DSPM.DataTypes.No | Number | Data types number. |
 
 #### Command example
 ```!dspm-get-data-types```
@@ -552,7 +566,8 @@ Retrieves a list of data type findings for the company.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.DataTypeFindings | String | List of data type findings for the company. | 
+| DSPM.DataTypeFindings.Key | String | Data type finding key. |
+| DSPM.DataTypeFindings.No | Number | Data type finding number. | 
 
 #### Command example
 ```!dspm-get-data-types-findings cloudProviderEqual=AWS```
@@ -596,7 +611,9 @@ Updates the status of a risk finding.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.RiskFindingStatusUpdate | String | The updated risk finding. | 
+| DSPM.RiskFindingStatusUpdate.newStatus | String | Updated risk finding status. | 
+| DSPM.RiskFindingStatusUpdate.oldStatus | String | Old risk finding status. | 
+| DSPM.RiskFindingStatusUpdate.riskFindingId | String | Risk finding id. | 
 
 #### Command example
 ```!dspm-update-risk-finding-status riskFindingId="00000000-0000-4f99-0000-616843b6b19e" status=INVESTIGATING```
@@ -664,7 +681,24 @@ Fetch list of alerts.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.Alerts | String | List of alerts. | 
+| DSPM.Alerts.id | String | Alert ID | 
+| DSPM.Alerts.detectionTime | Date | Alert detection time. | 
+| DSPM.Alerts.policyName | String | Alert policy name. | 
+| DSPM.Alerts.assetName | Alert asset name. | 
+| DSPM.Alerts.assetLabels | Unknown | Alert asset label. | 
+| DSPM.Alerts.cloudProvider | String | Alert cloud provider. | 
+| DSPM.Alerts.destinationProjects | Unknown | Alert destination projects. | 
+| DSPM.Alerts.cloudEnvironment | String | Alert cloud enviroment. | 
+| DSPM.Alerts.policySeverity | String | Alert policy severity. | 
+| DSPM.Alerts.policyCategoryType | String | Alert policy category type. | 
+| DSPM.Alerts.status | String | Alert status. | 
+| DSPM.Alerts.eventActor | String | Alert event actor. | 
+| DSPM.Alerts.eventUserAgent | String | Alert event user agent. |
+| DSPM.Alerts.eventActionMedium | String | Alert event action medium. |
+| DSPM.Alerts.eventSource | String | Alert event source. |
+| DSPM.Alerts.policyFrameWorks | String | Alert policy frameworks. |
+| DSPM.Alerts.eventRawData | String | Alert event raw data. | 
+
 
 #### Command example
 ```!dspm-get-list-of-alerts cloudEnvironmentEquals="TESTING"```
@@ -727,7 +761,9 @@ Updates the status of a alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.AlertStatusUpdate | String | The updated alert. | 
+| DSPM.AlertStatusUpdate.newStatus | String | Updated alert status. |
+| DSPM.AlertStatusUpdate.oldStatus | String | Old alert status. |
+| DSPM.AlertStatusUpdate.alertId | String | Alert id. | 
 
 #### Command example
 ```!dspm-update-alert-status alertId="000000608" status=INVESTIGATING```
