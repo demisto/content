@@ -1611,11 +1611,12 @@ class CoreClient(BaseClient):
             request_data["process_name"] = process_name
         if incident_id:
             request_data["incident_id"] = incident_id
-        return self._http_request(
+        response=  self._http_request(
             method='POST',
             url_suffix=f'/endpoints/{url_suffix_endpoint}/',
             json_data={"request_data": request_data},
         )
+        return response.get('reply')
 
 
 class AlertFilterArg:
@@ -4529,8 +4530,7 @@ def terminate_causality_command(client, args) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
-        outputs={
-            f'{args.get("integration_context_brand", "CoreApiModule")}'
-            f'.TerminateCausality(val.actionId && val.actionId == obj.actionId)': replies},
+         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)':
+             replies},
         raw_response=replies
     )
