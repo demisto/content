@@ -13,13 +13,25 @@
 	"itemVersion": "1.4.2",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 35,
+	"logicalVersion": 42,
 	"mapping": {
 		"GIB Attacks DDOS": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"GIB Admiralty Code": {
 					"simple": "evaluation.admiraltyCode"
+				},
+				"GIB CNC": {
+					"simple": "cnc.cnc"
+				},
+				"GIB CNC Domain": {
+					"simple": "cnc.domain"
+				},
+				"GIB CNC Port": {
+					"simple": "cnc.port"
+				},
+				"GIB CNC URL": {
+					"simple": "cnc.url"
 				},
 				"GIB Credibility": {
 					"simple": "evaluation.credibility"
@@ -69,6 +81,9 @@
 				"GIB DDOS Target Country Name": {
 					"simple": "target.countryName"
 				},
+				"GIB DDOS Target Domain": {
+					"simple": "target.domain"
+				},
 				"GIB DDOS Target IP": {
 					"simple": "target.ip"
 				},
@@ -80,6 +95,9 @@
 				},
 				"GIB DDOS Target Region": {
 					"simple": "target.region"
+				},
+				"GIB DDOS Target URL": {
+					"simple": "target.url"
 				},
 				"GIB DDOS Type": {
 					"simple": "type"
@@ -229,6 +247,9 @@
 				"GIB ID": {
 					"simple": "id"
 				},
+				"GIB Phishing Brand": {
+					"simple": "brand"
+				},
 				"GIB Phishing Date Added": {
 					"simple": "added"
 				},
@@ -261,6 +282,9 @@
 				},
 				"GIB Phishing Status": {
 					"simple": "status"
+				},
+				"GIB Phishing URL": {
+					"simple": "phishing.url"
 				},
 				"GIB Related Indicators Data": {
 					"simple": "indicators"
@@ -1102,6 +1126,9 @@
 				"GIB Admiralty Code": {
 					"simple": "evaluation.admiraltyCode"
 				},
+				"GIB Compromised Account": {
+					"simple": "account"
+				},
 				"GIB Credibility": {
 					"simple": "evaluation.credibility"
 				},
@@ -1253,9 +1280,6 @@
 				"GIB Cybercriminal Threat Actor Description": {
 					"simple": "description"
 				},
-				"GIB Cybercriminal Threat Actor Report Authors": {
-					"simple": "author"
-				},
 				"GIB Cybercriminal Threat Actor Reports": {
 					"simple": "reports"
 				},
@@ -1278,7 +1302,7 @@
 					"simple": "sourceType"
 				},
 				"GIB Threat Actor Name": {
-					"simple": "name"
+					"simple": "threat_actor_name"
 				},
 				"GIB Threat Actor is APT": {
 					"simple": "isAPT"
@@ -1440,9 +1464,6 @@
 				},
 				"GIB Malware Regions": {
 					"simple": "geoRegion"
-				},
-				"GIB Malware Report Authors": {
-					"simple": "author"
 				},
 				"GIB Malware Short Description": {
 					"simple": "shortDescription"
@@ -1650,9 +1671,6 @@
 				},
 				"GIB Nation-State Cybercriminals Threat Actor Langs": {
 					"simple": "langs"
-				},
-				"GIB Nation-State Cybercriminals Threat Actor Report Authors": {
-					"simple": "author"
 				},
 				"GIB Nation-State Cybercriminals Threat Actor Reports": {
 					"simple": "reports"

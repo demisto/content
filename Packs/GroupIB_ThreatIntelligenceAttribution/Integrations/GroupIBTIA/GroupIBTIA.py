@@ -265,6 +265,30 @@ COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED = [
     "suspicious_ip/socks_proxy",
 ]
 
+SET_WITH_ALL_DATE_FIELDS = {
+    "dateEnd",
+    "createdAt",
+    "updated",
+    "dateCreated",
+    "dateFirstSeen",
+    "dateModified",
+    "dateLastCompromised",
+    "added",
+    "updatedAt",
+    "created",
+    "dateAdd",
+    "dateBegin",
+    "dateLastSeen",
+    "blocked",
+    "detected",
+    "dateIncident",
+    "dateFirstCompromised",
+    "dateDetected",
+    "datePublished",
+    "dateReg",
+    "date",
+}
+
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "login",
@@ -413,6 +437,7 @@ MAPPING = {
             "swift": "organization.swift",  # GIB Organization SWIFT
             "clabe": "organization.clabe",  # GIB Organization CLABE
         },
+        "account": "account",  # GIB Compromised Account
         # END Information from GIB
         # GIB Evaluation
         "evaluation": {
@@ -563,6 +588,14 @@ MAPPING = {
             "severity": "evaluation.severity",  # GIB Severity
         },
         # END GIB Evaluation
+        # CNC Information from GIB
+        "cnc": {
+            "cnc": "cnc.cnc",  # GIB CNC
+            "domain": "cnc.domain",  # GIB CNC Domain
+            "port": "cnc.port",  # GIB CNC Port
+            "url": "cnc.url",  # GIB CNC URL
+        },
+        # END CNC Information from GIB
         # Threat Actor
         "threatActor": {
             "id": "threatActor.id",  # GIB Threat Actor ID
@@ -572,6 +605,7 @@ MAPPING = {
         # End Threat Actor
         # GIB DDOS Target
         "target": {
+            "url": "target.url",  # GIB DDOS Target URL
             "asn": "target.ipv4.asn",  # GIB DDOS Target ASN
             "city": "target.ipv4.city",  # GIB DDOS Target City
             "region": "target.ipv4.region",  # GIB DDOS Target Region
@@ -581,6 +615,7 @@ MAPPING = {
             "ip": "target.ipv4.ip",  # GIB DDOS Target IP
             "port": "target.port",  # GIB DDOS Target Port
             "category": "target.category",  # GIB DDOS Target Category
+            "domain": "target.domain",  # GIB DDOS Target Domain
         },
         # END GIB DDOS Target
         # GIB DDOS Request
@@ -653,6 +688,10 @@ MAPPING = {
         "name": "domainInfo.domain",
         # Information from GIB
         "id": "id",  # GIB ID
+        "brand": "brand",  # GIB Phishing Brand
+        "phishing": {
+            "url": "phishing.url",  # GIB Phishing URL
+        },
         "status": "status",  # GIB Phishing Status
         "phishing_domain_domain": "domainInfo.domain",  # GIB Phishing Domain
         "phishing_domain_registrar": "domainInfo.registrar",  # GIB Phishing Registrar
@@ -879,7 +918,6 @@ MAPPING = {
         "name": "name",  # GIB Malware Name
         "updatedAt": "updatedAt",  # GIB Date Updated At
         "aliases": "aliases",  # GIB Malware Aliases
-        "author": "author.id",  # GIB Malware Report Authors
         "category": "category",  # GIB Malware Categories
         "description": "description",  # GIB Malware Description
         "shortDescription": "shortDescription",  # GIB Malware Short Description
@@ -952,16 +990,12 @@ MAPPING = {
     },
     "hi/threat_actor": {  # GIB Source:sourceType, severity:systemSeverity
         # Information from GIB
+        "name":"name",
         "id": "id",  # GIB ID
         "aliases": "aliases",  # GIB Cybercriminal Threat Actor Aliases
-        "author": "author.id",  # GIB Cybercriminal Threat Actor Report Authors
-        "createdAt": "createdAt",  # GIB Date Created At
-        "updatedAt": "updatedAt",  # GIB Date Updated At
-        "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
-        "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
         "description": "description",  # GIB Cybercriminal Threat Actor Description
         "isAPT": "isAPT",  # GIB Threat Actor is APT
-        "name": "name",  # GIB Threat Actor Name
+        "threat_actor_name": "name",  # GIB Threat Actor Name
         "expertise": "stat.expertise",  # GIB Cybercriminal Expertises
         "regions": "stat.regions",  # GIB Cybercriminal Regions
         "sectors": "stat.sectors",  # GIB Cybercriminal Sectors
@@ -972,14 +1006,19 @@ MAPPING = {
             "datePublished": "stat.reports.datePublished",
         },
         # End Information from GIB
+        
+        # GIB Dates
+        "createdAt": "createdAt",  # GIB Date Created At
+        "updatedAt": "updatedAt",  # GIB Date Updated At
+        "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
+        "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
+        # END GIB Dates
     },
     "apt/threat_actor": {  # GIB Source:sourceType, severity:systemSeverity
         # Information from GIB
         "id": "id",  # GIB ID
         "aliases": "aliases",  # GIB Nation-State Cybercriminals Threat Actor Aliases
-        "author": "author.id",  # GIB Nation-State Cybercriminals Threat Actor Report Authors
         "country": "country",  # GIB Nation-State Cybercriminals Threat Actor Country
-        "createdAt": "createdAt",  # GIB Date Created At
         "description": "description",  # GIB Nation-State Cybercriminals Threat Actor Description
         "goals": "goals",  # GIB Nation-State Cybercriminals Threat Actor Goals
         "isAPT": "isAPT",  # GIB Threat Actor is APT
@@ -988,8 +1027,6 @@ MAPPING = {
         "langs": "langs",  # GIB Nation-State Cybercriminals Threat Actor Langs
         "roles": "roles",  # GIB Nation-State Cybercriminals Threat Actor Roles
         "cve": "stat.cve",  # GIB Nation-State Cybercriminals Threat Actor CVE
-        "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
-        "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
         "expertise": "stat.expertise",  # GIB Nation-State Cybercriminals Expertises
         "malware": "stat.malware",  # GIB Nation-State Cybercriminals Malware
         "regions": "stat.regions",  # GIB Nation-State Cybercriminals Regions
@@ -999,20 +1036,23 @@ MAPPING = {
             "datePublished": "stat.reports.datePublished",
         },
         "sectors": "stat.sectors",  # GIB Nation-State Cybercriminals Sectors
-        "updatedAt": "updatedAt",  # GIB Date Updated At
+        
         # End Information from GIB
+        
+        # GIB Dates
+        "createdAt": "createdAt",  # GIB Date Created At
+        "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
+        "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
+        "updatedAt": "updatedAt",  # GIB Date Updated At
+        # END GIB Dates
+        
     },
     "apt/threat": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "threatActor.name",
         # Information from GIB
         "id": "id",  # GIB ID
         "title": "title",  # GIB Nation-State Cybercriminals Threat Title
-        "author": "author.id",  # GIB Nation-State Cybercriminals Threat Report Authors
         "countries": "countries",  # GIB Nation-State Cybercriminals Threat Countries
-        "createdAt": "createdAt",  # GIB Date Created At
-        "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
-        "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
-        "datePublished": "datePublished",  # GIB Date Published
         "description": "description",  # GIB Nation-State Cybercriminals Threat Description
         "expertise": "expertise",  # GIB Nation-State Cybercriminals Threat Expertises
         "isTailored": "isTailored",  # GIB Is Tailored
@@ -1022,6 +1062,12 @@ MAPPING = {
         "reportNumber": "reportNumber",  # GIB Nation-State Cybercriminals Threat Report Number
         "sectors": "sectors",  # GIB Nation-State Cybercriminals Threat Sectors
         # End Information from GIB
+        # GIB Dates
+        "createdAt": "createdAt",  # GIB Date Created At
+        "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
+        "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
+        "datePublished": "datePublished",  # GIB Date Published
+        # END GIB Dates
         # GIB Threat Actor
         "threatActor": {
             "country": "threatActor.country",  # GIB Threat Actor Country
@@ -1678,6 +1724,38 @@ class IncidentsHelper:
 
         return name
 
+    def set_custom_severity(self):
+        severity = self.incident.get("evaluation", {}).get("severity")
+        if severity:
+            set_severity = "Unknown"
+            if severity == "green":
+                set_severity = "Low"
+            elif severity == "orange":
+                set_severity = "Medium"
+            elif severity == "red":
+                set_severity == "High"
+
+            self.incident["evaluation"]["severity"] = set_severity
+
+    @staticmethod
+    def date_conversion(date: str):
+        try:
+            date_obj = datetime.strptime(date, "%Y-%m-%d")
+            return date_obj.isoformat() + "T00:00:00+00:00"
+        except ValueError:
+            try:
+                datetime.fromisoformat(date)
+                return None
+            except ValueError:
+                raise ValueError("Invalid date format provided.")
+
+    def check_dates(self):
+        for field, value in self.incident.items():
+            if field in SET_WITH_ALL_DATE_FIELDS:
+                new_value = self.date_conversion(value)
+                if new_value:
+                    self.incident[field] = new_value
+
     def build_incident(self) -> dict:
         incident_name = self.get_incident_name()
         system_severity = self.get_system_severity()
@@ -1696,6 +1774,8 @@ class IncidentsHelper:
                 collection_name=self.collection_name, feed=self.incident
             ).run_transform()
 
+        self.set_custom_severity()
+        self.check_dates()
         return {
             "name": self.incident["name"],
             "occurred": self.get_incident_created_time(),
@@ -1893,7 +1973,7 @@ def fetch_incidents_command(
                         constructed_incident = IncidentsHelper(
                             collection_name=collection_name,
                             incident=incident,
-                            mapping=mapping,  # type: ignore
+                            mapping=mapping,
                         ).build_incident()
                         incidents.append(constructed_incident)
             else:
