@@ -1338,7 +1338,7 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs.
 outputs: []
-quiet: true
+quiet: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
