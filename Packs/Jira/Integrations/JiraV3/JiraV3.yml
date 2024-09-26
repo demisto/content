@@ -1483,7 +1483,7 @@ script:
     - description: The user's username (On-prem only).
       name: username
       required: false
-    - description: The user's accountId (Cloud only).
+    - description: The user's account ID (Cloud only).
       name: account_id
       required: false
     description: Retrieves information about a specified Jira user. For on-prem instances, you should use the user's key and username to retrieve their details. For Cloud instances, user's `account_id` is required. If no identifier is supplied, information for the user the API credentials belong to is returned.
