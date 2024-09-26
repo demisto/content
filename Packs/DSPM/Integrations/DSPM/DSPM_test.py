@@ -16,6 +16,10 @@ from DSPM import (
     update_dspm_alert_status,
     get_risk_finding_by_id,
     validate_parameter,
+    dspm_get_risk_findings_command,
+    dspm_get_list_of_assets_command,
+    dspm_get_data_types_findings_command,
+    dspm_get_list_of_alerts_command
 )
 
 
@@ -819,3 +823,247 @@ def test_validate_parameter_valid_and_invalid():
     # with invalid param_equal
     with pytest.raises(ValueError, match='This "AWS1" parameter is not supported'):
         validate_parameter(param_name, None, "AWS1", supported_list)
+
+
+def test_dspm_get_risk_findings_command(client):
+    # Mock response data
+    mock_responses = [
+        {
+            "id": "7e9a3891-8970-4c08-961a-01f49e239d68",
+            "ruleName": "Sensitive asset without storage versioning",
+            "severity": "MEDIUM",
+            "asset": {
+                "name": "****",
+                "assetId": "****",
+            },
+            "status": "OPEN",
+            "projectId": "****",
+            "cloudProvider": "AZURE",
+            "cloudEnvironment": "DEVELOPMENT",
+            "firstDiscovered": "2024-04-25T17:08:11.020304Z",
+            "complianceStandards": {}
+        },
+        {
+            "id": "7e9a3891-8970-4c08-961a-03f49e139d68",
+            "ruleName": "Sensitive asset without storage versioning",
+            "severity": "MEDIUM",
+            "asset": {
+                "name": "****",
+                "assetId": "****",
+            },
+            "status": "OPEN",
+            "projectId": "****",
+            "cloudProvider": "AZURE",
+            "cloudEnvironment": "DEVELOPMENT",
+            "firstDiscovered": "2024-04-25T17:08:11.020304Z",
+            "complianceStandards": {}
+        }
+    ]
+    args = {
+        "cloudProviderEqual": "AZURE",
+        "affectsEqual": "SECURITY",
+        "statusEqual": "OPEN",
+        "serviceTypeEqual": "UNMANAGED_AWS_REDIS",
+        "digTagKeyContains": "env",
+        "lifecycleIn": "RUNNING",
+        "sort": "status,desc"
+    }
+
+    # Mock the client method
+    client.fetch_risk_findings = MagicMock(side_effect=[mock_responses, None])
+    with patch('DSPM.return_results') as mock_return_results:
+        dspm_get_risk_findings_command(client, args)
+        result = mock_return_results.call_args[0][0]
+
+        # Assertions
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "DSPM.RiskFindings"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == len(mock_responses)  # type: ignore
+
+
+def test_dspm_get_list_of_assets_command(client):
+    # Mock response data
+    mock_responses = [
+        {
+            "projectId": "00000000000",
+            "projectName": "00000000000",
+            "name": "*********",
+            "cloudProvider": "AWS",
+            "cloudEnvironment": "TESTING",
+            "serviceType": "S3",
+            "dataTypeGroups": [],
+            "dataTypes": [],
+            "lifecycle": "RUNNING",
+            "openRisksCount": 0,
+            "openAlertsCount": 0,
+            "encrypted": True,
+            "openToWorld": False,
+            "tags": {},
+            "assetDigTags": [],
+            "id": "arn:aws:s3:::*********"
+        },
+        {
+            "projectId": "00000000000",
+            "projectName": "00000000000",
+            "name": "*********",
+            "cloudProvider": "AWS",
+            "cloudEnvironment": "TESTING",
+            "serviceType": "S3",
+            "dataTypeGroups": [],
+            "dataTypes": [],
+            "lifecycle": "RUNNING",
+            "openRisksCount": 0,
+            "openAlertsCount": 0,
+            "encrypted": True,
+            "openToWorld": False,
+            "tags": {},
+            "assetDigTags": [],
+            "id": "arn:aws:s3:::*********"
+        }
+    ]
+    args = {
+        "cloudProviderEqual": "AZURE",
+        "affectsEqual": "SECURITY",
+        "statusEqual": "OPEN",
+        "serviceTypeEqual": "UNMANAGED_AWS_REDIS",
+        "digTagKeyContains": "env",
+        "lifecycleIn": "RUNNING",
+        "sort": "status,desc"
+    }
+
+    # Mock the client method
+    client.get_asset_lists = MagicMock(side_effect=[mock_responses, None])
+    with patch('DSPM.return_results') as mock_return_results:
+        dspm_get_list_of_assets_command(client, args)
+        result = mock_return_results.call_args[0][0]
+
+        # Assertions
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "DSPM.Assets"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == len(mock_responses)  # type: ignore
+
+
+def test_dspm_get_data_types_findings_command(client):
+    # Mock response data
+    mock_responses = [
+        {
+            "dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION",
+            "label": "PII",
+            "assets": 1,
+            "clouds": [
+                "AWS"
+            ],
+            "regions": [
+                "us-east-1"
+            ],
+            "lastFound": "2024-05-09T03:24:29Z",
+            "recordsAtRisk": {}
+        },
+        {
+            "dataTypeName": "CC_EXPIRATION_DATE",
+            "label": "PII",
+            "assets": 1,
+            "clouds": [
+                "AWS"
+            ],
+            "regions": [
+                "us-east-1"
+            ],
+            "lastFound": "2024-05-09T03:24:29Z",
+            "recordsAtRisk": {}
+        }
+    ]
+    args = {
+        "cloudProviderEqual": "AZURE",
+        "affectsEqual": "SECURITY",
+        "statusEqual": "OPEN",
+        "serviceTypeEqual": "UNMANAGED_AWS_REDIS",
+        "digTagKeyContains": "env",
+        "lifecycleIn": "RUNNING",
+        "sort": "status,desc"
+    }
+
+    # Mock the client method
+    client.get_data_type_findings = MagicMock(side_effect=[mock_responses, None])
+    with patch('DSPM.return_results') as mock_return_results:
+        dspm_get_data_types_findings_command(client, args)
+        result = mock_return_results.call_args[0][0]
+
+        # Assertions
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "DSPM.DataTypesFindings"
+        assert result.outputs_key_field == "Key"
+        assert len(result.outputs) == len(mock_responses)  # type: ignore
+
+
+def test_dspm_get_list_of_alerts_command(client):
+    # Mock response data
+    mock_responses = [
+        {
+            "id": "340256006",
+            "detectionTime": "2024-08-07T18:55:50.64996Z",
+            "policyName": "Asset made public",
+            "assetName": "mikeys3",
+            "assetLabels": [],
+            "cloudProvider": "AWS",
+            "destinationProjects": {},
+            "cloudEnvironment": "TESTING",
+            "policySeverity": "HIGH",
+            "policyCategoryType": "ATTACK",
+            "status": "OPEN",
+            "eventActor": "dummy_email",
+            "eventUserAgent": "",
+            "eventActionMedium": "CONSOLE",
+            "eventSource": "***.**.**.***.***",
+            "policyFrameWorks": [
+                "MITRE-T1098"
+            ],
+            "eventRawData": ""
+        },
+        {
+            "id": "340256006",
+            "detectionTime": "2024-08-07T18:55:50.64996Z",
+            "policyName": "Asset made public",
+            "assetName": "mikeys3",
+            "assetLabels": [],
+            "cloudProvider": "AWS",
+            "destinationProjects": {},
+            "cloudEnvironment": "TESTING",
+            "policySeverity": "HIGH",
+            "policyCategoryType": "ATTACK",
+            "status": "OPEN",
+            "eventActor": "dummy_email",
+            "eventUserAgent": "",
+            "eventActionMedium": "CONSOLE",
+            "eventSource": "***.**.**.***.***",
+            "policyFrameWorks": [
+                "MITRE-T1098"
+            ],
+            "eventRawData": ""
+        }
+    ]
+
+    args = {
+        "cloudProviderEqual": "AZURE",
+        "policyNameIn": "SECURITY",
+        "statusEqual": "OPEN",
+        "assetNameIn": "assets1,assets2",
+        "cloudEnvironmentIn": "TESTING",
+        "policySeverityEquals": "HIGH",
+        "categoryTypeEquals": "FIRST_MOVE",
+        "sort": "status,desc"
+    }
+
+    # Mock the client method
+    client.get_alerts_list = MagicMock(side_effect=[mock_responses, None])
+    with patch('DSPM.return_results') as mock_return_results:
+        dspm_get_list_of_alerts_command(client, args)
+        result = mock_return_results.call_args[0][0]
+
+        # Assertions
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "DSPM.Alerts"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == len(mock_responses)  # type: ignore

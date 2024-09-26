@@ -894,7 +894,7 @@ def dspm_get_list_of_alerts_command(client, args):
                 return_results(
                     CommandResults(
                         outputs_prefix="DSPM.Alerts",
-                        outputs_key_field="Key",
+                        outputs_key_field="id",
                         outputs=[],
                         readable_output=readable_output,
                     )
