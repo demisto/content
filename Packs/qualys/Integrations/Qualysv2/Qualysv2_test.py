@@ -164,9 +164,42 @@ def test_fetch_assets_command(requests_mock):
                     )
     assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run={})
     assert len(assets) == 8
-    assert total_assets == '8'
+    assert total_assets == 8
     assert snapshot_id
     assert last_run['stage'] == 'vulnerabilities'
+
+
+def test_fetch_assets_command_time_out(requests_mock, mocker):
+    """
+    Given:
+    - fetch_assets_command
+    When:
+    - Want to list all existing incidents and got a timeout
+    Then:
+    - Ensure the limit was reduced.
+    """
+    time_out_error = False
+    base_url = 'https://server_url/'
+    with open('./test_data/host_list_detections_raw.xml') as f:
+        assets = f.read()
+    requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
+                      f'?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after='
+                      f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', exc=requests.exceptions.ReadTimeout)
+    set_last_run_call = mocker.patch.object(demisto, 'setAssetsLastRun')
+
+    client = Client(base_url=base_url,
+                    verify=True,
+                    headers={},
+                    proxy=False,
+                    username='demisto',
+                    password='demisto',
+                    )
+    try:
+        assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run={})
+    except TimeoutError:
+        time_out_error = True
+    assert time_out_error
+    assert set_last_run_call.call_args.args[0].get('limit') == 1000
 
 
 def test_fetch_vulnerabilities_command(requests_mock):
