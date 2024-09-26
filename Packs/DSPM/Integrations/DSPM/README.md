@@ -76,27 +76,40 @@ Retrieves risk findings matching the input criteria.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DSPM.RiskFindings | String | List of risk findings matching the input criteria. | 
+| DSPM.RiskFindings.ID |String |The unique ID of the risk finding.
+| DSPM.RiskFindings.AssetID |String |The ID of the asset associated with the risk finding.
+| DSPM.RiskFindings.AssetName |String |The name of the asset associated with the risk finding.
+| DSPM.RiskFindings.ComplianceStandards |String |The compliance standards relevant to the risk finding.
+| DSPM.RiskFindings.Severity |String |The severity of the risk finding (e.g., Low, Medium, High).
+| DSPM.RiskFindings.RuleName |String |The rule name associated with the risk finding.
+| DSPM.RiskFindings.FirstDiscovered |Date |The date the risk finding was first discovered.
+| DSPM.RiskFindings.CloudProvider |String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP).
+| DSPM.RiskFindings.Status |String |The current status of the risk finding (e.g., Open, Closed).
+| DSPM.RiskFindings.CloudEnvironment |String |The cloud environment (public or private) associated with the risk finding.
+| DSPM.RiskFindings.ProjectID |String |The project ID where the asset resides.
 
 #### Command example
 ```!dspm-get-risk-findings```
 #### Context Example
 ```json
 {
-    "DSPM": {
-        "RiskFindings": [{
-            "Asset ID": "arn:aws:s3:::emptybucketdspm-test",
-            "Asset Name": "emptybucketdspm-test",
-            "Cloud Environment": "UNKNOWN",
-            "Cloud Provider": "AWS",
-            "Compliance Standards": {},
-            "First Discovered": "2024-09-05T13:40:33.565153Z",
-            "ID": "00000000-0000-4f99-0000-616843b6b19e",
-            "Project ID": "774305603864",
-            "Rule Name": "Empty storage asset",
-            "Severity": "LOW",
-            "Status": "INVESTIGATING"
-        }]
-    }
+  "DSPM": {
+    "RiskFindings": [
+      {
+        "ID": "riskfinding123",
+        "AssetID": "asset123",
+        "AssetName": "Example Asset",
+        "ComplianceStandards": "PCI-DSS",
+        "Severity": "High",
+        "RuleName": "Sensitive Data Exposure",
+        "FirstDiscovered": "2024-09-01T12:00:00Z",
+        "CloudProvider": "AWS",
+        "Status": "Open",
+        "CloudEnvironment": "Public",
+        "ProjectID": "project123"
+      }
+    ]
+  }
 }
 ```
 

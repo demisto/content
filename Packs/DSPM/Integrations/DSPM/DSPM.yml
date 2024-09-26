@@ -471,6 +471,7 @@ script:
       type: Boolean
   - arguments:
     name: dspm-get-data-types
+    description: 'Fetches the available data types for the DSPM integration.'
     outputs:
     - contextPath: DSPM.DataTypes.Key
       description: ''
@@ -571,12 +572,10 @@ script:
   - arguments:
     - description: 'Risk Finding ID'
       isArray: false
-      isOptional: false
       name: riskFindingId
       required: true
     - description: 'List of supported status [ "OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING" ]'
       isArray: false
-      isOptional: false
       name: status
       required: true
       secret: false
@@ -603,12 +602,10 @@ script:
   - arguments:
     - description: 'Alert ID'
       isArray: false
-      isOptional: false
       name: alertId
       required: true
     - description: 'List of supported status [ "OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING" ].'
       isArray: false
-      isOptional: false
       name: status
       required: true
       secret: false
