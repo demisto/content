@@ -5817,10 +5817,6 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
-        },
-        {
-            "playbookID": "Netskope_V2_Test",
-            "integrations": "NetskopeAPIv2"
         }
     ],
     "skipped_tests": {
@@ -6147,8 +6143,7 @@
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
         "Aha": "No instance",
-        "SlackV2": "Integration slackV2 is deprecated.",
-        "NetskopeAPIv2": "No instance - developed by Qmasters"
+        "SlackV2": "Integration slackV2 is deprecated."
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",

@@ -1261,4 +1261,4 @@ script:
   type: python
 fromversion: 6.9.0
 tests:
-  - No tests (auto formatted)
+  - Netskope_V2_Test
