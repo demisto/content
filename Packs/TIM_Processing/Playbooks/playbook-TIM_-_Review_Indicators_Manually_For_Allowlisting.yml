@@ -1,18 +1,18 @@
-id: TIM - Review Indicators Manually For Whitelisting
+id: TIM - Review Indicators Manually For Allowlisting
 version: -1
 fromversion: 5.5.0
 marketplaces:
 - xsoar
-name: TIM - Review Indicators Manually For Whitelisting
+name: TIM - Review Indicators Manually For Allowlisting
 description: This playbook helps analysts manage the manual process of adding
   indicators from cloud providers, apps, services etc. to an allow list. The playbook indicator query
-  is set to search for indicators that have the 'whitelist_review' tag. The playbooks
+  is set to search for indicators that have the 'allowlist_review' tag. The playbooks
   layout displays all of the related indicators in the summary page. While reviewing
   the indicators, the analyst can go to the summary page and tag the indicators accordingly
-  with tags such as, 'approved_black', 'approved_white', etc. Once the analyst completes
+  with tags such as, 'approved_block', 'approved_allow', etc. Once the analyst completes
   the review, the playbook can optionally send an email with a list of changes done
   by the analyst which haven't been approved. Once complete, the playbook removes
-  the 'whitelist review' tag from the indicators.
+  the 'allowlist review' tag from the indicators.
 starttaskid: "0"
 tasks:
   "0":
@@ -88,8 +88,8 @@ tasks:
       description: Manually review the indicators. The review process can include
         running reputation calculation on the indicator, or reviewing the indicator
         online in various engines. At the end of the process, the analyst needs to
-        add the relevant indicator tags, such as approved_watchlist, approved_white,
-        approved_black, etc. These tags are later used by another playbook to send
+        add the relevant indicator tags, such as approved_watchlist, approved_allow,
+        approved_block, etc. These tags are later used by another playbook to send
         the indicators to relevant 3rd party systems such as SIEM, EDR, EDL etc.
       type: regular
       iscommand: false
@@ -178,7 +178,7 @@ tasks:
     task:
       id: 21dc7963-c302-415d-843b-257e7d2861ac
       version: -1
-      name: Allow to remove whitelist review tag from all indicators
+      name: Allow to remove allowlist review tag from all indicators
       type: condition
       iscommand: false
       brand: ""
@@ -208,8 +208,8 @@ tasks:
     task:
       id: f7de89f6-eb9a-44e6-84da-8ef43a58aa25
       version: -1
-      name: Remove whitelist review tag from indicators
-      description: Removes the whitelist review tag from indicators
+      name: Remove allowlist review tag from indicators
+      description: Removes the allowlist review tag from indicators
       script: Builtin|||removeIndicatorField
       type: regular
       iscommand: true
@@ -221,7 +221,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: whitelist_review
+        simple: allowlist_review
       indicatorsValues:
         simple: ${playbookQuery.value}
     separatecontext: false
@@ -514,7 +514,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: tags:whitelist_review and -tags:being_reviewed
+    query: tags:allowlist_review and -tags:being_reviewed
     queryEntity: indicators
     results: null
     daterange:
