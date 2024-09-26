@@ -12,7 +12,7 @@ This integration was integrated and tested with version 12 of WALLIX Bastion.
     | Server URL (e.g. localhost) | True |
     | API Auth User | True |
     | API Auth Key or user password | False |
-    | Password authentication mode (false if you provided an API key) | False |
+    | Password authentication mode (set false if you provided an API key) | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
     | API version to use. Leave the field empty to use the latest API version available. | False |
@@ -28,7 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### wab-add-session-target-to-target-group
 
 ***
-Add a target account to a target group.
+Add a target account to a target group
 
 #### Base Command
 
@@ -54,7 +54,7 @@ There is no context output for this command.
 ### wab-add-password-target-to-target-group
 
 ***
-Add a password checkout account to a target group.
+Add a password checkout account to a target group
 
 #### Base Command
 
@@ -78,7 +78,7 @@ There is no context output for this command.
 ### wab-add-restriction-to-target-group
 
 ***
-Add a restriction to a target group.
+Add a restriction to a target group
 
 #### Base Command
 
@@ -100,7 +100,8 @@ There is no context output for this command.
 ### wab-get-account-references
 
 ***
-Get account references.
+Get account references
+url: get /accounts/{account_id}/references
 
 #### Base Command
 
@@ -135,7 +136,8 @@ Get account references.
 ### wab-get-account-reference
 
 ***
-Get account reference.
+Get account reference
+url: get /accounts/{account_id}/references/{reference_id}
 
 #### Base Command
 
@@ -164,10 +166,34 @@ Get account reference.
 | WAB.account_reference_get.devices.error_date | String | The date/time since which the status is "error", or null if the status is not "error". | 
 | WAB.account_reference_get.devices.error_description | String | The description of the error, of null if the status is not "error". | 
 
+### wab-change-password-or-ssh-key-of-account
+
+***
+Change password or SSH key of an account and propagate changes on the target host. If the body is empty, an automatic password change is performed: the password or the SSH key are changed to a newly generated value, according to the password change policy on the domain. Note: the password change must be enabled on the domain, with a plugin that will be used to change the password on the target host
+url: put /accountchangepassword/{account_id}/{credential_type}
+
+#### Base Command
+
+`wab-change-password-or-ssh-key-of-account`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The account id. | Required | 
+| credential_type | 'password' to change the password or 'ssh_key' to change the SSH key. | Required | 
+| changePasswordOrSshKeyOfAccount_password | The new password. | Required | 
+| changePasswordOrSshKeyOfAccount_private_key | The new SSH private key. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-all-accounts
 
 ***
-Get all accounts.
+Get all accounts
+url: get /accounts
 
 #### Base Command
 
@@ -235,7 +261,8 @@ Get all accounts.
 ### wab-get-one-account
 
 ***
-Get one account.
+Get one account
+url: get /accounts/{account_id}
 
 #### Base Command
 
@@ -300,7 +327,8 @@ Get one account.
 ### wab-delete-account
 
 ***
-Delete an account.
+Delete an account
+url: delete /accounts/{account_id}
 
 #### Base Command
 
@@ -319,7 +347,8 @@ There is no context output for this command.
 ### wab-get-application-accounts
 
 ***
-Get the application accounts.
+Get the application accounts
+url: get /applications/{application_id}/localdomains/{domain_id}/accounts
 
 #### Base Command
 
@@ -371,7 +400,8 @@ Get the application accounts.
 ### wab-add-account-to-local-domain-of-application
 
 ***
-Add an account to a local domain of an application.
+Add an account to a local domain of an application
+url: post /applications/{application_id}/localdomains/{domain_id}/accounts
 
 #### Base Command
 
@@ -393,12 +423,15 @@ Add an account to a local domain of an application.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_account_to_local_domain_of_application.id | String | id of the created object. | 
 
 ### wab-get-application-account
 
 ***
-Get the application account.
+Get the application account
+url: get /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -447,7 +480,8 @@ Get the application account.
 ### wab-edit-account-on-local-domain-of-application
 
 ***
-Edit an account on a local domain of an application.
+Edit an account on a local domain of an application
+url: put /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -468,7 +502,7 @@ Edit an account on a local domain of an application.
 | app_account_put_checkout_policy | The account checkout policy. | Optional | 
 | app_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | app_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
-| app_account_put_onboard_status | Onboarding status of the account. | Optional | 
+| app_account_put_onboard_status | Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual). | Optional | 
 
 #### Context Output
 
@@ -477,7 +511,8 @@ There is no context output for this command.
 ### wab-delete-account-from-local-domain-of-application
 
 ***
-Delete an account from a local domain of an application.
+Delete an account from a local domain of an application
+url: delete /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -495,10 +530,80 @@ Delete an account from a local domain of an application.
 
 There is no context output for this command.
 
+### wab-get-local-domains-data-for-application
+
+***
+Get local domains data for a given application
+url: get /applications/{application_id}/localdomains
+
+#### Base Command
+
+`wab-get-local-domains-data-for-application`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | The application id or name. | Required | 
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'domain_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.localdomain_app_get.id | String | The domain id. Usable in the "q" parameter. | 
+| WAB.localdomain_app_get.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.localdomain_app_get.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.localdomain_app_get.enable_password_change | Boolean | Enable the change of password on this domain. | 
+| WAB.localdomain_app_get.admin_account | String | The administrator account used to change passwords on this domain \(format: "account_name"\). | 
+| WAB.localdomain_app_get.password_change_policy | String | The name of password change policy for this domain. | 
+| WAB.localdomain_app_get.password_change_plugin | String | The name of plugin used to change passwords on this domain. | 
+| WAB.localdomain_app_get.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.localdomain_app_get.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
+| WAB.localdomain_app_get.url | String | The API URL to the resource. | 
+
+### wab-get-local-domain-data-for-application
+
+***
+Get local domain data for a given application
+url: get /applications/{application_id}/localdomains/{domain_id}
+
+#### Base Command
+
+`wab-get-local-domain-data-for-application`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | The application id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.localdomain_app_get.id | String | The domain id. Usable in the "q" parameter. | 
+| WAB.localdomain_app_get.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.localdomain_app_get.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.localdomain_app_get.enable_password_change | Boolean | Enable the change of password on this domain. | 
+| WAB.localdomain_app_get.admin_account | String | The administrator account used to change passwords on this domain \(format: "account_name"\). | 
+| WAB.localdomain_app_get.password_change_policy | String | The name of password change policy for this domain. | 
+| WAB.localdomain_app_get.password_change_plugin | String | The name of plugin used to change passwords on this domain. | 
+| WAB.localdomain_app_get.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.localdomain_app_get.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
+| WAB.localdomain_app_get.url | String | The API URL to the resource. | 
+
 ### wab-get-applications
 
 ***
-Get the applications.
+Get the applications
+url: get /applications
 
 #### Base Command
 
@@ -534,7 +639,6 @@ Get the applications.
 | WAB.application_get.local_domains.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
 | WAB.application_get.local_domains.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.application_get.local_domains.url | String | The API URL to the resource. | 
-| WAB.application_get.tags.id | String | The tag id. | 
 | WAB.application_get.tags.key | String | The tag key. Must not start or end with a space. | 
 | WAB.application_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.application_get.connection_policy | String | The connection policy name. Usable in the "q" parameter. | 
@@ -543,7 +647,8 @@ Get the applications.
 ### wab-get-application
 
 ***
-Get the application.
+Get the application
+url: get /applications/{application_id}
 
 #### Base Command
 
@@ -576,7 +681,6 @@ Get the application.
 | WAB.application_get.local_domains.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
 | WAB.application_get.local_domains.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
 | WAB.application_get.local_domains.url | String | The API URL to the resource. | 
-| WAB.application_get.tags.id | String | The tag id. | 
 | WAB.application_get.tags.key | String | The tag key. Must not start or end with a space. | 
 | WAB.application_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.application_get.connection_policy | String | The connection policy name. Usable in the "q" parameter. | 
@@ -585,7 +689,8 @@ Get the application.
 ### wab-edit-application
 
 ***
-Edit an application.
+Edit an application
+url: put /applications/{application_id}
 
 #### Base Command
 
@@ -601,7 +706,6 @@ Edit an application.
 | application_put_description | The application description. | Optional | 
 | application_put_parameters | The application parameters. | Optional | 
 | application_put_connection_policy | The connection policy name. | Optional | 
-| application_put__meters | deprecated: use application_put_parameters instead. | Optional | 
 
 #### Context Output
 
@@ -610,7 +714,8 @@ There is no context output for this command.
 ### wab-delete-application
 
 ***
-Delete an application.
+Delete an application
+url: delete /applications/{application_id}
 
 #### Base Command
 
@@ -629,7 +734,8 @@ There is no context output for this command.
 ### wab-get-approvals
 
 ***
-Get the approvals.
+Get the approvals
+url: get /approvals
 
 #### Base Command
 
@@ -680,7 +786,8 @@ Get the approvals.
 ### wab-get-approvals-for-all-approvers
 
 ***
-Get the approvals for a given approver.
+Get the approvals for a given approver
+url: get /approvals/assignments
 
 #### Base Command
 
@@ -730,7 +837,8 @@ Get the approvals for a given approver.
 ### wab-reply-to-approval-request
 
 ***
-Reply to an approval request (approve/reject it). Note: you can answer to an approval request only if you are in approvers groups of authorization.
+Reply to an approval request (approve/reject it). Note: you can answer to an approval request only if you are in approvers groups of authorization
+url: post /approvals/assignments
 
 #### Base Command
 
@@ -746,16 +854,19 @@ Reply to an approval request (approve/reject it). Note: you can answer to an app
 | approval_assignment_post_timeout | Timeout to initiate the first connection (in minutes). After that, the approval will be automatically closed. 0: no timeout. | Optional | 
 | approval_assignment_post_approved | Approve/reject the request. | Required | 
 | approval_assignment_post_is_active | The approval is active. | Optional | 
-| approval_assignment_post_status | The approval status. | Optional | 
+| approval_assignment_post_status | The approval status. (accepted values: accepted,cancelled,closed,none,pending,rejected). | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.reply_to_approval_request.id | String | id of the created object. | 
 
 ### wab-get-approvals-for-approver
 
 ***
-Get the approvals for a given approver.
+Get the approvals for a given approver
+url: get /approvals/assignments/{user_name}
 
 #### Base Command
 
@@ -806,7 +917,8 @@ Get the approvals for a given approver.
 ### wab-cancel-accepted-approval
 
 ***
-Cancel an accepted approval. Note: you can cancel an approval only if you are in approvers groups of authorization and the end date is still not reached.
+Cancel an accepted approval. Note: you can cancel an approval only if you are in approvers groups of authorization and the end date is still not reached
+url: post /approvals/assignments/cancel
 
 #### Base Command
 
@@ -821,12 +933,15 @@ Cancel an accepted approval. Note: you can cancel an approval only if you are in
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.cancel_accepted_approval.id | String | id of the created object. | 
 
 ### wab-notify-approvers-linked-to-approval-assignment
 
 ***
-Notify approvers linked to an approval request by sending them an email.
+Notify approvers linked to an approval request by sending them an email
+url: post /approvals/assignments/notify
 
 #### Base Command
 
@@ -848,7 +963,8 @@ Notify approvers linked to an approval request by sending them an email.
 ### wab-get-approval-request-pending-for-user
 
 ***
-Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id.
+Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id
+url: get /approvals/requests
 
 #### Base Command
 
@@ -900,7 +1016,8 @@ Get the approval request pending for this user (by default the user logged on th
 ### wab-make-new-approval-request-to-access-target
 
 ***
-Make a new approval request to access a target. Note: depending on the authorization settings, the fields "ticket" and "comment" may be required.
+Make a new approval request to access a target. Note: depending on the authorization settings, the fields "ticket" and "comment" may be required
+url: post /approvals/requests
 
 #### Base Command
 
@@ -931,7 +1048,8 @@ Make a new approval request to access a target. Note: depending on the authoriza
 ### wab-cancel-approval-request
 
 ***
-Cancel an approval request.
+Cancel an approval request
+url: post /approvals/requests/cancel
 
 #### Base Command
 
@@ -945,12 +1063,15 @@ Cancel an approval request.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.cancel_approval_request.id | String | id of the created object. | 
 
 ### wab-notify-approvers-linked-to-approval-request
 
 ***
-Notify approvers linked to an approval request by sending them an email.
+Notify approvers linked to an approval request by sending them an email
+url: post /approvals/requests/notify
 
 #### Base Command
 
@@ -972,7 +1093,8 @@ Notify approvers linked to an approval request by sending them an email.
 ### wab-check-if-approval-is-required-for-target
 
 ***
-Check if an approval is required for this target (optionally for a given date in future).
+Check if an approval is required for this target (optionally for a given date in future)
+url: get /approvals/requests/target/{target_name}
 
 #### Base Command
 
@@ -994,10 +1116,163 @@ Check if an approval is required for this target (optionally for a given date in
 | WAB.approval_request_target_get.message | String | A message with detail about the access to the target. | 
 | WAB.approval_request_target_get.id | String | The approval id if an approval request is already pending for this target. | 
 
+### wab-get-mappings-of-domain
+
+***
+Get the mappings of a domain
+url: get /authdomains/{domain_id}/mappings
+
+#### Base Command
+
+`wab-get-mappings-of-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | A domain id or name to retrieve. | Required | 
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'user_group'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.authdomain_mapping_get.id | String | The mapping id. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.domain | String | The name of the domain for which the mapping is defined. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.user_group | String | The name of the Bastion users group. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.external_group | String | The name of the external group \(LDAP/AD: Distinguished Name, Azure AD: name or ID\), "\*" means fallback mapping. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.url | String | The API URL to the resource. | 
+
+### wab-add-mapping-in-domain
+
+***
+Add a mapping in a domain and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user_group by default
+url: post /authdomains/{domain_id}/mappings
+
+#### Base Command
+
+`wab-add-mapping-in-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | A domain id or name. | Required | 
+| authdomain_mapping_post_domain | The name of the domain for which the mapping is defined. | Optional | 
+| authdomain_mapping_post_user_group | The name of the Bastion users group. | Required | 
+| authdomain_mapping_post_external_group | The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_mapping_in_domain.id | String | id of the created object. | 
+
+### wab-edit-mappings-of-domain
+
+***
+Edit mappings of a domain
+url: put /authdomains/{domain_id}/mappings
+
+#### Base Command
+
+`wab-edit-mappings-of-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | A domain id or name. | Required | 
+| authdomain_mapping_put_domain | The name of the domain for which the mapping is defined. | Optional | 
+| authdomain_mapping_put_user_group | The name of the Bastion users group. | Required | 
+| authdomain_mapping_put_external_group | The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-get-mapping-of-domain
+
+***
+Get the mapping of a domain
+url: get /authdomains/{domain_id}/mappings/{mapping_id}
+
+#### Base Command
+
+`wab-get-mapping-of-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | A domain id or name to retrieve. | Required | 
+| mapping_id | A mapping id to retrieve. If specified, only this mapping information will be retrieved. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.authdomain_mapping_get.id | String | The mapping id. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.domain | String | The name of the domain for which the mapping is defined. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.user_group | String | The name of the Bastion users group. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.external_group | String | The name of the external group \(LDAP/AD: Distinguished Name, Azure AD: name or ID\), "\*" means fallback mapping. Usable in the "q" parameter. Usable in the "sort" parameter. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authdomain_mapping_get.url | String | The API URL to the resource. | 
+
+### wab-edit-mapping-of-domain
+
+***
+Edit a mapping of a domain
+url: put /authdomains/{domain_id}/mappings/{mapping_id}
+
+#### Base Command
+
+`wab-edit-mapping-of-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | A domain id or name. | Required | 
+| mapping_id | A mapping id to edit. | Required | 
+| authdomain_mapping_put_domain | The name of the domain for which the mapping is defined. | Optional | 
+| authdomain_mapping_put_user_group | The name of the Bastion users group. | Required | 
+| authdomain_mapping_put_external_group | The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-mapping-of-domain
+
+***
+Delete the mapping of the given domain
+url: delete /authdomains/{domain_id}/mappings/{mapping_id}
+
+#### Base Command
+
+`wab-delete-mapping-of-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | A domain id or name. | Required | 
+| mapping_id | A mapping id. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-auth-domains
 
 ***
-Get the auth domains.
+Get the auth domains
+url: get /authdomains
 
 #### Base Command
 
@@ -1036,7 +1311,8 @@ Get the auth domains.
 ### wab-get-auth-domain
 
 ***
-Get the auth domain.
+Get the auth domain
+url: get /authdomains/{domain_id}
 
 #### Base Command
 
@@ -1072,7 +1348,8 @@ Get the auth domain.
 ### wab-get-authentications
 
 ***
-Get the authentications.
+Get the authentications
+url: get /authentications
 
 #### Base Command
 
@@ -1108,7 +1385,8 @@ Get the authentications.
 ### wab-get-authentication
 
 ***
-Get the authentication.
+Get the authentication
+url: get /authentications/{auth_id}
 
 #### Base Command
 
@@ -1141,7 +1419,8 @@ Get the authentication.
 ### wab-get-authorizations
 
 ***
-Get the authorizations.
+Get the authorizations
+url: get /authorizations
 
 #### Base Command
 
@@ -1188,7 +1467,8 @@ Get the authorizations.
 ### wab-add-authorization
 
 ***
-Add an authorization.
+Add an authorization
+url: post /authorizations
 
 #### Base Command
 
@@ -1218,16 +1498,19 @@ Add an authorization.
 | authorization_post_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). | Optional | 
 | authorization_post_approval_timeout | Set a timeout in minutes after which the approval will be automatically closed if no connection has been initiated (i.e. the user won't be able to connect). 0: no timeout. | Optional | 
 | authorization_post_authorize_session_sharing | Enable Session Sharing. | Optional | 
-| authorization_post_session_sharing_mode | The Session Sharing Mode. | Optional | 
+| authorization_post_session_sharing_mode | The Session Sharing Mode. (accepted values: view_only,view_control). | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_authorization.id | String | id of the created object. | 
 
 ### wab-get-authorization
 
 ***
-Get the authorization.
+Get the authorization
+url: get /authorizations/{authorization_id}
 
 #### Base Command
 
@@ -1271,7 +1554,8 @@ Get the authorization.
 ### wab-edit-authorization
 
 ***
-Edit an authorization.
+Edit an authorization
+url: put /authorizations/{authorization_id}
 
 #### Base Command
 
@@ -1301,7 +1585,7 @@ Edit an authorization.
 | authorization_put_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). | Optional | 
 | authorization_put_approval_timeout | Set a timeout in minutes after which the approval will be automatically closed if no connection has been initiated (i.e. the user won't be able to connect). 0: no timeout. | Optional | 
 | authorization_put_authorize_session_sharing | Enable Session Sharing. | Optional | 
-| authorization_put_session_sharing_mode | The Session Sharing Mode. | Optional | 
+| authorization_put_session_sharing_mode | The Session Sharing Mode. (accepted values: view_only,view_control). | Optional | 
 
 #### Context Output
 
@@ -1310,7 +1594,8 @@ There is no context output for this command.
 ### wab-delete-authorization
 
 ***
-Delete an authorization.
+Delete an authorization
+url: delete /authorizations/{authorization_id}
 
 #### Base Command
 
@@ -1329,7 +1614,8 @@ There is no context output for this command.
 ### wab-get-checkout-policies
 
 ***
-Get the checkout policies.
+Get the checkout policies
+url: get /checkoutpolicies
 
 #### Base Command
 
@@ -1362,7 +1648,8 @@ Get the checkout policies.
 ### wab-get-checkout-policy
 
 ***
-Get the checkout policy.
+Get the checkout policy
+url: get /checkoutpolicies/{checkout_policy_id}
 
 #### Base Command
 
@@ -1389,10 +1676,72 @@ Get the checkout policy.
 | WAB.checkoutpolicy_get.change_credentials_at_checkin | Boolean | Change credentials at check-in. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.checkoutpolicy_get.url | String | The API URL to the resource. | 
 
+### wab-get-clusters
+
+***
+Get the clusters
+url: get /clusters
+
+#### Base Command
+
+`wab-get-clusters`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'cluster_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.cluster_get.id | String | The cluster id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.cluster_get.cluster_name | String | The cluster name. \\/:\*?"&lt;&gt;| and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.cluster_get.description | String | The cluster description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.cluster_get.accounts | String | The cluster targets. The targets must exist in the Bastion. | 
+| WAB.cluster_get.account_mappings | String | The cluster targets with account mapping. The targets must exist in the Bastion. | 
+| WAB.cluster_get.interactive_logins | String | The cluster targets with interactive login. The targets must exist in the Bastion. | 
+| WAB.cluster_get.url | String | The API URL to the resource. | 
+
+### wab-get-cluster
+
+***
+Get the cluster
+url: get /clusters/{cluster_id}
+
+#### Base Command
+
+`wab-get-cluster`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cluster_id | A cluster id or name. If specified, only this cluster is returned. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.cluster_get.id | String | The cluster id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.cluster_get.cluster_name | String | The cluster name. \\/:\*?"&lt;&gt;| and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.cluster_get.description | String | The cluster description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.cluster_get.accounts | String | The cluster targets. The targets must exist in the Bastion. | 
+| WAB.cluster_get.account_mappings | String | The cluster targets with account mapping. The targets must exist in the Bastion. | 
+| WAB.cluster_get.interactive_logins | String | The cluster targets with interactive login. The targets must exist in the Bastion. | 
+| WAB.cluster_get.url | String | The API URL to the resource. | 
+
 ### wab-getx509-configuration-infos
 
 ***
-Get the X509 configuration infos.
+Get the X509 configuration infos
+url: get /config/x509
 
 #### Base Command
 
@@ -1415,7 +1764,8 @@ There are no input arguments for this command.
 ### wab-uploadx509-configuration
 
 ***
-Upload X509 configuration.
+Upload X509 configuration
+url: post /config/x509
 
 #### Base Command
 
@@ -1432,12 +1782,15 @@ Upload X509 configuration.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.uploadx509_configuration.id | String | id of the created object. | 
 
 ### wab-updatex509-configuration
 
 ***
-Update X509 Configuration.
+Update X509 Configuration
+url: put /config/x509
 
 #### Base Command
 
@@ -1459,7 +1812,8 @@ There is no context output for this command.
 ### wab-resetx509-configuration
 
 ***
-Reset X509 configuration.
+Reset X509 configuration
+url: delete /config/x509
 
 #### Base Command
 
@@ -1476,7 +1830,8 @@ There is no context output for this command.
 ### wab-get-current-serial-configuration-number-of-bastion
 
 ***
-Get current serial configuration number of the Bastion. This number can be used to know if the Bastion configuration was changed.
+Get current serial configuration number of the Bastion. This number can be used to know if the Bastion configuration was changed
+url: get /confignumber
 
 #### Base Command
 
@@ -1492,10 +1847,140 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | WAB.confignumber_get.configuration_number | Number | The current serial configuration number of the WALLIX Bastion. | 
 
+### wab-get-connection-policies
+
+***
+Get the connection policies
+url: get /connectionpolicies
+
+#### Base Command
+
+`wab-get-connection-policies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'connection_policy_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.connectionpolicy_get.id | String | The connection policy id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.connection_policy_name | String | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.type | String | The connection policy type. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.description | String | The connection policy description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.protocol | String | The connection policy protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.is_default | Boolean | True if the connection policy is a default one. | 
+| WAB.connectionpolicy_get.url | String | The API URL to the resource. | 
+
+### wab-add-connection-policy
+
+***
+Add a connection policy
+url: post /connectionpolicies
+
+#### Base Command
+
+`wab-add-connection-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| connectionpolicy_post_connection_policy_name | The connection policy name. | Required | 
+| connectionpolicy_post_type | The connection policy type. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC). | Required | 
+| connectionpolicy_post_description | The connection policy description. | Optional | 
+| connectionpolicy_post_protocol | The connection policy protocol. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_connection_policy.id | String | id of the created object. | 
+
+### wab-get-connection-policy
+
+***
+Get the connection policy
+url: get /connectionpolicies/{connection_policy_id}
+
+#### Base Command
+
+`wab-get-connection-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| connection_policy_id | A connection policy id or name. If specified, only this connection policy is returned. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.connectionpolicy_get.id | String | The connection policy id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.connection_policy_name | String | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.type | String | The connection policy type. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.description | String | The connection policy description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.protocol | String | The connection policy protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.connectionpolicy_get.is_default | Boolean | True if the connection policy is a default one. | 
+| WAB.connectionpolicy_get.url | String | The API URL to the resource. | 
+
+### wab-edit-connection-policy
+
+***
+Edit a connection policy
+url: put /connectionpolicies/{connection_policy_id}
+
+#### Base Command
+
+`wab-edit-connection-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| connection_policy_id | A connection policy id or name to edit. | Required | 
+| force | The default value is false. When it is set to true the values of the authentication_methods are replaced, otherwise the values are added to the existing ones. | Optional | 
+| connectionpolicy_put_connection_policy_name | The connection policy name. | Optional | 
+| connectionpolicy_put_description | The connection policy description. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-connection-policy
+
+***
+Delete a connection policy. Note: it is not possible to delete the default Bastion connection policies
+url: delete /connectionpolicies/{connection_policy_id}
+
+#### Base Command
+
+`wab-delete-connection-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| connection_policy_id | The connection policy id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-all-accounts-on-device-local-domain
 
 ***
-Get all accounts on a device local domain.
+Get all accounts on a device local domain
+url: get /devices/{device_id}/localdomains/{domain_id}/accounts
 
 #### Base Command
 
@@ -1557,7 +2042,8 @@ Get all accounts on a device local domain.
 ### wab-add-account-to-local-domain-on-device
 
 ***
-Add an account to a local domain on a device.
+Add an account to a local domain on a device
+url: post /devices/{device_id}/localdomains/{domain_id}/accounts
 
 #### Base Command
 
@@ -1581,12 +2067,15 @@ Add an account to a local domain on a device.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_account_to_local_domain_on_device.id | String | id of the created object. | 
 
 ### wab-get-one-account-on-device-local-domain
 
 ***
-Get one account on a device local domain.
+Get one account on a device local domain
+url: get /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -1645,7 +2134,8 @@ Get one account on a device local domain.
 ### wab-edit-account-on-local-domain-of-device
 
 ***
-Edit an account on a local domain of a device.
+Edit an account on a local domain of a device
+url: put /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -1667,7 +2157,7 @@ Edit an account on a local domain of a device.
 | device_account_put_checkout_policy | The account checkout policy. | Optional | 
 | device_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | device_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
-| device_account_put_onboard_status | Onboarding status of the account. | Optional | 
+| device_account_put_onboard_status | Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual). | Optional | 
 | device_account_put_services | The account services. | Optional | 
 
 #### Context Output
@@ -1677,7 +2167,8 @@ There is no context output for this command.
 ### wab-delete-account-from-local-domain-of-device
 
 ***
-Delete an account from a local domain of a device.
+Delete an account from a local domain of a device
+url: delete /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -1698,7 +2189,8 @@ There is no context output for this command.
 ### wab-get-certificates-on-device
 
 ***
-Get the certificates on a device.
+Get the certificates on a device
+url: get /devices/{device_id}/certificates
 
 #### Base Command
 
@@ -1730,7 +2222,8 @@ Get the certificates on a device.
 ### wab-get-certificate-on-device
 
 ***
-Get the certificate on a device.
+Get the certificate on a device
+url: get /devices/{device_id}/certificates/{cert_type}/{address}/{port}
 
 #### Base Command
 
@@ -1765,7 +2258,8 @@ Get the certificate on a device.
 ### wab-revoke-certificate-of-device
 
 ***
-Revoke a certificate of a device.
+Revoke a certificate of a device
+url: delete /devices/{device_id}/certificates/{cert_type}/{address}/{port}
 
 #### Base Command
 
@@ -1784,10 +2278,80 @@ Revoke a certificate of a device.
 
 There is no context output for this command.
 
+### wab-get-local-domains-of-device
+
+***
+Get the local domains of a device
+url: get /devices/{device_id}/localdomains
+
+#### Base Command
+
+`wab-get-local-domains-of-device`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'domain_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.localdomain_get.id | String | The domain id. Usable in the "q" parameter. | 
+| WAB.localdomain_get.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.localdomain_get.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.localdomain_get.enable_password_change | Boolean | Enable the change of password on this domain. | 
+| WAB.localdomain_get.admin_account | String | The administrator account used to change passwords on this domain \(format: "account_name"\). | 
+| WAB.localdomain_get.password_change_policy | String | The name of password change policy for this domain. | 
+| WAB.localdomain_get.password_change_plugin | String | The name of plugin used to change passwords on this domain. | 
+| WAB.localdomain_get.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.localdomain_get.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
+| WAB.localdomain_get.url | String | The API URL to the resource. | 
+
+### wab-get-local-domain-of-device
+
+***
+Get the local domain of a device
+url: get /devices/{device_id}/localdomains/{domain_id}
+
+#### Base Command
+
+`wab-get-local-domain-of-device`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| domain_id | The local domain id or name. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.localdomain_get.id | String | The domain id. Usable in the "q" parameter. | 
+| WAB.localdomain_get.domain_name | String | The domain name. /:\*?"&lt;&gt;|@ are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.localdomain_get.description | String | The domain description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.localdomain_get.enable_password_change | Boolean | Enable the change of password on this domain. | 
+| WAB.localdomain_get.admin_account | String | The administrator account used to change passwords on this domain \(format: "account_name"\). | 
+| WAB.localdomain_get.password_change_policy | String | The name of password change policy for this domain. | 
+| WAB.localdomain_get.password_change_plugin | String | The name of plugin used to change passwords on this domain. | 
+| WAB.localdomain_get.ca_private_key | String | The ssh private key of the signing authority for the ssh keys for accounts in the domain. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519". | 
+| WAB.localdomain_get.ca_public_key | String | The ssh public key of the signing authority for the ssh keys for accounts in the domain. | 
+| WAB.localdomain_get.url | String | The API URL to the resource. | 
+
 ### wab-get-services-of-device
 
 ***
-Get the services of a device.
+Get the services of a device
+url: get /devices/{device_id}/services
 
 #### Base Command
 
@@ -1819,7 +2383,8 @@ Get the services of a device.
 ### wab-add-service-in-device
 
 ***
-Add a service in a device.
+Add a service in a device
+url: post /devices/{device_id}/services
 
 #### Base Command
 
@@ -1832,20 +2397,23 @@ Add a service in a device.
 | device_id | The device id or name. | Required | 
 | service_post_id | The service id. Usable in the "sort" parameter. | Optional | 
 | service_post_service_name | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
-| service_post_protocol | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
+| service_post_protocol | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC). | Required | 
 | service_post_port | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
-| service_post_subprotocols | The sub protocols. | Required | 
+| service_post_subprotocols | The sub protocols. (accepted values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11). | Required | 
 | service_post_connection_policy | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
 | service_post_global_domains | The global domains names. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_service_in_device.id | String | id of the created object. | 
 
 ### wab-get-service-of-device
 
 ***
-Get the service of a device.
+Get the service of a device
+url: get /devices/{device_id}/services/{service_id}
 
 #### Base Command
 
@@ -1874,7 +2442,8 @@ Get the service of a device.
 ### wab-edit-service-of-device
 
 ***
-Edit a service of a device.
+Edit a service of a device
+url: put /devices/{device_id}/services/{service_id}
 
 #### Base Command
 
@@ -1898,7 +2467,8 @@ There is no context output for this command.
 ### wab-delete-service-from-device
 
 ***
-Delete a service from a device.
+Delete a service from a device
+url: delete /devices/{device_id}/services/{service_id}
 
 #### Base Command
 
@@ -1918,7 +2488,8 @@ There is no context output for this command.
 ### wab-get-devices
 
 ***
-Get the devices.
+Get the devices
+url: get /devices
 
 #### Base Command
 
@@ -1961,7 +2532,6 @@ Get the devices.
 | WAB.device_get.services.connection_policy | String | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.services.global_domains | String | The global domains names. | 
 | WAB.device_get.services.url | String | The API URL to the resource. | 
-| WAB.device_get.tags.id | String | The tag id. | 
 | WAB.device_get.tags.key | String | The tag key. Must not start or end with a space. | 
 | WAB.device_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.device_get.onboard_status | String | Onboarding status of the device Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -1982,7 +2552,8 @@ Get the devices.
 ### wab-add-device
 
 ***
-Add a device.
+Add a device
+url: post /devices
 
 #### Base Command
 
@@ -1999,12 +2570,15 @@ Add a device.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_device.id | String | id of the created object. | 
 
 ### wab-get-device
 
 ***
-Get the device.
+Get the device
+url: get /devices/{device_id}
 
 #### Base Command
 
@@ -2044,7 +2618,6 @@ Get the device.
 | WAB.device_get.services.connection_policy | String | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.device_get.services.global_domains | String | The global domains names. | 
 | WAB.device_get.services.url | String | The API URL to the resource. | 
-| WAB.device_get.tags.id | String | The tag id. | 
 | WAB.device_get.tags.key | String | The tag key. Must not start or end with a space. | 
 | WAB.device_get.tags.value | String | The tag value. Must not start or end with a space. | 
 | WAB.device_get.onboard_status | String | Onboarding status of the device Usable in the "q" parameter. Usable in the "sort" parameter. | 
@@ -2065,7 +2638,8 @@ Get the device.
 ### wab-edit-device
 
 ***
-Edit a device.
+Edit a device
+url: put /devices/{device_id}
 
 #### Base Command
 
@@ -2081,7 +2655,7 @@ Edit a device.
 | device_put_description | The device description. | Optional | 
 | device_put_alias | The device alias. \ /:*?"&lt;&gt;\|@ and space are forbidden. | Optional | 
 | device_put_host | The device host address. | Optional | 
-| device_put_onboard_status | Onboarding status of the device. | Optional | 
+| device_put_onboard_status | Onboarding status of the device (accepted values: onboarded,to_onboard,hide,manual). | Optional | 
 
 #### Context Output
 
@@ -2090,7 +2664,8 @@ There is no context output for this command.
 ### wab-delete-device
 
 ***
-Delete a device.
+Delete a device
+url: delete /devices/{device_id}
 
 #### Base Command
 
@@ -2109,7 +2684,8 @@ There is no context output for this command.
 ### wab-get-accounts-of-global-domain
 
 ***
-Get the accounts of a global domain.
+Get the accounts of a global domain
+url: get /domains/{domain_id}/accounts
 
 #### Base Command
 
@@ -2168,7 +2744,8 @@ Get the accounts of a global domain.
 ### wab-add-account-in-global-domain
 
 ***
-Add an account in a global domain.
+Add an account in a global domain
+url: post /domains/{domain_id}/accounts
 
 #### Base Command
 
@@ -2191,12 +2768,15 @@ Add an account in a global domain.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_account_in_global_domain.id | String | id of the created object. | 
 
 ### wab-get-account-of-global-domain
 
 ***
-Get the account of a global domain.
+Get the account of a global domain
+url: get /domains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -2253,7 +2833,8 @@ Get the account of a global domain.
 ### wab-edit-account-in-global-domain
 
 ***
-Edit an account in a global domain.
+Edit an account in a global domain
+url: put /domains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -2274,7 +2855,7 @@ Edit an account in a global domain.
 | domain_account_put_checkout_policy | The account checkout policy. | Optional | 
 | domain_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | domain_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
-| domain_account_put_onboard_status | Onboarding status of the account. | Optional | 
+| domain_account_put_onboard_status | Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual). | Optional | 
 | domain_account_put_resources | The account resources. | Optional | 
 
 #### Context Output
@@ -2284,7 +2865,8 @@ There is no context output for this command.
 ### wab-delete-account-from-global-domain
 
 ***
-Delete an account from a global domain.
+Delete an account from a global domain
+url: delete /domains/{domain_id}/accounts/{account_id}
 
 #### Base Command
 
@@ -2304,7 +2886,8 @@ There is no context output for this command.
 ### wab-delete-resource-from-global-domain-account
 
 ***
-delete a resource from the global domain account.
+delete a resource from the global domain account
+url: delete /domains/{domain_id}/accounts/{account_id}/resource/{resource_name}
 
 #### Base Command
 
@@ -2325,7 +2908,8 @@ There is no context output for this command.
 ### wab-get-global-domains
 
 ***
-Get the global domains.
+Get the global domains
+url: get /domains
 
 #### Base Command
 
@@ -2365,7 +2949,8 @@ Get the global domains.
 ### wab-get-global-domain
 
 ***
-Get the global domain.
+Get the global domain
+url: get /domains/{domain_id}
 
 #### Base Command
 
@@ -2399,10 +2984,40 @@ Get the global domain.
 | WAB.domain_get.is_editable | Boolean | True if the domain is editable by the user who made the query. This might be slow to compute for a domain with many accounts if the user has limitations. | 
 | WAB.domain_get.url | String | The API URL to the resource. | 
 
+### wab-get-external-authentication-group-mappings
+
+***
+Get the external authentication group mappings
+url: get /authmappings
+
+#### Base Command
+
+`wab-get-external-authentication-group-mappings`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_by | Group the result-set by one property. Can take one of the values 'user_group' or 'domain'. | Optional | 
+| q | Searches for a resource matching parameters. Used only if "group_by" is not set. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'domain,user_group'. Used only if "group_by" is not set. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). Used only if "group_by" is not set. | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. Used only if "group_by" is not set. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.authmappings_get.domain | String | The name of the domain for which the mapping is defined. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authmappings_get.user_group | String | The name of the Bastion users group. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.authmappings_get.external_group | String | The name of the external group \(LDAP/AD: Distinguished Name, Azure AD: name or ID\), "\*" means fallback mapping. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+
 ### wab-get-ldap-users-of-domain
 
 ***
-Get the LDAP users of a given domain.
+Get the LDAP users of a given domain
+url: get /ldapusers/{domain}
 
 #### Base Command
 
@@ -2438,7 +3053,8 @@ Get the LDAP users of a given domain.
 ### wab-get-ldap-user-of-domain
 
 ***
-Get the LDAP user of a given domain.
+Get the LDAP user of a given domain
+url: get /ldapusers/{domain}/{user_name}
 
 #### Base Command
 
@@ -2472,7 +3088,8 @@ Get the LDAP user of a given domain.
 ### wab-get-information-about-wallix-bastion-license
 
 ***
-Get information about the WALLIX Bastion license.
+Get information about the WALLIX Bastion license
+url: get /licenseinfo
 
 #### Base Command
 
@@ -2524,7 +3141,8 @@ There are no input arguments for this command.
 ### wab-post-logsiem
 
 ***
-Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured).
+Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured)
+url: post /logsiem
 
 #### Base Command
 
@@ -2539,12 +3157,15 @@ Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured)
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.post_logsiem.id | String | id of the created object. | 
 
 ### wab-get-notifications
 
 ***
-Get the notifications.
+Get the notifications
+url: get /notifications
 
 #### Base Command
 
@@ -2576,7 +3197,8 @@ Get the notifications.
 ### wab-add-notification
 
 ***
-Add a notification.
+Add a notification
+url: post /notifications
 
 #### Base Command
 
@@ -2589,19 +3211,22 @@ Add a notification.
 | notification_post_notification_name | The notification name. | Required | 
 | notification_post_description | The notification description. | Optional | 
 | notification_post_enabled | Notification is enabled. | Required | 
-| notification_post_type | Notification type. | Required | 
+| notification_post_type | Notification type. (accepted values: email). | Required | 
 | notification_post_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Required | 
-| notification_post_language | The notification language (in email). | Required | 
-| notification_post_events | The list of events that will trigger a notification. | Optional | 
+| notification_post_language | The notification language (in email). (accepted values: de,en,es,fr,ru). | Required | 
+| notification_post_events | The list of events that will trigger a notification. (accepted values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint). | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_notification.id | String | id of the created object. | 
 
 ### wab-get-notification
 
 ***
-Get the notification.
+Get the notification
+url: get /notifications/{notification_id}
 
 #### Base Command
 
@@ -2630,7 +3255,8 @@ Get the notification.
 ### wab-edit-notification
 
 ***
-Edit a notification.
+Edit a notification
+url: put /notifications/{notification_id}
 
 #### Base Command
 
@@ -2645,10 +3271,10 @@ Edit a notification.
 | notification_put_notification_name | The notification name. | Optional | 
 | notification_put_description | The notification description. | Optional | 
 | notification_put_enabled | Notification is enabled. | Optional | 
-| notification_put_type | Notification type. | Optional | 
+| notification_put_type | Notification type. (accepted values: email). | Optional | 
 | notification_put_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Optional | 
-| notification_put_language | The notification language (in email). | Optional | 
-| notification_put_events | The list of events that will trigger a notification. | Optional | 
+| notification_put_language | The notification language (in email). (accepted values: de,en,es,fr,ru). | Optional | 
+| notification_put_events | The list of events that will trigger a notification. (accepted values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint). | Optional | 
 
 #### Context Output
 
@@ -2657,7 +3283,8 @@ There is no context output for this command.
 ### wab-delete-notification
 
 ***
-Delete a notification.
+Delete a notification
+url: delete /notifications/{notification_id}
 
 #### Base Command
 
@@ -2676,7 +3303,8 @@ There is no context output for this command.
 ### wab-get-object-to-onboard
 
 ***
-Get object to onboard, by type (either devices with their linked accounts or global accounts alone).
+Get object to onboard, by type (either devices with their linked accounts or global accounts alone)
+url: get /onboarding_objects
 
 #### Base Command
 
@@ -2715,10 +3343,267 @@ Get object to onboard, by type (either devices with their linked accounts or glo
 | WAB.onboarding_objects_get.last_seen.end | String | Scan job end timestamp. | 
 | WAB.onboarding_objects_get.url | String | The API URL to the resource. | 
 
+### wab-get-password-change-policies
+
+***
+Get the password change policies
+url: get /passwordchangepolicies
+
+#### Base Command
+
+`wab-get-password-change-policies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'password_change_policy_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.passwordchangepolicy_get.id | String | The password change policy id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.password_change_policy_name | String | The password change policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.description | String | The password change policy description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.password_length | Number | Number of chars in password. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.special_chars | Number | The minimum number of special chars in password \(0 = no minimum, null = no special chars at all\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.lower_chars | Number | The minimum number of lower case chars in password \(0 = no minimum, null = no lower case chars at all\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.upper_chars | Number | The minimum number of upper case chars in password \(0 = no minimum, null = no upper case chars at all\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.digit_chars | Number | The minimum number of digit chars in password \(0 = no minimum, null = no digit chars at all\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.exclude_chars | String | Characters to exclude in password. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.ssh_key_type | String | The SSH key type. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.ssh_key_size | Number | The SSH key size \(in bits\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.change_period | String | 
+The period to change password.
+
+String value must be a valid cron syntax \(e.g. '\\\* \\\* \\\* \\\* \\\*'\).
+
+Aliases are allowed:
+
+@hourly → 0 \\\* \\\* \\\* \\\*
+@daily → 0 0 \\\* \\\* \\\*
+@weekly → 0 0 \\\* \\\* 0
+@monthly → 0 0 1 \\\* \\\*
+@yearly → 0 0 1 1 \\\*
+
+Note: An empty string \(or null\) will deactivate the change password schedule.
+Moreover, @reboot is not allowed.
+ Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.url | String | The API URL to the resource. | 
+
+### wab-add-password-change-policy
+
+***
+Add a password change policy. Note: at least password or SSH options must be given in the policy (and both can be used at same time)
+url: post /passwordchangepolicies
+
+#### Base Command
+
+`wab-add-password-change-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| passwordchangepolicy_post_password_change_policy_name | The password change policy name. | Required | 
+| passwordchangepolicy_post_description | The password change policy description. | Optional | 
+| passwordchangepolicy_post_password_length | Number of chars in password. (enter null for null value). | Optional | 
+| passwordchangepolicy_post_special_chars | The minimum number of special chars in password (0 = no minimum, null = no special chars at all). (enter null for null value). | Optional | 
+| passwordchangepolicy_post_lower_chars | The minimum number of lower case chars in password (0 = no minimum, null = no lower case chars at all). (enter null for null value). | Optional | 
+| passwordchangepolicy_post_upper_chars | The minimum number of upper case chars in password (0 = no minimum, null = no upper case chars at all). (enter null for null value). | Optional | 
+| passwordchangepolicy_post_digit_chars | The minimum number of digit chars in password (0 = no minimum, null = no digit chars at all). (enter null for null value). | Optional | 
+| passwordchangepolicy_post_exclude_chars | Characters to exclude in password. (enter null for null value). | Optional | 
+| passwordchangepolicy_post_ssh_key_type | The SSH key type. (enter null for null value). | Optional | 
+| passwordchangepolicy_post_ssh_key_size | The SSH key size (in bits). (enter null for null value). | Optional | 
+| passwordchangepolicy_post_change_period | <br/>The period to change password.<br/><br/>String value must be a valid cron syntax (e.g. '\* \* \* \* \*').<br/><br/>Aliases are allowed:<br/><br/>@hourly → 0 \* \* \* \*<br/>@daily → 0 0 \* \* \*<br/>@weekly → 0 0 \* \* 0<br/>@monthly → 0 0 1 \* \*<br/>@yearly → 0 0 1 1 \*<br/><br/>Note: An empty string (or null) will deactivate the change password schedule.<br/>Moreover, @reboot is not allowed.<br/> (enter null for null value). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_password_change_policy.id | String | id of the created object. | 
+
+### wab-get-password-change-policy
+
+***
+Get the password change policy
+url: get /passwordchangepolicies/{policy_id}
+
+#### Base Command
+
+`wab-get-password-change-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | A password change policy id or name. If specified, only this password change policy is returned. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.passwordchangepolicy_get.id | String | The password change policy id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.password_change_policy_name | String | The password change policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.description | String | The password change policy description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.password_length | Number | Number of chars in password. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.special_chars | Number | The minimum number of special chars in password \(0 = no minimum, null = no special chars at all\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.lower_chars | Number | The minimum number of lower case chars in password \(0 = no minimum, null = no lower case chars at all\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.upper_chars | Number | The minimum number of upper case chars in password \(0 = no minimum, null = no upper case chars at all\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.digit_chars | Number | The minimum number of digit chars in password \(0 = no minimum, null = no digit chars at all\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.exclude_chars | String | Characters to exclude in password. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.ssh_key_type | String | The SSH key type. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.ssh_key_size | Number | The SSH key size \(in bits\). Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.change_period | String | 
+The period to change password.
+
+String value must be a valid cron syntax \(e.g. '\\\* \\\* \\\* \\\* \\\*'\).
+
+Aliases are allowed:
+
+@hourly → 0 \\\* \\\* \\\* \\\*
+@daily → 0 0 \\\* \\\* \\\*
+@weekly → 0 0 \\\* \\\* 0
+@monthly → 0 0 1 \\\* \\\*
+@yearly → 0 0 1 1 \\\*
+
+Note: An empty string \(or null\) will deactivate the change password schedule.
+Moreover, @reboot is not allowed.
+ Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.passwordchangepolicy_get.url | String | The API URL to the resource. | 
+
+### wab-edit-password-change-policy
+
+***
+Edit a password change policy
+url: put /passwordchangepolicies/{policy_id}
+
+#### Base Command
+
+`wab-edit-password-change-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The password change policy id or name to edit. | Required | 
+| passwordchangepolicy_put_password_change_policy_name | The password change policy name. | Optional | 
+| passwordchangepolicy_put_description | The password change policy description. | Optional | 
+| passwordchangepolicy_put_password_length | Number of chars in password. (enter null for null value). | Optional | 
+| passwordchangepolicy_put_special_chars | The minimum number of special chars in password (0 = no minimum, null = no special chars at all). (enter null for null value). | Optional | 
+| passwordchangepolicy_put_lower_chars | The minimum number of lower case chars in password (0 = no minimum, null = no lower case chars at all). (enter null for null value). | Optional | 
+| passwordchangepolicy_put_upper_chars | The minimum number of upper case chars in password (0 = no minimum, null = no upper case chars at all). (enter null for null value). | Optional | 
+| passwordchangepolicy_put_digit_chars | The minimum number of digit chars in password (0 = no minimum, null = no digit chars at all). (enter null for null value). | Optional | 
+| passwordchangepolicy_put_exclude_chars | Characters to exclude in password. (enter null for null value). | Optional | 
+| passwordchangepolicy_put_ssh_key_type | The SSH key type. (enter null for null value). | Optional | 
+| passwordchangepolicy_put_ssh_key_size | The SSH key size (in bits). (enter null for null value). | Optional | 
+| passwordchangepolicy_put_change_period | <br/>The period to change password.<br/><br/>String value must be a valid cron syntax (e.g. '\* \* \* \* \*').<br/><br/>Aliases are allowed:<br/><br/>@hourly → 0 \* \* \* \*<br/>@daily → 0 0 \* \* \*<br/>@weekly → 0 0 \* \* 0<br/>@monthly → 0 0 1 \* \*<br/>@yearly → 0 0 1 1 \*<br/><br/>Note: An empty string (or null) will deactivate the change password schedule.<br/>Moreover, @reboot is not allowed.<br/> (enter null for null value). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-password-change-policy
+
+***
+Delete a password change policy
+url: delete /passwordchangepolicies/{policy_id}
+
+#### Base Command
+
+`wab-delete-password-change-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The password change policy id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-get-passwordrights
+
+***
+Get current user's or the user 'user_name' password rights on accounts (for checkout/checkin)
+url: get /passwordrights
+
+#### Base Command
+
+`wab-get-passwordrights`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| count | The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
+| q | Only a simple string to search is allowed in this resource (for example: 'q=windows'). The search is performed on the following fields only: account, account_description, device, device_alias, device_description, application, application_description, domain, domain_description, authorization, authorization_description. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'account,domain,device,application'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.passwordrights_get.type | String | The account type. | 
+| WAB.passwordrights_get.target | String | The complete target identifier which can be used in resource /targetpasswords \(format: "account_name@global_domain_name"\). / The complete target identifier which can be used in resource /targetpasswords \(example: "account@domain@device"\). / The complete target identifier which can be used in resource /targetpasswords \(format: "account_name@local_domain_name@application_name"\). | 
+| WAB.passwordrights_get.account | String | The account name. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.account_description | String | The account description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.domain | String | The global domain name. Usable in the "sort" parameter. / The local domain name on device. Usable in the "sort" parameter. / The local domain name on application. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.domain_description | String | The domain description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.domain_vault | Boolean | The domain accounts are stored on an external vault. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.authorization_approval | Boolean | True if an approval workflow is defined in the authorization, otherwise False. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.authorization | String | The authorization name. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.authorization_description | String | The authorization description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.right_fingerprint | String | The fingerprint of the right \(hash of authorization and target uid\). | 
+
+### wab-get-passwordrights-user-name
+
+***
+Get current user's or the user 'user_name' password rights on accounts (for checkout/checkin)
+url: get /passwordrights/{user_name}
+
+#### Base Command
+
+`wab-get-passwordrights-user-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_name | If specified, the user_name password rights is returned. | Required | 
+| count | The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.passwordrights_get.type | String | The account type. | 
+| WAB.passwordrights_get.target | String | The complete target identifier which can be used in resource /targetpasswords \(format: "account_name@global_domain_name"\). / The complete target identifier which can be used in resource /targetpasswords \(example: "account@domain@device"\). / The complete target identifier which can be used in resource /targetpasswords \(format: "account_name@local_domain_name@application_name"\). | 
+| WAB.passwordrights_get.account | String | The account name. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.account_description | String | The account description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.domain | String | The global domain name. Usable in the "sort" parameter. / The local domain name on device. Usable in the "sort" parameter. / The local domain name on application. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.domain_description | String | The domain description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.domain_vault | Boolean | The domain accounts are stored on an external vault. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.authorization_approval | Boolean | True if an approval workflow is defined in the authorization, otherwise False. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.authorization | String | The authorization name. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.authorization_description | String | The authorization description. Usable in the "sort" parameter. | 
+| WAB.passwordrights_get.right_fingerprint | String | The fingerprint of the right \(hash of authorization and target uid\). | 
+| WAB.passwordrights_get.user_name | String | the user_name. | 
+
 ### wab-get-profiles
 
 ***
-Get the profiles.
+Get the profiles
+url: get /profiles
 
 #### Base Command
 
@@ -2771,12 +3656,12 @@ Get the profiles.
 | WAB.profile_get.target_access | Boolean | Target access. | 
 | WAB.profile_get.dashboards | String | Ordered list of dashboards names. Usable in the "q" parameter. | 
 | WAB.profile_get.url | String | The API URL to the resource. | 
-| WAB.profile_get.gui_features.dashboards | String | deprecated: unused field. | 
 
 ### wab-get-profile
 
 ***
-Get the profile.
+Get the profile
+url: get /profiles/{profile_id}
 
 #### Base Command
 
@@ -2826,12 +3711,12 @@ Get the profile.
 | WAB.profile_get.target_access | Boolean | Target access. | 
 | WAB.profile_get.dashboards | String | Ordered list of dashboards names. Usable in the "q" parameter. | 
 | WAB.profile_get.url | String | The API URL to the resource. | 
-| WAB.profile_get.gui_features.dashboards | String | deprecated: unused field. | 
 
 ### wab-get-scanjobs
 
 ***
-Get the scanjobs.
+Get the scanjobs
+url: get /scanjobs
 
 #### Base Command
 
@@ -2861,7 +3746,8 @@ Get the scanjobs.
 ### wab-start-scan-job-manually
 
 ***
-Start a scan job manually.
+Start a scan job manually
+url: post /scanjobs
 
 #### Base Command
 
@@ -2875,12 +3761,15 @@ Start a scan job manually.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.start_scan_job_manually.id | String | id of the created object. | 
 
 ### wab-get-scanjob
 
 ***
-Get the scanjob.
+Get the scanjob
+url: get /scanjobs/{scanjob_id}
 
 #### Base Command
 
@@ -2907,7 +3796,8 @@ Get the scanjob.
 ### wab-cancel-scan-job
 
 ***
-Cancel a scan job.
+Cancel a scan job
+url: put /scanjobs/{scanjob_id}
 
 #### Base Command
 
@@ -2926,7 +3816,8 @@ There is no context output for this command.
 ### wab-get-scans
 
 ***
-Get the scans.
+Get the scans
+url: get /scans
 
 #### Base Command
 
@@ -2962,7 +3853,8 @@ Get the scans.
 ### wab-get-scan
 
 ***
-Get the scan.
+Get the scan
+url: get /scans/{scan_id}
 
 #### Base Command
 
@@ -2992,10 +3884,57 @@ Get the scan.
 | WAB.scan_get.type | String | Scan type Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.scan_get.url | String | The API URL to the resource. | 
 
+### wab-edit-scan
+
+***
+Edit a scan
+url: put /scans/{scan_id}
+
+#### Base Command
+
+`wab-edit-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scan_id | The scan id or name to edit. | Required | 
+| force | The default value is false. When it is set to true the values of the subnets, banner_regex or protocols replaced, otherwise the values are added to the existing ones. | Optional | 
+| scan_put_name | Scan name. | Optional | 
+| scan_put_active | State of the job schedule. | Optional | 
+| scan_put_periodicity | Periodicity of the scan, in cron notation. | Optional | 
+| scan_put_description | Description of the scan. | Optional | 
+| scan_put_emails | Emails to notify when a job is finished. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-scan
+
+***
+Delete a scan
+url: delete /scans/{scan_id}
+
+#### Base Command
+
+`wab-delete-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scan_id | The scan id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-sessionrights
 
 ***
-Get current user's or the user 'user_name' session rights (connections via proxies).
+Get current user's or the user 'user_name' session rights (connections via proxies)
+url: get /sessionrights
 
 #### Base Command
 
@@ -3037,7 +3976,8 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 ### wab-get-sessionrights-user-name
 
 ***
-Get current user's or the user 'user_name' session rights (connections via proxies).
+Get current user's or the user 'user_name' session rights (connections via proxies)
+url: get /sessionrights/{user_name}
 
 #### Base Command
 
@@ -3077,7 +4017,8 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 ### wab-get-sessions
 
 ***
-Get the sessions.
+Get the sessions
+url: get /sessions
 
 #### Base Command
 
@@ -3168,7 +4109,8 @@ Get the sessions.
 ### wab-edit-session
 
 ***
-Edit a session.
+Edit a session
+url: put /sessions
 
 #### Base Command
 
@@ -3189,7 +4131,8 @@ There is no context output for this command.
 ### wab-get-session-metadata
 
 ***
-Get the metadata of one or multiple sessions.
+Get the metadata of one or multiple sessions
+url: get /sessions/metadata
 
 #### Base Command
 
@@ -3212,7 +4155,8 @@ Get the metadata of one or multiple sessions.
 ### wab-get-session-sharing-requests
 
 ***
-Get session sharing requests.
+Get session sharing requests
+url: get /sessions/requests
 
 #### Base Command
 
@@ -3242,7 +4186,8 @@ Get session sharing requests.
 ### wab-create-session-request
 
 ***
-Create a session request.
+Create a session request
+url: post /sessions/requests
 
 #### Base Command
 
@@ -3253,7 +4198,7 @@ Create a session request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | session_request_post_session_id | The session id. | Required | 
-| session_request_post_mode | The session sharing mode. | Required | 
+| session_request_post_mode | The session sharing mode. (accepted values: view_only,view_control). | Required | 
 
 #### Context Output
 
@@ -3262,7 +4207,8 @@ There is no context output for this command.
 ### wab-delete-pending-or-live-session-request
 
 ***
-Delete a pending or a live session request.
+Delete a pending or a live session request
+url: delete /sessions/requests/{request_id}
 
 #### Base Command
 
@@ -3281,7 +4227,8 @@ There is no context output for this command.
 ### wab-get-latest-snapshot-of-running-session
 
 ***
-Get the latest snapshot of a running session.
+Get the latest snapshot of a running session
+url: get /sessions/snapshots/{session_id}
 
 #### Base Command
 
@@ -3300,7 +4247,8 @@ There is no context output for this command.
 ### wab-get-status-of-trace-generation
 
 ***
-Get the status of a trace generation.
+Get the status of a trace generation
+url: get /sessions/traces/{session_id}
 
 #### Base Command
 
@@ -3330,7 +4278,8 @@ Get the status of a trace generation.
 ### wab-generate-trace-for-session
 
 ***
-Generate a trace for a session.
+Generate a trace for a session
+url: post /sessions/traces
 
 #### Base Command
 
@@ -3346,12 +4295,15 @@ Generate a trace for a session.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.generate_trace_for_session.id | String | id of the created object. | 
 
 ### wab-get-wallix-bastion-usage-statistics
 
 ***
-Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied it will return the statistics for the last full calendar month.
+Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied it will return the statistics for the last full calendar month
+url: get /statistics
 
 #### Base Command
 
@@ -3386,7 +4338,8 @@ Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied
 ### wab-get-target-groups
 
 ***
-Get the target groups.
+Get the target groups
+url: get /targetgroups
 
 #### Base Command
 
@@ -3448,7 +4401,8 @@ Get the target groups.
 ### wab-add-target-group
 
 ***
-Add a target group.
+Add a target group
+url: post /targetgroups
 
 #### Base Command
 
@@ -3463,12 +4417,15 @@ Add a target group.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_target_group.id | String | id of the created object. | 
 
 ### wab-get-target-group
 
 ***
-Get the target group.
+Get the target group
+url: get /targetgroups/{group_id}
 
 #### Base Command
 
@@ -3527,7 +4484,8 @@ Get the target group.
 ### wab-edit-target-group
 
 ***
-Edit a target group.
+Edit a target group
+url: put /targetgroups/{group_id}
 
 #### Base Command
 
@@ -3549,7 +4507,8 @@ There is no context output for this command.
 ### wab-delete-target-group
 
 ***
-Delete a target group.
+Delete a target group
+url: delete /targetgroups/{group_id}
 
 #### Base Command
 
@@ -3568,7 +4527,8 @@ There is no context output for this command.
 ### wab-delete-target-from-group
 
 ***
-Delete a target from a group.
+Delete a target from a group
+url: delete /targetgroups/{group_id}/{target_type}/{target_id}
 
 #### Base Command
 
@@ -3586,10 +4546,146 @@ Delete a target from a group.
 
 There is no context output for this command.
 
+### wab-get-timeframes
+
+***
+Get the timeframes
+url: get /timeframes
+
+#### Base Command
+
+`wab-get-timeframes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'timeframe_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.timeframe_get.id | String | The timeframe id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.timeframe_get.timeframe_name | String | The timeframe name. No space is permitted at first or end. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.timeframe_get.description | String | The timeframe description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.timeframe_get.is_overtimable | Boolean | Do not close sessions at the end of the time period. | 
+| WAB.timeframe_get.periods.start_date | String | The period start date. Must respect the format "yyyy-mm-dd". | 
+| WAB.timeframe_get.periods.end_date | String | The period end date. Must respect the format "yyyy-mm-dd". | 
+| WAB.timeframe_get.periods.start_time | String | The period start time. Must respect the format "hh:mm". | 
+| WAB.timeframe_get.periods.end_time | String | The period end time. Must respect the format "hh:mm". | 
+| WAB.timeframe_get.periods.week_days | String | The period week days. | 
+| WAB.timeframe_get.url | String | The API URL to the resource. | 
+
+### wab-add-timeframe
+
+***
+Add a timeframe
+url: post /timeframes
+
+#### Base Command
+
+`wab-add-timeframe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| timeframe_post_timeframe_name | The timeframe name. No space is permitted at first or end. | Required | 
+| timeframe_post_description | The timeframe description. | Optional | 
+| timeframe_post_is_overtimable | Do not close sessions at the end of the time period. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_timeframe.id | String | id of the created object. | 
+
+### wab-get-timeframe
+
+***
+Get the timeframe
+url: get /timeframes/{timeframe_id}
+
+#### Base Command
+
+`wab-get-timeframe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| timeframe_id | A timeframe id or name. If specified, only this timeframe is returned. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.timeframe_get.id | String | The timeframe id. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.timeframe_get.timeframe_name | String | The timeframe name. No space is permitted at first or end. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.timeframe_get.description | String | The timeframe description. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.timeframe_get.is_overtimable | Boolean | Do not close sessions at the end of the time period. | 
+| WAB.timeframe_get.periods.start_date | String | The period start date. Must respect the format "yyyy-mm-dd". | 
+| WAB.timeframe_get.periods.end_date | String | The period end date. Must respect the format "yyyy-mm-dd". | 
+| WAB.timeframe_get.periods.start_time | String | The period start time. Must respect the format "hh:mm". | 
+| WAB.timeframe_get.periods.end_time | String | The period end time. Must respect the format "hh:mm". | 
+| WAB.timeframe_get.periods.week_days | String | The period week days. | 
+| WAB.timeframe_get.url | String | The API URL to the resource. | 
+
+### wab-edit-timeframe
+
+***
+Edit a timeframe
+url: put /timeframes/{timeframe_id}
+
+#### Base Command
+
+`wab-edit-timeframe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| timeframe_id | The timeframe id or name to edit. | Required | 
+| force | The default value is false. When it is set to true the values of the periods are replaced, otherwise the values are added to the existing ones. | Optional | 
+| timeframe_put_timeframe_name | The timeframe name. No space is permitted at first or end. | Optional | 
+| timeframe_put_description | The timeframe description. | Optional | 
+| timeframe_put_is_overtimable | Do not close sessions at the end of the time period. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-timeframe
+
+***
+Delete a timeframe
+url: delete /timeframes/{timeframe_id}
+
+#### Base Command
+
+`wab-delete-timeframe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| timeframe_id | The timeframe id or name to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-user-groups
 
 ***
-Get the user groups.
+Get the user groups
+url: get /usergroups
 
 #### Base Command
 
@@ -3626,7 +4722,8 @@ Get the user groups.
 ### wab-get-user-group
 
 ***
-Get the user group.
+Get the user group
+url: get /usergroups/{group_id}
 
 #### Base Command
 
@@ -3660,7 +4757,8 @@ Get the user group.
 ### wab-get-users
 
 ***
-Get the users.
+Get the users
+url: get /users
 
 #### Base Command
 
@@ -3703,7 +4801,8 @@ Get the users.
 ### wab-add-user
 
 ***
-Add a user.
+Add a user
+url: post /users
 
 #### Base Command
 
@@ -3718,7 +4817,7 @@ Add a user.
 | user_post_display_name | The displayed name. | Optional | 
 | user_post_email | The email address. | Required | 
 | user_post_ip_source | The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com. | Optional | 
-| user_post_preferred_language | The preferred language. | Optional | 
+| user_post_preferred_language | The preferred language. (accepted values: de,en,es,fr,ru). | Optional | 
 | user_post_profile | The user profile. | Required | 
 | user_post_groups | The groups containing this user. | Optional | 
 | user_post_user_auths | The authentication procedures(s). | Required | 
@@ -3726,19 +4825,22 @@ Add a user.
 | user_post_force_change_pwd | Force password change. | Optional | 
 | user_post_ssh_public_key | The SSH public key. | Optional | 
 | user_post_certificate_dn | The certificate DN (for X509 authentication). | Optional | 
-| user_post_last_connection | The last connection of this user. | Optional | 
+| user_post_last_connection | The last connection of this user. (enter null for null value). | Optional | 
 | user_post_expiration_date | Account expiration date/time (format: "yyyy-mm-dd hh:mm"). | Optional | 
 | user_post_is_disabled | Account is disabled. | Optional | 
 | user_post_gpg_public_key | The GPG public key (ascii output from the command: 'gpg --armor --export [USER_ID]'). | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_user.id | String | id of the created object. | 
 
 ### wab-get-user
 
 ***
-Get the user.
+Get the user
+url: get /users/{name}
 
 #### Base Command
 
@@ -3775,10 +4877,178 @@ Get the user.
 | WAB.user_get.url | String | The API URL to the resource. | 
 | WAB.user_get.gpg_public_key | String | The GPG public key fingerprint. | 
 
+### wab-edit-user
+
+***
+Edit a user
+url: put /users/{name}
+
+#### Base Command
+
+`wab-edit-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The user name to edit. | Required | 
+| force | The default value is false. When set to true, the values of the groups and user_auths are replaced, otherwise the values are added to the existing ones. | Optional | 
+| password_hash | Update password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. | Optional | 
+| user_put_user_name | The user name. /:*?"&lt;&gt;\| are forbidden. | Optional | 
+| user_put_display_name | The displayed name. | Optional | 
+| user_put_email | The email address. | Optional | 
+| user_put_ip_source | The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com. | Optional | 
+| user_put_preferred_language | The preferred language. (accepted values: de,en,es,fr,ru). | Optional | 
+| user_put_profile | The user profile. | Optional | 
+| user_put_groups | The groups containing this user. | Optional | 
+| user_put_user_auths | The authentication procedures(s). | Optional | 
+| user_put_password | The password. | Optional | 
+| user_put_force_change_pwd | Force password change. | Optional | 
+| user_put_ssh_public_key | The SSH public key. | Optional | 
+| user_put_certificate_dn | The certificate DN (for X509 authentication). | Optional | 
+| user_put_last_connection | The last connection of this user. (enter null for null value). | Optional | 
+| user_put_expiration_date | Account expiration date/time (format: "yyyy-mm-dd hh:mm"). | Optional | 
+| user_put_is_disabled | Account is disabled. | Optional | 
+| user_put_gpg_public_key | The GPG public key (ascii output from the command: 'gpg --armor --export [USER_ID]'). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-get-target-group-restrictions
+
+***
+Get target group restrictions
+url: get /targetgroups/{group_id}/restrictions
+
+#### Base Command
+
+`wab-get-target-group-restrictions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A target group id or name. | Required | 
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'group_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.restriction_get.id | String | The restriction id. Usable in the "q" parameter. | 
+| WAB.restriction_get.action | String | The restriction type. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.restriction_get.rules | String | The restriction rules. Usable in the "sort" parameter. | 
+| WAB.restriction_get.subprotocol | String | The restriction subprotocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.restriction_get.url | String | The API URL to the resource. | 
+
+### wab-add-restriction-to-targetgroup
+
+***
+Add a restriction in a targetgroup
+url: post /targetgroups/{group_id}/restrictions
+
+#### Base Command
+
+`wab-add-restriction-to-targetgroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A target group id or name. | Required | 
+| restriction_post_action | The restriction type. (accepted values: kill,notify). | Required | 
+| restriction_post_rules | The restriction rules. | Required | 
+| restriction_post_subprotocol | The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_restriction_in_targetgroup.id | String | id of the created object. | 
+
+### wab-get-target-group-restriction
+
+***
+Get one target group restriction
+url: get /targetgroups/{group_id}/restrictions/{restriction_id}
+
+#### Base Command
+
+`wab-get-target-group-restriction`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A target group id or name. | Required | 
+| restriction_id | The identifier of the desired restriction. If specified, only this restriction is returned. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.restriction_get.id | String | The restriction id. Usable in the "q" parameter. | 
+| WAB.restriction_get.action | String | The restriction type. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.restriction_get.rules | String | The restriction rules. Usable in the "sort" parameter. | 
+| WAB.restriction_get.subprotocol | String | The restriction subprotocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.restriction_get.url | String | The API URL to the resource. | 
+
+### wab-edit-restriction-from-targetgroup
+
+***
+Edit a restriction from a targetgroup
+url: put /targetgroups/{group_id}/restrictions/{restriction_id}
+
+#### Base Command
+
+`wab-edit-restriction-from-targetgroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A target group id or name. | Required | 
+| restriction_id | The identifier of the desired restriction. | Required | 
+| restriction_put_action | The restriction type. (accepted values: kill,notify). | Optional | 
+| restriction_put_rules | The restriction rules. | Optional | 
+| restriction_put_subprotocol | The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-restriction-from-targetgroup
+
+***
+Delete a restriction from a targetgroup
+url: delete /targetgroups/{group_id}/restrictions/{restriction_id}
+
+#### Base Command
+
+`wab-delete-restriction-from-targetgroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A target group id or name. | Required | 
+| restriction_id | The identifier of the desired restriction. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-password-for-target
 
 ***
-Get the password for a given target.
+Get the password for a given target
+url: get /targetpasswords/checkout/{account_name}
 
 #### Base Command
 
@@ -3814,7 +5084,8 @@ Get the password for a given target.
 ### wab-extend-duration-time-to-get-passwords-for-target
 
 ***
-Extend the duration time to get the passwords for a given target.
+Extend the duration time to get the passwords for a given target
+url: get /targetpasswords/extendcheckout/{account_name}
 
 #### Base Command
 
@@ -3834,7 +5105,8 @@ There is no context output for this command.
 ### wab-release-passwords-for-target
 
 ***
-Release the passwords for a given target.
+Release the passwords for a given target
+url: get /targetpasswords/checkin/{account_name}
 
 #### Base Command
 
@@ -3856,7 +5128,8 @@ There is no context output for this command.
 ### wab-get-target-by-type
 
 ***
-Get the target by type.
+Get the target by type
+url: get /targets/{target_type}
 
 #### Base Command
 
@@ -3890,7 +5163,8 @@ Get the target by type.
 ### wab-get-mappings-of-user-group
 
 ***
-Get the mappings of a user group.
+Get the mappings of a user group
+url: get /usergroups/{group_id}/mappings
 
 #### Base Command
 
@@ -3920,7 +5194,8 @@ Get the mappings of a user group.
 ### wab-add-mapping-in-group
 
 ***
-Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default.
+Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default
+url: post /usergroups/{group_id}/mappings
 
 #### Base Command
 
@@ -3937,12 +5212,15 @@ Add a mapping in a group and set mapping fallback. If the field "external_group"
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_mapping_in_group.id | String | id of the created object. | 
 
 ### wab-get-mapping-of-user-group
 
 ***
-Get the mapping of a user group.
+Get the mapping of a user group
+url: get /usergroups/{group_id}/mappings/{mapping_id}
 
 #### Base Command
 
@@ -3969,7 +5247,8 @@ Get the mapping of a user group.
 ### wab-edit-mapping-of-user-group
 
 ***
-Edit a mapping of a user group.
+Edit a mapping of a user group
+url: put /usergroups/{group_id}/mappings/{mapping_id}
 
 #### Base Command
 
@@ -3992,7 +5271,8 @@ There is no context output for this command.
 ### wab-delete-mapping-of-user-group
 
 ***
-Delete the mapping of the given user group.
+Delete the mapping of the given user group
+url: delete /usergroups/{group_id}/mappings/{mapping_id}
 
 #### Base Command
 
@@ -4008,3 +5288,159 @@ Delete the mapping of the given user group.
 #### Context Output
 
 There is no context output for this command.
+
+### wab-get-user-group-restrictions
+
+***
+Get user group restrictions
+url: get /usergroups/{group_id}/restrictions
+
+#### Base Command
+
+`wab-get-user-group-restrictions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A user group id or name. | Required | 
+| q | Searches for a resource matching parameters. | Optional | 
+| sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'group_name'. | Optional | 
+| offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
+| limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.restriction_get.id | String | The restriction id. Usable in the "q" parameter. | 
+| WAB.restriction_get.action | String | The restriction type. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.restriction_get.rules | String | The restriction rules. Usable in the "sort" parameter. | 
+| WAB.restriction_get.subprotocol | String | The restriction subprotocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.restriction_get.url | String | The API URL to the resource. | 
+
+### wab-add-restriction-to-usergroup
+
+***
+Add a restriction to a usergroup
+url: post /usergroups/{group_id}/restrictions
+
+#### Base Command
+
+`wab-add-restriction-to-usergroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A user group id or name. | Required | 
+| restriction_post_action | The restriction type. (accepted values: kill,notify). | Required | 
+| restriction_post_rules | The restriction rules. | Required | 
+| restriction_post_subprotocol | The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_restriction_to_usergroup.id | String | id of the created object. | 
+
+### wab-get-user-group-restriction
+
+***
+Get one user group restriction
+url: get /usergroups/{group_id}/restrictions/{restriction_id}
+
+#### Base Command
+
+`wab-get-user-group-restriction`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A user group id or name. | Required | 
+| restriction_id | The identifier of the desired restriction. If specified, only this restriction is returned. | Required | 
+| fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.restriction_get.id | String | The restriction id. Usable in the "q" parameter. | 
+| WAB.restriction_get.action | String | The restriction type. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.restriction_get.rules | String | The restriction rules. Usable in the "sort" parameter. | 
+| WAB.restriction_get.subprotocol | String | The restriction subprotocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
+| WAB.restriction_get.url | String | The API URL to the resource. | 
+
+### wab-edit-restriction-from-usergroup
+
+***
+Edit a restriction from a usergroup
+url: put /usergroups/{group_id}/restrictions/{restriction_id}
+
+#### Base Command
+
+`wab-edit-restriction-from-usergroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A user group id or name. | Required | 
+| restriction_id | The identifier of the desired restriction. | Required | 
+| restriction_put_action | The restriction type. (accepted values: kill,notify). | Optional | 
+| restriction_put_rules | The restriction rules. | Optional | 
+| restriction_put_subprotocol | The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-delete-restriction-from-usergroup
+
+***
+Delete a restriction from a usergroup
+url: delete /usergroups/{group_id}/restrictions/{restriction_id}
+
+#### Base Command
+
+`wab-delete-restriction-from-usergroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | A user group id or name. | Required | 
+| restriction_id | The identifier of the desired restriction. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### wab-get-version
+
+***
+Get the REST API and WALLIX Bastion version numbers
+url: get /version
+
+#### Base Command
+
+`wab-get-version`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.version_get.version | String | The REST API version. | 
+| WAB.version_get.version_decimal | Number | The REST API version as decimal number. | 
+| WAB.version_get.wab_version | String | The WALLIX Bastion version \(format: X.Y\). | 
+| WAB.version_get.wab_form_factor | String | The WALLIX Bastion form factor \(appliance, cloud\). . | 
+| WAB.version_get.wab_version_decimal | Number | The WALLIX Bastion version as decimal number. | 
+| WAB.version_get.wab_version_hotfix | String | The WALLIX Bastion version with hotfix level \(format: X.Y.Z, Z being the hotfix level\). | 
+| WAB.version_get.wab_version_hotfix_decimal | Number | The WALLIX Bastion version with hotfix level as decimal. | 
+| WAB.version_get.wab_complete_version | String | The WALLIX Bastion complete version, with hotfix level and build date. | 
