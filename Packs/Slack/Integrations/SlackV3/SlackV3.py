@@ -2850,9 +2850,9 @@ def init_globals(command_name: str = ''):
     PROXIES = handle_proxy()
     PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel', None)
-    ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
-    CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
-    USER_CLIENT = slack_sdk.WebClient(token=USER_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
+    ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL,base_url="https://www.slack.com/api/")
+    CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT,base_url="https://www.slack.com/api/")
+    USER_CLIENT = slack_sdk.WebClient(token=USER_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT, base_url="https://www.slack.com/api/")
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
     INCIDENT_TYPE = demisto.params().get('incidentType')
