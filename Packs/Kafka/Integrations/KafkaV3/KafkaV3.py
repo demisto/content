@@ -53,7 +53,7 @@ class KafkaCommunicator:
     POLL_TIMEOUT: float = 1.0
     MAX_POLLS_FOR_LOG: int = 100
 
-    def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = '4564',
+    def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
