@@ -6,11 +6,10 @@
         "TIM_REVIEWER": "The GitHub username for TIM reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
-        "adi88d",
-        "israelpoli",
-        "rshunim"
+        "tcarmeli1",
+        "yaakovpraisler",
     ],
-    "CONTRIBUTION_TL": "thefrieddan1",
+    "CONTRIBUTION_TL": "jbabazadeh",
     "CONTRIBUTION_SECURITY_REVIEWER": ["tomer-pan"],
     "ON_CALL_DEVS": [
         "skidorball",
