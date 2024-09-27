@@ -362,14 +362,13 @@ script:
     description: Copies a file (object) from one bucket to another.
     name: gcs-copy-file
   - arguments:
-    - description: Name of the bucket in which to modify the public access prevention.
-        If not specified, operation will be performed on the default bucket parameter.
+    - description: Name of the bucket to which public access policy is to be applied.
       name: bucket_name
       required: true
-    - description: When you set public access prevention to inherited for an individual bucket,
-        the bucket might still be subject to public access prevention due to an organization policy.
-        To ensure that public access prevention is disabled for a bucket with an inherited setting,
-        make sure public access prevention is also disabled for its parent project.
+    - description: |
+        Defines the public access prevention mode for the bucket.
+        - **Enforced**: Completely blocks public access to the bucket, ensuring only authorized users can access it.
+        - **Inherited**: The bucket will inherit the public access prevention setting from its parent project.
       name: public_access_prevention
       required: false
     description: |
