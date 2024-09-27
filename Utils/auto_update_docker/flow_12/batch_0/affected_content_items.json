@@ -1,0 +1,42 @@
+{
+    "demisto/bs4": {
+        "content_items": [
+            "Packs/PopularCybersecurityNews/Integrations/PopularNews/PopularNews.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.76921"
+    },
+    "demisto/googleapi-python3": {
+        "content_items": [
+            "Packs/GoogleVertexAI/Integrations/GoogleVertexAI/GoogleVertexAI.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.100240"
+    },
+    "demisto/lacework": {
+        "content_items": [
+            "Packs/Lacework/Integrations/Lacework/Lacework.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.100340"
+    },
+    "demisto/netmiko": {
+        "content_items": [
+            "Packs/SimpleSFTP/Integrations/SimpleSFTP/SimpleSFTP.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.100251"
+    }
+}
