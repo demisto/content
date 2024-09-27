@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import unittest
 import urllib
 import uuid
 import warnings
@@ -15,6 +16,7 @@ import pytest
 import pytz
 import requests
 from pytest import raises, mark
+from unittest.mock import patch, call
 
 import CommonServerPython
 import demistomock as demisto
@@ -31,7 +33,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
-                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, debugger
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -9898,3 +9900,94 @@ def test_get_server_config_fail(mocker):
     mocked_error = mocker.patch.object(demisto, 'error')
     assert get_server_config() == {}
     assert mocked_error.call_args[0][0] == 'Error decoding JSON: Expecting value: line 1 column 1 (char 0)'
+
+
+# Example function to use with the decorator
+@debugger(secret_keys=['password'])
+def example_function(username, password):
+    return f"User {username} logged in."
+
+# Example function to use with the decorator and an error
+
+
+@debugger(secret_keys=['token'])
+def error_function(token):
+    raise ValueError("Test exception")
+
+
+def test_successful_execution(mocker):
+    """
+    GIVEN:
+        A function decorated with the debugger decorator.
+    WHEN:
+        The function is called with valid arguments.
+    THEN:
+        The function should execute successfully, and the debugger should log
+         the function name, arguments, keyword arguments, runtime, memory usage, and result.
+    """
+    def demisto_debug(msg):
+        pass
+
+    mock_debug = mocker.patch.object(demisto, 'debug', side_effect=demisto_debug)
+
+    result = example_function('someuser', 'super-secret-shhh')
+    assert result == 'User someuser logged in.'
+
+    # Ensure the last call contains the expected substring "Function example_function result: User someuser logged in"
+    last_call_args = mock_debug.call_args_list[-1][0][0]
+    assert "Function example_function result: User someuser logged in." in last_call_args
+
+
+def test_function_with_kwargs(mocker):
+    """
+    GIVEN:
+        A function decorated with the debugger decorator.
+    WHEN:
+        The function is called with keyword arguments.
+    THEN:
+        The function should execute successfully, and the debugger should log
+        the function name, arguments, keyword arguments, runtime, memory usage, and result.
+    """
+    def demisto_debug(msg):
+        pass
+    mock_debug = mocker.patch.object(demisto, 'debug', side_effect=demisto_debug)
+
+    kwargs = {
+        "username": "someuser",
+        "password": "super-secret-shhh"
+    }
+
+    result = example_function(**kwargs)
+    assert result == 'User someuser logged in.'
+
+    mock_debug.assert_has_calls([
+        mocker.call(
+            "Calling function: example_function\nArguments: ()\nKeyword arguments: {'username': 'someuser', 'password': '***'}"),
+    ])
+
+    # Ensure the last call contains the expected substring "Function example_function result: User someuser logged in"
+    last_call_args = mock_debug.call_args_list[-1][0][0]
+    assert "Function example_function result: User someuser logged in." in last_call_args
+
+
+def test_exception_handling(mocker):
+    """
+    GIVEN:
+        A function decorated with the debugger decorator.
+    WHEN:
+        The function raises an exception.
+    THEN:
+        The debugger should log the function name, arguments, keyword arguments, and the exception details.
+    """
+    def demisto_debug(msg):
+        pass
+    mock_debug = mocker.patch.object(demisto, 'debug', side_effect=demisto_debug)
+    error_mock = mocker.patch.object(demisto, 'error')
+
+    with pytest.raises(ValueError, match="Test exception"):
+        error_function(3)
+
+    mock_debug.assert_has_calls([
+        mocker.call("Calling function: error_function\nArguments: ()\nKeyword arguments: {'token': '***'}")
+    ])
+    error_mock.assert_called_once_with("Exception in error_function: Test exception")

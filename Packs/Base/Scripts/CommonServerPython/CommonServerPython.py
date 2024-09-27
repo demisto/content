@@ -7,6 +7,8 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import inspect
+import resource
 import gc
 import json
 import logging
@@ -39,9 +41,9 @@ def __line__():
     return cf.f_back.f_lineno  # type: ignore[union-attr]
 
 
-# 43 - The line offset from the beginning of the file.
+# 45 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -201,7 +203,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast
+    from typing import Optional, Dict, List, Any, Union, Set, cast, TypeVar, Callable
 
     from urllib3 import disable_warnings
     disable_warnings()
@@ -527,6 +529,11 @@ class ErrorTypes(object):
     SSL_ERROR = 'SSLError'
     TIMEOUT_ERROR = 'TimeoutError'
     RETRY_ERROR = "RetryError"
+
+
+class SensitiveFields(object):
+    COMMON_PARAMS = ['key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account']
+    COMMON_KEYWORDS = ['Authorization:', 'Cookie', "Token"]
 
 
 class FeedIndicatorType(object):
@@ -1616,10 +1623,8 @@ class IntegrationLogger(object):
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
-            # add common params
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account')
             if demisto.params():
-                self._iter_sensistive_dict_obj(demisto.params(), sensitive_params)
+                self._iter_sensistive_dict_obj(demisto.params(), SensitiveFields.COMMON_PARAMS)
 
     def _iter_sensistive_dict_obj(self, dict_obj, sensitive_params):
         for (k, v) in dict_obj.items():
@@ -8433,8 +8438,7 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token"]
-    lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
+    lower_keywords_to_censor = [word.lower() for word in SensitiveFields.COMMON_KEYWORDS]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
     request_log_with_spaces = trimed_request_log.replace("\\r\\n", " \\r\\n")
@@ -12063,6 +12067,100 @@ def get_server_config():
     body = parse_json_string(response.get('body'))
     server_config = body.get('sysConf', {})
     return server_config
+
+
+def mask_secrets(args: tuple, kwargs: dict, func: Callable, secret_keys=None) -> tuple:
+    """
+    Mask secrets in args and kwargs based on secret_keys.
+
+    Args:
+        args (tuple): Positional arguments.
+        kwargs (dict): Keyword arguments.
+        func (Callable): The original function to inspect.
+        secret_keys (Optional[List[str]]): List of keys whose values should be masked.
+
+    Returns:
+        tuple: Masked args and kwargs.
+    """
+    if secret_keys is None:
+        secret_keys = SensitiveFields.COMMON_PARAMS + SensitiveFields.COMMON_KEYWORDS
+
+    # Get function signature
+    sig = inspect.signature(func)
+    bound_args = sig.bind_partial(*args, **kwargs)
+    bound_args.apply_defaults()
+
+    # Mask arguments based on their names
+    for name, value in bound_args.arguments.items():
+        if name in secret_keys:
+            bound_args.arguments[name] = "***"
+
+    # Separate args and kwargs
+    new_args = tuple(bound_args.arguments[name] for name in sig.parameters if sig.parameters[name].kind
+                     == inspect.Parameter.POSITIONAL_ONLY and name in bound_args.arguments)
+    new_kwargs = {name: bound_args.arguments[name] for name in sig.parameters if sig.parameters[name].kind in (
+        inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD) and name in bound_args.arguments}
+
+    return new_args, new_kwargs
+
+
+# Type variable to indicate that the decorated function can be any callable
+FuncType = TypeVar('FuncType', bound=Callable[..., Any])
+
+
+def debugger(secret_keys: Optional[List[str]] = None) -> Callable[[FuncType], FuncType]:
+    """
+    Decorator to log the function name, arguments, keyword arguments, timestamp, runtime, memory usage,
+    and execution context to server logs. Optionally masks secrets in the logs.
+    Also handles and logs any exceptions raised during execution.
+
+    Args:
+        secret_keys (Optional[List[str]]): List of keys whose values should be masked.
+
+    Returns:
+        Callable[..., Any]: The decorated function with logging functionality.
+    """
+    def decorator(func: FuncType) -> FuncType:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            # Log the timestamp and function details
+            function_name = func.__name__
+            masked_args, masked_kwargs = mask_secrets(args, kwargs, func, secret_keys)
+
+            demisto.debug(f"Calling function: {function_name}"
+                          f"\nArguments: {masked_args}"
+                          f"\nKeyword arguments: {masked_kwargs}")
+
+            # Capture the start memory usage
+            start_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
+            try:
+                # Start timer, execute the function and capture the result
+                start_time = time.time()
+                result = func(*args, **kwargs)
+            except Exception as e:
+                # Log any exceptions raised
+                demisto.error(f"Exception in {function_name}: {e}")
+                raise
+
+            # Capture the end time and calculate runtime
+            end_time = time.time()
+            runtime = end_time - start_time
+
+            # Capture end memory usage
+            end_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+            memory_used = end_memory - start_memory
+
+            # Log runtime and memory usage
+            demisto.debug(f"Function {function_name} completed in {runtime:.4f} seconds"
+                          f"\nMemory used by {function_name}: {memory_used / 1024:.2f} KB"
+                          f"\nFunction {function_name} result: {result}")
+
+            return result
+
+        return wrapper  # type: ignore
+
+    return decorator
 
 
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402

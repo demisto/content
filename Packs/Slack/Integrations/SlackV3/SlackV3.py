@@ -18,6 +18,8 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
+from CommonServerPython import debugger
+
 ''' CONSTANTS '''
 
 SEVERITY_DICT = {
@@ -374,6 +376,7 @@ def get_user_by_name_with_caching(user_to_search, add_to_context):
     return user
 
 
+@debugger
 def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     """
     Gets a slack user by a user name
