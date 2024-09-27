@@ -3,6 +3,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 from CommonServerPython import *  # noqa: F401
 from DSPM import (
+    get_list_of_labels,
     get_list_of_assets,
     get_asset_files_by_id,
     test_module,
