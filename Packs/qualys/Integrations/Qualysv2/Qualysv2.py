@@ -3536,7 +3536,7 @@ def main():  # pragma: no cover
 
                 demisto.debug(f'sending {len(assets)} assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
-                                   snapshot_id=snapshot_id, items_count=total_assets, should_update_health_module=False)
+                                   snapshot_id=snapshot_id, items_count=str(total_assets), should_update_health_module=False)
                 demisto.setAssetsLastRun(new_last_run)
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
 
