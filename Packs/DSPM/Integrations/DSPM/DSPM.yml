@@ -563,6 +563,16 @@ script:
       description: ''
       type: Number
   - arguments: []
+    description: Returns list of label names based on company
+    name: dspm-get-list-of-labels
+    outputs:
+    - contextPath: DSPM.Label.Key
+      description: ''
+      type: String
+    - contextPath: DSPM.Label.No
+      description: ''
+      type: Number
+  - arguments: []
     description: Retrieves integration configuration.
     name: dspm-get-integration-config
     outputs:

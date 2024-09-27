@@ -475,9 +475,6 @@ Retrieves file details for the specified asset ID.
 
 
 ### dspm-get-data-types
-
-***
-
 #### Base Command
 
 `dspm-get-data-types`
@@ -535,6 +532,67 @@ There are no input arguments for this command.
 >| 3  | AWS Secret Key |
 >| 4  | Credit Card Expiration Date |
 >| 5  | Certificate |
+
+
+### dspm-get-list-of-labels
+
+#### Base Command
+
+`dspm-get-list-of-labels`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DSPM.Label.Key | String | Data types key. |
+| DSPM.Label.No | Number | Data types number. |
+
+#### Command example
+```!dspm-get-list-of-labels```
+#### Context Example
+```json
+{
+    "DSPM": {
+        "Label": [
+            {
+                "Key": "PCI",
+                "No": 1
+            },
+            {
+                "Key": "PHI",
+                "No": 2
+            },
+            {
+                "Key": "PII",
+                "No": 3
+            },
+            {
+                "Key": "Confidential",
+                "No": 4
+            },
+            {
+                "Key": "Sensitive",
+                "No": 5
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Data Types
+> | No | Key  |
+> |----|------|
+>| 1  | PCI |
+>| 2  | PHI |
+>| 3  | PII |
+>| 4  | Confidential |
+>| 5  | Sensitive |
 
 
 ### dspm-get-data-types-findings

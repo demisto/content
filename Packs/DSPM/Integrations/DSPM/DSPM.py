@@ -19,9 +19,8 @@ GET_ASSET_FILES = "/v1/classification/asset-files/id"
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
 GET_ALERTS_LIST: str = "/v1/alerts"
+GET_LABELS: str = "/v1/labels"
 GET_RISK_FINDING_BY_ID: str = "/v1/risk-findings/id/"
-INCIDENT_STATUS = {"OPEN": 1, "INVESTIGATING": 2, "HANDLED": 2, "CLOSED": 2}
-RISK_STATUS = {"Active": "OPEN", "Closed": "INVESTIGATING", "Pending": "INVESTIGATING"}
 
 SUPPORTED_CLOUD_PROVIDERS = ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]
 SUPPORTED_CATEGORIES = [
@@ -32,14 +31,6 @@ SUPPORTED_CATEGORIES = [
     "SECURITY_AND_GOVERNANCE",
     "COMPLIANCE_AND_GOVERNANCE",
     "SECURITY_AND_COMPLIANCE_AND_GOVERNANCE",
-]
-SUPPORTED_STATUSES = [
-    "OPEN",
-    "CLOSED",
-    "UNIMPORTANT",
-    "WRONG",
-    "HANDLED",
-    "INVESTIGATING",
 ]
 SUPPORTED_SERVICE_TYPES = [
     "ATHENA",
@@ -127,7 +118,6 @@ SUPPORTED_SERVICE_TYPES = [
     "VERTEX_ENDPOINT",
 ]
 SUPPORTED_LIFECYCLE = ["RUNNING", "STOPPED", "DELETED"]
-SORTING_ORDER = ["ASC", "DESC"]
 SUPPORTED_STATUSES = [
     "OPEN",
     "CLOSED",
@@ -149,6 +139,11 @@ class Client(BaseClient):
     def __init__(self, base_url, api_key, verify=True, proxy=False):
         headers = {"dig-api-key": api_key, "Accept": "application/json"}
         super().__init__(base_url, verify=verify, headers=headers, proxy=proxy)
+
+    def get_labels(self):
+        return self._http_request(
+            method="GET", url_suffix=f"{GET_LABELS}"
+        )
 
     def fetch_risk_findings(self, params: dict[str, Any]):
         demisto.debug(f"all params : {params}")
@@ -214,26 +209,6 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
-
-
-def map_status(status: str):
-    mapped_status = INCIDENT_STATUS.get(
-        status, 1
-    )  # Default to 'Active' if the status is not found
-    demisto.debug(f"Mapping status '{status}' to '{mapped_status}'")
-    return mapped_status
-
-
-def severity_to_dbot_score(severity):
-    if severity == "LOW":
-        return 1
-    if severity == "MEDIUM":
-        return 2
-    if severity == "HIGH":
-        return 3
-    if severity == "CRITICAL":
-        return 4
-    return 0
 
 
 def validate_parameter(
@@ -769,6 +744,28 @@ def get_integration_config():
     )
 
 
+def get_list_of_labels(client: Client):
+    """Command to fetch list of label names based on company"""
+    labels = client.get_labels()
+    labels_formatted = [
+        {"No": index + 1, "Key": dt} for index, dt in enumerate(labels)
+    ]
+
+    table_name = "Labels"
+    headers = ['No', 'Key']
+    if labels_formatted:
+        readable_output = tableToMarkdown(table_name, labels_formatted, headers=headers)
+    else:
+        readable_output = tableToMarkdown(table_name, "No data found", headers=headers)
+
+    return CommandResults(
+        outputs_prefix="DSPM.Labels",
+        outputs_key_field="Key",
+        outputs=labels_formatted,
+        readable_output=readable_output,
+    )
+
+
 def dspm_get_risk_findings_command(client, args):
     page = 0
     headers = ["ID", "Rule Name", "Severity", "Asset Name", "Asset ID", "Status", "Project ID",
@@ -940,22 +937,49 @@ def main() -> None:
             return_results(result)
         elif demisto.command() == "dspm-get-integration-config":
             return_results(get_integration_config())
+
+        #
+        # labels-resource
+        #
+        elif demisto.command() == "dspm-get-list-of-labels":
+            return_results(get_list_of_labels(client))
+
+        #
+        # risk-resource
+        #
         elif demisto.command() == "dspm-get-risk-findings":
             return_results(dspm_get_risk_findings_command(client, demisto.args()))
         elif demisto.command() == "dspm-get-risk-finding-by-id":
             return_results(get_risk_finding_by_id(client, demisto.args()))
+        elif demisto.command() == "dspm-update-risk-finding-status":
+            return_results(update_risk_finding_status(client, demisto.args()))
+
+        #
+        # asset-resource
+        #
+
         elif demisto.command() == "dspm-get-list-of-assets":
             return_results(dspm_get_list_of_assets_command(client, demisto.args()))
         elif demisto.command() == "dspm-get-asset-details":
             return_results(get_asset_details(client, demisto.args()))
-        elif demisto.command() == "dspm-get-asset-files-by-id":
-            return_results(get_asset_files_by_id(client, demisto.args()))
+
+        #
+        # classification-resource
+        #
         elif demisto.command() == "dspm-get-data-types":
             return_results(get_data_types(client))
+        elif demisto.command() == "dspm-get-asset-files-by-id":
+            return_results(get_asset_files_by_id(client, demisto.args()))
+
+        #
+        # data-type-findings-resource
+        #
         elif demisto.command() == "dspm-get-data-types-findings":
             return_results(dspm_get_data_types_findings_command(client, demisto.args()))
-        elif demisto.command() == "dspm-update-risk-finding-status":
-            return_results(update_risk_finding_status(client, demisto.args()))
+
+        #
+        # alert-resource
+        #
         elif demisto.command() == "dspm-update-alert-status":
             return_results(update_dspm_alert_status(client, demisto.args()))
         elif demisto.command() == "dspm-get-list-of-alerts":

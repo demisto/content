@@ -48,6 +48,7 @@ def client():
     client.get_asset_details = MagicMock(return_value={'id': 'asset1', 'name': 'Test Asset'})
     client.update_risk_status = MagicMock(return_value=MagicMock(status_code=200, text='Update successful'))
     client.get_data_types = MagicMock(return_value=["Type1", "Type2", "Type3"])
+    client.get_labels = MagicMock(return_value=["label1", "label2", "label3"])
     client.get_data_type_findings = MagicMock(return_value=[
         {"dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION"},
         {"dataTypeName": "PII"},
@@ -410,6 +411,35 @@ def test_get_data_types_single_type(client):
     assert result.outputs_prefix == 'DSPM.DataTypes'
     assert result.outputs_key_field == 'Key'
     assert result.outputs == [{"No": 1, "Key": "Type1"}]
+
+
+def test_get_labels(client):
+    result = get_list_of_labels(client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.Labels'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == [{"No": 1, "Key": "label1"}, {"No": 2, "Key": "label2"}, {"No": 3, "Key": "label3"}]
+
+
+def test_get_labels_empty_response(client):
+    client.get_labels = MagicMock(return_value=[])  # Empty data types
+    result = get_list_of_labels(client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.Labels'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == []
+
+
+def test_get_labels_single_label(client):
+    client.get_labels = MagicMock(return_value=["Label1"])  # Single data type
+    result = get_list_of_labels(client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.Labels'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == [{"No": 1, "Key": "Label1"}]
 
 
 sample_data_multiple = [
