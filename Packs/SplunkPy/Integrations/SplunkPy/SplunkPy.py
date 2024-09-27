@@ -500,7 +500,7 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_
 
         fetch_notables(service=service, enrich_notables=False, mapper=mapper, comment_tag_to_splunk=comment_tag_to_splunk,
                        comment_tag_from_splunk=comment_tag_from_splunk)
-
+ 
 
 # =========== Regular Fetch Mechanism ===========
 
