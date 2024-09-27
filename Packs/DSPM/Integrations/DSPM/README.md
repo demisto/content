@@ -75,17 +75,17 @@ Retrieves risk findings matching the input criteria.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.RiskFindings.ID |String |The unique ID of the risk finding.
-| DSPM.RiskFindings.AssetID |String |The ID of the asset associated with the risk finding.
-| DSPM.RiskFindings.AssetName |String |The name of the asset associated with the risk finding.
-| DSPM.RiskFindings.ComplianceStandards |String |The compliance standards relevant to the risk finding.
-| DSPM.RiskFindings.Severity |String |The severity of the risk finding (e.g., Low, Medium, High).
-| DSPM.RiskFindings.RuleName |String |The rule name associated with the risk finding.
-| DSPM.RiskFindings.FirstDiscovered |Date |The date the risk finding was first discovered.
-| DSPM.RiskFindings.CloudProvider |String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP).
-| DSPM.RiskFindings.Status |String |The current status of the risk finding (e.g., Open, Closed).
-| DSPM.RiskFindings.CloudEnvironment |String |The cloud environment (public or private) associated with the risk finding.
-| DSPM.RiskFindings.ProjectID |String |The project ID where the asset resides.
+| DSPM.RiskFindings.ID | String |The unique ID of the risk finding. |
+| DSPM.RiskFindings.AssetID | String |The ID of the asset associated with the risk finding. |
+| DSPM.RiskFindings.AssetName | String |The name of the asset associated with the risk finding. |
+| DSPM.RiskFindings.ComplianceStandards |String |The compliance standards relevant to the risk finding. |
+| DSPM.RiskFindings.Severity | String |The severity of the risk finding (e.g., Low, Medium, High). |
+| DSPM.RiskFindings.RuleName | String |The rule name associated with the risk finding. |
+| DSPM.RiskFindings.FirstDiscovered | Date |The date the risk finding was first discovered. |
+| DSPM.RiskFindings.CloudProvider | String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP). |
+| DSPM.RiskFindings.Status | String |The current status of the risk finding (e.g., Open, Closed). |
+| DSPM.RiskFindings.CloudEnvironment | String |The cloud environment (public or private) associated with the risk finding. |
+| DSPM.RiskFindings.ProjectID | String |The project ID where the asset resides. |
 
 #### Command example
 ```!dspm-get-risk-findings```
@@ -139,17 +139,17 @@ Retrieves the details of a risk for the provided risk ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.RiskFindings.ID |String |The unique ID of the risk finding.
-| DSPM.RiskFindings.AssetID |String |The ID of the asset associated with the risk finding.
-| DSPM.RiskFindings.AssetName |String |The name of the asset associated with the risk finding.
-| DSPM.RiskFindings.ComplianceStandards |String |The compliance standards relevant to the risk finding.
-| DSPM.RiskFindings.Severity |String |The severity of the risk finding (e.g., Low, Medium, High).
-| DSPM.RiskFindings.RuleName |String |The rule name associated with the risk finding.
-| DSPM.RiskFindings.FirstDiscovered |Date |The date the risk finding was first discovered.
-| DSPM.RiskFindings.CloudProvider |String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP).
-| DSPM.RiskFindings.Status |String |The current status of the risk finding (e.g., Open, Closed).
-| DSPM.RiskFindings.CloudEnvironment |String |The cloud environment (public or private) associated with the risk finding.
-| DSPM.RiskFindings.ProjectID |String |The project ID where the asset resides.
+| DSPM.RiskFinding.ID | String |The unique ID of the risk finding. |
+| DSPM.RiskFinding.AssetID | String |The ID of the asset associated with the risk finding. |
+| DSPM.RiskFinding.AssetName | String |The name of the asset associated with the risk finding. |
+| DSPM.RiskFinding.ComplianceStandards | String |The compliance standards relevant to the risk finding. |
+| DSPM.RiskFinding.Severity | String |The severity of the risk finding (e.g., Low, Medium, High). |
+| DSPM.RiskFinding.RuleName | String |The rule name associated with the risk finding. |
+| DSPM.RiskFinding.FirstDiscovered | Date |The date the risk finding was first discovered. |
+| DSPM.RiskFinding.CloudProvider | String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP). |
+| DSPM.RiskFinding.Status | String |The current status of the risk finding (e.g., Open, Closed). |
+| DSPM.RiskFinding.CloudEnvironment | String |The cloud environment (public or private) associated with the risk finding. |
+| DSPM.RiskFinding.ProjectID | String |The project ID where the asset resides. |
 
 
 #### Command example
@@ -737,12 +737,12 @@ Fetch list of alerts.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| DSPM.Alerts.id | String | Alert ID | 
+| **Path** | **Type** | **Description** | 
+| --- | --- | --- | 
+| DSPM.Alerts.id | String | Alert ID. | 
 | DSPM.Alerts.detectionTime | Date | Alert detection time. | 
 | DSPM.Alerts.policyName | String | Alert policy name. | 
-| DSPM.Alerts.assetName | Alert asset name. | 
+| DSPM.Alerts.assetName | String | Alert asset name. | 
 | DSPM.Alerts.assetLabels | Unknown | Alert asset label. | 
 | DSPM.Alerts.cloudProvider | String | Alert cloud provider. | 
 | DSPM.Alerts.destinationProjects | Unknown | Alert destination projects. | 
@@ -751,10 +751,10 @@ Fetch list of alerts.
 | DSPM.Alerts.policyCategoryType | String | Alert policy category type. | 
 | DSPM.Alerts.status | String | Alert status. | 
 | DSPM.Alerts.eventActor | String | Alert event actor. | 
-| DSPM.Alerts.eventUserAgent | String | Alert event user agent. |
-| DSPM.Alerts.eventActionMedium | String | Alert event action medium. |
-| DSPM.Alerts.eventSource | String | Alert event source. |
-| DSPM.Alerts.policyFrameWorks | String | Alert policy frameworks. |
+| DSPM.Alerts.eventUserAgent | String | Alert event user agent. | 
+| DSPM.Alerts.eventActionMedium | String | Alert event action medium. | 
+| DSPM.Alerts.eventSource | String | Alert event source. | 
+| DSPM.Alerts.policyFrameWorks | String | Alert policy frameworks. | 
 | DSPM.Alerts.eventRawData | String | Alert event raw data. | 
 
 
