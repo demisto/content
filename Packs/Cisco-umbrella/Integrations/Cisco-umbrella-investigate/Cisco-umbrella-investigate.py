@@ -1,3 +1,4 @@
+# pylint: disable=E9010
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
