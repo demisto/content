@@ -119,7 +119,7 @@ configuration:
     type: 8
     defaultvalue: "false"
 description: Netskope API v2 provides a powerful interface for managing and monitoring Netskope deployments. It enables users to retrieve alerts and events, manage URL lists, and control clients. With Netskope API v2, organizations can proactively respond to security threats, enforce web access policies, and efficiently administer their Netskope environment.
-display: Netskope (API v2) LOCAL
+display: Netskope (API v2)
 name: netskope_api_v2
 script:
   commands:
