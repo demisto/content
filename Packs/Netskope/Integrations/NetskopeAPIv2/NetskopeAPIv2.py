@@ -521,8 +521,6 @@ def list_alert_command(
         alert["alert_id"] = alert["_id"]
         alert["timestamp"] = timestamp_to_datestring(alert["timestamp"] * 1000)
 
-    output = update_keys(output)
-
     readable_output = tableToMarkdown(
         name="Alert List",
         metadata=pagination_message,
@@ -587,8 +585,6 @@ def list_event_command(
         event["event_id"] = event["_id"]
         event["timestamp"] = timestamp_to_datestring(event["timestamp"] * 1000)
 
-    output = update_keys(output)
-
     readable_output = tableToMarkdown(
         name="Event List",
         metadata=pagination_message,
@@ -602,7 +598,7 @@ def list_event_command(
         outputs_prefix="Netskope.Event",
         outputs_key_field="id",
         outputs=output,
-        raw_response=output,
+        raw_response=response,
     )
 
 
@@ -906,7 +902,6 @@ def list_dlp_incident_command(
             incidents += dlp_incidents
 
     incidents = remove_duplicates(incidents, "object_id")
-    incidents = update_keys(incidents)
 
     readable_output = tableToMarkdown(
         name="DLP Incident List:",
@@ -1189,23 +1184,6 @@ def get_remote_data_command(
 
 
 # HELPERS FUNCTIONS #
-
-
-def update_keys(data_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """
-    Updates keys in a list of dictionaries by removing the leading underscore ('_')
-    from any key that starts with it.
-
-    Args:
-        data_list (list[dict[str, Any]]): A list of dictionaries to be updated.
-
-    Returns:
-        list[dict[str, Any]]: A new list of dictionaries with updated keys.
-    """
-    return [{
-        key.lstrip('_'): value
-        for key, value in item.items()
-    } for item in data_list]
 
 
 def get_hourly_timestamps(start_time: int, end_time: int) -> list[int]:

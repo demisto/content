@@ -98,7 +98,7 @@ def test_list_event(client, requests_mock, url, args):
     assert len(result.outputs) == 1
     assert result.outputs_prefix == "Netskope.Event"
 
-    assert result.outputs[0]["id"] == "c4a0ad0684b73c3746e205a0"
+    assert result.outputs[0]["_id"] == "c4a0ad0684b73c3746e205a0"
     assert result.outputs[0]["timestamp"] == "2023-07-05T17:14:52.000Z"
     assert result.outputs[0]["type"] == "nspolicy"
     assert result.outputs[0]["access_method"] == "Client"
