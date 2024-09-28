@@ -105,9 +105,6 @@ configuration:
       - Incoming
       - Outgoing
       - Incoming and Outgoing
-    displaypassword: false
-    hiddenusername: false
-    hiddenpassword: false
   - name: close_incident
     display: Close Mirrored XSOAR Incident
     required: false
