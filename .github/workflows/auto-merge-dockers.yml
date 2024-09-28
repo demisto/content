@@ -35,7 +35,7 @@ jobs:
       - name: Post to a Slack channel
         if: ${{ failure() }}
         id: slack
-        uses: slackapi/slack-github-action@v1.24.0  # disable-secrets-detection
+        uses: slackapi/slack-github-action@v1.27.0  # disable-secrets-detection
         with:
           channel-id: 'auto-merge-docker-action'
           slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
