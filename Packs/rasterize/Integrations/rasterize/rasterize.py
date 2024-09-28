@@ -316,9 +316,9 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
     :param chrome_port: Port for Chrome instance.
     """
     existing_data = read_json_file()
-    
+
     if chrome_port in existing_data:
-        existing_data[chrome_port][ RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
+        existing_data[chrome_port][RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
         write_chrome_instances_file(existing_data)
     else:
         demisto.info(f"Chrome port '{chrome_port}' not found.")
@@ -342,21 +342,20 @@ def terminate_port_chrome_instances_file(chrome_port: str = ''):
 
 def add_new_chrome_instance(new_chrome_instance_content: Optional[Dict] = None) -> None:
     """Add new Chrome instance content to the JSON file.
-    
+
     :param new_chrome_instance_content: Data to write to the file. If None, an empty file is created.
-    
+
     """
     existing_data = read_json_file()
-    
+
     if new_chrome_instance_content:
         existing_data.update(new_chrome_instance_content)
-    
+
     write_chrome_instances_file(existing_data)
 
 
-# split this function to increase counter, terminate chrome, add new chrome
 def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}
-                    ):
+                                ):
     """
     Add new Chrome instance content to the JSON file.
 
@@ -829,7 +828,7 @@ def perform_rasterize(path: str | list[str],
             demisto.info(
                 f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
 
-            chrome_instances_file_content: dict = read_json_file() # CR fix name
+            chrome_instances_file_content: dict = read_json_file()  # CR fix name
             rasterizations_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZETION_COUNT, 0) + len(
                 rasterization_threads)
 

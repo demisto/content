@@ -653,13 +653,7 @@ def test_is_mailto_urls(mocker: MockerFixture):
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
 
-@pytest.mark.parametrize('new_chrome_instance_content, chrome_port, increase_counter, terminate_port',
-                         [
-                             ({"5000": {"rasterize_count": 1, "chrome_options": '', 'instance_id': '1'}}, '', False, False),
-                             ({}, '2222', '--foo', False),
-                             ({}, '2222', '', True),
-                         ])
-def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, increase_counter, terminate_port):
+def test_increase_counter_chrome_instances_file(mocker):
     """
     Given:
         - A new Chrome instance content
@@ -667,55 +661,90 @@ def test_write_json_file(mocker, new_chrome_instance_content, chrome_port, incre
         - An increase counter
         - A terminate port
     When:
-        - Executing the write_json_file function
+        - Executing the increase_counter_chrome_instances_file function
     Then:
-        - The function writes to the correct file, truncates it, and calls json.dump with the expected arguments.
+        - The function writes to the correct file and increase the "rasteriztion_count" by 1
     """
-    from rasterize import write_json_file
+    from rasterize import increase_counter_chrome_instances_file, RASTERIZETION_COUNT
+    from unittest.mock import mock_open
+    mocker.patch("os.path.exists", return_value=True)
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    expected_rasterizetion_count = mock_file_content['2222'][RASTERIZETION_COUNT] + 1
+    mock_file = mock_open()
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch.object(json, 'load', return_value=mock_file_content)
+    mocker_json = mocker.patch("json.dump")
+    increase_counter_chrome_instances_file(chrome_port="2222")
+    assert mocker_json.called
+    assert expected_rasterizetion_count == mocker_json.call_args[0][0]['2222'][RASTERIZETION_COUNT]
+
+
+def test_add_new_chrome_instance(mocker):
+    """
+    Given:
+        - A new Chrome instance content
+    When:
+        - Executing the add_new_chrome_instance function
+    Then:
+        - The function writes to the correct file the new chrome instance.
+    """
+    from rasterize import add_new_chrome_instance
     from unittest.mock import mock_open
     mocker.patch("os.path.exists", return_value=True)
     mock_file_content = util_load_json("test_data/chrome_instances.json")
     mock_file = mock_open()
     mocker.patch("builtins.open", mock_file)
     mocker.patch.object(json, 'load', return_value=mock_file_content)
-    # Create a mock file object
     mocker_json = mocker.patch("json.dump")
-    write_json_file(new_chrome_instance_content=new_chrome_instance_content,
-                    chrome_port=chrome_port,
-                    increase_counter=increase_counter,
-                    terminate_port=terminate_port)
-
-    # Get the handle to the mocked file object
-    handle = mock_file()
-
-    # Assert
-    handle.seek.assert_called_once_with(0)
-    handle.truncate.assert_called_once()
+    add_new_chrome_instance(new_chrome_instance_content={"9345": {
+        "instance_id": "44444444-4444-4444-4444-444444444444",
+        "chrome_options": "chrome_options4",
+        "rasterize_count": 1
+    }})
     assert mocker_json.called
+    assert '9345' in mocker_json.call_args[0][0]
 
 
-def test_write_json_file_new_file(mocker):
+def test_terminate_port_chrome_instances_file(mocker):
+    """
+    Given:
+        - A port to terminate.
+    When:
+        - Executing the terminate_port_chrome_instances_file function
+    Then:
+        - The function writes to the correct file the data without the port to terminate.
+    """
+    from rasterize import terminate_port_chrome_instances_file
+    from unittest.mock import mock_open
+    mocker.patch("os.path.exists", return_value=True)
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    mock_file = mock_open()
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch.object(json, 'load', return_value=mock_file_content)
+    mocker_json = mocker.patch("json.dump")
+    terminate_port_chrome_instances_file(chrome_port="2222")
+    assert mocker_json.called
+    assert '2222' not in mocker_json.call_args[0][0]
+
+
+def test_write_chrome_instances_empty(mocker):
     """
     Given:
         - A new Chrome instance content(first chrome instance).
     When:
-        - Executing the write_json_file function
+        - Executing the write_chrome_instances_file function
     Then:
         - The function creates and writes to the correct file, calls json.dump with the expected arguments.
     """
-    from rasterize import write_json_file
+    from rasterize import write_chrome_instances_file
     from unittest.mock import mock_open
-    mocker.patch("os.path.exists", return_value=False)
     mock_file_content = util_load_json("test_data/chrome_instances.json")
     mock_file = mock_open()
     mocker.patch("builtins.open", mock_file)
-    mocker.patch.object(json, 'dump', return_value=mock_file_content)
-    mocker_json = mocker.patch("json.dump")
-    mock_info = mocker.patch.object(demisto, "info")
-    write_json_file(new_chrome_instance_content=mock_file_content)
+    mocker_json = mocker.patch.object(json, 'dump', return_value=mock_file_content)
+    write_chrome_instances_file(new_chrome_content=mock_file_content)
 
     assert mocker_json.call_count == 1
-    assert mock_info.call_args_list[0][0][0] == "File '/var/chrome_instances.json' does not exist."
 
 
 def test_read_json_file(mocker):
@@ -732,37 +761,3 @@ def test_read_json_file(mocker):
     mock_file_content = util_load_json("test_data/chrome_instances.json")
     file_result = read_json_file("test_data/chrome_instances.json")
     assert file_result == mock_file_content
-
-
-def test_read_text_file():
-    """
-    Given:
-        - A log file at 'test_data/example_log_file.json'
-    When:
-        - Executing the read_json_file function
-    Then:
-        - The function reads the log file and returns the correct content.
-    """
-    from rasterize import read_text_file
-    expected_result = util_read_tsv(file_path="test_data/example_log_file.txt")
-    read_text_file_result = read_text_file(file_path="test_data/example_log_file.txt")
-    assert read_text_file_result == expected_result
-
-
-def test_write_file_new(mocker):
-    """
-        Given:
-            - A file named 'testfile.txt' does not exist yet.
-        When:
-            - Executing the write_text_file function with 'Hello, World!' as contents and overwrite set to False.
-        Then:
-            - The function opens the file in append mode and writes 'Hello, World!' to it.
-            - The correct log messages are generated indicating the file is being saved and successfully saved.
-        """
-    from rasterize import write_text_file
-    mock_open = mocker.patch("builtins.open", mocker.mock_open())
-    mock_info = mocker.patch.object(demisto, "info")
-    write_text_file('testfile.txt', 'Hello, World!', overwrite=False)
-    assert mock_info.call_args_list[0][0][0] == "Saving File 'testfile.txt' with Hello, World!."
-    assert mock_info.call_args_list[1][0][0] == "File 'testfile.txt' saved successfully with Hello, World!."
-    assert mock_open.call_args[0] == ('testfile.txt', 'a')
