@@ -5817,7 +5817,7 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
-        }
+        },
         {
             "integrations": "netskope_api_v2",
             "playbookID": "Netskope_V2_Test"
