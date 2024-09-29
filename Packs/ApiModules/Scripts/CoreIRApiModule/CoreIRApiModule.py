@@ -28,7 +28,8 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Security Testing',
     'resolved_other': 'Other',
-    'resolved_auto': 'Resolved'
+    'resolved_auto': 'Resolved',
+    'resolved_auto_resolve': 'Resolved'
 }
 
 ALERT_GENERAL_FIELDS = {
@@ -162,7 +163,7 @@ class CoreClient(BaseClient):
         self.timeout = timeout
         # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,  # type: ignore[override]
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
                       error_handler=None, with_metrics=False, resp_type='json'):
         '''
@@ -3342,7 +3343,10 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
 
         return PollResult(
             response=get_script_execution_results_command(
-                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+                client, {'action_id': action_id,
+                         'integration_context_brand': 'Core'
+                         if argToBoolean(args.get('is_core', False))
+                         else 'PaloAltoNetworksXDR'}
             ),
             continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
         )
@@ -3623,7 +3627,7 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             decode_dict_values(alert)
         except Exception as e:
             demisto.debug("encountered the following while decoding dictionary values, skipping")
-            demisto.debug(e)
+            demisto.debug(f'{e}')
             continue
 
         # Remove original_alert_json field and add its content to the alert body.

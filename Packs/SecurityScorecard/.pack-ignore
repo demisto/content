@@ -1,2 +1,6 @@
 [known_words]
 SecurityScorecard
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-SecurityScorecard_Alert_Layout.json]
+ignore=GR103
