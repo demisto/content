@@ -100,7 +100,7 @@ class Client(BaseClient):
             )
 
         except DemistoException as e:
-            if "Invalid refresh_token" in e.message:
+            if "Invalid refresh_token" in str(e):
                 demisto.debug('Refresh token is invalid, acquiring new access token via oauth.')
                 return self.oauth_sequence()
 
@@ -151,7 +151,8 @@ class Client(BaseClient):
         csrf_token = response.cookies.get('csrftoken')
         session = response.cookies.get('session')
         if not csrf_token or not session:
-            raise DemistoException('Failed to acquire CSRF token and session from login request, check the credentials are valid')
+            raise DemistoException('Failed to acquire CSRF token and session from login request. '
+                                   'Check if the credentials are valid.')
         demisto.debug(f'Login request response: {csrf_token=}, {session=}')
         return csrf_token, session
 
@@ -244,7 +245,7 @@ class Client(BaseClient):
                 headers=headers,
             )
         except DemistoException as e:
-            if 'access token is invalid' in e.message:
+            if 'access token is invalid' in str(e):
                 demisto.debug('Access token is invalid, refreshing and retrying the request')
                 headers['authorization'] = f'Bearer {self.get_access_token(use_cached_token=False)}'
                 response = self._http_request(
@@ -465,6 +466,7 @@ def add_time_to_events(events: list[dict] | None, time_arg: str):
 
     Args:
         events: List[Dict] - list of events to add the _time key to.
+        time_arg: str - the key to be used for time extraction.
 
     Returns:
         list: The events with the _time key.
