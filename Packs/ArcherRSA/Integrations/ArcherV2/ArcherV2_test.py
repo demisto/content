@@ -1,5 +1,5 @@
 import copy
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
@@ -561,7 +561,7 @@ class TestArcherV2:
         record = copy.deepcopy(INCIDENT_RECORD)
         record['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
         incident, incident_created_time = client.record_to_incident(record, 75, '305')
-        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=UTC)
         assert incident['name'] == 'RSA Archer Incident: 227602'
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
@@ -778,7 +778,7 @@ class TestArcherV2:
         incident['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
         incident['record']['Date/Time Reported'] = "26/03/2018 10:03 AM"
         incident, incident_created_time = client.record_to_incident(INCIDENT_RECORD, 75, '305')
-        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=UTC)
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
     def test_record_to_incident_american_time(self):
@@ -800,7 +800,7 @@ class TestArcherV2:
         incident, incident_created_time = client.record_to_incident(
             INCIDENT_RECORD, 75, '305'
         )
-        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=UTC)
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
     def test_fetch_time_change(self, mocker):
@@ -832,7 +832,7 @@ class TestArcherV2:
         mocker.patch.object(client, 'search_records', return_value=([record], {}))
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
         assert last_fetch < next_fetch
-        assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=timezone.utc)
+        assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=UTC)
         assert incidents[0]['occurred'] == date_time_reported
 
     def test_two_fetches(self, mocker):
@@ -867,11 +867,11 @@ class TestArcherV2:
         )
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
         assert last_fetch < next_fetch
-        assert next_fetch == datetime(2020, 3, 18, 10, 30, tzinfo=timezone.utc)
+        assert next_fetch == datetime(2020, 3, 18, 10, 30, tzinfo=UTC)
         assert incidents[0]['occurred'] == '2020-03-18T10:30:00.000Z'
         incidents, next_fetch = fetch_incidents(client, params, next_fetch, '305')
         assert last_fetch < next_fetch
-        assert next_fetch == datetime(2020, 3, 18, 15, 30, tzinfo=timezone.utc)
+        assert next_fetch == datetime(2020, 3, 18, 15, 30, tzinfo=UTC)
         assert incidents[0]['occurred'] == '2020-03-18T15:30:00.000Z'
 
     def test_fetch_got_old_incident(self, mocker):
@@ -958,12 +958,12 @@ class TestArcherV2:
         first_fetch = parser('2021-02-24T08:45:55Z')
         incidents, first_next_fetch = fetch_incidents(client, params, first_fetch, field_time_id)
         assert first_fetch < first_next_fetch
-        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
+        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=UTC)
         assert incidents[0]['occurred'] == '2021-02-25T08:45:55.977Z'
         # first_next_fetch_dt simulates the set to last_run done in fetch-incidents
         first_next_fetch_dt = parser(first_next_fetch.strftime(OCCURRED_FORMAT))
         incidents, second_next_fetch = fetch_incidents(client, params, first_next_fetch_dt, field_time_id)
-        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
+        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=UTC)
         assert not incidents
 
     def test_search_records_by_report_command(self, mocker):
