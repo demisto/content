@@ -30,13 +30,8 @@
                   "type": "Custom XQL",
                   "width": 50,
                   "height": 349,
-                  "params": [
-                    {
-                      "name": "vbr_hosts",
-                      "value": "*"
-                    }
-                  ],
-                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
+                  "params": [],
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
                   "time_frame": { "relativeTime": 86400000 },
                   "viewOptions": {
                     "type": "single",
@@ -66,6 +61,7 @@
                   "title": "Four-Eyes Authorization Events by Type",
                   "width": 50,
                   "height": 349,
+                  "params": [],
                   "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in ( \"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n        _operation=arrayindex(regextract(_raw_log, \"Operation\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| comp count(_instanceId ) as _count by _operation\r\n| view graph type = pie subtype = full xaxis = _operation yaxis = _count ",
                   "time_frame": { "relativeTime": 86400000 },
                   "viewOptions": {
@@ -135,13 +131,8 @@
         "creation_time": 1727085303502,
         "description": "The total amount of Veeam Backup & Replication four-eyes authorization events.",
         "data": {
-          "params": [
-            {
-              "name": "vbr_hosts",
-              "value": "*"
-            }
-          ],
-          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
+          "params": [],
+          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
           "time_frame": { "relativeTime": 86400000 },
           "viewOptions": {
             "type": "single",
