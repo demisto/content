@@ -45,8 +45,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       defaultValue: true
     description: Send a message to Microsoft Teams via Incoming Webhook.
     name: ms-teams-message
