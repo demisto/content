@@ -3042,6 +3042,9 @@ Deprecated. Retrieves traffic log query data by job id.
 | Panorama.TrafficLogs.Logs.Action | string | Action of the traffic log. |
 | Panorama.TrafficLogs.Logs.ActionSource | string | Action source of the traffic log. |
 | Panorama.TrafficLogs.Logs.Application | string | Application of the traffic log. |
+| Panorama.TrafficLogs.Logs.Bytes | string | The total log bytes. |
+| Panorama.TrafficLogs.Logs.BytesReceived | string |  The log bytes received. |
+| Panorama.TrafficLogs.Logs.BytesSent | string | The log bytes sent. |
 | Panorama.TrafficLogs.Logs.Category | string | Category of the traffic log. |
 | Panorama.TrafficLogs.Logs.DeviceName | string | Device name of the traffic log. |
 | Panorama.TrafficLogs.Logs.Destination | string | Destination of the traffic log. |
@@ -4065,7 +4068,9 @@ Checks the PAN-OS software version from the repository.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.LatestVersions | unknown | Latest software versions. | 
 
 #### Command Example
 ```!pan-os-check-latest-panos-software```
@@ -8257,10 +8262,20 @@ Returns a list of redistribution-profiles of a specific virtual-router of either
 | template | The template that the redistribution profiles and virtual-router are part of. Use only for Panorama instances. | Optional | 
 | limit | The maximum number of redistribution-profiles to retrieve. Default is 50. | Optional | 
 
-
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.RedistributionProfile.Name | String | The name of the profile. | 
+| Panorama.RedistributionProfile.Priority | String | The priority of the profile. | 
+| Panorama.RedistributionProfile.Action | String | The action of the profile. | 
+| Panorama.RedistributionProfile.FilterInterface | Unknown | The filter interface\(s\). | 
+| Panorama.RedistributionProfile.FilterType | Unknown | The filter type\(s\). | 
+| Panorama.RedistributionProfile.FilterDestination | Unknown | The filter destination\(s\). | 
+| Panorama.RedistributionProfile.FilterNextHop | Unknown | The filter next hop. | 
+| Panorama.RedistributionProfile.BGP | Unknown | The BGP of the profile. | 
+| Panorama.RedistributionProfile.OSPF | Unknown | The OSPF of the profile. | 
+
 #### Command example
 ```!pan-os-list-redistribution-profiles virtual_router=test```
 #### Context Example
@@ -9184,9 +9199,18 @@ Gets the audit comment of a rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The rule name to apply. | Required | 
-| rule_type | The rule type. Possible values are: Security Rule, NAT Rule, PBF Rule. | Optional | 
-| pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
-| device_group | The device group that the tag will be part of. | Optional | 
+| rule_type | The rule type. Possible values are: Security Rule, NAT Rule, PBF Rule. | Required | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: Pre, Post. | Optional | 
+| device-group | The device group that the rule is part of. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.AuditComment.comment | String | The audit comment ot the rule. | 
+| Panorama.AuditComment.rule_name | String | The rule name. | 
+| Panorama.AuditComment.rule_type | String | The rule type. | 
+
 
 #### Command example
 ```!pan-os-get-audit-comment rule_name="test" rule_type="Security Rule" pre_post=Post```
