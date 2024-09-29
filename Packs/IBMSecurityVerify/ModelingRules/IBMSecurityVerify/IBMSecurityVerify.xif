@@ -1,8 +1,7 @@
 //Created a generic mapping rule for fields relevant to most event types in IBM Security Verify.
 [RULE: generic_fields_mapping]
 alter
-    src_ipv6 = arrayindex(regextract(data -> origin, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
-    res = lowercase(data -> result)
+    src_ipv6 = arrayindex(regextract(data -> origin, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0)
 | alter
     xdm.source.location.continent = geoip -> continent_name,
     xdm.source.asn.as_name = geoip -> as_org,
@@ -12,9 +11,8 @@ alter
     xdm.source.location.longitude = to_float(geoip -> location.lon),
     xdm.source.location.latitude = to_float(geoip -> location.lat),
     xdm.source.asn.as_number = to_integer(geoip -> asn),
-    xdm.event.type = event_type,
+    xdm.event.type = if(event_type = "sso", "authentication", event_type),
     xdm.event.id = id,
-    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res IN("pending", "sent"), XDM_CONST.OUTCOME_UNKNOWN, res = "skipped", XDM_CONST.OUTCOME_PARTIAL, res),
     xdm.source.ipv4 = if(incidr(data -> origin, "0.0.0.0/0"), data -> origin),
     xdm.source.ipv6 = src_ipv6,
     xdm.source.user_agent = data -> devicetype,
@@ -29,8 +27,10 @@ filter event_type = "management"
 | alter
     src_user1 = arrayindex(regextract(data -> performedby_username, "(.+)\@") ,0), // The username can sometimes appear as a username and other times as an email.
     src_user2 = arrayindex(regextract(data -> username, "(.+)\@") ,0),
-    mod = if(data -> modified = "[]", null, data -> modified)
+    mod = if(data -> modified = "[]", null, data -> modified),
+    res = lowercase(data -> result)
 | alter
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res IN("pending", "sent"), XDM_CONST.OUTCOME_UNKNOWN, res = "skipped", XDM_CONST.OUTCOME_PARTIAL, res),
     xdm.event.operation_sub_type = coalesce(data -> dict_op, data -> action),
     xdm.target.application.name = data -> applicationname,
     xdm.event.description = if(data -> cause != null AND data -> modified != null, concat(rtrim(data -> cause, "."), ". modified properties: ", mod), coalesce(data -> cause, data -> modified)), // Checks if 'cause' and 'modified' are both populated. If so, appends the cause with a list of modified properties. If not, returns whichever field is available.
@@ -52,14 +52,22 @@ Mapping of 'sso' event types.
 */
 filter event_type = "sso"
 | alter
+    res = lowercase(data -> result),
     src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0) // The username can sometimes appear as a username and other times as an email.
 | alter
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
     xdm.auth.service = data -> subtype,
     xdm.source.user.identifier = data -> userid,
     xdm.source.user.username = coalesce(src_user, data -> username),
     xdm.source.user.upn = if(src_user != null, data -> username),
-    xdm.target.application.name = data -> applicationname,
-    xdm.source.host.device_id = data -> deviceid //valid only if its an Android or iPhone device.
+    xdm.target.resource.id = data -> applicationid,
+    xdm.target.resource.name = data -> applicationname,
+    xdm.source.host.device_id = data -> deviceid, //valid only if its an Android or iPhone device.
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.target.ipv4 = "", //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.source.port = 0, //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.target.port = 0, //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.event.original_event_type = event_type
 | call generic_fields_mapping;
 
 /*
@@ -67,8 +75,10 @@ Mapping of 'authentication' event types
 */
 filter event_type = "authentication"
 | alter
+    res = lowercase(data -> result),
     src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0) // The username can sometimes appear as a username and other times as an email.
 | alter
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
     xdm.event.operation_sub_type = coalesce(data -> dict_op, data -> action),
     xdm.event.description = data -> cause,
     xdm.auth.service = data -> sourcetype,
@@ -78,9 +88,12 @@ filter event_type = "authentication"
     xdm.source.user.upn = if(src_user != null, data -> username),
     xdm.source.host.device_id = data -> deviceid,
     xdm.auth.mfa.method = data -> mfamethod,
-    xdm.auth.mfa.client_details = data -> mfadevice,
     xdm.event.original_event_type = coalesce(data -> messageid, data -> messageId),
-    xdm.session_context_id = data -> usersessionid
+    xdm.session_context_id = data -> usersessionid,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.target.ipv4 = "", //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.source.port = 0, //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
+    xdm.target.port = 0 //For story 102, we hardcode the necessary fields since the data isn't available in the logs.
 | call generic_fields_mapping;
 
 /*
@@ -88,8 +101,10 @@ Mapping of 'slo' event types.
 */
 filter event_type = "slo"
 | alter
+    res = lowercase(data -> result),
     src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0) // The username can sometimes appear as a username and other times as an email.
 | alter
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res IN("pending", "sent"), XDM_CONST.OUTCOME_UNKNOWN, res = "skipped", XDM_CONST.OUTCOME_PARTIAL, res),
     xdm.event.operation_sub_type = data -> action,
     xdm.target.application.name = data -> applicationname,
     xdm.event.description = data -> cause,
