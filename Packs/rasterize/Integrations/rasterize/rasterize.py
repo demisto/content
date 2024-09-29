@@ -64,7 +64,7 @@ PAGES_LIMITATION = 20
 
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
-CHROME_OPTIONS = "chrome_options"
+CHROME_INSTANCE_OPTIONS = "chrome_options"
 RASTERIZETION_COUNT = "rasteriztion_count"
 
 
@@ -402,7 +402,7 @@ def get_chrome_options(default_options, user_options):
     return options
 
 
-def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binary=CHROME_EXE, user_options=""):
+def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binary=CHROME_EXE):
     try:
         logfile = open(CHROME_LOG_FILE_PATH, 'ab')
 
@@ -424,9 +424,9 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
             if browser:
                 new_chrome_instance = {
                     chrome_port: {
-                        'instance_id': instance_id,
-                        'chrome_options': chrome_options,
-                        'rasteriztion_count': 0
+                        INSTANCE_ID: instance_id,
+                        CHROME_INSTANCE_OPTIONS: chrome_options,
+                        RASTERIZETION_COUNT: 0
                     }
                 }
                 add_new_chrome_instance(new_chrome_instance_content=new_chrome_instance)
@@ -516,19 +516,19 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
     # it can compare between the fetched 'None' string and the 'None' that assigned.
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
-    chrome_options = demisto.params().get(CHROME_OPTIONS, 'None')
+    chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
     instance_id_dict = {
         value[INSTANCE_ID]: {
             'chrome_port': key,
-            'chrome_options': value[CHROME_OPTIONS]
+            CHROME_INSTANCE_OPTIONS: value[CHROME_INSTANCE_OPTIONS]
         }
         for key, value in chrome_instances_contents.items()
     }
     if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    elif chrome_options != instance_id_dict.get(instance_id, {}).get('chrome_options', ''):
+    elif chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
         # If the current Chrome options differ from the saved options for this instance ID,
         # it terminates the existing Chrome instance and generates a new one with the new options.
         chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
@@ -826,7 +826,8 @@ def perform_rasterize(path: str | list[str],
             # Wait for all tasks to complete
             executor.shutdown(wait=True)
             demisto.info(
-                f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
+                f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
+                f"active tabs len: {len(browser.list_tab())}")
 
             chrome_instances_file_content: dict = read_json_file()  # CR fix name
             rasterizations_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZETION_COUNT, 0) + len(
