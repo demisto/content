@@ -455,7 +455,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         demisto.debug(f'In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes')
 
     headers['User-Agent'] = 'PANW-XSOAR'
-    int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
+    int_timeout = int(timeout) if timeout else 60  # 60 is the default in generic_http_request
 
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
@@ -5508,12 +5508,13 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
     detection_res = get_detections_by_behaviors(behaviors_id).get('resources', {})
     outputs = []
 
+    # detection_ids are under the alert_ids key in the new (raptor) API, see XSUP-41622
+    detection_ids_key = 'detection_ids' if LEGACY_VERSION else 'alert_ids'
     for detection in detection_res:
         outputs.append({
             'incident_id': detection.get('incident_id'),
             'behavior_id': detection.get('behavior_id'),
-            'detection_ids': detection.get('detection_ids'),
-
+            'detection_ids': detection.get(detection_ids_key),
         })
     return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
                           outputs=outputs,
