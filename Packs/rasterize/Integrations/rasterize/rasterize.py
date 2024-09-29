@@ -409,7 +409,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
         default_chrome_options = CHROME_OPTIONS
         default_chrome_options.append(f"--remote-debugging-port={chrome_port}")
         subprocess_options = [chrome_binary]
-        user_chrome_options = demisto.params().get(CHROME_OPTIONS, "")
+        user_chrome_options = demisto.params().get(CHROME_INSTANCE_OPTIONS, "")
         subprocess_options.extend(get_chrome_options(default_chrome_options, user_chrome_options))
         demisto.debug(f"Starting Chrome with {subprocess_options=}")
 
