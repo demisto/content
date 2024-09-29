@@ -957,8 +957,9 @@ def remove_double_quotes(query: str) -> str:
 
         Return: query with no double double quotes. Example: "this is a ""test""\" -> "this is a "test""
     """
-    # Regular expression to match two consecutive quotation marks with any character(s) in between
-    pattern = re.compile(r'""(.*?)""')
+    # Regular expression to match two consecutive quotation marks with any character(s) in between.
+    # Separation marks such as comma are ignored.
+    pattern = re.compile(r'""([^",]*([,][^",]+)*)""')
 
     # Substitute the pattern with single quotes around the matched content
     return pattern.sub(r'"\1"', query)
