@@ -14,7 +14,7 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
     | Customer ID || True |
     | Username || True |
     | Password || True |
-    | Fetch networking events | Whether to fetch networking events or only audit | False |
+    | Fetch networking events | Whether to fetch networking events or only audit logs. | False |
     | The maximum number of audit events per fetch | Default - 100 | False |
     | The maximum number of networking events per fetch | Default - 5000 | False |
     | Trust any certificate (not secure) || False |
@@ -42,7 +42,7 @@ Gets events from Aruba Central.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. Default is 3 hours prior | Optional | 
+| from_date | Date from which to get events. Default is 3 hours prior. | Optional | 
 
 #### Command Example
 

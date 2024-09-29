@@ -1,7 +1,7 @@
 # HPE Aruba Central
  
 Aruba Central provides a centralized platform for the management and monitoring of network infrastructure.
-It includes comprehensive event collection and audit log management capabilities, allowing to maintain detailed records of network changes, user activities, and security events.
+It includes comprehensive event collection and audit log management capabilities, allowing you to maintain detailed records of network changes, user activities, and security events.
 
 [Aruba Central Documentation](https://developer.arubanetworks.com/hpe-aruba-networking-central/docs/central-about) 
 

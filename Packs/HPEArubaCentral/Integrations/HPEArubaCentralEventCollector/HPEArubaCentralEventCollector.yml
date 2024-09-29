@@ -14,14 +14,12 @@ configuration:
 - name: credentials
   display: Client ID
   required: true
-  defaultvalue:
   type: 9
   displaypassword: Client Secret
   section: Connect
   hiddenusername: false
 - name: customer_id
   required: true
-  defaultvalue:
   type: 9
   displaypassword: Customer ID
   section: Connect
@@ -29,7 +27,6 @@ configuration:
 - name: user
   display: Username
   required: true
-  defaultvalue:
   type: 9
   displaypassword: Password 
   section: Connect
