@@ -367,8 +367,8 @@ script:
       required: false
     - description: |
         Defines the public access prevention mode for the bucket.
-        - Enforced: Completely blocks public access to the bucket, ensuring only authorized users can access it.
-        - Inherited: The bucket will inherit the public access prevention setting from its parent project.
+        - enforced: Completely blocks public access to the bucket, ensuring only authorized users can access it.
+        - inherited: The bucket will inherit the public access prevention setting from its parent project.
       name: public_access_prevention
       required: true
       auto: PREDEFINED
