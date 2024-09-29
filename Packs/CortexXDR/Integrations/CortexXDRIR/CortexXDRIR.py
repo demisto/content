@@ -1006,6 +1006,8 @@ def get_remote_data_command(client, args):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
+    demisto.debug(f'this is the remote args {remote_args}')
+    demisto.debug(f'this is the remote args delta {remote_args.delta}')
     incident_id = remote_args.remote_incident_id
     remote_data = remote_args.data
     demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
@@ -1298,7 +1300,7 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
-    command = demisto.command()
+    command = 'test-module' #demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
     # using two different credentials object as they both fields need to be encrypted
