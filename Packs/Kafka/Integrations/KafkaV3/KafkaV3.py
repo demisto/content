@@ -765,6 +765,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                 except DemistoException as e:
                     demisto.debug(f"KAFKA DEBUG: {str(e)}")
                     demisto.debug(f"KAFKA DEBUG: {last_fetched_offsets=}")
+                    break
 
     finally:
         if kafka_consumer:
