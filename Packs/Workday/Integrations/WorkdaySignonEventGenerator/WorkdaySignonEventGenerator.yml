@@ -27,5 +27,7 @@ script:
   longRunningPort: true
 fromversion: 6.8.0
 toversion: 7.9.9
+marketplaces:
+  - xsoar_on_prem
 tests:
 - No tests (auto formatted)
