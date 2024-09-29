@@ -7,7 +7,6 @@ DEFAULT_LIMIT = 100
 DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
 
-
 INCLUDEINFORMATIONAL_SUPPORT_VERSION = '8.8'
 ENABLE_INCLUDEINFORMATIONAL_ARG = (is_xsiam() and is_demisto_version_ge(version=INCLUDEINFORMATIONAL_SUPPORT_VERSION))
 
@@ -149,8 +148,14 @@ def search_incidents(args: Dict):  # pragma: no cover
     if args.get('includeinformational'):
         if not ENABLE_INCLUDEINFORMATIONAL_ARG:
             raise ValueError('The includeinformational argument supported only in XSIAM from version x.x.x.')
-        if not args.get('fromdate') and not args.get('todate'):
+        if not (args.get('fromdate') and args.get('todate')):
             raise ValueError('The includeinformational argument requires fromDate and toDate arguments.')
+        if (datetime.now() - fromdate).total_seconds() > 5 * 60 * 60:
+            args['fromdate'] = (datetime.now() - timedelta(hours=5)).isoformat()
+            demisto.log(f'fromdate: {fromdate} is more than 5 hours from now: {datetime.now()}. '
+                        f'Currently, we support querying informational incidents for up to the last 5 hours.'
+                        f' The fromdate has been adjusted to {args.get("fromdate")}')
+
         args['includeinformational'] = argToBoolean(args.get('includeinformational', False))
 
     # handle list of ids
