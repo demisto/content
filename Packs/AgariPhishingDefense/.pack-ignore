@@ -16,3 +16,6 @@ ignore=BA101
 [known_words]
 agari
 
+[file:playbook-Agari_Message_Remediation_-_Agari_Phishing_Defense.yml]
+ignore=GR107
+
