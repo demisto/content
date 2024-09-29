@@ -155,7 +155,6 @@ def search_incidents(args: Dict):  # pragma: no cover
             demisto.log(f'fromdate: {fromdate} is more than 5 hours from now: {datetime.utcnow()}. '
                         f'Currently, we support querying informational incidents for up to the last 5 hours.'
                         f' The fromdate has been adjusted to {args.get("fromdate")}')
-
         args['includeinformational'] = argToBoolean(args.get('includeinformational', False))
 
     # handle list of ids
