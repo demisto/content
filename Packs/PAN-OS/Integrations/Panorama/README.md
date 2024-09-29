@@ -2503,6 +2503,11 @@ Edits a policy rule.
 | Panorama.SecurityRule.Application | string | Application for the rule. | 
 | Panorama.SecurityRule.Target | string | Target firewall \(Panorama instances\). | 
 | Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
+| Panorama.SecurityRule.Category | string | The category of the rule. |
+| Panorama.SecurityRule.LogForwarding | string | The log forwarding of the rule. |
+| Panorama.SecurityRule.ProfileSetting | string | The profile setting of the rule. |
+| Panorama.SecurityRule.SourceUser | string | The source user of the rule. |
+| Panorama.SecurityRule.AuditComment | string | The audit comment of the rule. |
 | Panorama.SecurityRule.Tags | String | Tags for the rule. | 
 | Panorama.SecurityRules.ProfileSetting | String | Profile setting group. |
 
