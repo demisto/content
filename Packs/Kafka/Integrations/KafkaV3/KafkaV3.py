@@ -738,17 +738,25 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
 
             for message in range(max_messages):
                 try:
-                    for pull_timeout in range(1,4):
-                        demisto.debug(f"KAFKA DEBUG: trying to poll message {message} out of {max_messages} with poll {kafka.POLL_TIMEOUT*pull_timeout}")
-                        polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT*pull_timeout)
-                        demisto.debug(f"KAFKA DEBUG: finish to poll message {message} out of {max_messages} with poll {kafka.POLL_TIMEOUT*pull_timeout}")
+                    for pull_timeout in range(1, 4):
+                        demisto.debug(
+                            f"KAFKA DEBUG: trying to poll message {message} out of {max_messages} with poll {kafka.POLL_TIMEOUT*pull_timeout}"
+                        )
+                        polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT * pull_timeout)
+                        demisto.debug(
+                            f"KAFKA DEBUG: finish to poll message {message} out of {max_messages} with poll {kafka.POLL_TIMEOUT*pull_timeout}"
+                        )
                         if polled_msg:
-                            demisto.debug(f"KAFKA DEBUG: succeeded to poll message {message} out of {max_messages} offset: {polled_msg.offset()}")
+                            demisto.debug(
+                                f"KAFKA DEBUG: succeeded to poll message {message} out of {max_messages} offset: {polled_msg.offset()}"
+                            )
                             incidents.append(create_incident(message=polled_msg, topic=topic))
-                            last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
+                            last_fetched_offsets[f"{polled_msg.partition()}"] = polled_msg.offset()
                             break
                         if pull_timeout == 3:
-                            raise DemistoException(f"Can't poll message {message} after {kafka.POLL_TIMEOUT*pull_timeout} skipping.")
+                            raise DemistoException(
+                                f"Can't poll message {message} after {kafka.POLL_TIMEOUT*pull_timeout} skipping."
+                            )
                 except DemistoException as e:
                     demisto.debug(f"KAFKA DEBUG: {str(e)}")
                     demisto.debug(f"KAFKA DEBUG: {last_fetched_offsets=}")
