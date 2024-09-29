@@ -40,7 +40,7 @@ script:
     - defaultValue: Cortex XSOAR URL
       description: The title for the link, defaults to "Cortex XSOAR URL".
       name: url_title
-    - description: When using webhook -Should the adaptive cards format be used?, When using Workflow- Should be a card or a single text message.
+    - description: Should the adaptive cards format be used or a single text message
       name: adaptive_cards_format
       required: false
       auto: PREDEFINED
