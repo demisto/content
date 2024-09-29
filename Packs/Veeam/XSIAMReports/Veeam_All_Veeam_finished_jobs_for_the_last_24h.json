@@ -30,13 +30,7 @@
                 "type": "Custom XQL",
                 "width": 100,
                 "height": 288,
-                "params": [
-                  {
-                    "name": "hosts",
-                    "value": "*"
-                  }
-                ],
-                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") valuecolor(\"Failed\",\"#D10000\") ",
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") valuecolor(\"Failed\",\"#D10000\") ",
                 "time_frame": { "relativeTime": 86400000 },
                 "viewOptions": {
                   "type": "pie",
@@ -115,13 +109,7 @@
       "creation_time": 1727085251591,
       "description": "The breakdown of all finished jobs by state.",
       "data": {
-        "params": [
-          {
-            "name": "hosts",
-            "value": "*"
-          }
-        ],
-        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") valuecolor(\"Failed\",\"#D10000\") ",
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") valuecolor(\"Failed\",\"#D10000\") ",
         "time_frame": { "relativeTime": 2592000000 },
         "viewOptions": {
           "type": "pie",
