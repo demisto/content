@@ -3,22 +3,18 @@ You can use the pack's playbooks to detonate both files and URLs. SecneurX Analy
 
 This integration was integrated and tested with version 1.0.0 of SecneurX Analysis
 
-## Configure SecneurX Analysis on Cortex XSOAR
+## Configure SecneurX Analysis in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SecneurX Analysis.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Input the url of SecneurX Analysis server. | True |
-    | API Key | Input the API key to access the sandbox. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Input the url of SecneurX Analysis server. | True |
+| API Key | Input the API key to access the sandbox. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### snx-analysis-get-verdict
 ***

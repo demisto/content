@@ -1,24 +1,20 @@
 This is the NetBox event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 3.0 and above of NetBox API. 
 
-## Configure NetBox Event Collector on Cortex XSIAM
+## Configure NetBox Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for NetBox Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., https://www.example.com) | True |
-    | API Key | True |
-    | First fetch time | False |
-    | The maximum number of alerts per fetch | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., https://www.example.com) | True |
+| API Key | True |
+| First fetch time | False |
+| The maximum number of alerts per fetch | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### netbox-get-events
 ***

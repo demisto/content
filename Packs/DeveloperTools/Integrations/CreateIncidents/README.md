@@ -1,22 +1,18 @@
 CreateIncidents fetches incident created manually.
 
-## Configure Create Test Incidents on Cortex XSOAR
+## Configure Create Test Incidents in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for Create Test Incidents.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Source URL | The base URL of the source you wish to upload/downlowd files from. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Source URL | The base URL of the source you wish to upload/downlowd files from. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### create-test-incident-from-file
 ***

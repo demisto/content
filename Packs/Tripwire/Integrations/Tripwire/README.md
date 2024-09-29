@@ -1,27 +1,23 @@
 Tripwire is a file integrity management (FIM), FIM monitors files and folders on systems and is triggered when they have changed.
 This integration was integrated and tested with v1 of Tripwire
-## Configure Tripwire on Cortex XSOAR
+## Configure Tripwire in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Tripwire.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Server URL \(e.g. https://tripwire.com\) | True |
-    | credentials | Username | True |
-    | isFetch | Fetch incidents | False |
-    | incidentType | Incident type | False |
-    | max_fetch | Maximum number of incidents per fetch | False |
-    | first_fetch | First fetch time | False |
-    | rule_oids | Rule ids | False |
-    | node_oids | Node ids | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Server URL \(e.g. https://tripwire.com\) | True |
+| credentials | Username | True |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+| max_fetch | Maximum number of incidents per fetch | False |
+| first_fetch | First fetch time | False |
+| rule_oids | Rule ids | False |
+| node_oids | Node ids | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### tripwire-versions-list
 ***
@@ -690,4 +686,3 @@ Returns a list of all nodes or those that match the provided filter criteria.
 >|---|---|---|---|---|---|---|
 >| -1y2p0ij32e8bu:-1y2p0ij32e7b3 | ip-172-31-45-155.eu-west-1.compute.internal | Red Hat | 172.31.45.155 | Linux Server | 1970-01-02T00:00:00.000Z | 2020-09-30T18:00:12.416Z |
 >| -1y2p0ij32e8bu:-1y2p0ij323ikt | ip-10-128-0-12.eu-west-1.compute.internal | CentOS | 10.128.0.12 | Linux Server | 2020-12-01T14:01:00.000Z | 2020-10-20T14:16:01.603Z |
-

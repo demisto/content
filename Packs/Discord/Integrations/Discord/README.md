@@ -1,20 +1,16 @@
 This is the Discord integration for sending Messages from XSOAR to Discord  server made by Trustnet
-## Configure Discord on Cortex XSOAR
+## Configure Discord in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Discord.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Api Key | You'll find your api key in BOT section -&amp;gt; Reset Token | True |
-    | Channel ID | You'll find your channel id by click on your channle then "Copy Channel ID" | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Api Key | You'll find your api key in BOT section -&amp;gt; Reset Token | True |
+| Channel ID | You'll find your channel id by click on your channle then "Copy Channel ID" | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### discord-send-message

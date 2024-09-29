@@ -1,36 +1,32 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
 This integration was integrated and tested with version 1.1.3 of CheckPointHEC
 
-## Configure Check Point Harmony Email and Collaboration (HEC) on Cortex XSOAR
+## Configure Check Point Harmony Email and Collaboration (HEC) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Check Point Harmony Email and Collaboration (HEC).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Smart API URL or Check Point Infinity API URL |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Client ID |  | True |
-    | Client Secret |  | True |
-    | First fetch time |  | False |
-    | SaaS Application | Get incidents from the selected SaaS | False |
-    | State | Get incidents with only the selected states | False |
-    | Severity | Get incidents with only the selected severities | False |
-    | Threat Type | Get incidents with only the selected types | False |
-    | Maximum number of incidents per fetch |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incidents Fetch Interval |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Smart API URL or Check Point Infinity API URL |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Client ID |  | True |
+| Client Secret |  | True |
+| First fetch time |  | False |
+| SaaS Application | Get incidents from the selected SaaS | False |
+| State | Get incidents with only the selected states | False |
+| Severity | Get incidents with only the selected severities | False |
+| Threat Type | Get incidents with only the selected types | False |
+| Maximum number of incidents per fetch |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incidents Fetch Interval |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### checkpointhec-get-entity

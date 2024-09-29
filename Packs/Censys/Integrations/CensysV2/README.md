@@ -4,28 +4,24 @@ This integration was integrated and tested with version 2.0 of Censys.
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#additional-considerations-for-this-version).
 
-## Configure Censys v2 on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Censys v2.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | App ID | True |
-    | Secret | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Labels premium feature available | False |
-    | IP and Domain Malicious labels | False |
-    | IP and Domain Suspicious labels | False |
-    | Malicious labels threshold | False |
-    | Suspicious labels threshold | False |
+## Configure Censys v2 in Cortex
 
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| App ID | True |
+| Secret | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Labels premium feature available | False |
+| IP and Domain Malicious labels | False |
+| IP and Domain Suspicious labels | False |
+| Malicious labels threshold | False |
+| Suspicious labels threshold | False |
+
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cen-view
 ***

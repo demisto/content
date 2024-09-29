@@ -1,24 +1,20 @@
 Manage block lists, manage allow lists, and perform domain, IP, and/or URL reputation and categorization lookups.
 This integration was integrated and tested with version 9.8.38.245 of iboss Zero Trust Secure Service Edge.
 
-## Configure iboss on Cortex XSOAR
+## Configure iboss in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for iboss.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Username |  | True |
-    | Password |  | True |
-    | Account Settings ID |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data |  |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Username |  | True |
+| Password |  | True |
+| Account Settings ID |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iboss-add-entity-to-allow-list
 ***

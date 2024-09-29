@@ -18,27 +18,23 @@ It is worth noting that this pack does not pull in all of the data on each incid
 
 Use the Mandiant Automated Defense integration to fetch and update incidents from Mandiant Automated Defense. Mandiant Automated Defense fetches open incidents and updates them every minute. Changes made within XSOAR are reflected in Mandiant Automated Defense platform with bi-directional mirroring capabilities enabled.
 
-## Configure Mandiant Automated Defense (Formerly Respond Software) on Cortex XSOAR
+## Configure Mandiant Automated Defense (Formerly Respond Software) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Mandiant Automated Defense (Formerly Respond Software).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident Mirroring Direction |  | False |
-    | Base Url | https://&amp;lt;Respond Analyst Server&amp;gt; \(either hostname or IP address\) | True |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | API Token | steps to generate an API token here -&amp;gt; https://knowledge-base.respond-software.com/knowledge/api-token | True |
-    | Max Fetch |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Incidents Fetch Interval |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Incident Mirroring Direction |  | False |
+| Base Url | https://&amp;lt;Respond Analyst Server&amp;gt; \(either hostname or IP address\) | True |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| API Token | steps to generate an API token here -&amp;gt; https://knowledge-base.respond-software.com/knowledge/api-token | True |
+| Max Fetch |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Incidents Fetch Interval |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### mad-get-incident
 ***
@@ -188,12 +184,12 @@ To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
-    | **Option** | **Description** |
-    | --- | --- |
-    | None | Turns off incident mirroring. |
-    | Incoming | Any changes in Mandiant Automated Defense (Formerly Respond Software) events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Mandiant Automated Defense (Formerly Respond Software) events (outgoing mirrored fields). |
-    | Both |  |
+| **Option** | **Description** |
+| --- | --- |
+| None | Turns off incident mirroring. |
+| Incoming | Any changes in Mandiant Automated Defense (Formerly Respond Software) events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+| Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Mandiant Automated Defense (Formerly Respond Software) events (outgoing mirrored fields). |
+| Both |  |
 
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.

@@ -1,21 +1,17 @@
 FortiSandbox integration is used to submit files to FortiSandbox for malware analysis and retrieving the report of the analysis. It can also provide file rating based on hashes for already scanned files.
 
-## Configure FortiSandbox on Cortex XSOAR
+## Configure FortiSandbox in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FortiSandbox.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | URL of the Fortisandbox server. | True |
-    | Credentials |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) | By default SSL certification validation is enabled. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | URL of the Fortisandbox server. | True |
+| Credentials |  | True |
+| Password |  | True |
+| Trust any certificate (not secure) | By default SSL certification validation is enabled. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortisandbox-simple-file-rating-sha256
 ***
@@ -269,5 +265,4 @@ There is no context output for this command.
 ``` ```
 
 #### Human Readable Output
-
 

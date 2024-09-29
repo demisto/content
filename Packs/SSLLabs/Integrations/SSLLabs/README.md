@@ -1,19 +1,15 @@
 Analyze a host or a URL. 
-## Configure SSL Labs (Community Contribution) on Cortex XSOAR
+## Configure SSL Labs (Community Contribution) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SSL Labs (Community Contribution).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Registered Email Address | The registered email address that will be used to access SSL Labs.  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Registered Email Address | The registered email address that will be used to access SSL Labs.  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ssl-labs-register-email

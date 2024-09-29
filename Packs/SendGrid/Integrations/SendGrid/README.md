@@ -1,22 +1,18 @@
 SendGrid provides a cloud-based service that assists businesses with email delivery. It allows companies to track email opens, unsubscribes, bounces, and spam reports. Our SendGrid pack utilize these SendGrid use cases to help you send and manage your emails.
 
-## Configure SendGrid on Cortex XSOAR
+## Configure SendGrid in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SendGrid.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Key | True |
-    | From Email ID | True |
-    | From Sender Name | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| API Key | True |
+| From Email ID | True |
+| From Sender Name | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### sg-send-email

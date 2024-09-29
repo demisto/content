@@ -1,22 +1,18 @@
 Scalable visibility and security analytics.
 This integration was integrated and tested with version 7.2.1 of Cisco Secure Network Analytics (Stealthwatch). Due to changes in the product API, versions grater than 7.3.2 (including) are currently not supported.
 
-## Configure Cisco Stealthwatch on Cortex XSOAR
+## Configure Cisco Stealthwatch in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Secure Network Analytics (Stealthwatch).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Server URL for Cisco Stealthwatch console e.g.: https://ip:port/. | True |
-    | User Credentials |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Server URL for Cisco Stealthwatch console e.g.: https://ip:port/. | True |
+| User Credentials |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cisco-stealthwatch-query-flows-initialize
 ***
@@ -2514,4 +2510,3 @@ Lists the security events results. Use this command after the search job complet
 >| 88193 | 102 | 121 | 310 | 2021-03-15T13:44:26.000+0000 | 2021-03-15T13:44:26.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
 >| 88192 | 102 | 121 | 310 | 2021-03-15T13:44:25.000+0000 | 2021-03-15T13:44:25.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
 >| 88191 | 102 | 121 | 310 | 2021-03-15T13:44:25.000+0000 | 2021-03-15T13:44:25.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
-

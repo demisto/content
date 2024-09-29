@@ -1,25 +1,21 @@
 Find, prioritize, and fix vulnerabilities on your IT & OT assets.
 This integration was integrated and tested with version 13.11 of Cyberwatch.
 
-## Configure Cyberwatch on Cortex XSOAR
+## Configure Cyberwatch in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cyberwatch.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Master scanner URL (e.g. https://192.168.0.1) | The Cyberwatch master scanner URL. | True |
-    | API Access key | See the Cyberwatch documentation for instructions to generate the API access and secret keys. | True |
-    | API Secret key | See the Cyberwatch documentation for instructions to generate the API access and secret keys. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Master scanner URL (e.g. https://192.168.0.1) | The Cyberwatch master scanner URL. | True |
+| API Access key | See the Cyberwatch documentation for instructions to generate the API access and secret keys. | True |
+| API Secret key | See the Cyberwatch documentation for instructions to generate the API access and secret keys. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cyberwatch-list-cves
@@ -3208,4 +3204,3 @@ Get all details for a Security issue from Cyberwatch.
 >|id|sid|title|description|servers_count|cve_announcements_count|
 >|---|---|---|---|---|---|
 >| 47 | WSTG-INPV-05 | SQL Injection | An SQL injection attack... |  |  |
-

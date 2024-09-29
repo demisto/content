@@ -1,28 +1,24 @@
 Microsoft Graph lets your app get authorized access to a user's Teams app in a personal or organization account.
 
-## Configure O365 Teams (Using Graph API) on Cortex XSOAR
+## Configure O365 Teams (Using Graph API) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for O365 Teams (Using Graph API).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Tenant ID | Token or Tenant ID - see Detailed Instructions \(?\) | True |
-    | Client ID | ID or Client ID - see Detailed Instructions \(?\) | True |
-    | Client Secret | Key or Client Secret - see Detailed Instructions \(?\) | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Use a self deployed Azure Application |  | False |
-    | Application redirect URI (for Authorization Code flow mode) |  | False |
-    | Authorization Code | Authorization code on behalf of a user, used with self deployed Azure Applications. | False |
-    | Email address of the XSOAR delegated Teams user (e.g. "example@demisto.com") |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Suppress Errors for Non Found Users |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Tenant ID | Token or Tenant ID - see Detailed Instructions \(?\) | True |
+| Client ID | ID or Client ID - see Detailed Instructions \(?\) | True |
+| Client Secret | Key or Client Secret - see Detailed Instructions \(?\) | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Use a self deployed Azure Application |  | False |
+| Application redirect URI (for Authorization Code flow mode) |  | False |
+| Authorization Code | Authorization code on behalf of a user, used with self deployed Azure Applications. | False |
+| Email address of the XSOAR delegated Teams user (e.g. "example@demisto.com") |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Suppress Errors for Non Found Users |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 #### Required Permissions
@@ -38,7 +34,7 @@ ChatMessage.Send - Delegated
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### msgraph-teams-list-chats

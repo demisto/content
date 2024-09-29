@@ -39,30 +39,26 @@ Use Cases
 * Create or modify Active Directory users.
 * Manage user accounts and their status
 
-## Configure Active Directory Query v2 on Cortex XSOAR
+## Configure Active Directory Query v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Active Directory Query v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                                  | **Required** |
-    |--------------------------------------------------------------------------------------------------| --- | --- |
-    | Server IP address (for example, 192.168.0.1) | The Server IP that should be used to access Active Directory.                                    | True |
-    | Port  | Server port. If not specified, the default port is 389, or 636 for LDAPS.                        | False |
-    | Credentials | User credentials.                                                                                                 | True |
-    | Password |                                                                                                  | True |
-    | NTLM authentication | Indicates whether to use NTLM authentication.                                                                                                 | False |
-    | Base DN (for example "dc=company,dc=com") | The basic hierarchical path of objects in the active directory.                                                                                                 | True |
-    | Page size | The number of results to be returned, per page (page - response content from AD server), from a query. This may effect query run time.                                                                                                 | True |
-    | Secure Connection |  Use SSL or Start TLS for secure connection or ‘None’ for communication over clear-text.                                                                                                | True |
-    | SSL Version | The SSL\TLS version to use in SSL or Start TLS connections types. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections. For more information please see: [ssl.PROTOCOLS](https://docs.python.org/3/library/ssl.html#ssl.PROTOCOL_TLS_CLIENT)). | False |
-    | Trust any certificate (not secure) | Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to a missing CA certificate)                                                                                                 | False |
-    | Incoming Mapper | Used in the IAM commands.                                                                        | True |
-    | Outgoing Mapper | Used in the IAM commands.                                                                        | True |
-    | Group CN for terminated employees |                                                                                                  | False |
-    | Create user if does not exist | If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only. | False |
+| **Parameter** | **Description**                                                                                  | **Required** |
+|--------------------------------------------------------------------------------------------------| --- | --- |
+| Server IP address (for example, 192.168.0.1) | The Server IP that should be used to access Active Directory.                                    | True |
+| Port  | Server port. If not specified, the default port is 389, or 636 for LDAPS.                        | False |
+| Credentials | User credentials.                                                                                                 | True |
+| Password |                                                                                                  | True |
+| NTLM authentication | Indicates whether to use NTLM authentication.                                                                                                 | False |
+| Base DN (for example "dc=company,dc=com") | The basic hierarchical path of objects in the active directory.                                                                                                 | True |
+| Page size | The number of results to be returned, per page (page - response content from AD server), from a query. This may effect query run time.                                                                                                 | True |
+| Secure Connection |  Use SSL or Start TLS for secure connection or ‘None’ for communication over clear-text.                                                                                                | True |
+| SSL Version | The SSL\TLS version to use in SSL or Start TLS connections types. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections. For more information please see: [ssl.PROTOCOLS](https://docs.python.org/3/library/ssl.html#ssl.PROTOCOL_TLS_CLIENT)). | False |
+| Trust any certificate (not secure) | Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to a missing CA certificate)                                                                                                 | False |
+| Incoming Mapper | Used in the IAM commands.                                                                        | True |
+| Outgoing Mapper | Used in the IAM commands.                                                                        | True |
+| Group CN for terminated employees |                                                                                                  | False |
+| Create user if does not exist | If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ##### Identity Lifecycle Management premium pack configuration
@@ -78,7 +74,7 @@ To allow the integration to access the mapper from within the code, as required 
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ad-expire-password
 ***
@@ -1228,5 +1224,4 @@ support pagination with the following arguments:
 * *limit*
 * *page-size*
 * *page-cookie*
-
 

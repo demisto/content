@@ -2,30 +2,26 @@ Rapidly detect, analyse and respond to security threats with mnemonic’s leadin
 
 This integration was integrated and tested with version 5.1.1 argus-toolbelt ([PyPi](https://pypi.org/project/argus-toolbelt)).
 
-## Configure ArgusManagedDefence on Cortex XSOAR
+## Configure ArgusManagedDefence in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ArgusManagedDefence.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fetch incidents | Defines if this integration fetches incidents. | False |
-    | Incident type | Should be set to Argus Case. | False |
-    | API URL | URL to Argus' API Endpoint. | True |
-    | API Key | API Key of API user in Argus. | True |
-    | Minimum severity of alerts to fetch | Argus Cases with priority lower than this value will be excluded by fetch incidents. | True |
-    | First fetch time | How far back should the first run fetch open cases in Argus. | False |
-    | Maximum number of incidents per fetch | Maximum number of cases to be fetched from Argus. 0 means up to system limit \(100 000\) | False |
-    | Fetch incidents exclude tag | Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with tag key, or key: value pairs by a comma-separated string. | False |
-    | Incident Mirroring Direction | Which direction should the integration mirror incidents. | False |
-    | Mirroring tag | Names of tags used to mark incident entries to be mirrored. Comma separated. | False |
-    | Close Argus Case | If true, when an incident is closed in XSOAR: close the mirrored Argus Case | False |
-    | Close XSOAR Incident | If true, when mirrored Argus Case is closed: also close the XSOAR Incident | False |
-    | Trust any certificate (not secure) | Skip HTTPS certification verification. | False |
-    | Use system proxy settings | Use system proxy settings. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch incidents | Defines if this integration fetches incidents. | False |
+| Incident type | Should be set to Argus Case. | False |
+| API URL | URL to Argus' API Endpoint. | True |
+| API Key | API Key of API user in Argus. | True |
+| Minimum severity of alerts to fetch | Argus Cases with priority lower than this value will be excluded by fetch incidents. | True |
+| First fetch time | How far back should the first run fetch open cases in Argus. | False |
+| Maximum number of incidents per fetch | Maximum number of cases to be fetched from Argus. 0 means up to system limit \(100 000\) | False |
+| Fetch incidents exclude tag | Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with tag key, or key: value pairs by a comma-separated string. | False |
+| Incident Mirroring Direction | Which direction should the integration mirror incidents. | False |
+| Mirroring tag | Names of tags used to mark incident entries to be mirrored. Comma separated. | False |
+| Close Argus Case | If true, when an incident is closed in XSOAR: close the mirrored Argus Case | False |
+| Close XSOAR Incident | If true, when mirrored Argus Case is closed: also close the XSOAR Incident | False |
+| Trust any certificate (not secure) | Skip HTTPS certification verification. | False |
+| Use system proxy settings | Use system proxy settings. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Mirroring
 This integration supports in- and outbound mirroring of incidents. 
@@ -45,7 +41,7 @@ An example use case could be that you are running an XSOAR incident for a while 
 ```
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### argus-get-attachment

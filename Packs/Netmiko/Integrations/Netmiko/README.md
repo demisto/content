@@ -6,9 +6,6 @@
 
 ## Configure Netmiko Integration in Cortex XSOAR
 
- 1. Navigate to **Settings** - **Integrations**
- 2. Search for **Netmiko**
- 3. Click **Add instance** to create and configure a new integration instance.
 	 - **Name**: a name for the integration instance.
 	 - **Platform**: the platform identifier taken from the above SSH or Telnet platform name lists (e.g., linux_ssh, paloalto_panos, etc.)
 **NOTE**: Platform names are taken from the supported
@@ -17,7 +14,6 @@
 	 - **Port**: The port to connect to via SSH
 	 - **Credentials**: The username/password, or XSOAR credential object, to be used for the connection
 	 - **Override the default timeout value**: Override the timeout value (in seconds) for a given integration instance. This is useful for devices that are slow in responding with requested output over SSH.
-4. Click **Test** to validate the new instance. This performs a simple connection to the system hosting the SSH server.
 
 ## Commands
 

@@ -1,10 +1,7 @@
 Use the Intezer v2 integration to detect and analyze malware, based on code reuse.
 
-## Configure Intezer v2 on Cortex XSOAR
+## Configure Intezer v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Intezer v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Required** |
              | --- | --- | --- |
@@ -13,11 +10,10 @@ Use the Intezer v2 integration to detect and analyze malware, based on code reus
    | Use system proxy settings |  | False |
    | Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### intezer-analyze-by-hash

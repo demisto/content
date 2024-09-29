@@ -1,26 +1,22 @@
 This integration collects event logs from Bitwarden Password Manager to Cortex XSIAM.
 This integration was integrated and tested with version 2024.6.2 of Bitwarden Password Manager.
 
-## Configure Bitwarden Password Manager on Cortex XSIAM
+## Configure Bitwarden Password Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Bitwarden Password Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., https://example.bitwarden.com) | True |
-    | Client ID | True |
-    | Client Secret | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Maximum number of events per fetch | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., https://example.bitwarden.com) | True |
+| Client ID | True |
+| Client Secret | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Maximum number of events per fetch | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### bitwarden-get-events

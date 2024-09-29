@@ -1,26 +1,22 @@
 **KnowBe4 PhishER** integration allows to pull events from PhishER system and do mutations.
 This integration was integrated and tested with version 6.0.0 of XSOAR
 
-## Configure Phisher on Cortex XSOAR
+## Configure Phisher in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PhishER.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | API Key |  | True |
-    | First Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
-    | Fetch incidents |  | False |
-    | Fetch Limit | Maximum number of alerts per fetch. Default is 50, maximum is 100. | False |
-    | Incident type |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL |  | True |
+| API Key |  | True |
+| First Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+| Fetch incidents |  | False |
+| Fetch Limit | Maximum number of alerts per fetch. Default is 50, maximum is 100. | False |
+| Incident type |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### phisher-message-list
 ***

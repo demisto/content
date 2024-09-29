@@ -6,19 +6,15 @@ How to use this integration ?
 4. Additionally, the playbook allows the user to configure to choose between the three sources using the Playbook inputs.
 
 This integration was integrated and tested with version 1.0.0 of Popular News
-## Configure Popular News on Cortex XSOAR
+## Configure Popular News in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Popular News.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    |  | False |
+| **Parameter** | **Required** |
+| --- | --- |
+|  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### get-news-KrebsOnSecurity
 ***
@@ -117,5 +113,4 @@ There is no context output for this command.
 ``` ```
 
 #### Human Readable Output
-
 

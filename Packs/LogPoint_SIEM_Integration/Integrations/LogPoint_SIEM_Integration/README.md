@@ -9,29 +9,25 @@ This integration was integrated and tested with version 6.7.4 of LogPoint.
 * Act accordingly to the incidents using LogPoint provided or custom playbooks.
 * Use commands to get logs from LogPoint’s devices and repos
 
-## Configure LogPoint on Cortex XSOAR
+## Configure LogPoint in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for LogPoint SIEM Integration.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | LogPoint URL |  | True |
-    | LogPoint Username |  | True |
-    | API Key | User's secret key | True |
-    | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
-    | Use system proxy settings | Whether to use XSOAR’s system proxy settings to connect to the API | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 6 hours, 1 day) | If it is not provided, incidents from past 24 hours will be fetched by default. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Fetch limit (Max value is 200, Recommended value is 50 or less) | If this is left blank, maximum 50 incidents will be fetched at a time. | False |
-    | Incidents Fetch Interval |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| LogPoint URL |  | True |
+| LogPoint Username |  | True |
+| API Key | User's secret key | True |
+| Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
+| Use system proxy settings | Whether to use XSOAR’s system proxy settings to connect to the API | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 6 hours, 1 day) | If it is not provided, incidents from past 24 hours will be fetched by default. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Fetch limit (Max value is 200, Recommended value is 50 or less) | If this is left blank, maximum 50 incidents will be fetched at a time. | False |
+| Incidents Fetch Interval |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lp-get-incidents
 ***
@@ -1140,5 +1136,4 @@ Gets LogPoint search result. Uses the value of search_id as an argument.
 >|---|---|---|---|---|---|
 >| office365 |  |  count() |  col_type count() | office365 | 312 |
 >| filesystem |  |  count() |  col_type count() | filesystem | 3658 |
-
 

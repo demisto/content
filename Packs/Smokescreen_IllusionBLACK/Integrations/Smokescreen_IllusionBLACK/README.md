@@ -2,11 +2,8 @@ Smokescreen IllusionBLACK is a deception-based threat defense platform designed 
 This integration was integrated and tested with version v3.10.7.4 of Smokescreen IllusionBLACK
 ## Permissions
 
-## Configure Smokescreen IllusionBLACK on Cortex XSOAR
+## Configure Smokescreen IllusionBLACK in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Smokescreen IllusionBLACK.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,9 +14,8 @@ This integration was integrated and tested with version v3.10.7.4 of Smokescreen
 | proxy | Use system proxy settings | False |
 | first_fetch | First fetch time for fetching incidents \(2 days, 3 weeks, etc\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### illusionblack-get-ad-decoys
 ***
@@ -571,4 +567,3 @@ Gets a single event by the event ID.
 |attacker.id|attacker.name|attacker.score|attacker.threat_parse_ids|decoy.appliance.id|decoy.appliance.name|decoy.client.id|decoy.client.name|decoy.group|decoy.id|decoy.name|decoy.type|file.name|file.operation|file.operation_string|file.process.command_line|file.process.domain_name|file.process.exit_code|file.process.id|file.process.image_name|file.process.user_name|file.process.user_sid|file.thread_id|id|kill_chain_phase|mitre_ids|record_type|severity|sub_type|threat_parse_ids|timestamp|type|whitelisted|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | NT AUTHORITY\SYSTEM | NT AUTHORITY\SYSTEM | 250 | filetheft_unattend,<br/>lm_file_active_monitoring,<br/>lm_file_open | cmc | CMC | experience | experience | Endpoint | endpoint:admin-pc-001 | admin-pc-001 | endpoint | C:\Users\admin\Desktop\passwords\Passwords.xlsx | 67 | Read |  | NT AUTHORITY | -1 | 2824 | MsMpEng.exe | SYSTEM | S-1-5-18 | 724 | 2020-02-25T09:49:15Z-0950f80f-7571-4382-b4b8-5e04c160c4c0 | Data Theft | T1005 | event | high | file | lm_file_open | 2020-04-12T08:57:01Z | endpoint | false |
-

@@ -1,24 +1,20 @@
 Files and Directories management with an SMB server. Supports SMB2 and SMB3 protocols.
 
-## Configure Server Message Block (SMB) v2 on Cortex XSOAR
+## Configure Server Message Block (SMB) v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Server Message Block (SMB) v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server IP / Hostname (e.g. 1.2.3.4) |  | False |
-    | Port |  | False |
-    | Domain Controller | The domain controller hostname. This is useful for environments with DFS servers as it is used to identify the DFS domain information automatically. | False |
-    | Username |  | False |
-    | Client GUID | The client machine name to identify the client to the server on a new connection. | False |
-    | Force Encryption | Force encryption on the connection, requires SMBv3 or newer on the remote server. Default is "false". | False |
-    | Secure Dialect Negotiation | Validate the negotiation info when connecting to a share. More information can be found on https://docs.microsoft.com/en-us/archive/blogs/openspecification/smb3-secure-dialect-negotiation | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server IP / Hostname (e.g. 1.2.3.4) |  | False |
+| Port |  | False |
+| Domain Controller | The domain controller hostname. This is useful for environments with DFS servers as it is used to identify the DFS domain information automatically. | False |
+| Username |  | False |
+| Client GUID | The client machine name to identify the client to the server on a new connection. | False |
+| Force Encryption | Force encryption on the connection, requires SMBv3 or newer on the remote server. Default is "false". | False |
+| Secure Dialect Negotiation | Validate the negotiation info when connecting to a share. More information can be found on https://docs.microsoft.com/en-us/archive/blogs/openspecification/smb3-secure-dialect-negotiation | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### smb-download
 ***

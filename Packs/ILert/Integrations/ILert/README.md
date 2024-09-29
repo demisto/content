@@ -3,23 +3,19 @@ iLert is a modern uptime platform with advanced on-call and alerting features.
 Alert and notify users using iLert.
 This integration was integrated and tested with API version 1 of iLert.
 
-## Configure iLert on Cortex XSOAR
+## Configure iLert in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for iLert.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | The API key of the alert source (for triggering events only) | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| The API key of the alert source (for triggering events only) | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### iLert-submit-event

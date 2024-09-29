@@ -1,25 +1,21 @@
 Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
-## Configure Cofense Intelligence on Cortex XSOAR
+## Configure Cofense Intelligence in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cofense Intelligence.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., https://www.threathq.com/apiv1) |  | True |
-    | API username |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | URL Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the URL malicious |  | False |
-    | File Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the file malicious |  | False |
-    | IP Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the IP malicious |  | False |
-    | Email Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the email malicious |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://www.threathq.com/apiv1) |  | True |
+| API username |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| URL Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the URL malicious |  | False |
+| File Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the file malicious |  | False |
+| IP Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the IP malicious |  | False |
+| Email Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the email malicious |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### url
 ***
@@ -256,5 +252,4 @@ Searches for extracted strings identified within malware campaigns.
 ``` ```
 
 #### Human Readable Output
-
 

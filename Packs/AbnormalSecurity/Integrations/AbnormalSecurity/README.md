@@ -1,24 +1,20 @@
 Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
 This integration was integrated and tested with version 1.3.0 of Abnormal Security
 
-## Configure Abnormal Security on Cortex XSOAR
+## Configure Abnormal Security in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Abnormal Security.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                         | **Required** |
-    | ----------------------------------------------------- | ------------ |
-    | Server URL (e.g. https://api.abnormalplatform.com/v1) | True         |
-    | API Key                                               | True         |
-    | Trust any certificate (not secure)                    | False        |
-    | Use system proxy settings                             | False        |
+| **Parameter**                                         | **Required** |
+| ----------------------------------------------------- | ------------ |
+| Server URL (e.g. https://api.abnormalplatform.com/v1) | True         |
+| API Key                                               | True         |
+| Trust any certificate (not secure)                    | False        |
+| Use system proxy settings                             | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### abnormal-security-check-case-action-status

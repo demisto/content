@@ -1,26 +1,22 @@
 Use this integration to fetch audit logs from Keeper Security Admin Console as XSIAM events.
 This integration was integrated and tested with version 16.11.8 of Keeper Commander.
 
-## Configure Keeper Secrets Manager Event Collector on Cortex XSOAR
+## Configure Keeper Secrets Manager Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Keeper Secrets Manager Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | The server URL. For more help, checkout the 'Server Regions' section in the description. | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch. |  |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The server URL. For more help, checkout the 'Server Regions' section in the description. | True |
+| Username |  | True |
+| Password |  | True |
+| Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch. |  |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### keeper-security-register-start

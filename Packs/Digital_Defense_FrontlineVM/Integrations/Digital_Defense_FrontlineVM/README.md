@@ -1,10 +1,7 @@
 Use the Digital Defense Frontline VM to identify and evaluate the security and business risks of network devices and applications deployed as premise, cloud, or hybrid network-based implementations.
 This integration was integrated and tested with version 6.2.4 of Digital Defense FrontlineVM
-## Configure Digital Defense FrontlineVM on Cortex XSOAR
+## Configure Digital Defense FrontlineVM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Digital Defense FrontlineVM.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,9 +13,8 @@ This integration was integrated and tested with version 6.2.4 of Digital Defense
 | incidentSeverity | Minimum vulnerability severity for fetching incidents | False |
 | incidentFrequency | Rate at which to check vulnerability events when fetching incidents | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### frontline-get-assets
 ***
@@ -135,5 +131,4 @@ Performs a scan on the specified asset.
 ``` ```
 
 #### Human Readable Output
-
 
