@@ -498,7 +498,7 @@ inputs:
 - key: MaliciousIPs
   value: {}
   required: false
-  description: 'An array of malicious IPs to block. Enter a comma-separated list of IPs (i.e.: 1.1.1.1,2.2.2.2).'
+  description: 'IP or list of IPs.'
   playbookInputQuery:
 inputSections:
 - inputs:

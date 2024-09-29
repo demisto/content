@@ -35,7 +35,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MaliciousIPs | An array of malicious IPs to block. Enter a comma-separated list of IPs \(i.e.: 1.1.1.1,2.2.2.2\). |  | Optional |
+| MaliciousIPs | IP or list of IPs. |  | Optional |
 
 ## Playbook Outputs
 
