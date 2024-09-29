@@ -29,6 +29,7 @@ def client():
 
 """ TEST HELPER FUNCTIONS """
 
+
 @freeze_time("2024-09-24 11:25:31 UTC")
 def test_arg_to_timestamp():
     assert (
