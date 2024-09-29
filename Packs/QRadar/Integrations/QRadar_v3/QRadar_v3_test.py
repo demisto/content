@@ -1714,7 +1714,7 @@ def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandRes
 
 
 @pytest.mark.parametrize('id', [(0), (None)])
-def test_get_resource(mocker, id: int | None):
+def test_get_resource(mocker, id):
     """
     Given:
         - An existing ID or None.
@@ -1945,6 +1945,34 @@ def test_qradar_reference_set_value_upsert_command_quiet_mode(mocker, quiet_mode
     mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
 
     result = qradar_reference_set_value_upsert_command(args, client=client, params={"api_version": "17.0"})
+
+    assert all("Name" in i for i in result.outputs)
+    assert all("Data" not in i for i in result.outputs) or not quiet_mode
+    assert "data" in result.raw_response
+
+
+@pytest.mark.parametrize('quiet_mode', [False, True])
+def test_qradar_indicators_upload_command_quiet_mode(mocker, quiet_mode):
+    """
+    Given:
+        - A reference set with data
+    When:
+        - Running qradar-indicators-upload with quiet_mode, once set to true and once to false
+        - The polling status is "completed" (i.e. the results should be returned in the current interval)
+    Then:
+        - Ensure the command does not output the reference set data iff quiet_mode=true
+        - Ensure the data is always in the raw response
+    """
+    args = {"ref_name": "test_ref", "quiet_mode": quiet_mode, "task_id": "test"}
+
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
+    mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version",
+                        return_value={"iocs": [{"value": "test", "indicator_type":"ip"}]})
+    mock_response = command_test_data["reference_set_bulk_load"]['response'] | {"data": ["some_data"]}
+    mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
+
+    result = qradar_indicators_upload_command(args, client=client, params={"api_version": "17.0"})
 
     assert all("Name" in i for i in result.outputs)
     assert all("Data" not in i for i in result.outputs) or not quiet_mode
