@@ -3049,7 +3049,7 @@ script:
       description: The action ID.
       type: String
   - arguments:
-    - description: The agent ID
+    - description: The agent ID.
       name: agent_id
       isArray: false
       required: true
