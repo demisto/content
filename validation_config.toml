@@ -16,7 +16,7 @@ ignorable_errors = [
     "PR101",
     "LO107",
     "DB100",
-    "GR103",
+    "GR103", "GR107"
 ]
 
 
@@ -46,7 +46,8 @@ select = [
     "LO107",
     "GR104", "GR106",
     "CR102",
-    "PR101"
+    "PR101",
+    "ST110"
 ]
 
 warning = ["DS107"]
@@ -74,7 +75,8 @@ select = [
     "LO107",
     "GR100", "GR104",
     "CR102",
-    "PR101"
+    "PR101",
+    "ST110"
 ]
 warning = ["RM108"]
 
