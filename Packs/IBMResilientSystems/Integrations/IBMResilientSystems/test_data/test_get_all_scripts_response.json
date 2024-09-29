@@ -1,0 +1,34 @@
+{
+    "entities": [
+        {
+            "id": 1,
+            "name": "Sample script: process inbound email (v35)",
+            "description": "This script processes inbound emails.",
+            "language": "python",
+            "object_type": 13,
+            "uuid": "0000-0000-0000-0000-0000",
+            "actions": [],
+            "tags": []
+        },
+        {
+            "id": 3,
+            "name": "test-script",
+            "description": "Testing",
+            "language": "python",
+            "object_type": 0,
+            "uuid": "0000-0000-0000-0000-0000",
+            "actions": [],
+            "tags": []
+        },
+        {
+            "id": 4,
+            "name": "test-script-2",
+            "description": "Testing 2",
+            "language": "python",
+            "object_type": 13,
+            "uuid": "0000-0000-0000-0000-0000",
+            "actions": [],
+            "tags": []
+        }
+    ]
+}
