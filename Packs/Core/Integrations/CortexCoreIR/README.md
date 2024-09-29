@@ -2818,7 +2818,7 @@ Initiates a new endpoint script execution action using a script from the script 
 ### core-terminate-process
 
 ***
-Terminate a process by it's instance id.
+Terminate a process by its instance ID.
 
 #### Base Command
 
@@ -2828,11 +2828,11 @@ Terminate a process by it's instance id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | The agent id. | Required | 
-| instance_id | The instance id. | Required | 
+| agent_id | The agent ID. | Required | 
+| instance_id | The instance ID. | Required | 
 | process_name | The process name. | Optional | 
-| incident_id | The incident id. | Optional | 
-| action_id | For polling use. | Optional | 
+| incident_id | The incident ID. | Optional | 
+| action_id | The action ID. For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
 
@@ -2840,11 +2840,11 @@ Terminate a process by it's instance id.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.TerminateProcess.action_id | String | The action id. | 
+| Core.TerminateProcess.action_id | String | The action ID. | 
 ### core-terminate-causality
 
 ***
-Stops a process by it's causality id.
+Stops a process by its causality ID.
 
 ##### Command Example
 
@@ -2871,11 +2871,11 @@ Stops a process by it's causality id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | The agent id. | Required | 
-| causality_id | The causality id. | Required | 
+| agent_id | The agent ID. | Required | 
+| causality_id | The causality ID. | Required | 
 | process_name | The process name. | Optional | 
-| incident_id | The incident id. | Optional | 
-| action_id | For polling use. | Optional | 
+| incident_id | The incident ID. | Optional | 
+| action_id | The action ID. For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
 

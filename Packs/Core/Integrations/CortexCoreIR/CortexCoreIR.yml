@@ -3017,11 +3017,11 @@ script:
       description: Timestamp in which the retrieved files will be deleted from the server.
       type: Date
   - arguments:
-    - description: The agent id.
+    - description: The agent ID.
       name: agent_id
       isArray: false
       required: true
-    - description: The instance id.
+    - description: The instance ID.
       name: instance_id
       isArray: true
       required: true
@@ -3029,11 +3029,11 @@ script:
       name: process_name
       isArray: false
       required: false
-    - description: The incident id.
+    - description: The incident ID.
       name: incident_id
       isArray: false
       required: false
-    - description: For polling use.
+    - description: The action ID. For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -3042,18 +3042,18 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-process
-    description: Terminate a process by it's instance id. Available only for XSIAM 2.4.
+    description: Terminate a process by its instance ID. Available only for XSIAM 2.4.
     polling: true
     outputs:
     - contextPath: Core.TerminateProcess.action_id
-      description: The action id.
+      description: The action ID.
       type: String
   - arguments:
-    - description: The agent id.
+    - description: The agent ID
       name: agent_id
       isArray: false
       required: true
-    - description: The causality id.
+    - description: The causality ID.
       name: causality_id
       isArray: true
       required: true
@@ -3061,11 +3061,11 @@ script:
       name: process_name
       isArray: false
       required: false
-    - description: The incident id.
+    - description: The incident ID.
       name: incident_id
       isArray: false
       required: false
-    - description: For polling use.
+    - description: The action ID. For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -3074,7 +3074,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-causality
-    description: Terminate a process tree by it's causality id. Available only for XSIAM 2.4.
+    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
     polling: true
     outputs:
     - contextPath: Core.TerminateCausality.action_id
