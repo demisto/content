@@ -4251,10 +4251,10 @@ def test_terminate_process_command(mocker):
     mocker.patch.object(demisto, "_apiCall", side_effect=[
         {'name': '/api/webapp/public_api/v1/endpoints/terminate_process',
          'status': 200,
-         'data': json.dumps({'reply':{'group_action_id': 1}})},
+         'data': json.dumps({'reply': {'group_action_id': 1}})},
         {'name': '/api/webapp/public_api/v1/endpoints/terminate_process',
          'status': 200,
-         'data': json.dumps({'reply':{'group_action_id': 2}})}
+         'data': json.dumps({'reply': {'group_action_id': 2}})}
     ]
     )
 
@@ -4284,10 +4284,10 @@ def test_terminate_causality_command(mocker):
     mocker.patch.object(demisto, "_apiCall", side_effect=[
         {'name': '/api/webapp/public_api/v1/endpoints/terminate_causality',
          'status': 200,
-         'data': json.dumps({'reply':{'group_action_id': 1}})},
+         'data': json.dumps({'reply': {'group_action_id': 1}})},
         {'name': '/api/webapp/public_api/v1/endpoints/terminate_causality',
          'status': 200,
-         'data': json.dumps({'reply':{'group_action_id': 2}})}
+         'data': json.dumps({'reply': {'group_action_id': 2}})}
     ]
     )
 
