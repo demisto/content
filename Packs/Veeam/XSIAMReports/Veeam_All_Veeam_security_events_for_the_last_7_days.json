@@ -30,13 +30,8 @@
                   "type": "Custom XQL",
                   "width": 50,
                   "height": 324,
-                  "params": [
-                    {
-                      "name": "vbr_hosts",
-                      "value": "*"
-                    }
-                  ],
-                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter _status=if(\r\n    _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n    _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\",\r\n    _instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), \"Medium\",\r\n    _instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), \"Information\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId ) as _count by _status\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _status yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
+                  "params": [],
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter _status=if(\r\n    _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n    _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\",\r\n    _instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), \"Medium\",\r\n    _instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), \"Information\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId ) as _count by _status\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _status yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
                   "time_frame": { "relativeTime": 604800000 },
                   "viewOptions": {
                     "type": "pie",
@@ -96,13 +91,8 @@
                   "type": "Custom XQL",
                   "width": 50,
                   "height": 324,
-                  "params": [
-                    {
-                      "name": "vbr_hosts",
-                      "value": "*"
-                    }
-                  ],
-                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
+                  "params": [],
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
                   "time_frame": { "relativeTime": 604800000 },
                   "viewOptions": {
                     "type": "single",
@@ -136,13 +126,8 @@
                   "type": "Custom XQL",
                   "width": 50,
                   "height": 324,
-                  "params": [
-                    {
-                      "name": "vbr_hosts",
-                      "value": "*"
-                    }
-                  ],
-                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42220\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
+                  "params": [],
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42220\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
                   "time_frame": { "relativeTime": 604800000 },
                   "viewOptions": {
                     "type": "single",
@@ -171,13 +156,8 @@
                   "type": "Custom XQL",
                   "width": 50,
                   "height": 324,
-                  "params": [
-                    {
-                      "name": "vbr_hosts",
-                      "value": "*"
-                    }
-                  ],
-                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
+                  "params": [],
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
                   "time_frame": { "relativeTime": 604800000 },
                   "viewOptions": {
                     "type": "single",
@@ -238,13 +218,8 @@
         "creation_time": 1727085304736,
         "description": "The total amount of Veeam Backup & Replication security events.",
         "data": {
-          "params": [
-            {
-              "name": "vbr_hosts",
-              "value": "*"
-            }
-          ],
-          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter _status=if(\r\n    _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n    _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\",\r\n    _instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), \"Medium\",\r\n    _instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), \"Information\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId ) as _count by _status\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _status yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
+          "params": [],
+          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\",\"42220\",\"25500\",\"26100\",\"28100\",\"28970\",\"29800\",\"30100\",\"30400\",\"31500\",\"31600\",\"31700\",\"31800\",\"31900\",\"40204\",\"40400\",\"40500\",\"40600\",\"42260\",\"42270\",\"42302\",\"23090\",\"23420\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"28980\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"41402\",\"115\",\"31210\",\"31400\",\"40201\",\"40205\",\"40206\",\"41610\",\"41800\",\"41810\",\"42230\",\"42301\",\"42401\",\"42402\",\"42404\",\"42405\",\"21224\",\"26110\",\"31200\",\"36013\",\"42210\",\"42403\",\"42500\",\"27000\",\"24060\",\"24030\",\"24050\",\"24070\",\"24040\",\"42290\")\r\n| alter _status=if(\r\n    _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n    _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\",\r\n    _instanceId in (\"24040\",\"24060\",\"24070\",\"26100\",\"26110\",\"28100\",\"28970\",\"29800\",\"31210\",\"36013\",\"40500\"), \"Medium\",\r\n    _instanceId in (\"24020\",\"30400\",\"30500\",\"31500\",\"31600\",\"41610\",\"42210\",\"42230\",\"42270\",\"42404\",\"42500\"), \"Information\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId ) as _count by _status\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _status yaxis = _count valuecolor(\"Critical\",\"#D10000\") valuecolor(\"High\",\"#FF8F2E\") valuecolor(\"Medium\",\"#0084D1\") valuecolor(\"Information\",\"#00D15F\") ",
           "time_frame": { "relativeTime": 86400000 },
           "viewOptions": {
             "type": "pie",
@@ -310,13 +285,8 @@
         "creation_time": 1727085304545,
         "description": "The total amount of Veeam Backup & Replication objects marked as Infected.",
         "data": {
-          "params": [
-            {
-              "name": "vbr_hosts",
-              "value": "*"
-            }
-          ],
-          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42220\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
+          "params": [],
+          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42220\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
           "time_frame": { "relativeTime": 86400000 },
           "viewOptions": {
             "type": "single",
@@ -351,13 +321,8 @@
         "creation_time": 1727085304626,
         "description": "The total amount of Veeam Backup & Replication objects marked as Suspicious.",
         "data": {
-          "params": [
-            {
-              "name": "vbr_hosts",
-              "value": "*"
-            }
-          ],
-          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
+          "params": [],
+          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"41600\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
           "time_frame": { "relativeTime": 86400000 },
           "viewOptions": {
             "type": "single",
@@ -392,13 +357,8 @@
         "creation_time": 1727085303502,
         "description": "The total amount of Veeam Backup & Replication four-eyes authorization events.",
         "data": {
-          "params": [
-            {
-              "name": "vbr_hosts",
-              "value": "*"
-            }
-          ],
-          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($vbr_hosts)\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
+          "params": [],
+          "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"42402\")\r\n| alter _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp count(_instanceId) as _count\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _count ",
           "time_frame": { "relativeTime": 86400000 },
           "viewOptions": {
             "type": "single",
