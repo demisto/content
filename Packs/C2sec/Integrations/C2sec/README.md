@@ -94,7 +94,7 @@
 <pre>!irisk-add-domain newscan=false domain=demisto.com</pre>
 <h5>
 <a id="Human_Readable_Output_52"></a>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/61213135-cf3f7780-a70c-11e9-8a13-09c6f2701b43.png" alt="image"></p>
+<p><img src="../../doc_files/61213135-cf3f7780-a70c-11e9-8a13-09c6f2701b43.png" alt="image"></p>
 <h3 id="h_93a605e6-1ab9-4349-80c9-5968792eea44">
 <a id="2_Get_the_status_of_a_scan_56"></a>2. Get the status of a scan</h3>
 <hr>
@@ -165,7 +165,7 @@
 <pre>!irisk-get-scan-status id=1247</pre>
 <h5>
 <a id="Human_Readable_Output_83"></a>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/61213344-758b7d00-a70d-11e9-8f4d-57227824201b.png" alt="image"></p>
+<p><img src="../../doc_files/61213344-758b7d00-a70d-11e9-8f4d-57227824201b.png" alt="image"></p>
 <h3 id="h_b8bb719e-d7a3-4032-8827-e358b59f6288">
 <a id="3_Rescan_a_domain_87"></a>3. Re-scan a domain</h3>
 <hr>
@@ -226,7 +226,7 @@
 <pre>!irisk-rescan-domain domain=demisto.com</pre>
 <h5>
 <a id="Human_Readable_Output_112"></a>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/61213321-6278ad00-a70d-11e9-8d2d-7e05f7c5e955.png" alt="image"></p>
+<p><img src="../../doc_files/61213321-6278ad00-a70d-11e9-8d2d-7e05f7c5e955.png" alt="image"></p>
 <h3 id="h_cc2d5cfe-b44d-4489-a1cb-df741e9d682d">
 <a id="4_Get_the_issues_for_a_domain_116"></a>4. Get the issues for a domain</h3>
 <hr>
@@ -317,7 +317,7 @@
 <pre>!irisk-get-domain-issues domain=google.com</pre>
 <h5>
 <a id="Human_Readable_Output_147"></a>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/61213286-496ffc00-a70d-11e9-97dc-ad932cad733c.png" alt="image"></p>
+<p><img src="../../doc_files/61213286-496ffc00-a70d-11e9-97dc-ad932cad733c.png" alt="image"></p>
 <h3 id="h_496fd318-3fe1-49d8-b03a-51ba5bbbbed1">
 <a id="5_Get_the_results_of_a_scan_150"></a>5. Get the results of a scan</h3>
 <hr>
@@ -458,4 +458,4 @@
 <pre>!irisk-get-scan-results component=application domain=demisto.com</pre>
 <h5>
 <a id="Human_Readable_Output_191"></a>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/61213200-06ae2400-a70d-11e9-93b0-d7fd5ff7a763.png" alt="image"></p>
+<p><img src="../../doc_files/61213200-06ae2400-a70d-11e9-93b0-d7fd5ff7a763.png" alt="image"></p>
