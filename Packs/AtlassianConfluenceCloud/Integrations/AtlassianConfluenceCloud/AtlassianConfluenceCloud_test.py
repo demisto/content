@@ -1,10 +1,9 @@
-import io
 
 import pytest
 from pytest_mock import MockerFixture
 
 from CommonServerPython import *
-from AtlassianConfluenceCloud import Client, URL_SUFFIX, MESSAGES, PAGE_SIZE, fetch_events, get_events
+from AtlassianConfluenceCloud import Client, URL_SUFFIX, MESSAGES, AUDIT_FETCH_PAGE_SIZE, fetch_events, get_events
 from test_data import input_data
 
 BASE_URL = "https://dummy.atlassian.com"
@@ -13,7 +12,7 @@ client = Client(BASE_URL, True, False, headers={"Accept": "application/json"}, a
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -105,7 +104,7 @@ def test_confluence_cloud_group_list_command_when_valid_response_is_returned(req
     requests_mock.get(BASE_URL + URL_SUFFIX["GROUP"], json=expected_response)
     expected_context_output = util_load_json(os.path.join("test_data", "group/group_list_command_context.json"))
 
-    with open(os.path.join("test_data", "group/group_list_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "group/group_list_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -236,7 +235,7 @@ def test_confluence_cloud_content_create_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_command_context.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -287,7 +286,7 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_object_not_present.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -320,7 +319,7 @@ def test_confluence_cloud_comment_create_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "comment_create"
                                                                        "/comment_create_command_context.json"))
 
-    with open(os.path.join("test_data", "comment_create/comment_create_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "comment_create/comment_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -369,7 +368,7 @@ def test_confluence_cloud_user_list_command_when_valid_response_is_returned(requ
     requests_mock.get(BASE_URL + URL_SUFFIX["USER"], json=expected_response, status_code=200)
     expected_context_output = util_load_json("test_data/User/user_list_command_context.json")
 
-    with open("test_data/User/user_list_command.md", 'r') as f:
+    with open("test_data/User/user_list_command.md") as f:
         expected_readable_output = f.read()
 
     args = {
@@ -438,7 +437,7 @@ def test_confluence_cloud_content_search_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "content_search/"
                                                                        "content_search_command_context.json"))
 
-    with open(os.path.join("test_data", "content_search/content_search_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_search/content_search_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -534,7 +533,7 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
     expected_context_output = util_load_json(os.path.join("test_data", "content_list/"
                                                                        "content_list_command_context.json"))
 
-    with open(os.path.join("test_data", "content_list/content_list_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_list/content_list_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -611,7 +610,7 @@ def test_confluence_cloud_space_create_command_when_valid_response_is_returned(r
     expected_context_output = util_load_json(os.path.join("test_data", "space_create"
                                                                        "/space_create_command_context.json"))
 
-    with open(os.path.join("test_data", "space_create/space_create_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "space_create/space_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -698,7 +697,7 @@ def test_confluence_cloud_space_list_command_when_valid_response_is_returned(req
     requests_mock.get(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
     expected_context_output = util_load_json(os.path.join("test_data", "space_list/space_list_command_context.json"))
 
-    with open(os.path.join("test_data", "space_list/space_list_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "space_list/space_list_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -772,7 +771,7 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_command_context.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -825,7 +824,7 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_object_not_present.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -860,7 +859,7 @@ def test_confluence_cloud_comment_create_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "comment_create"
                                                                        "/comment_create_object_not_present.json"))
 
-    with open(os.path.join("test_data", "comment_create/comment_create_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "comment_create/comment_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -895,7 +894,7 @@ def test_confluence_cloud_space_list_command_when_key_not_present(requests_mock)
                                                                        "/space_list_command_key_not_present_context"
                                                                        ".json"))
 
-    with open(os.path.join("test_data", "space_list/space_list_command_key_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "space_list/space_list_command_key_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -930,7 +929,7 @@ def test_confluence_cloud_content_search_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "content_search"
                                                                        "/content_search_object_not_present_context.json"))
 
-    with open(os.path.join("test_data", "content_search/content_search_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_search/content_search_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -962,7 +961,7 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
     expected_context_output = util_load_json(os.path.join("test_data", "content_list/"
                                                                        "content_list_object_not_present_context.json"))
 
-    with open(os.path.join("test_data", "content_list/content_list_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_list/content_list_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -986,56 +985,47 @@ def test_fetch_events_first_run_no_links(mocker: MockerFixture):
     """
     Given:
         - First time running fetch_events (last_run is empty)
-        - There are events to fetch
         - There is only one page (there is no next link after the first api call)
     When:
         - The fetch_events function is called with an empty last_run dictionary and a fetch_limit of 100
     Then:
         - Ensure the events are returned
-        - Ensure the end_date is returned correctly
+        - Ensure the last_run object is set correctly
         - Ensure client.search_events is called with the correct arguments
     """
-    last_run = {}
     fetch_limit = 100
     response = collector_test_data['get-audit-records-no-links']
 
     # mock values
     mock_time = 1680000000
+    mocker.patch('demistomock.getLastRun', return_value={})
     mocker.patch('time.time', return_value=mock_time)
     mock_search = mocker.patch.object(client, 'search_events', return_value=response)
+    mock_set_last_run = mocker.patch('demistomock.setLastRun')
 
     # expected values
-    expected_end_date = (mock_time - 5)*1000
+    expected_end_date = (mock_time - 5) * 1000
     expected_start_date = expected_end_date - 60000
 
     # call
-    fetch = fetch_events(client, last_run, fetch_limit)
-    actual_events, actual_next_link, actual_end_date = next(fetch)
+    fetch = fetch_events(client, fetch_limit)
+    actual_events = next(fetch)
     # assertions
-    mock_search.assert_called_with(limit=PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    mock_set_last_run.assert_called_with({'next_link': None, 'end_date': actual_events[-1]['creationDate']})
     assert actual_events == response['results']
-    assert not actual_next_link
-    assert actual_end_date == expected_end_date
-
-    actual_events, actual_next_link, actual_end_date = next(fetch)
-    assert actual_events == []
-    assert not actual_next_link
-    assert actual_end_date == expected_end_date
 
 
 def test_fetch_events_first_run_with_links(mocker: MockerFixture):
     """
     Given:
         - First time running fetch_events (last_run is empty)
-        - There are events to fetch
         - There is more than one page
     When:
         - The fetch_events function is called with an empty last_run dictionary and a fetch_limit of 100
-
     Then:
         - Ensure the events are returned
-        - Ensure the next_link is calculated correctly
-        - Ensure the end_date is returned correctly
+        - Ensure the last_run object is set correctly
         - Ensure calling to client.search_events with the correct arguments
     """
     fetch_limit = 100
@@ -1044,42 +1034,41 @@ def test_fetch_events_first_run_with_links(mocker: MockerFixture):
     # mock values
     mock_time = 1680000000
     mocker.patch('time.time', return_value=mock_time)
+    mocker.patch('demistomock.getLastRun', return_value={})
     mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
+    mock_set_last_run = mocker.patch('demistomock.setLastRun')
 
     # expected values
-    expected_end_date = (mock_time - 5)*1000
+    expected_end_date = (mock_time - 5) * 1000
     expected_start_date = expected_end_date - 60000
 
     # call
-    fetch = fetch_events(client, {}, fetch_limit)
-    actual_events, actual_next_link, actual_end_date = next(fetch)
+    fetch = fetch_events(client, fetch_limit)
+    actual_events = next(fetch)
+    first_page_len = len(actual_events)
 
     # assertions
-    mock_search.assert_called_with(limit=PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
     assert actual_events == first_page_response['results']
-    assert actual_next_link == first_page_response['_links']['next']
-    assert actual_end_date == expected_end_date
+    mock_set_last_run.assert_called_with({
+        'next_link': first_page_response['_links']['next'],
+        'end_date': actual_events[-1]['creationDate']
+    })
 
     # mock values
     second_page_response = collector_test_data['get-audit-records-no-links']
     mock_search = mocker.patch.object(client, 'search_events', return_value=second_page_response)
 
     # call
-    actual_events, actual_next_link, actual_end_date = next(fetch)
+    actual_events = next(fetch)
 
     # assertions
-    mock_search.assert_called_with(limit=PAGE_SIZE, next_link=first_page_response['_links']['next'])
+    mock_search.assert_called_with(limit=fetch_limit - first_page_len, next_link=first_page_response['_links']['next'])
     assert actual_events == second_page_response['results']
-    assert not actual_next_link
-    assert actual_end_date == expected_end_date
-
-    # call
-    actual_events, actual_next_link, actual_end_date = next(fetch)
-
-    # assertions
-    assert actual_events == []
-    assert not actual_next_link
-    assert actual_end_date == expected_end_date
+    mock_set_last_run.assert_called_with({
+        'next_link': None,
+        'end_date': actual_events[-1]['creationDate']
+    })
 
 
 def test_fetch_events_fetch_limit_reached_no_link(mocker: MockerFixture):
@@ -1090,9 +1079,7 @@ def test_fetch_events_fetch_limit_reached_no_link(mocker: MockerFixture):
         - The fetch limit is reached
         - The last response had no next link
     Then:
-        - Ensure only the events within the fetch limit are returned
-        - Ensure the next_link is calculated correctly
-        - Ensure the end_date is returned correctly
+        - search_events is called with the correct page_size
     """
     fetch_limit = 1
     first_page_response = collector_test_data['get-audit-records-no-links']
@@ -1105,71 +1092,9 @@ def test_fetch_events_fetch_limit_reached_no_link(mocker: MockerFixture):
     # expected values
     expected_end_date = (mock_time - 5) * 1000
     expected_start_date = expected_end_date - 60000
-    expected_event = first_page_response['results'][:fetch_limit]
-    expected_next_link = URL_SUFFIX['NEXT_LINK_TEMPLATE'].format(expected_end_date, PAGE_SIZE, fetch_limit, expected_start_date)
 
-    # call
-    fetch = fetch_events(client, {}, fetch_limit)
-    actual_events, actual_next_link, actual_end_date = next(fetch)
-
-    # assertions
-    mock_search.assert_called_with(limit=PAGE_SIZE, start_date=str(expected_start_date),end_date=str(expected_end_date))
-    assert actual_events == expected_event
-    assert actual_next_link == expected_next_link
-    assert actual_end_date == expected_end_date
-
-    # call
-    actual_events, actual_next_link, actual_end_date = next(fetch)
-
-    # assertions
-    assert actual_events == []
-    assert actual_next_link == expected_next_link
-    assert actual_end_date == expected_end_date
-
-
-def test_fetch_events_fetch_limit_reached_with_link(mocker: MockerFixture):
-    """
-    Given:
-        - Running fetch_events with a fetch limit of 1
-    When:
-        - The fetch limit is reached
-        - The last response had no next link
-    Then:
-        - Ensure only the events within the fetch limit are returned
-        - Ensure the next_link is calculated correctly
-        - Ensure the end_date is returned correctly
-    """
-    fetch_limit = 1
-    first_page_response = collector_test_data['get-audit-records-with-links']
-
-    # mock values
-    mock_time = 1680000000
-    mocker.patch('time.time', return_value=mock_time)
-    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
-
-    # expected values
-    expected_end_date = (mock_time - 5) * 1000
-    expected_start_date = expected_end_date - 60000
-    expected_event = first_page_response['results'][:fetch_limit]
-    expected_next_link = first_page_response['_links']['next'].replace('start=2000', f'start={fetch_limit}')
-
-    # call
-    fetch = fetch_events(client, {}, fetch_limit)
-    actual_events, actual_next_link, actual_end_date = next(fetch)
-
-    # assertions
-    mock_search.assert_called_with(limit=PAGE_SIZE, start_date=str(expected_start_date),end_date=str(expected_end_date))
-    assert actual_events == expected_event
-    assert actual_next_link == expected_next_link
-    assert actual_end_date == expected_end_date
-
-    # call
-    actual_events, actual_next_link, actual_end_date = next(fetch)
-
-    # assertions
-    assert actual_events == []
-    assert actual_next_link == expected_next_link
-    assert actual_end_date == expected_end_date
+    next(fetch_events(client, fetch_limit))
+    mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
 
 
 def test_fetch_events_cleanup_no_link(mocker: MockerFixture):
@@ -1180,66 +1105,37 @@ def test_fetch_events_cleanup_no_link(mocker: MockerFixture):
         - There are events to fetch
         - The cleanup call returns the last page
     Then:
-        - Ensure the events are returned
-        - Ensure the end_date is returned correctly
         - Ensure client.search_events is called with the correct arguments
     """
-    last_run = {"next_link": "/rest/api/audit/?end_date=1680000000000&next=true&limit=1000&start=2000&startDate=1679999940000"}
+    last_run = {"next_link": "/rest/api/audit/?next=true"}
     fetch_limit = 100
     first_page_response = collector_test_data['get-audit-records-no-links']
-    second_page_response = collector_test_data['get-audit-records-with-links']
 
     # mock values
     mock_time = 1680000000
     mocker.patch('time.time', return_value=mock_time)
+    mocker.patch('demistomock.getLastRun', return_value=last_run)
     mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
 
     # expected values
     expected_end_date = (mock_time - 5) * 1000
     expected_start_date = expected_end_date - 60000
-    expected_events = first_page_response['results'] + second_page_response['results']
 
     # call
-    fetch = fetch_events(client, last_run, fetch_limit)
-    actual_events, actual_next_link, actual_end_date = next(fetch)
+    fetch = fetch_events(client, fetch_limit)
+    first_events = next(fetch)
+    mock_search.assert_called_with(limit=fetch_limit, next_link=last_run['next_link'])
 
-    # assertions
-    mock_search.assert_has_calls([
-        mocker.call(limit=PAGE_SIZE, next_link=last_run['next_link']),
-        mocker.call(limit=PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date))
-    ])
+    # mock values
+    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
 
-    assert actual_events == expected_events
-    assert not actual_next_link
-    assert actual_end_date == expected_end_date
-
-
-def test_fetch_events_no_more_events(mocker: MockerFixture):
-    """
-    Given:
-        - Running fetch_events when there are no more events to fetch
-
-    When:
-        - next_link is None
-
-    Then:
-        - Ensure empty lists are returned for events and next_link
-        - Ensure the end_date is returned correctly
-    """
-    last_run = {}
-    fetch_limit = 100
-    empty_results_page = collector_test_data['get-empty-audit-records']
-    mock_time = 1680000000
-    mocker.patch('time.time', return_value=mock_time)
-    mocker.patch.object(client, 'search_events', return_value=empty_results_page)
-
-    generator = fetch_events(client, last_run, fetch_limit)
-    next(generator)
-    actual_events, actual_next_link, actual_end_date = next(generator)
-
-    assert actual_events == []
-    assert actual_next_link is None
-    assert actual_end_date == (mock_time-5)*1000
+    # call
+    next(fetch)
+    mock_search.assert_called_with(
+        limit=fetch_limit - len(first_events),
+        end_date=str(expected_end_date),
+        start_date=str(expected_start_date)
+    )
 
 
 def test_get_events_default_values(mocker: MockerFixture):
@@ -1272,8 +1168,8 @@ def test_get_events_default_values(mocker: MockerFixture):
     # assertions
     assert actual_events == expected_events
     mock_search.assert_has_calls([
-        mocker.call(limit=PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date)),
-        mocker.call(limit=PAGE_SIZE, next_link=expected_next_link)
+        mocker.call(limit=AUDIT_FETCH_PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date)),
+        mocker.call(limit=AUDIT_FETCH_PAGE_SIZE, next_link=expected_next_link)
     ])
 
 
@@ -1295,7 +1191,7 @@ def test_get_events_with_arguments(mocker: MockerFixture):
     actual_events, _ = get_events(client, args)
 
     assert actual_events == mocked_response['results']
-    mocked_search.assert_called_once_with(limit=PAGE_SIZE, start_date="1670000000", end_date="1680000000")
+    mocked_search.assert_called_once_with(limit=AUDIT_FETCH_PAGE_SIZE, start_date="1670000000", end_date="1680000000")
 
 
 def test_get_events_with_arguments_with_limit(mocker: MockerFixture):
@@ -1316,4 +1212,3 @@ def test_get_events_with_arguments_with_limit(mocker: MockerFixture):
     actual_events, _ = get_events(client, args)
 
     assert actual_events == mocked_response['results'][:args['limit']]
-    mocked_search.assert_called_once_with(limit=PAGE_SIZE, start_date="1670000000", end_date="1680000000")
