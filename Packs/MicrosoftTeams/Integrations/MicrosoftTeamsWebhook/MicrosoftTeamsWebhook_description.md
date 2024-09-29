@@ -1,9 +1,9 @@
-Use the Microsoft Teams Webhook integration to send messages and notifications to Teams configured with an incoming webhook.  The message will always include a link back to the investigation from which it was sent.
+Use the Microsoft Teams Webhook integration to send messages and notifications to Teams configured with an incoming webhook or a workflow.  When using an adaptive card, the message will always include a link back to the investigation from which it was sent.
 ​
 ## Create a workflow in Microsoft Teams.
 First, [Install the Workflows app in Microsoft Teams](https://learn.microsoft.com/en-us/power-automate/teams/install-teams-app).<br/>
 Second, [Browse and add workflows in Microsoft Teams Create a workflow to support Teams Webhook](https://support.microsoft.com/en-us/office/browse-and-add-workflows-in-microsoft-teams-4998095c-8b72-4b0e-984c-f2ad39e6ba9a). <br/>
-Create a workflow with template `Post to a channel when a webhook request is received`.<br/>
+Create a workflow of type `Post to a channel when a webhook request is received` and follow the set up instructions.<br/>
 In order to create an instance of the Microsoft Teams Webhook in Cortex XSOAR, complete the following:
 ​
 1. Add an instance of the integration and add the Workflow URL for the Teams channel.
