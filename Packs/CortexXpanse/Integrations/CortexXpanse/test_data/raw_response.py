@@ -1577,7 +1577,7 @@ INCIDENT_GET_RAW = {
                     "country_codes": "RU",
                     "cloud_providers": "On Prem",
                     "ipv4_addresses": "1.1.1.1",
-                    "ipv6_addresses": null,
+                    "ipv6_addresses": "1111:2222:33333:4444:5555:6666:7777:8888",
                     "domain_names": "acme.com",
                     "service_ids": "8b4ea64b-e3da-3942-9fdd-aaa5289cfdc1",
                     "website_ids": null,

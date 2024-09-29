@@ -196,7 +196,7 @@ def test_query_logs_command_transform_results_1():
     cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_xformed.json')
 
     class MockClient():
-        def query_loggings(self, query):
+        def query_loggings(self, query, page_number=None, page_size=None):
             return cdl_records, []
 
     # test 1, with no transform_results options, should transform to common context
@@ -211,10 +211,92 @@ def test_query_logs_command_transform_results_1():
     assert results_noxform == {'CDL.Logging': cdl_records}
 
 
+def test_query_logs_command_transform_sysmtem_logs():
+    """
+    Given:
+        - a list of CDL query results from the log.system table.
+    When
+        - running query_logs_command function
+    Then
+        - the CDL query results from the log.system table should be transformed to the system log context format.
+    """
+    from CortexDataLake import query_logs_command
+
+    cdl_records = load_test_data('./test_data/test_query_logs_command_transform_results_system_logs.json')
+    cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_system_logs_xformed.json')
+
+    class MockClient():
+        def query_loggings(self, query, page_number=None, page_size=None):
+            return cdl_records, []
+
+    _, results_xform, _ = query_logs_command({'limit': '1', 'query': 'SELECT * FROM `log.system`'}, MockClient())
+
+    assert results_xform == {'CDL.Logging': cdl_records_xform}
+
+
+class TestPagination:
+    """
+    A class to test the pagination mechanism in the Cortex Data Lake integration
+    """
+    args = {
+        'page_size': "10",
+        'page': "2",
+        'limit': "10",
+        "fields": "all",
+        "start_time": "1970-01-01 00:00:00"
+    }
+
+    class MockClient:
+
+        def query_loggings(self, query, page_number=None, page_size=None):
+            assert 'LIMIT' not in query
+            assert page_number is not None
+            return [], []
+
+    @pytest.mark.parametrize("command_function", [
+        "query_logs_command",
+        "get_critical_logs_command",
+        "get_social_applications_command",
+        "search_by_file_hash_command",
+        "query_threat_logs_command",
+        "query_url_logs_command",
+        "query_file_data_command"
+    ])
+    def test_command_pagination(self, command_function):
+        """
+        Given:
+            - A query to fetch data from the Cortex Data Lake
+            - A page size of 10
+            - A page number of 2
+        When
+            - Running any command function that involves pagination
+        Then
+            - Validate that the query is built correctly without the LIMIT value, and the page number is set
+        """
+        command = getattr(__import__('CortexDataLake'), command_function)
+        _, _, _ = command(self.args, self.MockClient())
+
+    def test_build_query(self):
+        """
+        Given:
+            - A query to fetch data from the Cortex Data Lake
+            - A page size of 10
+            - A page number of 2
+        When
+            - Building the query to fetch data from the Cortex Data Lake
+        Then
+            - Validate that the query is built correctly without the LIMIT value
+        """
+        from CortexDataLake import build_query
+        fields, query = build_query(self.args, 'firewall.traffic')
+        assert 'LIMIT' not in query
+
+
 class TestBackoffStrategy:
     """ A class to test the backoff strategy mechanism
 
     """
+
     @pytest.mark.parametrize('integration_context, exception', [
         ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat(),
           LAST_FAILURE_TIME_CONST: datetime.utcnow().isoformat()}, True),

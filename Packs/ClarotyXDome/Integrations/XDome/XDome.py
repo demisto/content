@@ -6,7 +6,8 @@ from CommonServerUserPython import *  # noqa
 import abc
 import dateparser
 from datetime import datetime, timedelta
-from typing import Dict, Any, Collection, Set, Optional, Tuple, Union, Callable, List
+from typing import Any, TypeAlias
+from collections.abc import Collection, Callable
 import urllib3
 
 # Disable insecure warnings
@@ -19,9 +20,9 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 SMALLEST_TIME_UNIT = timedelta(seconds=1)
 
-MAX_REQUEST_LIMIT = 5000
+MAX_REQUEST_LIMIT = 5_000
 
-DEFAULT_REQUEST_LIMIT = 1000
+DEFAULT_REQUEST_LIMIT = 1_000
 
 MAX_FETCH_LIMIT = 50_000
 DEFAULT_FETCH_LIMIT = 50_000
@@ -34,6 +35,7 @@ DEVICE_ALERT_FIELDS = {
     "alert_labels",
     "alert_name",
     "alert_type_name",
+    "alert_description",
     "device_alert_detected_time",
     "device_alert_status",
     "device_alert_updated_time",
@@ -66,6 +68,10 @@ DEVICE_ALERT_FIELDS = {
     "device_subcategory",
     "device_type",
     "device_uid",
+    "mitre_technique_enterprise_ids",
+    "mitre_technique_enterprise_names",
+    "mitre_technique_ics_ids",
+    "mitre_technique_ics_names",
 }
 
 DEVICE_VULNERABILITY_FIELDS = {
@@ -248,7 +254,7 @@ DEVICE_VULNERABILITY_FIELDS = {
 
 INCIDENT_TIMESTAMP_FIELD = "device_alert_updated_time"
 
-QueryFilterType = Dict[str, Any]
+QueryFilterType: TypeAlias = dict[str, Any]
 
 
 ''' CLIENT CLASS '''
@@ -269,11 +275,11 @@ class Client(BaseClient):
         paginated_getter_func: Callable,
         items_name: str,
         fields: Collection[str],
-        filter_by: Optional[QueryFilterType] = None,
-        sort_by: Optional[List[Dict]] = None,
-        stop_after: Optional[int] = None,
-        start_from: Optional[int] = None,
-    ) -> List[Dict]:
+        filter_by: QueryFilterType | None = None,
+        sort_by: list[dict] | None = None,
+        stop_after: int | None = None,
+        start_from: int | None = None,
+    ) -> list[dict]:
         offset = start_from or 0
         batch_size = MAX_REQUEST_LIMIT
         result = paginated_getter_func(
@@ -294,12 +300,12 @@ class Client(BaseClient):
     def get_device_alert_relations(
         self,
         fields: Collection[str],
-        filter_by: Optional[QueryFilterType] = None,
+        filter_by: QueryFilterType | None = None,
         offset: int = 0,
         limit: int = DEFAULT_REQUEST_LIMIT,
-        sort_by: Optional[List[Dict]] = None,
+        sort_by: list[dict] | None = None,
         count: bool = False,
-    ) -> Dict:
+    ) -> dict:
         body = {"offset": offset, "limit": limit, "fields": list(fields), "include_count": count}
         if filter_by:
             body["filter_by"] = filter_by
@@ -310,12 +316,12 @@ class Client(BaseClient):
     def get_device_vulnerability_relations(
         self,
         fields: Collection[str],
-        filter_by: Optional[QueryFilterType] = None,
+        filter_by: QueryFilterType | None = None,
         offset: int = 0,
         limit: int = DEFAULT_REQUEST_LIMIT,
-        sort_by: Optional[List[Dict]] = None,
+        sort_by: list[dict] | None = None,
         count: bool = False,
-    ) -> Dict:
+    ) -> dict:
         body = {"offset": offset, "limit": limit, "fields": list(fields), "include_count": count}
         if filter_by:
             body["filter_by"] = filter_by
@@ -326,11 +332,11 @@ class Client(BaseClient):
     def force_get_all_device_vulnerability_relations(
         self,
         fields: Collection[str],
-        filter_by: Optional[QueryFilterType] = None,
-        sort_by: Optional[List[Dict]] = None,
-        stop_after: Optional[int] = None,
-        start_from: Optional[int] = None,
-    ) -> List[Dict]:
+        filter_by: QueryFilterType | None = None,
+        sort_by: list[dict] | None = None,
+        stop_after: int | None = None,
+        start_from: int | None = None,
+    ) -> list[dict]:
         return self._force_get_all_wrapper(
             paginated_getter_func=self.get_device_vulnerability_relations,
             items_name="devices_vulnerabilities",
@@ -344,11 +350,11 @@ class Client(BaseClient):
     def force_get_all_device_alert_relations(
         self,
         fields: Collection[str],
-        filter_by: Optional[QueryFilterType] = None,
-        sort_by: Optional[List[Dict]] = None,
-        stop_after: Optional[int] = None,
-        start_from: Optional[int] = None,
-    ) -> List[Dict]:
+        filter_by: QueryFilterType | None = None,
+        sort_by: list[dict] | None = None,
+        stop_after: int | None = None,
+        start_from: int | None = None,
+    ) -> list[dict]:
         return self._force_get_all_wrapper(
             paginated_getter_func=self.get_device_alert_relations,
             items_name="devices_alerts",
@@ -359,11 +365,11 @@ class Client(BaseClient):
             start_from=start_from,
         )
 
-    def set_device_single_alert_relations(self, alert_id: int, device_uids: Optional[List[str]], status: str) -> Optional[Dict]:
+    def set_device_single_alert_relations(self, alert_id: int, device_uids: list[str] | None, status: str) -> dict | None:
         devices_uids_filter = _simple_filter("uid", "in", device_uids) if device_uids else None
         return self.set_device_alert_relations([alert_id], devices_uids_filter, status)
 
-    def set_device_alert_relations(self, alert_ids: List[int], device_filter_by: Optional[Dict], status: str) -> Dict:
+    def set_device_alert_relations(self, alert_ids: list[int], device_filter_by: dict | None, status: str) -> dict:
         body = {"alerts": {"alert_ids": alert_ids}, "status": status}
         if device_filter_by:
             body["devices"] = {"filter_by": device_filter_by}
@@ -373,52 +379,56 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def _device_alert_relation_id(device_alert_relation: Dict) -> Tuple[int, str]:
+def _device_alert_relation_id(device_alert_relation: dict) -> tuple[int, str]:
     return device_alert_relation["alert_id"], device_alert_relation["device_uid"]
 
 
-def _device_alert_relation_id_str(device_alert_relation: Dict) -> str:
+def _device_alert_relation_id_str(device_alert_relation: dict) -> str:
     dar_id = _device_alert_relation_id(device_alert_relation)
     return f"{dar_id[0]}↔{dar_id[1]}"
 
 
-def _split_device_alert_relation_id(device_alert_relation_id: str) -> Tuple[int, str]:
+def _split_device_alert_relation_id(device_alert_relation_id: str) -> tuple[int, str]:
     alert_id, device_uid = device_alert_relation_id.split("↔")
     return int(alert_id), device_uid
 
 
-def _device_alert_relation_name(device_alert_relation: Dict) -> str:
+def _device_alert_relation_name(device_alert_relation: dict) -> str:
     return f"Alert “{device_alert_relation.get('alert_name', '')}” on Device “{device_alert_relation.get('device_name', '')}”"
 
 
-def _format_date(date: Union[str, datetime], format: str = DATE_FORMAT) -> str:
+def _format_date(date: str | datetime, format: str = DATE_FORMAT) -> str:
     dt = date if isinstance(date, datetime) else dateparser.parse(date)
     assert dt is not None
     return dt.strftime(format)
 
 
-def _simple_filter(field: str, operation: str, value: Any):
+def _ascending(field: str) -> dict[str, str]:
+    return {"field": field, "order": "asc"}
+
+
+def _simple_filter(field: str, operation: str, value: Any) -> QueryFilterType:
     return {"field": field, "operation": operation, "value": value}
 
 
-def _build_alert_types_filter(alert_types: List[str]) -> QueryFilterType:
+def _build_alert_types_filter(alert_types: list[str]) -> QueryFilterType:
     return _simple_filter("alert_type_name", "in", [at.strip() for at in alert_types])
 
 
-def _compound_filter(op: str, *filters: Optional[Dict]) -> Optional[QueryFilterType]:
+def _compound_filter(op: str, *filters: dict | None) -> QueryFilterType | None:
     filters = [f for f in filters if f]
     return None if not filters else filters[0] if len(filters) == 1 else {"operation": op, "operands": filters}
 
 
-def _and(*filters: Optional[Dict]) -> Optional[QueryFilterType]:
+def _and(*filters: dict | None) -> QueryFilterType | None:
     return _compound_filter("and", *filters)
 
 
-def _or(*filters: Optional[Dict]) -> Optional[QueryFilterType]:
+def _or(*filters: dict | None) -> QueryFilterType | None:
     return _compound_filter("or", *filters)
 
 
-def _device_alert_relation_to_incident(device_alert_relation: Dict[str, Any]) -> Dict[str, Any]:
+def _device_alert_relation_to_incident(device_alert_relation: dict[str, Any]) -> dict[str, Any]:
     return {
         "dbotMirrorId": _device_alert_relation_id_str(device_alert_relation),
         "name": _device_alert_relation_name(device_alert_relation),
@@ -469,11 +479,10 @@ class XDomeCommand(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def all_fields(cls) -> Set[str]:
-        ...
+    def all_fields(cls) -> set[str]: ...
 
     @classmethod
-    def _constant_filter(cls) -> Optional[QueryFilterType]:
+    def _constant_filter(cls) -> QueryFilterType | None:
         return None
 
     @classmethod
@@ -483,11 +492,11 @@ class XDomeCommand(abc.ABC):
     def __init__(
         self,
         client: Client,
-        fields: Optional[str],
-        filter_by: Optional[str],
-        offset: Optional[str],
-        limit: Optional[str],
-        sort_by: Optional[str],
+        fields: str | None,
+        filter_by: str | None,
+        offset: str | None,
+        limit: str | None,
+        sort_by: str | None,
     ):
         self._client = client
         self._raw_args = {"fields": fields, "filter_by": filter_by, "offset": offset, "limit": limit, "sort_by": sort_by}
@@ -504,7 +513,7 @@ class XDomeCommand(abc.ABC):
         parsed_fields = [field.strip() for field in raw_fields.split(",")]
         return self.all_fields() if "all" in parsed_fields else parsed_fields
 
-    def _parse_filter_by(self, raw_filter_by: Optional[str]) -> QueryFilterType:
+    def _parse_filter_by(self, raw_filter_by: str | None) -> QueryFilterType:
         """parse the raw filter input and make sure to always exclude retired devices"""
         filter_by = json.loads(raw_filter_by) if raw_filter_by else None
         filter_by = _and(filter_by, self.exclude_retired_filter(), self._constant_filter())
@@ -512,22 +521,20 @@ class XDomeCommand(abc.ABC):
         return filter_by
 
     @abc.abstractmethod
-    def _get_data(self) -> List:
-        ...
+    def _get_data(self) -> list: ...
 
     @abc.abstractmethod
-    def _generate_results(self, raw_response: Union[List, Dict]) -> CommandResults:
-        ...
+    def _generate_results(self, raw_response: list | dict) -> CommandResults: ...
 
 
 class XDomeGetDeviceAlertRelationsCommand(XDomeCommand):
     retired_field_name: str = "device_retired"
 
     @classmethod
-    def all_fields(cls) -> Set[str]:
+    def all_fields(cls) -> set[str]:
         return DEVICE_ALERT_FIELDS
 
-    def _get_data(self) -> List:
+    def _get_data(self) -> list:
         return self._client.force_get_all_device_alert_relations(
             fields=self._fields,
             filter_by=self._filter_by,
@@ -536,7 +543,7 @@ class XDomeGetDeviceAlertRelationsCommand(XDomeCommand):
             start_from=self._offset if self._raw_args.get("offset") is not None else None,
         )
 
-    def _generate_results(self, raw_response: Union[List, Dict]) -> CommandResults:
+    def _generate_results(self, raw_response: list | dict) -> CommandResults:
         device_alert_pairs = raw_response
         outputs = {
             "XDome.DeviceAlert(val.device_uid == obj.device_uid && val.alert_id == obj.alert_id)": device_alert_pairs
@@ -554,14 +561,14 @@ class XDomeGetDeviceVulnerabilityRelationsCommand(XDomeCommand):
     retired_field_name: str = "device_retired"
 
     @classmethod
-    def all_fields(cls) -> Set[str]:
+    def all_fields(cls) -> set[str]:
         return DEVICE_VULNERABILITY_FIELDS
 
     @classmethod
-    def _constant_filter(cls) -> Optional[QueryFilterType]:
+    def _constant_filter(cls) -> QueryFilterType | None:
         return _simple_filter("vulnerability_relevance", "in", ["Confirmed", "Potentially Relevant"])
 
-    def _get_data(self) -> List:
+    def _get_data(self) -> list:
         return self._client.force_get_all_device_vulnerability_relations(
             fields=self._fields,
             filter_by=self._filter_by,
@@ -570,7 +577,7 @@ class XDomeGetDeviceVulnerabilityRelationsCommand(XDomeCommand):
             start_from=self._offset if self._raw_args.get("offset") is not None else None,
         )
 
-    def _generate_results(self, raw_response: Union[List, Dict]) -> CommandResults:
+    def _generate_results(self, raw_response: list | dict) -> CommandResults:
         device_vulnerability_pairs = raw_response
         outputs = {
             "XDome.DeviceVulnerability(val.device_uid == obj.device_uid "
@@ -585,7 +592,7 @@ class XDomeGetDeviceVulnerabilityRelationsCommand(XDomeCommand):
         )
 
 
-def get_device_alert_relations_command(client: Client, args: Dict) -> CommandResults:
+def get_device_alert_relations_command(client: Client, args: dict) -> CommandResults:
     cmd = XDomeGetDeviceAlertRelationsCommand(
         client=client,
         fields=args.get("fields"),
@@ -624,10 +631,10 @@ def set_device_alert_relations_command(client: Client, args: dict) -> CommandRes
 
 def fetch_incidents(
     client: Client,
-    last_run: Dict,
+    last_run: dict,
     initial_fetch_time: str,
     fetch_limit: int,
-    alert_types: Optional[List[str]],
+    alert_types: list[str] | None,
     fetch_only_unresolved: bool,
 ):
     """This function will execute each interval (default is 1 minute)"""
@@ -651,17 +658,13 @@ def fetch_incidents(
         # should be the 'not_equals' or the 'greater' operation, but they're currently not working.
         # not_last_fetched_time_filter = _simple_filter(INCIDENT_TIMESTAMP_FIELD, "not_equals", start_time)
         # patch: use the 'greater_or_equal' operation on value 'Time + 1s'
-        not_last_fetched_time_filter = _simple_filter(
-            field=INCIDENT_TIMESTAMP_FIELD,
-            operation="greater_or_equal",
-            value=_next_tick(start_time),
-        )
+        not_last_fetched_time_filter = _simple_filter(INCIDENT_TIMESTAMP_FIELD, "greater_or_equal", _next_tick(start_time))
         no_last_run_dups_filter = _or(not_in_last_fetched_ids_filter, not_last_fetched_time_filter)
     else:
         no_last_run_dups_filter = None
 
     start_time_filter = _simple_filter(INCIDENT_TIMESTAMP_FIELD, "greater_or_equal", start_time)
-    sort_by_update_time = [{"field": INCIDENT_TIMESTAMP_FIELD, "order": "asc"}]
+    sort_by_update_time = [_ascending(INCIDENT_TIMESTAMP_FIELD)]
 
     try:
         device_alert_relations = client.force_get_all_device_alert_relations(
@@ -691,6 +694,11 @@ def fetch_incidents(
             _device_alert_relation_id_str(dar) for dar in device_alert_relations
             if dar[INCIDENT_TIMESTAMP_FIELD] == next_start_time
         ]
+        if next_start_time == start_time:
+            # start_time == next_start_time which means that all the incidents that were fetched have the same
+            # update_time. So I want to keep the current 'latest_ids' for the next run (& extend them with the new IDs)
+            # instead of overriding them. By doing so I make sure we don't fetch those incidents again next run.
+            next_latest_ids = latest_ids + next_latest_ids
     else:
         next_start_time = _next_tick(start_time)
         next_latest_ids = []
@@ -722,7 +730,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-        headers: Dict = {"Authorization": f"Bearer {api_key}"}
+        headers: dict = {"Authorization": f"Bearer {api_key}"}
 
         client = Client(
             base_url=base_url,
