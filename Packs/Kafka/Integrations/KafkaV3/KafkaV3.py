@@ -740,15 +740,20 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                 try:
                     for pull_timeout in range(1, 4):
                         demisto.debug(
-                            f"KAFKA DEBUG: trying to poll message {message} out of {max_messages} with poll {kafka.POLL_TIMEOUT*pull_timeout}"
+                            f"KAFKA DEBUG: trying to poll message {message} out of {max_messages}"
+                            f" with poll {kafka.POLL_TIMEOUT*pull_timeout}"
                         )
-                        polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT * pull_timeout)
+                        polled_msg = kafka_consumer.poll(
+                            kafka.POLL_TIMEOUT * pull_timeout
+                        )
                         demisto.debug(
-                            f"KAFKA DEBUG: finish to poll message {message} out of {max_messages} with poll {kafka.POLL_TIMEOUT*pull_timeout}"
+                            f"KAFKA DEBUG: finish to poll message {message} out of {max_messages}"
+                            f" with poll {kafka.POLL_TIMEOUT*pull_timeout}"
                         )
                         if polled_msg:
                             demisto.debug(
-                                f"KAFKA DEBUG: succeeded to poll message {message} out of {max_messages} offset: {polled_msg.offset()}"
+                                f"KAFKA DEBUG: succeeded to poll message {message} out of"
+                                f" {max_messages} offset: {polled_msg.offset()}"
                             )
                             incidents.append(create_incident(message=polled_msg, topic=topic))
                             last_fetched_offsets[f"{polled_msg.partition()}"] = polled_msg.offset()
