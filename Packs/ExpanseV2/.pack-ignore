@@ -86,3 +86,15 @@ ignore=GR103
 ignore=GR103
 [file:incidentfield-Expanse_IP.json]
 ignore=GR103
+
+[file:incidenttype-Xpanse_Issue_Generic.json]
+ignore=GR107
+
+[file:incidenttype-Expanse_Issue.json]
+ignore=GR107
+
+[file:widget-Expanse_Map.json]
+ignore=GR107
+
+[file:dashboard-Expanse_Incidents.json]
+ignore=GR107
