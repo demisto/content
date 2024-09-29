@@ -14,13 +14,7 @@
                 "type": "Custom XQL",
                 "width": 50,
                 "height": 413,
-                "params": [
-                  {
-                    "name": "hosts",
-                    "value": "*"
-                  }
-                ],
-                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n_jobResultCode=arrayindex(if(\r\n    _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n    _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n    _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n    regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n_host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n    count(if(_jobResultCode = \"2\", 1)) as _failed\r\n| fields _failed\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _failed ",
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n_jobResultCode=arrayindex(if(\r\n    _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n    _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n    _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n    regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n_host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp \r\n    count(if(_jobResultCode = \"2\", 1)) as _failed\r\n| fields _failed\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _failed ",
                 "time_frame": { "relativeTime": 86400000 },
                 "viewOptions": {
                   "type": "single",
@@ -58,13 +52,7 @@
                 "type": "Custom XQL",
                 "width": 50,
                 "height": 413,
-                "params": [
-                  {
-                    "name": "hosts",
-                    "value": "*"
-                  }
-                ],
-                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"150\",\"151\")\r\n| alter \r\n    _transferredGb=to_float(arrayindex(regextract(_raw_log, \"TransferredGb\\=\\\"(\\d*\\.?\\d*)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp sum(_transferredGb) as _totalTransferredGb\r\n| replacenull _totalTransferredGb = 0\r\n| fields _totalTransferredGb\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _totalTransferredGb dataunit = \"GB\" ",
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"150\",\"151\")\r\n| alter \r\n    _transferredGb=to_float(arrayindex(regextract(_raw_log, \"TransferredGb\\=\\\"(\\d*\\.?\\d*)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host != null\r\n| comp sum(_transferredGb) as _totalTransferredGb\r\n| replacenull _totalTransferredGb = 0\r\n| fields _totalTransferredGb\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _totalTransferredGb dataunit = \"GB\" ",
                 "time_frame": { "relativeTime": 604800000 },
                 "viewOptions": {
                   "type": "single",
