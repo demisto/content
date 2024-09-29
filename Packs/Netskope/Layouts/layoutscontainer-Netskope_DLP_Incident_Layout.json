@@ -492,7 +492,7 @@
                                 "fieldId": "netskopedlpprofile",
                                 "height": 53,
                                 "id": "73655640-6396-11ef-8680-bbc80a06ab12",
-                                "index": 1,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -501,6 +501,15 @@
                                 "fieldId": "netskopedlprule",
                                 "height": 53,
                                 "id": "749ac900-6396-11ef-8680-bbc80a06ab12",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "netskopedlppolicy",
+                                "height": 22,
+                                "id": "207bdfc0-7bde-11ef-8629-59eaad67fea4",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -631,5 +640,7 @@
     "version": -1,
     "fromVersion": "6.10.0",
     "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

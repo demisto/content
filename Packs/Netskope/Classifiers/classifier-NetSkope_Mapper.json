@@ -164,6 +164,9 @@
                 "Netskope Action": {
                     "simple": "activity"
                 },
+                "Netskope DLP Policy": {
+                    "simple": "dlp_match_info.[].dlp_policy"
+                },
                 "Netskope DLP Profile": {
                     "simple": "dlp_match_info.[].dlp_profile_name"
                 },
