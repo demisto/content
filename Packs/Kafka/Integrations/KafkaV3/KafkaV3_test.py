@@ -1,3 +1,6 @@
+from unittest.mock import MagicMock, patch
+
+from pytest_mock import MockerFixture
 from CommonServerPython import DemistoException, demisto
 
 from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \
@@ -9,16 +12,22 @@ import pytest
 import KafkaV3
 import os
 
-KAFKA = KafkaCommunicator(brokers='some_broker_ip', use_ssl=True, use_sasl=False, trust_any_cert=True)  # trust_any_cert=True
+KAFKA = KafkaCommunicator(brokers='some_broker_ip', use_ssl=True, use_sasl=False, trust_any_cert=False,
+                          ca_cert='ca_cert', client_cert='client_cert', client_cert_key='client_cert_key')
 
-# SSL_KAFKA_ADMIN = KafkaCommunicator(brokers='some_broker_ip', use_ssl=True, use_sasl=False,
-#                                     trust_any_cert=False, consumer_only=False)
-# SSL_KAFKA_CONSUMER_ONLY = KafkaCommunicator(brokers='some_broker_ip', use_ssl=True, use_sasl=False,
-#                                             trust_any_cert=False, consumer_only=True)
-# SASL_SSL_ADMIN = KafkaCommunicator(brokers='some_broker_ip', use_ssl=True, use_sasl=True,
-#                                    trust_any_cert=False, consumer_only=False)
-# SASL_SSL_CONSUMER_ONLY = KafkaCommunicator(brokers='some_broker_ip', use_ssl=True, use_sasl=True,
-#                                            trust_any_cert=False, consumer_only=True)
+def mock_consumer_only_kafka():
+    return KafkaCommunicator(brokers='brokers',
+                              consumer_only=True,
+                              use_ssl=False,
+                              use_sasl=False,
+                              trust_any_cert=True)
+    
+def mock_not_consumer_only_kafka():
+    return KafkaCommunicator(brokers='brokers',
+                              consumer_only=False,
+                              use_ssl=False,
+                              use_sasl=False,
+                              trust_any_cert=True)
 
 
 def test_passing_simple_test_module(mocker):
@@ -867,7 +876,7 @@ def test_ssl_configuration():
     os.remove(kafka.client_cert_path)
     os.remove(kafka.client_key_path)
     
-
+    
 def test_sasl_ssl_configuration():
     """
     Given:
@@ -939,4 +948,160 @@ def test_consumer_only():
                               consumer_only=True)
     assert kafka.conf_consumer
     assert not kafka.conf_producer
+    
+    
+def test_KafkaCommunicator__not_consumer_only():
+    """
+        Given:
+        A consumer_only=False argument and other required ones.
+        When:
+        Calling KafkaCommunicator init function.
+        Then:
+        The Kafka communicator is created with a conf_consumer and with conf_producer.
+    """
+    kafka = KafkaCommunicator(brokers='brokers',
+                              ca_cert='ca_cert',
+                              plain_username='plain_username',
+                              plain_password='plain_password',
+                              ssl_password='ssl_password',
+                              offset='earliest',
+                              trust_any_cert=False,
+                              use_ssl=True,
+                              use_sasl=True,
+                              consumer_only=False)
+    assert kafka.conf_consumer
+    assert kafka.conf_producer
+    
+    
+valid_params_cases = [
+    # Valid case with SSL only
+    {
+        'use_ssl': True, 'use_sasl': False, 'brokers': 'broker1,broker2',
+        'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key'
+    },
+    # Valid case with SSL and SASL
+    {
+        'use_ssl': True, 'use_sasl': True, 'brokers': 'broker1,broker2',
+        'ca_cert': 'cert', 'plain_username': 'user', 'plain_password': 'pass'
+    },
+    # Valid case trust_any_cert
+    {
+        'use_ssl': False, 'use_sasl': False, 'brokers': 'broker1,broker2', 'insecure': True
+    }
+ ]
+@pytest.mark.parametrize('params', valid_params_cases)
+def test_validate_params__valid(params):
+    from KafkaV3 import validate_params
+    # This test should not raise any exceptions
+    validate_params(params)
+     
+     
+     
+invalid_params_cases = [
+    # Missing brokers
+    (
+        {'use_ssl': True, 'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key'},
+        'Please specify a CSV list of Kafka brokers to connect to.'
+    ),
+    # SSL enabled but missing certificates
+    (
+        {'use_ssl': True, 'brokers': 'broker1,broker2'},
+        'When using SSL, the following are required: CA certificate of Kafka server (.cer), Client certificate (.cer), Client certificate key (.key). Please provide them.'),
+    (
+        {'use_ssl': True, 'brokers': 'broker1, broker2', 'ca_cert': 'cert'},
+        'When using SSL, the following are required: Client certificate (.cer), Client certificate key (.key). Please provide them.'
+    ),
+    (
+        {'use_ssl': True, 'brokers': 'broker1, broker2', 'client_cert': 'client_cert'},
+        'When using SSL, the following are required: CA certificate of Kafka server (.cer), Client certificate key (.key). Please provide them.'
+    ),
+    (
+        {'use_ssl': True, 'brokers': 'broker1, broker2', 'client_cert_key': 'client_key'},
+        'When using SSL, the following are required: CA certificate of Kafka server (.cer), Client certificate (.cer). Please provide them.'
+    ),
+    # SASL_SSL missing username/password/ca_cert
+    (
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2', 'plain_password': 'pass', 'ca_cert': 'cert'},
+        'When using SASL PLAIN with SSL, the following are required: SASL PLAIN Username. Please provide them.'
+    ),
+    (
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2', 'plain_username': 'user', 'ca_cert': 'cert'},
+        'When using SASL PLAIN with SSL, the following are required: SASL PLAIN Password. Please provide them.'
+    ),
+    (
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2', 'plain_username': 'user', 'plain_password': 'pass'},
+        'When using SASL PLAIN with SSL, the following are required: CA certificate of Kafka server (.cer). Please provide them.'
+    ),
+    # No connection method was chosen
+    (
+        {'use_ssl': False, 'use_sasl': False, 'insecure': False},
+        'No connection method was chosen.'
+    ),
+    # use_sasl and not use_ssl
+    (
+        {'use_sasl': True, 'use_ssl': False},
+        'SASL protocol can be used only with a SSL encription'
+    )
+]
+@pytest.mark.parametrize('params, expected_message', invalid_params_cases)
+def test_validate_params_invalid(params, expected_message):
+    from KafkaV3 import validate_params
+    # Test that the appropriate exception is raised with the correct message
+    with pytest.raises(DemistoException) as e:
+        validate_params(params)
+    assert str(e.value) == expected_message
 
+    
+def test__test_connection__consumer_only(mocker:MockerFixture):
+    """
+        Given:
+        A consumer_only=True argument and other required ones.
+        When:
+        Calling test_connection function.
+        Then:
+        Assert get_kafka_producer() isn't called and get_kafka_consumer() is called
+    """
+    
+    mocker.patch.object(KConsumer, 'list_topics')
+    consumer_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_consumer')
+    producer_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_producer')
+
+    mock_consumer_only_kafka().test_connection(consumer_only=True)
+    
+    consumer_mock.assert_called_once()
+    producer_mock.assert_not_called()
+
+    
+def test__test_connection__not_consumer_only(mocker):
+    """
+        Given:
+        A consumer_only=True argument and other required ones.
+        When:
+        Calling test_connection function.
+        Then:
+        Assert get_kafka_producer() and get_kafka_consumer() are called
+    """
+    mocker.patch.object(KConsumer, 'list_topics')
+    mocker.patch.object(KProducer, 'list_topics')
+    consumer_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_consumer')
+    producer_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_producer')
+
+    mock_not_consumer_only_kafka().test_connection(consumer_only=False)
+    
+    consumer_mock.assert_called_once()
+    producer_mock.assert_called_once()
+    
+def test_command_manager_consumer_only():
+    """
+        Given:
+        A consumer_only=True argument and other required ones.
+        When:
+        Calling publish-message command.
+        Then:
+        Assert that an exception is thrown
+    """
+    from KafkaV3 import commands_manager
+    with pytest.raises(DemistoException) as e:
+        commands_manager(demisto_args={}, kafka_kwargs={}, demisto_params={'consumer_only': True},
+                         demisto_command='kafka-publish-msg')
+    assert 'This instance is consumer_only. The kafka-publish-msg command cannot be run' in str(e.value)
