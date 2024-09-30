@@ -991,3 +991,39 @@
 <pre>gcs-copy-file source_bucket_name="my-bucket" destination_bucket_name="another-bucket" source_object_name="/some/path/my_file.txt"</pre>
 <h5>Human Readable Output</h5>
 <p>File was successfully copied to bucket "another-bucket" as /some/path/my_file.txt</p>
+
+
+<h3>17. Use public access prevention</h3>
+<hr>
+<p>Blocks public access to a specified Google Cloud Storage bucket by enabling public access prevention, ensuring only authorized users can access the bucket.</h3>
+<h5>Base Command</h5>
+<p><code>gcs-block-public-access-bucket</code></p>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 169px;"><strong>Argument Name</strong></th>
+<th style="width: 451px;"><strong>Description</strong></th>
+<th style="width: 88px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 169px;">bucket_name</td>
+<td style="width: 451px;">Name of the bucket to which public access policy is to be applied.</td>
+<td style="width: 88px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 169px;">public_access_prevention</td>
+<td style="width: 451px;">Defines the public access prevention mode for the bucket.
+        - enforced: Completely blocks public access to the bucket, ensuring only authorized users can access it.
+        - inherited: The bucket will inherit the public access prevention setting from its parent project.</td>
+<td style="width: 88px;">Required</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<pre>gcs-block-public-access-bucket source_bucket_name="my-bucket" public_access_prevention="enforced"</pre>
+<h5>Human Readable Output</h5>
+<p>Public access prevention is set to enforced for my-bucket.</p>
