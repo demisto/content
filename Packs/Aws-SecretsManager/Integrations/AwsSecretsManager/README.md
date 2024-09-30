@@ -1,6 +1,7 @@
 AWS Secrets Manager helps you to securely encrypt, store, and retrieve credentials for your databases and other services.
 This integration was integrated and tested with version 1.0 of AwsSecretsManager
 
+The keys supported for the [Fetch Credentials flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Configure-Credentials) are: "username", "password", "workgroup".
 ## Configure Aws Secrets Manager on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
