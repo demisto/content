@@ -579,7 +579,7 @@ def test_dspm_get_list_of_asset_fields_command(client):
 
     # Define the arguments for the command
     args = {
-        'asset_id': 'asset1',
+        'assetId': 'asset1',
         'page': 1,
         'size': 20
     }

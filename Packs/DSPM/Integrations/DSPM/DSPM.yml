@@ -473,7 +473,7 @@ script:
     - description: ID of the asset for which to retrieve field details.
       name: assetId
       required: true
-    description: Return lists of asset fields. Only for structured assets such as RDS, Aurora, BigQuery. Do not support S3 assets.
+    description: Return list of fields for structured assets such as RDS, Aurora, and BigQuery.
     name: dspm-get-list-of-asset-fields-by-id
     outputs:
     - contextPath: DSPM.AssetFields.name

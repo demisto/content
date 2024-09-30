@@ -477,7 +477,7 @@ Retrieves file details for the specified asset ID.
 ### dspm-get-list-of-asset-fields-by-id
 
 ***
-Return lists of asset fields. Only for structured assets such as RDS, Aurora, BigQuery. Do not support S3 assets.
+Return list of fields for structured assets such as RDS, Aurora, and BigQuery.
 
 #### Base Command
 
