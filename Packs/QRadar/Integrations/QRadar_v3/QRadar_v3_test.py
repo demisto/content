@@ -1968,7 +1968,7 @@ def test_qradar_indicators_upload_command_quiet_mode(mocker, quiet_mode):
     mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
     mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
     mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version",
-                        return_value={"iocs": [{"value": "test", "indicator_type":"ip"}]})
+                        return_value={"iocs": [{"value": "test", "indicator_type": "ip"}]})
     mock_response = command_test_data["reference_set_bulk_load"]['response'] | {"data": ["some_data"]}
     mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
 
