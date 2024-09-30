@@ -2,7 +2,7 @@ Use the MITRE ATT&CK Feed integration to fetch indicators from MITRE ATT&CK.
 For more information click [here](https://www.mitre.org/capabilities/cybersecurity/overview/cybersecurity-blog/attck%E2%84%A2-content-available-in-stix%E2%84%A2-20-via).
 
 Note: When upgrading from v1 (MITRE IDs Feed) to v2 (MITRE ATT&CK) - disabling the MITRE IDs Feed indicator type, and instance are important for the smooth flow of the upgrade.
-## Configure MITRE ATT&CK Feed on XSOAR
+## Configure MITRE ATT&CK Feed in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
