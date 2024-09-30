@@ -130,6 +130,7 @@ def test_module():
     """
     Sends a test message to the dedicated slack channel.
     """
+    raise Exception(f"TESING AAAAA")
     if not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0:
         return_error(
             "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
