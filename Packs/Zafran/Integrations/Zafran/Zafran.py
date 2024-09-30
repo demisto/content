@@ -64,7 +64,7 @@ def mitigations_export_command(client: Client, args: Dict[str, Any]) -> CommandR
     response = client.mitigations_export_request(filter_arg)
     command_results = CommandResults(
         outputs_prefix='Zafran.UpstreamMitigation',
-        outputs_key_field='',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
