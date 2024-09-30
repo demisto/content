@@ -15,7 +15,7 @@ The Cyren Threat InDepth content pack includes access to these streams of indica
 - Malware URL Intelligence
 - Malware File Intelligence
 
-## Configure Cyren Threat InDepth Threat Intelligence Feed on XSOAR
+## Configure Cyren Threat InDepth Threat Intelligence Feed In Cortex
 
 
 | **Parameter** | **Description** | **Required** |
