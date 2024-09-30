@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib.parse
 
-
 from collections.abc import Callable
 
 from CommonServerUserPython import *  # noqa
@@ -100,6 +99,7 @@ VENDOR = "Atlassian"
 PRODUCT = "Confluence"
 AUDIT_FETCH_PAGE_SIZE = 1000
 ONE_MINUTE_IN_MILL_SECONDS = 60000
+_last_run_cache = None
 ''' CLIENT CLASS '''
 
 
@@ -166,6 +166,31 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def get_last_run() -> dict:
+    """
+    Retrieve the last run data from the cache or Demisto's getLastRun.
+
+    Returns:
+        dict: The last run data.
+    """
+    global _last_run_cache
+    if _last_run_cache is None:
+        _last_run_cache = demisto.getLastRun()
+    return _last_run_cache
+
+
+def set_last_run(last_run: dict):
+    """
+    Set the last run data in both the cache and Demisto's setLastRun.
+
+    Args:
+        last_run (dict): The last run data to set.
+    """
+    global _last_run_cache
+    _last_run_cache = last_run
+    demisto.setLastRun(last_run)
+
+
 def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[str, Any], page_size: int) -> dict[str, Any]:
     """
     Retrieve events from the Atlassian Confluence Cloud API according to the following logic:
@@ -214,7 +239,6 @@ def add_time_to_events(events: list[dict] | None):
             create_time = arg_to_datetime(arg=event.get('creationDate'))
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
-# TODO: set last run and get last run caching mechanisms
 
 def get_error_message(errors):
     err_msg = ""
@@ -1400,7 +1424,7 @@ def confluence_cloud_group_list_command(client: Client, args: dict[str, str]) ->
         raw_response=response_json)
 
 
-def fetch_events(client: Client, fetch_limit: int) -> Iterator[List[Dict[str, Any]]]:
+def fetch_events(client: Client, fetch_limit: int) -> List[Dict[str, Any]]:
     """
     Fetches events from Confluence Cloud in batches.
 
@@ -1412,29 +1436,26 @@ def fetch_events(client: Client, fetch_limit: int) -> Iterator[List[Dict[str, An
         client (Client): The client object used to make API requests.
         fetch_limit (int): The maximum number of events to fetch.
 
-    Yields:
+    Returns:
         list: A list of event dictionaries from the Confluence Cloud API.
 
     Notes:
-        - The function updates the last run data using demisto.setLastRun() after each batch.
-        - It uses demisto.getLastRun() to retrieve the last run data for pagination.
         - The function stops fetching when either the fetch_limit is reached or there are no more events.
     """
-    last_run = demisto.getLastRun()
+    last_run = get_last_run()
     demisto.debug(f'Starting fetch_events with {last_run=} and {fetch_limit=}')
     next_link = last_run.get('next_link', '')
     finished_last_query = not next_link
     no_events_in_confluence = False
-    num_total_events = 0
+    all_events = []
 
-    while num_total_events < fetch_limit and not no_events_in_confluence:
-        last_run = demisto.getLastRun()
-        page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - num_total_events)
+    while len(all_events) < fetch_limit and not no_events_in_confluence:
+        last_run = get_last_run()
+        page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - len(all_events))
         response = run_fetch_mechanism(client, next_link, last_run, page_size)
         events = response['results']
         next_link = response['_links'].get('next', None)
-        num_total_events += len(events)
-        demisto.debug(f'Fetched {len(events)} events, total_length: {num_total_events}, next_link: {next_link}')
+        demisto.debug(f'Fetched {len(events)} events, total_length: {len(all_events)}, next_link: {next_link}')
 
         if finished_last_query and not next_link:
             demisto.debug("Finished fetching events")
@@ -1448,8 +1469,9 @@ def fetch_events(client: Client, fetch_limit: int) -> Iterator[List[Dict[str, An
                 'end_date': last_end_date
             }
             demisto.debug(f'setting last run with: {new_last_run_obj}')
-            demisto.setLastRun(new_last_run_obj)
-        yield events
+            set_last_run(new_last_run_obj)
+        all_events.extend(events)
+    return all_events
 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
@@ -1540,14 +1562,12 @@ def main() -> None:
 
         elif command == 'fetch-events':
 
-            total_events_count = 0
-            for events in fetch_events(client, limit):
-                demisto.debug(f'events returned from fetch-events:{str(len(events))}')
-                if events:
-                    total_events_count += len(events)
-                    add_time_to_events(events)
-                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT, should_update_health_module=False)
-            demisto.updateModuleHealth({'eventsPulled': total_events_count})
+            events = fetch_events(client, limit)
+            if events:
+                add_time_to_events(events)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT, should_update_health_module=False)
+
+            demisto.updateModuleHealth({'eventsPulled': len(events)})
         elif command == 'confluence-cloud-get-events':
             demisto.debug(f'Fetching Confluence Cloud events with the following parameters: {args}')
             should_push_events = argToBoolean(args.get('should_push_events', False))
