@@ -12,7 +12,6 @@ import urllib.parse
 import urllib3
 from apiclient import discovery
 from oauth2client import service_account
-from typing import Dict, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -140,7 +139,7 @@ def detect_logos_command(proxies):
     Detects brand logos from a given entry id.
     """
     entry_ids = argToList(demisto.args().get('entry_id'))
-    output: Dict[str, Dict[str, List[Dict[str, str]]]] = {'GoogleVisionAPI': {'Logo': []}}
+    output: dict[str, dict[str, list[dict[str, str]]]] = {'GoogleVisionAPI': {'Logo': []}}
     hit = False
 
     for entry_id in entry_ids:
