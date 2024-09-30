@@ -143,30 +143,31 @@ alter // init aliases for root level & common objects for supporting both camelC
     service_action_rds_login_attempt_remote_isp_org = coalesce(finding_rds_login -> RemoteIpDetails.Organization.Org, finding_rds_login -> remoteIpDetails.organization.org) // The name of the internet provider.
 
 | alter // post extraction processing 
-    is_connection_inbound = if(service_action_network_connection_direction = "INBOUND"),
-    is_connection_outbound = if(service_action_network_connection_direction = "OUTBOUND"),
+    is_connection_inbound = if(service_action_network_connection_direction != null and service_action_network_connection_direction = "INBOUND"),
+    is_connection_outbound = if(service_action_network_connection_direction != null and service_action_network_connection_direction = "OUTBOUND"),
     http_code = to_integer(service_action_k8s_api_call_status_code),
     http_verb = service_action_k8s_api_call_verb,
     network_protocol = coalesce(service_action_network_connection_protocol, service_action_dns_request_action_protocol),
     k8s_api_call_src_ipv4_addresses = arrayfilter(service_action_k8s_api_call_sourceIPs,  "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
     k8s_api_call_src_ipv6_addresses = arrayfilter(service_action_k8s_api_call_sourceIPs,  "@element" ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}")
 | alter 
+    network_application_protocol = if(is_connection_inbound, service_action_network_connection_local_port_name, is_connection_outbound, service_action_network_connection_remote_port_name), 
     source_ipv4 = if(is_connection_inbound, service_action_network_connection_remote_ipv4, is_connection_outbound, service_action_network_connection_local_ipv4, coalesce(service_action_api_call_remote_ipv4, service_action_k8s_api_call_remote_ipv4, service_action_rds_login_attempt_remote_ipv4)),
-    source_ipv6 = if(is_connection_inbound, service_action_network_connection_remote_ipv4, is_connection_outbound, service_action_network_connection_local_ipv4, coalesce(service_action_api_call_remote_ipv6, service_action_k8s_api_call_remote_ipv6, service_action_rds_login_attempt_remote_ipv6)),
+    source_ipv6 = if(is_connection_inbound, service_action_network_connection_remote_ipv6, is_connection_outbound, service_action_network_connection_local_ipv6, coalesce(service_action_api_call_remote_ipv6, service_action_k8s_api_call_remote_ipv6, service_action_rds_login_attempt_remote_ipv6)),
     target_ipv4 = if(is_connection_inbound, service_action_network_connection_local_ipv4, is_connection_outbound, service_action_network_connection_remote_ipv4),
     target_ipv6 = if(is_connection_inbound, service_action_network_connection_local_ipv6, is_connection_outbound, service_action_network_connection_remote_ipv6)
 | alter
-    source_ipv4_addresses = coalesce(k8s_api_call_src_ipv4_addresses, service_action_port_probing_remote_ipv4_addresses),
-    source_ipv6_addresses = coalesce(k8s_api_call_src_ipv6_addresses, service_action_port_probing_remote_ipv6_addresses)
+    source_ipv4_addresses = if(array_length(k8s_api_call_src_ipv4_addresses) > 0, k8s_api_call_src_ipv4_addresses, array_length(service_action_port_probing_remote_ipv4_addresses) > 0, service_action_port_probing_remote_ipv4_addresses),
+    source_ipv6_addresses = if(array_length(k8s_api_call_src_ipv6_addresses) > 0, k8s_api_call_src_ipv6_addresses, array_length(service_action_port_probing_remote_ipv6_addresses) > 0, service_action_port_probing_remote_ipv6_addresses)
 | alter 
     all_source_ipv4_addresses = if(array_length(source_ipv4_addresses) > 0 and source_ipv4 != null, arrayconcat(arraycreate(source_ipv4), source_ipv4_addresses), source_ipv4 != null, arraycreate(source_ipv4), source_ipv4_addresses),
     all_source_ipv6_addresses = if(array_length(source_ipv6_addresses) > 0 and source_ipv6 != null, arrayconcat(arraycreate(source_ipv6), source_ipv6_addresses), source_ipv6 != null, arraycreate(source_ipv6), source_ipv6_addresses)
 
-| alter // xdm mappings 
+| alter // XDM mappings 
     xdm.alert.description = finding_description,
     xdm.alert.name = finding_title,
     xdm.alert.original_alert_id = finding_id,
-    xdm.alert.risks = service_evidence_threat_intelligence_details,
+    xdm.alert.risks = if(array_length(service_evidence_threat_intelligence_details) > 0, service_evidence_threat_intelligence_details),
     xdm.alert.severity = if( // https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html#guardduty_findings-severity
         finding_severity >= 7, "High", 
         finding_severity >= 4 and finding_severity <= 6.9 , "Medium", 
@@ -177,7 +178,7 @@ alter // init aliases for root level & common objects for supporting both camelC
     xdm.event.operation_sub_type = service_action_type,
     xdm.event.outcome = if(service_action_network_connection_is_blocked or service_action_dns_request_action_blocked or service_action_api_call_error_code != null, XDM_CONST.OUTCOME_FAILED),
     xdm.event.outcome_reason = service_action_api_call_error_code,
-    xdm.network.application_protocol = if(is_connection_inbound, service_action_network_connection_local_port_name, is_connection_outbound, service_action_network_connection_remote_port_name),
+    xdm.network.application_protocol = if(network_application_protocol != "Unknown", network_application_protocol),
     xdm.network.dns.dns_question.name = service_action_dns_request_action_domain,
     xdm.network.http.method = if(http_verb = null, http_verb, http_verb = "GET", XDM_CONST.HTTP_METHOD_GET, http_verb = "POST", XDM_CONST.HTTP_METHOD_POST, http_verb = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_verb = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_verb = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_verb = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_verb = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_verb = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_verb = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_verb = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_verb = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_verb = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_verb = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_verb = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_verb = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_verb = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_verb = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_verb = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_verb = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_verb = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_verb = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_verb = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_verb = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_verb = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_verb = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_verb = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_verb = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_verb = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_verb = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_verb = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_verb = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_verb = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_verb = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_verb = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_verb = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_verb = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_verb = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_verb = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_verb = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, uppercase(http_verb)),
     xdm.network.http.response_code = if(http_code = null, null, http_code = 200, XDM_CONST.HTTP_RSP_CODE_OK, http_code = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, http_code = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, http_code = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_code = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_code = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_code = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_code = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_code = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_code = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_code = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_code = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_code = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_code = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_code = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_code = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_code = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_code = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_code = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_code = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_code = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_code = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_code = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_code = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_code = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_code = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_code = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_code = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, http_code = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_code = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_code = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_code = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_code = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_code = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_code = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_code = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_code = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_code = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_code = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_code = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_code = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_code = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_code = 410, XDM_CONST.HTTP_RSP_CODE_GONE, http_code = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_code = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_code = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_code = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_code = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_code = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_code = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_code = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_code = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_code = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, http_code = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_code = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_code = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_code = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_code = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_code = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_code = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, service_action_k8s_api_call_status_code),
@@ -193,8 +194,8 @@ alter // init aliases for root level & common objects for supporting both camelC
     xdm.source.cloud.region = finding_region,
     xdm.source.cloud.zone = resource_availability_zone,
     xdm.source.host.device_model = resource_instance_type, 
-    xdm.source.host.ipv4_addresses = all_source_ipv4_addresses,
-    xdm.source.host.ipv6_addresses = all_source_ipv6_addresses,
+    xdm.source.host.ipv4_addresses = if(array_length(all_source_ipv4_addresses) > 0, all_source_ipv4_addresses),
+    xdm.source.host.ipv6_addresses = if(array_length(all_source_ipv6_addresses) > 0, all_source_ipv6_addresses),
     xdm.source.host.ipv4_public_addresses = arrayfilter(all_source_ipv4_addresses, not incidr("@element", "10.0.0.0/8") and not incidr("@element", "172.16.0.0/12") and not incidr("@element", "192.168.0.0/16") and not incidr("@element", "127.0.0.0/8") and not incidr("@element", "169.254.0.0/16") and not incidr("@element", "100.64.0.0/10")),
     xdm.source.host.hostname = resource_instance_id,
     xdm.source.ipv4 = coalesce(source_ipv4, arrayindex(all_source_ipv4_addresses, 0)),
@@ -205,15 +206,18 @@ alter // init aliases for root level & common objects for supporting both camelC
     xdm.source.process.identifier = service_runtime_details_process_uuid,
     xdm.source.process.name = service_runtime_details_process_name,
     xdm.source.process.parent_id = service_runtime_details_process_parent_uuid,
-    xdm.source.process.pid = to_integer(service_runtime_details_process_pid),
     xdm.source.user_agent = coalesce(service_action_api_call_user_agent, service_action_k8s_api_call_user_agent),
     xdm.source.user.groups = if(service_action_k8s_role_name != null, arraycreate(service_action_k8s_role_name), resource_user_groups),
     xdm.source.user.identifier = if(service_runtime_details_process_user_id != null or resource_user_id != null, arraystring(arraycreate(resource_user_id, service_runtime_details_process_user_id), ",")),
     xdm.source.user.user_type = resource_user_type,
-    xdm.source.user.username = if(resource_username != null or service_action_rds_login_attempt_users != null or service_runtime_details_process_user != null, arraystring(arraycreate(resource_username, service_action_rds_login_attempt_users, service_runtime_details_process_user), ",")),
+    xdm.source.user.username = trim(coalesce(service_action_rds_login_attempt_users, service_runtime_details_process_user, resource_username), ","),
     xdm.target.asn.as_name = if(is_connection_outbound, service_action_api_call_remote_asn_org),
     xdm.target.asn.as_number = to_integer(if(is_connection_outbound, service_action_api_call_remote_asn)), 
     xdm.target.asn.isp = if(is_connection_outbound, coalesce(service_action_api_call_remote_isp, service_action_api_call_remote_isp_org)), 
+    xdm.target.cloud.project_id = finding_account_id,
+    xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
+    xdm.target.cloud.region = finding_region,
+    xdm.target.cloud.zone = resource_availability_zone,
     xdm.target.host.ipv4_addresses = if(target_ipv4 !=  null, arraycreate(target_ipv4)),
     xdm.target.host.ipv6_addresses = if(target_ipv6 !=  null, arraycreate(target_ipv6)),
     xdm.target.host.ipv4_public_addresses = if(target_ipv4 != null and not incidr(target_ipv4, "10.0.0.0/8") and not incidr(target_ipv4, "172.16.0.0/12") and not incidr(target_ipv4, "192.168.0.0/16") and not incidr(target_ipv4, "127.0.0.0/8") and not incidr(target_ipv4, "169.254.0.0/16") and not incidr(target_ipv4, "100.64.0.0/10"), arraycreate(target_ipv4)),

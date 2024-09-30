@@ -57,11 +57,11 @@
                "is_array": false
           },
           "Severity": {
-               "type": "int",
+               "type": "float",
                "is_array": false
           },
           "severity": {
-               "type": "int",
+               "type": "float",
                "is_array": false
           },
           "Title": {
