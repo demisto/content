@@ -29,9 +29,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* CortexCoreIR
-* CoreIOCs
 * CortexCoreXQLQueryEngine
+* CoreIOCs
+* CortexCoreIR
 
 ### Scripts
 
@@ -40,10 +40,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* core-list-risky-users
+* closeInvestigation
 * core-get-cloud-original-alerts
 * ip
 * okta-get-user-factors
+* okta-expire-password
+* core-list-risky-users
 
 ## Playbook Inputs
 
