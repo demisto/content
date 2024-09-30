@@ -550,7 +550,7 @@ def test_produce_error_message(mocker):
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
              MessageMock(message='polled_msg', partition=0, offset=2,
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
-             None, None, None], [(0, 2), (0, 2)], id="1 partition 2/3 messages"),
+             None], [(0, 2), (0, 2)], id="1 partition 2/3 messages"),
         pytest.param({  # second run changed topic
             'topic': 'some-topic',
             'partition': '0',
@@ -573,7 +573,7 @@ def test_produce_error_message(mocker):
             'max_fetch': '1'
         }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
             {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
-            [], {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'}, [None, None, None], [(0, 2), (0, 2)],
+            [], {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'}, [None], [(0, 2), (0, 2)],
             id="No message"),
         pytest.param(
             {'topic': 'some-topic',
