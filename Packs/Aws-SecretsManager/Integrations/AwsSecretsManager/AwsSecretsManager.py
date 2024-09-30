@@ -9,8 +9,6 @@ from typing import Dict, Any
 
 from AWSApiModule import *  # noqa: E402
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import argToBoolean
-
 SERVICE = 'secretsmanager'
 
 # Disable insecure warnings
