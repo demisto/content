@@ -849,7 +849,7 @@ def update_user_risk_profile(client, args):
     actor = client.get_actor(username)
     actor_id = actor.actor_id
 
-    resp = client.incydr_sdk.risk_profiles.v1.update(
+    resp = client.incydr_sdk.actors.v1.update_actor(
         actor_id,
         start_date=start_date,
         end_date=end_date,
@@ -864,7 +864,7 @@ def update_user_risk_profile(client, args):
     else:
         success = False
     outputs = {
-        "Username": resp.username,
+        "Username": resp.name,
         "Success": success,
         "EndDate": resp.end_date,
         "StartDate": resp.start_date,
@@ -883,13 +883,11 @@ def update_user_risk_profile(client, args):
 def get_user_risk_profile(client, args):
     username = args.get("username")
     actor = client.get_actor(username)
-    actor_id = actor.actor_id
-    resp = client.incydr_sdk.risk_profiles.v1.get_risk_profile(actor_id)
     outputs = {
-        "Username": resp.username,
-        "EndDate": resp.end_date,
-        "StartDate": resp.start_date,
-        "Notes": resp.notes,
+        "Username": actor.name,
+        "EndDate": actor.end_date,
+        "StartDate": actor.start_date,
+        "Notes": actor.notes,
     }
     return CommandResults(
         outputs_prefix="Code42.UserRiskProfiles",

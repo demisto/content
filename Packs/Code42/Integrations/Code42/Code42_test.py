@@ -1033,12 +1033,13 @@ def code42_users_mock(code42_sdk_mock, mocker):
 
 @pytest.fixture
 def code42_user_risk_profile_mock(incydr_sdk_mock, mocker):
-    risk_profile_response = create_mock_code42_sdk_response(
-        mocker, MOCK_USER_RISK_PROFILE_RESPONSE
+    risk_profile_response = Actor.parse_response(
+        create_mock_requests_response(mocker, MOCK_USER_RISK_PROFILE_RESPONSE)
     )
-    code42_sdk_mock.userriskprofile.get_by_username.return_value = risk_profile_response
-    code42_sdk_mock.userriskprofile.update.return_value = risk_profile_response
-    return code42_sdk_mock
+    incydr_sdk_mock.actors.v1.get_actor_by_name.return_value = risk_profile_response
+    incydr_sdk_mock.actors.v1.get_actor_by_id.return_value = risk_profile_response
+    incydr_sdk_mock.actors.v1.update_actor.return_value = risk_profile_response
+    return incydr_sdk_mock
 
 
 def create_alerts_mock(c42_sdk_mock, mocker):
@@ -1455,42 +1456,42 @@ def test_user_reactivate_command(code42_users_mock):
 
 
 def test_user_get_risk_profile_command(code42_user_risk_profile_mock):
-    client = _create_client(code42_user_risk_profile_mock)
+    client = _create_incydr_client(code42_user_risk_profile_mock)
     cmd_res = get_user_risk_profile(client, args={"username": "profile@example.com"})
     assert cmd_res.raw_response == {
-        "EndDate": {"day": 10, "month": 10, "year": 2023},
+        "EndDate": "2023-10-10",
         "Notes": "test update",
-        "StartDate": {"day": 10, "month": 10, "year": 2020},
+        "StartDate": "2020-10-10",
         "Username": "profile@example.com",
     }
-    assert cmd_res.outputs["EndDate"] == {"day": 10, "month": 10, "year": 2023}
+    assert cmd_res.outputs["EndDate"] == "2023-10-10"
     assert cmd_res.outputs_prefix == "Code42.UserRiskProfiles"
-    code42_user_risk_profile_mock.userriskprofile.get_by_username.assert_called_once_with("profile@example.com")
+    code42_user_risk_profile_mock.actors.v1.get_actor_by_name.assert_called_once_with("profile@example.com")
 
 
 def test_user_update_risk_profile_command(code42_user_risk_profile_mock):
-    client = _create_client(code42_user_risk_profile_mock)
+    client = _create_incydr_client(code42_user_risk_profile_mock)
     cmd_res = update_user_risk_profile(
         client,
         args={
             "username": "profile@example.com",
-            "notes": "new note",
+            "notes": "test update",
             "start_date": "2020-10-10",
             "end_date": "2023-10-10",
         },
     )
     assert cmd_res.raw_response == {
-        "EndDate": {"day": 10, "month": 10, "year": 2023},
+        "EndDate": "2023-10-10",
         "Notes": "test update",
-        "StartDate": {"day": 10, "month": 10, "year": 2020},
+        "StartDate": "2020-10-10",
         "Success": True,
         "Username": "profile@example.com",
     }
-    assert cmd_res.outputs["EndDate"] == {"day": 10, "month": 10, "year": 2023}
+    assert cmd_res.outputs["EndDate"] == "2023-10-10"
     assert cmd_res.outputs_prefix == "Code42.UpdatedUserRiskProfiles"
-    code42_user_risk_profile_mock.userriskprofile.update.assert_called_once_with(
-        "123412341234123412",
-        notes="new note",
+    code42_user_risk_profile_mock.actors.v1.update_actor.assert_called_once_with(
+        "e96364db-8557-4c82-a31b-eccc7c8e6754",
+        notes="test update",
         start_date="2020-10-10",
         end_date="2023-10-10",
     )
