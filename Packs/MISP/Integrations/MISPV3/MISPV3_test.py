@@ -3,8 +3,8 @@ from CommonServerPython import *
 from CommonServerPython import DemistoException, Common
 from requests.models import Response
 
-TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [1, 2, 3], [4, 5]),
-                 ([1, 2, 3], [4, 5], [1, 2, 3], [4, 5])]
+TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [4, 6, 7], [1, 2, 3], [4, 5], [6, 7]),
+                 ([1, 2, 3], [4, 5], [6, 7], [1, 2, 3], [4, 5], [6, 7])]
 
 ATTRIBUTE_TAG_LIMIT = [{'ID': '1', 'Name': 'Tag1'}, {'ID': '2', 'Name': 'misp-galaxy:tag2'},
                        {'ID': '3', 'Name': 'misp-galaxy:tag3'}]
@@ -17,14 +17,16 @@ REPUTATION_COMMANDS_ERROR_LIST = [
     ("EMAIL", "invalid_email", "Error: The given invalid_email address: example is not valid"),  # invalid EMAIL,
 ]
 
-CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], Common.DBotScore.BAD, '1', False)
-CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], Common.DBotScore.SUSPICIOUS, '1', False)
-CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], Common.DBotScore.BAD, '2', False)
-CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], Common.DBotScore.SUSPICIOUS, '2', False)
-CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.NONE, None, False)
-CASE_OF_BAD_THREAT_LEVEL_ID = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.BAD, None, True)
-TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
-                   CASE_OF_SUSPICIOUS_EVENT, CASE_OF_UNKNOWN, CASE_OF_BAD_THREAT_LEVEL_ID]
+CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], ['5'], Common.DBotScore.BAD, '1', False)
+CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.SUSPICIOUS, '1', False)
+CASE_OF_BENIGN_ATTRIBUTE = (['5'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.GOOD, '5', False)
+CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], ['5'], Common.DBotScore.BAD, '2', False)
+CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], ['5'], Common.DBotScore.SUSPICIOUS, '2', False)
+CASE_OF_BENIGN_EVENT = (['8'], ['5'], ['3'], ['3'], ['5'], Common.DBotScore.GOOD, '5', False)
+CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], ['5'], Common.DBotScore.NONE, None, False)
+CASE_OF_BAD_THREAT_LEVEL_ID = (['1'], ['2'], ['3'], ['4'], ['5'], Common.DBotScore.BAD, None, True)
+TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_BENIGN_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
+                   CASE_OF_SUSPICIOUS_EVENT, CASE_OF_BENIGN_EVENT, CASE_OF_UNKNOWN, CASE_OF_BAD_THREAT_LEVEL_ID]
 
 VALID_DISTRIBUTION_LIST = [(0, 0), ("1", 1), ("Your_organization_only", 0)]
 INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
@@ -299,10 +301,11 @@ def test_is_tag_list_invalid(mocker):
             raise AssertionError
 
 
-@pytest.mark.parametrize('malicious_tag_ids, suspicious_tag_ids, return_malicious_tag_ids, return_suspicious_tag_ids',
+@pytest.mark.parametrize('malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, return_malicious_tag_ids, '
+                         'return_suspicious_tag_ids, return_benign_tag_ids',
                          TAG_IDS_LISTS)
-def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_ids, return_malicious_tag_ids,
-                                    return_suspicious_tag_ids):
+def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, return_malicious_tag_ids,
+                                    return_suspicious_tag_ids, return_benign_tag_ids):
     """
 
     Given:
@@ -316,8 +319,11 @@ def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_id
     """
     mock_misp(mocker)
     from MISPV3 import handle_tag_duplication_ids
-    assert return_malicious_tag_ids, return_suspicious_tag_ids == handle_tag_duplication_ids(malicious_tag_ids,
-                                                                                             suspicious_tag_ids)
+    assert (return_malicious_tag_ids, return_suspicious_tag_ids, return_benign_tag_ids) == handle_tag_duplication_ids(
+        malicious_tag_ids,
+        suspicious_tag_ids,
+        benign_tag_ids
+    )
 
 
 def test_convert_arg_to_misp_args(mocker):
@@ -381,9 +387,9 @@ def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_
     assert tag_list_id == expected_tag_list_ids
 
 
-@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, '
+@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids, '
                          'expected_score, found_tag, is_attribute_in_event_with_bad_threat_level', TEST_TAG_SCORES)
-def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
+def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, benign_tag_ids,
                    expected_score, found_tag, is_attribute_in_event_with_bad_threat_level):
     """
 
@@ -392,7 +398,8 @@ def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids
         attribute_tags_ids : all tag ids of an attribute.
         event_tags_ids: all tag ids of an event.
         malicious_tag_ids: tag ids that defined to be recognized as malicious.
-        suspicious_tag_ids: tag ids that defined to be recognized as  suspicious.
+        suspicious_tag_ids: tag ids that defined to be recognized as suspicious.
+        benign_tag_ids: tag ids that defined to be recognized as benign.
 
     When:
     - Running a reputation command and want to get the dbot score.
@@ -404,7 +411,7 @@ def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids
     mock_misp(mocker)
     from MISPV3 import get_score
     score, tag = get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
-                           is_attribute_in_event_with_bad_threat_level)
+                           benign_tag_ids, is_attribute_in_event_with_bad_threat_level)
     assert score == expected_score
     assert tag == found_tag
 
@@ -507,9 +514,10 @@ def test_parse_response_reputation_command(mocker):
     reputation_expected = util_load_json("test_data/reputation_command_outputs.json")
     malicious_tag_ids = ['279', '131']
     suspicious_tag_ids = ['104']
+    benign_tag_ids = []
     attribute_limit = 3
     outputs, _, _, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids,
-                                                         attribute_limit)
+                                                         benign_tag_ids, attribute_limit)
     assert outputs == reputation_expected
 
 
@@ -669,7 +677,9 @@ def test_add_email_object(file_path, expected_output_key, mock_response_key, moc
     mocker.patch.object(demisto, "getFilePath", return_value={
                         "path": file_path
                         })
-    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(200, mocker, mock_response_key))
+    mocked_response = get_response(200, mocker, mock_response_key)
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=mocked_response)
+    mocker.patch.object(pymisp.api.PyMISP, "_check_response", return_value=mocked_response.json())
     pymisp.ExpandedPyMISP.global_pythonify = False
     output = add_email_object(demisto_args).outputs
     expected_output = util_load_json("test_data/response_mock_add_email_object_test.json")[expected_output_key]
@@ -693,11 +703,12 @@ def test_fail_to_add_email_object(mocker):
     mocker.patch.object(demisto, "getFilePath", return_value={
                         "path": "test_data/test_add_email_object_case_1.eml"
                         })
-    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(404, mocker, "response_mock_case_1"))
+    mocked_response = get_response(404, mocker, "response_mock_case_1")
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=mocked_response)
     pymisp.ExpandedPyMISP.global_pythonify = True
     with pytest.raises(DemistoException) as exception_info:
         add_email_object(demisto_args)
-    assert "'errors': (404" in str(exception_info.value)
+    assert "404" in str(exception_info.value)
 
 
 def test_add_msg_email_object(mocker):
