@@ -10,6 +10,7 @@ There are 2 authentication methods:
 
 ### Generate a Cluster Authentication Token
 
+1. Navigate to **Settings** > **Admin Operations** > **Cluster Authentication Token**.
 
 2. At the Cluster Authentication Token menu, click the blue `+` button.
    
@@ -21,7 +22,6 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
 
 ## Configure Exabeam in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
