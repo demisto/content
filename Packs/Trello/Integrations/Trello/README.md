@@ -1,27 +1,23 @@
 Interact with the Trello task manager
 This integration was integrated and tested with version 1.0.0 of Trello
-## Configure Trello on Cortex XSOAR
+## Configure Trello in Cortex
 
 First, retrieve an API key from the trello API page, by following [this link](https://trello.com/app-key)
 For more information, see the following [Trello documentation](https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/)
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trello.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://example.net) |  | True |
-    | Fetch incidents |  | False |
-    | Use system proxy settings |  | False |
-    | Default and Fetch Board ID | ID of Trello board used both to fetch incidents and as the default for all integration commands. | False |
-    | API Key |  | False |
-    | List to Fetch Incidents from | Optional - If specified, incidents will only be fetched when cards are created in this specific list. Use trello-list-lists command to display IDs of available lists in Board. | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://example.net) |  | True |
+| Fetch incidents |  | False |
+| Use system proxy settings |  | False |
+| Default and Fetch Board ID | ID of Trello board used both to fetch incidents and as the default for all integration commands. | False |
+| API Key |  | False |
+| List to Fetch Incidents from | Optional - If specified, incidents will only be fetched when cards are created in this specific list. Use trello-list-lists command to display IDs of available lists in Board. | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trello-list-boards
 ***

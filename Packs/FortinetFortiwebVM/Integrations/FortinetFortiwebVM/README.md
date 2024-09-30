@@ -1,24 +1,20 @@
 Fortiweb VM integration allows to manage WAF policies and block cookies, URLs, and host names.
 This integration was integrated and tested with version 1 & 2 of fortiweb_vm
 
-## Configure Fortiweb VM on Cortex XSOAR
+## Configure Fortiweb VM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Fortiweb VM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Username. | True |
-    | Password. | True |
-    | API Version | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Username. | True |
+| Password. | True |
+| API Version | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortiwebvm-protected-hostname-group-create
 ***

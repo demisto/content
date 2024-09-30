@@ -48,36 +48,32 @@ There are 3 new playbooks:
 ### Classifier
 **Carbon Black Endpoint Standard**
 
-## Configure Carbon Black Endpoint Standard on Cortex XSOAR
+## Configure Carbon Black Endpoint Standard in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Carbon Black Endpoint Standard.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | URL |  | True |
-    | Custom API Key | This Custom API key is required for all use cases except the policy use cases. | False |
-    | Custom API Secret Key | This Custom API secret key is required for all use cases except the policy use cases. | False |
-    | Live Response API Key | This Live Response API key is required only for the policy use cases. | False |
-    | Live Response API Secret Key | This Live Response API secret key is required only for the policy use cases. | False |
-    | Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\) except the policy use cases. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | The type of the alert | Type of alert to be fetched. | False |
-    | The category of the alert. | Category of alert to be fetched \(THREAT, MONITORED\). If nothing is selected he is fetching from all categories. | False |
-    | Device id | The alerts related to a specific device, represented by its ID. | False |
-    | Policy id | The alerts related to a specific policy, represented by its ID. | False |
-    | Device username | The alerts related to a specific device, represented by its username. | False |
-    | Query | Query in Lucene syntax and/or value searches. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
-    | Maximum number of incidents per fetch |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| URL |  | True |
+| Custom API Key | This Custom API key is required for all use cases except the policy use cases. | False |
+| Custom API Secret Key | This Custom API secret key is required for all use cases except the policy use cases. | False |
+| Live Response API Key | This Live Response API key is required only for the policy use cases. | False |
+| Live Response API Secret Key | This Live Response API secret key is required only for the policy use cases. | False |
+| Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\) except the policy use cases. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| The type of the alert | Type of alert to be fetched. | False |
+| The category of the alert. | Category of alert to be fetched \(THREAT, MONITORED\). If nothing is selected he is fetching from all categories. | False |
+| Device id | The alerts related to a specific device, represented by its ID. | False |
+| Policy id | The alerts related to a specific policy, represented by its ID. | False |
+| Device username | The alerts related to a specific device, represented by its username. | False |
+| Query | Query in Lucene syntax and/or value searches. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
+| Maximum number of incidents per fetch |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cbd-get-alert-details
 ***
@@ -4414,4 +4410,3 @@ RBAC Permissions Required - org.alerts: READ
 >| 1234 | THREAT | 1234 | QA\win2k16-vg6-11 | jon@example.com | 2021-04-04T13:28:21.393Z |  | default | setup.exe | CB_ANALYTICS | 2 |
 >| 5678 | THREAT | 5678 | cb-komand-w12 | jon@example.com | 2021-04-04T13:28:06.812Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |
 >| 9101 | THREAT | 9101 | BITGLASS-INC\Win10 | office@net.com | 2021-04-04T13:28:05.399Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |
-

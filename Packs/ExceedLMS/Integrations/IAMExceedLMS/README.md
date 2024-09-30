@@ -2,29 +2,25 @@ Note: This integration should be used as part of our **Identity Lifecycle Manage
 
 This integration was integrated and tested with version v2 of ExceedLMS.
 
-## Configure ExceedLMS IAM on Cortex XSOAR
+## Configure ExceedLMS IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ExceedLMS IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL | True |
-    | API Key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Allow creating users | False |
-    | Allow updating users | False |
-    | Allow enabling users | False |
-    | Allow disabling users | False |
-    | Automatically create user if not found in update command | False |
-    | Incoming Mapper | True |
-    | Outgoing Mapper | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Base URL | True |
+| API Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Allow creating users | False |
+| Allow updating users | False |
+| Allow enabling users | False |
+| Allow disabling users | False |
+| Automatically create user if not found in update command | False |
+| Incoming Mapper | True |
+| Outgoing Mapper | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***

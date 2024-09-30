@@ -1,25 +1,21 @@
 Checkpoint Harmony Endpoint provides a complete endpoint security solution built to protect organizations and the remote workforce from today's complex threat landscape.
 This integration was integrated and tested with version 1 of CheckPointHarmonyEndpoint.
 
-## Configure Check Point Harmony Endpoint on Cortex XSOAR
+## Configure Check Point Harmony Endpoint in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Check Point Harmony Endpoint.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL | True |
-    | Client ID | True |
-    | Secret Key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Base URL | True |
+| Client ID | True |
+| Secret Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### harmony-ep-job-status-get
@@ -2605,4 +2601,3 @@ Removes the given VPN site's configuration to computers matching the given query
 >|Machine Id|Machine Name|Operation Status|
 >|---|---|---|
 >| 1 | DESKTOP-1 | DA_NOT_INSTALLED |
-

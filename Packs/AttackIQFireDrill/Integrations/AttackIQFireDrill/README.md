@@ -9,25 +9,21 @@ This integration was integrated and tested with AttackIQ FireDrill v2.15.96.
 *   Retrieves detailed assessment results.
 *   Triggers other playbook-based assessment results.
 
-## Configure AttackIQ Platform on Cortex XSOAR
+## Configure AttackIQ Platform in Cortex
 
-1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
-2.  Search for AttackIQ Platform.
-3.  Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Example** |
-    | ---------             | -----------           | -------            |
-    | Name | A meaningful name for the integration instance. | AttackIQFireDrill_instance_2 |
-    | Server URL | The URL to the Proofpoint server, including the scheme.  |  https:/<span></span>/example.net |
-    |  API Token | Account's private token (as appears in attackIQ UI). | N/A  |
-    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
+| **Parameter** | **Description** | **Example** |
+| ---------             | -----------           | -------            |
+| Name | A meaningful name for the integration instance. | AttackIQFireDrill_instance_2 |
+| Server URL | The URL to the Proofpoint server, including the scheme.  |  https:/<span></span>/example.net |
+|  API Token | Account's private token (as appears in attackIQ UI). | N/A  |
+| Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
+| Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
 
-4.  Click **Test** to validate the new instance.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get assessment information by ID
 
@@ -1067,4 +1063,3 @@ There are no context outputs for this command.
 ##### Human Readable Output
 
 Deleted assessment b2fc06d4-5d0a-4924-a126-66320887dce0 successfully.
-

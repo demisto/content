@@ -4,11 +4,8 @@ In order to configure this integration you must have a FireEye customer ID. Your
 
 The API key can be found and generated in the **API KEYS** section. You can navigate to it from your FireEye Helix app home page by clicking on the **user icon** on the top right, and choosing **HELIX Settings**. You'll be redirected to the **HELIX Settings** page, where API KEYS can be found.
 
-## Configure FireEyeHelix on Cortex XSOAR
+## Configure FireEyeHelix in Cortex
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for FireEyeHelix.
-3. Click __Add instance__ to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Example** |
    | ---------             | -----------           | -------            |
@@ -23,10 +20,9 @@ The API key can be found and generated in the **API KEYS** section. You can navi
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
 
 
-4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get all alerts

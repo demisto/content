@@ -1,36 +1,32 @@
 Zero Trust Analytics Platform (ZTAP) is the underlying investigation platform and user interface for Critical Start's MDR service.
 This integration was integrated and tested with version 2021-06-25 of ZeroTrustAnalyticsPlatform
 
-## Configure ZeroTrustAnalyticsPlatform on Cortex XSOAR
+## Configure ZeroTrustAnalyticsPlatform in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ZeroTrustAnalyticsPlatform.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | ZTAP server URL |  | True |
-    | API Key | The API Key to use for connection | True |
-    | Escalation Organization |  | True |
-    | Escalation Group |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Incident Mirroring Direction |  | False |
-    | Comment entry tag |  |  |
-    | Escalate entry tag |  |  |
-    | ZTAP input tag |  |  |
-    | Fetch attachments for comments from ZTAP |  |  |
-    | Sync closing incidents with ZTAP |  |  |
-    | Sync reopening incidents with ZTAP |  |  |
-    | First fetch timestamp |  | False |
-    | Maximum number of incidents to fetch |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| ZTAP server URL |  | True |
+| API Key | The API Key to use for connection | True |
+| Escalation Organization |  | True |
+| Escalation Group |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Incident Mirroring Direction |  | False |
+| Comment entry tag |  |  |
+| Escalate entry tag |  |  |
+| ZTAP input tag |  |  |
+| Fetch attachments for comments from ZTAP |  |  |
+| Sync closing incidents with ZTAP |  |  |
+| Sync reopening incidents with ZTAP |  |  |
+| First fetch timestamp |  | False |
+| Maximum number of incidents to fetch |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### get-mapping-fields
 ***

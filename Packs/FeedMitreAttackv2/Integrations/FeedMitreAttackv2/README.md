@@ -4,9 +4,6 @@ For more information click [here](https://www.mitre.org/capabilities/cybersecuri
 Note: When upgrading from v1 (MITRE IDs Feed) to v2 (MITRE ATT&CK) - disabling the MITRE IDs Feed indicator type, and instance are important for the smooth flow of the upgrade.
 ## Configure MITRE ATT&CK Feed on XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MITRE ATT&CK Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -22,7 +19,6 @@ Note: When upgrading from v1 (MITRE IDs Feed) to v2 (MITRE ATT&CK) - disabling t
 | proxy | Whether to use the system proxy settings. | False |
 | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
-4. Click **Test** to validate the connection.
 
 #### Feed timeouts:
 MITRE enforce a rate limit for connecting to their taxii server. Ensure that your fetch interval is reasonable, otherwise you will receive connection errors.
@@ -188,5 +184,4 @@ Looks up the reputation of the indicator in the Enterprise collection only.
 ``` ```
 
 #### Human Readable Output
-
 

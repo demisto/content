@@ -12,30 +12,26 @@ Integrate with Oracle Identity Access Management service to execute CRUD (create
 
 For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
-## Configure OracleIAM on Cortex XSOAR
+## Configure OracleIAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OracleIAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL | True |
-    | Username | True |
-    | Password | True |
-    | Allow creating users | False |
-    | Allow updating users | False |
-    | Allow enabling users | False |
-    | Allow disabling users | False |
-    | Automatically create user if not found in update command | False |
-    | Incoming Mapper | True |
-    | Outgoing Mapper | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Base URL | True |
+| Username | True |
+| Password | True |
+| Allow creating users | False |
+| Allow updating users | False |
+| Allow enabling users | False |
+| Allow disabling users | False |
+| Automatically create user if not found in update command | False |
+| Incoming Mapper | True |
+| Outgoing Mapper | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***

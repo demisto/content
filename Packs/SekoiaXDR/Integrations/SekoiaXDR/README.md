@@ -2,39 +2,35 @@ Fetch alerts and events from SEKOIA.IO XDR.
 To use this integration, please create an API Key with the appropriate permissions.
 This integration was integrated and tested with version 1.0 of Sekoia XDR.
 
-## Configure Sekoia XDR on Cortex XSOAR
+## Configure Sekoia XDR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Sekoia XDR.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API key |  | True |
-    | API Key |  | True |
-    | Server URL (i.e. https://api.sekoia.io) |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt;, e.g., -7d, -1h) |  | True |
-    | Maximum incidents to fetch per interval. | By default the max_fetch is set to 10 | True |
-    | Incidents Fetch Interval |  | False |
-    | Alerts status. | Filter alerts to fetch by status. You can write and press enter to insert new types. | False |
-    | Alerts types. | Filter alerts to fetch by types. You can write and press enter to insert new types. | False |
-    | Alerts urgency levels  ( "MINurgency,MAXurgency".  i.e: 80,100 ). | Filter alerts by their urgency levels. Use the format "MINurgency, MAXurgency" | False |
-    | Fetch mode | If there's no max_fetch it will fetch 10 incidents by default. | True |
-    | Replace "dots" in event field names with another character. | Replacing dots in events will make names look pretty good for users | True |
-    | Events fields to exclude from the events search result. | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
-    | Include assets information in the alerts when fetching. | When selected, it includes the assets information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
-    | Include kill chain information in the alerts when fetching. | When selected, it includes the kill chain information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False | 
-    | Timezone ( TZ format ) | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API key |  | True |
+| API Key |  | True |
+| Server URL (i.e. https://api.sekoia.io) |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp (&lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt;, e.g., -7d, -1h) |  | True |
+| Maximum incidents to fetch per interval. | By default the max_fetch is set to 10 | True |
+| Incidents Fetch Interval |  | False |
+| Alerts status. | Filter alerts to fetch by status. You can write and press enter to insert new types. | False |
+| Alerts types. | Filter alerts to fetch by types. You can write and press enter to insert new types. | False |
+| Alerts urgency levels  ( "MINurgency,MAXurgency".  i.e: 80,100 ). | Filter alerts by their urgency levels. Use the format "MINurgency, MAXurgency" | False |
+| Fetch mode | If there's no max_fetch it will fetch 10 incidents by default. | True |
+| Replace "dots" in event field names with another character. | Replacing dots in events will make names look pretty good for users | True |
+| Events fields to exclude from the events search result. | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
+| Include assets information in the alerts when fetching. | When selected, it includes the assets information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
+| Include kill chain information in the alerts when fetching. | When selected, it includes the kill chain information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False | 
+| Timezone ( TZ format ) | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### sekoia-xdr-list-alerts

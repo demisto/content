@@ -1,10 +1,7 @@
 Use the MalQuery Integration to query the contents of clean and malicious binary files, which forms part of Falcon's search engine.
 This integration was integrated and tested with version 1.0 of CrowdStrikeMalquery
-## Configure CrowdStrikeMalquery on Cortex XSOAR
+## Configure CrowdStrikeMalquery in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CrowdStrikeMalquery.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -14,9 +11,8 @@ This integration was integrated and tested with version 1.0 of CrowdStrikeMalque
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cs-malquery-exact-search
 ***
@@ -598,4 +594,3 @@ Retrieves indexed files metadata by their hash.
 >|filesize|filetype|first_seen|label|md5|sha1|sha256|
 >|---|---|---|---|---|---|---|
 >| 1076152 | PE32 | 2014/01/27 | unknown | c6a6a731f341ced1d93b61bc7628721d | 8953cdddbe825e8378c590084dca1e3d76ced233 | d77cf874521ee7d4bb7f54bd8cef3d60ec24d267cf2d502f819880f0819f5766 |
-

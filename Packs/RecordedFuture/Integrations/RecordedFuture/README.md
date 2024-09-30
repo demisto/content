@@ -4,42 +4,38 @@ This integration was integrated and tested with version 2.4.3 of Recorded Future
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previo-us-version-of-this-integration-recorded-future-v2).
 
-## Configure Recorded Future v2 on Cortex XSOAR
+## Configure Recorded Future v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Recorded Future v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., https://api.recordedfuture.com/gw/xsoar/) |  | True |
-    | API Token |  | True |
-    | File Threshold | Minimum risk score from Recorded Future to consider the file malicious. | False |
-    | CVE Threshold | Minimum risk score from Recorded Future to consider the CVE malicious. | False |
-    | IP Threshold | Minimum risk score from RF to consider the IP malicious. | False |
-    | Domain Threshold | Minimum risk score from Recorded Future to consider the domain malicious. | False |
-    | URL Threshold | Minimum risk score from Recorded Future to consider the URL malicious. | False |
-    | Vulnerability Threshold | Minimum risk score from Recorded Future to consider the vulnerability critical. | False |
-    | Collective Insights | The Recorded Future Intelligence Cloud aggregates data related to indicators, driving collective insights to better identify threats. Anonymized data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Rule names to fetch alerts by | Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched. | False |
-    | Alert Statuses to include in the fetch | Comma-separated alert statuses \(e.g. "unassigned,assigned,pending,actionable,no-action,tuning"\). If empty, the default value of "no-action" will be used. | False |
-    | Update alert status on fetch. | If selected, alerts with a status of 'no-action' will be updated to 'pending' once fetched by the integration. | False |
-    | First fetch time | Format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., "12 hours", "7 days", "3 months", "1 year". | False |
-    | Incident type |  | False |
-    | Maximum number of incidents per fetch |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    |  |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incidents Fetch Interval |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://api.recordedfuture.com/gw/xsoar/) |  | True |
+| API Token |  | True |
+| File Threshold | Minimum risk score from Recorded Future to consider the file malicious. | False |
+| CVE Threshold | Minimum risk score from Recorded Future to consider the CVE malicious. | False |
+| IP Threshold | Minimum risk score from RF to consider the IP malicious. | False |
+| Domain Threshold | Minimum risk score from Recorded Future to consider the domain malicious. | False |
+| URL Threshold | Minimum risk score from Recorded Future to consider the URL malicious. | False |
+| Vulnerability Threshold | Minimum risk score from Recorded Future to consider the vulnerability critical. | False |
+| Collective Insights | The Recorded Future Intelligence Cloud aggregates data related to indicators, driving collective insights to better identify threats. Anonymized data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Rule names to fetch alerts by | Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched. | False |
+| Alert Statuses to include in the fetch | Comma-separated alert statuses \(e.g. "unassigned,assigned,pending,actionable,no-action,tuning"\). If empty, the default value of "no-action" will be used. | False |
+| Update alert status on fetch. | If selected, alerts with a status of 'no-action' will be updated to 'pending' once fetched by the integration. | False |
+| First fetch time | Format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., "12 hours", "7 days", "3 months", "1 year". | False |
+| Incident type |  | False |
+| Maximum number of incidents per fetch |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+|  |  | False |
+| Incidents Fetch Interval |  | False |
+| Incidents Fetch Interval |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### domain

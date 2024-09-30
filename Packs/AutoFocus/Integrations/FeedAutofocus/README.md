@@ -5,11 +5,8 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 
 **Note:** The `Daily Threat Feed` option is deprecated. No available replacement.
 
-## Configure AutoFocus Feed on Cortex XSOAR
+## Configure AutoFocus Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AutoFocus Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -30,7 +27,6 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 #### Custom Feed info:
 To connect a custom AutoFocus feed you need to provide the Custom Feed URL.
@@ -63,7 +59,7 @@ You can go to AutoFocus UI -> Search -> Sample -> Advanced -> Create your desire
 }`
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators

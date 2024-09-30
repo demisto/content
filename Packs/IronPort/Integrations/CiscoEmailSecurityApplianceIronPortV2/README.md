@@ -1,30 +1,26 @@
 The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
 This integration was integrated and tested with version 14.0 of Cisco Email Security Appliance.
-## Configure Cisco ESA on Cortex XSOAR
+## Configure Cisco ESA in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco ESA.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
-    | First fetch timestamp | Timestamp in ISO format or number time unit,<br/>e.g., 2022-01-01T00:00:00000Z, 12 hours, 7 days, 3 months, now. | False |
-    | Filter by | The message field by which to fetch results. | False |
-    | Filter operator | The message field operator by which to fetch results. | False |
-    | Filter value | The message filter value by which to fetch results. | False |
-    | Recipient filter operator | The message recipient filter operator by which to fetch results. | False |
-    | Recipient filter value | The message recipient filter value by which to fetch results. | False |
-    | Time to live for the JWT connection token (in minutes). |   | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
+| Username |  | True |
+| Password |  | True |
+| Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
+| First fetch timestamp | Timestamp in ISO format or number time unit,<br/>e.g., 2022-01-01T00:00:00000Z, 12 hours, 7 days, 3 months, now. | False |
+| Filter by | The message field by which to fetch results. | False |
+| Filter operator | The message field operator by which to fetch results. | False |
+| Filter value | The message filter value by which to fetch results. | False |
+| Recipient filter operator | The message recipient filter operator by which to fetch results. | False |
+| Recipient filter value | The message recipient filter value by which to fetch results. | False |
+| Time to live for the JWT connection token (in minutes). |   | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Troubleshooting
 If you encounter multiple recurring errors similar to the following message:
@@ -36,7 +32,7 @@ If the time to live is shorter, it can lead to the authorization error above. To
 By default, this value is 30 minutes and should only be reduced if these errors occur.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cisco-esa-spam-quarantine-message-search
 ***
@@ -1441,4 +1437,3 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-
 >|Blocked Dmarc|Blocked Invalid Recipient|Blocked Reputation|Blocked Sdr|Bulk Mail|Detected Amp|Detected Spam|Detected Spam Certain|Detected Spam Suspect|Detected Virus|Detected Virus Per Msg|Failed Dkim|Failed Spf|Ims Spam Increment Over Case|Malicious Url|Marketing Mail|Social Mail|Threat Content Filter|Total Clean Recipients|Total Graymail Recipients|Total Mailbox Auto Remediated Recipients|Total Recipients|Total Spoofed Emails|Total Threat Recipients|Verif Decrypt Fail|Verif Decrypt Success|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 12 | 1345 | 0 | 1 | 0 | 19 | 15 | 4 | 0 | 0 | 0 | 0 | 0 | 3 | 4 | 0 | 4 | 179 | 5 | 0 | 1567 | 1 | 1383 | 0 | 0 |
-

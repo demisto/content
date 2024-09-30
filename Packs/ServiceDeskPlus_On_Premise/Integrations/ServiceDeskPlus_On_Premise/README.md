@@ -1,10 +1,7 @@
 IT Service Management
 
-## Configure ServiceDeskPlus (On-Premise) on Cortex XSOAR
+## Configure ServiceDeskPlus (On-Premise) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ServiceDeskPlus (On-Premise).
-3. Click **Add instance** to create and configure a new integration instance.
 
 ## Instance Creation Flow
 
@@ -14,7 +11,6 @@ Follow the next steps to create an instance:
 
 1. Enter the Server URL info.
 2. Enter the Technician Key.
-3. Click the **Test** button to validate the instance.
 
 **NOTES**
 - For more details about generating a technician key please refer to the [help documentation](https://help.servicedeskplus.com/api/rest-api.html$key)
@@ -35,7 +31,7 @@ Follow the next steps to create an instance:
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### service-desk-plus-requests-list
 ***

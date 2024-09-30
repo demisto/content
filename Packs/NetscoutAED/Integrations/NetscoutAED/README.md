@@ -9,22 +9,18 @@ Using the Netscout AED integration you can:
 - Get, add, and remove hosts from the outbound all.
 - Get and update the protection group (the IPv4 or IPv6 hosts that you need to protect).
 
-## Configure NetscoutAED on Cortex XSOAR
+## Configure NetscoutAED in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for NetscoutAED.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | API Token | If using 6.0.2 or lower version, put your API Key in the **Password** field, leave the **User** field empty. | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| API Token | If using 6.0.2 or lower version, put your API Key in the **Password** field, leave the **User** field empty. | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### na-ed-outbound-blacklisted-countries-list
 ***

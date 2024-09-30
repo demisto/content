@@ -1,24 +1,20 @@
 Simple customer authentication and streamlined workforce identity operations.
 
-## Configure OneLogin Event Collector on Cortex XSIAM
+## Configure OneLogin Event Collector in Cortex
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Data Sources**.
-2. Search for OneLogin Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | Client Id | The client ID. | True |
-    | Client Secret | The client secret. | True |
-    | The maximum number of events per fetch |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL |  | True |
+| Client Id | The client ID. | True |
+| Client Secret | The client secret. | True |
+| The maximum number of events per fetch |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### onelogin-get-events
 ***

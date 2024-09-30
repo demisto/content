@@ -3,28 +3,24 @@ Note: This integration should be used as part of our **Identity Lifecycle Manage
 Integrate with Slack's services to execute CRUD operations for employee lifecycle processes.
 For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
-## Configure Slack IAM on Cortex XSOAR
+## Configure Slack IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Slack IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | access_token | Access Token | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | create_user_enabled | Allow creating users. If set to false, iam-create-user command will be skipped, and user will not be created. | False |
-    | update_user_enabled | Allow updating users | False |
-    | enable_user_enabled | Allow enabling users | False |
-    | disable_user_enabled | Allow disabling users | False |
-    | create_if_not_exists | Automatically create user if not found in update command | False |
-    | mapper_in | Incoming Mapper | True |
-    | mapper_out | Outgoing Mapper | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| access_token | Access Token | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| create_user_enabled | Allow creating users. If set to false, iam-create-user command will be skipped, and user will not be created. | False |
+| update_user_enabled | Allow updating users | False |
+| enable_user_enabled | Allow enabling users | False |
+| disable_user_enabled | Allow disabling users | False |
+| create_if_not_exists | Automatically create user if not found in update command | False |
+| mapper_in | Incoming Mapper | True |
+| mapper_out | Outgoing Mapper | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***

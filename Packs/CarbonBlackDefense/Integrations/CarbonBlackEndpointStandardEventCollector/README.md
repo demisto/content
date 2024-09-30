@@ -2,29 +2,25 @@ Endpoint Standard (formerly called Carbon Black Defense), a Next-Generation Anti
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Carbon Black Endpoint Standard Event Collector on Cortex XSOAR
+## Configure Carbon Black Endpoint Standard Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Carbon Black Endpoint Standard Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API ID | The API Key to use for connection | True |
-    | API Secret Key |  | True |
-    | Organization Key |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Include Audit Logs |  | False |
-    | Maximum number of alerts per fetch | Default 100,000. | False |
-    | Maximum number of audit logs per fetch | Default 25,000. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API ID | The API Key to use for connection | True |
+| API Secret Key |  | True |
+| Organization Key |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Include Audit Logs |  | False |
+| Maximum number of alerts per fetch | Default 100,000. | False |
+| Maximum number of audit logs per fetch | Default 25,000. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### carbonblack-endpoint-standard-get-events

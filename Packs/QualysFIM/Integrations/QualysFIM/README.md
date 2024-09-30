@@ -2,28 +2,24 @@
 
 Log and track file changes across global IT systems.
 This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
-## Configure qualys_fim on Cortex XSOAR
+## Configure qualys_fim in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for qualys_fim.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Username | Username for authentication | True |
-    | Password | Password for authentication | True |
-    | Qualys API Platform URL | The Qualys API server URL that you should use for API requests depends on the platform where your account is located.  Platforms and URLS: Qualys US Platform 1: https://gateway.qg1.apps.qualys.com Qualys US Platform 2: https://gateway.qg2.apps.qualys.com Qualys US Platform 3: https://gateway.qg3.apps.qualys.com Qualys EU Platform 1: https://gateway.qg1.apps.qualys.eu Qualys EU Platform 2: https://gateway.qg2.apps.qualys.eu Qualys India Platform 1: https://gateway.qg1.apps.qualys.in Qualys Private Cloud Platform\(Custom Platform\): https://gateway.\<customer_base_url\> | True |
-    | Fetch incidents | Fetch incidents| False |
-    | Fetch time | First fetch timestamp (\<number\> \<time unit\>) e.g., 12 hours, 7 days | False |
-    | Incident Type | Incident type | False |
-    | Max Fetch | Max Fetch is limited to 200 incidents per fetch. Choose a value lower than 200. | False |
-    | Fetch Filter | Filter the incidents fetching by providing a query using Qualys syntax i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm | False |
-    | Insecure | Trust any certificate (not secure) | False |
-    | Proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Username | Username for authentication | True |
+| Password | Password for authentication | True |
+| Qualys API Platform URL | The Qualys API server URL that you should use for API requests depends on the platform where your account is located.  Platforms and URLS: Qualys US Platform 1: https://gateway.qg1.apps.qualys.com Qualys US Platform 2: https://gateway.qg2.apps.qualys.com Qualys US Platform 3: https://gateway.qg3.apps.qualys.com Qualys EU Platform 1: https://gateway.qg1.apps.qualys.eu Qualys EU Platform 2: https://gateway.qg2.apps.qualys.eu Qualys India Platform 1: https://gateway.qg1.apps.qualys.in Qualys Private Cloud Platform\(Custom Platform\): https://gateway.\<customer_base_url\> | True |
+| Fetch incidents | Fetch incidents| False |
+| Fetch time | First fetch timestamp (\<number\> \<time unit\>) e.g., 12 hours, 7 days | False |
+| Incident Type | Incident type | False |
+| Max Fetch | Max Fetch is limited to 200 incidents per fetch. Choose a value lower than 200. | False |
+| Fetch Filter | Filter the incidents fetching by providing a query using Qualys syntax i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm | False |
+| Insecure | Trust any certificate (not secure) | False |
+| Proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### qualys-fim-events-list
 ***
@@ -1936,4 +1932,3 @@ Retrieve a list of all FIM assets.
 >|---|---|---|---|---|---|---|
 >| Qmasters_desktop | 2021-02-16 08:18:39 | 2021-01-10 11:58:40 | 1.1.1.1 | 4.1.0.744 | 2021-02-16 09:31:25 | b1caea93-0d21-4343-801c-92009f036c79 |
 >| DC | 2021-01-17 16:16:57 | 2021-01-17 16:01:41 | 4.0.0.411 | 1.1.1.1 | 2021-01-17 16:23:58 | 12345678 |
-

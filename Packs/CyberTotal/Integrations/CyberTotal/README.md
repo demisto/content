@@ -1,10 +1,7 @@
 CyberTotal is a cloud-based threat intelligence service developed by CyCraft.
 This integration was integrated and tested with version 1.6.4 of CyberTotal
-## Configure CyberTotal on Cortex XSOAR
+## Configure CyberTotal in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CyberTotal.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,9 +15,8 @@ This integration was integrated and tested with version 1.6.4 of CyberTotal
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -982,4 +978,3 @@ Return domain whois information
 >|admin|auditCreatedAt|auditUpdatedAt|compositeParseCode|contactCountries|contactEmails|contactNames|contactOrganizations|contacts|createdAt|domain|domainAvailable|domainMd5|domainStatus|domainUnicode|expired|id|message|nameservers|noRecord|permalink|registrant|registrarCreatedAt|registrarEmail|registrarExpiresAt|registrarIanaID|registrarName|registrarParseCode|registrarPhone|registrarUpdatedAt|registryParseCode|resource|scan_date|status|task_id|technical|tld|updatedAt|whoisID|whoisServer|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 2020-04-09T07:17:45+00:00 | 2020-04-09T07:17:45+00:00 | 3579 | US | corp.dns.domains@disney.com | ABC, Inc.; Domain Administrator | ABC, Inc. | {'whoisContactID': 0, 'email': 'xxx@xxx.net', 'name': 'ABC, Inc.; Domain Administrator', 'organization': 'ABC, Inc.', 'city': 'New York', 'state': 'NY', 'zip': '10023-6298', 'country': 'US', 'phone': '18182384694', 'fax': '18182384694', 'address': 'New York\n10023-6298\nNY\nUS\n', 'id': 0} | 2020-04-09T07:17:45+00:00 | abc.com | false | 929ba26f492f86d4a9d66a080849865a | clientTransferProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited | abc.com | false | 6653913764397840884 | search success | ns-1368.awsdns-43.org,<br/>ns-1869.awsdns-41.co.uk,<br/>ns-318.awsdns-39.com,<br/>ns-736.awsdns-28.net | false | ["https://cybertotal.cycraft.com/app/intelligence/79ca1bd740564c36a7a4a78df5dc719d"] | whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | 1996-05-22T04:00:00+00:00 | domainabuse@cscglobal.com | 2021-05-23T04:00:00+00:00 | 299 | CSC Corporate Domains, Inc. | 3579 | +1.8887802723 | 2020-04-08T07:06:06+00:00 | 251 | ["abc.com"] | ["2020-06-18 03:19:48"] | ACTIVE | 79ca1bd740564c36a7a4a78df5dc719d | whoisContactID: 0<br/>email: xxx@xxx.net<br/>name: ABC, Inc.; Domain Administrator<br/>organization: ABC, Inc.<br/>city: New York<br/>state: NY<br/>zip: 10023-6298<br/>country: US<br/>phone: 18182384694<br/>fax: 18182384694<br/>address: New York<br/>10023-6298<br/>NY<br/>US<br/><br/>id: 0 | com | 2020-04-09T07:17:45+00:00 | 6653913764397840884 | whois.corporatedomains.com |
-

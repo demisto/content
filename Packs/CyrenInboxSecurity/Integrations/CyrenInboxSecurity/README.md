@@ -1,25 +1,21 @@
 Cyren Inbox Security is an innovative solution that safeguards Office 365 mailboxes in your organization against evasive phishing, business email compromise (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into XSOAR, and includes a playbook for incident resolution.
 This integration was integrated and tested with version 1.0 of Cyren Inbox Security
 
-## Configure Cyren Inbox Security on Cortex XSOAR
+## Configure Cyren Inbox Security in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cyren Inbox Security.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | The endpoint  provided by your Cyren Representative. \(use "sample" to test\) | True |
-    | Client ID | The client iD provided by your Cyren Representative. \(use "sample" to test\) | True |
-    | Client Secret | The client secret provided by your Cyren Representative. \(use "sample" to test\) | True |
-    | First fetch time | 1 day, 2 days, etc... | False |
-    | Maximum number of incidents per fetch |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The endpoint  provided by your Cyren Representative. \(use "sample" to test\) | True |
+| Client ID | The client iD provided by your Cyren Representative. \(use "sample" to test\) | True |
+| Client Secret | The client secret provided by your Cyren Representative. \(use "sample" to test\) | True |
+| First fetch time | 1 day, 2 days, etc... | False |
+| Maximum number of incidents per fetch |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cyren-resolve-and-remediate
 ***

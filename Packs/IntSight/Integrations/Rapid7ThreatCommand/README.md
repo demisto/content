@@ -1,38 +1,34 @@
 Rapid7 Insight - Threat Command allows managing alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.
 This integration was integrated and tested with version 3.1.4 of rapid7_threat_command
 
-## Configure Rapid7 - Threat Command (IntSights) on Cortex XSOAR
+## Configure Rapid7 - Threat Command (IntSights) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rapid7 - Threat Command (IntSights).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | URL of the Rapid7 platform. | True |
-    | Account ID |  | True |
-    | API key |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Fetch incidents |  | False |
-    | First fetch timestamp. | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2023-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
-    | Maximum incidents per fetch | The maximum number of alerts to fetch each time. The default is 50. If the value is greater than 200, it will be considered as 200. | True |
-    | Alert types to fetch as incidents | Alert types to fetch as incidents. | False |
-    | Network types to fetch as incidents | Network types to fetch as incidents. | False |
-    | Minimum Alert Severity Level | Alerts with the minimum level of severity to fetch. | False |
-    | Source types to filter alerts by | Source types to filter alerts by. | False |
-    | Fetch closed alerts | Fetch closed alerts from Rapid7 platform. | False |
-    | Include CSV files of alerts |  | False |
-    | Include attachments of alerts | MSSP accounts must provide a sub-account ID to perform this action. | False |
-    | Sub-account ID (for MSSP accounts). |  | False |
-    | Incident type |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | URL of the Rapid7 platform. | True |
+| Account ID |  | True |
+| API key |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Fetch incidents |  | False |
+| First fetch timestamp. | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2023-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
+| Maximum incidents per fetch | The maximum number of alerts to fetch each time. The default is 50. If the value is greater than 200, it will be considered as 200. | True |
+| Alert types to fetch as incidents | Alert types to fetch as incidents. | False |
+| Network types to fetch as incidents | Network types to fetch as incidents. | False |
+| Minimum Alert Severity Level | Alerts with the minimum level of severity to fetch. | False |
+| Source types to filter alerts by | Source types to filter alerts by. | False |
+| Fetch closed alerts | Fetch closed alerts from Rapid7 platform. | False |
+| Include CSV files of alerts |  | False |
+| Include attachments of alerts | MSSP accounts must provide a sub-account ID to perform this action. | False |
+| Sub-account ID (for MSSP accounts). |  | False |
+| Incident type |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### threat-command-cyber-term-list

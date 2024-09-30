@@ -1,12 +1,9 @@
 The Office 365 IP Address and URL web service is a read-only API provided by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed integration fetches indicators from the service, with which you can create a list (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.
 
 
-## Configure Office 365 Feed on Cortex XSOAR
+## Configure Office 365 Feed in Cortex
 ---
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for Office 365 Feed.
-3. Click __Add instance__ to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Example** |
    | ------------- | --------------- | ----------- |
@@ -21,14 +18,13 @@ The Office 365 IP Address and URL web service is a read-only API provided by Mic
    | feedExpirationInterval |  |  |
    | Feed Fetch Interval | How often to fetch indicators from this integration instance. You can specify the interval in days, hours, or minutes. | 30 minutes |
    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed.  This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | N/A |
-    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
+| Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
-4. Click __Test__ to validate the URLs and connection.
 
 ## Commands
 ---
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed

@@ -1,26 +1,22 @@
 Use the GLIMPS Detect Integration to send files to GLIMPS Malware and get results from it
 This integration was integrated and tested with version 0.2.0 of gdetect client.
 
-## Configure GLIMPS Detect on Cortex XSOAR
+## Configure GLIMPS Detect in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GLIMPS Detect.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Token |  | True |
-    | URL |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | First Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
-    | Fetch Limit | Maximum number of alerts per fetch. Default and recommended is 50 | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Token |  | True |
+| URL |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| First Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+| Fetch Limit | Maximum number of alerts per fetch. Default and recommended is 50 | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gdetect-send
 ***

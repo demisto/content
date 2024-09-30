@@ -1,22 +1,18 @@
 The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 
-## Configure Investigation & Response on Cortex XSOAR
+## Configure Investigation & Response in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Investigation & Response.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident type |  | False |
-    | Server URL (copy URL from Core - click ? to see more info.) |  | False |
-    | API Key ID |  | False |
-    | API Key |  | False |
-    | HTTP Timeout | The timeout of the HTTP requests sent to Cortex API \(in seconds\). | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Incident type |  | False |
+| Server URL (copy URL from Core - click ? to see more info.) |  | False |
+| API Key ID |  | False |
+| API Key |  | False |
+| HTTP Timeout | The timeout of the HTTP requests sent to Cortex API \(in seconds\). | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### core-isolate-endpoint
 ***
@@ -2813,4 +2809,3 @@ Initiates a new endpoint script execution action using a script from the script 
 >| _return_value| domain | endpoint_id| endpoint_ip_address| endpoint_name| endpoint_status| execution_status| failed_files| retention_date| retrieved_files| standard_output|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >||222|111|1.1.1.1|test|STATUS_010_CONNECTED|COMPLETED_SUCCESSFULLY|0||0||
-

@@ -1,26 +1,22 @@
 Vulnerabilities management
 This integration was integrated and tested with version 1.0 of Cyberpion
-## Configure Cyberpion on Cortex XSOAR
+## Configure Cyberpion in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cyberpion.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://api.example.com/security/api) |  | True |
-    | API Key |  | True |
-    | Maximum number of incidents per fetch |  | False |
-    | Action items category to fetch as incidents. | Allowed values: "Network", "Web", "Cloud", "DNS", "PKI", "Vulnerabilities", "TLS", "Email Server", "Mobile". | True |
-    | Minimum Action items severity level to fetch incidents from. | Allowed values are integers between 1 to 10.<br/>1 will fetch all incidents. | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Show only active issues |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://api.example.com/security/api) |  | True |
+| API Key |  | True |
+| Maximum number of incidents per fetch |  | False |
+| Action items category to fetch as incidents. | Allowed values: "Network", "Web", "Cloud", "DNS", "PKI", "Vulnerabilities", "TLS", "Email Server", "Mobile". | True |
+| Minimum Action items severity level to fetch incidents from. | Allowed values are integers between 1 to 10.<br/>1 will fetch all incidents. | True |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Show only active issues |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cyberpion-get-domain-action-items
 ***
@@ -154,4 +150,3 @@ Retrieves domain's info and current state
 >|id|domain|ips|risk_rank|vuln_count|cname_chain|domain_types|discovery_date|
 >|---|---|---|---|---|---|---|---|
 >| 9ab5474a-3da2-4910-9d59-9a1f11a2193e | $anon100-2.com | 153.228.75.31: None<br/>235.125.130.90: None | 0 | 0 |  | 1.<br/>service_type: CBSP<br/>provider: Incapsula<br/>service: None<br/>description: None | 2021-03-07 |
-

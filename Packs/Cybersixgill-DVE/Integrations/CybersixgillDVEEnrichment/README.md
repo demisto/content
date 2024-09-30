@@ -8,23 +8,19 @@ DVE Score is also the most comprehensive CVE enrichment solution on the market: 
 
 To obtain access to Cybersixgill DVE Score feed via Cortex XSOAR, please contact Cybersixgill at getstarted@cybersixgill.com.
 
-## Configure Sixgill_Darkfeed_Enrichment on Cortex XSOAR
+## Configure Sixgill_Darkfeed_Enrichment in Cortex
 
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for "Cybersixgill DVE Enrichment".
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Sixgill API client ID | Sixgill API client ID | True |
-    | Sixgill API client secret | Sixgill API client secret | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Sixgill API client ID | Sixgill API client ID | True |
+| Sixgill API client secret | Sixgill API client secret | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cybersixgill-cve-enrich
 ***
@@ -70,4 +66,3 @@ Returns information for each CVE in the input list
 ``` ```
 
 #### Human Readable Output
-

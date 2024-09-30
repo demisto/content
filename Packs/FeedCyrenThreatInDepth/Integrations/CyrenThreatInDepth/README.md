@@ -17,9 +17,6 @@ The Cyren Threat InDepth content pack includes access to these streams of indica
 
 ## Configure Cyren Threat InDepth Threat Intelligence Feed on XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cyren Threat InDepth Threat Intelligence Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -36,7 +33,6 @@ The Cyren Threat InDepth content pack includes access to these streams of indica
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 The underlying Cyren Threat InDepth API provides you with an incremental feed, meaning it provides new
 or modified indicators. It also works with an offset value that keeps track of your currently processed

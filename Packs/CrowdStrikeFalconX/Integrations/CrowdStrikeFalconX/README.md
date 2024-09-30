@@ -1,22 +1,18 @@
 Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 This integration was integrated and tested with version 2 of CrowdStrike Falcon Intelligence Sandbox
 
-## Configure CrowdStrike Falcon Intelligence Sandbox on Cortex XSOAR
+## Configure CrowdStrike Falcon Intelligence Sandbox in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CrowdStrike Falcon Intelligence Sandbox.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Cloud Base URL (e.g., https://api.crowdstrike.com) |  | False |
-    | Client ID |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data |  |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Cloud Base URL (e.g., https://api.crowdstrike.com) |  | False |
+| Client ID |  | True |
+| Password |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Uploading a file to the sandbox
@@ -28,7 +24,7 @@ in this option the sha256 identifier from the ***cs-fx-upload-file*** command ou
 For more information review the documentation for the commands.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cs-fx-upload-file
 ***
@@ -3896,4 +3892,3 @@ There is no context output for this command.
 
 >### CrowdStrike Falcon Intelligence Sandbox response:
 >**No entries.**
-

@@ -1,10 +1,7 @@
 Integration with Humio
 
-## Configure Humio on Cortex XSOAR
+## Configure Humio in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Humio.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,7 +16,6 @@ Integration with Humio
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Obtaining an API key
 Go to https://your-humio/settings and copy the API token. Example [https://cloud.humio.com/settings](https://cloud.humio.com/settings)
 
@@ -27,7 +23,7 @@ Go to https://your-humio/settings and copy the API token. Example [https://cloud
 The parameters used for fetch-incidents are only used if you want to use the fetch incidents feature. It is recommended to use alerts and notifiers in Humio to send this data to XSOAR via a webhook notifier instead. You can read more about the supported time-formats for backfilling [here](https://docs.humio.com/reference/api/search-api/#time-specification).
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### humio-query
 ***
@@ -808,4 +804,3 @@ Get notifier from Humio by id
 >|entity|id|name|properties|
 >|---|---|---|---|
 >| WebHookNotifier | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | Null Webhook | bodyTemplate: {<br/>  "repository": "{repo_name}",<br/>  "timestamp": "{alert_triggered_timestamp}",<br/>  "alert": {<br/>    "name": "{alert_name}",<br/>    "description": "{alert_description}",<br/>    "query": {<br/>      "queryString": "{query_string} ",<br/>      "end": "{query_time_end}",<br/>      "start": "{query_time_start}"<br/>    },<br/>    "notifierID": "{alert_notifier_id}",<br/>    "id": "{alert_id}",<br/>    "linkURL": "{url}"<br/>  },<br/>  "warnings": "{warnings}",<br/>  "events": {events},<br/>  "numberOfEvents": {event_count}<br/>}<br/>headers: {"Content-Type": "application/json"}<br/>ignoreSSL: false<br/>method: POST<br/>url: http://localhost |
-

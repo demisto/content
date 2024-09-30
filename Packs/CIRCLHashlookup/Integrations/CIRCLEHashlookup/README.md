@@ -1,23 +1,19 @@
 CIRCL hash lookup is a public API to lookup hash values against known database of files. NSRL RDS database is included and many others are also included. The API is accessible via HTTP ReST API and the API is also described as an OpenAPI. The service is free and served as a best-effort basis.
 This integration was integrated and tested with online version of CIRCLEHashlookup
 
-## Configure CIRCLEHashlookup on Cortex XSOAR
+## Configure CIRCLEHashlookup in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CIRCLEHashlookup.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://hashlookup.circl.lu) |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://hashlookup.circl.lu) |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### circl-info
 ***
@@ -174,5 +170,4 @@ Return the top 100 of most queried values.
 ``` ```
 
 #### Human Readable Output
-
 
