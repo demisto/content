@@ -3043,7 +3043,7 @@ Deprecated. Retrieves traffic log query data by job id.
 | Panorama.TrafficLogs.Logs.ActionSource | string | Action source of the traffic log. |
 | Panorama.TrafficLogs.Logs.Application | string | Application of the traffic log. |
 | Panorama.TrafficLogs.Logs.Bytes | string | The total log bytes. |
-| Panorama.TrafficLogs.Logs.BytesReceived | string |  The log bytes received. |
+| Panorama.TrafficLogs.Logs.BytesReceived | string | The log bytes received. |
 | Panorama.TrafficLogs.Logs.BytesSent | string | The log bytes sent. |
 | Panorama.TrafficLogs.Logs.Category | string | Category of the traffic log. |
 | Panorama.TrafficLogs.Logs.DeviceName | string | Device name of the traffic log. |
@@ -9207,7 +9207,7 @@ Gets the audit comment of a rule.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.AuditComment.comment | String | The audit comment ot the rule. | 
+| Panorama.AuditComment.comment | String | The audit comment of the rule. | 
 | Panorama.AuditComment.rule_name | String | The rule name. | 
 | Panorama.AuditComment.rule_type | String | The rule type. | 
 
