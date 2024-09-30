@@ -1,7 +1,6 @@
 
 ## Configure Core REST API in Cortex
 
-   When using XSOAR: Navigate to **Settings** > **Integrations**.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
