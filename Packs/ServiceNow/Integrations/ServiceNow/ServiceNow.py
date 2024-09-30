@@ -1465,6 +1465,7 @@ def fetch_incidents():
 
 
 def test_module():
+    raise Exception(f"TESTING AAA")
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
 
