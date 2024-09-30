@@ -1,7 +1,7 @@
 {
-    "id": "Review Indicators Manually For Whitelisting",
+    "id": "Review Indicators Manually For Allowlisting",
     "group": "incident",
-    "name": "Review Indicators Manually For Whitelisting Incident",
+    "name": "Review Indicators Manually For Allowlisting Incident",
     "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
