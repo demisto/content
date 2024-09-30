@@ -20,7 +20,8 @@ from DSPM import (
     dspm_get_risk_findings_command,
     dspm_get_list_of_assets_command,
     dspm_get_data_types_findings_command,
-    dspm_get_list_of_alerts_command
+    dspm_get_list_of_alerts_command,
+    dspm_get_list_of_asset_fields_command
 )
 
 
@@ -554,6 +555,48 @@ def test_get_asset_files_by_id(client):
             {"filename": "file2.txt", "size": 5678}
         ],
         'filesCount': 2
+    }
+
+
+def test_dspm_get_list_of_asset_fields_command(client):
+    # Mock response data
+    mock_responses = [
+        {
+            "fields": [
+                {"name": "maidenname", "databaseName": "dummy"},
+                {"name": "salary", "databaseName": "dummy"}
+            ],
+            "fieldsCount": 2
+        },
+        {
+            "fields": [],
+            "filesCount": 0
+        }
+    ]
+
+    # Mock the client method
+    client.get_list_of_asset_fields = MagicMock(side_effect=[mock_responses[0], mock_responses[1]])
+
+    # Define the arguments for the command
+    args = {
+        'asset_id': 'asset1',
+        'page': 1,
+        'size': 20
+    }
+
+    # Call the function
+    result = dspm_get_list_of_asset_fields_command(client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.AssetFields'
+    assert result.outputs_key_field == 'name'
+    assert result.outputs == {
+        'fields': [
+            {"name": "maidenname", "databaseName": "dummy"},
+            {"name": "salary", "databaseName": "dummy"}
+        ],
+        'fieldsCount': 2
     }
 
 

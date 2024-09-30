@@ -469,6 +469,52 @@ script:
     - contextPath: DSPM.AssetFiles.isDbDump
       description: 'Asset file isDbDump.'
       type: Boolean
+  - arguments:
+    - description: ID of the asset for which to retrieve field details.
+      name: assetId
+      required: true
+    description: Return lists of asset fields. Only for structured assets such as RDS, Aurora, BigQuery. Do not support S3 assets.
+    name: dspm-get-list-of-asset-fields-by-id
+    outputs:
+    - contextPath: DSPM.AssetFields.name
+      description: 'Asset field name.'
+      type: String
+    - contextPath: DSPM.AssetFields.path
+      description: 'Asset field path.'
+      type: String
+    - contextPath: DSPM.AssetFields.tableName
+      description: 'Asset field tableName.'
+      type: String
+    - contextPath: DSPM.AssetFields.tableSize
+      description: 'Asset field tableSize.'
+      type: String
+    - contextPath: DSPM.AssetFields.databaseName
+      description: 'Asset field databaseName.'
+      type: String
+    - contextPath: DSPM.AssetFields.collectionName
+      description: 'Asset field collectionName.'
+      type: String
+    - contextPath: DSPM.AssetFields.type
+      description: 'Asset field type.'
+      type: String
+    - contextPath: DSPM.AssetFields.dataTypes.name
+      description: 'Asset field datatype name.'
+      type: String
+    - contextPath: DSPM.AssetFields.dataTypes.label
+      description: 'Asset field datatype label.'
+      type: String
+    - contextPath: DSPM.AssetFields.dataTypes.hitPercentage
+      description: 'Asset field datatype hitPercentage.'
+      type: Number
+    - contextPath: DSPM.AssetFields.dataTypes.maskedValues.masked_value
+      description: 'Asset field datatype masked value.'
+      type: String
+    - contextPath: DSPM.AssetFields.dataTypes.maskedValues.line
+      description: 'Asset field datatype masked value line.'
+      type: Number
+    - contextPath: DSPM.AssetFields.schemaName
+      description: 'Asset field schemaName.'
+      type: String
   - arguments: []
     name: dspm-get-data-types
     description: 'Fetches the available data types for the DSPM integration.'

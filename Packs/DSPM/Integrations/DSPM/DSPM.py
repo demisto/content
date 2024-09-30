@@ -16,6 +16,7 @@ GET_RISK_FINDINGS_ENDPOINT = "/v1/risk-findings"
 GET_ASSET_LISTS = "/v1/assets"
 GET_ASSET_DETAILS = "/v1/assets/id?id="
 GET_ASSET_FILES = "/v1/classification/asset-files/id"
+GET_ASSET_FIELDS = "/v1/classification/asset-fields/id"
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
 GET_ALERTS_LIST: str = "/v1/alerts"
@@ -205,6 +206,13 @@ class Client(BaseClient):
         return self._http_request(
             method="PATCH",
             url_suffix=f"/v1/alerts/id/{alert_id}/status/{updated_status}",
+        )
+
+    def get_list_of_asset_fields(self, params):
+        return self._http_request(
+            method="POST",
+            url_suffix=f"{GET_ASSET_FIELDS}",
+            params=params
         )
 
 
@@ -910,6 +918,56 @@ def dspm_get_list_of_alerts_command(client, args):
         page += 1
 
 
+def dspm_get_list_of_asset_fields_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    asset_id = args.get("assetId", None)
+    if not asset_id:
+        raise ValueError("Asset ID not specified")
+
+    page_number = 1
+    all_fields = []
+    try:
+        while True:
+            params = {
+                "id": asset_id,
+                "page": page_number,
+                "size": MAX_PAGE_SIZE
+            }
+
+            # Fetch the asset fields for the current page
+            response = client.get_list_of_asset_fields(params)
+            fields = response[0].get("fields", [])
+
+            if not fields:
+                break
+
+            # Append the fields to the total list of fields
+            all_fields.extend(fields)
+
+            # Increment page number for the next fetch
+            page_number += 1
+
+        fields_count = len(all_fields)
+
+        # Return the result without formatting the fields structure
+        headers = ["name", "dataTypes", "path", "tableName", "tableSize", "databaseName", "collectionName", "type", "schemaName"]
+        readable_output = tableToMarkdown("Asset Field", all_fields, headers=headers, headerTransform=pascalToSpace)
+        return CommandResults(
+            outputs_prefix="DSPM.AssetFields",
+            outputs_key_field="name",
+            outputs={"fields": all_fields, "fieldsCount": fields_count},
+            readable_output=readable_output
+        )
+    except Exception as e:
+        error = str(e)
+        if '"status": 400' in error:
+            message = f"Provided assetID:- '{asset_id}' does not supported. Please check the command description for more details"
+        elif '"status": 404' in error:
+            message = f"Incorrect assetID:- '{asset_id}' provided. Please confirm the assetID"
+        else:
+            message = f"Failed to get asset fields for assetId:- '{asset_id}'. Error: {str(e)}"
+        raise Exception(message)
+
+
 """ MAIN FUNCTION """
 
 
@@ -970,6 +1028,8 @@ def main() -> None:
             return_results(get_data_types(client))
         elif demisto.command() == "dspm-get-asset-files-by-id":
             return_results(get_asset_files_by_id(client, demisto.args()))
+        elif demisto.command() == "dspm-get-list-of-asset-fields-by-id":
+            return_results(dspm_get_list_of_asset_fields_command(client, demisto.args()))
 
         #
         # data-type-findings-resource

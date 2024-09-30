@@ -474,6 +474,79 @@ Retrieves file details for the specified asset ID.
 >|data security test cases.pdf|data security test cases.pdf|Document|73286|true|false|false|Street Address (Sensitive), Email Address (PII)|PII, Sensitive|false|
 
 
+### dspm-get-list-of-asset-fields-by-id
+
+***
+Return lists of asset fields. Only for structured assets such as RDS, Aurora, BigQuery. Do not support S3 assets.
+
+#### Base Command
+
+`dspm-get-list-of-asset-fields-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| assetId | ID of the asset for which to retrieve field details. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DSPM.AssetFields.name | String | Asset field name. | 
+| DSPM.AssetFields.path | String | Asset field path. | 
+| DSPM.AssetFields.tableName | String | Asset field tableName. | 
+| DSPM.AssetFields.tableSize | String | Asset field tableSize. | 
+| DSPM.AssetFields.databaseName | String | Asset field databaseName. | 
+| DSPM.AssetFields.collectionName | String | Asset field collectionName. | 
+| DSPM.AssetFields.type | String | Asset field type. | 
+| DSPM.AssetFields.dataTypes.name | String | Asset field datatype name. |
+| DSPM.AssetFields.dataTypes.label | String | Asset field datatype label. |
+| DSPM.AssetFields.dataTypes.hitPercentage | Number | Asset field datatype hitPercentage. |
+| DSPM.AssetFields.dataTypes.maskedValues.masked_value | String | Asset field datatype masked value. | 
+| DSPM.AssetFields.dataTypes.maskedValues.line | Number | Asset field datatype masked value line. | 
+| DSPM.AssetFields.schemaName | String | Asset field schemaName. |
+
+#### Command example
+```!dspm-get-list-of-asset-fields-by-id assetId="arn:aws:rds:::dummyrds-cifp-us-east-1"```
+#### Context Example
+```json
+{
+    "fields": [
+        {
+            "name": "maidenname",
+            "dataTypes": [],
+            "path": "/public/dummy",
+            "tableName": "dummy",
+            "tableSize": "29996",
+            "databaseName": "Hi",
+            "collectionName": null,
+            "type": "varchar",
+            "schemaName": "public"
+        },
+        {
+            "name": "phone",
+            "dataTypes": [],
+            "path": "/public/dummy",
+            "tableName": "dummy",
+            "tableSize": "29996",
+            "databaseName": "Hi",
+            "collectionName": null,
+            "type": "varchar",
+            "schemaName": "public"
+        }
+    ],
+    "fieldsCount": 2
+}
+```
+
+#### Human Readable Output
+
+>|name|path|tableName|tableSize|databaseName|collectionName|type|dataTypes|schemaName|
+>|---|---|---|---|---|---|---|---|---|---|
+>|phone|public/dummy|dummy|29996|Hi|null|varchar|First Name|PII|100|As****|null|public|
+
+
 ### dspm-get-data-types
 #### Base Command
 
