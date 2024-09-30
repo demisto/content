@@ -40,6 +40,7 @@ class KafkaCommunicator:
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
     POLL_TIMEOUT: float = 10.0
+    CONSUME_TIMEOUT: float = 1.0
     MAX_POLLS_FOR_LOG: int = 100
 
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
@@ -253,7 +254,7 @@ class KafkaCommunicator:
         """
         kafka_consumer = self.get_kafka_consumer()
         kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset, True))
-        polled_msg = kafka_consumer.poll(self.POLL_TIMEOUT)
+        polled_msg = kafka_consumer.poll(self.CONSUME_TIMEOUT)
         demisto.debug(f"polled {polled_msg}")
         kafka_consumer.close()
         return polled_msg
@@ -742,7 +743,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                     f" with poll {kafka.POLL_TIMEOUT}"
                 )
                 polled_msg = kafka_consumer.poll(
-                        kafka.POLL_TIMEOUT
+                    kafka.POLL_TIMEOUT
                 )
                 demisto.debug(
                     f"KAFKA DEBUG: finish to poll message {message} out of {max_messages}"
