@@ -1714,7 +1714,7 @@ def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandRes
 
 
 @pytest.mark.parametrize('id', [(0), (None)])
-def test_get_resource(mocker, id):
+def test_get_resource(mocker, id: int | None):
     """
     Given:
         - An existing ID or None.
