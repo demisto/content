@@ -4,17 +4,17 @@ the API available as part of Vision Licensing and integrate the data into XSOAR.
 ## Configure Cyble Events in Cortex
 
 
-   | **Parameter** | **Description** | **Required** |
-          | --- | --- | --- |
-   | Server URL (e.g. https://example.net) |  | True |
-   | Access Token |  | True |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
-   | Fetch incidents |  | False |
-   | Incidents Fetch Interval |  | False |
-   | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | True |
-   | Incident type |  | False |
-   | Priority | Fetch the events based on priority. All priorities will be considered by default. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://example.net) |  | True |
+| Access Token |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | True |
+| Incident type |  | False |
+| Priority | Fetch the events based on priority. All priorities will be considered by default. | False |
 
 
 ## Commands
