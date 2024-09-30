@@ -95,6 +95,7 @@ script:
     - name: ip
       required: true
       description: IP address to enrich.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Score
       description: The actual score.

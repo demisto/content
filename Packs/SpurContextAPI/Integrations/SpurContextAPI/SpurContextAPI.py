@@ -175,25 +175,28 @@ def _build_spur_indicator(ip: str, response: dict) -> SpurIP:
     )
 
 
-def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    ip = args.get("ip", None)
-    if not ip:
-        raise ValueError("IP not specified")
+def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    ips = argToList(args["ip"])
 
-    response = client.ip(ip)
+    results: List[CommandResults] = []
 
-    if not isinstance(response, dict):
-        raise ValueError(f"Invalid response from API: {response}")
+    for ip in ips:
+        response = client.ip(ip)
 
-    response = fix_nested_client(response)
+        if not isinstance(response, dict):
+            raise ValueError(f"Invalid response from API: {response}")
 
-    return CommandResults(
-        outputs_prefix="SpurContextAPI.Context",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response,
-        indicator=_build_spur_indicator(ip, response),
-    )
+        response = fix_nested_client(response)
+
+        results.append(CommandResults(
+            outputs_prefix="SpurContextAPI.Context",
+            outputs_key_field="",
+            outputs=response,
+            raw_response=response,
+            indicator=_build_spur_indicator(ip, response),
+        ))
+
+    return results
 
 
 """ MAIN FUNCTION """

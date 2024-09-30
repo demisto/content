@@ -113,7 +113,7 @@ def test_enrich_command(client):
 
 def test_ip_command(client):
     args = {'ip': '1.1.1.1'}
-    results = ip_command(client, args)
+    results = ip_command(client, args)[0]
     assert isinstance(results.indicator, SpurIP)
     assert results.indicator.risks == MOCK_HTTP_RESPONSE['risks']
 
