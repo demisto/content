@@ -1,3 +1,5 @@
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -260,8 +262,8 @@ def main():  # pragma: no cover:
         aws_role_session_name = params.get('roleSessionName')
         aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
-        aws_access_key_id = params.get('credentials').get('identifier')
-        aws_secret_access_key = params.get('credentials').get('password')
+        aws_access_key_id = params.get('credentials', {}).get('identifier')
+        aws_secret_access_key = params.get('credentials', {}).get('password')
         verify_certificate = not argToBoolean(params.get('insecure'))
         disable_sensitive_commands = argToBoolean(params.get('disable_sensitive_commands'))
         timeout = params.get('timeout')
@@ -294,6 +296,7 @@ def main():  # pragma: no cover:
             fetch_credentials(aws_client, args)
 
     except Exception as e:
+        demisto.debug(f'error from command {e}, {traceback.format_exc()}')
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
