@@ -40,10 +40,10 @@ class Client(BaseClient):
 
 
 def mitigation_performed_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    mitigationstatus_external_ticket_id = str(args.get('mitigationstatus_external_ticket_id', ''))
-    mitigationstatus_external_ticket_url = str(args.get('mitigationstatus_external_ticket_url', ''))
-    mitigationstatus_id = str(args.get('mitigationstatus_id', ''))
-    mitigationstatus_state = str(args.get('mitigationstatus_state', ''))
+    mitigationstatus_external_ticket_id = args.get('mitigationstatus_external_ticket_id', '')
+    mitigationstatus_external_ticket_url = args.get('mitigationstatus_external_ticket_url', '')
+    mitigationstatus_id = args.get('mitigationstatus_id', '')
+    mitigationstatus_state = args.get('mitigationstatus_state', '')
 
     response = client.mitigation_performed_request(
         mitigationstatus_external_ticket_id, mitigationstatus_external_ticket_url,
@@ -59,9 +59,9 @@ def mitigation_performed_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def mitigations_export_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    filter_ = str(args.get('filter_', ''))
+    filter_arg = args.get('filter', '')
 
-    response = client.mitigations_export_request(filter_)
+    response = client.mitigations_export_request(filter_arg)
     command_results = CommandResults(
         outputs_prefix='Zafran.UpstreamMitigation',
         outputs_key_field='',
@@ -73,9 +73,9 @@ def mitigations_export_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def mitigations_performed_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    mitigationsstatus_mitigation_id = str(args.get('mitigationsstatus_mitigation_id', ''))
+    mitigationsstatus_mitigation_id = args.get('mitigationsstatus_mitigation_id', '')
     mitigationsstatus_mitigation_ids = argToList(args.get('mitigationsstatus_mitigation_ids', []))
-    mitigationsstatus_state = str(args.get('mitigationsstatus_state', ''))
+    mitigationsstatus_state = args.get('mitigationsstatus_state', '')
 
     response = client.mitigations_performed_request(
         mitigationsstatus_mitigation_id, mitigationsstatus_mitigation_ids, mitigationsstatus_state)

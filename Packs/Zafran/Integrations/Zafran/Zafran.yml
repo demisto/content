@@ -69,7 +69,7 @@ script:
   - name: zafran-mitigations-export
     description: Export recommended mitigations
     arguments:
-    - name: filter_
+    - name: filter
       description: ZQL filter
       required: false
       isArray: false
