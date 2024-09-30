@@ -10,8 +10,7 @@ This integration was integrated and tested with the latest version of Armis.
 | Incident type |  | False |
 | Maximum number of incidents per fetch |  | False |
 | Fetch alerts with status (UNHANDLED, SUPPRESSED, RESOLVED) |  | False |
-| Fetch alerts with type | The type of alerts are Policy Violation, System Policy Violation,
-    Anomaly Detection. If no type is chosen, all types will be fetched. | False |
+| Fetch alerts with type | The type of alerts are Policy Violation, System Policy Violation, Anomaly Detection If no type is chosen, all types will be fetched. | False |
 | Minimum severity of alerts to fetch |  | True |
 | First fetch time |  | False |
 | Trust any certificate (not secure) |  | False |
