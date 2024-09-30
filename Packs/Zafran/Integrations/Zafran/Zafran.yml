@@ -4,7 +4,7 @@ commonfields:
 name: Zafran API
 display: Zafran API
 category: Utilities
-description: 'The Zafran API provides a programmatic way to interact with the Zafran Risk & Mitigation Platform for various use cases.  Using the API requires an   API token  , which can be obtained by contacting the Zafran support team at support@zafran.io.  API authorization is based on a bearer token that should be added as a header to all requests made for the AP, in the following way:  `Authorization: Bearer  token ` '
+description: 'The Zafran API provides a programmatic way to interact with the Zafran Risk & Mitigation Platform for various use cases.'
 configuration:
 - name: url
   display: Server URL (e.g. api.zafran.io)
