@@ -1,20 +1,18 @@
 {
-    "name": "Microsoft Teams",
-    "description": "Send messages and notifications to your team members.",
+    "name": "HPE Aruba Central",
+    "description": "Aruba Central helps manage and monitor your network infrastructure from a centralized platform.",
     "support": "xsoar",
-    "currentVersion": "1.5.0",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Messaging and Conferencing"
+        "Analytics & SIEM"
     ],
     "tags": [],
-    "created": "2020-04-14T00:00:00Z",
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
