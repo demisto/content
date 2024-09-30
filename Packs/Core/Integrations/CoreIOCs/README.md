@@ -15,7 +15,7 @@ The Cortex Core - IOCs integration uses the Cortex API for detection and respons
 | Use system proxy settings |  | False |
 
 ## Commands
-You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### core-iocs-sync
 ***
