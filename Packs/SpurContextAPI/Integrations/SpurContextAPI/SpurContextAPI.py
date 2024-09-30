@@ -229,13 +229,9 @@ def main() -> None:
             return_results(test_module(client))
         else:
             if command == "ip":
-                result = ip_command(client, demisto.args())
+                return_results(ip_command(client, demisto.args()))
             elif command == "spur-context-api-enrich":
-                result = enrich_command(client, demisto.args())
-            else:
-                raise DemistoException(f"Invalid Command")
-
-            return_results(result)
+                return_results(enrich_command(client, demisto.args()))
 
     except Exception:
         return_error(f"Error: {traceback.format_exc()}")

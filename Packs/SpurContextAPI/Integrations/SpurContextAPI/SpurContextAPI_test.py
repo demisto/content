@@ -122,6 +122,7 @@ def test_test_module(client):
     result = test_module(client)
     assert result == 'ok'
 
+
 def test_spur_ip_to_context():
     ip = '1.1.1.1'
     asn = 'AS12345'
