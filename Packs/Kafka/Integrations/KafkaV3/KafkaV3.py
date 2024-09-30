@@ -39,7 +39,7 @@ class KafkaCommunicator:
 
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
-    POLL_TIMEOUT: float = 1.0
+    POLL_TIMEOUT: float = 10.0
     MAX_POLLS_FOR_LOG: int = 100
 
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
