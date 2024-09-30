@@ -5,22 +5,22 @@ The Office 365 IP Address and URL web service is a read-only API provided by Mic
 ---
 
 
-   | **Parameter** | **Description** | **Example** |
-   | ------------- | --------------- | ----------- |
-   | Name | A meaningful name for the integration instance. | Office 365 Feed_worldwide_exchange |
-   | Fetch indicators | Select this option if you want this integration instance to fetch indicators from the Office 365 feed. | N/A |
-   | Regions | The regions from which to fetch indicators. Supports multi-select. For all regions, you need to select each region. | 
-   | Services | The services for which to fetch indicators. Supports multi-select. For all services, select the “All” option. | Sharepoint, Exchange |
-   | Indicator Reputation | This reputation will be applied to all indicators fetched from this integration instance. | Good |
-   | Source Reliability | The reliability of the source providing the intelligence data, which affects how this indicator's fields and reputation are populated. | A - Completely reliable |
-   | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | N/A |
-   | feedExpirationPolicy | The method by which to expire indicators from this integration instance. | When removed from the feed |
-   | feedExpirationInterval |  |  |
-   | Feed Fetch Interval | How often to fetch indicators from this integration instance. You can specify the interval in days, hours, or minutes. | 30 minutes |
-   | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed.  This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | N/A |
+| **Parameter** | **Description** | **Example** |
+| ------------- | --------------- | ----------- |
+| Name | A meaningful name for the integration instance. | Office 365 Feed_worldwide_exchange |
+| Fetch indicators | Select this option if you want this integration instance to fetch indicators from the Office 365 feed. | N/A |
+| Regions | The regions from which to fetch indicators. Supports multi-select. For all regions, you need to select each region. | 
+| Services | The services for which to fetch indicators. Supports multi-select. For all services, select the “All” option. | Sharepoint, Exchange |
+| Indicator Reputation | This reputation will be applied to all indicators fetched from this integration instance. | Good |
+| Source Reliability | The reliability of the source providing the intelligence data, which affects how this indicator's fields and reputation are populated. | A - Completely reliable |
+| Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | N/A |
+| feedExpirationPolicy | The method by which to expire indicators from this integration instance. | When removed from the feed |
+| feedExpirationInterval |  |  |
+| Feed Fetch Interval | How often to fetch indicators from this integration instance. You can specify the interval in days, hours, or minutes. | 30 minutes |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed.  This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | N/A |
 | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
-   | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-   | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
+| Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
+| Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
 
 ## Commands
 ---
