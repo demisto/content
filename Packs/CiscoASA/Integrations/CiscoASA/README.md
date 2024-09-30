@@ -5,10 +5,7 @@ This integration was integrated and tested with version 9.16(3)23 of Cisco ASA
 
 
 | **Parameter** | **Required** |
-| --- | --- |  "objectId": "api"
-                }
-            },
-            {
+| --- | --- |
 | Server URL (e.g., https://192.168.0.1) | True |
 | Credentials | True |
 | Password | True |
