@@ -8,7 +8,7 @@ description: 'The Zafran API provides a programmatic way to interact with the Za
 configuration:
 - name: url
   display: Server URL (e.g. api.zafran.io)
-  defaultvalue: https://api.zafran.io # disable-secrets-detection
+  defaultvalue: https://api.zafran.io
   type: 0
   required: true
 - name: api_key
