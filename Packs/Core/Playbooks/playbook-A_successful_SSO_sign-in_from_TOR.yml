@@ -3,7 +3,7 @@ version: -1
 name: A successful SSO sign-in from TOR
 description: "This playbook is designed to handle the following alerts:\n- A successful SSO sign-in from TOR\n- A successful SSO sign-in from TOR via a mobile device\n\nThe playbook executes the following stages:\n\nEarly Containment:\n- The playbooks will perform early containment actions by clearing\\revoking user sessions and enforcing re-authentication to terminate the connection from the Tor exit node and verify the user's identity. \nDepending on the alert source, the playbook will use either\nAzure Active Directory Users or Okta v2 integrations to clear the user sessions.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n- Checks the user's risk score.\n- Search for suspicious user agent usage within the alert.\n- Search for related XDR alerts using the following MITRE techniques to identify any malicious activity:\nT1566 - Phishing \nT1621 - Multi-Factor Authentication Request Generation\n T1110 - Brute Force\n T1556 - Modify Authentication Process\n\nRemediation:\n- Remediation actions will be taken if the user’s risk score is high, a suspicious user agent is detected, or a related alert is found. In such cases, the playbook will disable the account.\nBy default, account disabling requires analyst approval.\n\nRequires: \nFor any response action, you will need one of the following integrations: Azure Active Directory Users / Okta v2."
 tags:
-- TA0001-Initial Access
+- TA0001 - Initial Access
 - T1078 - Valid Accounts
 starttaskid: "0"
 tasks:
@@ -27,7 +27,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -570
+          "y": -750
         }
       }
     note: false
@@ -89,7 +89,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -270
+          "y": -450
         }
       }
     note: false
@@ -114,7 +114,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "39"
     scriptarguments:
       user_id:
         complex:
@@ -129,7 +129,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 160
+          "y": -20
         }
       }
     note: false
@@ -242,7 +242,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 25
+          "y": -155
         }
       }
     note: false
@@ -337,7 +337,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -140
+          "y": -320
         }
       }
     note: false
@@ -378,7 +378,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -435
+          "y": -615
         }
       }
     note: false
@@ -418,32 +418,11 @@ tasks:
             value:
               simple: HIGH
           ignorecase: true
-        - operator: AnyMatch
+        - operator: isNotEmpty
           left:
             value:
-              simple: Core.OriginalAlert.event.action_user_agent
+              simple: SuspiciousUserAgent
             iscontext: true
-          right:
-            value:
-              simple: |-
-                Python-urllib,
-                libwww-perl,
-                Scrapy,
-                curl,
-                Wget,
-                sqlmap,
-                Nikto,
-                Xrumer,
-                Hydra,
-                JohnTheRipper,
-                LOIC,
-                HOIC,
-                MJ12bot,
-                Baiduspider,
-                BlackWidow,
-                HeadlessChrome,
-                PhantomJS,
-                Selenium
     continueonerrortype: ""
     view: |-
       {
@@ -603,6 +582,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: eb1d3c97-e1f0-409b-8c2e-fc00c0254b81
+    type: regular
+    task:
+      id: eb1d3c97-e1f0-409b-8c2e-fc00c0254b81
+      version: -1
+      name: Extract suspicious user agent
+      description: Extracts regex data from the provided text. The script supports groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousUserAgent
+      data:
+        simple: ${Core.OriginalAlert.event.action_user_agent}
+      regex:
+        simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium|REST)\b
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -613,10 +632,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1925,
+        "height": 2105,
         "width": 610,
         "x": 450,
-        "y": -570
+        "y": -750
       }
     }
   }
