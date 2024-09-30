@@ -1,26 +1,22 @@
 Playbook Overview:
-
-This playbook is designed to handle the following alerts:
-
+This playbook is designed to address the following alerts:
 - SSO Password Spray Threat Detected
 - SSO Password Spray Activity Observed
 - SSO Password Spray Involving a Honey User
 
-Early Containment: 
+Early Containment:
+The playbook will check if the IP is external and suspicious. If it is, the playbook will suggest blocking the IP.
 
-- Checks if the ip is external and suspicious, if yes the playbook will suggest to block the ip. 
+Investigation:
+The playbook will assess the risk score of the user who successfully logged in and examine the legitimacy of the user agent. It will also verify if the user has MFA configured.
 
-Investigation: 
+Containment:
+If there is a successful login attempt and the user's risk score is high, or if the user agent is detected as suspicious, or if the time intervals were automated, the playbook will clear the user's session. If the user doesn't have 2FA, the playbook will recommend expiring the user's password.
 
-- The playbook will assess the risk score of the user that successfully logged in and examine the legitimacy of the user agent. The playbook checks if the user has MFA configured.
+For any response action, you will need one of the following integrations:
 
-Containment: 
-
-- If there is a successful login attempt and user’s risk score is high or the user agent is detected as suspicious or the time intervals were automated, the playbook will clear user's session and if the user doesn't have 2FA the playbook will recommend to expire the password for the user. 
-
-For any response action, you will need one of the following integrations: 
-- Microsoft Graph User
-- Okta.
+Microsoft Graph User
+Okta.
 
 ## Dependencies
 
@@ -33,22 +29,21 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* CortexCoreXQLQueryEngine
-* CoreIOCs
 * CortexCoreIR
+* CoreIOCs
+* CortexCoreXQLQueryEngine
 
 ### Scripts
 
-* AnalyzeTimestampIntervals_v2
+* AnalyzeTimestampIntervals
 * SetAndHandleEmpty
 
 ### Commands
 
-* okta-get-user-factors
 * core-list-risky-users
-* okta-expire-password
 * core-get-cloud-original-alerts
 * ip
+* okta-get-user-factors
 
 ## Playbook Inputs
 
