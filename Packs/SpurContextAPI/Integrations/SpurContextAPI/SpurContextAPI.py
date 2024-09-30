@@ -228,13 +228,12 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
         else:
-            match command:
-                case "ip":
-                    result = ip_command(client, demisto.args())
-                case "spur-context-api-enrich":
-                    result = enrich_command(client, demisto.args())
-                case default:
-                    raise DemistoException(f"Invalid Command: {default}")
+            if command == "ip":
+                result = ip_command(client, demisto.args())
+            elif command == "spur-context-api-enrich":
+                result = enrich_command(client, demisto.args())
+            else:
+                raise DemistoException(f"Invalid Command")
 
             return_results(result)
 
