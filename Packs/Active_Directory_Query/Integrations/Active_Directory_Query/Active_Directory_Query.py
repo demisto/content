@@ -473,6 +473,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         attributes: the attributes to specify for each entry found in the DIT
     """
     assert connection is not None
+    demisto.debug('AD-M: connection is not None')
     total_entries = 0
     cookie = base64.b64decode(page_cookie) if page_cookie else None
     start = datetime.now()
@@ -482,6 +483,8 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
     while True:
         if 0 < entries_left_to_fetch < page_size:
             page_size = entries_left_to_fetch
+        demisto.debug(f'AD-M: {entries_left_to_fetch=} the arguments to the search are {search_base=} {search_filter=} '
+                      f'{attributes=} {page_size=} {cookie=}')
         connection.search(
             search_base,
             search_filter,
@@ -492,6 +495,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         )
         entries_left_to_fetch -= len(connection.entries)
         total_entries += len(connection.entries)
+        demisto.debug(f'AD-M: retrieved {len(connection.entries)=} {total_entries=}')
         cookie = dict_safe_get(connection.result, ['controls', '1.2.840.113556.1.4.319', 'value', 'cookie'])
         time_diff = (datetime.now() - start).seconds
 
@@ -499,6 +503,9 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
         # stop when: 1.reached size limit 2.reached time limit 3. no cookie
         if (size_limit and size_limit <= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
+            demisto.debug(f'AD-M: stop when: 1.reached size limit {size_limit=} <= {total_entries=} '
+                          f'2.reached time limit {time_limit=} <= {time_diff} '
+                          f'3. no cookie {cookie=}')
             break
 
     # keep the raw entry for raw content (backward compatibility)
@@ -506,6 +513,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
     # flatten the entries
     flat = []
 
+    demisto.debug('AD-M: creating the raw and flat values')
     for entry in entries:
         entry = json.loads(entry.entry_to_json())
 
@@ -519,6 +527,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         raw.append(entry)
         flat.append(flat_entry)
     encode_cookie = b64_encode(cookie) if cookie else None
+    demisto.debug(f'AD-M: {len(raw)=} {len(flat)=}')
     return {
         "raw": raw,
         "flat": flat,
@@ -598,6 +607,7 @@ def free_search(default_base_dn, page_size):
     if args.get('page-size'):
         page_size = arg_to_number(args['page-size'])
         size_limit = page_size
+    demisto.debug(f'AD-M: {search_filter=} {page_cookie=} {page_size=} {size_limit=}')
 
     entries = search_with_paging(
         search_filter,
@@ -620,6 +630,7 @@ def free_search(default_base_dn, page_size):
         'HumanReadable': tableToMarkdown("Active Directory Search", entries['flat']),
         'EntryContext': ec
     }
+    demisto.debug(f"AD-M: created the demisto_entry with {len(demisto_entry['Contents'])=}")
     demisto.results(demisto_entry)
 
 
@@ -1930,6 +1941,7 @@ def main():
         demisto.info(f'Verified base DN "{default_base_dn}"')
 
         ''' COMMAND EXECUTION '''
+        demisto.debug(f'Command being called is {command}')
 
         if command == 'test-module':
             if connection.user == '':
