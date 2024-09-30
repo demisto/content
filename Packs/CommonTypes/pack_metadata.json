@@ -2,14 +2,12 @@
     "name": "Common Types",
     "description": "This Content Pack will get you up and running in no-time and provide you with the most commonly used incident & indicator fields and types.",
     "support": "xsoar",
-    "currentVersion": "3.5.18",
+    "currentVersion": "3.5.21",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-05-19T15:37:38Z",
-    "categories": [
-        "Utilities"
-    ],
+    "categories": ["Utilities"],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -51,9 +49,5 @@
         "Malware",
         "CVESearch"
     ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "xpanse"
-    ]
+    "marketplaces": ["xsoar", "marketplacev2", "xpanse"]
 }
