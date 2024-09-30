@@ -191,7 +191,6 @@ alter // init aliases for root level & common objects for supporting both camelC
     xdm.source.cloud.project_id = coalesce(service_action_api_call_remote_account_id, finding_account_id),
     xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
     xdm.source.cloud.region = finding_region,
-    // xdm.source.cloud.source_type = resource_instance_type,
     xdm.source.cloud.zone = resource_availability_zone,
     xdm.source.host.device_model = resource_instance_type, 
     xdm.source.host.ipv4_addresses = all_source_ipv4_addresses,
