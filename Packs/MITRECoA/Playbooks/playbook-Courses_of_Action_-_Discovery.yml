@@ -87,6 +87,7 @@ tasks:
       name: File and Directory Discovery
       type: condition
       version: -1
+      description: ''
     taskid: 1916b208-5035-432f-8dda-d16752dc03d8
     timertriggers: []
     type: condition
@@ -325,6 +326,7 @@ tasks:
       name: Process Discovery
       type: condition
       version: -1
+      description: ''
     taskid: d08b0d1c-6df8-4d00-87e3-4edff8f3aed2
     timertriggers: []
     type: condition
@@ -375,6 +377,7 @@ tasks:
       name: Network Share Discovery
       type: condition
       version: -1
+      description: ''
     taskid: 811df866-f5a7-4605-87ab-a1b794113d2e
     timertriggers: []
     type: condition
@@ -425,6 +428,7 @@ tasks:
       name: Software Discovery
       type: condition
       version: -1
+      description: ''
     taskid: 4ca705b5-6d4a-47ae-89bf-6ecbffbf8243
     timertriggers: []
     type: condition
@@ -475,6 +479,7 @@ tasks:
       name: System Information Discovery
       type: condition
       version: -1
+      description: ''
     taskid: ba627e36-ac2f-43f4-82bf-5277d3d34696
     timertriggers: []
     type: condition
@@ -848,3 +853,6 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
+marketplaces:
+  - xsoar
+  - marketplacev2
