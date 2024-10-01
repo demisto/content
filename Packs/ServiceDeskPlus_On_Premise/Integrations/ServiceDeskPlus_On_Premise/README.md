@@ -11,6 +11,7 @@ Follow the next steps to create an instance:
 
 1. Enter the Server URL info.
 2. Enter the Technician Key.
+3. Click the **Test** button to validate the instance.
 
 **NOTES**
 - For more details about generating a technician key please refer to the [help documentation](https://help.servicedeskplus.com/api/rest-api.html$key)
@@ -29,7 +30,6 @@ Follow the next steps to create an instance:
 | fetch_limit | The maximum number of incidents that should be fetched each time | False |
 | fetch_filter | Use this field to filter the incidents that are being fetched according to any of the request properties.  Please see additional information for exact filter format. Overrides the status filter, if given. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
