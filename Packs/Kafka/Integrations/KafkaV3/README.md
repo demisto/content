@@ -21,10 +21,14 @@ This integration is fully compatible with the Kafka v2 integration.
     | Client certificate key (.key) |  | False |
     | Client certificate key password (if required) |  | False |
     | Password |  | False |
+    | Use SASL PLAIN for connection |  | False |
+    | SASL PLAIN Username |  | False |
+    | SASL PLAIN Password |  | False |
     | Topic to fetch incidents from (Required for fetch incidents) |  | False |
     | CSV list of partitions to fetch messages from |  | False |
     | Offset to fetch messages from (exclusive) | The initial offset to start fetching from, not including the value set \(e.g., if 3 is set, the first event that will be fetched will be with offset 4\). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly. | False |
     | Max number of messages to fetch |  | False |
+    | Consumer Only |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Max number of bytes per message | The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'. | False |

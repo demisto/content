@@ -15,3 +15,13 @@
 5. Provide the client certificate in the 'Client certificate (.cer)' section.
 6. Provide the client certificate key in the 'Client certificate key (.key)' section.
 7. If your client certificate is password protected, provide the password in the 'Client certificate key password (if required)' section.
+
+## Configuration of SASL PLAIN:
+1. Make sure you have the broker port '<port>' which supports SSL connection.
+2. Add '<broker_address>:<port>' to the brokers list.
+3. Check the 'Use TLS for connection' flag.
+4. Provide the CA root certificate in the 'CA certificate of Kafka server (.cer)' section.
+5. If your client certificate is password protected, provide the password in the 'Client certificate key password (if required)' section.
+6. Provide SASL PLAIN Username and SASL PLAIN Password
+
+Note: SASL is supported only when used in combination with SSL. SASL by itself is not supported.
