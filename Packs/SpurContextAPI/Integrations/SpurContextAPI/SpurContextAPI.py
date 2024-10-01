@@ -195,7 +195,8 @@ def main() -> None:
     proxy = demisto.params().get("proxy", False)
     demisto.debug(f"Command being called is {demisto.command()}")
 
-    try:
+    command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
 
         headers: dict = {"TOKEN": api_key}
 
