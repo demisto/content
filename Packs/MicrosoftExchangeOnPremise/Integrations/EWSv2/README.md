@@ -26,6 +26,7 @@ The EWS integration can be used for the following use cases:
 
 - Monitor a specific email account and create incidents from incoming emails to the defined folder.
 Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data) section.
+- Search for an email message across mailboxes and folders.
   This can be achieved in the following ways:
   - Use the ```ews-search-mailboxes``` command to search for all emails in a specific scope of mailboxes. Use the filter argument to narrow the search for emails sent from a specific account and more.
   - Use the ```ews-search-mailbox``` command to search for all emails in a specific folder within the target mailbox. Use the query argument to narrow the search for emails sent from a specific account and more.
@@ -40,7 +41,6 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
 
 ## Configure EWS v2 in Cortex
 
-2. Search for EWS v2.
 
 | **Parameter**                                                                                                                                 | **Required** |
 |-----------------------------------------------------------------------------------------------------------------------------------------------|--------------|
