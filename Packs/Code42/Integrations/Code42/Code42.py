@@ -1080,7 +1080,7 @@ def handle_fetch_command(client):
 def run_command(command):
     try:
         results = command()
-        if not isinstance(results, tuple | list):
+        if not (isinstance(results, (list, tuple))):
             results = [results]
         for result in results:
             return_results(result)
