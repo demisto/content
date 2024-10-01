@@ -761,12 +761,12 @@ To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
-| **Option** | **Description** |
-| --- | --- |
-| None | Turns off incident mirroring. |
-| Incoming | Any changes in Salesforce V2 events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-| Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Salesforce V2 events (outgoing mirrored fields). |
-| Incoming And Outgoing | Changes in Cortex XSOAR incidents and Salesforce V2 events will be reflected in both directions. |
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Salesforce V2 events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Salesforce V2 events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Salesforce V2 events will be reflected in both directions. |
 
 3. Optional: You can go to the mirroring tags parameter and select the tags used to mark incident entries to be mirrored. Available tags are: Comment Entry Tag.
 4. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Salesforce V2.
