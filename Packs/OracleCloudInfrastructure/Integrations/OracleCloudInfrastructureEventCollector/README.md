@@ -26,7 +26,7 @@ More about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Content/A
 | User system proxy settings  | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.                                                                                                                                                                             | False        |
 
 ## Commands
-You can execute the following command from the Cortex XSIAM CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute the following command from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 #### oracle-cloud-infrastructure-get-events
 ***
