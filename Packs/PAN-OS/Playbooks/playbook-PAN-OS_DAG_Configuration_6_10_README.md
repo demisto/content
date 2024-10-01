@@ -26,8 +26,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * pan-os-list-address-groups
-* pan-os-register-ip-tag
 * pan-os-create-address-group
+* pan-os-register-ip-tag
 
 ## Playbook Inputs
 

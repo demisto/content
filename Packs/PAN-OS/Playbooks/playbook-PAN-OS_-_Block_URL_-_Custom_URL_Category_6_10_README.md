@@ -19,9 +19,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
+* pan-os-get-custom-url-category
 * pan-os-custom-block-rule
 * pan-os-create-custom-url-category
-* pan-os-get-custom-url-category
 * pan-os-edit-custom-url-category
 
 ## Playbook Inputs

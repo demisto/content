@@ -22,8 +22,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* pan-os-get-address-group
 * pan-os-create-address
+* pan-os-get-address-group
 * pan-os-edit-address-group
 
 ## Playbook Inputs
