@@ -1472,6 +1472,22 @@ tasks:
                 value:
                   simple: xlsb
               ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: doc
           - - operator: notContainsGeneral
               left:
                 value:
