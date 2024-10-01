@@ -33,6 +33,7 @@ You can enable incident mirroring between Cortex XSOAR incidents and Prisma Clou
 
 To setup the mirroring follow these instructions:
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **Prisma Cloud v2** and select your integration instance.
 3. Enable **Fetches incidents**.
 4. Optional: You can go to the *Fetch only incidents matching these filters* parameter and select the query to fetch the alerts from Prisma Cloud.
