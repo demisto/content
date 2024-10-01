@@ -184,12 +184,12 @@ To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
-| **Option** | **Description** |
-| --- | --- |
-| None | Turns off incident mirroring. |
-| Incoming | Any changes in Mandiant Automated Defense (Formerly Respond Software) events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-| Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Mandiant Automated Defense (Formerly Respond Software) events (outgoing mirrored fields). |
-| Both |  |
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Mandiant Automated Defense (Formerly Respond Software) events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Mandiant Automated Defense (Formerly Respond Software) events (outgoing mirrored fields). |
+    | Both |  |
 
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
