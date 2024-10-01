@@ -21,17 +21,14 @@ This integration was integrated and tested with version 1.0 of AwsSecretsManager
     | AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Disable sensitive commands |  | False |
+    | Disable sensitive commands | Disables the following sensitive commands from running: aws-secrets-manager-secret–value-get. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 ### aws-secrets-manager-secret-list
-
 ***
 Retrieve all secrets.
 
@@ -39,7 +36,6 @@ Retrieve all secrets.
 #### Base Command
 
 `aws-secrets-manager-secret-list`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -82,11 +78,8 @@ Retrieve all secrets.
 | AWS.SecretsManager.Secret.SecretList.SecretVersionsToStages.ac32e535-79e7-4188-a732-7f02dbe399f0 | String | The SecretVersionStage staging labels for the provided hash. | 
 
 #### Command example
-
 ```!aws-secrets-manager-secret-list```
-
 #### Context Example
-
 ```json
 {
     "AWS": {
@@ -170,7 +163,6 @@ Retrieve all secrets.
 #### Human Readable Output
 
 >### AWS Secrets List
-
 >|ARN|Description|LastAccessedDate|Name|
 >|---|---|---|---|
 >| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc |  | 2022-10-23T13:40:55 | fdff |
@@ -180,7 +172,6 @@ Retrieve all secrets.
 
 
 ### aws-secrets-manager-secret–value-get
-
 ***
 Retrieve a secret value by key.
 
@@ -188,7 +179,6 @@ Retrieve a secret value by key.
 #### Base Command
 
 `aws-secrets-manager-secret–value-get`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -220,11 +210,8 @@ Retrieve a secret value by key.
 | AWS.SecretsManager.Secret.SecretValue.ResponseMetadata.RetryAttempts | Number | The number of HTTP header response retry attempts. | 
 
 #### Command example
-
 ```!aws-secrets-manager-secret–value-get secret_id="fdff"```
-
 #### Context Example
-
 ```json
 {
     "AWS": {
@@ -260,14 +247,12 @@ Retrieve a secret value by key.
 #### Human Readable Output
 
 >### AWS Get Secret
-
 >|ARN|CreatedDate|Name|SecretBinary|SecretString|
 >|---|---|---|---|---|
 >| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc | 2022-09-04T09:10:13 | fdff |  | {"password":"cvcvcv","username":"cvcvcv"} |
 
 
 ### aws-secrets-manager-secret–delete
-
 ***
 Delete a specific secret.
 
@@ -275,7 +260,6 @@ Delete a specific secret.
 #### Base Command
 
 `aws-secrets-manager-secret–delete`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -291,17 +275,13 @@ Delete a specific secret.
 #### Context Output
 
 There is no context output for this command.
-
 #### Command example
-
 ```!aws-secrets-manager-secret–delete secret_id="fdff"```
-
 #### Human Readable Output
 
 >The Secret was Deleted
 
 ### aws-secrets-manager-secret–restore
-
 ***
 Restore a specific secret after deletion.
 
@@ -309,7 +289,6 @@ Restore a specific secret after deletion.
 #### Base Command
 
 `aws-secrets-manager-secret–restore`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -323,17 +302,13 @@ Restore a specific secret after deletion.
 #### Context Output
 
 There is no context output for this command.
-
 #### Command example
-
 ```!aws-secrets-manager-secret–restore secret_id="fdff"```
-
 #### Human Readable Output
 
 >the secret was restored successfully
 
 ### aws-secrets-manager-secret–policy-get
-
 ***
 Get the Secret Manager policy for a specific secret.
 
@@ -341,7 +316,6 @@ Get the Secret Manager policy for a specific secret.
 #### Base Command
 
 `aws-secrets-manager-secret–policy-get`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -367,11 +341,8 @@ Get the Secret Manager policy for a specific secret.
 | AWS.SecretsManager.Policy.ResponseMetadata.RetryAttempts | Number | The number of HTTP header response retry attempts. | 
 
 #### Command example
-
 ```!aws-secrets-manager-secret–policy-get secret_id="fdff"```
-
 #### Context Example
-
 ```json
 {
     "AWS": {
@@ -399,7 +370,6 @@ Get the Secret Manager policy for a specific secret.
 #### Human Readable Output
 
 >### AWS Secret Policy
-
 >|ARN|Name|Policy|
 >|---|---|---|
 >| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc | fdff |  |
