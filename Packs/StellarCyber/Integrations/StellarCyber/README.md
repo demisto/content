@@ -28,10 +28,10 @@ To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
-| **Option** | **Description** |
-| --- | --- |
-| None | Turns off incident mirroring. |
-| Incoming | Any changes in Stellar Cyber events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Stellar Cyber events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
 
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
