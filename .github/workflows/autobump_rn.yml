@@ -2,7 +2,7 @@ name: Autobump Version
 on:
   push:
     branches:
-      - master
+      - fix_autobump_timezone_test
 
 permissions:
   pull-requests: write
