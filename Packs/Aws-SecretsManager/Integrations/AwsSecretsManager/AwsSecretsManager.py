@@ -256,9 +256,9 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]):  # pragma: no co
 
 def main():  # pragma: no cover:
     try:
+        params = demisto.params()
         if argToBoolean(params.get('disable_sensitive_commands')) and demisto.command() in SENSITIVE_COMMANDS:
             raise ValueError('Sensitive commands are disabled. You can reenable them in the integration settings.')
-        params = demisto.params()
         aws_default_region = params.get('defaultRegion')
         aws_role_arn = params.get('roleArn')
         aws_role_session_name = params.get('roleSessionName')
