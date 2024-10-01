@@ -391,10 +391,10 @@ To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored (currently only outgoing mirroring is available):
 
-| **Option** | **Description** |
-| --- | --- |
-| None | Turns off incident mirroring. |
-| Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Varonis SaaS service (outgoing mirrored fields). |
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Varonis SaaS service (outgoing mirrored fields). |
 
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
