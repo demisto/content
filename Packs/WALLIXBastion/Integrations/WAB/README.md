@@ -28,7 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### wab-add-session-target-to-target-group
 
 ***
-Add a target account to a target group
+Add a target account to a target group.
 
 #### Base Command
 
@@ -54,7 +54,7 @@ There is no context output for this command.
 ### wab-add-password-target-to-target-group
 
 ***
-Add a password checkout account to a target group
+Add a password checkout account to a target group.
 
 #### Base Command
 
@@ -78,7 +78,7 @@ There is no context output for this command.
 ### wab-add-restriction-to-target-group
 
 ***
-Add a restriction to a target group
+Add a restriction to a target group.
 
 #### Base Command
 
@@ -101,7 +101,7 @@ There is no context output for this command.
 
 ***
 Get account references
-url: get /accounts/{account_id}/references
+url: get /accounts/{account_id}/references.
 
 #### Base Command
 
@@ -137,7 +137,7 @@ url: get /accounts/{account_id}/references
 
 ***
 Get account reference
-url: get /accounts/{account_id}/references/{reference_id}
+url: get /accounts/{account_id}/references/{reference_id}.
 
 #### Base Command
 
@@ -170,7 +170,7 @@ url: get /accounts/{account_id}/references/{reference_id}
 
 ***
 Change password or SSH key of an account and propagate changes on the target host. If the body is empty, an automatic password change is performed: the password or the SSH key are changed to a newly generated value, according to the password change policy on the domain. Note: the password change must be enabled on the domain, with a plugin that will be used to change the password on the target host
-url: put /accountchangepassword/{account_id}/{credential_type}
+url: put /accountchangepassword/{account_id}/{credential_type}.
 
 #### Base Command
 
@@ -193,7 +193,7 @@ There is no context output for this command.
 
 ***
 Get all accounts
-url: get /accounts
+url: get /accounts.
 
 #### Base Command
 
@@ -262,7 +262,7 @@ url: get /accounts
 
 ***
 Get one account
-url: get /accounts/{account_id}
+url: get /accounts/{account_id}.
 
 #### Base Command
 
@@ -328,7 +328,7 @@ url: get /accounts/{account_id}
 
 ***
 Delete an account
-url: delete /accounts/{account_id}
+url: delete /accounts/{account_id}.
 
 #### Base Command
 
@@ -348,7 +348,7 @@ There is no context output for this command.
 
 ***
 Get the application accounts
-url: get /applications/{application_id}/localdomains/{domain_id}/accounts
+url: get /applications/{application_id}/localdomains/{domain_id}/accounts.
 
 #### Base Command
 
@@ -401,7 +401,7 @@ url: get /applications/{application_id}/localdomains/{domain_id}/accounts
 
 ***
 Add an account to a local domain of an application
-url: post /applications/{application_id}/localdomains/{domain_id}/accounts
+url: post /applications/{application_id}/localdomains/{domain_id}/accounts.
 
 #### Base Command
 
@@ -431,7 +431,7 @@ url: post /applications/{application_id}/localdomains/{domain_id}/accounts
 
 ***
 Get the application account
-url: get /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
+url: get /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -481,7 +481,7 @@ url: get /applications/{application_id}/localdomains/{domain_id}/accounts/{accou
 
 ***
 Edit an account on a local domain of an application
-url: put /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
+url: put /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -502,7 +502,7 @@ url: put /applications/{application_id}/localdomains/{domain_id}/accounts/{accou
 | app_account_put_checkout_policy | The account checkout policy. | Optional | 
 | app_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | app_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
-| app_account_put_onboard_status | Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual). | Optional | 
+| app_account_put_onboard_status | Onboarding status of the account. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
 
 #### Context Output
 
@@ -512,7 +512,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a local domain of an application
-url: delete /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
+url: delete /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -534,7 +534,7 @@ There is no context output for this command.
 
 ***
 Get local domains data for a given application
-url: get /applications/{application_id}/localdomains
+url: get /applications/{application_id}/localdomains.
 
 #### Base Command
 
@@ -570,7 +570,7 @@ url: get /applications/{application_id}/localdomains
 
 ***
 Get local domain data for a given application
-url: get /applications/{application_id}/localdomains/{domain_id}
+url: get /applications/{application_id}/localdomains/{domain_id}.
 
 #### Base Command
 
@@ -603,7 +603,7 @@ url: get /applications/{application_id}/localdomains/{domain_id}
 
 ***
 Get the applications
-url: get /applications
+url: get /applications.
 
 #### Base Command
 
@@ -648,7 +648,7 @@ url: get /applications
 
 ***
 Get the application
-url: get /applications/{application_id}
+url: get /applications/{application_id}.
 
 #### Base Command
 
@@ -690,7 +690,7 @@ url: get /applications/{application_id}
 
 ***
 Edit an application
-url: put /applications/{application_id}
+url: put /applications/{application_id}.
 
 #### Base Command
 
@@ -715,7 +715,7 @@ There is no context output for this command.
 
 ***
 Delete an application
-url: delete /applications/{application_id}
+url: delete /applications/{application_id}.
 
 #### Base Command
 
@@ -735,7 +735,7 @@ There is no context output for this command.
 
 ***
 Get the approvals
-url: get /approvals
+url: get /approvals.
 
 #### Base Command
 
@@ -787,7 +787,7 @@ url: get /approvals
 
 ***
 Get the approvals for a given approver
-url: get /approvals/assignments
+url: get /approvals/assignments.
 
 #### Base Command
 
@@ -838,7 +838,7 @@ url: get /approvals/assignments
 
 ***
 Reply to an approval request (approve/reject it). Note: you can answer to an approval request only if you are in approvers groups of authorization
-url: post /approvals/assignments
+url: post /approvals/assignments.
 
 #### Base Command
 
@@ -854,7 +854,7 @@ url: post /approvals/assignments
 | approval_assignment_post_timeout | Timeout to initiate the first connection (in minutes). After that, the approval will be automatically closed. 0: no timeout. | Optional | 
 | approval_assignment_post_approved | Approve/reject the request. | Required | 
 | approval_assignment_post_is_active | The approval is active. | Optional | 
-| approval_assignment_post_status | The approval status. (accepted values: accepted,cancelled,closed,none,pending,rejected). | Optional | 
+| approval_assignment_post_status | The approval status. Possible values are: accepted, cancelled, closed, none, pending, rejected. | Optional | 
 
 #### Context Output
 
@@ -866,7 +866,7 @@ url: post /approvals/assignments
 
 ***
 Get the approvals for a given approver
-url: get /approvals/assignments/{user_name}
+url: get /approvals/assignments/{user_name}.
 
 #### Base Command
 
@@ -918,7 +918,7 @@ url: get /approvals/assignments/{user_name}
 
 ***
 Cancel an accepted approval. Note: you can cancel an approval only if you are in approvers groups of authorization and the end date is still not reached
-url: post /approvals/assignments/cancel
+url: post /approvals/assignments/cancel.
 
 #### Base Command
 
@@ -941,7 +941,7 @@ url: post /approvals/assignments/cancel
 
 ***
 Notify approvers linked to an approval request by sending them an email
-url: post /approvals/assignments/notify
+url: post /approvals/assignments/notify.
 
 #### Base Command
 
@@ -964,7 +964,7 @@ url: post /approvals/assignments/notify
 
 ***
 Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id
-url: get /approvals/requests
+url: get /approvals/requests.
 
 #### Base Command
 
@@ -1017,7 +1017,7 @@ url: get /approvals/requests
 
 ***
 Make a new approval request to access a target. Note: depending on the authorization settings, the fields "ticket" and "comment" may be required
-url: post /approvals/requests
+url: post /approvals/requests.
 
 #### Base Command
 
@@ -1049,7 +1049,7 @@ url: post /approvals/requests
 
 ***
 Cancel an approval request
-url: post /approvals/requests/cancel
+url: post /approvals/requests/cancel.
 
 #### Base Command
 
@@ -1071,7 +1071,7 @@ url: post /approvals/requests/cancel
 
 ***
 Notify approvers linked to an approval request by sending them an email
-url: post /approvals/requests/notify
+url: post /approvals/requests/notify.
 
 #### Base Command
 
@@ -1094,7 +1094,7 @@ url: post /approvals/requests/notify
 
 ***
 Check if an approval is required for this target (optionally for a given date in future)
-url: get /approvals/requests/target/{target_name}
+url: get /approvals/requests/target/{target_name}.
 
 #### Base Command
 
@@ -1120,7 +1120,7 @@ url: get /approvals/requests/target/{target_name}
 
 ***
 Get the mappings of a domain
-url: get /authdomains/{domain_id}/mappings
+url: get /authdomains/{domain_id}/mappings.
 
 #### Base Command
 
@@ -1151,7 +1151,7 @@ url: get /authdomains/{domain_id}/mappings
 
 ***
 Add a mapping in a domain and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user_group by default
-url: post /authdomains/{domain_id}/mappings
+url: post /authdomains/{domain_id}/mappings.
 
 #### Base Command
 
@@ -1176,7 +1176,7 @@ url: post /authdomains/{domain_id}/mappings
 
 ***
 Edit mappings of a domain
-url: put /authdomains/{domain_id}/mappings
+url: put /authdomains/{domain_id}/mappings.
 
 #### Base Command
 
@@ -1199,7 +1199,7 @@ There is no context output for this command.
 
 ***
 Get the mapping of a domain
-url: get /authdomains/{domain_id}/mappings/{mapping_id}
+url: get /authdomains/{domain_id}/mappings/{mapping_id}.
 
 #### Base Command
 
@@ -1227,7 +1227,7 @@ url: get /authdomains/{domain_id}/mappings/{mapping_id}
 
 ***
 Edit a mapping of a domain
-url: put /authdomains/{domain_id}/mappings/{mapping_id}
+url: put /authdomains/{domain_id}/mappings/{mapping_id}.
 
 #### Base Command
 
@@ -1251,7 +1251,7 @@ There is no context output for this command.
 
 ***
 Delete the mapping of the given domain
-url: delete /authdomains/{domain_id}/mappings/{mapping_id}
+url: delete /authdomains/{domain_id}/mappings/{mapping_id}.
 
 #### Base Command
 
@@ -1272,7 +1272,7 @@ There is no context output for this command.
 
 ***
 Get the auth domains
-url: get /authdomains
+url: get /authdomains.
 
 #### Base Command
 
@@ -1312,7 +1312,7 @@ url: get /authdomains
 
 ***
 Get the auth domain
-url: get /authdomains/{domain_id}
+url: get /authdomains/{domain_id}.
 
 #### Base Command
 
@@ -1349,7 +1349,7 @@ url: get /authdomains/{domain_id}
 
 ***
 Get the authentications
-url: get /authentications
+url: get /authentications.
 
 #### Base Command
 
@@ -1386,7 +1386,7 @@ url: get /authentications
 
 ***
 Get the authentication
-url: get /authentications/{auth_id}
+url: get /authentications/{auth_id}.
 
 #### Base Command
 
@@ -1420,7 +1420,7 @@ url: get /authentications/{auth_id}
 
 ***
 Get the authorizations
-url: get /authorizations
+url: get /authorizations.
 
 #### Base Command
 
@@ -1468,7 +1468,7 @@ url: get /authorizations
 
 ***
 Add an authorization
-url: post /authorizations
+url: post /authorizations.
 
 #### Base Command
 
@@ -1498,7 +1498,7 @@ url: post /authorizations
 | authorization_post_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). | Optional | 
 | authorization_post_approval_timeout | Set a timeout in minutes after which the approval will be automatically closed if no connection has been initiated (i.e. the user won't be able to connect). 0: no timeout. | Optional | 
 | authorization_post_authorize_session_sharing | Enable Session Sharing. | Optional | 
-| authorization_post_session_sharing_mode | The Session Sharing Mode. (accepted values: view_only,view_control). | Optional | 
+| authorization_post_session_sharing_mode | The Session Sharing Mode. Possible values are: view_only, view_control. | Optional | 
 
 #### Context Output
 
@@ -1510,7 +1510,7 @@ url: post /authorizations
 
 ***
 Get the authorization
-url: get /authorizations/{authorization_id}
+url: get /authorizations/{authorization_id}.
 
 #### Base Command
 
@@ -1555,7 +1555,7 @@ url: get /authorizations/{authorization_id}
 
 ***
 Edit an authorization
-url: put /authorizations/{authorization_id}
+url: put /authorizations/{authorization_id}.
 
 #### Base Command
 
@@ -1585,7 +1585,7 @@ url: put /authorizations/{authorization_id}
 | authorization_put_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). | Optional | 
 | authorization_put_approval_timeout | Set a timeout in minutes after which the approval will be automatically closed if no connection has been initiated (i.e. the user won't be able to connect). 0: no timeout. | Optional | 
 | authorization_put_authorize_session_sharing | Enable Session Sharing. | Optional | 
-| authorization_put_session_sharing_mode | The Session Sharing Mode. (accepted values: view_only,view_control). | Optional | 
+| authorization_put_session_sharing_mode | The Session Sharing Mode. Possible values are: view_only, view_control. | Optional | 
 
 #### Context Output
 
@@ -1595,7 +1595,7 @@ There is no context output for this command.
 
 ***
 Delete an authorization
-url: delete /authorizations/{authorization_id}
+url: delete /authorizations/{authorization_id}.
 
 #### Base Command
 
@@ -1615,7 +1615,7 @@ There is no context output for this command.
 
 ***
 Get the checkout policies
-url: get /checkoutpolicies
+url: get /checkoutpolicies.
 
 #### Base Command
 
@@ -1649,7 +1649,7 @@ url: get /checkoutpolicies
 
 ***
 Get the checkout policy
-url: get /checkoutpolicies/{checkout_policy_id}
+url: get /checkoutpolicies/{checkout_policy_id}.
 
 #### Base Command
 
@@ -1680,7 +1680,7 @@ url: get /checkoutpolicies/{checkout_policy_id}
 
 ***
 Get the clusters
-url: get /clusters
+url: get /clusters.
 
 #### Base Command
 
@@ -1712,7 +1712,7 @@ url: get /clusters
 
 ***
 Get the cluster
-url: get /clusters/{cluster_id}
+url: get /clusters/{cluster_id}.
 
 #### Base Command
 
@@ -1741,7 +1741,7 @@ url: get /clusters/{cluster_id}
 
 ***
 Get the X509 configuration infos
-url: get /config/x509
+url: get /config/x509.
 
 #### Base Command
 
@@ -1765,7 +1765,7 @@ There are no input arguments for this command.
 
 ***
 Upload X509 configuration
-url: post /config/x509
+url: post /config/x509.
 
 #### Base Command
 
@@ -1790,7 +1790,7 @@ url: post /config/x509
 
 ***
 Update X509 Configuration
-url: put /config/x509
+url: put /config/x509.
 
 #### Base Command
 
@@ -1813,7 +1813,7 @@ There is no context output for this command.
 
 ***
 Reset X509 configuration
-url: delete /config/x509
+url: delete /config/x509.
 
 #### Base Command
 
@@ -1831,7 +1831,7 @@ There is no context output for this command.
 
 ***
 Get current serial configuration number of the Bastion. This number can be used to know if the Bastion configuration was changed
-url: get /confignumber
+url: get /confignumber.
 
 #### Base Command
 
@@ -1851,7 +1851,7 @@ There are no input arguments for this command.
 
 ***
 Get the connection policies
-url: get /connectionpolicies
+url: get /connectionpolicies.
 
 #### Base Command
 
@@ -1883,7 +1883,7 @@ url: get /connectionpolicies
 
 ***
 Add a connection policy
-url: post /connectionpolicies
+url: post /connectionpolicies.
 
 #### Base Command
 
@@ -1894,9 +1894,9 @@ url: post /connectionpolicies
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | connectionpolicy_post_connection_policy_name | The connection policy name. | Required | 
-| connectionpolicy_post_type | The connection policy type. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC). | Required | 
+| connectionpolicy_post_type | The connection policy type. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 | connectionpolicy_post_description | The connection policy description. | Optional | 
-| connectionpolicy_post_protocol | The connection policy protocol. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC). | Required | 
+| connectionpolicy_post_protocol | The connection policy protocol. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 
 #### Context Output
 
@@ -1908,7 +1908,7 @@ url: post /connectionpolicies
 
 ***
 Get the connection policy
-url: get /connectionpolicies/{connection_policy_id}
+url: get /connectionpolicies/{connection_policy_id}.
 
 #### Base Command
 
@@ -1937,7 +1937,7 @@ url: get /connectionpolicies/{connection_policy_id}
 
 ***
 Edit a connection policy
-url: put /connectionpolicies/{connection_policy_id}
+url: put /connectionpolicies/{connection_policy_id}.
 
 #### Base Command
 
@@ -1960,7 +1960,7 @@ There is no context output for this command.
 
 ***
 Delete a connection policy. Note: it is not possible to delete the default Bastion connection policies
-url: delete /connectionpolicies/{connection_policy_id}
+url: delete /connectionpolicies/{connection_policy_id}.
 
 #### Base Command
 
@@ -1980,7 +1980,7 @@ There is no context output for this command.
 
 ***
 Get all accounts on a device local domain
-url: get /devices/{device_id}/localdomains/{domain_id}/accounts
+url: get /devices/{device_id}/localdomains/{domain_id}/accounts.
 
 #### Base Command
 
@@ -2043,7 +2043,7 @@ url: get /devices/{device_id}/localdomains/{domain_id}/accounts
 
 ***
 Add an account to a local domain on a device
-url: post /devices/{device_id}/localdomains/{domain_id}/accounts
+url: post /devices/{device_id}/localdomains/{domain_id}/accounts.
 
 #### Base Command
 
@@ -2075,7 +2075,7 @@ url: post /devices/{device_id}/localdomains/{domain_id}/accounts
 
 ***
 Get one account on a device local domain
-url: get /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
+url: get /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -2135,7 +2135,7 @@ url: get /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
 
 ***
 Edit an account on a local domain of a device
-url: put /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
+url: put /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -2157,7 +2157,7 @@ url: put /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
 | device_account_put_checkout_policy | The account checkout policy. | Optional | 
 | device_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | device_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
-| device_account_put_onboard_status | Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual). | Optional | 
+| device_account_put_onboard_status | Onboarding status of the account. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
 | device_account_put_services | The account services. | Optional | 
 
 #### Context Output
@@ -2168,7 +2168,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a local domain of a device
-url: delete /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
+url: delete /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -2190,7 +2190,7 @@ There is no context output for this command.
 
 ***
 Get the certificates on a device
-url: get /devices/{device_id}/certificates
+url: get /devices/{device_id}/certificates.
 
 #### Base Command
 
@@ -2223,7 +2223,7 @@ url: get /devices/{device_id}/certificates
 
 ***
 Get the certificate on a device
-url: get /devices/{device_id}/certificates/{cert_type}/{address}/{port}
+url: get /devices/{device_id}/certificates/{cert_type}/{address}/{port}.
 
 #### Base Command
 
@@ -2259,7 +2259,7 @@ url: get /devices/{device_id}/certificates/{cert_type}/{address}/{port}
 
 ***
 Revoke a certificate of a device
-url: delete /devices/{device_id}/certificates/{cert_type}/{address}/{port}
+url: delete /devices/{device_id}/certificates/{cert_type}/{address}/{port}.
 
 #### Base Command
 
@@ -2282,7 +2282,7 @@ There is no context output for this command.
 
 ***
 Get the local domains of a device
-url: get /devices/{device_id}/localdomains
+url: get /devices/{device_id}/localdomains.
 
 #### Base Command
 
@@ -2318,7 +2318,7 @@ url: get /devices/{device_id}/localdomains
 
 ***
 Get the local domain of a device
-url: get /devices/{device_id}/localdomains/{domain_id}
+url: get /devices/{device_id}/localdomains/{domain_id}.
 
 #### Base Command
 
@@ -2351,7 +2351,7 @@ url: get /devices/{device_id}/localdomains/{domain_id}
 
 ***
 Get the services of a device
-url: get /devices/{device_id}/services
+url: get /devices/{device_id}/services.
 
 #### Base Command
 
@@ -2384,7 +2384,7 @@ url: get /devices/{device_id}/services
 
 ***
 Add a service in a device
-url: post /devices/{device_id}/services
+url: post /devices/{device_id}/services.
 
 #### Base Command
 
@@ -2397,9 +2397,9 @@ url: post /devices/{device_id}/services
 | device_id | The device id or name. | Required | 
 | service_post_id | The service id. Usable in the "sort" parameter. | Optional | 
 | service_post_service_name | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
-| service_post_protocol | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC). | Required | 
+| service_post_protocol | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 | service_post_port | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
-| service_post_subprotocols | The sub protocols. (accepted values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11). | Required | 
+| service_post_subprotocols | The sub protocols. Possible values are: RDP_AUDIO_INPUT, RDP_AUDIO_OUTPUT, RDP_CLIPBOARD_DOWN, RDP_CLIPBOARD_FILE, RDP_CLIPBOARD_UP, RDP_COM_PORT, RDP_DRIVE, RDP_PRINTER, RDP_SMARTCARD, SFTP_SESSION, SSH_AUTH_AGENT, SSH_DIRECT_TCPIP, SSH_DIRECT_UNIXSOCK, SSH_REMOTE_COMMAND, SSH_REVERSE_TCPIP, SSH_REVERSE_UNIXSOCK, SSH_SCP_DOWN, SSH_SCP_UP, SSH_SHELL_SESSION, SSH_X11. | Required | 
 | service_post_connection_policy | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
 | service_post_global_domains | The global domains names. | Optional | 
 
@@ -2413,7 +2413,7 @@ url: post /devices/{device_id}/services
 
 ***
 Get the service of a device
-url: get /devices/{device_id}/services/{service_id}
+url: get /devices/{device_id}/services/{service_id}.
 
 #### Base Command
 
@@ -2443,7 +2443,7 @@ url: get /devices/{device_id}/services/{service_id}
 
 ***
 Edit a service of a device
-url: put /devices/{device_id}/services/{service_id}
+url: put /devices/{device_id}/services/{service_id}.
 
 #### Base Command
 
@@ -2468,7 +2468,7 @@ There is no context output for this command.
 
 ***
 Delete a service from a device
-url: delete /devices/{device_id}/services/{service_id}
+url: delete /devices/{device_id}/services/{service_id}.
 
 #### Base Command
 
@@ -2489,7 +2489,7 @@ There is no context output for this command.
 
 ***
 Get the devices
-url: get /devices
+url: get /devices.
 
 #### Base Command
 
@@ -2553,7 +2553,7 @@ url: get /devices
 
 ***
 Add a device
-url: post /devices
+url: post /devices.
 
 #### Base Command
 
@@ -2578,7 +2578,7 @@ url: post /devices
 
 ***
 Get the device
-url: get /devices/{device_id}
+url: get /devices/{device_id}.
 
 #### Base Command
 
@@ -2639,7 +2639,7 @@ url: get /devices/{device_id}
 
 ***
 Edit a device
-url: put /devices/{device_id}
+url: put /devices/{device_id}.
 
 #### Base Command
 
@@ -2655,7 +2655,7 @@ url: put /devices/{device_id}
 | device_put_description | The device description. | Optional | 
 | device_put_alias | The device alias. \ /:*?"&lt;&gt;\|@ and space are forbidden. | Optional | 
 | device_put_host | The device host address. | Optional | 
-| device_put_onboard_status | Onboarding status of the device (accepted values: onboarded,to_onboard,hide,manual). | Optional | 
+| device_put_onboard_status | Onboarding status of the device. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
 
 #### Context Output
 
@@ -2665,7 +2665,7 @@ There is no context output for this command.
 
 ***
 Delete a device
-url: delete /devices/{device_id}
+url: delete /devices/{device_id}.
 
 #### Base Command
 
@@ -2685,7 +2685,7 @@ There is no context output for this command.
 
 ***
 Get the accounts of a global domain
-url: get /domains/{domain_id}/accounts
+url: get /domains/{domain_id}/accounts.
 
 #### Base Command
 
@@ -2745,7 +2745,7 @@ url: get /domains/{domain_id}/accounts
 
 ***
 Add an account in a global domain
-url: post /domains/{domain_id}/accounts
+url: post /domains/{domain_id}/accounts.
 
 #### Base Command
 
@@ -2776,7 +2776,7 @@ url: post /domains/{domain_id}/accounts
 
 ***
 Get the account of a global domain
-url: get /domains/{domain_id}/accounts/{account_id}
+url: get /domains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -2834,7 +2834,7 @@ url: get /domains/{domain_id}/accounts/{account_id}
 
 ***
 Edit an account in a global domain
-url: put /domains/{domain_id}/accounts/{account_id}
+url: put /domains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -2855,7 +2855,7 @@ url: put /domains/{domain_id}/accounts/{account_id}
 | domain_account_put_checkout_policy | The account checkout policy. | Optional | 
 | domain_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | domain_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
-| domain_account_put_onboard_status | Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual). | Optional | 
+| domain_account_put_onboard_status | Onboarding status of the account. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
 | domain_account_put_resources | The account resources. | Optional | 
 
 #### Context Output
@@ -2866,7 +2866,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a global domain
-url: delete /domains/{domain_id}/accounts/{account_id}
+url: delete /domains/{domain_id}/accounts/{account_id}.
 
 #### Base Command
 
@@ -2887,7 +2887,7 @@ There is no context output for this command.
 
 ***
 delete a resource from the global domain account
-url: delete /domains/{domain_id}/accounts/{account_id}/resource/{resource_name}
+url: delete /domains/{domain_id}/accounts/{account_id}/resource/{resource_name}.
 
 #### Base Command
 
@@ -2909,7 +2909,7 @@ There is no context output for this command.
 
 ***
 Get the global domains
-url: get /domains
+url: get /domains.
 
 #### Base Command
 
@@ -2950,7 +2950,7 @@ url: get /domains
 
 ***
 Get the global domain
-url: get /domains/{domain_id}
+url: get /domains/{domain_id}.
 
 #### Base Command
 
@@ -2988,7 +2988,7 @@ url: get /domains/{domain_id}
 
 ***
 Get the external authentication group mappings
-url: get /authmappings
+url: get /authmappings.
 
 #### Base Command
 
@@ -3017,7 +3017,7 @@ url: get /authmappings
 
 ***
 Get the LDAP users of a given domain
-url: get /ldapusers/{domain}
+url: get /ldapusers/{domain}.
 
 #### Base Command
 
@@ -3054,7 +3054,7 @@ url: get /ldapusers/{domain}
 
 ***
 Get the LDAP user of a given domain
-url: get /ldapusers/{domain}/{user_name}
+url: get /ldapusers/{domain}/{user_name}.
 
 #### Base Command
 
@@ -3089,7 +3089,7 @@ url: get /ldapusers/{domain}/{user_name}
 
 ***
 Get information about the WALLIX Bastion license
-url: get /licenseinfo
+url: get /licenseinfo.
 
 #### Base Command
 
@@ -3142,7 +3142,7 @@ There are no input arguments for this command.
 
 ***
 Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured)
-url: post /logsiem
+url: post /logsiem.
 
 #### Base Command
 
@@ -3165,7 +3165,7 @@ url: post /logsiem
 
 ***
 Get the notifications
-url: get /notifications
+url: get /notifications.
 
 #### Base Command
 
@@ -3198,7 +3198,7 @@ url: get /notifications
 
 ***
 Add a notification
-url: post /notifications
+url: post /notifications.
 
 #### Base Command
 
@@ -3211,10 +3211,10 @@ url: post /notifications
 | notification_post_notification_name | The notification name. | Required | 
 | notification_post_description | The notification description. | Optional | 
 | notification_post_enabled | Notification is enabled. | Required | 
-| notification_post_type | Notification type. (accepted values: email). | Required | 
+| notification_post_type | Notification type. Possible values are: email. | Required | 
 | notification_post_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Required | 
-| notification_post_language | The notification language (in email). (accepted values: de,en,es,fr,ru). | Required | 
-| notification_post_events | The list of events that will trigger a notification. (accepted values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint). | Optional | 
+| notification_post_language | The notification language (in email). Possible values are: de, en, es, fr, ru. | Required | 
+| notification_post_events | The list of events that will trigger a notification. Possible values are: cx_equipment, daily_reporting, external_storage_full, filesystem_full, integrity_error, licence_notifications, new_fingerprint, password_expired, pattern_found, primary_cx_failed, raid_error, rdp_outcxn_found, rdp_pattern_found, rdp_process_found, secondary_cx_failed, sessionlog_purge, watchdog_notifications, wrong_fingerprint. | Optional | 
 
 #### Context Output
 
@@ -3226,7 +3226,7 @@ url: post /notifications
 
 ***
 Get the notification
-url: get /notifications/{notification_id}
+url: get /notifications/{notification_id}.
 
 #### Base Command
 
@@ -3256,7 +3256,7 @@ url: get /notifications/{notification_id}
 
 ***
 Edit a notification
-url: put /notifications/{notification_id}
+url: put /notifications/{notification_id}.
 
 #### Base Command
 
@@ -3271,10 +3271,10 @@ url: put /notifications/{notification_id}
 | notification_put_notification_name | The notification name. | Optional | 
 | notification_put_description | The notification description. | Optional | 
 | notification_put_enabled | Notification is enabled. | Optional | 
-| notification_put_type | Notification type. (accepted values: email). | Optional | 
+| notification_put_type | Notification type. Possible values are: email. | Optional | 
 | notification_put_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Optional | 
-| notification_put_language | The notification language (in email). (accepted values: de,en,es,fr,ru). | Optional | 
-| notification_put_events | The list of events that will trigger a notification. (accepted values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint). | Optional | 
+| notification_put_language | The notification language (in email). Possible values are: de, en, es, fr, ru. | Optional | 
+| notification_put_events | The list of events that will trigger a notification. Possible values are: cx_equipment, daily_reporting, external_storage_full, filesystem_full, integrity_error, licence_notifications, new_fingerprint, password_expired, pattern_found, primary_cx_failed, raid_error, rdp_outcxn_found, rdp_pattern_found, rdp_process_found, secondary_cx_failed, sessionlog_purge, watchdog_notifications, wrong_fingerprint. | Optional | 
 
 #### Context Output
 
@@ -3284,7 +3284,7 @@ There is no context output for this command.
 
 ***
 Delete a notification
-url: delete /notifications/{notification_id}
+url: delete /notifications/{notification_id}.
 
 #### Base Command
 
@@ -3304,7 +3304,7 @@ There is no context output for this command.
 
 ***
 Get object to onboard, by type (either devices with their linked accounts or global accounts alone)
-url: get /onboarding_objects
+url: get /onboarding_objects.
 
 #### Base Command
 
@@ -3347,7 +3347,7 @@ url: get /onboarding_objects
 
 ***
 Get the password change policies
-url: get /passwordchangepolicies
+url: get /passwordchangepolicies.
 
 #### Base Command
 
@@ -3399,7 +3399,7 @@ Moreover, @reboot is not allowed.
 
 ***
 Add a password change policy. Note: at least password or SSH options must be given in the policy (and both can be used at same time)
-url: post /passwordchangepolicies
+url: post /passwordchangepolicies.
 
 #### Base Command
 
@@ -3431,7 +3431,7 @@ url: post /passwordchangepolicies
 
 ***
 Get the password change policy
-url: get /passwordchangepolicies/{policy_id}
+url: get /passwordchangepolicies/{policy_id}.
 
 #### Base Command
 
@@ -3480,7 +3480,7 @@ Moreover, @reboot is not allowed.
 
 ***
 Edit a password change policy
-url: put /passwordchangepolicies/{policy_id}
+url: put /passwordchangepolicies/{policy_id}.
 
 #### Base Command
 
@@ -3511,7 +3511,7 @@ There is no context output for this command.
 
 ***
 Delete a password change policy
-url: delete /passwordchangepolicies/{policy_id}
+url: delete /passwordchangepolicies/{policy_id}.
 
 #### Base Command
 
@@ -3531,7 +3531,7 @@ There is no context output for this command.
 
 ***
 Get current user's or the user 'user_name' password rights on accounts (for checkout/checkin)
-url: get /passwordrights
+url: get /passwordrights.
 
 #### Base Command
 
@@ -3568,7 +3568,7 @@ url: get /passwordrights
 
 ***
 Get current user's or the user 'user_name' password rights on accounts (for checkout/checkin)
-url: get /passwordrights/{user_name}
+url: get /passwordrights/{user_name}.
 
 #### Base Command
 
@@ -3603,7 +3603,7 @@ url: get /passwordrights/{user_name}
 
 ***
 Get the profiles
-url: get /profiles
+url: get /profiles.
 
 #### Base Command
 
@@ -3661,7 +3661,7 @@ url: get /profiles
 
 ***
 Get the profile
-url: get /profiles/{profile_id}
+url: get /profiles/{profile_id}.
 
 #### Base Command
 
@@ -3716,7 +3716,7 @@ url: get /profiles/{profile_id}
 
 ***
 Get the scanjobs
-url: get /scanjobs
+url: get /scanjobs.
 
 #### Base Command
 
@@ -3747,7 +3747,7 @@ url: get /scanjobs
 
 ***
 Start a scan job manually
-url: post /scanjobs
+url: post /scanjobs.
 
 #### Base Command
 
@@ -3769,7 +3769,7 @@ url: post /scanjobs
 
 ***
 Get the scanjob
-url: get /scanjobs/{scanjob_id}
+url: get /scanjobs/{scanjob_id}.
 
 #### Base Command
 
@@ -3797,7 +3797,7 @@ url: get /scanjobs/{scanjob_id}
 
 ***
 Cancel a scan job
-url: put /scanjobs/{scanjob_id}
+url: put /scanjobs/{scanjob_id}.
 
 #### Base Command
 
@@ -3817,7 +3817,7 @@ There is no context output for this command.
 
 ***
 Get the scans
-url: get /scans
+url: get /scans.
 
 #### Base Command
 
@@ -3854,7 +3854,7 @@ url: get /scans
 
 ***
 Get the scan
-url: get /scans/{scan_id}
+url: get /scans/{scan_id}.
 
 #### Base Command
 
@@ -3888,7 +3888,7 @@ url: get /scans/{scan_id}
 
 ***
 Edit a scan
-url: put /scans/{scan_id}
+url: put /scans/{scan_id}.
 
 #### Base Command
 
@@ -3899,7 +3899,7 @@ url: put /scans/{scan_id}
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scan_id | The scan id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the subnets, banner_regex or protocols replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the subnets, banner_regex or protocols are replaced, otherwise the values are added to the existing ones. | Optional | 
 | scan_put_name | Scan name. | Optional | 
 | scan_put_active | State of the job schedule. | Optional | 
 | scan_put_periodicity | Periodicity of the scan, in cron notation. | Optional | 
@@ -3914,7 +3914,7 @@ There is no context output for this command.
 
 ***
 Delete a scan
-url: delete /scans/{scan_id}
+url: delete /scans/{scan_id}.
 
 #### Base Command
 
@@ -3934,7 +3934,7 @@ There is no context output for this command.
 
 ***
 Get current user's or the user 'user_name' session rights (connections via proxies)
-url: get /sessionrights
+url: get /sessionrights.
 
 #### Base Command
 
@@ -3977,7 +3977,7 @@ url: get /sessionrights
 
 ***
 Get current user's or the user 'user_name' session rights (connections via proxies)
-url: get /sessionrights/{user_name}
+url: get /sessionrights/{user_name}.
 
 #### Base Command
 
@@ -4018,7 +4018,7 @@ url: get /sessionrights/{user_name}
 
 ***
 Get the sessions
-url: get /sessions
+url: get /sessions.
 
 #### Base Command
 
@@ -4110,7 +4110,7 @@ url: get /sessions
 
 ***
 Edit a session
-url: put /sessions
+url: put /sessions.
 
 #### Base Command
 
@@ -4132,7 +4132,7 @@ There is no context output for this command.
 
 ***
 Get the metadata of one or multiple sessions
-url: get /sessions/metadata
+url: get /sessions/metadata.
 
 #### Base Command
 
@@ -4156,7 +4156,7 @@ url: get /sessions/metadata
 
 ***
 Get session sharing requests
-url: get /sessions/requests
+url: get /sessions/requests.
 
 #### Base Command
 
@@ -4187,7 +4187,7 @@ url: get /sessions/requests
 
 ***
 Create a session request
-url: post /sessions/requests
+url: post /sessions/requests.
 
 #### Base Command
 
@@ -4198,7 +4198,7 @@ url: post /sessions/requests
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | session_request_post_session_id | The session id. | Required | 
-| session_request_post_mode | The session sharing mode. (accepted values: view_only,view_control). | Required | 
+| session_request_post_mode | The session sharing mode. Possible values are: view_only, view_control. | Required | 
 
 #### Context Output
 
@@ -4208,7 +4208,7 @@ There is no context output for this command.
 
 ***
 Delete a pending or a live session request
-url: delete /sessions/requests/{request_id}
+url: delete /sessions/requests/{request_id}.
 
 #### Base Command
 
@@ -4228,7 +4228,7 @@ There is no context output for this command.
 
 ***
 Get the latest snapshot of a running session
-url: get /sessions/snapshots/{session_id}
+url: get /sessions/snapshots/{session_id}.
 
 #### Base Command
 
@@ -4248,7 +4248,7 @@ There is no context output for this command.
 
 ***
 Get the status of a trace generation
-url: get /sessions/traces/{session_id}
+url: get /sessions/traces/{session_id}.
 
 #### Base Command
 
@@ -4279,7 +4279,7 @@ url: get /sessions/traces/{session_id}
 
 ***
 Generate a trace for a session
-url: post /sessions/traces
+url: post /sessions/traces.
 
 #### Base Command
 
@@ -4303,7 +4303,7 @@ url: post /sessions/traces
 
 ***
 Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied it will return the statistics for the last full calendar month
-url: get /statistics
+url: get /statistics.
 
 #### Base Command
 
@@ -4339,7 +4339,7 @@ url: get /statistics
 
 ***
 Get the target groups
-url: get /targetgroups
+url: get /targetgroups.
 
 #### Base Command
 
@@ -4402,7 +4402,7 @@ url: get /targetgroups
 
 ***
 Add a target group
-url: post /targetgroups
+url: post /targetgroups.
 
 #### Base Command
 
@@ -4425,7 +4425,7 @@ url: post /targetgroups
 
 ***
 Get the target group
-url: get /targetgroups/{group_id}
+url: get /targetgroups/{group_id}.
 
 #### Base Command
 
@@ -4485,7 +4485,7 @@ url: get /targetgroups/{group_id}
 
 ***
 Edit a target group
-url: put /targetgroups/{group_id}
+url: put /targetgroups/{group_id}.
 
 #### Base Command
 
@@ -4508,7 +4508,7 @@ There is no context output for this command.
 
 ***
 Delete a target group
-url: delete /targetgroups/{group_id}
+url: delete /targetgroups/{group_id}.
 
 #### Base Command
 
@@ -4528,7 +4528,7 @@ There is no context output for this command.
 
 ***
 Delete a target from a group
-url: delete /targetgroups/{group_id}/{target_type}/{target_id}
+url: delete /targetgroups/{group_id}/{target_type}/{target_id}.
 
 #### Base Command
 
@@ -4550,7 +4550,7 @@ There is no context output for this command.
 
 ***
 Get the timeframes
-url: get /timeframes
+url: get /timeframes.
 
 #### Base Command
 
@@ -4585,7 +4585,7 @@ url: get /timeframes
 
 ***
 Add a timeframe
-url: post /timeframes
+url: post /timeframes.
 
 #### Base Command
 
@@ -4609,7 +4609,7 @@ url: post /timeframes
 
 ***
 Get the timeframe
-url: get /timeframes/{timeframe_id}
+url: get /timeframes/{timeframe_id}.
 
 #### Base Command
 
@@ -4641,7 +4641,7 @@ url: get /timeframes/{timeframe_id}
 
 ***
 Edit a timeframe
-url: put /timeframes/{timeframe_id}
+url: put /timeframes/{timeframe_id}.
 
 #### Base Command
 
@@ -4665,7 +4665,7 @@ There is no context output for this command.
 
 ***
 Delete a timeframe
-url: delete /timeframes/{timeframe_id}
+url: delete /timeframes/{timeframe_id}.
 
 #### Base Command
 
@@ -4685,7 +4685,7 @@ There is no context output for this command.
 
 ***
 Get the user groups
-url: get /usergroups
+url: get /usergroups.
 
 #### Base Command
 
@@ -4723,7 +4723,7 @@ url: get /usergroups
 
 ***
 Get the user group
-url: get /usergroups/{group_id}
+url: get /usergroups/{group_id}.
 
 #### Base Command
 
@@ -4758,7 +4758,7 @@ url: get /usergroups/{group_id}
 
 ***
 Get the users
-url: get /users
+url: get /users.
 
 #### Base Command
 
@@ -4802,7 +4802,7 @@ url: get /users
 
 ***
 Add a user
-url: post /users
+url: post /users.
 
 #### Base Command
 
@@ -4817,7 +4817,7 @@ url: post /users
 | user_post_display_name | The displayed name. | Optional | 
 | user_post_email | The email address. | Required | 
 | user_post_ip_source | The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com. | Optional | 
-| user_post_preferred_language | The preferred language. (accepted values: de,en,es,fr,ru). | Optional | 
+| user_post_preferred_language | The preferred language. Possible values are: de, en, es, fr, ru. | Optional | 
 | user_post_profile | The user profile. | Required | 
 | user_post_groups | The groups containing this user. | Optional | 
 | user_post_user_auths | The authentication procedures(s). | Required | 
@@ -4840,7 +4840,7 @@ url: post /users
 
 ***
 Get the user
-url: get /users/{name}
+url: get /users/{name}.
 
 #### Base Command
 
@@ -4881,7 +4881,7 @@ url: get /users/{name}
 
 ***
 Edit a user
-url: put /users/{name}
+url: put /users/{name}.
 
 #### Base Command
 
@@ -4898,7 +4898,7 @@ url: put /users/{name}
 | user_put_display_name | The displayed name. | Optional | 
 | user_put_email | The email address. | Optional | 
 | user_put_ip_source | The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com. | Optional | 
-| user_put_preferred_language | The preferred language. (accepted values: de,en,es,fr,ru). | Optional | 
+| user_put_preferred_language | The preferred language. Possible values are: de, en, es, fr, ru. | Optional | 
 | user_put_profile | The user profile. | Optional | 
 | user_put_groups | The groups containing this user. | Optional | 
 | user_put_user_auths | The authentication procedures(s). | Optional | 
@@ -4919,7 +4919,7 @@ There is no context output for this command.
 
 ***
 Get target group restrictions
-url: get /targetgroups/{group_id}/restrictions
+url: get /targetgroups/{group_id}/restrictions.
 
 #### Base Command
 
@@ -4950,7 +4950,7 @@ url: get /targetgroups/{group_id}/restrictions
 
 ***
 Add a restriction in a targetgroup
-url: post /targetgroups/{group_id}/restrictions
+url: post /targetgroups/{group_id}/restrictions.
 
 #### Base Command
 
@@ -4961,9 +4961,9 @@ url: post /targetgroups/{group_id}/restrictions
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | A target group id or name. | Required | 
-| restriction_post_action | The restriction type. (accepted values: kill,notify). | Required | 
+| restriction_post_action | The restriction type. Possible values are: kill, notify. | Required | 
 | restriction_post_rules | The restriction rules. | Required | 
-| restriction_post_subprotocol | The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP). | Required | 
+| restriction_post_subprotocol | The restriction subprotocol. Possible values are: SSH_SHELL_SESSION, SSH_REMOTE_COMMAND, SSH_SCP_UP, SSH_SCP_DOWN, SFTP_SESSION, RLOGIN, TELNET, RDP. | Required | 
 
 #### Context Output
 
@@ -4975,7 +4975,7 @@ url: post /targetgroups/{group_id}/restrictions
 
 ***
 Get one target group restriction
-url: get /targetgroups/{group_id}/restrictions/{restriction_id}
+url: get /targetgroups/{group_id}/restrictions/{restriction_id}.
 
 #### Base Command
 
@@ -5003,7 +5003,7 @@ url: get /targetgroups/{group_id}/restrictions/{restriction_id}
 
 ***
 Edit a restriction from a targetgroup
-url: put /targetgroups/{group_id}/restrictions/{restriction_id}
+url: put /targetgroups/{group_id}/restrictions/{restriction_id}.
 
 #### Base Command
 
@@ -5015,9 +5015,9 @@ url: put /targetgroups/{group_id}/restrictions/{restriction_id}
 | --- | --- | --- |
 | group_id | A target group id or name. | Required | 
 | restriction_id | The identifier of the desired restriction. | Required | 
-| restriction_put_action | The restriction type. (accepted values: kill,notify). | Optional | 
+| restriction_put_action | The restriction type. Possible values are: kill, notify. | Optional | 
 | restriction_put_rules | The restriction rules. | Optional | 
-| restriction_put_subprotocol | The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP). | Optional | 
+| restriction_put_subprotocol | The restriction subprotocol. Possible values are: SSH_SHELL_SESSION, SSH_REMOTE_COMMAND, SSH_SCP_UP, SSH_SCP_DOWN, SFTP_SESSION, RLOGIN, TELNET, RDP. | Optional | 
 
 #### Context Output
 
@@ -5027,7 +5027,7 @@ There is no context output for this command.
 
 ***
 Delete a restriction from a targetgroup
-url: delete /targetgroups/{group_id}/restrictions/{restriction_id}
+url: delete /targetgroups/{group_id}/restrictions/{restriction_id}.
 
 #### Base Command
 
@@ -5048,7 +5048,7 @@ There is no context output for this command.
 
 ***
 Get the password for a given target
-url: get /targetpasswords/checkout/{account_name}
+url: get /targetpasswords/checkout/{account_name}.
 
 #### Base Command
 
@@ -5085,7 +5085,7 @@ url: get /targetpasswords/checkout/{account_name}
 
 ***
 Extend the duration time to get the passwords for a given target
-url: get /targetpasswords/extendcheckout/{account_name}
+url: get /targetpasswords/extendcheckout/{account_name}.
 
 #### Base Command
 
@@ -5106,7 +5106,7 @@ There is no context output for this command.
 
 ***
 Release the passwords for a given target
-url: get /targetpasswords/checkin/{account_name}
+url: get /targetpasswords/checkin/{account_name}.
 
 #### Base Command
 
@@ -5129,7 +5129,7 @@ There is no context output for this command.
 
 ***
 Get the target by type
-url: get /targets/{target_type}
+url: get /targets/{target_type}.
 
 #### Base Command
 
@@ -5164,7 +5164,7 @@ url: get /targets/{target_type}
 
 ***
 Get the mappings of a user group
-url: get /usergroups/{group_id}/mappings
+url: get /usergroups/{group_id}/mappings.
 
 #### Base Command
 
@@ -5195,7 +5195,7 @@ url: get /usergroups/{group_id}/mappings
 
 ***
 Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default
-url: post /usergroups/{group_id}/mappings
+url: post /usergroups/{group_id}/mappings.
 
 #### Base Command
 
@@ -5220,7 +5220,7 @@ url: post /usergroups/{group_id}/mappings
 
 ***
 Get the mapping of a user group
-url: get /usergroups/{group_id}/mappings/{mapping_id}
+url: get /usergroups/{group_id}/mappings/{mapping_id}.
 
 #### Base Command
 
@@ -5248,7 +5248,7 @@ url: get /usergroups/{group_id}/mappings/{mapping_id}
 
 ***
 Edit a mapping of a user group
-url: put /usergroups/{group_id}/mappings/{mapping_id}
+url: put /usergroups/{group_id}/mappings/{mapping_id}.
 
 #### Base Command
 
@@ -5272,7 +5272,7 @@ There is no context output for this command.
 
 ***
 Delete the mapping of the given user group
-url: delete /usergroups/{group_id}/mappings/{mapping_id}
+url: delete /usergroups/{group_id}/mappings/{mapping_id}.
 
 #### Base Command
 
@@ -5293,7 +5293,7 @@ There is no context output for this command.
 
 ***
 Get user group restrictions
-url: get /usergroups/{group_id}/restrictions
+url: get /usergroups/{group_id}/restrictions.
 
 #### Base Command
 
@@ -5324,7 +5324,7 @@ url: get /usergroups/{group_id}/restrictions
 
 ***
 Add a restriction to a usergroup
-url: post /usergroups/{group_id}/restrictions
+url: post /usergroups/{group_id}/restrictions.
 
 #### Base Command
 
@@ -5335,9 +5335,9 @@ url: post /usergroups/{group_id}/restrictions
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | A user group id or name. | Required | 
-| restriction_post_action | The restriction type. (accepted values: kill,notify). | Required | 
+| restriction_post_action | The restriction type. Possible values are: kill, notify. | Required | 
 | restriction_post_rules | The restriction rules. | Required | 
-| restriction_post_subprotocol | The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP). | Required | 
+| restriction_post_subprotocol | The restriction subprotocol. Possible values are: SSH_SHELL_SESSION, SSH_REMOTE_COMMAND, SSH_SCP_UP, SSH_SCP_DOWN, SFTP_SESSION, RLOGIN, TELNET, RDP. | Required | 
 
 #### Context Output
 
@@ -5349,7 +5349,7 @@ url: post /usergroups/{group_id}/restrictions
 
 ***
 Get one user group restriction
-url: get /usergroups/{group_id}/restrictions/{restriction_id}
+url: get /usergroups/{group_id}/restrictions/{restriction_id}.
 
 #### Base Command
 
@@ -5377,7 +5377,7 @@ url: get /usergroups/{group_id}/restrictions/{restriction_id}
 
 ***
 Edit a restriction from a usergroup
-url: put /usergroups/{group_id}/restrictions/{restriction_id}
+url: put /usergroups/{group_id}/restrictions/{restriction_id}.
 
 #### Base Command
 
@@ -5389,9 +5389,9 @@ url: put /usergroups/{group_id}/restrictions/{restriction_id}
 | --- | --- | --- |
 | group_id | A user group id or name. | Required | 
 | restriction_id | The identifier of the desired restriction. | Required | 
-| restriction_put_action | The restriction type. (accepted values: kill,notify). | Optional | 
+| restriction_put_action | The restriction type. Possible values are: kill, notify. | Optional | 
 | restriction_put_rules | The restriction rules. | Optional | 
-| restriction_put_subprotocol | The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP). | Optional | 
+| restriction_put_subprotocol | The restriction subprotocol. Possible values are: SSH_SHELL_SESSION, SSH_REMOTE_COMMAND, SSH_SCP_UP, SSH_SCP_DOWN, SFTP_SESSION, RLOGIN, TELNET, RDP. | Optional | 
 
 #### Context Output
 
@@ -5401,7 +5401,7 @@ There is no context output for this command.
 
 ***
 Delete a restriction from a usergroup
-url: delete /usergroups/{group_id}/restrictions/{restriction_id}
+url: delete /usergroups/{group_id}/restrictions/{restriction_id}.
 
 #### Base Command
 
@@ -5422,7 +5422,7 @@ There is no context output for this command.
 
 ***
 Get the REST API and WALLIX Bastion version numbers
-url: get /version
+url: get /version.
 
 #### Base Command
 
