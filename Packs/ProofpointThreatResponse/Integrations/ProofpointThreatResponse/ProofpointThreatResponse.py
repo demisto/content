@@ -528,7 +528,7 @@ def get_incidents_batch_by_time_request(params):
     # while loop relevant for fetching old incidents
     while created_before < current_time and len(incidents_list) < fetch_limit:
         demisto.debug(
-            "Entered the batch loop , with fetch_limit {} and incidents list {} and incident length {} "
+            "PTR: Entered the batch loop , with fetch_limit {} and incidents list {} and incident length {} "
             "with created_after {} and created_before {}.".format(
                 str(fetch_limit), str([incident.get('id') for incident in incidents_list]), str(len(incidents_list)),
                 str(request_params['created_after']), str(request_params['created_before'])))
@@ -543,7 +543,7 @@ def get_incidents_batch_by_time_request(params):
         # updating params according to the new times
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
-        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} incidents")
+        demisto.debug(f"PTR: End of the current batch loop with {str(len(incidents_list))} incidents")
 
     # fetching the last batch when created_before is bigger then current time = fetching new incidents
     if len(incidents_list) < fetch_limit:
@@ -553,7 +553,7 @@ def get_incidents_batch_by_time_request(params):
         incidents_list.extend(new_incidents)
 
         demisto.debug(
-            "Finished the last batch, with fetch_limit {} and incidents list {} and incident length {}".format(
+            "PTR: Finished the last batch, with fetch_limit {} and incidents list {} and incident length {}".format(
                 str(fetch_limit), str([incident.get('id') for incident in incidents_list]), str(len(incidents_list))))
 
     incidents_list_limit = incidents_list[:fetch_limit]
@@ -606,7 +606,7 @@ def fetch_incidents_command():
                 (datetime.strptime(last_fetch_time, TIME_FORMAT) - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
             last_fetched_id[state] = id
 
-    demisto.debug("End of current fetch function with last_fetch {} and last_fetched_id {}".format(str(last_fetch), str(
+    demisto.debug("PTR: End of current fetch function with last_fetch {} and last_fetched_id {}".format(str(last_fetch), str(
         last_fetched_id)))
 
     demisto.setLastRun({'last_fetch': last_fetch})
@@ -817,11 +817,25 @@ def search_quarantine():
     for incident in incidents_list:
         for alert in incident.get('events'):
             for email in alert.get('emails'):
-                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and email.get(
-                        'messageDeliveryTime', {}).get('millis'):
+                message_delivery_time = email.get('messageDeliveryTime', {})
+                demisto.debug(f'PTR: Got {message_delivery_time=} with type {type(message_delivery_time)}')
+                if message_delivery_time and isinstance(message_delivery_time, dict):
+                    message_delivery_time = message_delivery_time.get('millis')
+                elif message_delivery_time and isinstance(message_delivery_time, str):
+                    message_delivery_time = dateparser.parse(message_delivery_time)
+                    if message_delivery_time:
+                        message_delivery_time = int(message_delivery_time.timestamp() * 1000)
+                    else:
+                        demisto.info(f'PTR: Could not parse time of incident {incident.get("id")}, got '
+                                     f'{email.get("messageDeliveryTime", "")=}')
+                        continue
+
+                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and message_delivery_time:
                     found['mid'] = True
-                    emailTRAPtimestamp = int(email.get('messageDeliveryTime', {}).get('millis') / 1000)
+                    demisto.debug('PTR: Found the email, adding the alert')
+                    emailTRAPtimestamp = int(message_delivery_time / 1000)
                     if emailTAPtime == emailTRAPtimestamp:
+                        demisto.debug(f'PTR: Adding the alert with id {alert.get("id")}')
                         found['email'] = True
                         lstAlert.append({
                             'incidentid': incident.get('id'),
@@ -859,7 +873,7 @@ def search_quarantine():
                     else:
                         quarantineFoundcpt += 1
                 else:
-                    demisto.debug(f"Failed to parse timestamp of incident: {alert=} {quarantine=}.")
+                    demisto.debug(f"PTR: Failed to parse timestamp of incident: {alert=} {quarantine=}.")
 
     if quarantineFoundcpt > 0:
         return CommandResults(
@@ -872,7 +886,7 @@ def search_quarantine():
         return CommandResults(
             readable_output=f"{midtxt} but timestamp between email delivery time and time given as argument doesn't match")
     elif not found['quarantine']:
-        demisto.debug("\n".join([json.dumps(alt, indent=4) for alt in lstAlert]))
+        demisto.debug("PTR: " + "\n".join([json.dumps(alt, indent=4) for alt in lstAlert]))
         return CommandResults(f"{midtxt} but not in the quarantine list meaning that email has not be quarantined.")
 
     return CommandResults(
