@@ -5,7 +5,7 @@ This integration was integrated and tested with version v37.0 of Workday Sign On
 
 
 | **Parameter**                                     | **Description** | **Required** |
----------------------------------------------------| --- | --- | --- |
+|---------------------------------------------------| --- | --- |
 | Server URL (e.g., https://services1.myworkday.com) | API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application. | True |
 | Tenant Name                                       | The name of the Workday Tenant. Can be obtained from View API Clients report in Workday application. | True |
 | Username                                          |  | True |
