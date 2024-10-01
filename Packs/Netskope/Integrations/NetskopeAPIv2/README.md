@@ -1214,7 +1214,7 @@ To set up the mirroring:
     | Outgoing              | Any changes in Cortex XSOAR incidents will be reflected in Netskope (API v2) LOCAL events (outgoing mirrored fields).  |
     | Incoming and Outgoing |                                                                                                                        |
 
-    3. Optional: Check the _Close Mirrored XSOAR Incident_ integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Netskope (API v2) LOCAL.
+3. Optional: Check the _Close Mirrored XSOAR Incident_ integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Netskope (API v2) LOCAL.
 
-    Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-    **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Netskope (API v2) LOCAL.
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Netskope (API v2) LOCAL.
