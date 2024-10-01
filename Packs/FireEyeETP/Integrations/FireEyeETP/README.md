@@ -4,6 +4,7 @@
 Use the FireEye Email Threat Prevention (ETP) integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
 
 ## Use Cases
+* Search for messages using specific message attributes as indicators.
 * Import messages as Cortex XSOAR incidents, using the message status as indicator.
 
 ## Prerequisites
@@ -13,26 +14,26 @@ Make sure you obtain the following information.
 * Upon Authentication errors, contact FireEye Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing , e.g. https://etp.us.fireeye.com. FireEye will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and FireEye ETP.
 
 ## Configure FireEye ETP in Cortex
-2. Search for FireEye ETP.
-    * *Name*: a textual name for the integration instance.
-    * *Server URL*: ETP server URL. Use the endpoint in the region that hosts your ETP service:
-        * US instance: https://etp.us.fireeye.com
-        * EMEA instance: https://etp.eu.fireeye.com
-        * US GOV instance: https://etp.us.fireeyegov.com
-    * *API key*: The API key configured in the ETP Web Portal.
-    * *Messages status*: All status specified messages will be imported as incidents. Valid values are:
-        * accepted
-        * deleted
-        * delivered
-        * delivered (retroactive)
-        * dropped
-        * dropped oob
-        * dropped (oob retroactive)
-        * permanent failure
-        * processing
-        * quarantined
-        * rejected
-        * temporary failure
+
+* *Name*: a textual name for the integration instance.
+* *Server URL*: ETP server URL. Use the endpoint in the region that hosts your ETP service:
+    * US instance: https://etp.us.fireeye.com
+    * EMEA instance: https://etp.eu.fireeye.com
+    * US GOV instance: https://etp.us.fireeyegov.com
+* *API key*: The API key configured in the ETP Web Portal.
+* *Messages status*: All status specified messages will be imported as incidents. Valid values are:
+    * accepted
+    * deleted
+    * delivered
+    * delivered (retroactive)
+    * dropped
+    * dropped oob
+    * dropped (oob retroactive)
+    * permanent failure
+    * processing
+    * quarantined
+    * rejected
+    * temporary failure
 
 ## Fetched Incidents Data
 To use Fetch incidents:

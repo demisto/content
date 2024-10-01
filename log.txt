@@ -393,3 +393,4 @@ MicrosoftTeams : ['5. If using the same bot from the XSOAR 6 instance, make sure
 GenericWebhookFormData : ['empty readme file!']
 TOPdesk : ['5. A window should open requesting a name for the application. Choose any convenient name (e.g., XSOAR-key) and click **Create**. ']
 UnifiVideo : ['empty readme file!']
+FireEyeETP: ['params are not in a table']
