@@ -29,6 +29,7 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
       <img src="../../doc_files/enable-gke-api-menu.png" alt="Menu"  />
 
+   2. Search for `Kubernetes Engine API`:
 
       <img src="../../doc_files/enable-gke-api-search.png" alt="Search"  />
 
@@ -70,8 +71,7 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
 ## Configure GoogleKubernetesEngine in Cortex
 
-2. Search for GoogleKubernetesEngine.
-3. Generate `credentials.json` file by instruction in  [Google documentation](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred).
+ Generate `credentials.json` file by instruction in  [Google documentation](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred).
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
