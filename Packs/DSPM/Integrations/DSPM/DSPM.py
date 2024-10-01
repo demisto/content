@@ -935,7 +935,11 @@ def dspm_get_list_of_asset_fields_command(client: Client, args: dict[str, Any]) 
 
             # Fetch the asset fields for the current page
             response = client.get_list_of_asset_fields(params)
-            fields = response[0].get("fields", [])
+            if isinstance(response, list) and len(response) > 0:
+                fields = response[0].get("fields", [])
+            else:
+                fields = response.get("fields", [])
+            # fields = response[0].get("fields", [])
 
             if not fields:
                 break
