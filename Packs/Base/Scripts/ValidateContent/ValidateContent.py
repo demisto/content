@@ -11,11 +11,10 @@ from datetime import datetime
 from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory, TemporaryFile
-from typing import Any, Dict, List, Optional, Tuple
-import logging
+from typing import Any, Dict, List, Optional, Tuple, Set
 
 import git
-from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
+from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType, ExecutionMode
 from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
@@ -24,21 +23,297 @@ from demisto_sdk.commands.init.contribution_converter import (
     ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from demisto_sdk.commands.validate.validation_results import (
     ResultWriter,
-)
-from demisto_sdk.commands.validate.config_reader import (
-    ConfigReader,
 )
 from demisto_sdk.commands.validate.initializer import Initializer
 
 from ruamel.yaml import YAML
 
+from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
+from demisto_sdk.commands.validate.config_reader import (
+    ConfigReader,
+    ConfiguredValidations,
+)
+from demisto_sdk.commands.common.logger import logger
 
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 yaml = YAML()
+
+##############################################################################################################################
+from demisto_sdk.commands.content_graph.parsers.content_item import (
+    ContentItemParser,
+    IncorrectParserException
+)
+
+from demisto_sdk.commands.common.constants import (
+    MARKETPLACE_MIN_VERSION,
+    PACK_DEFAULT_MARKETPLACES,
+    MarketplaceVersions,
+)
+class CustomContentItemParser(ContentItemParser):
+
+    @staticmethod
+    def from_path(
+        path: Path,
+        pack_marketplaces: List[MarketplaceVersions] = list(MarketplaceVersions),
+        git_sha: Optional[str] = None,
+    ) -> ContentItemParser:
+        """Tries to parse a content item by its path.
+        If during the attempt we detected the file is not a content item, `None` is returned.
+
+        Returns:
+            Optional[ContentItemParser]: The parsed content item.
+        """
+        from demisto_sdk.commands.content_graph.common import ContentType
+
+        demisto.debug(f"Parsing content item {path}")
+        if not ContentItemParser.is_content_item(path):
+            if ContentItemParser.is_content_item(path.parent):
+                path = path.parent
+        try:
+            content_type: ContentType = ContentType.by_path(path)
+        except ValueError:
+            try:
+                optional_content_type = ContentType.by_schema(path, git_sha=git_sha)
+            except ValueError as e:
+                demisto.error(f"Could not determine content type for {path}: {e}")
+                raise InvalidContentItemException from e
+            content_type = optional_content_type
+        if parser_cls := ContentItemParser.content_type_to_parser.get(content_type):
+            try:
+                return CustomContentItemParser.parse(
+                    parser_cls, path, pack_marketplaces, git_sha
+                )
+            except IncorrectParserException as e:
+                return CustomContentItemParser.parse(
+                    e.correct_parser, path, pack_marketplaces, git_sha, **e.kwargs
+                )
+            except NotAContentItemException:
+                demisto.debug(f"{path} is not a content item, skipping")
+                raise
+            except Exception as e:
+                demisto.error(f"Failed to parse {path}: {e}")
+                raise InvalidContentItemException from e
+        demisto.debug(f"Could not find parser for {content_type} of {path}")
+        raise NotAContentItemException
+
+
+
+##############################################################################################################################
+from typing import Type
+from demisto_sdk.commands.content_graph.common import (
+    ContentType,
+)
+CONTENT_TYPE_TO_MODEL: Dict[ContentType, Type["BaseContent"]] = {}
+from functools import cached_property, lru_cache
+
+from demisto_sdk.commands.content_graph.parsers import content_item
+
+from demisto_sdk.commands.common.constants import (
+    MARKETPLACE_MIN_VERSION,
+    PACKS_FOLDER,
+    PACKS_PACK_META_FILE_NAME,
+    GitStatuses,
+    MarketplaceVersions,
+)
+from demisto_sdk.commands.content_graph.parsers.pack import PackParser
+
+class CustomBaseContent(BaseContent):
+    @staticmethod
+    @lru_cache
+    def from_path(
+        path: Path,
+        git_sha: Optional[str] = None,
+        raise_on_exception: bool = False,
+        metadata_only: bool = False,
+    ) -> Optional["BaseContent"]:
+        demisto.debug(f"Loading content item from {path}")
+
+        if (
+            path.is_dir()
+            and path.parent.name == PACKS_FOLDER
+            or path.name == PACKS_PACK_META_FILE_NAME
+        ):  # if the path given is a pack
+            try:
+                return CONTENT_TYPE_TO_MODEL[ContentType.PACK].from_orm(
+                    PackParser(path, git_sha=git_sha, metadata_only=metadata_only)
+                )
+            except InvalidContentItemException:
+                demisto.error(f"Could not parse content from {path}")
+                return None
+
+        try:
+            content_item.MARKETPLACE_MIN_VERSION = "0.0.0"
+            content_item_parser = CustomContentItemParser.from_path(path, git_sha=git_sha)
+
+            content_item.MARKETPLACE_MIN_VERSION = MARKETPLACE_MIN_VERSION
+
+        except (NotAContentItemException, InvalidContentItemException) as e:
+            if raise_on_exception:
+                raise
+            demisto.error(
+                f"Invalid content path provided: {path}. Please provide a valid content item or pack path. ({type(e).__name__})"
+            )
+            return None
+
+        demisto.debug(f'from_path {content_item_parser.content_type=} | {CONTENT_TYPE_TO_MODEL=}')
+        model = CONTENT_TYPE_TO_MODEL.get(content_item_parser.content_type)
+        if model:
+            demisto.debug(f"Detected model {model} for {path.name}")
+        else:
+            demisto.error(f"Could not parse content item from {path.name}")
+            return None
+
+        try:
+            return model.from_orm(content_item_parser)  # type: ignore
+        except Exception as e:
+            demisto.error(
+                f"Could not parse content item from path {path} using {content_item_parser} | {str(e)}"
+            )
+            return None
+
+##############################################################################################################################
+from demisto_sdk.commands.content_graph.objects.repository import (
+    ContentDTO,
+)
+from demisto_sdk.commands.content_graph.parsers.content_item import (
+    InvalidContentItemException,
+    NotAContentItemException,
+)
+
+class CustomInitializer(Initializer):
+
+    def paths_to_basecontent_set(
+        self, files_set: Set[Path]
+    ) -> tuple[set[BaseContent], set[Path], set[Path]]:
+        """Attempting to convert the given paths to a set of BaseContent.
+
+        Args:
+            files_set (Path): The set of file paths to case into BaseContent.
+
+        Returns:
+            Tuple[Set[BaseContent], Set[Path], Set[Path]]: The sets of all the successful casts, the sets of all failed casts, and the set of non content items.
+        """
+        basecontent_with_path_set: Set[BaseContent] = set()
+        invalid_content_items: Set[Path] = set()
+        non_content_items: Set[Path] = set()
+        related_files_main_items: Set[Path] = self.collect_related_files_main_items(
+            files_set
+        )
+        demisto.debug(f'paths_to_basecontent_set {related_files_main_items=}')
+        for file_path in related_files_main_items:
+            path: Path = Path(file_path)
+            demisto.debug(f'paths_to_basecontent_set {path=}')
+            try:
+                temp_obj = CustomBaseContent.from_path(
+                    path, git_sha=None, raise_on_exception=True
+                )
+                demisto.debug(f'paths_to_basecontent_set {temp_obj=}')
+                if temp_obj is None:
+                    invalid_content_items.add(path)
+                else:
+                    basecontent_with_path_set.add(temp_obj)
+            except NotAContentItemException:
+                non_content_items.add(file_path)  # type: ignore[arg-type]
+            except InvalidContentItemException:
+                invalid_content_items.add(file_path)  # type: ignore[arg-type]
+            except Exception as e:
+                demisto.debug(f'paths_to_basecontent_set {str(e)=}')
+        return basecontent_with_path_set, invalid_content_items, non_content_items
+
+    def gather_objects_to_run_on(
+        self,
+    ) -> Tuple[Set[BaseContent], Set[Path]]:
+        """
+        Filter the file that should run according to the given flag (-i/-g/-a).
+
+        Returns:
+            Tuple[Set[BaseContent], Set[Path]]: The sets of all the successful casts, and the sets of all failed casts.
+        """
+        content_objects_to_run: Set[BaseContent] = set()
+        invalid_content_items: Set[Path] = set()
+        non_content_items: Set[Path] = set()
+        if self.execution_mode == ExecutionMode.USE_GIT:
+            (
+                content_objects_to_run,
+                invalid_content_items,
+                non_content_items,
+            ) = self.get_files_using_git()
+        elif self.execution_mode == ExecutionMode.SPECIFIC_FILES:
+
+            file_path = self.file_path.split(",")
+            demisto.debug(f'gather_objects_to_run_on {file_path=}')
+            loaded_files = set(self.load_files(file_path))
+            demisto.debug(f'gather_objects_to_run_on {loaded_files=}')
+            (
+                content_objects_to_run,
+                invalid_content_items,
+                non_content_items,
+            ) = self.paths_to_basecontent_set(loaded_files)
+
+        elif self.execution_mode == ExecutionMode.ALL_FILES:
+            demisto.debug("Running validation on all files.")
+            content_dto = ContentDTO.from_path()
+            if not isinstance(content_dto, ContentDTO):
+                raise Exception("no content found")
+            content_objects_to_run = set(content_dto.packs)
+        else:
+            self.execution_mode = ExecutionMode.USE_GIT
+            self.committed_only = True
+            (
+                content_objects_to_run,
+                invalid_content_items,
+                non_content_items,
+            ) = self.get_files_using_git()
+
+        if self.execution_mode != ExecutionMode.USE_GIT:
+            content_objects_to_run_with_packs: Set[BaseContent] = (
+                self.get_items_from_packs(content_objects_to_run)
+            )
+        else:
+            content_objects_to_run_with_packs = content_objects_to_run
+
+        for non_content_item in non_content_items:
+            demisto.debug(
+                f"Invalid content path provided: {str(non_content_item)}. Please provide a valid content item or pack path."
+            )
+        return content_objects_to_run_with_packs, invalid_content_items
+##############################################################################################################################
+
+
+class CustomValidateManger(ValidateManager):
+    def __init__(
+        self,
+        validation_results: ResultWriter,
+        config_reader: ConfigReader,
+        initializer: Initializer,
+        file_path=None,
+        allow_autofix=False,
+        ignore_support_level=False,
+        ignore: Optional[List[str]] = None,
+    ):
+        self.ignore_support_level = ignore_support_level
+        self.file_path = file_path
+        self.allow_autofix = allow_autofix
+        self.validation_results = validation_results
+        self.config_reader = config_reader
+        self.initializer = initializer
+        self.objects_to_run: Set[BaseContent] = set()
+        self.invalid_items: Set[Path] = set()
+        demisto.debug(f'CustomValidateManger __init__ {self.file_path=} | {self.initializer.file_path=}')
+        (
+            self.objects_to_run,
+            self.invalid_items,
+        ) = self.initializer.gather_objects_to_run_on()
+        self.committed_only = self.initializer.committed_only
+        self.configured_validations: ConfiguredValidations = self.config_reader.read(
+            ignore_support_level=ignore_support_level,
+            mode=self.initializer.execution_mode,
+            codes_to_ignore=ignore,
+        )
+        self.validators = self.filter_validators()
 
 
 def _create_pack_base_files(self):
@@ -67,8 +342,8 @@ def get_extracted_code_filepath(extractor: YmlSplitter) -> str:
 
 
 def content_item_to_package_format(
-        self, content_item_dir: str, del_unified: bool = True, source_mapping: Optional[Dict] = None,  # noqa: F841
-        code_fp_to_row_offset: Dict = {}
+    self, content_item_dir: str, del_unified: bool = True, source_mapping: Optional[Dict] = None,  # noqa: F841
+    code_fp_to_row_offset: Dict = {}
 ) -> None:
     child_files = get_child_files(content_item_dir)
     for child_file in child_files:
@@ -137,8 +412,8 @@ def get_pack_name(zip_fp: str) -> str:
 
 
 def adjust_linter_row_and_col(
-        error_output: Dict, code_fp_to_row_offset: Optional[Dict] = None,
-        row_offset: int = 2, row_start: int = 1, col_offset: int = 1, col_start: int = 0
+    error_output: Dict, code_fp_to_row_offset: Optional[Dict] = None,
+    row_offset: int = 2, row_start: int = 1, col_offset: int = 1, col_start: int = 0
 ) -> None:
     """Update the linter errors row and column numbering
 
@@ -180,7 +455,7 @@ def adjust_linter_row_and_col(
                       f'\n{e}')
 
 
-def run_validate(file_path: str, json_output_file: str) -> None:
+def run_validate(path_to_validate: str, json_output_file: str) -> None:
     os.environ['DEMISTO_SDK_SKIP_VERSION_CHECK'] = '1'
     tests_dir = 'Tests'
     if not os.path.exists(tests_dir):
@@ -197,16 +472,17 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 
     result_writer = ResultWriter(json_file_path=json_output_file)
     config_reader = ConfigReader(category="xsoar_best_practices_path_based_validations")
-    initializer = Initializer(
+    initializer = CustomInitializer(
         staged=False,
         committed_only=False,
         prev_ver="origin/master",
-        file_path=file_path,
-        # execution_mode=ExecutionMode.SPECIFIC_FILES
-        execution_mode='-i'
+        file_path=str(path_to_validate),
+        execution_mode=ExecutionMode.SPECIFIC_FILES
     )
-    new_validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False, )
+    new_validate_manager = CustomValidateManger(result_writer, config_reader, initializer, allow_autofix=False)
     new_validate_manager.run_validations()
+
+
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
     lint_manager = LintManager(
@@ -243,9 +519,13 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name,
                                               contribution=pack_name)
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
+
+    demisto.debug(f'prepare_single_content_item_for_validation: {filename=}')
     prefix = '-'.join(filename.split('-')[:-1])
+    demisto.debug(f'prepare_single_content_item_for_validation: {pack_dir=}, {prefix=}')
     containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
     containing_dir.mkdir(exist_ok=True)
+    demisto.debug(f'prepare_single_content_item_for_validation: {containing_dir=}')
     is_json = filename.casefold().endswith('.json')
     data_as_string = data.decode()
     loaded_data = json.loads(data_as_string) if is_json else yaml.load(data_as_string)
@@ -255,21 +535,43 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
         buff = io.StringIO()
         yaml.dump(loaded_data, buff)
         data_as_string = buff.getvalue()
+
     # write content item file to file system
     file_path = containing_dir / filename
     file_path.write_text(data_as_string)
+    demisto.debug(f'prepare_single_content_item_for_validation {file_path=}')
     file_type = find_type(str(file_path))
     file_type = file_type.value if file_type else file_type
+    demisto.debug(f'prepare_single_content_item_for_validation {file_type=}')
+
     if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
         return str(file_path), {}
+
     extractor = YmlSplitter(
         input=str(file_path), file_type=file_type, output=containing_dir,
         no_logging=True, no_pipenv=True, no_basic_fmt=True
     )
+    demisto.debug(f'prepare_single_content_item_for_validation 1: {os.listdir()=}')
+
     # validate the resulting package files, ergo set path_to_validate to the package directory that results
     # from extracting the unified yaml to a package format
     extractor.extract_to_package_format()
+    demisto.debug(f'prepare_single_content_item_for_validation 2: {os.listdir()=}')
+
+    for root, dirs, files in os.walk('.'):
+        # Print the current root directory
+        demisto.debug(f"Root Directory: {root}")
+
+        # Print all directories under the current root
+        for dir_name in dirs:
+            demisto.debug(f"Directory: {os.path.join(root, dir_name)}")
+
+        # Print all files under the current root
+        for file_name in files:
+            demisto.debug(f"File: {os.path.join(root, file_name)}")
+
     code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
+    demisto.debug(f'prepare_single_content_item_for_validation 4: {code_fp_to_row_offset=}')
     return extractor.get_output_path(), code_fp_to_row_offset
 
 
@@ -277,15 +579,15 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
-
+    demisto.debug(f'validate_content {tmp_directory=} | {filename=} | {data=}')
     with redirect_stderr(output_capture):
         with TemporaryFile(mode='w+') as tmp:
             logging_setup(
-                console_log_threshold=logging.INFO,
-                file_log_threshold=logging.DEBUG,
-                log_file_path=tmp.name,
-                skip_log_file_creation=True
+                calling_function='validate_content',
+                path=tmp.name,
+                initial=True
             )
+            logger.enable(None)
 
             if filename.endswith('.zip'):
                 path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
@@ -296,7 +598,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
                     filename, data, tmp_directory
                 )
             run_validate(path_to_validate, json_output_path)
-            run_lint(path_to_validate, lint_output_path)
+            # run_lint(path_to_validate, lint_output_path)
 
             demisto.debug("log capture:" + tmp.read())
 
@@ -408,9 +710,9 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
 
 
 def get_file_name_and_contents(
-        filename: Optional[str] = None,
-        data: Optional[str] = None,
-        entry_id: Optional[str] = None,
+    filename: Optional[str] = None,
+    data: Optional[str] = None,
+    entry_id: Optional[str] = None,
 ):
     if filename and data:
         return filename, b64decode(data)
@@ -445,7 +747,6 @@ def main():
             args.get('data'),
             args.get('entry_id'),
         )
-
         os.makedirs(content_tmp_dir.name, exist_ok=True)
         os.chdir(content_tmp_dir.name)
 
