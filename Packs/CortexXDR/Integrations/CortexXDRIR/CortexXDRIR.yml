@@ -181,13 +181,12 @@ configuration:
   advanced: true
   type: 8
   section: Collect
-- defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-display: Cortex XDR - IR
+display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
 script:
   commands:
@@ -3551,6 +3550,7 @@ script:
     - auto: PREDEFINED
       description: Required severity to update alerts to.
       name: severity
+      required: false
       predefined:
       - critical
       - high
@@ -3559,6 +3559,7 @@ script:
     - auto: PREDEFINED
       description: New status for updated alerts.
       name: status
+      required: false
       predefined:
       - new
       - resolved_threat_handled
@@ -3572,19 +3573,20 @@ script:
       - resolved_true_positive
     - description: Comment to append to updated alerts.
       name: comment
+      required: false
     description: |-
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   dockerimage: demisto/python3:3.11.9.107902
   isfetch: true
+  isfetch:xpanse: false
   script: ''
   subtype: python3
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   type: python
-  runonce: false
 tests:
 - Test XDR Playbook execute script commands
 - Test XDR Playbook quarantine file command
