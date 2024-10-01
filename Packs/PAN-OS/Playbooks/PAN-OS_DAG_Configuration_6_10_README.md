@@ -12,8 +12,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* PAN-OS Commit Configuration v2
 * PAN-OS - Create Or Edit Rule
-* PAN-OS Commit Configuration
 
 ### Integrations
 
@@ -25,9 +25,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* pan-os-list-address-groups
-* pan-os-create-address-group
 * pan-os-register-ip-tag
+* pan-os-create-address-group
+* pan-os-list-address-groups
 
 ## Playbook Inputs
 

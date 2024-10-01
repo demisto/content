@@ -1,5 +1,7 @@
 id: PAN-OS - Block IP - Static Address Group
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: PAN-OS - Block IP - Static Address Group
 description: |-
   This playbook blocks IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall.
@@ -7,8 +9,6 @@ description: |-
 
   ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
 starttaskid: "0"
-fromversion: 5.0.0
-toversion: 6.10.0
 tasks:
   "0":
     id: "0"
@@ -25,6 +25,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -47,7 +48,6 @@ tasks:
       id: 480942ef-335c-4e66-87f7-dc2b3ada2048
       version: -1
       name: Palo Alto Networks PAN-OS enabled?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -84,6 +84,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -106,7 +107,6 @@ tasks:
       id: 1ecb1e3c-a84b-40ce-8975-79f309bd0b07
       version: -1
       name: Is there an IP to block?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -124,6 +124,7 @@ tasks:
             value:
               simple: inputs.IP
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -151,6 +152,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -186,6 +188,7 @@ tasks:
         complex:
           root: inputs.AddressGroupName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -208,7 +211,6 @@ tasks:
       id: 435dfd22-d2d5-4ccb-8116-20e0c9dab09f
       version: -1
       name: Check if the malicious IPs already exist in the address group
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -230,6 +232,7 @@ tasks:
             value:
               simple: inputs.IP
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -276,6 +279,7 @@ tasks:
       type:
         simple: static
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -315,42 +319,12 @@ tasks:
         complex:
           root: inputs.IP
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1190,
           "y": 880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: af6b5eb3-b5d1-4bed-81c6-28ca8d6ec194
-    type: playbook
-    task:
-      id: af6b5eb3-b5d1-4bed-81c6-28ca8d6ec194
-      version: -1
-      name: PAN-OS Commit Configuration
-      playbookName: PAN-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 1220
         }
       }
     note: false
@@ -377,6 +351,7 @@ tasks:
       '#none#':
       - "3"
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -399,7 +374,6 @@ tasks:
       id: 52739aac-151a-484e-8ca0-cb85200d4a9b
       version: -1
       name: AutoCommit defined?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -407,7 +381,7 @@ tasks:
       '#default#':
       - "13"
       "yes":
-      - "10"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -421,6 +395,7 @@ tasks:
           right:
             value:
               simple: "Yes"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -443,7 +418,6 @@ tasks:
       id: 32cbe912-af9b-416f-8c8a-e54b58a88558
       version: -1
       name: Commit PAN-OS Instance manually
-      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -451,6 +425,7 @@ tasks:
       '#none#':
       - "14"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -497,6 +472,7 @@ tasks:
       type:
         simple: static
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -519,7 +495,6 @@ tasks:
       id: 8a034a0d-ebea-401c-8b9d-e7e708d94fdb
       version: -1
       name: Commit PAN-OS Instance manually
-      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -527,11 +502,44 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1440,
           "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4bc1586a-2526-4146-8bd5-98477fd43863
+    type: playbook
+    task:
+      id: 4bc1586a-2526-4146-8bd5-98477fd43863
+      version: -1
+      name: PAN-OS Commit Configuration v2
+      playbookName: PAN-OS Commit Configuration v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1220
         }
       }
     note: false
@@ -591,7 +599,7 @@ inputs:
   playbookInputQuery:
 - key: IPDescription
   value:
-    simple: Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSOAR.
+    simple: Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSIAM.
   required: false
   description: The description of the IP in case it will get created by the playbook.
   playbookInputQuery:
@@ -609,6 +617,7 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- PAN-OS - Block IP - Static Address Group Test
-contentitemexportablefields:
-  contentitemfields: {}
+- PAN-OS Create Or Edit Rule Test
+- palo_alto_panorama_test_pb
+- PAN-OS DAG Configuration Test
+fromversion: 6.10.0

@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS Commit Configuration
+* PAN-OS Commit Configuration v2
 
 ### Integrations
 
@@ -20,9 +20,9 @@ This playbook does not use any scripts.
 ### Commands
 
 * pan-os-create-custom-url-category
+* pan-os-custom-block-rule
 * pan-os-edit-custom-url-category
 * pan-os-get-custom-url-category
-* pan-os-custom-block-rule
 
 ## Playbook Inputs
 

@@ -1,8 +1,8 @@
 id: PAN-OS DAG Configuration
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: PAN-OS DAG Configuration
-fromversion: 5.0.0
-toversion: 6.10.0
 description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed. \n"
 starttaskid: "0"
 tasks:
@@ -14,13 +14,14 @@ tasks:
       id: 5ee527a7-506f-4f02-88c0-c8a2701138cd
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,6 +32,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: e016bd2c-ae83-4cd4-878b-097fd9462b86
@@ -76,6 +81,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -86,6 +92,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 6abdb166-ece1-4eaf-8b41-f184c1f80352
@@ -103,6 +113,7 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -113,6 +124,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 6523233b-4db1-4691-8ce8-51803456138b
@@ -146,6 +161,7 @@ tasks:
                 accessor: AddressGroups.Match
             iscontext: true
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -156,6 +172,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 08979ffd-bc11-4816-8464-78d1a3850280
@@ -175,10 +195,10 @@ tasks:
     scriptarguments:
       IPs:
         simple: ${inputs.ip_list}
-      persistent: {}
       tag:
         simple: ${inputs.tag_name}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -189,6 +209,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 7686cb45-06bb-4891-8aeb-8ff9b29f1fbf
@@ -197,11 +221,12 @@ tasks:
       id: 7686cb45-06bb-4891-8aeb-8ff9b29f1fbf
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -212,6 +237,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 4fe7d7db-5a12-4db3-8e42-b97a9c615044
@@ -229,8 +258,6 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      addresses: {}
-      description: {}
       match:
         simple: ${inputs.tag_name}
       name:
@@ -238,6 +265,7 @@ tasks:
       type:
         simple: dynamic
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -248,6 +276,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: ec9cdad5-afdf-46c8-8255-c3e6091753b5
@@ -264,6 +296,7 @@ tasks:
       '#none#':
       - "4"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -274,37 +307,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 26ba4584-16ba-48c3-8566-0a044ed15c60
-    type: playbook
-    task:
-      id: 26ba4584-16ba-48c3-8566-0a044ed15c60
-      version: -1
-      name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
-      playbookName: PAN-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 580,
-          "y": 1230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 9c646c84-8ba3-4f49-8028-17e466d6f10e
@@ -322,7 +328,7 @@ tasks:
       '#default#':
       - "15"
       "yes":
-      - "16"
+      - "22"
     scriptarguments:
       left:
         simple: ${inputs.auto_commit}
@@ -331,6 +337,7 @@ tasks:
     results:
     - AreValuesEqual
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -341,6 +348,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: 987cb459-479b-4011-85dc-0403306d3eb0
@@ -349,11 +360,11 @@ tasks:
       id: 987cb459-479b-4011-85dc-0403306d3eb0
       version: -1
       name: PAN-OS - Create Or Edit Rule
-      description: ""
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -386,10 +397,12 @@ tasks:
         complex:
           root: inputs.rule_name
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -400,11 +413,46 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 5dfeb1a9-a077-4792-8ea5-92c15cde7224
+    type: playbook
+    task:
+      id: 5dfeb1a9-a077-4792-8ea5-92c15cde7224
+      version: -1
+      name: PAN-OS Commit Configuration v2
+      playbookName: PAN-OS Commit Configuration v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "17_15_#default#": 0.54,
-      "17_16_yes": 0.58,
       "1_5_#default#": 0.1,
       "3_4_yes": 0.4,
       "3_6_#default#": 0.65
@@ -423,26 +471,32 @@ inputs:
   value: {}
   required: true
   description: The name of the tag to add to PAN-OS. This can be a single tag.
+  playbookInputQuery:
 - key: ip_list
   value: {}
   required: true
   description: The list of the IP addresses to block.
+  playbookInputQuery:
 - key: address_group_name
   value: {}
   required: true
   description: The name of the group that will be created if the tag does not exist.
+  playbookInputQuery:
 - key: rule_name
   value: {}
   required: false
   description: The name of the rule to update, or the name of the rule that will be created.
+  playbookInputQuery:
 - key: auto_commit
   value: {}
   required: false
   description: Whether the rule will be committed automatically.
+  playbookInputQuery:
 - key: log-forwarding-object-name
   value: {}
   required: false
   description: The server address to which to forward logs.
+  playbookInputQuery:
 - key: rule-position
   value: {}
   required: false
@@ -454,14 +508,17 @@ inputs:
       * After
 
     The default position is 'Top'
+  playbookInputQuery:
 - key: relative-rule-name
   value: {}
   required: false
   description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
+  playbookInputQuery:
 - key: inbound-or-outbound-rule
   value: {}
   required: false
   description: Determines if the rule is inbound or outbound.
+  playbookInputQuery:
 - key: action-type
   value: {}
   required: false
@@ -470,15 +527,18 @@ inputs:
     * allow
     * deny
     * drop
+  playbookInputQuery:
 - key: pre-post-rulebase
   value: {}
   required: true
   description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+  playbookInputQuery:
 - key: device-group
   value: {}
   required: false
   description: the device group for which to return results. for panorama only!
+  playbookInputQuery:
 outputs: []
 tests:
-- PAN-OS DAG Configuration Test
-sourceplaybookid: PAN-OS DAG Configuration
+- PAN-OS Create Or Edit Rule Test
+fromversion: 6.10.0
