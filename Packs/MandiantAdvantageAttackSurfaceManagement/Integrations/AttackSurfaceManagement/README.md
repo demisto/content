@@ -4,18 +4,18 @@ This integration was integrated and tested with version 1 of AttackSurfaceManage
 ## Configure Mandiant Attack Surface Management in Cortex
 
 
-   | **Parameter** | **Description** | **Required** |
-       | --- | --- | --- |
-   | Your server URL | The ASM API URL.  Leave as \`https://asm-api.advantage.mandiant.com/\` if you're unsure | True |
-   | Access Key | The Access and Secret Keys used for authentication | True |
-   | Secret Key |  | True |
-   | Project ID | The ASM Project ID to retrieve issues from | False |
-   | Collection IDs | A list of Collection IDs, separated by commas \(\`,\`\) | False |
-   | Initial Lookback Days | The number of days to look back when first retrieving issues. | True |
-   | Maximum Issues To Fetch | The maximum number of issues to pull during a single fetch-incidents command. | True |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
-   | Mirror incoming incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL | The ASM API URL.  Leave as \`https://asm-api.advantage.mandiant.com/\` if you're unsure | True |
+| Access Key | The Access and Secret Keys used for authentication | True |
+| Secret Key |  | True |
+| Project ID | The ASM Project ID to retrieve issues from | False |
+| Collection IDs | A list of Collection IDs, separated by commas \(\`,\`\) | False |
+| Initial Lookback Days | The number of days to look back when first retrieving issues. | True |
+| Maximum Issues To Fetch | The maximum number of issues to pull during a single fetch-incidents command. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Mirror incoming incidents |  | False |
 
 
 ## Commands
