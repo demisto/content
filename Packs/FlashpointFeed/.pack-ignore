@@ -1,9 +1,6 @@
 [file:FlashpointFeed_image.png]
 ignore=IM111
 
-[file:IgniteFeed.yml]
-ignore=IN122
-
 [known_words]
 keyerror
 tlp
