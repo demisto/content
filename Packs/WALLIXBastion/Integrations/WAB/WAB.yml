@@ -793,7 +793,13 @@ script:
     - name: app_account_put_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
     - name: app_account_put_onboard_status
-      description: 'Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual).'
+      description: Onboarding status of the account.
+      auto: PREDEFINED
+      predefined:
+      - onboarded
+      - to_onboard
+      - hide
+      - manual
   - name: wab-delete-account-from-local-domain-of-application
     description: 'Delete an account from a local domain of an application
 
@@ -1285,7 +1291,15 @@ script:
     - name: approval_assignment_post_is_active
       description: The approval is active.
     - name: approval_assignment_post_status
-      description: 'The approval status. (accepted values: accepted,cancelled,closed,none,pending,rejected).'
+      description: The approval status.
+      auto: PREDEFINED
+      predefined:
+      - accepted
+      - cancelled
+      - closed
+      - none
+      - pending
+      - rejected
     outputs:
     - type: String
       contextPath: WAB.reply_to_approval_request.id
@@ -2072,7 +2086,11 @@ script:
     - name: authorization_post_authorize_session_sharing
       description: Enable Session Sharing.
     - name: authorization_post_session_sharing_mode
-      description: 'The Session Sharing Mode. (accepted values: view_only,view_control).'
+      description: The Session Sharing Mode.
+      auto: PREDEFINED
+      predefined:
+      - view_only
+      - view_control
     outputs:
     - type: String
       contextPath: WAB.add_authorization.id
@@ -2206,7 +2224,11 @@ script:
     - name: authorization_put_authorize_session_sharing
       description: Enable Session Sharing.
     - name: authorization_put_session_sharing_mode
-      description: 'The Session Sharing Mode. (accepted values: view_only,view_control).'
+      description: The Session Sharing Mode.
+      auto: PREDEFINED
+      predefined:
+      - view_only
+      - view_control
   - name: wab-delete-authorization
     description: 'Delete an authorization
 
@@ -2473,13 +2495,29 @@ script:
       description: The connection policy name.
       required: true
     - name: connectionpolicy_post_type
-      description: 'The connection policy type. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC).'
+      description: 'The connection policy type.'
       required: true
+      auto: PREDEFINED
+      predefined:
+      - RAWTCPIP
+      - RDP
+      - RLOGIN
+      - SSH
+      - TELNET
+      - VNC
     - name: connectionpolicy_post_description
       description: The connection policy description.
     - name: connectionpolicy_post_protocol
-      description: 'The connection policy protocol. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC).'
+      description: The connection policy protocol.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - RAWTCPIP
+      - RDP
+      - RLOGIN
+      - SSH
+      - TELNET
+      - VNC
     outputs:
     - type: String
       contextPath: WAB.add_connection_policy.id
@@ -2861,7 +2899,13 @@ script:
     - name: device_account_put_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
     - name: device_account_put_onboard_status
-      description: 'Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual).'
+      description: Onboarding status of the account.
+      auto: PREDEFINED
+      predefined:
+      - onboarded
+      - to_onboard
+      - hide
+      - manual
     - name: device_account_put_services
       description: The account services.
       isArray: true
@@ -3132,15 +3176,45 @@ script:
       description: 'The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter.'
       required: true
     - name: service_post_protocol
-      description: 'The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. (accepted values: RAWTCPIP,RDP,RLOGIN,SSH,TELNET,VNC).'
+      description: The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - RAWTCPIP
+      - RDP
+      - RLOGIN
+      - SSH
+      - TELNET
+      - VNC
     - name: service_post_port
       description: 'The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter.'
       required: true
     - name: service_post_subprotocols
-      description: 'The sub protocols. (accepted values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11).'
+      description: The sub protocols.
       required: true
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - RDP_AUDIO_INPUT
+      - RDP_AUDIO_OUTPUT
+      - RDP_CLIPBOARD_DOWN
+      - RDP_CLIPBOARD_FILE
+      - RDP_CLIPBOARD_UP
+      - RDP_COM_PORT
+      - RDP_DRIVE
+      - RDP_PRINTER
+      - RDP_SMARTCARD
+      - SFTP_SESSION
+      - SSH_AUTH_AGENT
+      - SSH_DIRECT_TCPIP
+      - SSH_DIRECT_UNIXSOCK
+      - SSH_REMOTE_COMMAND
+      - SSH_REVERSE_TCPIP
+      - SSH_REVERSE_UNIXSOCK
+      - SSH_SCP_DOWN
+      - SSH_SCP_UP
+      - SSH_SHELL_SESSION
+      - SSH_X11
     - name: service_post_connection_policy
       description: The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter.
       required: true
@@ -3516,7 +3590,13 @@ script:
     - name: device_put_host
       description: The device host address.
     - name: device_put_onboard_status
-      description: 'Onboarding status of the device (accepted values: onboarded,to_onboard,hide,manual).'
+      description: Onboarding status of the device.
+      auto: PREDEFINED
+      predefined:
+      - onboarded
+      - to_onboard
+      - hide
+      - manual
   - name: wab-delete-device
     description: 'Delete a device
 
@@ -3830,7 +3910,13 @@ script:
     - name: domain_account_put_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
     - name: domain_account_put_onboard_status
-      description: 'Onboarding status of the account (accepted values: onboarded,to_onboard,hide,manual).'
+      description: Onboarding status of the account.
+      auto: PREDEFINED
+      predefined:
+      - onboarded
+      - to_onboard
+      - hide
+      - manual
     - name: domain_account_put_resources
       description: The account resources.
       isArray: true
@@ -4287,17 +4373,47 @@ script:
       description: Notification is enabled.
       required: true
     - name: notification_post_type
-      description: 'Notification type. (accepted values: email).'
+      description: Notification type.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - email
     - name: notification_post_destination
       description: Destination for notification; for the type "email", this is a list of recipient emails separated by ";".
       required: true
     - name: notification_post_language
-      description: 'The notification language (in email). (accepted values: de,en,es,fr,ru).'
+      description: The notification language (in email).
       required: true
+      auto: PREDEFINED
+      predefined:
+      - de
+      - en
+      - es
+      - fr
+      - ru
     - name: notification_post_events
-      description: 'The list of events that will trigger a notification. (accepted values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint).'
+      description: The list of events that will trigger a notification.
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - cx_equipment
+      - daily_reporting
+      - external_storage_full
+      - filesystem_full
+      - integrity_error
+      - licence_notifications
+      - new_fingerprint
+      - password_expired
+      - pattern_found
+      - primary_cx_failed
+      - raid_error
+      - rdp_outcxn_found
+      - rdp_pattern_found
+      - rdp_process_found
+      - secondary_cx_failed
+      - sessionlog_purge
+      - watchdog_notifications
+      - wrong_fingerprint
     outputs:
     - type: String
       contextPath: WAB.add_notification.id
@@ -4355,14 +4471,44 @@ script:
     - name: notification_put_enabled
       description: Notification is enabled.
     - name: notification_put_type
-      description: 'Notification type. (accepted values: email).'
+      description: Notification type.
+      auto: PREDEFINED
+      predefined:
+      - email
     - name: notification_put_destination
       description: Destination for notification; for the type "email", this is a list of recipient emails separated by ";".
     - name: notification_put_language
-      description: 'The notification language (in email). (accepted values: de,en,es,fr,ru).'
+      description: The notification language (in email).
+      auto: PREDEFINED
+      predefined:
+      - de
+      - en
+      - es
+      - fr
+      - ru
     - name: notification_put_events
-      description: 'The list of events that will trigger a notification. (accepted values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint).'
+      description: The list of events that will trigger a notification.
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - cx_equipment
+      - daily_reporting
+      - external_storage_full
+      - filesystem_full
+      - integrity_error
+      - licence_notifications
+      - new_fingerprint
+      - password_expired
+      - pattern_found
+      - primary_cx_failed
+      - raid_error
+      - rdp_outcxn_found
+      - rdp_pattern_found
+      - rdp_process_found
+      - secondary_cx_failed
+      - sessionlog_purge
+      - watchdog_notifications
+      - wrong_fingerprint
   - name: wab-delete-notification
     description: 'Delete a notification
 
@@ -5128,7 +5274,7 @@ script:
       description: 'The scan id or name to edit.'
       required: true
     - name: force
-      description: The default value is false. When it is set to true the values of the subnets, banner_regex or protocols replaced, otherwise the values are added to the existing ones.
+      description: The default value is false. When it is set to true the values of the subnets, banner_regex or protocols are replaced, otherwise the values are added to the existing ones.
     - name: scan_put_name
       description: Scan name.
     - name: scan_put_active
@@ -5569,8 +5715,12 @@ script:
       description: The session id.
       required: true
     - name: session_request_post_mode
-      description: 'The session sharing mode. (accepted values: view_only,view_control).'
+      description: The session sharing mode.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - view_only
+      - view_control
   - name: wab-delete-pending-or-live-session-request
     description: 'Delete a pending or a live session request
 
@@ -6312,7 +6462,14 @@ script:
     - name: user_post_ip_source
       description: 'The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com.'
     - name: user_post_preferred_language
-      description: 'The preferred language. (accepted values: de,en,es,fr,ru).'
+      description: The preferred language.
+      auto: PREDEFINED
+      predefined:
+      - de
+      - en
+      - es
+      - fr
+      - ru
     - name: user_post_profile
       description: The user profile.
       required: true
@@ -6431,7 +6588,14 @@ script:
     - name: user_put_ip_source
       description: 'The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com.'
     - name: user_put_preferred_language
-      description: 'The preferred language. (accepted values: de,en,es,fr,ru).'
+      description: The preferred language.
+      auto: PREDEFINED
+      predefined:
+      - de
+      - en
+      - es
+      - fr
+      - ru
     - name: user_put_profile
       description: The user profile.
     - name: user_put_groups
@@ -6499,14 +6663,28 @@ script:
       description: A target group id or name.
       required: true
     - name: restriction_post_action
-      description: 'The restriction type. (accepted values: kill,notify).'
+      description: The restriction type.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - kill
+      - notify
     - name: restriction_post_rules
       description: The restriction rules.
       required: true
     - name: restriction_post_subprotocol
-      description: 'The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP).'
+      description: The restriction subprotocol.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - SSH_SHELL_SESSION
+      - SSH_REMOTE_COMMAND
+      - SSH_SCP_UP
+      - SSH_SCP_DOWN
+      - SFTP_SESSION
+      - RLOGIN
+      - TELNET
+      - RDP
     outputs:
     - type: String
       contextPath: WAB.add_restriction_in_targetgroup.id
@@ -6552,11 +6730,25 @@ script:
       description: The identifier of the desired restriction.
       required: true
     - name: restriction_put_action
-      description: 'The restriction type. (accepted values: kill,notify).'
+      description: The restriction type.
+      auto: PREDEFINED
+      predefined:
+      - kill
+      - notify
     - name: restriction_put_rules
       description: The restriction rules.
     - name: restriction_put_subprotocol
-      description: 'The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP).'
+      description: The restriction subprotocol.
+      auto: PREDEFINED
+      predefined:
+      - SSH_SHELL_SESSION
+      - SSH_REMOTE_COMMAND
+      - SSH_SCP_UP
+      - SSH_SCP_DOWN
+      - SFTP_SESSION
+      - RLOGIN
+      - TELNET
+      - RDP
   - name: wab-delete-restriction-from-targetgroup
     description: 'Delete a restriction from a targetgroup
 
@@ -6847,14 +7039,28 @@ script:
       description: A user group id or name.
       required: true
     - name: restriction_post_action
-      description: 'The restriction type. (accepted values: kill,notify).'
+      description: The restriction type.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - kill
+      - notify
     - name: restriction_post_rules
       description: The restriction rules.
       required: true
     - name: restriction_post_subprotocol
-      description: 'The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP).'
+      description: The restriction subprotocol.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - SSH_SHELL_SESSION
+      - SSH_REMOTE_COMMAND
+      - SSH_SCP_UP
+      - SSH_SCP_DOWN
+      - SFTP_SESSION
+      - RLOGIN
+      - TELNET
+      - RDP
     outputs:
     - type: String
       contextPath: WAB.add_restriction_to_usergroup.id
@@ -6900,11 +7106,25 @@ script:
       description: The identifier of the desired restriction.
       required: true
     - name: restriction_put_action
-      description: 'The restriction type. (accepted values: kill,notify).'
+      description: The restriction type.
+      auto: PREDEFINED
+      predefined:
+      - kill
+      - notify
     - name: restriction_put_rules
       description: The restriction rules.
     - name: restriction_put_subprotocol
-      description: 'The restriction subprotocol. (accepted values: SSH_SHELL_SESSION,SSH_REMOTE_COMMAND,SSH_SCP_UP,SSH_SCP_DOWN,SFTP_SESSION,RLOGIN,TELNET,RDP).'
+      description: The restriction subprotocol.
+      auto: PREDEFINED
+      predefined:
+      - SSH_SHELL_SESSION
+      - SSH_REMOTE_COMMAND
+      - SSH_SCP_UP
+      - SSH_SCP_DOWN
+      - SFTP_SESSION
+      - RLOGIN
+      - TELNET
+      - RDP
   - name: wab-delete-restriction-from-usergroup
     description: 'Delete a restriction from a usergroup
 
