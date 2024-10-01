@@ -94,18 +94,6 @@ def fix_nested_client(data):
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
 
     message: str = ""
     try:
@@ -201,12 +189,6 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
-
     api_key = demisto.params().get("credentials", {}).get("password")
     base_url = demisto.params().get("base_url")
     verify_certificate = not demisto.params().get("insecure", False)
@@ -225,11 +207,10 @@ def main() -> None:
 
         if command == "test-module":
             return_results(test_module(client))
-        else:
-            if command == "ip":
-                return_results(ip_command(client, demisto.args()))
-            elif command == "spur-context-api-enrich":
-                return_results(enrich_command(client, demisto.args()))
+        elif command == "ip":
+            return_results(ip_command(client, demisto.args()))
+        elif command == "spur-context-api-enrich":
+            return_results(enrich_command(client, demisto.args()))
 
     except Exception:
         return_error(f"Error: {traceback.format_exc()}")
