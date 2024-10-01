@@ -1106,10 +1106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b00731f6-af3b-4011-8be2-3680f778777e
+    taskid: a81da43e-d75f-4860-8c79-d59851d1410c
     type: regular
     task:
-      id: b00731f6-af3b-4011-8be2-3680f778777e
+      id: a81da43e-d75f-4860-8c79-d59851d1410c
       version: -1
       name: Extract text from images
       description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
@@ -1170,8 +1170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2640,
-          "y": 1320
+          "x": 2190,
+          "y": 1310
         }
       }
     note: false
@@ -1314,6 +1314,22 @@ tasks:
                       value:
                         simple: CDFV2 Encrypted
                     ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: docx
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: doc
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -1601,7 +1617,7 @@ tasks:
       - "10"
       "yes":
       - "13"
-      - "28"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1813,10 +1829,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ca969180-8bc8-43a8-8018-6fc398457815
+    taskid: 424f69f0-0339-42f1-8a9e-c73f4e171412
     type: regular
     task:
-      id: ca969180-8bc8-43a8-8018-6fc398457815
+      id: 424f69f0-0339-42f1-8a9e-c73f4e171412
       version: -1
       name: Extract Text from QR Code
       description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
@@ -1835,28 +1851,12 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: inputs.File.Info
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
-                  simple: image/png
+                  simple: image
               ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: inputs.File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: image/jpeg
-            - operator: isEqualString
-              left:
-                value:
-                  simple: inputs.File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: image/jpg
           accessor: EntryID
           transformers:
           - operator: append
@@ -1878,8 +1878,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 1330
+          "x": 1530,
+          "y": 1310
         }
       }
     note: false
@@ -2138,66 +2138,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: ff1834e4-8544-4395-86e4-81f108cf6920
-    type: condition
-    task:
-      id: ff1834e4-8544-4395-86e4-81f108cf6920
-      version: -1
-      name: Does ReadQRCode support the image?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.File.Info
-            iscontext: true
-          right:
-            value:
-              simple: image/png
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.File.Info
-            iscontext: true
-          right:
-            value:
-              simple: image/jpeg
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.File.Info
-            iscontext: true
-          right:
-            value:
-              simple: image/jpg
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1820,
-          "y": 1050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2218,7 +2158,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1815,
-        "width": 3995,
+        "width": 3545,
         "x": -975,
         "y": -10
       }
