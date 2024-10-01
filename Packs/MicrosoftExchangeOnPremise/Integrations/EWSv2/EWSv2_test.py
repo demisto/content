@@ -12,10 +12,11 @@ import pytest
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
 from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address, get_attachment_name
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
-from exchangelib import EWSDateTime, EWSTimeZone
+from exchangelib import EWSDateTime, EWSTimeZone, EWSDate
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
 import demistomock as demisto
 from exchangelib.properties import ItemId
+from exchangelib.items import Item
 
 
 class TestNormalCommands:
@@ -588,6 +589,41 @@ def test_categories_parse_item_as_dict():
 
     return_value = parse_item_as_dict(message, False)
     assert return_value.get("categories") == ['Purple category', 'Orange category']
+
+
+def test_parse_incident_from_item():
+    """
+    Given -
+        a Message with attachments contains non-ASCII characters.
+
+    When -
+        running the parse_incident_from_item function.
+
+    Then -
+        verify that the attachments were parsed correctly.
+    """
+    from EWSv2 import parse_incident_from_item
+    from exchangelib.attachments import AttachmentId, ItemAttachment
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      id='message4',
+                      attachments=[
+                          ItemAttachment(
+                              item=Item(mime_content=b'\x80\x81\x82'),
+                              attachment_id=AttachmentId(),
+                              last_modified_time=EWSDate(year=2021, month=1, day=25),
+                          ),
+                      ],
+                      )
+
+    return_value = parse_incident_from_item(message, is_fetch=False)
+    assert return_value.get("attachment")
 
 
 def test_list_parse_item_as_dict():
