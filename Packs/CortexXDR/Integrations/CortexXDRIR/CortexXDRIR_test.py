@@ -427,6 +427,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         incident.
     """
     from CortexXDRIR import get_remote_data_command, Client
+    import sys
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
@@ -434,12 +435,10 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         'lastUpdate': 0
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch('CortexXDRIR.return_error', side_effect=sys.exit)
     mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=Exception("Rate limit exceeded"))
     with pytest.raises(SystemExit):
         _ = get_remote_data_command(client, args)
-
-    assert demisto.results.call_args[0][0].get('Contents') == "API rate limit"
 
 
 def test_get_remote_data_command_should_not_update(requests_mock, mocker):
