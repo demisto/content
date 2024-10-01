@@ -3,12 +3,12 @@ Use the Intezer v2 integration to detect and analyze malware, based on code reus
 ## Configure Intezer v2 in Cortex
 
 
-   | **Parameter** | **Description** | **Required** |
-             | --- | --- | --- |
-   | API Key |  | True |
-   | Intezer Analyze Base URL | The API address to intezer Analyze - i.e. <https://analyze.intezer.com/api/> | False |
-   | Use system proxy settings |  | False |
-   | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key |  | True |
+| Intezer Analyze Base URL | The API address to intezer Analyze - i.e. <https://analyze.intezer.com/api/> | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
 
 ## Commands
