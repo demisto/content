@@ -67,7 +67,7 @@ The server will then authenticate the requests by the `Authorization` header, ex
 
 Some tools require the indicators in STIX to be a STIX indicator type and not an SCO. If that is the case you can select which indicator types will be converted into SDOs using a STIX Pattern for the indicator value.
 
-For example, when `STIX types for STIX indicator Domain Object` is not selected for IPs XSOAR will output the IP indicators as an SCO:
+For example, when `STIX types for STIX indicator Domain Object` is not selected for IPs the TAXII server will output the IP indicators as an SCO:
 ```json
 {
     "objects": [
@@ -83,7 +83,7 @@ For example, when `STIX types for STIX indicator Domain Object` is not selected 
 }
 ```
 
-When `ipv4-addr` is selected in `STIX types for STIX indicator Domain Object` XSOAR will output the indicator as an Indicator SDO with the correct pattern:
+When `ipv4-addr` is selected in `STIX types for STIX indicator Domain Object` the server will output the indicator as a STIX Indicator SDO with the correct pattern:
 ```json
 {
     "objects": [
