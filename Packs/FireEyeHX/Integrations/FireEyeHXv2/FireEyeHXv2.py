@@ -2861,7 +2861,7 @@ SEARCHES
 
 def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
     if 'searchId' not in args:
-        demisto.debug(f"searchId is not in the args, aka new search")
+        demisto.debug(f"searchId is not in the args, starting a new search")
         list_of_args = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]
         arg = oneFromList(list_of_args=list_of_args, args=args)
         if arg is False:
@@ -2893,11 +2893,11 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
         args['limit'] = 1000
     search_id = str(args.get('searchId')) if args.get('searchId') else str(search_id)
     searchInfo = client.get_search_by_id_request(search_id)["data"]
-    demisto.debug(f"search info for search with id {search_id} is: {searchInfo}")
     matched = searchInfo.get('stats', {}).get('search_state', {}).get('MATCHED', 0)
     pending = searchInfo.get('stats', {}).get('search_state', {}).get('PENDING', 0)
-    demisto.debug(f"matched is: {matched}, pending is: {pending}")
-    if searchInfo.get("state") != "STOPPED" and matched < int(args.get('limit', '')) and pending != 0:
+    no_limit = matched < int(args.get('limit')) if args.get('limit') else True
+
+    if searchInfo.get("state") != "STOPPED" and ((no_limit and pending != 0) or (matched == 0 and pending == 0)):
         return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), False, search_id
 
     return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), True, search_id
@@ -3001,6 +3001,7 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
         raise ValueError("Search Id is must be")
     demisto.debug(f"in get search results command with search id: {args.get('searchId')}")
     searches_ids = argToList(str(args.get("searchId")))
+    limit = args.get('limit')
     results: List[List[Dict]] = []
     for search_id in searches_ids:
         result = client.search_result_get_request(search_id)["data"]["entries"]
@@ -3010,7 +3011,8 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
 
     commandsResults: List = []
     for result in results:
-        for entry in result:
+        entries_amount = min(int(limit), len(result)) if limit else len(result)
+        for entry in result[:entries_amount]:
             Title = f"Host Id {entry.get('host', {}).get('_id')}\nHost Name {entry.get('host', {}).get('hostname')}"
             for_table = []
             for res in entry.get("results", []):
