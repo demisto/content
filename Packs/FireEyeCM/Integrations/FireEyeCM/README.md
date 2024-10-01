@@ -17,12 +17,12 @@ To fetch a FireEye EX alert email, you will need the UUID.
 ## Access the FireEye Alert URL
 To display a proper link in the FireEye NX Alert URL field of the FireEye NX or EX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
 1. Log in to your FireEye application.
+2. Navigate to **Appliance Settings > Network > Hostname**.
 3. In the Hostname field, enter your URL/server/ip address.
 
 
 ## Configure FireEye Central Management in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 
 | **Parameter** | **Required** |
 | --- | --- |
