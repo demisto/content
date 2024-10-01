@@ -8,12 +8,12 @@ In order to use the embedded Google Maps view, make sure a Google Maps Geocoding
 
 
 | **Parameter** | **Description** | **Required** |
-       | --- | --- | --- |
-   | Google Maps API Key | The API key to use for the connection. | True |
-   | Raise error an empty result | Whether to consider empty results as an error. | False |
-   | Base URL |  | True |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
+| --- | --- | --- |
+| Google Maps API Key | The API key to use for the connection. | True |
+| Raise error an empty result | Whether to consider empty results as an error. | False |
+| Base URL |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
