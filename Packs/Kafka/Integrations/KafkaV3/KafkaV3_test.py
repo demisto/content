@@ -207,13 +207,16 @@ def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
     Then:
         - Assert all the topics and partitions are in the command results.
     """
-    mocker.patch.object(KProducer, '__init__', return_value=None)
+    from CommonServerPython import CommandResults
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
-    mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     result = print_topics(KAFKA, demisto_args)
+    assert type(result) is CommandResults
+    assert type(result.outputs) is list
     for topic in cluster_tree.keys():
         topic_partitions = [{'ID': partition} for partition in cluster_tree[topic]]
-       # assert {'Name': topic, 'Partitions': topic_partitions} in result.outputs
+        assert {'Name': topic, 'Partitions': topic_partitions} in result.outputs
 
 
 @pytest.mark.parametrize('demisto_args, first_offset, last_offset', [
@@ -232,12 +235,15 @@ def test_print_topics_with_offsets(mocker, demisto_args, first_offset, last_offs
     mocker.patch.object(KProducer, '__init__', return_value=None)
     mocker.patch.object(KConsumer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata({'some-topic': [1]})
-    mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(first_offset, last_offset))
     result = print_topics(KAFKA, demisto_args)
     expected = {'Name': 'some-topic',
                 'Partitions': [{'ID': 1, 'EarliestOffset': first_offset, 'OldestOffset': last_offset}]}
-    #assert expected in result.outputs
+    from CommonServerPython import CommandResults
+    assert type(result) is CommandResults
+    assert type(result.outputs) is list
+    assert expected in result.outputs
 
 
 @pytest.mark.parametrize('demisto_args', [{'include_offsets': 'true'}, {'include_offsets': 'false'}])
@@ -250,8 +256,8 @@ def test_print_topics_no_topics(mocker, demisto_args):
     Then:
         - Assert the 'No topics found.' response and that no errors are raised.
     """
-    mocker.patch.object(KProducer, '__init__', return_value=None)
-    mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     assert print_topics(KAFKA, demisto_args) == 'No topics found.'
 
 
@@ -268,9 +274,9 @@ def test_fetch_partitions(mocker, demisto_args, cluster_tree, topic):
     Then:
         - Assert the fetched partitions are in the command results.
     """
-    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
-    mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     result = fetch_partitions(KAFKA, demisto_args)
     assert {'Name': topic, 'Partition': cluster_tree[topic]} == result.outputs
 
@@ -285,8 +291,8 @@ def test_fetch_partitions_no_topics(mocker, demisto_args):
     Then:
         - Assert the relevant error was raised.
     """
-    mocker.patch.object(KProducer, '__init__', return_value=None)
-    mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     with pytest.raises(DemistoException) as exception_info:
         fetch_partitions(KAFKA, demisto_args)
     assert f'Topic {demisto_args["topic"]} was not found in Kafka' in str(exception_info.value)

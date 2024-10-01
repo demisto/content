@@ -72,8 +72,7 @@ class KafkaCommunicator:
             raise DemistoException(f'General offset {offset} not found in supported offsets: '
                                    f'{SUPPORTED_GENERAL_OFFSETS}')
 
-        self.conf_consumer = {'bootstrap.servers': brokers,
-                              'session.timeout.ms': self.SESSION_TIMEOUT,
+        self.conf_consumer = {'session.timeout.ms': self.SESSION_TIMEOUT,
                               'auto.offset.reset': offset,
                               'group.id': group_id,
                               'enable.auto.commit': False}
@@ -561,7 +560,7 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
         kafka: initialized KafkaCommunicator object to preform actions with.
         demisto_args: The demisto command arguments.
 
-    Return CommandResults withe the detailed topics, 'No topics found.' if no topics were found.
+    Return CommandResults with the detailed topics, 'No topics found.' if no topics were found.
     """
     include_offsets = argToBoolean(demisto_args.get('include_offsets', 'true'))
     kafka_topics = kafka.get_topics().values()
@@ -951,26 +950,23 @@ def main():  # pragma: no cover
     
     # SASL_PLAINTEXT
     elif use_sasl and not use_ssl:
-        kafka_kwargs = demisto_params
-        # {'use_ssl': use_ssl, 'brokers': brokers, 'offset': offset,
-        #                 'use_sasl': use_sasl, 'plain_username': plain_username, 'plain_password': plain_password,
-        #                 'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
+        kafka_kwargs =  {'use_ssl': use_ssl, 'brokers': brokers, 'offset': offset,
+                        'use_sasl': use_sasl, 'plain_username': plain_username, 'plain_password': plain_password,
+                        'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
     
     elif use_sasl and use_ssl:
     # SASL_SSL
-        kafka_kwargs = demisto_params
-        # {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
-        #                 'use_sasl': use_sasl, 'plain_username': plain_username, 'plain_password': plain_password,
-        #                 'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
+        kafka_kwargs =  {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
+                        'use_sasl': use_sasl, 'plain_username': plain_username, 'plain_password': plain_password,
+                        'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
         
-        # if ssl_password:
-        #     kafka_kwargs['ssl_password'] = ssl_password
+        if ssl_password:
+            kafka_kwargs['ssl_password'] = ssl_password
     
     # Trust any certificate
     else:
-        kafka_kwargs = demisto_params
-        # {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert, 'group_id': group_id,
-        #                 'consumer_only': consumer_only, 'use_ssl': use_ssl, 'use_sasl': use_sasl}
+        kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert, 'group_id': group_id,
+                        'consumer_only': consumer_only, 'use_ssl': use_ssl, 'use_sasl': use_sasl}
 
     try:
         commands_manager(demisto_args, kafka_kwargs, demisto_params, demisto_command)
