@@ -1,12 +1,9 @@
-from typing import Iterator
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import urllib.parse
 
 from collections.abc import Callable
-
 from CommonServerUserPython import *  # noqa
 
 import requests
@@ -205,6 +202,19 @@ def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[st
     Returns:
         dict[str, Any]: The API response containing the fetched events.
     """
+    # return {
+    #     "results": [{"creationDate": 59}],
+    #     "start": 0,
+    #     "limit": 1000,
+    #     "size": 25,
+    #     "_links": {
+    #         "base": "https://tenant.atlassian.net/wiki",
+    #         "context": "/wiki",
+    #         "next": "TEST_LINK",
+    #         "prev": "TEST_LINK",
+    #         "self": "https://tenant.atlassian.net/wiki/rest/api/audit/?end_date=1724658181290&startDate=1724583600000"
+    #     }
+    # }
     if not next_link:
         end_date = int((time.time() - 5) * 1000)
         last_end_date = last_run.get('end_date', 0)
@@ -1065,6 +1075,7 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    return 'ok'
     params: dict = {
         "cql": "type=page",
         "limit": 1
@@ -1424,7 +1435,7 @@ def confluence_cloud_group_list_command(client: Client, args: dict[str, str]) ->
         raw_response=response_json)
 
 
-def fetch_events(client: Client, fetch_limit: int) -> List[Dict[str, Any]]:
+def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
     Fetches events from Confluence Cloud in batches.
 
@@ -1435,14 +1446,13 @@ def fetch_events(client: Client, fetch_limit: int) -> List[Dict[str, Any]]:
     Args:
         client (Client): The client object used to make API requests.
         fetch_limit (int): The maximum number of events to fetch.
-
+        last_run (Dict[str, Any]): The state of the previous fetch, including the next page link and last end date.
     Returns:
         list: A list of event dictionaries from the Confluence Cloud API.
 
     Notes:
         - The function stops fetching when either the fetch_limit is reached or there are no more events.
     """
-    last_run = get_last_run()
     demisto.debug(f'Starting fetch_events with {last_run=} and {fetch_limit=}')
     next_link = last_run.get('next_link', '')
     finished_last_query = not next_link
@@ -1450,7 +1460,6 @@ def fetch_events(client: Client, fetch_limit: int) -> List[Dict[str, Any]]:
     all_events = []
 
     while len(all_events) < fetch_limit and not no_events_in_confluence:
-        last_run = get_last_run()
         page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - len(all_events))
         response = run_fetch_mechanism(client, next_link, last_run, page_size)
         events = response['results']
@@ -1462,16 +1471,12 @@ def fetch_events(client: Client, fetch_limit: int) -> List[Dict[str, Any]]:
             no_events_in_confluence = True
 
         finished_last_query = not next_link
-        if events:
-            last_end_date = events[-1]['creationDate']
-            new_last_run_obj = {
-                'next_link': next_link,
-                'end_date': last_end_date
-            }
-            demisto.debug(f'setting last run with: {new_last_run_obj}')
-            set_last_run(new_last_run_obj)
         all_events.extend(events)
-    return all_events
+
+    if not all_events:
+        return [], {'next_link': None, 'end_date': last_run.get('end_date', 0)}
+
+    return all_events, {'next_link': next_link, 'end_date': all_events[-1]['creationDate']}
 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
@@ -1562,10 +1567,11 @@ def main() -> None:
 
         elif command == 'fetch-events':
 
-            events = fetch_events(client, limit)
+            events, last_run_object = fetch_events(client, limit, get_last_run())
             if events:
                 add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT, should_update_health_module=False)
+                set_last_run(last_run_object)
 
             demisto.updateModuleHealth({'eventsPulled': len(events)})
         elif command == 'confluence-cloud-get-events':

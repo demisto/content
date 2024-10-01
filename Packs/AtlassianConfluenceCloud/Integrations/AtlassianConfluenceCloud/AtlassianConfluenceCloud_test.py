@@ -1001,19 +1001,17 @@ def test_fetch_events_first_run_no_links(mocker: MockerFixture):
     mocker.patch('demistomock.getLastRun', return_value={})
     mocker.patch('time.time', return_value=mock_time)
     mock_search = mocker.patch.object(client, 'search_events', return_value=response)
-    mock_set_last_run = mocker.patch('demistomock.setLastRun')
 
     # expected values
     expected_end_date = (mock_time - 5) * 1000
     expected_start_date = expected_end_date - 60000
 
     # call
-    fetch = fetch_events(client, fetch_limit)
-    actual_events = next(fetch)
+    actual_events, last_run = fetch_events(client, fetch_limit, {})
     # assertions
     mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
-    mock_set_last_run.assert_called_with({'next_link': None, 'end_date': actual_events[-1]['creationDate']})
     assert actual_events == response['results']
+    assert last_run == {'next_link': None, 'end_date': response['results'][-1]['creationDate']}
 
 
 def test_fetch_events_first_run_with_links(mocker: MockerFixture):
@@ -1043,8 +1041,7 @@ def test_fetch_events_first_run_with_links(mocker: MockerFixture):
     expected_start_date = expected_end_date - 60000
 
     # call
-    fetch = fetch_events(client, fetch_limit)
-    actual_events = next(fetch)
+    actual_events, last_run = fetch_events(client, fetch_limit, {})
     first_page_len = len(actual_events)
 
     # assertions
@@ -1060,7 +1057,7 @@ def test_fetch_events_first_run_with_links(mocker: MockerFixture):
     mock_search = mocker.patch.object(client, 'search_events', return_value=second_page_response)
 
     # call
-    actual_events = next(fetch)
+    actual_events, last_run = next(fetch)
 
     # assertions
     mock_search.assert_called_with(limit=fetch_limit - first_page_len, next_link=first_page_response['_links']['next'])
