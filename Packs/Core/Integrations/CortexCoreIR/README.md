@@ -2814,3 +2814,90 @@ Initiates a new endpoint script execution action using a script from the script 
 >|---|---|---|---|---|---|---|---|---|---|---|
 >||222|111|1.1.1.1|test|STATUS_010_CONNECTED|COMPLETED_SUCCESSFULLY|0||0||
 
+
+### core-terminate-process
+
+***
+Terminate a process by its instance ID.
+
+#### Base Command
+
+`core-terminate-process`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_id | The agent ID. | Required | 
+| instance_id | The instance ID. | Required | 
+| process_name | The process name. | Optional | 
+| incident_id | The incident ID. | Optional | 
+| action_id | The action ID. For polling use. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. | Optional | 
+| timeout_in_seconds | Polling timeout in seconds. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.TerminateProcess.action_id | String | The action ID. | 
+### core-terminate-causality
+
+***
+Stops a process by its causality ID.
+
+##### Command Example
+
+```!core-terminate-process agent_id=1 instance_id=1 process_name=process incident_id=2```
+
+##### Context Example
+
+```
+{
+    "Core.TerminateProcess": [
+        {
+            "action_id": "1",
+        }
+       
+    ]
+}
+```
+
+#### Base Command
+
+`core-terminate-causality`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_id | The agent ID. | Required | 
+| causality_id | The causality ID. | Required | 
+| process_name | The process name. | Optional | 
+| incident_id | The incident ID. | Optional | 
+| action_id | The action ID. For polling use. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. | Optional | 
+| timeout_in_seconds | Polling timeout in seconds. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.TerminateCausality.action_id | String | The action id. | 
+
+##### Command Example
+
+```!core-terminate-causality agent_id=1 causality_id=1 process_name=process incident_id=2```
+
+##### Context Example
+
+```
+{
+    "Core.TerminateCausality": [
+        {
+            "action_id": "1",
+        }
+       
+    ]
+}
+```
