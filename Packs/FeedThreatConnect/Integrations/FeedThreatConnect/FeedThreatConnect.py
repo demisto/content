@@ -163,7 +163,8 @@ INDICATOR_GROUPS = ['Attack Pattern',
                     'Vulnerability'
                     ]
 
-
+FETCH_TIME_DICT = {'Created': 'dateAdded',
+                   'Modified': 'lastModified'}
 #########
 # Utils #
 #########
@@ -511,9 +512,10 @@ def build_url_with_query_params(params: dict, endpoint: str, last_run: dict):
     last_run_date = last_run.get(endpoint, {}).get('from_date', '')
     demisto.debug('last run get: ' + str(last_run_date))
     from_date = ''
-    # last_run_date = "2024-05-11T16:35:13Z"
+    fetch_from = FETCH_TIME_DICT.get(params.get('fetch_from'))
+
     if last_run_date:
-        from_date = f'AND (lastModified > "{last_run_date}") '
+        from_date = f'AND ({fetch_from} > "{last_run_date}") '
 
     fields = set_fields_query(params, endpoint)
     tql = params.get('indicator_query')
