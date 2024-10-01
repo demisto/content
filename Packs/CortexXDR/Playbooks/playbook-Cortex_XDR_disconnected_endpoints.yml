@@ -567,20 +567,17 @@ view: |-
   }
 inputs:
 - key: LastSeenStartDate
-  value:
-    simple: 7 days
+  value: {}
   required: false
   description: 'Last seen start date, in relative timestamp - "1 Day" or  "7 days" '
   playbookInputQuery:
 - key: LastSeenEndDate
-  value:
-    simple: 0 days
+  value: {}
   required: false
   description: "Last seen end date, in relative timestamp - \"1 Day\" or  \"7 days\" \nFor the current day use \"0 days\""
   playbookInputQuery:
 - key: Email
-  value:
-    simple: asawyer@paloaltonetworks.com
+  value: {}
   required: false
   description: Email addresses to send the disconnected endpoints report.
   playbookInputQuery:
