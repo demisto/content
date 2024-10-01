@@ -50,9 +50,9 @@ class SpurIP(Common.IP):
 
         super().__init__(**kwargs)
 
-        self.client_types = client_types if client_types is not None else []
-        self.risks = risks if risks is not None else []
-        self.tunnels = tunnels if tunnels is not None else {}
+        self.client_types = client_types if client_types else []
+        self.risks = risks if risks else []
+        self.tunnels = tunnels if tunnels else {}
 
     def to_context(self) -> dict:
         context = super().to_context()
@@ -120,9 +120,7 @@ def test_module(client: Client) -> str:
         )
         message = "ok"
     except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(
-            e
-        ):  # TODO: make sure you capture authentication errors
+        if "Forbidden" in str(e) or "Authorization" in str():  # TODO: make sure you capture authentication errors
             message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
