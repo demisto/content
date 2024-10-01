@@ -12,10 +12,11 @@ import pytest
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
 from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address, get_attachment_name
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
-from exchangelib import EWSDateTime, EWSTimeZone
+from exchangelib import EWSDateTime, EWSTimeZone, EWSDate
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
 import demistomock as demisto
 from exchangelib.properties import ItemId
+from exchangelib.items import Item
 
 
 class TestNormalCommands:
@@ -115,7 +116,7 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
 
     client = TestNormalCommands.MockClient()
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2021, 5, 23, 13, 18, 14, 901293,
-                                                                            datetime.timezone.utc))
+                                                                            datetime.UTC))
     mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
 
     mocker.patch.object(MockObject, 'filter')
@@ -590,6 +591,41 @@ def test_categories_parse_item_as_dict():
     assert return_value.get("categories") == ['Purple category', 'Orange category']
 
 
+def test_parse_incident_from_item():
+    """
+    Given -
+        a Message with attachments contains non-ASCII characters.
+
+    When -
+        running the parse_incident_from_item function.
+
+    Then -
+        verify that the attachments were parsed correctly.
+    """
+    from EWSv2 import parse_incident_from_item
+    from exchangelib.attachments import AttachmentId, ItemAttachment
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      id='message4',
+                      attachments=[
+                          ItemAttachment(
+                              item=Item(mime_content=b'\x80\x81\x82'),
+                              attachment_id=AttachmentId(),
+                              last_modified_time=EWSDate(year=2021, month=1, day=25),
+                          ),
+                      ],
+                      )
+
+    return_value = parse_incident_from_item(message, is_fetch=False)
+    assert return_value.get("attachment")
+
+
 def test_list_parse_item_as_dict():
     """
     Given -
@@ -874,18 +910,20 @@ def test_parse_item_as_dict_return_json_serializable():
     assert '"item_id": {"id": "id123", "changekey": "change"}' in item_as_json
 
 
-@pytest.mark.parametrize("attachment_name, content_id, is_inline, expected_result", [
-    pytest.param('image1.png', "", False, "image1.png"),
-    pytest.param('image1.png', '123', True, "123-attachmentName-image1.png"),
-    pytest.param('image1.png', None, False, "image1.png"),
+@pytest.mark.parametrize("attachment_name, content_id, is_inline, attachment_subject, expected_result", [
+    pytest.param('image1.png', "", False, None, "image1.png"),
+    pytest.param('image1.png', '123', True, None, "123-attachmentName-image1.png"),
+    pytest.param('image1.png', None, False, None, "image1.png"),
+    pytest.param(None, None, False, "Re: test", "Re: test"),
 
 ])
-def test_get_attachment_name(attachment_name, content_id, is_inline, expected_result):
+def test_get_attachment_name(attachment_name, content_id, is_inline, attachment_subject, expected_result):
     """
     Given:
         - case 1: attachment is not inline.
-        - case 1: attachment is inline.
+        - case 2: attachment is inline.
         - case 3: attachment is not inline.
+        - case 4: attachment with no name, only subject.
     When:
         - get_attachment_name is called with LEGACY_NAME=FALSE
     Then:
@@ -893,7 +931,7 @@ def test_get_attachment_name(attachment_name, content_id, is_inline, expected_re
 
     """
     assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
-                               is_inline=is_inline) == expected_result
+                               is_inline=is_inline, attachment_subject=attachment_subject) == expected_result
 
 
 @pytest.mark.parametrize("attachment_name, content_id, is_inline, expected_result", [
@@ -917,3 +955,83 @@ def test_get_attachment_name_legacy_name(monkeypatch, attachment_name, content_i
     monkeypatch.setattr('EWSv2.LEGACY_NAME', True)
     assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
                                is_inline=is_inline) == expected_result
+
+
+def test_parse_mime_content_with_quoted_printable():
+    """
+    Given:
+        - A MIME item with quoted-printable encoded subject and UTF-8 encoded body.
+
+    When:
+        - The MIME item is cast to a message object.
+
+    Then:
+        - The subject should be correctly decoded.
+        - The body of the email should be correctly parsed.
+    """
+
+    from EWSv2 import cast_mime_item_to_message
+
+    class MockMimeItem:
+        mime_content: str = ''
+
+        def __init__(self, message: str):
+            self.mime_content = message
+
+    mime_content = "Subject: =?UTF-8?Q?Prueba_de_correo?=\n\nEste es un correo de prueba."
+    mime_item = cast_mime_item_to_message(MockMimeItem(mime_content))
+    expected_subject = "Prueba de correo"
+    expected_body = "Este es un correo de prueba."
+
+    assert mime_item['Subject'] == expected_subject, f"Expected subject '{expected_subject}', got '{mime_item['Subject']}'"
+    assert mime_item.get_payload() == expected_body, f"Expected body '{expected_body}', got '{mime_item.get_payload()}'"
+
+
+def test_get_item_as_eml(mocker):
+    """
+    Given
+        - A quoted-printable encoded email returns.
+    When
+        - The "ews-get-items-as-eml" command is called.
+    Then
+        - The output contains the expected file name and content
+    """
+    from EWSv2 import get_item_as_eml
+    from exchangelib.properties import MessageHeader
+    from exchangelib.items import Item
+
+    content = b'MIME-Version: 1.0\n' \
+              b'Message-ID:\r\n' \
+              b' <message-test-idRANDOMVALUES@testing.com>\r\n' \
+              b'Content-Type: text/plain; charset="iso-8859-2"\r\n' \
+              b'Content-Transfer-Encoding: quoted-printable\r\n' \
+              b'X-FAKE-Header: HVALue\r\n' \
+              b'X-Who-header: whovALUE\n' \
+              b'DATE: 2023-12-16T12:04:45\r\n' \
+              b'\r\nHello'
+
+    item_headers = [
+        MessageHeader(name="Mime-Version", value="1.0"),
+        MessageHeader(name="Content-Type", value='application/ms-tnef'),
+        MessageHeader(name="X-Fake-Header", value="HVALue"),
+        MessageHeader(name="X-WHO-header", value="whovALUE"),
+        # this is a header whose value is different. The field is limited to 1 by RFC
+        MessageHeader(name="Date", value="2023-12-16 12:04:45"),
+        MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
+    ]
+    expected_data = 'MIME-Version: 1.0\r\n' \
+                    'Message-ID: \r\n' \
+                    ' <message-test-idRANDOMVALUES@testing.com>\r\n' \
+                    'Content-Type: text/plain; charset="iso-8859-2"\r\n' \
+                    'Content-Transfer-Encoding: quoted-printable\r\n' \
+                    'X-FAKE-Header: HVALue\r\n' \
+                    'X-Who-header: whovALUE\r\n' \
+                    'DATE: 2023-12-16T12:04:45\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
+                    '\r\nHello'
+    mock_file_result = mocker.patch('EWSv2.fileResult')
+    mocker.patch.object(EWSv2, 'get_item_from_mailbox', return_value=Item(mime_content=content, headers=item_headers))
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+
+    get_item_as_eml("Inbox", "test@gmail.com")
+    mock_file_result.assert_called_once_with("demisto_untitled_eml.eml", expected_data)
