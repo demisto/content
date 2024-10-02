@@ -16,7 +16,7 @@ description: |
 
   Verdict Handling:
   - Handles malicious incidents by initiating appropriate response actions, including blocking malicious indicators, isolating endpoints, and disabling user accounts.
-  
+
   To utilize this playbook as the default for handling XDR incidents, the classifier should be empty, and the selected incident type should be `Cortex XDR - Lite`.
   The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
 starttaskid: "0"
@@ -91,10 +91,10 @@ tasks:
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
-      playbookName: Entity Enrichment - Generic v3
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Entity Enrichment - Generic v3
     nexttasks:
       '#none#':
       - "23"
@@ -273,10 +273,10 @@ tasks:
         - Block Email - Generic v2
         - Block Domain - Generic v2
 
-      playbookName: Block Indicators - Generic v3
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Block Indicators - Generic v3
     nexttasks:
       '#none#':
       - "33"
@@ -622,10 +622,10 @@ tasks:
       version: -1
       name: Command-Line Analysis
       description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you want to run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
-      playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Command-Line Analysis
     nexttasks:
       '#none#':
       - "25"
@@ -832,10 +832,10 @@ tasks:
       version: -1
       name: Cortex XDR - Isolate Endpoint
       description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
-      playbookName: Cortex XDR - Isolate Endpoint
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex XDR - Isolate Endpoint
     nexttasks:
       '#none#':
       - "33"
@@ -1124,10 +1124,10 @@ tasks:
       description: |-
         This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
         Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
-      playbookName: Cortex XDR - Get entity alerts by MITRE tactics
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex XDR - Get entity alerts by MITRE tactics
     nexttasks:
       '#none#':
       - "25"
@@ -1224,10 +1224,10 @@ tasks:
       description: |-
         This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
         Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
-      playbookName: Cortex XDR - Get entity alerts by MITRE tactics
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex XDR - Get entity alerts by MITRE tactics
     nexttasks:
       '#none#':
       - "25"
@@ -2099,9 +2099,7 @@ inputs:
   playbookInputQuery:
 - key: incident_id
   value:
-    complex:
-      root: incident
-      accessor: xdrincidentid
+    simple: ${incident.labels.incident_id}
   required: false
   description: Incident ID.
   playbookInputQuery:
@@ -2229,7 +2227,10 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+- Test XDR Playbook general commands
+- Test XDR Playbook
 fromversion: 6.9.0
-marketplaces:
-- xsoar
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all

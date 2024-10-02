@@ -23,15 +23,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Cortex XDR - Get entity alerts by MITRE tactics
+* Entity Enrichment - Generic v3
+* Command-Line Analysis
 * Cortex XDR - Isolate Endpoint
 * Block Indicators - Generic v3
-* Command-Line Analysis
-* Entity Enrichment - Generic v3
-* Cortex XDR - Get entity alerts by MITRE tactics
 
 ### Integrations
 
-* CortexXDRIR
 * Cortex XDR - IR
 
 ### Scripts
@@ -51,7 +50,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Username | Username. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
-| incident_id | Incident ID. | incident.xdrincidentid | Optional |
+| incident_id | Incident ID. | ${incident.labels.incident_id} | Optional |
 | Hostname | Hostname. | PaloAltoNetworksXDR.Incident.alerts.host_name | Optional |
 | EndpointID | XDR endpoint ID. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
 | XDRDomain | XDR instance domain. | incident.xdrurl | Optional |
