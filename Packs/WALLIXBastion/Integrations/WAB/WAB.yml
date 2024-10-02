@@ -240,6 +240,10 @@ script:
     - name: credential_type
       description: '''password'' to change the password or ''ssh_key'' to change the SSH key.'
       required: true
+      auto: PREDEFINED
+      predefined:
+      - password
+      - ssh_key
     - name: changePasswordOrSshKeyOfAccount_password
       description: The new password.
       required: true
