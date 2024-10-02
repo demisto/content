@@ -2,12 +2,7 @@ import json
 
 import pytest
 from incydr import Client as incydrClient
-from incydr.models import (
-    Session,
-    Actor,
-    RuleDetails,
-    FileEventsPage
-)
+from incydr import models
 from py42.sdk import SDKClient
 from py42.response import Py42Response
 from Code42 import (
@@ -44,6 +39,12 @@ from Code42 import (
 )
 from requests import Response, HTTPError
 import time
+from incydr import __version__
+
+
+def test_version():
+    assert __version__ == "2.1.0"
+
 
 MOCK_URL = "https://123-fake-api.com"
 
@@ -1033,7 +1034,7 @@ def code42_users_mock(code42_sdk_mock, mocker):
 
 @pytest.fixture
 def code42_user_risk_profile_mock(incydr_sdk_mock, mocker):
-    risk_profile_response = Actor.parse_response(
+    risk_profile_response = models.Actor.parse_response(
         create_mock_requests_response(mocker, MOCK_USER_RISK_PROFILE_RESPONSE)
     )
     incydr_sdk_mock.actors.v1.get_actor_by_name.return_value = risk_profile_response
@@ -1057,21 +1058,21 @@ def create_alerts_mock(c42_sdk_mock, mocker):
 
 
 def create_sessions_mock(incydr_sdk_mock, mocker):
-    incydr_sdk_mock.sessions.v1.get_session_details.return_value = Session.parse_response(
+    incydr_sdk_mock.sessions.v1.get_session_details.return_value = models.Session.parse_response(
         create_mock_requests_response(mocker, MOCK_SESSION_RESPONSE))
-    incydr_sdk_mock.actors.v1.get_actor_by_id.return_value = Actor.parse_response(
+    incydr_sdk_mock.actors.v1.get_actor_by_id.return_value = models.Actor.parse_response(
         create_mock_requests_response(mocker, MOCK_ACTOR_RESPONSE))
-    incydr_sdk_mock.alert_rules.v2.get_rule.return_value = RuleDetails.parse_response(
+    incydr_sdk_mock.alert_rules.v2.get_rule.return_value = models.RuleDetails.parse_response(
         create_mock_requests_response(mocker, MOCK_RULE_RESPONSE))
-    incydr_sdk_mock.sessions.v1.get_session_events.return_value = FileEventsPage.parse_response(
+    incydr_sdk_mock.sessions.v1.get_session_events.return_value = models.FileEventsPage.parse_response(
         create_mock_requests_response(mocker, MOCK_V2_FILE_EVENTS_RESPONSE))
     incydr_sdk_mock.sessions.v1.iter_all.return_value = iter(
         [
-            Session.parse_response(
+            models.Session.parse_response(
                 create_mock_requests_response(mocker, MOCK_SESSION_RESPONSE)),
-            Session.parse_response(
+            models.Session.parse_response(
                 create_mock_requests_response(mocker, MOCK_SESSION_RESPONSE_2)),
-            Session.parse_response(
+            models.Session.parse_response(
                 create_mock_requests_response(mocker, MOCK_SESSION_RESPONSE_3))
         ]
     )

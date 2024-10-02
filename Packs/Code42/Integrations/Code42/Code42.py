@@ -9,7 +9,7 @@ import urllib3
 import incydr
 import py42.sdk
 import py42.settings
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from uuid import UUID
 from py42.sdk.queries.fileevents.v2.file_event_query import FileEventQuery as FileEventQueryV2
 
@@ -963,7 +963,7 @@ class Code42SecurityIncidentFetcher:
         start_query_time = self._get_start_query_time()
         alerts = self._fetch_alerts(start_query_time)
         incidents = [self._create_incident_from_alert(a) for a in alerts]
-        save_time = datetime.now(timezone.utc).timestamp()
+        save_time = datetime.now(UTC).timestamp()
         next_run = {"last_fetch": save_time}
         return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
@@ -1080,7 +1080,7 @@ def handle_fetch_command(client):
 def run_command(command):
     try:
         results = command()
-        if not (isinstance(results, (list, tuple))):
+        if not (isinstance(results, list | tuple)):
             results = [results]
         for result in results:
             return_results(result)
