@@ -101,7 +101,7 @@ There is no context output for this command.
 
 ***
 Get account references
-url: get /accounts/{account_id}/references
+category: Account References
 
 #### Base Command
 
@@ -137,7 +137,7 @@ url: get /accounts/{account_id}/references
 
 ***
 Get account reference
-url: get /accounts/{account_id}/references/{reference_id}
+category: Account References
 
 #### Base Command
 
@@ -170,7 +170,7 @@ url: get /accounts/{account_id}/references/{reference_id}
 
 ***
 Change password or SSH key of an account and propagate changes on the target host. If the body is empty, an automatic password change is performed: the password or the SSH key are changed to a newly generated value, according to the password change policy on the domain. Note: the password change must be enabled on the domain, with a plugin that will be used to change the password on the target host
-url: put /accountchangepassword/{account_id}/{credential_type}
+category: Account Change Password
 
 #### Base Command
 
@@ -193,7 +193,7 @@ There is no context output for this command.
 
 ***
 Get all accounts
-url: get /accounts
+category: Accounts
 
 #### Base Command
 
@@ -262,7 +262,7 @@ url: get /accounts
 
 ***
 Get one account
-url: get /accounts/{account_id}
+category: Accounts
 
 #### Base Command
 
@@ -328,7 +328,7 @@ url: get /accounts/{account_id}
 
 ***
 Delete an account
-url: delete /accounts/{account_id}
+category: Accounts
 
 #### Base Command
 
@@ -348,7 +348,7 @@ There is no context output for this command.
 
 ***
 Get the application accounts
-url: get /applications/{application_id}/localdomains/{domain_id}/accounts
+category: Application Accounts
 
 #### Base Command
 
@@ -401,7 +401,7 @@ url: get /applications/{application_id}/localdomains/{domain_id}/accounts
 
 ***
 Add an account to a local domain of an application
-url: post /applications/{application_id}/localdomains/{domain_id}/accounts
+category: Application Accounts
 
 #### Base Command
 
@@ -431,7 +431,7 @@ url: post /applications/{application_id}/localdomains/{domain_id}/accounts
 
 ***
 Get the application account
-url: get /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
+category: Application Accounts
 
 #### Base Command
 
@@ -481,7 +481,7 @@ url: get /applications/{application_id}/localdomains/{domain_id}/accounts/{accou
 
 ***
 Edit an account on a local domain of an application
-url: put /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
+category: Application Accounts
 
 #### Base Command
 
@@ -512,7 +512,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a local domain of an application
-url: delete /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}
+category: Application Accounts
 
 #### Base Command
 
@@ -534,7 +534,7 @@ There is no context output for this command.
 
 ***
 Get local domains data for a given application
-url: get /applications/{application_id}/localdomains
+category: Application Local Domains
 
 #### Base Command
 
@@ -570,7 +570,7 @@ url: get /applications/{application_id}/localdomains
 
 ***
 Get local domain data for a given application
-url: get /applications/{application_id}/localdomains/{domain_id}
+category: Application Local Domains
 
 #### Base Command
 
@@ -603,7 +603,7 @@ url: get /applications/{application_id}/localdomains/{domain_id}
 
 ***
 Get the applications
-url: get /applications
+category: Applications
 
 #### Base Command
 
@@ -648,7 +648,7 @@ url: get /applications
 
 ***
 Get the application
-url: get /applications/{application_id}
+category: Applications
 
 #### Base Command
 
@@ -690,7 +690,7 @@ url: get /applications/{application_id}
 
 ***
 Edit an application
-url: put /applications/{application_id}
+category: Applications
 
 #### Base Command
 
@@ -715,7 +715,7 @@ There is no context output for this command.
 
 ***
 Delete an application
-url: delete /applications/{application_id}
+category: Applications
 
 #### Base Command
 
@@ -735,7 +735,7 @@ There is no context output for this command.
 
 ***
 Get the approvals
-url: get /approvals
+category: Approvals
 
 #### Base Command
 
@@ -787,7 +787,7 @@ url: get /approvals
 
 ***
 Get the approvals for a given approver
-url: get /approvals/assignments
+category: Approvals Assignments
 
 #### Base Command
 
@@ -838,7 +838,7 @@ url: get /approvals/assignments
 
 ***
 Reply to an approval request (approve/reject it). Note: you can answer to an approval request only if you are in approvers groups of authorization
-url: post /approvals/assignments
+category: Approvals Assignments
 
 #### Base Command
 
@@ -866,7 +866,7 @@ url: post /approvals/assignments
 
 ***
 Get the approvals for a given approver
-url: get /approvals/assignments/{user_name}
+category: Approvals Assignments
 
 #### Base Command
 
@@ -918,7 +918,7 @@ url: get /approvals/assignments/{user_name}
 
 ***
 Cancel an accepted approval. Note: you can cancel an approval only if you are in approvers groups of authorization and the end date is still not reached
-url: post /approvals/assignments/cancel
+category: Approvals Assignments
 
 #### Base Command
 
@@ -941,7 +941,7 @@ url: post /approvals/assignments/cancel
 
 ***
 Notify approvers linked to an approval request by sending them an email
-url: post /approvals/assignments/notify
+category: Approvals Assignments
 
 #### Base Command
 
@@ -964,7 +964,7 @@ url: post /approvals/assignments/notify
 
 ***
 Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id
-url: get /approvals/requests
+category: Approvals Requests
 
 #### Base Command
 
@@ -1017,7 +1017,7 @@ url: get /approvals/requests
 
 ***
 Make a new approval request to access a target. Note: depending on the authorization settings, the fields "ticket" and "comment" may be required
-url: post /approvals/requests
+category: Approvals Requests
 
 #### Base Command
 
@@ -1049,7 +1049,7 @@ url: post /approvals/requests
 
 ***
 Cancel an approval request
-url: post /approvals/requests/cancel
+category: Approvals Requests
 
 #### Base Command
 
@@ -1071,7 +1071,7 @@ url: post /approvals/requests/cancel
 
 ***
 Notify approvers linked to an approval request by sending them an email
-url: post /approvals/requests/notify
+category: Approvals Requests
 
 #### Base Command
 
@@ -1094,7 +1094,7 @@ url: post /approvals/requests/notify
 
 ***
 Check if an approval is required for this target (optionally for a given date in future)
-url: get /approvals/requests/target/{target_name}
+category: Approvals Requests Target
 
 #### Base Command
 
@@ -1120,7 +1120,7 @@ url: get /approvals/requests/target/{target_name}
 
 ***
 Get the mappings of a domain
-url: get /authdomains/{domain_id}/mappings
+category: Auth Domain Mappings
 
 #### Base Command
 
@@ -1151,7 +1151,7 @@ url: get /authdomains/{domain_id}/mappings
 
 ***
 Add a mapping in a domain and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user_group by default
-url: post /authdomains/{domain_id}/mappings
+category: Auth Domain Mappings
 
 #### Base Command
 
@@ -1176,7 +1176,7 @@ url: post /authdomains/{domain_id}/mappings
 
 ***
 Edit mappings of a domain
-url: put /authdomains/{domain_id}/mappings
+category: Auth Domain Mappings
 
 #### Base Command
 
@@ -1199,7 +1199,7 @@ There is no context output for this command.
 
 ***
 Get the mapping of a domain
-url: get /authdomains/{domain_id}/mappings/{mapping_id}
+category: Auth Domain Mappings
 
 #### Base Command
 
@@ -1227,7 +1227,7 @@ url: get /authdomains/{domain_id}/mappings/{mapping_id}
 
 ***
 Edit a mapping of a domain
-url: put /authdomains/{domain_id}/mappings/{mapping_id}
+category: Auth Domain Mappings
 
 #### Base Command
 
@@ -1251,7 +1251,7 @@ There is no context output for this command.
 
 ***
 Delete the mapping of the given domain
-url: delete /authdomains/{domain_id}/mappings/{mapping_id}
+category: Auth Domain Mappings
 
 #### Base Command
 
@@ -1272,7 +1272,7 @@ There is no context output for this command.
 
 ***
 Get the auth domains
-url: get /authdomains
+category: Auth Domains
 
 #### Base Command
 
@@ -1312,7 +1312,7 @@ url: get /authdomains
 
 ***
 Get the auth domain
-url: get /authdomains/{domain_id}
+category: Auth Domains
 
 #### Base Command
 
@@ -1349,7 +1349,7 @@ url: get /authdomains/{domain_id}
 
 ***
 Get the authentications
-url: get /authentications
+category: Authentications
 
 #### Base Command
 
@@ -1386,7 +1386,7 @@ url: get /authentications
 
 ***
 Get the authentication
-url: get /authentications/{auth_id}
+category: Authentications
 
 #### Base Command
 
@@ -1420,7 +1420,7 @@ url: get /authentications/{auth_id}
 
 ***
 Get the authorizations
-url: get /authorizations
+category: Authorizations
 
 #### Base Command
 
@@ -1468,7 +1468,7 @@ url: get /authorizations
 
 ***
 Add an authorization
-url: post /authorizations
+category: Authorizations
 
 #### Base Command
 
@@ -1510,7 +1510,7 @@ url: post /authorizations
 
 ***
 Get the authorization
-url: get /authorizations/{authorization_id}
+category: Authorizations
 
 #### Base Command
 
@@ -1555,7 +1555,7 @@ url: get /authorizations/{authorization_id}
 
 ***
 Edit an authorization
-url: put /authorizations/{authorization_id}
+category: Authorizations
 
 #### Base Command
 
@@ -1595,7 +1595,7 @@ There is no context output for this command.
 
 ***
 Delete an authorization
-url: delete /authorizations/{authorization_id}
+category: Authorizations
 
 #### Base Command
 
@@ -1615,7 +1615,7 @@ There is no context output for this command.
 
 ***
 Get the checkout policies
-url: get /checkoutpolicies
+category: Checkout Policies
 
 #### Base Command
 
@@ -1649,7 +1649,7 @@ url: get /checkoutpolicies
 
 ***
 Get the checkout policy
-url: get /checkoutpolicies/{checkout_policy_id}
+category: Checkout Policies
 
 #### Base Command
 
@@ -1680,7 +1680,7 @@ url: get /checkoutpolicies/{checkout_policy_id}
 
 ***
 Get the clusters
-url: get /clusters
+category: Clusters
 
 #### Base Command
 
@@ -1712,7 +1712,7 @@ url: get /clusters
 
 ***
 Get the cluster
-url: get /clusters/{cluster_id}
+category: Clusters
 
 #### Base Command
 
@@ -1741,7 +1741,7 @@ url: get /clusters/{cluster_id}
 
 ***
 Get the X509 configuration infos
-url: get /config/x509
+category: Config X509
 
 #### Base Command
 
@@ -1765,7 +1765,7 @@ There are no input arguments for this command.
 
 ***
 Upload X509 configuration
-url: post /config/x509
+category: Config X509
 
 #### Base Command
 
@@ -1790,7 +1790,7 @@ url: post /config/x509
 
 ***
 Update X509 Configuration
-url: put /config/x509
+category: Config X509
 
 #### Base Command
 
@@ -1813,7 +1813,7 @@ There is no context output for this command.
 
 ***
 Reset X509 configuration
-url: delete /config/x509
+category: Config X509
 
 #### Base Command
 
@@ -1831,7 +1831,7 @@ There is no context output for this command.
 
 ***
 Get current serial configuration number of the Bastion. This number can be used to know if the Bastion configuration was changed
-url: get /confignumber
+category: Configuration Number
 
 #### Base Command
 
@@ -1851,7 +1851,7 @@ There are no input arguments for this command.
 
 ***
 Get the connection policies
-url: get /connectionpolicies
+category: Connection Policies
 
 #### Base Command
 
@@ -1883,7 +1883,7 @@ url: get /connectionpolicies
 
 ***
 Add a connection policy
-url: post /connectionpolicies
+category: Connection Policies
 
 #### Base Command
 
@@ -1908,7 +1908,7 @@ url: post /connectionpolicies
 
 ***
 Get the connection policy
-url: get /connectionpolicies/{connection_policy_id}
+category: Connection Policies
 
 #### Base Command
 
@@ -1937,7 +1937,7 @@ url: get /connectionpolicies/{connection_policy_id}
 
 ***
 Edit a connection policy
-url: put /connectionpolicies/{connection_policy_id}
+category: Connection Policies
 
 #### Base Command
 
@@ -1960,7 +1960,7 @@ There is no context output for this command.
 
 ***
 Delete a connection policy. Note: it is not possible to delete the default Bastion connection policies
-url: delete /connectionpolicies/{connection_policy_id}
+category: Connection Policies
 
 #### Base Command
 
@@ -1980,7 +1980,7 @@ There is no context output for this command.
 
 ***
 Get all accounts on a device local domain
-url: get /devices/{device_id}/localdomains/{domain_id}/accounts
+category: Device Accounts
 
 #### Base Command
 
@@ -2043,7 +2043,7 @@ url: get /devices/{device_id}/localdomains/{domain_id}/accounts
 
 ***
 Add an account to a local domain on a device
-url: post /devices/{device_id}/localdomains/{domain_id}/accounts
+category: Device Accounts
 
 #### Base Command
 
@@ -2075,7 +2075,7 @@ url: post /devices/{device_id}/localdomains/{domain_id}/accounts
 
 ***
 Get one account on a device local domain
-url: get /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
+category: Device Accounts
 
 #### Base Command
 
@@ -2135,7 +2135,7 @@ url: get /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
 
 ***
 Edit an account on a local domain of a device
-url: put /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
+category: Device Accounts
 
 #### Base Command
 
@@ -2168,7 +2168,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a local domain of a device
-url: delete /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}
+category: Device Accounts
 
 #### Base Command
 
@@ -2190,7 +2190,7 @@ There is no context output for this command.
 
 ***
 Get the certificates on a device
-url: get /devices/{device_id}/certificates
+category: Device Certificates
 
 #### Base Command
 
@@ -2223,7 +2223,7 @@ url: get /devices/{device_id}/certificates
 
 ***
 Get the certificate on a device
-url: get /devices/{device_id}/certificates/{cert_type}/{address}/{port}
+category: Device Certificates
 
 #### Base Command
 
@@ -2259,7 +2259,7 @@ url: get /devices/{device_id}/certificates/{cert_type}/{address}/{port}
 
 ***
 Revoke a certificate of a device
-url: delete /devices/{device_id}/certificates/{cert_type}/{address}/{port}
+category: Device Certificates
 
 #### Base Command
 
@@ -2282,7 +2282,7 @@ There is no context output for this command.
 
 ***
 Get the local domains of a device
-url: get /devices/{device_id}/localdomains
+category: Device Local Domains
 
 #### Base Command
 
@@ -2318,7 +2318,7 @@ url: get /devices/{device_id}/localdomains
 
 ***
 Get the local domain of a device
-url: get /devices/{device_id}/localdomains/{domain_id}
+category: Device Local Domains
 
 #### Base Command
 
@@ -2351,7 +2351,7 @@ url: get /devices/{device_id}/localdomains/{domain_id}
 
 ***
 Get the services of a device
-url: get /devices/{device_id}/services
+category: Device Services
 
 #### Base Command
 
@@ -2384,7 +2384,7 @@ url: get /devices/{device_id}/services
 
 ***
 Add a service in a device
-url: post /devices/{device_id}/services
+category: Device Services
 
 #### Base Command
 
@@ -2413,7 +2413,7 @@ url: post /devices/{device_id}/services
 
 ***
 Get the service of a device
-url: get /devices/{device_id}/services/{service_id}
+category: Device Services
 
 #### Base Command
 
@@ -2443,7 +2443,7 @@ url: get /devices/{device_id}/services/{service_id}
 
 ***
 Edit a service of a device
-url: put /devices/{device_id}/services/{service_id}
+category: Device Services
 
 #### Base Command
 
@@ -2468,7 +2468,7 @@ There is no context output for this command.
 
 ***
 Delete a service from a device
-url: delete /devices/{device_id}/services/{service_id}
+category: Device Services
 
 #### Base Command
 
@@ -2489,7 +2489,7 @@ There is no context output for this command.
 
 ***
 Get the devices
-url: get /devices
+category: Devices
 
 #### Base Command
 
@@ -2553,7 +2553,7 @@ url: get /devices
 
 ***
 Add a device
-url: post /devices
+category: Devices
 
 #### Base Command
 
@@ -2578,7 +2578,7 @@ url: post /devices
 
 ***
 Get the device
-url: get /devices/{device_id}
+category: Devices
 
 #### Base Command
 
@@ -2639,7 +2639,7 @@ url: get /devices/{device_id}
 
 ***
 Edit a device
-url: put /devices/{device_id}
+category: Devices
 
 #### Base Command
 
@@ -2665,7 +2665,7 @@ There is no context output for this command.
 
 ***
 Delete a device
-url: delete /devices/{device_id}
+category: Devices
 
 #### Base Command
 
@@ -2685,7 +2685,7 @@ There is no context output for this command.
 
 ***
 Get the accounts of a global domain
-url: get /domains/{domain_id}/accounts
+category: Domain Accounts
 
 #### Base Command
 
@@ -2745,7 +2745,7 @@ url: get /domains/{domain_id}/accounts
 
 ***
 Add an account in a global domain
-url: post /domains/{domain_id}/accounts
+category: Domain Accounts
 
 #### Base Command
 
@@ -2776,7 +2776,7 @@ url: post /domains/{domain_id}/accounts
 
 ***
 Get the account of a global domain
-url: get /domains/{domain_id}/accounts/{account_id}
+category: Domain Accounts
 
 #### Base Command
 
@@ -2834,7 +2834,7 @@ url: get /domains/{domain_id}/accounts/{account_id}
 
 ***
 Edit an account in a global domain
-url: put /domains/{domain_id}/accounts/{account_id}
+category: Domain Accounts
 
 #### Base Command
 
@@ -2866,7 +2866,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a global domain
-url: delete /domains/{domain_id}/accounts/{account_id}
+category: Domain Accounts
 
 #### Base Command
 
@@ -2887,7 +2887,7 @@ There is no context output for this command.
 
 ***
 delete a resource from the global domain account
-url: delete /domains/{domain_id}/accounts/{account_id}/resource/{resource_name}
+category: Domain Accounts
 
 #### Base Command
 
@@ -2909,7 +2909,7 @@ There is no context output for this command.
 
 ***
 Get the global domains
-url: get /domains
+category: Domains
 
 #### Base Command
 
@@ -2950,7 +2950,7 @@ url: get /domains
 
 ***
 Get the global domain
-url: get /domains/{domain_id}
+category: Domains
 
 #### Base Command
 
@@ -2988,7 +2988,7 @@ url: get /domains/{domain_id}
 
 ***
 Get the external authentication group mappings
-url: get /authmappings
+category: Ldap Mappings
 
 #### Base Command
 
@@ -3017,7 +3017,7 @@ url: get /authmappings
 
 ***
 Get the LDAP users of a given domain
-url: get /ldapusers/{domain}
+category: Ldap Users
 
 #### Base Command
 
@@ -3054,7 +3054,7 @@ url: get /ldapusers/{domain}
 
 ***
 Get the LDAP user of a given domain
-url: get /ldapusers/{domain}/{user_name}
+category: Ldap Users
 
 #### Base Command
 
@@ -3089,7 +3089,7 @@ url: get /ldapusers/{domain}/{user_name}
 
 ***
 Get information about the WALLIX Bastion license
-url: get /licenseinfo
+category: License Info
 
 #### Base Command
 
@@ -3142,7 +3142,7 @@ There are no input arguments for this command.
 
 ***
 Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured)
-url: post /logsiem
+category: Log Siem
 
 #### Base Command
 
@@ -3165,7 +3165,7 @@ url: post /logsiem
 
 ***
 Get the notifications
-url: get /notifications
+category: Notifications
 
 #### Base Command
 
@@ -3198,7 +3198,7 @@ url: get /notifications
 
 ***
 Add a notification
-url: post /notifications
+category: Notifications
 
 #### Base Command
 
@@ -3226,7 +3226,7 @@ url: post /notifications
 
 ***
 Get the notification
-url: get /notifications/{notification_id}
+category: Notifications
 
 #### Base Command
 
@@ -3256,7 +3256,7 @@ url: get /notifications/{notification_id}
 
 ***
 Edit a notification
-url: put /notifications/{notification_id}
+category: Notifications
 
 #### Base Command
 
@@ -3284,7 +3284,7 @@ There is no context output for this command.
 
 ***
 Delete a notification
-url: delete /notifications/{notification_id}
+category: Notifications
 
 #### Base Command
 
@@ -3304,7 +3304,7 @@ There is no context output for this command.
 
 ***
 Get object to onboard, by type (either devices with their linked accounts or global accounts alone)
-url: get /onboarding_objects
+category: Onboarding Objects
 
 #### Base Command
 
@@ -3347,7 +3347,7 @@ url: get /onboarding_objects
 
 ***
 Get the password change policies
-url: get /passwordchangepolicies
+category: Password Change Policies
 
 #### Base Command
 
@@ -3399,7 +3399,7 @@ Moreover, @reboot is not allowed.
 
 ***
 Add a password change policy. Note: at least password or SSH options must be given in the policy (and both can be used at same time)
-url: post /passwordchangepolicies
+category: Password Change Policies
 
 #### Base Command
 
@@ -3431,7 +3431,7 @@ url: post /passwordchangepolicies
 
 ***
 Get the password change policy
-url: get /passwordchangepolicies/{policy_id}
+category: Password Change Policies
 
 #### Base Command
 
@@ -3480,7 +3480,7 @@ Moreover, @reboot is not allowed.
 
 ***
 Edit a password change policy
-url: put /passwordchangepolicies/{policy_id}
+category: Password Change Policies
 
 #### Base Command
 
@@ -3511,7 +3511,7 @@ There is no context output for this command.
 
 ***
 Delete a password change policy
-url: delete /passwordchangepolicies/{policy_id}
+category: Password Change Policies
 
 #### Base Command
 
@@ -3531,7 +3531,7 @@ There is no context output for this command.
 
 ***
 Get current user's or the user 'user_name' password rights on accounts (for checkout/checkin)
-url: get /passwordrights
+category: Password Rights
 
 #### Base Command
 
@@ -3568,7 +3568,7 @@ url: get /passwordrights
 
 ***
 Get current user's or the user 'user_name' password rights on accounts (for checkout/checkin)
-url: get /passwordrights/{user_name}
+category: Password Rights
 
 #### Base Command
 
@@ -3603,7 +3603,7 @@ url: get /passwordrights/{user_name}
 
 ***
 Get the profiles
-url: get /profiles
+category: Profiles
 
 #### Base Command
 
@@ -3661,7 +3661,7 @@ url: get /profiles
 
 ***
 Get the profile
-url: get /profiles/{profile_id}
+category: Profiles
 
 #### Base Command
 
@@ -3716,7 +3716,7 @@ url: get /profiles/{profile_id}
 
 ***
 Get the scanjobs
-url: get /scanjobs
+category: Scan Jobs
 
 #### Base Command
 
@@ -3747,7 +3747,7 @@ url: get /scanjobs
 
 ***
 Start a scan job manually
-url: post /scanjobs
+category: Scan Jobs
 
 #### Base Command
 
@@ -3769,7 +3769,7 @@ url: post /scanjobs
 
 ***
 Get the scanjob
-url: get /scanjobs/{scanjob_id}
+category: Scan Jobs
 
 #### Base Command
 
@@ -3797,7 +3797,7 @@ url: get /scanjobs/{scanjob_id}
 
 ***
 Cancel a scan job
-url: put /scanjobs/{scanjob_id}
+category: Scan Jobs
 
 #### Base Command
 
@@ -3817,7 +3817,7 @@ There is no context output for this command.
 
 ***
 Get the scans
-url: get /scans
+category: Scans
 
 #### Base Command
 
@@ -3854,7 +3854,7 @@ url: get /scans
 
 ***
 Get the scan
-url: get /scans/{scan_id}
+category: Scans
 
 #### Base Command
 
@@ -3888,7 +3888,7 @@ url: get /scans/{scan_id}
 
 ***
 Edit a scan
-url: put /scans/{scan_id}
+category: Scans
 
 #### Base Command
 
@@ -3914,7 +3914,7 @@ There is no context output for this command.
 
 ***
 Delete a scan
-url: delete /scans/{scan_id}
+category: Scans
 
 #### Base Command
 
@@ -3934,7 +3934,7 @@ There is no context output for this command.
 
 ***
 Get current user's or the user 'user_name' session rights (connections via proxies)
-url: get /sessionrights
+category: Session Rights
 
 #### Base Command
 
@@ -3977,7 +3977,7 @@ url: get /sessionrights
 
 ***
 Get current user's or the user 'user_name' session rights (connections via proxies)
-url: get /sessionrights/{user_name}
+category: Session Rights
 
 #### Base Command
 
@@ -4018,7 +4018,7 @@ url: get /sessionrights/{user_name}
 
 ***
 Get the sessions
-url: get /sessions
+category: Sessions
 
 #### Base Command
 
@@ -4110,7 +4110,7 @@ url: get /sessions
 
 ***
 Edit a session
-url: put /sessions
+category: Sessions
 
 #### Base Command
 
@@ -4132,7 +4132,7 @@ There is no context output for this command.
 
 ***
 Get the metadata of one or multiple sessions
-url: get /sessions/metadata
+category: Sessions Metadata
 
 #### Base Command
 
@@ -4156,7 +4156,7 @@ url: get /sessions/metadata
 
 ***
 Get session sharing requests
-url: get /sessions/requests
+category: Sessions Requests
 
 #### Base Command
 
@@ -4187,7 +4187,7 @@ url: get /sessions/requests
 
 ***
 Create a session request
-url: post /sessions/requests
+category: Sessions Requests
 
 #### Base Command
 
@@ -4208,7 +4208,7 @@ There is no context output for this command.
 
 ***
 Delete a pending or a live session request
-url: delete /sessions/requests/{request_id}
+category: Sessions Requests
 
 #### Base Command
 
@@ -4228,7 +4228,7 @@ There is no context output for this command.
 
 ***
 Get the latest snapshot of a running session
-url: get /sessions/snapshots/{session_id}
+category: Sessions Snapshots
 
 #### Base Command
 
@@ -4248,7 +4248,7 @@ There is no context output for this command.
 
 ***
 Get the status of a trace generation
-url: get /sessions/traces/{session_id}
+category: Sessions Traces
 
 #### Base Command
 
@@ -4279,7 +4279,7 @@ url: get /sessions/traces/{session_id}
 
 ***
 Generate a trace for a session
-url: post /sessions/traces
+category: Sessions Traces
 
 #### Base Command
 
@@ -4303,7 +4303,7 @@ url: post /sessions/traces
 
 ***
 Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied it will return the statistics for the last full calendar month
-url: get /statistics
+category: Statistics
 
 #### Base Command
 
@@ -4339,7 +4339,7 @@ url: get /statistics
 
 ***
 Get the target groups
-url: get /targetgroups
+category: Target Groups
 
 #### Base Command
 
@@ -4402,7 +4402,7 @@ url: get /targetgroups
 
 ***
 Add a target group
-url: post /targetgroups
+category: Target Groups
 
 #### Base Command
 
@@ -4425,7 +4425,7 @@ url: post /targetgroups
 
 ***
 Get the target group
-url: get /targetgroups/{group_id}
+category: Target Groups
 
 #### Base Command
 
@@ -4485,7 +4485,7 @@ url: get /targetgroups/{group_id}
 
 ***
 Edit a target group
-url: put /targetgroups/{group_id}
+category: Target Groups
 
 #### Base Command
 
@@ -4508,7 +4508,7 @@ There is no context output for this command.
 
 ***
 Delete a target group
-url: delete /targetgroups/{group_id}
+category: Target Groups
 
 #### Base Command
 
@@ -4528,7 +4528,7 @@ There is no context output for this command.
 
 ***
 Delete a target from a group
-url: delete /targetgroups/{group_id}/{target_type}/{target_id}
+category: Target Groups
 
 #### Base Command
 
@@ -4550,7 +4550,7 @@ There is no context output for this command.
 
 ***
 Get the timeframes
-url: get /timeframes
+category: Timeframes
 
 #### Base Command
 
@@ -4585,7 +4585,7 @@ url: get /timeframes
 
 ***
 Add a timeframe
-url: post /timeframes
+category: Timeframes
 
 #### Base Command
 
@@ -4609,7 +4609,7 @@ url: post /timeframes
 
 ***
 Get the timeframe
-url: get /timeframes/{timeframe_id}
+category: Timeframes
 
 #### Base Command
 
@@ -4641,7 +4641,7 @@ url: get /timeframes/{timeframe_id}
 
 ***
 Edit a timeframe
-url: put /timeframes/{timeframe_id}
+category: Timeframes
 
 #### Base Command
 
@@ -4665,7 +4665,7 @@ There is no context output for this command.
 
 ***
 Delete a timeframe
-url: delete /timeframes/{timeframe_id}
+category: Timeframes
 
 #### Base Command
 
@@ -4685,7 +4685,7 @@ There is no context output for this command.
 
 ***
 Get the user groups
-url: get /usergroups
+category: User Groups
 
 #### Base Command
 
@@ -4723,7 +4723,7 @@ url: get /usergroups
 
 ***
 Get the user group
-url: get /usergroups/{group_id}
+category: User Groups
 
 #### Base Command
 
@@ -4758,7 +4758,7 @@ url: get /usergroups/{group_id}
 
 ***
 Get the users
-url: get /users
+category: Users
 
 #### Base Command
 
@@ -4802,7 +4802,7 @@ url: get /users
 
 ***
 Add a user
-url: post /users
+category: Users
 
 #### Base Command
 
@@ -4840,7 +4840,7 @@ url: post /users
 
 ***
 Get the user
-url: get /users/{name}
+category: Users
 
 #### Base Command
 
@@ -4881,7 +4881,7 @@ url: get /users/{name}
 
 ***
 Edit a user
-url: put /users/{name}
+category: Users
 
 #### Base Command
 
@@ -4919,7 +4919,7 @@ There is no context output for this command.
 
 ***
 Get target group restrictions
-url: get /targetgroups/{group_id}/restrictions
+category: Target Group Restrictions
 
 #### Base Command
 
@@ -4950,7 +4950,7 @@ url: get /targetgroups/{group_id}/restrictions
 
 ***
 Add a restriction in a targetgroup
-url: post /targetgroups/{group_id}/restrictions
+category: Target Group Restrictions
 
 #### Base Command
 
@@ -4975,7 +4975,7 @@ url: post /targetgroups/{group_id}/restrictions
 
 ***
 Get one target group restriction
-url: get /targetgroups/{group_id}/restrictions/{restriction_id}
+category: Target Group Restrictions
 
 #### Base Command
 
@@ -5003,7 +5003,7 @@ url: get /targetgroups/{group_id}/restrictions/{restriction_id}
 
 ***
 Edit a restriction from a targetgroup
-url: put /targetgroups/{group_id}/restrictions/{restriction_id}
+category: Target Group Restrictions
 
 #### Base Command
 
@@ -5027,7 +5027,7 @@ There is no context output for this command.
 
 ***
 Delete a restriction from a targetgroup
-url: delete /targetgroups/{group_id}/restrictions/{restriction_id}
+category: Target Group Restrictions
 
 #### Base Command
 
@@ -5048,7 +5048,7 @@ There is no context output for this command.
 
 ***
 Get the password for a given target
-url: get /targetpasswords/checkout/{account_name}
+category: Target Passwords
 
 #### Base Command
 
@@ -5085,7 +5085,7 @@ url: get /targetpasswords/checkout/{account_name}
 
 ***
 Extend the duration time to get the passwords for a given target
-url: get /targetpasswords/extendcheckout/{account_name}
+category: Target Passwords
 
 #### Base Command
 
@@ -5106,7 +5106,7 @@ There is no context output for this command.
 
 ***
 Release the passwords for a given target
-url: get /targetpasswords/checkin/{account_name}
+category: Target Passwords
 
 #### Base Command
 
@@ -5129,7 +5129,7 @@ There is no context output for this command.
 
 ***
 Get the target by type
-url: get /targets/{target_type}
+category: Targets
 
 #### Base Command
 
@@ -5164,7 +5164,7 @@ url: get /targets/{target_type}
 
 ***
 Get the mappings of a user group
-url: get /usergroups/{group_id}/mappings
+category: User Group Mappings
 
 #### Base Command
 
@@ -5195,7 +5195,7 @@ url: get /usergroups/{group_id}/mappings
 
 ***
 Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default
-url: post /usergroups/{group_id}/mappings
+category: User Group Mappings
 
 #### Base Command
 
@@ -5220,7 +5220,7 @@ url: post /usergroups/{group_id}/mappings
 
 ***
 Get the mapping of a user group
-url: get /usergroups/{group_id}/mappings/{mapping_id}
+category: User Group Mappings
 
 #### Base Command
 
@@ -5248,7 +5248,7 @@ url: get /usergroups/{group_id}/mappings/{mapping_id}
 
 ***
 Edit a mapping of a user group
-url: put /usergroups/{group_id}/mappings/{mapping_id}
+category: User Group Mappings
 
 #### Base Command
 
@@ -5272,7 +5272,7 @@ There is no context output for this command.
 
 ***
 Delete the mapping of the given user group
-url: delete /usergroups/{group_id}/mappings/{mapping_id}
+category: User Group Mappings
 
 #### Base Command
 
@@ -5293,7 +5293,7 @@ There is no context output for this command.
 
 ***
 Get user group restrictions
-url: get /usergroups/{group_id}/restrictions
+category: User Group Restrictions
 
 #### Base Command
 
@@ -5324,7 +5324,7 @@ url: get /usergroups/{group_id}/restrictions
 
 ***
 Add a restriction to a usergroup
-url: post /usergroups/{group_id}/restrictions
+category: User Group Restrictions
 
 #### Base Command
 
@@ -5349,7 +5349,7 @@ url: post /usergroups/{group_id}/restrictions
 
 ***
 Get one user group restriction
-url: get /usergroups/{group_id}/restrictions/{restriction_id}
+category: User Group Restrictions
 
 #### Base Command
 
@@ -5377,7 +5377,7 @@ url: get /usergroups/{group_id}/restrictions/{restriction_id}
 
 ***
 Edit a restriction from a usergroup
-url: put /usergroups/{group_id}/restrictions/{restriction_id}
+category: User Group Restrictions
 
 #### Base Command
 
@@ -5401,7 +5401,7 @@ There is no context output for this command.
 
 ***
 Delete a restriction from a usergroup
-url: delete /usergroups/{group_id}/restrictions/{restriction_id}
+category: User Group Restrictions
 
 #### Base Command
 
@@ -5422,7 +5422,7 @@ There is no context output for this command.
 
 ***
 Get the REST API and WALLIX Bastion version numbers
-url: get /version
+category: Version
 
 #### Base Command
 
