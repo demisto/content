@@ -3588,4 +3588,6 @@ tests:
 - Test XDR Playbook quarantine file command
 - Test XDR Playbook general commands
 - Test XDR Playbook retrieve file command
+defaultmapperin: Cortex XDR - IR-mapper
+defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
