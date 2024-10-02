@@ -139,7 +139,7 @@ script:
   - name: wab-get-account-references
     description: 'Get account references
 
-      url: get /accounts/{account_id}/references.'
+      category: Account References.'
     arguments:
     - name: account_id
       description: "The referenced account id or name."
@@ -188,7 +188,7 @@ script:
   - name: wab-get-account-reference
     description: 'Get account reference
 
-      url: get /accounts/{account_id}/references/{reference_id}.'
+      category: Account References.'
     arguments:
     - name: account_id
       description: The referenced account id or name.
@@ -232,7 +232,7 @@ script:
   - name: wab-change-password-or-ssh-key-of-account
     description: 'Change password or SSH key of an account and propagate changes on the target host. If the body is empty, an automatic password change is performed: the password or the SSH key are changed to a newly generated value, according to the password change policy on the domain. Note: the password change must be enabled on the domain, with a plugin that will be used to change the password on the target host
 
-      url: put /accountchangepassword/{account_id}/{credential_type}.'
+      category: Account Change Password.'
     arguments:
     - name: account_id
       description: The account id.
@@ -253,7 +253,7 @@ script:
   - name: wab-get-all-accounts
     description: 'Get all accounts
 
-      url: get /accounts.'
+      category: Accounts.'
     arguments:
     - name: account_type
       description: 'The account type: "global" for only global domain accounts, "device" for only device accounts, "application" for only application accounts. By default accounts of any type are returned. Cannot be used if an account_name and/or device/application is specified.'
@@ -396,7 +396,7 @@ script:
   - name: wab-get-one-account
     description: 'Get one account
 
-      url: get /accounts/{account_id}.'
+      category: Accounts.'
     arguments:
     - name: account_id
       description: 'An account id or complete name with account name, domain name and device/application name, for example: "Administrator@local@win10".'
@@ -534,7 +534,7 @@ script:
   - name: wab-delete-account
     description: 'Delete an account
 
-      url: delete /accounts/{account_id}.'
+      category: Accounts.'
     arguments:
     - name: account_id
       description: 'An account id or complete name with account name, domain name and device/application name, for example: "Administrator@local@win10".'
@@ -542,7 +542,7 @@ script:
   - name: wab-get-application-accounts
     description: 'Get the application accounts
 
-      url: get /applications/{application_id}/localdomains/{domain_id}/accounts.'
+      category: Application Accounts.'
     arguments:
     - name: application_id
       description: The application id or name.
@@ -642,7 +642,7 @@ script:
   - name: wab-add-account-to-local-domain-of-application
     description: 'Add an account to a local domain of an application
 
-      url: post /applications/{application_id}/localdomains/{domain_id}/accounts.'
+      category: Application Accounts.'
     arguments:
     - name: application_id
       description: The application id or name.
@@ -674,7 +674,7 @@ script:
   - name: wab-get-application-account
     description: 'Get the application account
 
-      url: get /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}.'
+      category: Application Accounts.'
     arguments:
     - name: application_id
       description: The application id or name.
@@ -769,7 +769,7 @@ script:
   - name: wab-edit-account-on-local-domain-of-application
     description: 'Edit an account on a local domain of an application
 
-      url: put /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}.'
+      category: Application Accounts.'
     arguments:
     - name: application_id
       description: 'The application id or name.'
@@ -807,7 +807,7 @@ script:
   - name: wab-delete-account-from-local-domain-of-application
     description: 'Delete an account from a local domain of an application
 
-      url: delete /applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}.'
+      category: Application Accounts.'
     arguments:
     - name: application_id
       description: The application id or name.
@@ -821,7 +821,7 @@ script:
   - name: wab-get-local-domains-data-for-application
     description: 'Get local domains data for a given application
 
-      url: get /applications/{application_id}/localdomains.'
+      category: Application Local Domains.'
     arguments:
     - name: application_id
       description: The application id or name.
@@ -870,7 +870,7 @@ script:
   - name: wab-get-local-domain-data-for-application
     description: 'Get local domain data for a given application
 
-      url: get /applications/{application_id}/localdomains/{domain_id}.'
+      category: Application Local Domains.'
     arguments:
     - name: application_id
       description: The application id or name.
@@ -914,7 +914,7 @@ script:
   - name: wab-get-applications
     description: 'Get the applications
 
-      url: get /applications.'
+      category: Applications.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -990,7 +990,7 @@ script:
   - name: wab-get-application
     description: 'Get the application
 
-      url: get /applications/{application_id}.'
+      category: Applications.'
     arguments:
     - name: application_id
       description: An application id or name. If specified, only this application is returned.
@@ -1061,7 +1061,7 @@ script:
   - name: wab-edit-application
     description: 'Edit an application
 
-      url: put /applications/{application_id}.'
+      category: Applications.'
     arguments:
     - name: application_id
       description: The application id or name to edit.
@@ -1079,7 +1079,7 @@ script:
   - name: wab-delete-application
     description: 'Delete an application
 
-      url: delete /applications/{application_id}.'
+      category: Applications.'
     arguments:
     - name: application_id
       description: The application id or name to delete.
@@ -1087,7 +1087,7 @@ script:
   - name: wab-get-approvals
     description: 'Get the approvals
 
-      url: get /approvals.'
+      category: Approvals.'
     arguments:
     - name: approval_id
       description: An approval id. If specified, only this approval is returned.
@@ -1183,7 +1183,7 @@ script:
   - name: wab-get-approvals-for-all-approvers
     description: 'Get the approvals for a given approver
 
-      url: get /approvals/assignments.'
+      category: Approvals Assignments.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -1277,7 +1277,7 @@ script:
   - name: wab-reply-to-approval-request
     description: 'Reply to an approval request (approve/reject it). Note: you can answer to an approval request only if you are in approvers groups of authorization
 
-      url: post /approvals/assignments.'
+      category: Approvals Assignments.'
     arguments:
     - name: approval_assignment_post_id
       description: The approval id.
@@ -1311,7 +1311,7 @@ script:
   - name: wab-get-approvals-for-approver
     description: 'Get the approvals for a given approver
 
-      url: get /approvals/assignments/{user_name}.'
+      category: Approvals Assignments.'
     arguments:
     - name: user_name
       description: The name of a user (approver).
@@ -1408,7 +1408,7 @@ script:
   - name: wab-cancel-accepted-approval
     description: 'Cancel an accepted approval. Note: you can cancel an approval only if you are in approvers groups of authorization and the end date is still not reached
 
-      url: post /approvals/assignments/cancel.'
+      category: Approvals Assignments.'
     arguments:
     - name: approval_assignment_cancel_post_id
       description: 'The approval id.'
@@ -1423,7 +1423,7 @@ script:
   - name: wab-notify-approvers-linked-to-approval-assignment
     description: 'Notify approvers linked to an approval request by sending them an email
 
-      url: post /approvals/assignments/notify.'
+      category: Approvals Assignments.'
     arguments:
     - name: approval_assignment_notify_post_id
       description: 'The approval id.'
@@ -1438,7 +1438,7 @@ script:
   - name: wab-get-approval-request-pending-for-user
     description: 'Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id
 
-      url: get /approvals/requests.'
+      category: Approvals Requests.'
     arguments:
     - name: user
       description: (1st option) The name of a user (by default the user logged on the REST API).
@@ -1536,7 +1536,7 @@ script:
   - name: wab-make-new-approval-request-to-access-target
     description: 'Make a new approval request to access a target. Note: depending on the authorization settings, the fields "ticket" and "comment" may be required
 
-      url: post /approvals/requests.'
+      category: Approvals Requests.'
     arguments:
     - name: approval_request_post_target_name
       description: 'The target name (example: account@domain@device:service).'
@@ -1569,7 +1569,7 @@ script:
   - name: wab-cancel-approval-request
     description: 'Cancel an approval request
 
-      url: post /approvals/requests/cancel.'
+      category: Approvals Requests.'
     arguments:
     - name: approval_request_cancel_post_id
       description: The approval id.
@@ -1581,7 +1581,7 @@ script:
   - name: wab-notify-approvers-linked-to-approval-request
     description: 'Notify approvers linked to an approval request by sending them an email
 
-      url: post /approvals/requests/notify.'
+      category: Approvals Requests.'
     arguments:
     - name: approval_request_notify_post_id
       description: The approval id.
@@ -1596,7 +1596,7 @@ script:
   - name: wab-check-if-approval-is-required-for-target
     description: 'Check if an approval is required for this target (optionally for a given date in future)
 
-      url: get /approvals/requests/target/{target_name}.'
+      category: Approvals Requests Target.'
     arguments:
     - name: target_name
       description: 'The target name (for example ''account@domain@device:service'').'
@@ -1618,7 +1618,7 @@ script:
   - name: wab-get-mappings-of-domain
     description: 'Get the mappings of a domain
 
-      url: get /authdomains/{domain_id}/mappings.'
+      category: Auth Domain Mappings.'
     arguments:
     - name: domain_id
       description: 'A domain id or name to retrieve.'
@@ -1652,7 +1652,7 @@ script:
   - name: wab-add-mapping-in-domain
     description: 'Add a mapping in a domain and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user_group by default
 
-      url: post /authdomains/{domain_id}/mappings.'
+      category: Auth Domain Mappings.'
     arguments:
     - name: domain_id
       description: "A domain id or name."
@@ -1672,7 +1672,7 @@ script:
   - name: wab-edit-mappings-of-domain
     description: 'Edit mappings of a domain
 
-      url: put /authdomains/{domain_id}/mappings.'
+      category: Auth Domain Mappings.'
     arguments:
     - name: domain_id
       description: 'A domain id or name.'
@@ -1688,7 +1688,7 @@ script:
   - name: wab-get-mapping-of-domain
     description: 'Get the mapping of a domain
 
-      url: get /authdomains/{domain_id}/mappings/{mapping_id}.'
+      category: Auth Domain Mappings.'
     arguments:
     - name: domain_id
       description: A domain id or name to retrieve.
@@ -1717,7 +1717,7 @@ script:
   - name: wab-edit-mapping-of-domain
     description: 'Edit a mapping of a domain
 
-      url: put /authdomains/{domain_id}/mappings/{mapping_id}.'
+      category: Auth Domain Mappings.'
     arguments:
     - name: domain_id
       description: A domain id or name.
@@ -1736,7 +1736,7 @@ script:
   - name: wab-delete-mapping-of-domain
     description: 'Delete the mapping of the given domain
 
-      url: delete /authdomains/{domain_id}/mappings/{mapping_id}.'
+      category: Auth Domain Mappings.'
     arguments:
     - name: domain_id
       description: A domain id or name.
@@ -1747,7 +1747,7 @@ script:
   - name: wab-get-auth-domains
     description: 'Get the auth domains
 
-      url: get /authdomains.'
+      category: Auth Domains.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -1808,7 +1808,7 @@ script:
   - name: wab-get-auth-domain
     description: 'Get the auth domain
 
-      url: get /authdomains/{domain_id}.'
+      category: Auth Domains.'
     arguments:
     - name: domain_id
       description: 'An auth domain id or name to retrieve. If specified, only this auth domain information will be retrieved.'
@@ -1864,7 +1864,7 @@ script:
   - name: wab-get-authentications
     description: 'Get the authentications
 
-      url: get /authentications.'
+      category: Authentications.'
     outputs:
     - type: String
       contextPath: WAB.authentication_get.id
@@ -1913,7 +1913,7 @@ script:
   - name: wab-get-authentication
     description: 'Get the authentication
 
-      url: get /authentications/{auth_id}.'
+      category: Authentications.'
     outputs:
     - type: String
       contextPath: WAB.authentication_get.id
@@ -1957,7 +1957,7 @@ script:
   - name: wab-get-authorizations
     description: 'Get the authorizations
 
-      url: get /authorizations.'
+      category: Authorizations.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -2042,7 +2042,7 @@ script:
   - name: wab-add-authorization
     description: 'Add an authorization
 
-      url: post /authorizations.'
+      category: Authorizations.'
     arguments:
     - name: authorization_post_user_group
       description: The user group.
@@ -2102,7 +2102,7 @@ script:
   - name: wab-get-authorization
     description: 'Get the authorization
 
-      url: get /authorizations/{authorization_id}.'
+      category: Authorizations.'
     arguments:
     - name: authorization_id
       description: An authorization id or name. If specified, only this authorization is returned.
@@ -2182,7 +2182,7 @@ script:
   - name: wab-edit-authorization
     description: 'Edit an authorization
 
-      url: put /authorizations/{authorization_id}.'
+      category: Authorizations.'
     arguments:
     - name: authorization_id
       description: The authorization id or name to edit.
@@ -2236,7 +2236,7 @@ script:
   - name: wab-delete-authorization
     description: 'Delete an authorization
 
-      url: delete /authorizations/{authorization_id}.'
+      category: Authorizations.'
     arguments:
     - name: authorization_id
       description: The authorization id or name to delete.
@@ -2244,7 +2244,7 @@ script:
   - name: wab-get-checkout-policies
     description: 'Get the checkout policies
 
-      url: get /checkoutpolicies.'
+      category: Checkout Policies.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -2287,7 +2287,7 @@ script:
   - name: wab-get-checkout-policy
     description: 'Get the checkout policy
 
-      url: get /checkoutpolicies/{checkout_policy_id}.'
+      category: Checkout Policies.'
     arguments:
     - name: checkout_policy_id
       description: A checkout policy id or name. If specified, only this checkout policy is returned.
@@ -2325,7 +2325,7 @@ script:
   - name: wab-get-clusters
     description: 'Get the clusters
 
-      url: get /clusters.'
+      category: Clusters.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -2362,7 +2362,7 @@ script:
   - name: wab-get-cluster
     description: 'Get the cluster
 
-      url: get /clusters/{cluster_id}.'
+      category: Clusters.'
     arguments:
     - name: cluster_id
       description: A cluster id or name. If specified, only this cluster is returned.
@@ -2394,7 +2394,7 @@ script:
   - name: wab-getx509-configuration-infos
     description: 'Get the X509 configuration infos
 
-      url: get /config/x509.'
+      category: Config X509.'
     outputs:
     - type: String
       contextPath: WAB.config_x509_get.ca_certificate
@@ -2414,7 +2414,7 @@ script:
   - name: wab-uploadx509-configuration
     description: 'Upload X509 configuration
 
-      url: post /config/x509.'
+      category: Config X509.'
     arguments:
     - name: config_x509_post_ca_certificate
       description: 'Certificate Authority''s certificate (*.cert file in PEM format).If there''s several certificate to be added, they''ve to be concatenated and supplied to this field, as one string.'
@@ -2431,7 +2431,7 @@ script:
   - name: wab-updatex509-configuration
     description: 'Update X509 Configuration
 
-      url: put /config/x509.'
+      category: Config X509.'
     arguments:
     - name: config_x509_put_ca_certificate
       description: Certificate Authority's certificate (*.cert file in PEM format).If there's several certificate to be added, they've to be concatenated and supplied to this field, as one string.
@@ -2444,11 +2444,11 @@ script:
   - name: wab-resetx509-configuration
     description: 'Reset X509 configuration
 
-      url: delete /config/x509.'
+      category: Config X509.'
   - name: wab-get-current-serial-configuration-number-of-bastion
     description: 'Get current serial configuration number of the Bastion. This number can be used to know if the Bastion configuration was changed
 
-      url: get /confignumber.'
+      category: Configuration Number.'
     outputs:
     - type: Number
       contextPath: WAB.confignumber_get.configuration_number
@@ -2456,7 +2456,7 @@ script:
   - name: wab-get-connection-policies
     description: 'Get the connection policies
 
-      url: get /connectionpolicies.'
+      category: Connection Policies.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -2493,7 +2493,7 @@ script:
   - name: wab-add-connection-policy
     description: 'Add a connection policy
 
-      url: post /connectionpolicies.'
+      category: Connection Policies.'
     arguments:
     - name: connectionpolicy_post_connection_policy_name
       description: The connection policy name.
@@ -2529,7 +2529,7 @@ script:
   - name: wab-get-connection-policy
     description: 'Get the connection policy
 
-      url: get /connectionpolicies/{connection_policy_id}.'
+      category: Connection Policies.'
     arguments:
     - name: connection_policy_id
       description: A connection policy id or name. If specified, only this connection policy is returned.
@@ -2561,7 +2561,7 @@ script:
   - name: wab-edit-connection-policy
     description: 'Edit a connection policy
 
-      url: put /connectionpolicies/{connection_policy_id}.'
+      category: Connection Policies.'
     arguments:
     - name: connection_policy_id
       description: A connection policy id or name to edit.
@@ -2575,7 +2575,7 @@ script:
   - name: wab-delete-connection-policy
     description: 'Delete a connection policy. Note: it is not possible to delete the default Bastion connection policies
 
-      url: delete /connectionpolicies/{connection_policy_id}.'
+      category: Connection Policies.'
     arguments:
     - name: connection_policy_id
       description: The connection policy id or name to delete.
@@ -2583,7 +2583,7 @@ script:
   - name: wab-get-all-accounts-on-device-local-domain
     description: 'Get all accounts on a device local domain
 
-      url: get /devices/{device_id}/localdomains/{domain_id}/accounts.'
+      category: Device Accounts.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -2712,7 +2712,7 @@ script:
   - name: wab-add-account-to-local-domain-on-device
     description: 'Add an account to a local domain on a device
 
-      url: post /devices/{device_id}/localdomains/{domain_id}/accounts.'
+      category: Device Accounts.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -2749,7 +2749,7 @@ script:
   - name: wab-get-one-account-on-device-local-domain
     description: 'Get one account on a device local domain
 
-      url: get /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}.'
+      category: Device Accounts.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -2873,7 +2873,7 @@ script:
   - name: wab-edit-account-on-local-domain-of-device
     description: 'Edit an account on a local domain of a device
 
-      url: put /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}.'
+      category: Device Accounts.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -2916,7 +2916,7 @@ script:
   - name: wab-delete-account-from-local-domain-of-device
     description: 'Delete an account from a local domain of a device
 
-      url: delete /devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}.'
+      category: Device Accounts.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -2930,7 +2930,7 @@ script:
   - name: wab-get-certificates-on-device
     description: 'Get the certificates on a device
 
-      url: get /devices/{device_id}/certificates.'
+      category: Device Certificates.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -2970,7 +2970,7 @@ script:
   - name: wab-get-certificate-on-device
     description: 'Get the certificate on a device
 
-      url: get /devices/{device_id}/certificates/{cert_type}/{address}/{port}.'
+      category: Device Certificates.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -3019,7 +3019,7 @@ script:
   - name: wab-revoke-certificate-of-device
     description: 'Revoke a certificate of a device
 
-      url: delete /devices/{device_id}/certificates/{cert_type}/{address}/{port}.'
+      category: Device Certificates.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -3036,7 +3036,7 @@ script:
   - name: wab-get-local-domains-of-device
     description: 'Get the local domains of a device
 
-      url: get /devices/{device_id}/localdomains.'
+      category: Device Local Domains.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -3085,7 +3085,7 @@ script:
   - name: wab-get-local-domain-of-device
     description: 'Get the local domain of a device
 
-      url: get /devices/{device_id}/localdomains/{domain_id}.'
+      category: Device Local Domains.'
     arguments:
     - name: device_id
       description: "The device id or name."
@@ -3129,7 +3129,7 @@ script:
   - name: wab-get-services-of-device
     description: 'Get the services of a device
 
-      url: get /devices/{device_id}/services.'
+      category: Device Services.'
     arguments:
     - name: device_id
       description: 'The device id or name.'
@@ -3169,7 +3169,7 @@ script:
   - name: wab-add-service-in-device
     description: 'Add a service in a device
 
-      url: post /devices/{device_id}/services.'
+      category: Device Services.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -3232,7 +3232,7 @@ script:
   - name: wab-get-service-of-device
     description: 'Get the service of a device
 
-      url: get /devices/{device_id}/services/{service_id}.'
+      category: Device Services.'
     outputs:
     - type: String
       contextPath: WAB.service_get.id
@@ -3267,7 +3267,7 @@ script:
   - name: wab-edit-service-of-device
     description: 'Edit a service of a device
 
-      url: put /devices/{device_id}/services/{service_id}.'
+      category: Device Services.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -3287,7 +3287,7 @@ script:
   - name: wab-delete-service-from-device
     description: 'Delete a service from a device
 
-      url: delete /devices/{device_id}/services/{service_id}.'
+      category: Device Services.'
     arguments:
     - name: device_id
       description: The device id or name.
@@ -3298,7 +3298,7 @@ script:
   - name: wab-get-devices
     description: 'Get the devices
 
-      url: get /devices.'
+      category: Devices.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -3431,7 +3431,7 @@ script:
   - name: wab-add-device
     description: 'Add a device
 
-      url: post /devices.'
+      category: Devices.'
     arguments:
     - name: device_post_device_name
       description: The device name. \ /:*?"<>|@ and space are forbidden.
@@ -3450,7 +3450,7 @@ script:
   - name: wab-get-device
     description: 'Get the device
 
-      url: get /devices/{device_id}.'
+      category: Devices.'
     arguments:
     - name: device_id
       description: A device id or name. If specified, only this device is returned.
@@ -3578,7 +3578,7 @@ script:
   - name: wab-edit-device
     description: 'Edit a device
 
-      url: put /devices/{device_id}.'
+      category: Devices.'
     arguments:
     - name: device_id
       description: The device id or name to edit.
@@ -3604,7 +3604,7 @@ script:
   - name: wab-delete-device
     description: 'Delete a device
 
-      url: delete /devices/{device_id}.'
+      category: Devices.'
     arguments:
     - name: device_id
       description: 'The device id or name to delete.'
@@ -3612,7 +3612,7 @@ script:
   - name: wab-get-accounts-of-global-domain
     description: 'Get the accounts of a global domain
 
-      url: get /domains/{domain_id}/accounts.'
+      category: Domain Accounts.'
     arguments:
     - name: domain_id
       description: 'The global domain id or name.'
@@ -3734,7 +3734,7 @@ script:
   - name: wab-add-account-in-global-domain
     description: 'Add an account in a global domain
 
-      url: post /domains/{domain_id}/accounts.'
+      category: Domain Accounts.'
     arguments:
     - name: domain_id
       description: "The global domain id or name."
@@ -3768,7 +3768,7 @@ script:
   - name: wab-get-account-of-global-domain
     description: 'Get the account of a global domain
 
-      url: get /domains/{domain_id}/accounts/{account_id}.'
+      category: Domain Accounts.'
     arguments:
     - name: domain_id
       description: The global domain id or name.
@@ -3887,7 +3887,7 @@ script:
   - name: wab-edit-account-in-global-domain
     description: 'Edit an account in a global domain
 
-      url: put /domains/{domain_id}/accounts/{account_id}.'
+      category: Domain Accounts.'
     arguments:
     - name: domain_id
       description: The global domain id or name.
@@ -3927,7 +3927,7 @@ script:
   - name: wab-delete-account-from-global-domain
     description: 'Delete an account from a global domain
 
-      url: delete /domains/{domain_id}/accounts/{account_id}.'
+      category: Domain Accounts.'
     arguments:
     - name: domain_id
       description: The global domain id or name.
@@ -3938,7 +3938,7 @@ script:
   - name: wab-delete-resource-from-global-domain-account
     description: 'delete a resource from the global domain account
 
-      url: delete /domains/{domain_id}/accounts/{account_id}/resource/{resource_name}.'
+      category: Domain Accounts.'
     arguments:
     - name: domain_id
       description: "The global domain id or name."
@@ -3952,7 +3952,7 @@ script:
   - name: wab-get-global-domains
     description: 'Get the global domains
 
-      url: get /domains.'
+      category: Domains.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -4016,7 +4016,7 @@ script:
   - name: wab-get-global-domain
     description: 'Get the global domain
 
-      url: get /domains/{domain_id}.'
+      category: Domains.'
     arguments:
     - name: domain_id
       description: A global domain id or name. If specified, only this domain is returned.
@@ -4075,7 +4075,7 @@ script:
   - name: wab-get-external-authentication-group-mappings
     description: 'Get the external authentication group mappings
 
-      url: get /authmappings.'
+      category: Ldap Mappings.'
     arguments:
     - name: group_by
       description: Group the result-set by one property. Can take one of the values 'user_group' or 'domain'.
@@ -4102,7 +4102,7 @@ script:
   - name: wab-get-ldap-users-of-domain
     description: 'Get the LDAP users of a given domain
 
-      url: get /ldapusers/{domain}.'
+      category: Ldap Users.'
     arguments:
     - name: domain
       description: A LDAP domain name. All users in this domain are returned.
@@ -4154,7 +4154,7 @@ script:
   - name: wab-get-ldap-user-of-domain
     description: 'Get the LDAP user of a given domain
 
-      url: get /ldapusers/{domain}/{user_name}.'
+      category: Ldap Users.'
     arguments:
     - name: domain
       description: A LDAP domain name. All users in this domain are returned.
@@ -4203,7 +4203,7 @@ script:
   - name: wab-get-information-about-wallix-bastion-license
     description: 'Get information about the WALLIX Bastion license
 
-      url: get /licenseinfo.'
+      category: License Info.'
     outputs:
     - type: Boolean
       contextPath: WAB.licenseinfo_get.evaluation
@@ -4310,7 +4310,7 @@ script:
   - name: wab-post-logsiem
     description: 'Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured)
 
-      url: post /logsiem.'
+      category: Log Siem.'
     arguments:
     - name: logsiem_post_application
       description: 'The application name.'
@@ -4325,7 +4325,7 @@ script:
   - name: wab-get-notifications
     description: 'Get the notifications
 
-      url: get /notifications.'
+      category: Notifications.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -4366,7 +4366,7 @@ script:
   - name: wab-add-notification
     description: 'Add a notification
 
-      url: post /notifications.'
+      category: Notifications.'
     arguments:
     - name: notification_post_notification_name
       description: "The notification name."
@@ -4425,7 +4425,7 @@ script:
   - name: wab-get-notification
     description: 'Get the notification
 
-      url: get /notifications/{notification_id}.'
+      category: Notifications.'
     arguments:
     - name: notification_id
       description: A notification id or name. If specified, only this notification is returned.
@@ -4461,7 +4461,7 @@ script:
   - name: wab-edit-notification
     description: 'Edit a notification
 
-      url: put /notifications/{notification_id}.'
+      category: Notifications.'
     arguments:
     - name: notification_id
       description: The notification id or name to edit.
@@ -4516,7 +4516,7 @@ script:
   - name: wab-delete-notification
     description: 'Delete a notification
 
-      url: delete /notifications/{notification_id}.'
+      category: Notifications.'
     arguments:
     - name: notification_id
       description: The notification id or name to delete.
@@ -4524,7 +4524,7 @@ script:
   - name: wab-get-object-to-onboard
     description: 'Get object to onboard, by type (either devices with their linked accounts or global accounts alone)
 
-      url: get /onboarding_objects.'
+      category: Onboarding Objects.'
     arguments:
     - name: object_type
       description: 'The type of object, one of : ''devices'', ''global_accounts''.'
@@ -4594,7 +4594,7 @@ script:
   - name: wab-get-password-change-policies
     description: 'Get the password change policies
 
-      url: get /passwordchangepolicies.'
+      category: Password Change Policies.'
     arguments:
     - name: q
       description: 'Searches for a resource matching parameters.'
@@ -4647,7 +4647,7 @@ script:
   - name: wab-add-password-change-policy
     description: 'Add a password change policy. Note: at least password or SSH options must be given in the policy (and both can be used at same time)
 
-      url: post /passwordchangepolicies.'
+      category: Password Change Policies.'
     arguments:
     - name: passwordchangepolicy_post_password_change_policy_name
       description: 'The password change policy name.'
@@ -4679,7 +4679,7 @@ script:
   - name: wab-get-password-change-policy
     description: 'Get the password change policy
 
-      url: get /passwordchangepolicies/{policy_id}.'
+      category: Password Change Policies.'
     arguments:
     - name: policy_id
       description: A password change policy id or name. If specified, only this password change policy is returned.
@@ -4727,7 +4727,7 @@ script:
   - name: wab-edit-password-change-policy
     description: 'Edit a password change policy
 
-      url: put /passwordchangepolicies/{policy_id}.'
+      category: Password Change Policies.'
     arguments:
     - name: policy_id
       description: The password change policy id or name to edit.
@@ -4757,7 +4757,7 @@ script:
   - name: wab-delete-password-change-policy
     description: 'Delete a password change policy
 
-      url: delete /passwordchangepolicies/{policy_id}.'
+      category: Password Change Policies.'
     arguments:
     - name: policy_id
       description: The password change policy id or name to delete.
@@ -4765,7 +4765,7 @@ script:
   - name: wab-get-passwordrights
     description: 'Get current user''s or the user ''user_name'' password rights on accounts (for checkout/checkin)
 
-      url: get /passwordrights.'
+      category: Password Rights.'
     arguments:
     - name: count
       description: The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned.
@@ -4816,7 +4816,7 @@ script:
   - name: wab-get-passwordrights-user-name
     description: 'Get current user''s or the user ''user_name'' password rights on accounts (for checkout/checkin)
 
-      url: get /passwordrights/{user_name}.'
+      category: Password Rights.'
     arguments:
     - name: user_name
       description: If specified, the user_name password rights is returned.
@@ -4865,7 +4865,7 @@ script:
   - name: wab-get-profiles
     description: 'Get the profiles
 
-      url: get /profiles.'
+      category: Profiles.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -4980,7 +4980,7 @@ script:
   - name: wab-get-profile
     description: 'Get the profile
 
-      url: get /profiles/{profile_id}.'
+      category: Profiles.'
     arguments:
     - name: profile_id
       description: A profile id or name. If specified, only this profile is returned.
@@ -5090,7 +5090,7 @@ script:
   - name: wab-get-scanjobs
     description: 'Get the scanjobs
 
-      url: get /scanjobs.'
+      category: Scan Jobs.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -5124,7 +5124,7 @@ script:
   - name: wab-start-scan-job-manually
     description: 'Start a scan job manually
 
-      url: post /scanjobs.'
+      category: Scan Jobs.'
     arguments:
     - name: scanjob_post_scan_id
       description: Scan definition id.
@@ -5136,7 +5136,7 @@ script:
   - name: wab-get-scanjob
     description: 'Get the scanjob
 
-      url: get /scanjobs/{scanjob_id}.'
+      category: Scan Jobs.'
     arguments:
     - name: scanjob_id
       description: A scan job id or name. If specified, only this scan job is returned.
@@ -5165,7 +5165,7 @@ script:
   - name: wab-cancel-scan-job
     description: 'Cancel a scan job
 
-      url: put /scanjobs/{scanjob_id}.'
+      category: Scan Jobs.'
     arguments:
     - name: scanjob_id
       description: 'The scan id or name to edit.'
@@ -5173,7 +5173,7 @@ script:
   - name: wab-get-scans
     description: 'Get the scans
 
-      url: get /scans.'
+      category: Scans.'
     arguments:
     - name: q
       description: 'Searches for a resource matching parameters.'
@@ -5225,7 +5225,7 @@ script:
   - name: wab-get-scan
     description: 'Get the scan
 
-      url: get /scans/{scan_id}.'
+      category: Scans.'
     arguments:
     - name: scan_id
       description: 'A scan id or name. If specified, only this scan is returned.'
@@ -5272,7 +5272,7 @@ script:
   - name: wab-edit-scan
     description: 'Edit a scan
 
-      url: put /scans/{scan_id}.'
+      category: Scans.'
     arguments:
     - name: scan_id
       description: 'The scan id or name to edit.'
@@ -5293,7 +5293,7 @@ script:
   - name: wab-delete-scan
     description: 'Delete a scan
 
-      url: delete /scans/{scan_id}.'
+      category: Scans.'
     arguments:
     - name: scan_id
       description: 'The scan id or name to delete.'
@@ -5301,7 +5301,7 @@ script:
   - name: wab-get-sessionrights
     description: 'Get current user''s or the user ''user_name'' session rights (connections via proxies)
 
-      url: get /sessionrights.'
+      category: Session Rights.'
     arguments:
     - name: count
       description: The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned.
@@ -5369,7 +5369,7 @@ script:
   - name: wab-get-sessionrights-user-name
     description: 'Get current user''s or the user ''user_name'' session rights (connections via proxies)
 
-      url: get /sessionrights/{user_name}.'
+      category: Session Rights.'
     arguments:
     - name: user_name
       description: If specified, the user_name session rights is returned.
@@ -5435,7 +5435,7 @@ script:
   - name: wab-get-sessions
     description: 'Get the sessions
 
-      url: get /sessions.'
+      category: Sessions.'
     arguments:
     - name: session_id
       description: A session id. If specified, only this session is returned.
@@ -5646,7 +5646,7 @@ script:
   - name: wab-edit-session
     description: 'Edit a session
 
-      url: put /sessions.'
+      category: Sessions.'
     arguments:
     - name: session_id
       description: The session id to edit.
@@ -5659,7 +5659,7 @@ script:
   - name: wab-get-session-metadata
     description: 'Get the metadata of one or multiple sessions
 
-      url: get /sessions/metadata.'
+      category: Sessions Metadata.'
     arguments:
     - name: session_ids
       description: The session id, multiple IDs can be separated by commas.
@@ -5676,7 +5676,7 @@ script:
   - name: wab-get-session-sharing-requests
     description: 'Get session sharing requests
 
-      url: get /sessions/requests.'
+      category: Sessions Requests.'
     arguments:
     - name: request_id
       description: A request id. If specified, only this request is returned.
@@ -5713,7 +5713,7 @@ script:
   - name: wab-create-session-request
     description: 'Create a session request
 
-      url: post /sessions/requests.'
+      category: Sessions Requests.'
     arguments:
     - name: session_request_post_session_id
       description: The session id.
@@ -5728,7 +5728,7 @@ script:
   - name: wab-delete-pending-or-live-session-request
     description: 'Delete a pending or a live session request
 
-      url: delete /sessions/requests/{request_id}.'
+      category: Sessions Requests.'
     arguments:
     - name: request_id
       description: The session sharing request to delete.
@@ -5736,7 +5736,7 @@ script:
   - name: wab-get-latest-snapshot-of-running-session
     description: 'Get the latest snapshot of a running session
 
-      url: get /sessions/snapshots/{session_id}.'
+      category: Sessions Snapshots.'
     arguments:
     - name: session_id
       description: The session id.
@@ -5744,7 +5744,7 @@ script:
   - name: wab-get-status-of-trace-generation
     description: 'Get the status of a trace generation
 
-      url: get /sessions/traces/{session_id}.'
+      category: Sessions Traces.'
     arguments:
     - name: session_id
       description: The session id.
@@ -5780,7 +5780,7 @@ script:
   - name: wab-generate-trace-for-session
     description: 'Generate a trace for a session
 
-      url: post /sessions/traces.'
+      category: Sessions Traces.'
     arguments:
     - name: session_trace_post_session_id
       description: The session id.
@@ -5796,7 +5796,7 @@ script:
   - name: wab-get-wallix-bastion-usage-statistics
     description: 'Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied it will return the statistics for the last full calendar month
 
-      url: get /statistics.'
+      category: Statistics.'
     arguments:
     - name: from_date
       description: 'Get statistics from this date at midnight (format: "yyyy-mm-dd").'
@@ -5848,7 +5848,7 @@ script:
   - name: wab-get-target-groups
     description: 'Get the target groups
 
-      url: get /targetgroups.'
+      category: Target Groups.'
     arguments:
     - name: device
       description: Return only the targetgroups this device belongs to.
@@ -5975,7 +5975,7 @@ script:
   - name: wab-add-target-group
     description: 'Add a target group
 
-      url: post /targetgroups.'
+      category: Target Groups.'
     arguments:
     - name: targetgroups_post_group_name
       description: The target group name.
@@ -5989,7 +5989,7 @@ script:
   - name: wab-get-target-group
     description: 'Get the target group
 
-      url: get /targetgroups/{group_id}.'
+      category: Target Groups.'
     arguments:
     - name: group_id
       description: A target group id or name. If specified, only this target group is returned.
@@ -6111,7 +6111,7 @@ script:
   - name: wab-edit-target-group
     description: 'Edit a target group
 
-      url: put /targetgroups/{group_id}.'
+      category: Target Groups.'
     arguments:
     - name: group_id
       description: The group id or name to edit.
@@ -6125,7 +6125,7 @@ script:
   - name: wab-delete-target-group
     description: 'Delete a target group
 
-      url: delete /targetgroups/{group_id}.'
+      category: Target Groups.'
     arguments:
     - name: group_id
       description: The group id or name to delete.
@@ -6133,7 +6133,7 @@ script:
   - name: wab-delete-target-from-group
     description: 'Delete a target from a group
 
-      url: delete /targetgroups/{group_id}/{target_type}/{target_id}.'
+      category: Target Groups.'
     arguments:
     - name: group_id
       description: The group id or name to delete.
@@ -6147,7 +6147,7 @@ script:
   - name: wab-get-timeframes
     description: 'Get the timeframes
 
-      url: get /timeframes.'
+      category: Timeframes.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -6193,7 +6193,7 @@ script:
   - name: wab-add-timeframe
     description: 'Add a timeframe
 
-      url: post /timeframes.'
+      category: Timeframes.'
     arguments:
     - name: timeframe_post_timeframe_name
       description: The timeframe name. No space is permitted at first or end.
@@ -6209,7 +6209,7 @@ script:
   - name: wab-get-timeframe
     description: 'Get the timeframe
 
-      url: get /timeframes/{timeframe_id}.'
+      category: Timeframes.'
     arguments:
     - name: timeframe_id
       description: A timeframe id or name. If specified, only this timeframe is returned.
@@ -6250,7 +6250,7 @@ script:
   - name: wab-edit-timeframe
     description: 'Edit a timeframe
 
-      url: put /timeframes/{timeframe_id}.'
+      category: Timeframes.'
     arguments:
     - name: timeframe_id
       description: The timeframe id or name to edit.
@@ -6266,7 +6266,7 @@ script:
   - name: wab-delete-timeframe
     description: 'Delete a timeframe
 
-      url: delete /timeframes/{timeframe_id}.'
+      category: Timeframes.'
     arguments:
     - name: timeframe_id
       description: The timeframe id or name to delete.
@@ -6274,7 +6274,7 @@ script:
   - name: wab-get-user-groups
     description: 'Get the user groups
 
-      url: get /usergroups.'
+      category: User Groups.'
     arguments:
     - name: q
       description: Searches for a resource matching parameters.
@@ -6329,7 +6329,7 @@ script:
   - name: wab-get-user-group
     description: 'Get the user group
 
-      url: get /usergroups/{group_id}.'
+      category: User Groups.'
     arguments:
     - name: group_id
       description: A user group id or name. If specified, only this user group is returned.
@@ -6379,7 +6379,7 @@ script:
   - name: wab-get-users
     description: 'Get the users
 
-      url: get /users.'
+      category: Users.'
     arguments:
     - name: password_hash
       description: Export password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.
@@ -6451,7 +6451,7 @@ script:
   - name: wab-add-user
     description: 'Add a user
 
-      url: post /users.'
+      category: Users.'
     arguments:
     - name: password_hash
       description: Set password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.
@@ -6507,7 +6507,7 @@ script:
   - name: wab-get-user
     description: 'Get the user
 
-      url: get /users/{name}.'
+      category: Users.'
     arguments:
     - name: name
       description: A user name. If specified, only this user is returned.
@@ -6574,7 +6574,7 @@ script:
   - name: wab-edit-user
     description: 'Edit a user
 
-      url: put /users/{name}.'
+      category: Users.'
     arguments:
     - name: name
       description: The user name to edit.
@@ -6627,7 +6627,7 @@ script:
   - name: wab-get-target-group-restrictions
     description: 'Get target group restrictions
 
-      url: get /targetgroups/{group_id}/restrictions.'
+      category: Target Group Restrictions.'
     arguments:
     - name: group_id
       description: A target group id or name.
@@ -6661,7 +6661,7 @@ script:
   - name: wab-add-restriction-to-targetgroup
     description: 'Add a restriction in a targetgroup
 
-      url: post /targetgroups/{group_id}/restrictions.'
+      category: Target Group Restrictions.'
     arguments:
     - name: group_id
       description: A target group id or name.
@@ -6696,7 +6696,7 @@ script:
   - name: wab-get-target-group-restriction
     description: 'Get one target group restriction
 
-      url: get /targetgroups/{group_id}/restrictions/{restriction_id}.'
+      category: Target Group Restrictions.'
     arguments:
     - name: group_id
       description: A target group id or name.
@@ -6725,7 +6725,7 @@ script:
   - name: wab-edit-restriction-from-targetgroup
     description: 'Edit a restriction from a targetgroup
 
-      url: put /targetgroups/{group_id}/restrictions/{restriction_id}.'
+      category: Target Group Restrictions.'
     arguments:
     - name: group_id
       description: A target group id or name.
@@ -6756,7 +6756,7 @@ script:
   - name: wab-delete-restriction-from-targetgroup
     description: 'Delete a restriction from a targetgroup
 
-      url: delete /targetgroups/{group_id}/restrictions/{restriction_id}.'
+      category: Target Group Restrictions.'
     arguments:
     - name: group_id
       description: A target group id or name.
@@ -6767,7 +6767,7 @@ script:
   - name: wab-get-password-for-target
     description: 'Get the password for a given target
 
-      url: get /targetpasswords/checkout/{account_name}.'
+      category: Target Passwords.'
     arguments:
     - name: account_name
       description: 'A target name: ''account@domain@device'' for an account on a device, ''account@domain@application'' for an account on an application or ''account@domain'' for an account on a global domain.'
@@ -6820,7 +6820,7 @@ script:
   - name: wab-extend-duration-time-to-get-passwords-for-target
     description: 'Extend the duration time to get the passwords for a given target
 
-      url: get /targetpasswords/extendcheckout/{account_name}.'
+      category: Target Passwords.'
     arguments:
     - name: account_name
       description: 'A target name: ''account@domain@device'' for an account on a device, ''account@domain@application'' for an account on an application or ''account@domain'' for an account on a global domain.'
@@ -6830,7 +6830,7 @@ script:
   - name: wab-release-passwords-for-target
     description: 'Release the passwords for a given target
 
-      url: get /targetpasswords/checkin/{account_name}.'
+      category: Target Passwords.'
     arguments:
     - name: account_name
       description: 'A target name: ''account@domain@device'' for an account on a device, ''account@domain@application'' for an account on an application or ''account@domain'' for an account on a global domain.'
@@ -6844,7 +6844,7 @@ script:
   - name: wab-get-target-by-type
     description: 'Get the target by type
 
-      url: get /targets/{target_type}.'
+      category: Targets.'
     arguments:
     - name: target_type
       description: 'The type of target, one of: ''session_accounts'', ''session_account_mappings'', ''session_interactive_logins'', ''session_scenario_accounts'', ''password_retrieval_accounts''.'
@@ -6888,7 +6888,7 @@ script:
   - name: wab-get-mappings-of-user-group
     description: 'Get the mappings of a user group
 
-      url: get /usergroups/{group_id}/mappings.'
+      category: User Group Mappings.'
     arguments:
     - name: group_id
       description: A user group id or name to retrieve.
@@ -6922,7 +6922,7 @@ script:
   - name: wab-add-mapping-in-group
     description: 'Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default
 
-      url: post /usergroups/{group_id}/mappings.'
+      category: User Group Mappings.'
     arguments:
     - name: group_id
       description: A group id or name.
@@ -6943,7 +6943,7 @@ script:
   - name: wab-get-mapping-of-user-group
     description: 'Get the mapping of a user group
 
-      url: get /usergroups/{group_id}/mappings/{mapping_id}.'
+      category: User Group Mappings.'
     arguments:
     - name: group_id
       description: A user group id or name to retrieve.
@@ -6972,7 +6972,7 @@ script:
   - name: wab-edit-mapping-of-user-group
     description: 'Edit a mapping of a user group
 
-      url: put /usergroups/{group_id}/mappings/{mapping_id}.'
+      category: User Group Mappings.'
     arguments:
     - name: group_id
       description: A group id or name.
@@ -6992,7 +6992,7 @@ script:
   - name: wab-delete-mapping-of-user-group
     description: 'Delete the mapping of the given user group
 
-      url: delete /usergroups/{group_id}/mappings/{mapping_id}.'
+      category: User Group Mappings.'
     arguments:
     - name: group_id
       description: A group id or name.
@@ -7003,7 +7003,7 @@ script:
   - name: wab-get-user-group-restrictions
     description: 'Get user group restrictions
 
-      url: get /usergroups/{group_id}/restrictions.'
+      category: User Group Restrictions.'
     arguments:
     - name: group_id
       description: A user group id or name.
@@ -7037,7 +7037,7 @@ script:
   - name: wab-add-restriction-to-usergroup
     description: 'Add a restriction to a usergroup
 
-      url: post /usergroups/{group_id}/restrictions.'
+      category: User Group Restrictions.'
     arguments:
     - name: group_id
       description: A user group id or name.
@@ -7072,7 +7072,7 @@ script:
   - name: wab-get-user-group-restriction
     description: 'Get one user group restriction
 
-      url: get /usergroups/{group_id}/restrictions/{restriction_id}.'
+      category: User Group Restrictions.'
     arguments:
     - name: group_id
       description: A user group id or name.
@@ -7101,7 +7101,7 @@ script:
   - name: wab-edit-restriction-from-usergroup
     description: 'Edit a restriction from a usergroup
 
-      url: put /usergroups/{group_id}/restrictions/{restriction_id}.'
+      category: User Group Restrictions.'
     arguments:
     - name: group_id
       description: A user group id or name.
@@ -7132,7 +7132,7 @@ script:
   - name: wab-delete-restriction-from-usergroup
     description: 'Delete a restriction from a usergroup
 
-      url: delete /usergroups/{group_id}/restrictions/{restriction_id}.'
+      category: User Group Restrictions.'
     arguments:
     - name: group_id
       description: A user group id or name.
@@ -7143,7 +7143,7 @@ script:
   - name: wab-get-version
     description: 'Get the REST API and WALLIX Bastion version numbers
 
-      url: get /version.'
+      category: Version.'
     outputs:
     - type: String
       contextPath: WAB.version_get.version
