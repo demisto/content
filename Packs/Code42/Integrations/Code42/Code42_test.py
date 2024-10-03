@@ -39,12 +39,6 @@ from Code42 import (
 )
 from requests import Response, HTTPError
 import time
-from incydr import __version__
-
-
-def test_version():
-    assert __version__ == "2.1.0"
-
 
 MOCK_URL = "https://123-fake-api.com"
 
