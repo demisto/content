@@ -1,0 +1,131 @@
+id: Hoxhunt - Enrich Incident
+version: -1
+fromversion: 6.10.0
+name: Hoxhunt - Enrich Incident
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fdbe2557-af8d-4311-83d0-9ae3ff95e910
+    type: start
+    task:
+      id: fdbe2557-af8d-4311-83d0-9ae3ff95e910
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f94136c5-20d1-4d61-83d0-73a6a3f54729
+    type: regular
+    task:
+      id: f94136c5-20d1-4d61-83d0-73a6a3f54729
+      version: -1
+      name: Take screenshot of the first threat in the incident
+      description: Converts the contents of a URL to an image file or a PDF file.
+      script: "|||rasterize"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      file_name:
+        simple: first_threat
+      full_screen:
+        simple: "True"
+      type:
+        simple: png
+      url:
+        simple: ${incident.hoxftbodylink}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: efb4d2e0-56b6-46c9-8a5d-c9f3706508cb
+    type: title
+    task:
+      id: efb4d2e0-56b6-46c9-8a5d-c9f3706508cb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 465,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+description: Enriches the incidents pulled from Hoxhunt with additional information.

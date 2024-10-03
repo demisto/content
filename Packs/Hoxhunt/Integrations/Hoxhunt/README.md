@@ -9,7 +9,7 @@ This integration was integrated and tested with version August 2024 of Hoxhunt.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://api.hoxhunt.com/graphql-external) |  | True |
+    | Server URL (e.g. <https://api.hoxhunt.com/graphql-external>) |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | API Key | Input your api key from Hoxhunt | False |
@@ -224,6 +224,7 @@ Updates Incident state.
 
 You can enable incident mirroring between Cortex XSOAR incidents and Hoxhunt corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.

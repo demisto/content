@@ -1,16 +1,30 @@
 commonfields:
-  id: Hoxhunt
+  id: Hoxhunt v2
   version: -1
-name: Hoxhunt
-display: Hoxhunt (Deprecated)
+name: Hoxhunt v2
+display: Hoxhunt v2
 category: Email
-description: "Deprecated. Use Hoxhunt V2 instead."
+description: "Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents."
 configuration:
-- display: Server URL (e.g. https://api.hoxhunt.com/graphql-external)
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  defaultvalue: Incoming And Outgoing
+  type: 15
+  required: false
+  additionalinfo: "Choose the direction to mirror the incident: Incoming (from Hoxhunt to Cortex XSOAR), Outgoing (from Cortex XSOAR to Hoxhunt), or Incoming and Outgoing (from/to Cortex XSOAR and Hoxhunt)."
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+- display: Server URL
   name: url
-  defaultvalue: https://api.hoxhunt.com/graphql-external
   type: 0
   required: true
+  additionalinfo: e.g. https://api.hoxhunt.com/graphql-external
+  defaultvalue: https://api.hoxhunt.com/graphql-external
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -30,81 +44,91 @@ configuration:
   required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: '1'
   type: 19
   required: false
+  defaultvalue: "1"
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
+- display: First fetch timestamp
+  name: first_fetch
   type: 0
   required: false
-- display: Query Filter
-  name: queryfilter
+  additionalinfo: (<number> <time unit>, e.g., 12 hours, 7 days). Defaults to 7 days.
+  defaultvalue: "7 days"
+- display: Fetch limit
+  defaultvalue: "50"
+  name: max_fetch
   type: 0
   required: false
-  additionalinfo: Input a query filter for incidents to be fetched
+  additionalinfo: Maxium number of incidents per fetch. Cap is 100.
+- display: Only fetch escalated incidents
+  defaultvalue: "false"
+  name: only_escalated_incidents
+  type: 8
+  required: false
+  additionalinfo: "If enabled, only escalated incidents will be fetched. Set up escalation rules in Hoxhunt Response -> Incident Rules"
+- display: Only fetch open incidents
+  defaultvalue: "true"
+  name: only_open_incidents
+  type: 8
+  required: false
+  additionalinfo: "If enabled, only open incidents will be fetched."
 script:
-  script: ''
+  script: ""
   type: python
   commands:
-  - name: hoxhunt-get-current-user
+  - name: hoxhunt-current-user-get
     arguments: []
     outputs:
     - contextPath: HoxHunt.CurrentUser
       description: Current User information from Hoxhunt.
       type: string
     description: Gets the current user information from Hoxhunt.
-  - name: hoxhunt-get-incidents
+  - name: hoxhunt-incident-threats-get
     arguments:
-    - name: filter
-      description: Input here the filter or other arguments.
-      type: unknown
-    outputs:
-    - contextPath: Hoxhunt.Incidents
-      description: Incidents from Hoxhunt.
+    - name: incident_id
+      required: true
+      description: The ID of the Hoxhunt incident the threats will be from.
+    - name: query_options
+      description: >
+        Optional string for query options. Inserted directly into the query with following validation in place: first (max 100, default 50), sort (default createdAt_DESC), and filter (default {}).  Example: `first: 10, filter: {state_eq: OPEN}, sort: createdAt_DESC`  Refer to the Hoxhunt API documentation for more information.
       type: string
-    description: Gets incidents from Hoxhunt.
-  - name: hoxhunt-get-threats
-    arguments:
-    - name: filter
-      description: Input here the filter or other arguments.
     outputs:
     - contextPath: Hoxhunt.Threats
       description: Threats from Hoxhunt.
       type: string
     description: Gets threats from Hoxhunt.
-  - name: hoxhunt-add-incident-note
+  - name: hoxhunt-incident-note-add
     arguments:
     - name: incident_id
       required: true
-      description: The ID of the incident to which the note will be added.
+      description: The ID of the Hoxhunt incident to which the note will be added.
     - name: note
       required: true
-      description: The content of the note to add to the incident.
+      description: The text content of the note to add to the Hoxhunt incident.
     outputs:
     - contextPath: Hoxhunt.addIncidentNode
       description: Add Incident note.
       type: string
     description: Add Incident note.
-  - name: hoxhunt-remove-incident-threats
+  - name: hoxhunt-incident-threats-remove
     arguments:
     - name: incident_id
       required: true
-      description: The ID of the incident from which threats will be removed.
+      description: The ID of the Hoxhunt incident from which threats will be removed.
     outputs:
     - contextPath: Hoxhunt.removeIncidentThreats
       description: Returns number of removed threats.
       type: number
     description: Remove all threats that belong to an incident.
     execution: true
-  - name: hoxhunt-send-incident-soc-feedback
+  - name: hoxhunt-incident-soc-feedback-send
     arguments:
     - name: incident_id
       required: true
-      description: The ID of the incident for which SOC feedback will be sent.
+      description: The ID of the Hoxhunt incident for which SOC feedback will be sent.
       type: unknown
     - name: custom_message
       required: true
@@ -112,37 +136,37 @@ script:
       type: unknown
     - name: threat_feedback_reported_at_limit
       required: true
-      description: Datetime limit.
+      description: Datetime limit as a iso string (e.g. "2024-10-30T08:37:42.359Z").
       type: unknown
     outputs:
     - contextPath: Hoxhunt.sendIncidentSocFeedback
       description: The reporter will be informed the incident has been resolved and that no further actions are required from them.
       type: string
     description: Send feedback to reporters of incident about whether the reported email was safe, spam or malicious.
-  - name: hoxhunt-set-incident-sensitive
+  - name: hoxhunt-incident-set-sensitive
     arguments:
     - name: incident_id
       required: true
-      description: The ID of the incident to be marked as sensitive or not sensitive.
+      description: The ID of the Hoxhunt incident to be marked as sensitive or not sensitive.
       type: unknown
     - name: is_sensitive
       required: true
       auto: PREDEFINED
       predefined:
-      - 'TRUE'
-      - 'FALSE'
-      description: True or False Boolean.
+      - "TRUE"
+      - "FALSE"
+      description: True or False Boolean for whether the incident contains sensitive information.
       type: unknown
     outputs:
     - contextPath: Hoxhunt.setIncidentSensitive
       description: Incident sensitivity information.
       type: string
     description: Set incident to contain sensitive information.
-  - name: hoxhunt-set-incident-soc-classification
+  - name: hoxhunt-incident-set-soc-classification
     arguments:
     - name: incident_id
       required: true
-      description: The ID of the incident to classify.
+      description: The ID of the Hoxhunt incident to classify.
     - name: classification
       required: true
       auto: PREDEFINED
@@ -156,11 +180,11 @@ script:
       description: Incident SOC classification information.
       type: string
     description: Set soc classification for an incident.
-  - name: hoxhunt-update-incident-state
+  - name: hoxhunt-incident-update-state
     arguments:
     - name: incident_id
       required: true
-      description: The ID of the incident to update.
+      description: The ID of the Hoxhunt incident to update.
     - name: state
       required: true
       auto: PREDEFINED
@@ -173,14 +197,21 @@ script:
       description: Incident state information.
       type: string
     description: Updates Incident state.
-  dockerimage: demisto/python3:3.11.9.107902
+  - description: Get mapping fields from remote incident. Please note that this method will not update the current incident. It's here for debugging purposes.
+    name: get-mapping-fields
+    arguments: []
+    outputs: []
+  dockerimage: demisto/python3:3.10.13.86272
   isfetch: true
   runonce: false
   subtype: python3
   isremotesyncin: true
   isremotesyncout: true
   isFetchSamples: true
+  ismappable: true
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
-deprecated: true
+- Hoxhunt_test
+defaultclassifier: Hoxhunt-classifier
+defaultmapperin: Hoxhunt-mapper-incoming
+defaultmapperout: Hoxhunt-mapper-outgoing
