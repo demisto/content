@@ -316,6 +316,7 @@ script:
         on the URL of the ETP Policies)
     outputs:
     - contextPath: FireEyeETP.Policy
+      description: The policy id.
     description: Fetch the list of YARA rulesets and return a list with all the rules.
   - name: fireeye-etp-download-yara-file
     arguments:
@@ -347,6 +348,7 @@ script:
       description: Message ID of alert.
     outputs:
     - contextPath: FireEyeETP.Events
+      description: The Events of alert.
     description: Returns all events of alert by alert id.
   - name: fireeye-etp-quarantine-release
     arguments:
