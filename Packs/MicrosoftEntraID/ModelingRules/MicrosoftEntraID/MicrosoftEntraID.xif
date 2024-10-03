@@ -1,0 +1,136 @@
+[RULE: EntraID_Common_fields]
+filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
+| alter
+        xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, null),
+        xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, null),
+        xdm.event.original_event_type = category,
+        xdm.session_context_id = correlationId,
+        xdm.source.user_agent = json_extract_scalar(properties, "$.userAgent");
+
+[MODEL: dataset = msft_azure_raw]
+// AuditLogs mapping
+filter category = "AuditLogs"
+| call EntraID_Common_fields
+| alter
+        xdm.event.type = concat(category, " - ", json_extract_scalar(properties, "$.category")),
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.event.description = arraystring(json_extract_array(properties, "$.targetResources"), " *** "),
+        xdm.event.operation_sub_type = json_extract_scalar(properties, "$.operationName"),
+        xdm.event.outcome_reason = resultDescription,
+        xdm.event.outcome = if(lowercase(json_extract_scalar(properties, "$.result")) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(json_extract_scalar(properties, "$.result")) = "failure", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.source.cloud.project_id = tenantId,
+        xdm.source.cloud.geo_region = json_extract_scalar(properties, "$.tenantGeo"),
+        xdm.observer.type = json_extract_scalar(properties, "$.loggedByService"),
+        xdm.source.user.upn = json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName"),
+        xdm.source.user.identifier = json_extract_scalar(properties, "$.initiatedBy.user.id"),
+        xdm.source.user.username = json_extract_scalar(properties, "$.initiatedBy.user.displayName"),
+        xdm.source.application.name = coalesce(json_extract_scalar(properties, "$.initiatedBy.app.displayName"),json_extract_scalar(properties, "$.initiatedBy.app.servicePrincipalName")),
+        xdm.target.resource.sub_type = json_extract_scalar(properties, "$.category"),
+        xdm.target.resource.id = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if(json_extract_scalar("@element", "$.id") != null, json_extract_scalar("@element", "$.id"), "-")), ", "),
+        xdm.target.resource.name = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if((json_extract_scalar("@element", "$.displayName") = null or json_extract_scalar("@element", "$.displayName") = "") and json_extract_scalar("@element", "$.userPrincipalName") = null, "-", json_extract_scalar("@element", "$.userPrincipalName") != null, json_extract_scalar("@element", "$.userPrincipalName"), json_extract_scalar("@element", "$.displayName") != null, json_extract_scalar("@element", "$.displayName"))), ", "),
+        xdm.target.resource.type = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if(json_extract_scalar("@element", "$.type") != null, json_extract_scalar("@element", "$.type"), "-")), ", ");
+
+filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
+| call EntraID_Common_fields
+| alter
+        operatingSystem = lowercase(if(json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != null and json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != "", json_extract_scalar(properties, "$.deviceDetail.operatingSystem"), null)),
+        authenticationMethod = json_extract_scalar(arrayindex(json_extract_array(properties, "$.authenticationDetails"), 0), "$.authenticationMethod"),
+        authenticationMethodDetail = json_extract_scalar(arrayindex(json_extract_array(properties, "$.authenticationDetails"), 0), "$.authenticationMethodDetail")
+| alter
+        xdm.event.type = operationName,
+        xdm.event.duration = if(to_number(durationMs) != 0, to_number(durationMs), to_number(json_extract_scalar(properties, "$.processingTimeInMilliseconds")) != 0, to_number(json_extract_scalar(properties, "$.processingTimeInMilliseconds")), null),
+        xdm.event.id = if(json_extract_scalar(properties, "$.originalRequestId") != null, json_extract_scalar(properties, "$.originalRequestId"), json_extract_scalar(properties, "$.id") != null, json_extract_scalar(properties, "$.id"), null),
+        xdm.source.cloud.project_id = coalesce(json_extract_scalar(properties, "$.homeTenantId"), tenantId),
+        xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", resultType),
+        xdm.event.outcome = if(resultType = "0", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
+        xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
+        xdm.source.user.identifier = json_extract_scalar(properties, "$.userId"),
+        xdm.source.application.name = if(json_extract_scalar(properties, "$.appDisplayName") != null, json_extract_scalar(properties, "$.appDisplayName"), json_extract_scalar(properties, "$.servicePrincipalName") != null, json_extract_scalar(properties, "$.servicePrincipalName"), null),
+        xdm.auth.service = json_extract_scalar(properties, "$.authenticationProtocol"),
+        xdm.source.host.device_id = if(json_extract_scalar(properties, "$.deviceDetail.deviceId") != null and json_extract_scalar(properties, "$.deviceDetail.deviceId") != "", json_extract_scalar(properties, "$.deviceDetail.deviceId"), null),
+        xdm.source.host.os = if(json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != null and json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != "", json_extract_scalar(properties, "$.deviceDetail.operatingSystem"), null),
+        xdm.source.host.os_family = if(operatingSystem contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, operatingSystem contains "mac", XDM_CONST.OS_FAMILY_MACOS, operatingSystem contains "linux", XDM_CONST.OS_FAMILY_LINUX, operatingSystem contains "android", XDM_CONST.OS_FAMILY_ANDROID, operatingSystem contains "ios", XDM_CONST.OS_FAMILY_IOS, operatingSystem contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, operatingSystem contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, operatingSystem contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, operatingSystem contains "centos", XDM_CONST.OS_FAMILY_CENTOS, operatingSystem contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, operatingSystem contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, operatingSystem contains "scada", XDM_CONST.OS_FAMILY_SCADA, null),
+        xdm.network.http.browser = if(json_extract_scalar(properties, "$.deviceDetail.browser") != null and json_extract_scalar(properties, "$.deviceDetail.browser") != "", json_extract_scalar(properties, "$.deviceDetail.browser"), null),
+        xdm.source.location.country = location,
+        xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
+        xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
+        xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
+        xdm.logon.type = if(category = "SignInLogs", XDM_CONST.LOGON_TYPE_INTERACTIVE, category = "NonInteractiveUserSignInLogs", "non-interactive", category = "ServicePrincipalSignInLogs" or category = "ManagedIdentitySignInLogs", XDM_CONST.LOGON_TYPE_SERVICE, null),
+        xdm.alert.severity = if(json_extract_scalar(properties, "$.riskLevelDuringSignIn") = "none", null, json_extract_scalar(properties, "$.riskLevelDuringSignIn")),
+        xdm.alert.risks = if(array_length(json_extract_scalar_array(properties, "$.riskEventTypes_v2")) > 0, json_extract_scalar_array(properties, "$.riskEventTypes_v2"), null),
+        xdm.target.resource.name = json_extract_scalar(properties, "$.resourceDisplayName"),
+        xdm.target.resource.id = json_extract_scalar(properties, "$.resourceId"),
+        xdm.auth.auth_method = if(authenticationMethodDetail != null, concat(authenticationMethod, " - ", authenticationMethodDetail), authenticationMethod),
+        xdm.auth.is_mfa_needed = if(lowercase(json_extract_scalar(properties, "$.authenticationRequirement")) contains "multifactor", to_boolean("true"), to_boolean("false")),
+        xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
+        xdm.source.asn.as_number = to_number(json_extract_scalar(properties, "$.autonomousSystemNumber"));
+
+filter category = "ProvisioningLogs"
+| alter
+        initiatedBy_type = lowercase(json_extract_scalar(properties, "$.initiatedBy.Type"))
+| alter
+        Source_applicationName = if(initiatedBy_type = "application", json_extract_scalar(properties, "$.initiatedBy.Name"), json_extract_scalar(properties, "$.sourceSystem.Name")),
+        Source_userName = if(initiatedBy_type = "user", json_extract_scalar(properties, "$.initiatedBy.Name"), null),
+        Source_userIdentifier = if(initiatedBy_type = "user", json_extract_scalar(properties, "$.initiatedBy.Id"), null)
+| alter
+        xdm.event.original_event_type = category,
+        xdm.event.duration = to_number(durationMs),
+        xdm.event.type = operationName,
+        xdm.event.outcome = if(lowercase(resultType) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(resultType) = "failure", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", resultSignature),
+        xdm.event.description = arraystring(json_extract_array(properties, "$.provisioningSteps"), " **Next Step:** "),
+        xdm.source.cloud.project_id = tenantId,
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.session_context_id = json_extract_scalar(properties, "$.jobId"),
+        xdm.event.operation_sub_type = json_extract_scalar(properties, "$.provisioningAction"),
+        xdm.source.application.name = if(Source_applicationName != "", Source_applicationName, null),
+        xdm.target.application.name = if(json_extract_scalar(properties, "$.targetSystem.Name") != "", json_extract_scalar(properties, "$.targetSystem.Name"), null),
+        xdm.source.user.username = if(Source_userName != "", Source_userName, null),
+        xdm.source.user.identifier = if(Source_userIdentifier != "", Source_userIdentifier, null),
+        xdm.target.resource.id = if(json_extract_scalar(properties, "$.targetIdentity.Id") != "", json_extract_scalar(properties, "$.targetIdentity.Id"), null),
+        xdm.target.resource.type = if(json_extract_scalar(properties, "$.targetIdentity.identityType") != "", json_extract_scalar(properties, "$.targetIdentity.identityType"), null),
+        xdm.target.resource.name = if(json_extract_scalar(properties, "$.targetIdentity.Name") != "", json_extract_scalar(properties, "$.targetIdentity.Name"), null),
+        xdm.target.resource.value = json_extract_scalar(properties, "$.targetIdentity.details.UserPrincipalName");
+
+filter category in ("RiskyUsers", "RiskyServicePrincipals")
+| alter
+        xdm.event.original_event_type = category,
+        xdm.session_context_id = correlationId,
+        xdm.source.cloud.project_id = tenantId,
+        xdm.event.type = operationName,
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
+        xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
+        xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
+        xdm.source.application.name = json_extract_scalar(properties, "$.displayName"),
+        xdm.source.user.is_disabled = if(to_boolean(json_extract(properties, "$.accountEnabled")) = to_boolean("true"), to_boolean("false"), to_boolean(json_extract(properties, "$.accountEnabled")) = to_boolean("false"), to_boolean("true"), null);
+
+filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
+| alter
+        xdm.event.original_event_type = category,
+        xdm.event.description = json_extract_scalar(properties, "$.additionalInfo"),
+        xdm.session_context_id = coalesce(json_extract_scalar(properties, "$.correlationId"), correlationId),
+        xdm.source.cloud.project_id = tenantId,
+        xdm.event.type = json_extract_scalar(properties, "$.activity"),
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, null),
+        xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, null),
+        xdm.logon.logon_guid = if(json_extract_scalar(properties, "$.requestId") != "", json_extract_scalar(properties, "$.requestId"), null),
+        xdm.alert.subcategory = json_extract_scalar(properties, "$.riskEventType"),
+        xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
+        xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
+        xdm.observer.type = json_extract_scalar(properties, "$.source"),
+        xdm.source.location.country = if(json_extract_scalar(properties, "$.location.countryOrRegion") != null and json_extract_scalar(properties, "$.location.countryOrRegion") != "", json_extract_scalar(properties, "$.location.countryOrRegion"), null),
+        xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
+        xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
+        xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
+        xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
+        xdm.source.user.identifier = json_extract_scalar(properties, "$.userId"),
+        xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
+        xdm.source.application.name = json_extract_scalar(properties, "$.servicePrincipalDisplayName");
+
+
+

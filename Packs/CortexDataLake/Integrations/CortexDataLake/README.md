@@ -110,6 +110,8 @@ Runs a query on the Cortex logging service.
 | --- | --- | --- |
 | query | A free-text SQL query. For example, query="SELECT * FROM \`firewall.traffic\` limit 10". There are multiple tables in Loggings, for example: threat, traffic, and so on. Refer to the Cortex Logging service schema reference for the full list. | Optional |
 | limit | The number of logs to return. Default is 10 | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | transform_results | If set to false, query results are not mapped into the standard command context. Default is "true". | Optional | 
 
 
@@ -193,6 +195,8 @@ Runs a query on the Cortex logging service, according to preset queries.
 | start_time | The query start time. For example, start_time="2018-04-26 00:00:00" | Optional | 
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00" | Optional | 
 | limit | The number of logs to return. Default is 10 | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | time_range | First log time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | Optional | 
 
 
@@ -328,6 +332,8 @@ Runs a query on the Cortex logging service, according to preset queries.
 | start_time | Query start time. For example, start_time="2018-04-26 00:00:00" | Optional | 
 | end_time | Query end time. For example, end_time="2018-04-26 00:00:00" | Optional | 
 | limit | Amount of logs. Default is 10 | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | time_range | First log time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | Optional | 
 
 
@@ -490,6 +496,8 @@ Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat`
 | start_time | The query start time. For example, start_time="2018-04-26 00:00:00" | Optional | 
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00" | Optional | 
 | limit | The number of logs to return. Default is 10. | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | time_range | First log time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | Optional | 
 | SHA256 | The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file. | Required | 
 
@@ -637,6 +645,8 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00". | Optional | 
 | time_range | First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | Optional | 
 | limit | The number of logs to return. Default is 5. | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | dest_ip | A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
 | dest_port | Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445' | Optional | 
 | ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
@@ -768,6 +778,8 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00" | Optional | 
 | time_range | First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | Optional | 
 | limit | The number of logs to return. Default is 5. | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
 | port | Port utilized by the session. Enter a port or array of ports to search. | Optional | 
 
@@ -917,6 +929,8 @@ Searches the URL table
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00" | Optional | 
 | time_range | First log time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | Optional | 
 | limit | The number of logs to return. Default is 5. | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
 | port | Port utilized by the session. Enter a port or array of ports to search. | Optional | 
 | url | This argument allows to perform a LIKE search of the specified values on the Url and Uri fields An example value will be paloaltonetworks.com,demisto which will provide results like https://apps.paloaltonetworks.com and https://demisto.com | Optional | 
@@ -1034,18 +1048,19 @@ header field. |
 
 
 ### cdl-query-file-data
+
 ***
 Searches the Cortex firewall.file_data table.
-
 
 #### Base Command
 
 `cdl-query-file-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Identifies the action that the firewall took for the network traffic. | Optional | 
+| action | Identifies the action that the firewall took for the network traffic. Possible values are: unknown, n-a, aged-out, decoder, tcp-reuse, resources-unavailable, tcp-fin, tcp-rst-from-server, tcp-rst-from-client, policy-deny, threat, decrypt-error, decrypt-unsupport-param, decrypt-cert-validation, request-timeout, shutdown-from-endpoint, abort-from-endpoint, split-tunnel. | Optional | 
 | app | Application associated with the network traffic. | Optional | 
 | app_category | Identifies the high-level family of the application. | Optional | 
 | dest_device_host | Hostname of the device to which the session was directed. | Optional | 
@@ -1083,7 +1098,8 @@ Searches the Cortex firewall.file_data table.
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00". | Optional | 
 | time_range | First log time (&lt;number&gt; &lt;time unit&gt;. For example, 12 minutes, 7 days, 3 weeks). | Optional | 
 | limit | Limit the results to return. The default is 5. | Optional | 
-
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 
 #### Context Output
 

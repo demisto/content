@@ -35,7 +35,7 @@ def load_extended_keys():
         session = login()
         url = REST_ADDRESS + '/eventAttributeType/all'
         response = session.get(url, verify=VERIFY_SSL, auth=AUTH)
-        EXTENDED_KEYS = dict((attr['attributeId'], attr['displayName']) for attr in response.json())
+        EXTENDED_KEYS = {attr['attributeId']: attr['displayName'] for attr in response.json()}
 
         if demisto.command() != 'fetch-incidents':
             demisto.setIntegrationContext({'extended_keys': EXTENDED_KEYS})
@@ -66,7 +66,7 @@ def parse_resource_type(resource_type):
 @logger
 def validateSuccessfulResponse(resp, error_text):
     if resp.status_code != 200:
-        return_error('Got response status {} when {}'.format(resp.status_code, error_text))
+        return_error(f'Got response status {resp.status_code} when {error_text}')
 
 
 @logger
@@ -78,7 +78,7 @@ def login():
 
     # get the VIEW_STATE from the xml returned in the UI login page.
     p = re.compile('(value=".{1046}==")')
-    viewState = p.findall(response.text.encode('utf-8'))  # type:ignore[arg-type]
+    viewState = p.findall(response.text.encode('utf-8'))  # type: ignore[arg-type, call-overload]
     VIEW_STATE = viewState[0][len('value="'):][:-1]
 
     data = {
@@ -154,7 +154,7 @@ def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
                         "incidentExtTicketType,incidentViewStatus,rawEventMsg,phIncidentCategory,phSubIncidentCategory,"
                         "incidentRptDevStatus",
         "eventFilters": [{"name": "Filter_OVERALL_STATUS",
-                          "singleConstraint": "(phEventCategory = 1) AND incidentId = {}".format(incident_id)}],
+                          "singleConstraint": f"(phEventCategory = 1) AND incidentId = {incident_id}"}],
         "hints": "IgnoreTime",
     }
 
@@ -214,7 +214,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
             if len(key["data"]) == 0 or key["data"][0] == "No report results found.":
                 md = "No report results found."
                 break
-            else:
+            else:  # noqa: RET508
                 cur[eventKeys[i]] = key["data"][i]
         if md != "":
             # no results were found, not need to loop
@@ -377,9 +377,9 @@ def buildQueryString(args):
     res_list = []
     for key in args:
         if 'IpAddr' not in key:
-            res_list.append('{} = "{}"'.format(key, args[key]))
+            res_list.append(f'{key} = "{args[key]}"')
         else:
-            res_list.append("{} = {}".format(key, args[key]))
+            res_list.append(f"{key} = {args[key]}")
     return " AND ".join(res_list)
 
 
@@ -559,7 +559,7 @@ def add_item_to_resource_list_command():
 @logger
 def add_item_to_resource_list(resource_type, group_id, object_info):
     session = login()
-    url = '{}/{}/save'.format(REST_ADDRESS, resource_type)
+    url = f'{REST_ADDRESS}/{resource_type}/save'
     object_info['groupId'] = group_id
     object_info['active'] = True
     object_info['sysDefined'] = False
@@ -586,14 +586,14 @@ def remove_item_from_resource_list_command():
 @logger
 def remove_item_from_resource_list(resource_type, deleted_ids):
     session = login()
-    url = '{}/{}/del'.format(REST_ADDRESS, resource_type)
+    url = f'{REST_ADDRESS}/{resource_type}/del'
 
     response = session.delete(url, params={'ids': json.dumps(deleted_ids)}, verify=VERIFY_SSL, auth=AUTH)
 
     if response.text != '"OK"':
         return_error(response.text)
 
-    return 'items with id {} were removed.'.format(deleted_ids)
+    return f'items with id {deleted_ids} were removed.'
 
 
 def get_resource_list_command():
@@ -618,7 +618,7 @@ def get_resource_list_command():
 @logger
 def get_resource_list(resource_type, group_id):
     session = login()
-    url = '{}/{}/list'.format(REST_ADDRESS, resource_type)
+    url = f'{REST_ADDRESS}/{resource_type}/list'
 
     params = {
         'groupId': group_id,
@@ -636,7 +636,7 @@ def get_resource_list(resource_type, group_id):
 
 
 def convert_keys_to_snake_case(d):
-    d = dict((k.replace("-", "_"), v) for k, v in d.items())
+    d = {k.replace("-", "_"): v for k, v in d.items()}
     return d
 
 

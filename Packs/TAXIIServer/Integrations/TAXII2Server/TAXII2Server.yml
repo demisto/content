@@ -150,7 +150,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description.
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.94079
+  dockerimage: demisto/flask-nginx:1.0.0.110620
   longRunning: true
   longRunningPort: true
   script: '-'

@@ -57,6 +57,7 @@ tasks:
       - "5"
       - "20"
       - "28"
+      - "48"
     scriptarguments:
       all:
         simple: "yes"
@@ -163,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2820
+          "x": 920,
+          "y": 2850
         }
       }
     note: false
@@ -1531,14 +1532,293 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 2eba3ea0-55e5-4766-8ec0-f2a3a8dab3c3
+    type: regular
+    task:
+      id: 2eba3ea0-55e5-4766-8ec0-f2a3a8dab3c3
+      version: -1
+      name: prisma-cloud-access-key-create
+      description: Adds a new access key for the current user. If you have API access,
+        you can create up to two access keys.
+      script: '|||prisma-cloud-access-key-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "49"
+      '#none#':
+      - "50"
+    scriptarguments:
+      name:
+        simple: TestPlaybook_AccessKey
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 326bdd8b-49e0-4a1c-8cad-c6f509252a63
+    type: regular
+    task:
+      id: 326bdd8b-49e0-4a1c-8cad-c6f509252a63
+      version: -1
+      name: prisma-cloud-access-keys-list
+      description: Returns all access keys for your tenant if you have a Prisma Cloud
+        System Admin role. Returns just your access keys if you don't have this role.
+      script: '|||prisma-cloud-access-keys-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 99a33240-fe05-4b1d-868d-6e4f7650836a
+    type: regular
+    task:
+      id: 99a33240-fe05-4b1d-868d-6e4f7650836a
+      version: -1
+      name: prisma-cloud-access-keys-list Verify Access key by ID
+      description: Returns all access keys for your tenant if you have a Prisma Cloud
+        System Admin role. Returns just your access keys if you don't have this role.
+      script: '|||prisma-cloud-access-keys-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      access-key:
+        simple: ${PrismaCloud.AccessKeys.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 1f730f9e-9049-4a6d-8590-d7c9597e3a9e
+    type: regular
+    task:
+      id: 1f730f9e-9049-4a6d-8590-d7c9597e3a9e
+      version: -1
+      name: prisma-cloud-access-key-delete
+      description: Deletes the access key that has the specified ID.
+      script: '|||prisma-cloud-access-key-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      access-key:
+        simple: ${PrismaCloud.AccessKeys.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: e0b1360f-989d-481a-86b7-17c3e04b5737
+    type: regular
+    task:
+      id: e0b1360f-989d-481a-86b7-17c3e04b5737
+      version: -1
+      name: prisma-cloud-access-key-disable
+      description: Deactivates the access key that has the specified ID.
+      script: '|||prisma-cloud-access-key-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      access-key:
+        simple: ${PrismaCloud.AccessKeys.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 1a9597b5-4686-484d-8e6f-4cab649f9cff
+    type: regular
+    task:
+      id: 1a9597b5-4686-484d-8e6f-4cab649f9cff
+      version: -1
+      name: prisma-cloud-access-key-enable
+      description: Activates the access key that has the specified ID. You cannot
+        activate an expired access key.
+      script: '|||prisma-cloud-access-key-enable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      access-key:
+        simple: ${PrismaCloud.AccessKeys.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: e3a8b04c-89f9-4809-8299-319d323318f6
+    type: regular
+    task:
+      id: e3a8b04c-89f9-4809-8299-319d323318f6
+      version: -1
+      name: prisma-cloud-access-keys-list
+      description: Returns all access keys for your tenant if you have a Prisma Cloud
+        System Admin role. Returns just your access keys if you don't have this role.
+      script: '|||prisma-cloud-access-keys-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 56fa219e-d67a-4ed2-8780-6008d2df3f80
+    type: title
+    task:
+      id: 56fa219e-d67a-4ed2-8780-6008d2df3f80
+      version: -1
+      name: Access Key Flow Finished Successfully
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "48_49_#error#": 0.57
+    },
     "paper": {
       "dimensions": {
-        "height": 2835,
-        "width": 2100,
-        "x": 50,
+        "height": 2865,
+        "width": 2850,
+        "x": -700,
         "y": 50
       }
     }

@@ -926,6 +926,9 @@ def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
 def update_remote_system_command(client: Client, args: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
     changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data}
+    demisto.debug(f'Changes from update_remote_system: {changes}')
+    # Convert the values: severity, pap and tlp to integer as the api request
+    changes = {k: (int(v) if isinstance(v, str) and v.isdigit() else v) for k, v in changes.items()}
     if parsed_args.remote_incident_id:
         # Apply the updates
         client.update_case(case_id=parsed_args.remote_incident_id, updates=changes)

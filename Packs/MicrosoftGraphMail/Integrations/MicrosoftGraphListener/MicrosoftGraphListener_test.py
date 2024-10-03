@@ -755,7 +755,7 @@ def test_get_attachments_without_attachment_id(mocker, client):
     """
     from MicrosoftGraphListener import get_attachment_command
     file_attachments_result = {'2': 'f1145f66-90fe-4604-a7ea-faac8c33684e-attachmentName-image2.png',
-                               '3': 'exampleID3-attachmentName-image3.png'}
+                               '3': 'image3.png'}
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachments.txt') as mail_json:
         test_args = {}
@@ -1222,7 +1222,7 @@ def test_special_chars_in_attachment_name(mocker):
 
     res = client._get_email_attachments('message_id')
 
-    assert res[0].get('name') == f'123-attachmentName-{attachment_file_name}'
+    assert res[0].get('name') == attachment_file_name
 
 
 @pytest.mark.parametrize('attachment_file_name', ['1.png', 'file_example_JPG_100kB.jpg', 'sdsdagdsga.png'])
@@ -1243,7 +1243,7 @@ def test_regular_chars_in_attachment_name(mocker, attachment_file_name):
 
     res = client._get_email_attachments('message_id')
 
-    assert res[0].get('name') == f'1234-attachmentName-{attachment_file_name}'
+    assert res[0].get('name') == attachment_file_name
 
 
 @pytest.mark.parametrize('str_to_check, expected_result', [('slabiky, ale liší se podle významu', False),
@@ -1301,3 +1301,52 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri}'
     res = MicrosoftGraphListener.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+@pytest.mark.parametrize("raw_attachment, legacy_name, expected_name, expect_exception", [
+    (
+        {'name': 'test.png', 'contentId': '123', 'isInline': True,
+            'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        False,
+        "123-attachmentName-test.png",
+        False
+    ),
+    (
+        {'name': 'test.png', 'contentId': None, 'isInline': False,
+            'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        False,
+        "test.png",
+        False
+    ),
+    (
+        {'name': 'test.png', 'contentId': '123', 'isInline': True,
+            'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        True,
+        "test.png",
+        False
+    ),
+    (
+        {'name': 'test.png', 'contentId': 'None', 'isInline': True,
+            'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        False,
+        "test.png",
+        False
+    ),
+    (
+        {'name': 'test.png', 'contentId': '123', 'isInline': True, 'contentBytes': 'invalid_base64'},
+        False,
+        None,
+        True
+    )
+])
+def test_file_result_creator(monkeypatch, raw_attachment, legacy_name, expected_name, expect_exception):
+    from MicrosoftGraphMailApiModule import GraphMailUtils
+    monkeypatch.setattr('MicrosoftGraphListener.fileResult', fileResult)
+    monkeypatch.setattr('MicrosoftGraphListener.DemistoException', DemistoException)
+
+    if expect_exception:
+        with pytest.raises(DemistoException):
+            GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
+    else:
+        result = GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
+        assert result['File'] == expected_name

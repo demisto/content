@@ -1,3 +1,8 @@
 [INGEST:vendor="okta", product="okta", target_dataset="okta_okta_raw" , no_hit=keep]
 filter published ~= ".*T\d{2}:\d{2}:\d{2}[\.\dZ]+"
 | alter _time = published;
+
+
+[INGEST:vendor="okta", product="sso", target_dataset="okta_sso_raw" , no_hit=keep]
+filter published ~= ".*T\d{2}:\d{2}:\d{2}[\.\dZ]+"
+| alter _time = published;

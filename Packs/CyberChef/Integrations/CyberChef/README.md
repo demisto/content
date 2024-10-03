@@ -12,6 +12,7 @@ CyberChef is a web-application developed by GCHQ that's been called the “Cyber
     | API Key | API key if you use https://prod.apifor.io/ | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Local execution | Uses the [cyberchef node package](https://github.com/polarityio/cyberchef-node) for local execution of your commands | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
