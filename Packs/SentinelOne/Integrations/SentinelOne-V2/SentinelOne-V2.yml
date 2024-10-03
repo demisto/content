@@ -2537,7 +2537,9 @@ script:
       description: "QueryId. Example: pq3be5e2747f716cxxxxxxxxxxxxx20a0."
     description: Automate a power query and return the query results. (The maximum timeout of 300 seconds is allowed.)
     name: sentinelone-get-power-query-results
-    outputs: []
+    outputs:
+    - contextPath: SentinelOne.PowerQuery.[result_index]
+      description: Result from the query in array string format.
     polling: true
   - arguments: []
     description: Returns the list of fields for an incident type.
