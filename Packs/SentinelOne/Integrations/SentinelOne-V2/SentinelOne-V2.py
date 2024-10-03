@@ -3356,7 +3356,7 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
     else:
         scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
         return_results(CommandResults(scheduled_command=scheduled_command))
-
+    return None
 
 
 def remote_script_automate_results(client: Client, args: dict):
@@ -3382,13 +3382,15 @@ def get_power_query_output(cmd: str, interval: int, timeout: int, args: dict, qu
             readable_text += f"\nRecommendation: {str(recommendation)}"
         return CommandResults(
             readable_output=tableToMarkdown(readable_text, context_entries, removeNull=True,
-                                            metadata='\nSummary information and details about the power query', headerTransform=pascalToSpace),
+                                            metadata='\nSummary information and details about the power query',
+                                            headerTransform=pascalToSpace),
             outputs_prefix='SentinelOne.PowerQuery',
             outputs=context_entries,
             raw_response=query_response)
     else:
         scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
         return_results(CommandResults(scheduled_command=scheduled_command))
+    return None
 
 
 def poll_power_query_results(client: Client, cmd: str, args: dict) -> CommandResults:
