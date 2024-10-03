@@ -7,7 +7,7 @@ from DSPM import (
     get_list_of_assets,
     get_asset_files_by_id,
     test_module,
-    dspm_get_risk_findings,
+    get_list_risk_findings,
     get_asset_details,
     update_risk_finding_status,
     get_data_types,
@@ -17,10 +17,10 @@ from DSPM import (
     update_dspm_alert_status,
     get_risk_finding_by_id,
     validate_parameter,
-    dspm_get_risk_findings_command,
-    dspm_get_list_of_assets_command,
-    dspm_get_data_types_findings_command,
-    dspm_get_list_of_alerts_command,
+    dspm_list_risk_findings_command,
+    dspm_list_assets_command,
+    dspm_list_data_types_findings_command,
+    dspm_list_alerts_command,
     dspm_get_list_of_asset_fields_command
 )
 
@@ -68,36 +68,38 @@ def test_test_module(client, mocker):
 
 def test_dspm_get_risk_findings(client):
     expected_output = {
-        "ID": "7e9a3891-8970-4c08-961a-03f49e239d68",
-        "Rule Name": "Sensitive asset without storage versioning",
-        "Severity": "MEDIUM",
-        "Asset Name": "****",
-        "Asset ID": "****",
-        "Status": "OPEN",
-        "Project ID": "****",
-        "Cloud Provider": "AZURE",
-        "Cloud Environment": "DEVELOPMENT",
-        "First Discovered": "2024-04-25T17:08:11.020304Z",
-        "Compliance Standards": {}
+        "id": "7e9a3891-8970-4c08-961a-03f49e239d68",
+        "ruleName": "Sensitive asset without storage versioning",
+        "severity": "MEDIUM",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-04-25T17:08:11.020304Z",
+        "complianceStandards": {}
     }
     args = {
-        "ruleNameIn": "InvalidRule,AnotherInvalidRule",
-        "ruleNameEqual": "NotARealRule",
-        "dspmTagKeyIn": "InvalidKey,AnotherInvalidKey",
-        "dspmTagKeyEqual": "NotARealKey",
-        "dspmTagValueIn": "InvalidValue,AnotherInvalidValue",
-        "dspmTagValueEqual": "NotARealValue",
-        "projectIdIn": "InvalidProjectID123",
-        "projectIdEqual": "NotARealProjectID",
-        "cloudProviderIn": "AWS,AZURE",
-        "cloudProviderEqual": "AZURE",
-        "affectsIn": "SECURITY,COMPLIANCE",
-        "affectsEqual": "SECURITY",
-        "statusIn": "OPEN",
-        "statusEqual": "OPEN",
+        "rule_name_in": "InvalidRule,AnotherInvalidRule",
+        "rule_name_equal": "NotARealRule",
+        "dspm_tag_key_in": "InvalidKey,AnotherInvalidKey",
+        "dspm_tag_key_equal": "NotARealKey",
+        "dspm_tag_value_in": "InvalidValue,AnotherInvalidValue",
+        "dspm_tag_value_equal": "NotARealValue",
+        "projectId_in": "InvalidProjectID123",
+        "projectId_equal": "NotARealProjectID",
+        "cloud_provider_in": "AWS,AZURE",
+        "cloud_provider_equal": "AZURE",
+        "affects_in": "SECURITY,COMPLIANCE",
+        "affects_equal": "SECURITY",
+        "status_in": "OPEN",
+        "status_equal": "OPEN",
         "sort": "status,desc"
     }
-    result = dspm_get_risk_findings(client, args, page=0)
+    result = get_list_risk_findings(client, args, page=0)
     finding = result[0]  # type: ignore
 
     assert isinstance(result, List)
@@ -105,37 +107,47 @@ def test_dspm_get_risk_findings(client):
 
     # Check the structure of one finding
     required_keys = [
-        'ID', 'Rule Name', 'Severity', 'Asset Name', 'Asset ID',
-        'Status', 'Project ID', 'Cloud Provider', 'Cloud Environment',
-        'First Discovered', 'Compliance Standards'
+        'id', 'ruleName', 'severity', 'asset',
+        'status', 'projectId', 'cloudProvider', 'cloudEnvironment',
+        'firstDiscovered', 'complianceStandards'
     ]
     assert all(key in finding for key in required_keys)
 
 
 def test_dspm_get_risk_findings_with_valid_args(client):
     expected_output = {
-        "ID": "7e9a3891-8970-4c08-961a-03f49e239d68",
-        "Rule Name": "Sensitive asset without storage versioning",
-        "Severity": "MEDIUM",
-        "Asset Name": "****",
-        "Asset ID": "****",
-        "Status": "OPEN",
-        "Project ID": "****",
-        "Cloud Provider": "AZURE",
-        "Cloud Environment": "DEVELOPMENT",
-        "First Discovered": "2024-04-25T17:08:11.020304Z",
-        "Compliance Standards": {}
+        "id": "7e9a3891-8970-4c08-961a-03f49e239d68",
+        "ruleName": "Sensitive asset without storage versioning",
+        "severity": "MEDIUM",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-04-25T17:08:11.020304Z",
+        "complianceStandards": {}
     }
-    args = {"cloudProviderIn": "AWS,AZURE", "affectsIn": "SECURITY,COMPLIANCE",
-            "statusIn": "OPEN,CLOSED", "sort": "records,asc"}
-    result = dspm_get_risk_findings(client, args, page=0)
+    args = {
+        "cloud_provider_in": "AWS,AZURE",
+        "affects_in": "SECURITY,COMPLIANCE",
+        "status_in": "OPEN,CLOSED",
+        "sort": "records,asc"
+    }
+    result = get_list_risk_findings(client, args, page=0)
 
     assert isinstance(result, List)
     assert result[0] == expected_output
 
-    args = {"cloudProviderEqual": "AWS", "affectsEqual": "SECURITY",
-            "statusEqual": "OPEN", "sort": "records,desc"}
-    result = dspm_get_risk_findings(client, args, page=0)
+    args = {
+        "cloud_provider_equal": "AWS",
+        "affects_equal": "SECURITY",
+        "status_equal": "OPEN",
+        "sort": "records,desc"
+    }
+    result = get_list_risk_findings(client, args, page=0)
 
     assert isinstance(result, List)
     assert result[0] == expected_output
@@ -144,19 +156,19 @@ def test_dspm_get_risk_findings_with_valid_args(client):
 def test_dspm_get_risk_findings_with_invalid_args(client):
 
     test_cases = [
-        ({"cloudProviderIn": "AWS,AZURE12"}, 'This "AZURE12" cloudProvider is not supported'),
-        ({"cloudProviderEqual": "INVALID"}, 'This "INVALID" cloudProvider is not supported'),
-        ({"affectsIn": "SECURITY,INVALID"}, 'This "INVALID" affects is not supported'),
-        ({"affectsEqual": "WRONG"}, 'This "WRONG" affects is not supported'),
-        ({"statusIn": "INVALID,CLOSED"}, 'This "INVALID" status is not supported'),
-        ({"statusEqual": "IN"}, 'This "IN" status is not supported'),
+        ({"cloud_provider_in": "AWS,AZURE12"}, 'This "AZURE12" cloudProvider is not supported'),
+        ({"cloud_provider_equal": "INVALID"}, 'This "INVALID" cloudProvider is not supported'),
+        ({"affects_in": "SECURITY,INVALID"}, 'This "INVALID" affects is not supported'),
+        ({"affects_equal": "WRONG"}, 'This "WRONG" affects is not supported'),
+        ({"status_in": "INVALID,CLOSED"}, 'This "INVALID" status is not supported'),
+        ({"status_equal": "IN"}, 'This "IN" status is not supported'),
         ({"sort": "records,wrongOrder"}, 'This "records,wrongOrder" sorting order is not supported'),
     ]
 
     # Iterate over the test cases
     for args, expected_error in test_cases:
         with pytest.raises(ValueError, match=expected_error):
-            dspm_get_risk_findings(client, args, 0)
+            get_list_risk_findings(client, args, 0)
 
 
 def test_get_list_of_assets_with_valid_args(client):
@@ -182,27 +194,35 @@ def test_get_list_of_assets_with_valid_args(client):
         }]
     client.get_asset_lists = MagicMock(return_value=mock_response)
 
-    args = {"cloudProviderIn": "AWS,AZURE", "serviceTypeIn": "EFS,RDS",
-            "lifecycleIn": "RUNNING,STOPPED", "sort": "name,DESC"}
+    args = {
+        "cloud_provider_in": "AWS,AZURE",
+        "service_type_in": "EFS,RDS",
+        "lifecycle_in": "RUNNING,STOPPED",
+        "sort": "status,DESC"
+    }
     result = get_list_of_assets(client, args, page=0)
 
     assert isinstance(result, List)
-    assert result[0].get('ID') == "asset2"
+    assert result[0].get('id') == "asset2"
 
-    args = {"cloudProviderEqual": "AWS", "serviceTypeEqual": "RDS",
-            "lifecycleEqual": "RUNNING", "sort": "name,ASC"}
+    args = {
+        "cloud_provider_equal": "AWS",
+        "service_type_equal": "RDS",
+        "lifecycle_equal": "RUNNING",
+        "sort": "status,ASC"
+    }
     result = get_list_of_assets(client, args, page=0)
 
     assert isinstance(result, List)
-    assert result[0].get('ID') == "asset2"
+    assert result[0].get('id') == "asset2"
 
 
 def test_get_list_of_assets_with_invalid_args(client):
     # List of invalid args and their expected error messages
     invalid_test_cases = [
-        ({"cloudProviderIn": "INVALID_CLOUD_PROVIDER"}, 'This "INVALID_CLOUD_PROVIDER" cloudProvider is not supported'),
-        ({"serviceTypeIn": "INVALID_SERVICE_TYPE"}, 'This "INVALID_SERVICE_TYPE" serviceType is not supported'),
-        ({"lifecycleIn": "INVALID_LIFECYCLE"}, 'This "INVALID_LIFECYCLE" lifecycle is not supported'),
+        ({"cloud_provider_in": "INVALID_CLOUD_PROVIDER"}, 'This "INVALID_CLOUD_PROVIDER" cloudProvider is not supported'),
+        ({"service_type_in": "INVALID_SERVICE_TYPE"}, 'This "INVALID_SERVICE_TYPE" serviceType is not supported'),
+        ({"lifecycle_in": "INVALID_LIFECYCLE"}, 'This "INVALID_LIFECYCLE" lifecycle is not supported'),
         ({"sort": "invalid_sort_order"}, 'This "invalid_sort_order" sorting order is not supported'),
     ]
 
@@ -213,15 +233,15 @@ def test_get_list_of_assets_with_invalid_args(client):
 
 
 def test_get_data_type_findings_with_valid_args(client):
-    args = {"cloudProviderIn": "AWS,AZURE", "serviceTypeIn": "DYNAMODB,RDS",
-            "lifecycleIn": "DELETED,STOPPED", "sort": "records,DESC"}
+    args = {"cloud_provider_in": "AWS,AZURE", "service_type_in": "DYNAMODB,RDS",
+            "lifecycle_in": "DELETED,STOPPED", "sort": "records,DESC"}
     result = get_data_type_findings(client, args, page=0)
 
     assert isinstance(result, List)
     assert len(result) == 4
 
-    args = {"cloudProviderEqual": "AWS", "serviceTypeEqual": "DYNAMODB",
-            "lifecycleEqual": "DELETED", "sort": "records,ASC"}
+    args = {"cloud_provider_equal": "AWS", "service_type_equal": "DYNAMODB",
+            "lifecycle_equal": "DELETED", "sort": "records,ASC"}
     result = get_data_type_findings(client, args, page=0)
 
     assert isinstance(result, List)
@@ -231,9 +251,9 @@ def test_get_data_type_findings_with_valid_args(client):
 def test_get_data_type_findings_with_invalid_args(client):
     # List of invalid args and their expected error messages
     invalid_test_cases = [
-        ({"cloudProviderIn": "INVALID_CLOUD_PROVIDER"}, 'This "INVALID_CLOUD_PROVIDER" cloudProvider is not supported'),
-        ({"serviceTypeIn": "INVALID_SERVICE_TYPE"}, 'This "INVALID_SERVICE_TYPE" serviceType is not supported'),
-        ({"lifecycleIn": "INVALID_LIFECYCLE"}, 'This "INVALID_LIFECYCLE" lifecycle is not supported'),
+        ({"cloud_provider_in": "INVALID_CLOUD_PROVIDER"}, 'This "INVALID_CLOUD_PROVIDER" cloudProvider is not supported'),
+        ({"service_type_in": "INVALID_SERVICE_TYPE"}, 'This "INVALID_SERVICE_TYPE" serviceType is not supported'),
+        ({"lifecycle_in": "INVALID_LIFECYCLE"}, 'This "INVALID_LIFECYCLE" lifecycle is not supported'),
         ({"sort": "invalid_sort_order"}, 'This "invalid_sort_order" sorting order is not supported'),
     ]
 
@@ -284,12 +304,12 @@ def test_get_list_of_alerts_with_valid_args(client):
     client.get_alerts_list = MagicMock(return_value=mock_response)
 
     args = {
-        "cloudProviderIn": "AWS,AZURE",
-        "cloudEnvironmentIn": "DEVELOPMENT,STAGING",
-        "policySeverityIn": "MEDIUM,LOW",
-        "categoryTypeIn": "ATTACK,FIRST_MOVE",
-        "statusIn": "CLOSED,OPEN",
-        "sort": "name,DESC"
+        "cloud_provider_in": "AWS,AZURE",
+        "cloud_environment_in": "DEVELOPMENT,STAGING",
+        "policy_severity_in": "MEDIUM,LOW",
+        "category_type_in": "ATTACK,FIRST_MOVE",
+        "status_in": "CLOSED,OPEN",
+        "sort": "status,DESC"
     }
     result = get_list_of_alerts(client, args, 0)
 
@@ -297,12 +317,12 @@ def test_get_list_of_alerts_with_valid_args(client):
     assert result[0].get('id') == "274314608"
 
     args = {
-        "cloudProviderEqual": "AWS",
-        "cloudEnvironmentEqual": "STAGING",
-        "policySeverityEqual": "MEDIUM",
-        "categoryTypeEqual": "FIRST_MOVE",
-        "statusEqual": "OPEN",
-        "sort": "name,ASC"
+        "cloud_provider_equal": "AWS",
+        "cloud_environment_equal": "STAGING",
+        "policy_severity_equal": "MEDIUM",
+        "category_type_equal": "FIRST_MOVE",
+        "status_equal": "OPEN",
+        "sort": "status,ASC"
     }
     result = get_list_of_alerts(client, args, 0)
 
@@ -352,16 +372,16 @@ def test_get_list_of_alerts_with_invalid_args(client):
 
     # List of test cases with invalid args and expected error messages
     test_cases = [
-        ({"cloudProviderIn": "AWS,AZURE12"}, 'This "AZURE12" cloudProvider is not supported'),
-        ({"cloudEnvironmentIn": "Wrong,AZURE1"}, 'This "Wrong" cloudEnvironment is not supported'),
-        ({"policySeverityIn": "AWS32"}, 'This "AWS32" policySeverity is not supported'),
-        ({"categoryTypeIn": "AWS,INVALID"}, 'This "AWS" categoryType is not supported'),
-        ({"statusIn": "IN,OPEN"}, 'This "IN" status is not supported'),
-        ({"cloudProviderEqual": "AZURE12"}, 'This "AZURE12" cloudProvider is not supported'),
-        ({"cloudEnvironmentEqual": "Wrong"}, 'This "Wrong" cloudEnvironment is not supported'),
-        ({"policySeverityEqual": "AWS32"}, 'This "AWS32" policySeverity is not supported'),
-        ({"categoryTypeEqual": "AWS"}, 'This "AWS" categoryType is not supported'),
-        ({"statusEqual": "IN"}, 'This "IN" status is not supported')
+        ({"cloud_provider_in": "AWS,AZURE12"}, 'This "AZURE12" cloudProvider is not supported'),
+        ({"cloud_environment_in": "Wrong,AZURE1"}, 'This "Wrong" cloudEnvironment is not supported'),
+        ({"policy_severity_in": "AWS32"}, 'This "AWS32" policySeverity is not supported'),
+        ({"category_type_in": "AWS,INVALID"}, 'This "AWS" categoryType is not supported'),
+        ({"status_in": "IN,OPEN"}, 'This "IN" status is not supported'),
+        ({"cloud_provider_equal": "AZURE12"}, 'This "AZURE12" cloudProvider is not supported'),
+        ({"cloud_environment_equal": "Wrong"}, 'This "Wrong" cloudEnvironment is not supported'),
+        ({"policy_severity_equal": "AWS32"}, 'This "AWS32" policySeverity is not supported'),
+        ({"category_type_equal": "AWS"}, 'This "AWS" categoryType is not supported'),
+        ({"status_equal": "IN"}, 'This "IN" status is not supported')
     ]
 
     # Iterate over the test cases
@@ -419,7 +439,7 @@ def test_get_labels(client):
     result = get_list_of_labels(client)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == 'DSPM.Labels'
+    assert result.outputs_prefix == 'DSPM.Label'
     assert result.outputs_key_field == 'Key'
     assert result.outputs == [{"No": 1, "Key": "label1"}, {"No": 2, "Key": "label2"}, {"No": 3, "Key": "label3"}]
 
@@ -429,7 +449,7 @@ def test_get_labels_empty_response(client):
     result = get_list_of_labels(client)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == 'DSPM.Labels'
+    assert result.outputs_prefix == 'DSPM.Label'
     assert result.outputs_key_field == 'Key'
     assert result.outputs == []
 
@@ -439,7 +459,7 @@ def test_get_labels_single_label(client):
     result = get_list_of_labels(client)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == 'DSPM.Labels'
+    assert result.outputs_prefix == 'DSPM.Label'
     assert result.outputs_key_field == 'Key'
     assert result.outputs == [{"No": 1, "Key": "Label1"}]
 
@@ -614,14 +634,12 @@ def test_get_asset_files_by_id_with_invalid_key_name(client):
 @patch('DSPM.demisto')
 def test_get_integration_config(mock_demisto):
     mock_params = {
-        "dspmApiKey": {"password": "mocked_dspm_api_key"},
         "slackMsgLifetime": 4,
         "defaultSlackUser": "mock_user"
     }
     expected_result = {
         "integration_config": {
             "defaultSlackUser": "mock_user",
-            "dspmApiKey": "mocked_dspm_api_key",
             "slackMsgLifetime": 4
         }
     }
@@ -645,11 +663,11 @@ def test_get_list_of_assets_empty_response(client, mocker):
 
     # Define the arguments for the command
     args = {
-        'regionIn': 'us-east',
-        'cloudProviderIn': 'AWS',
-        'serviceTypeEqual': 'UNMANAGED_AWS_REDIS',
-        'digTagKeyContains': 'env',
-        'lifecycleIn': 'RUNNING',
+        'region_in': 'us-east',
+        'cloud_provider_in': 'AWS',
+        'service_type_equal': 'UNMANAGED_AWS_REDIS',
+        'dig_tag_key_contains': 'env',
+        'lifecycle_in': 'RUNNING',
         'sort': 'status,DESC',
         'size': 10
     }
@@ -715,20 +733,20 @@ mock_assets_page_2 = [
         ],
         [
             {
-                'ID': 'asset1',
-                'Project ID': 'project1',
-                'Project Name': 'Project One',
-                'Name': 'Asset One',
-                'Cloud Provider': 'GCP',
-                'Cloud Environment': 'TESTING',
-                'Service Type': 'UNMANAGED_GCP_MS_SQL',
-                'Lifecycle': 'RUNNING',
-                'Open Risks Count': 5,
-                'Open Alerts Count': 3,
-                'Encrypted': True,
-                'Open To World': False,
-                'Tags': {"example_tag_key": "example_tag_value"},
-                'Asset Dig Tags': [
+                'id': 'asset1',
+                'projectId': 'project1',
+                'projectName': 'Project One',
+                'name': 'Asset One',
+                'cloudProvider': 'GCP',
+                'cloudEnvironment': 'TESTING',
+                'serviceType': 'UNMANAGED_GCP_MS_SQL',
+                'lifecycle': 'RUNNING',
+                'openRisksCount': 5,
+                'openAlertsCount': 3,
+                'encrypted': True,
+                'openToWorld': False,
+                'tags': {"example_tag_key": "example_tag_value"},
+                'assetDigTags': [
                     {"digTagId": 1, "key": "tag1", "value": "value1"},
                     {"digTagId": 2, "key": "tag2", "value": "value2"}
                 ]
@@ -743,20 +761,20 @@ mock_assets_page_2 = [
         ],
         [
             {
-                'ID': 'asset1',
-                'Project ID': 'project1',
-                'Project Name': 'Project One',
-                'Name': 'Asset One',
-                'Cloud Provider': 'GCP',
-                'Cloud Environment': 'TESTING',
-                'Service Type': 'UNMANAGED_GCP_MS_SQL',
-                'Lifecycle': 'RUNNING',
-                'Open Risks Count': 5,
-                'Open Alerts Count': 3,
-                'Encrypted': True,
-                'Open To World': False,
-                'Tags': {"example_tag_key": "example_tag_value"},
-                'Asset Dig Tags': [
+                'id': 'asset1',
+                'projectId': 'project1',
+                'projectName': 'Project One',
+                'name': 'Asset One',
+                'cloudProvider': 'GCP',
+                'cloudEnvironment': 'TESTING',
+                'serviceType': 'UNMANAGED_GCP_MS_SQL',
+                'lifecycle': 'RUNNING',
+                'openRisksCount': 5,
+                'openAlertsCount': 3,
+                'encrypted': True,
+                'openToWorld': False,
+                'tags': {"example_tag_key": "example_tag_value"},
+                'assetDigTags': [
                     {"digTagId": 1, "key": "tag1", "value": "value1"},
                     {"digTagId": 2, "key": "tag2", "value": "value2"}
                 ]
@@ -791,7 +809,7 @@ def test_get_asset_details(mocker):
 
 
 def test_update_risk_status_with_valid_status(client):
-    args = {'riskFindingId': '1', 'status': 'INVESTIGATING'}
+    args = {'risk_finding_id': '1', 'status': 'INVESTIGATING'}
 
     mock_response = {
         "riskFindingId": '1',
@@ -799,27 +817,22 @@ def test_update_risk_status_with_valid_status(client):
         "newStatus": 'INVESTIGATING',
     }
 
-    expected_output = {
-        "Risk Finding ID": '1',
-        "Old Status": 'OPEN',
-        "New Status": 'INVESTIGATING',
-    }
     client = MagicMock()
     client.update_risk_status.return_value = mock_response
     result = update_risk_finding_status(client, args)
 
-    assert result.outputs == expected_output
+    assert result.outputs == mock_response
 
 
 def test_update_alert_status_invalid_status(client):
-    args = {'alertId': '1', 'status': 'INVALID_STATUS'}
+    args = {'alert_id': '1', 'status': 'INVALID_STATUS'}
 
     with pytest.raises(ValueError, match='This "INVALID_STATUS" status is not supported'):
         update_dspm_alert_status(client, args)
 
 
 def test_update_alert_status_valid_status(client):
-    args = {'alertId': '1', 'status': 'INVESTIGATING'}
+    args = {'alert_id': '1', 'status': 'INVESTIGATING'}
 
     mock_response = {
         "alertId": '1',
@@ -827,16 +840,11 @@ def test_update_alert_status_valid_status(client):
         "newStatus": 'INVESTIGATING',
     }
 
-    expected_output = {
-        "Alert ID": '1',
-        "Old Status": 'OPEN',
-        "New Status": 'INVESTIGATING',
-    }
     client = MagicMock()
     client.update_alert_status.return_value = mock_response
     result = update_dspm_alert_status(client, args)
 
-    assert result.outputs == expected_output
+    assert result.outputs == mock_response
 
 
 def test_get_risk_finding_by_id_with_missing_id(client):
@@ -862,25 +870,13 @@ def test_risk_finding_by_id_with_valid_id(client):
         "firstDiscovered": "2024-04-25T17:08:11.020304Z",
         "complianceStandards": {}
     }
-    expected_output = {
-        "ID": "7e9a3891-8970-4c08-961a-03f49e239d68",
-        "Rule Name": "Sensitive asset without storage versioning",
-        "Severity": "MEDIUM",
-        "Asset Name": "****",
-        "Asset ID": "****",
-        "Status": "OPEN",
-        "Project ID": "****",
-        "Cloud Provider": "AZURE",
-        "Cloud Environment": "DEVELOPMENT",
-        "First Discovered": "2024-04-25T17:08:11.020304Z",
-        "Compliance Standards": {}
-    }
+
     client = MagicMock()
     client.get_risk_information.return_value = mock_response
     args = {'finding_id': '7e9a3891-8970-4c08-961a-03f49e239d68'}
     result = get_risk_finding_by_id(client, args)
 
-    assert result.outputs == expected_output
+    assert result.outputs == mock_response
 
 
 def test_validate_parameter_valid_and_invalid():
@@ -934,26 +930,29 @@ def test_dspm_get_risk_findings_command(client):
         }
     ]
     args = {
-        "cloudProviderEqual": "AZURE",
-        "affectsEqual": "SECURITY",
-        "statusEqual": "OPEN",
-        "serviceTypeEqual": "UNMANAGED_AWS_REDIS",
-        "digTagKeyContains": "env",
-        "lifecycleIn": "RUNNING",
+        "cloud_provider_equal": "AZURE",
+        "affects_equal": "SECURITY",
+        "status_equal": "OPEN",
+        "service_type_equal": "UNMANAGED_AWS_REDIS",
+        "dig_tag_key_contains": "env",
+        "lifecycle_in": "RUNNING",
         "sort": "status,desc"
     }
 
     # Mock the client method
     client.fetch_risk_findings = MagicMock(side_effect=[mock_responses, None])
-    with patch('DSPM.return_results') as mock_return_results:
-        dspm_get_risk_findings_command(client, args)
-        result = mock_return_results.call_args[0][0]
+    result = dspm_list_risk_findings_command(client, args)
 
-        # Assertions
-        assert isinstance(result, CommandResults)
-        assert result.outputs_prefix == "DSPM.RiskFindings"
-        assert result.outputs_key_field == "id"
-        assert len(result.outputs) == len(mock_responses)  # type: ignore
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "DSPM.RiskFinding"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == len(mock_responses)  # type: ignore
+
+    # with invalid - 'limit' param
+    with pytest.raises(ValueError, match="The 'limit' parameter must be an integer."):
+        args = {"limit": "123abc"}
+        dspm_list_risk_findings_command(client, args)
 
 
 def test_dspm_get_list_of_assets_command(client):
@@ -997,26 +996,29 @@ def test_dspm_get_list_of_assets_command(client):
         }
     ]
     args = {
-        "cloudProviderEqual": "AZURE",
-        "affectsEqual": "SECURITY",
-        "statusEqual": "OPEN",
-        "serviceTypeEqual": "UNMANAGED_AWS_REDIS",
-        "digTagKeyContains": "env",
-        "lifecycleIn": "RUNNING",
+        "cloud_provider_equal": "AZURE",
+        "affects_equal": "SECURITY",
+        "status_equal": "OPEN",
+        "service_type_equal": "UNMANAGED_AWS_REDIS",
+        "dig_tag_key_contains": "env",
+        "lifecycle_in": "RUNNING",
         "sort": "status,desc"
     }
 
     # Mock the client method
     client.get_asset_lists = MagicMock(side_effect=[mock_responses, None])
-    with patch('DSPM.return_results') as mock_return_results:
-        dspm_get_list_of_assets_command(client, args)
-        result = mock_return_results.call_args[0][0]
+    result = dspm_list_assets_command(client, args)
 
-        # Assertions
-        assert isinstance(result, CommandResults)
-        assert result.outputs_prefix == "DSPM.Assets"
-        assert result.outputs_key_field == "id"
-        assert len(result.outputs) == len(mock_responses)  # type: ignore
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "DSPM.Asset"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == len(mock_responses)  # type: ignore
+
+    # with invalid - 'limit' param
+    with pytest.raises(ValueError, match="The 'limit' parameter must be an integer."):
+        args = {"limit": "123abc"}
+        dspm_list_assets_command(client, args)
 
 
 def test_dspm_get_data_types_findings_command(client):
@@ -1050,26 +1052,29 @@ def test_dspm_get_data_types_findings_command(client):
         }
     ]
     args = {
-        "cloudProviderEqual": "AZURE",
-        "affectsEqual": "SECURITY",
-        "statusEqual": "OPEN",
-        "serviceTypeEqual": "UNMANAGED_AWS_REDIS",
-        "digTagKeyContains": "env",
-        "lifecycleIn": "RUNNING",
+        "cloud_provider_equal": "AZURE",
+        "affects_equal": "SECURITY",
+        "status_equal": "OPEN",
+        "service_type_equal": "UNMANAGED_AWS_REDIS",
+        "dig_tag_key_contains": "env",
+        "lifecycle_in": "RUNNING",
         "sort": "status,desc"
     }
 
     # Mock the client method
     client.get_data_type_findings = MagicMock(side_effect=[mock_responses, None])
-    with patch('DSPM.return_results') as mock_return_results:
-        dspm_get_data_types_findings_command(client, args)
-        result = mock_return_results.call_args[0][0]
+    result = dspm_list_data_types_findings_command(client, args)
 
-        # Assertions
-        assert isinstance(result, CommandResults)
-        assert result.outputs_prefix == "DSPM.DataTypesFindings"
-        assert result.outputs_key_field == "Key"
-        assert len(result.outputs) == len(mock_responses)  # type: ignore
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "DSPM.DataTypesFinding"
+    assert result.outputs_key_field == "dataTypeName"
+    assert len(result.outputs) == len(mock_responses)  # type: ignore
+
+    # with invalid - 'limit' param
+    with pytest.raises(ValueError, match="The 'limit' parameter must be an integer."):
+        args = {"limit": "123abc"}
+        dspm_list_data_types_findings_command(client, args)
 
 
 def test_dspm_get_list_of_alerts_command(client):
@@ -1120,24 +1125,27 @@ def test_dspm_get_list_of_alerts_command(client):
     ]
 
     args = {
-        "cloudProviderEqual": "AZURE",
-        "policyNameIn": "SECURITY",
-        "statusEqual": "OPEN",
-        "assetNameIn": "assets1,assets2",
-        "cloudEnvironmentIn": "TESTING",
-        "policySeverityEquals": "HIGH",
-        "categoryTypeEquals": "FIRST_MOVE",
+        "cloud_provider_equal": "AZURE",
+        "policy_name_in": "SECURITY",
+        "status_equal": "OPEN",
+        "asset_name_in": "assets1,assets2",
+        "cloud_environment_in": "TESTING",
+        "policy_severity_equals": "HIGH",
+        "category_type_equals": "FIRST_MOVE",
         "sort": "status,desc"
     }
 
     # Mock the client method
     client.get_alerts_list = MagicMock(side_effect=[mock_responses, None])
-    with patch('DSPM.return_results') as mock_return_results:
-        dspm_get_list_of_alerts_command(client, args)
-        result = mock_return_results.call_args[0][0]
+    result = dspm_list_alerts_command(client, args)
 
-        # Assertions
-        assert isinstance(result, CommandResults)
-        assert result.outputs_prefix == "DSPM.Alerts"
-        assert result.outputs_key_field == "id"
-        assert len(result.outputs) == len(mock_responses)  # type: ignore
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "DSPM.Alert"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == len(mock_responses)  # type: ignore
+
+    # with invalid - 'limit' param
+    with pytest.raises(ValueError, match="The 'limit' parameter must be an integer."):
+        args = {"limit": "123abc"}
+        dspm_list_alerts_command(client, args)(client, args)

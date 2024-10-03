@@ -26,9 +26,6 @@ The Prisma Cloud DSPM(Data Security Posture Management) Integration enhances the
     | DSPM server URL | The tenant URL of the Prisma Cloud DSPM | True |
     | DSPM API Key | API key to use for the connection | True |
     | Default Slack user for notifications | the default user to receive Slack notifications in case of any errors | True |
-    | Azure Storage Account name |  | False |
-    | Azure Storage Shared Key | The shared API key available in the Azure Storage Account | False |
-    | GCP Service Account JSON |  | False |
     | Lifetime for slack notification (in hours) |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -42,71 +39,70 @@ Prisma Cloud DSPM pack allows the users to execute individual commands on the Co
 The following commands can be executed as a part of an automation or playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### dspm-get-risk-findings
+### dspm-list-risk-findings
 
 ***
 Retrieves risk findings matching the input criteria.
 
 #### Base Command
 
-`dspm-get-risk-findings`
+`dspm-list-risk-findings`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ruleNameIn | List of rule names. | Optional | 
-| ruleNameEqual | Exact rule name. | Optional | 
-| dspmTagKeyIn | List of DSPM tag keys. | Optional | 
-| dspmTagKeyEqual | Exact DSPM tag key. | Optional | 
-| dspmTagValueIn | List of DSPM tag values. | Optional | 
-| dspmTagValueEqual | Exact DSPM tag value. | Optional | 
-| projectIdIn | List of project IDs. | Optional | 
-| projectIdEqual | Exact project ID. | Optional | 
-| cloudProviderIn | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
-| cloudProviderEqual | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
-| affectsIn | List of affects ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"]. | Optional | 
-| affectsEqual | Exact affect ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"]. | Optional | 
-| statusIn | List of statuses ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional | 
-| statusEqual | Exact status ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional | 
+| rule_name_in | List of rule names. | Optional | 
+| rule_name_equal | Exact rule name. | Optional | 
+| dspm_tag_key_in | List of DSPM tag keys. | Optional | 
+| dspm_tag_key_equal | Exact DSPM tag key. | Optional | 
+| dspm_tag_value_in | List of DSPM tag values. | Optional | 
+| dspm_tag_value_equal | Exact DSPM tag value. | Optional | 
+| projectId_in | List of project IDs. | Optional | 
+| projectId_equal | Exact project ID. | Optional | 
+| limit | The maximum number of risk findings to retrieve. If not specified, the default value is 50. | Optional | 
+| cloud_provider_in | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
+| cloud_provider_equal | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
+| affects_in | List of affects ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"]. | Optional | 
+| affects_equal | Exact affect ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"]. | Optional | 
+| status_in | List of statuses ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional | 
+| status_equal | Exact status ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional | 
 | sort | Sort order. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.RiskFindings.ID | String |The unique ID of the risk finding. |
-| DSPM.RiskFindings.AssetID | String |The ID of the asset associated with the risk finding. |
-| DSPM.RiskFindings.AssetName | String |The name of the asset associated with the risk finding. |
-| DSPM.RiskFindings.ComplianceStandards |String |The compliance standards relevant to the risk finding. |
-| DSPM.RiskFindings.Severity | String |The severity of the risk finding (e.g., Low, Medium, High). |
-| DSPM.RiskFindings.RuleName | String |The rule name associated with the risk finding. |
-| DSPM.RiskFindings.FirstDiscovered | Date |The date the risk finding was first discovered. |
-| DSPM.RiskFindings.CloudProvider | String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP). |
-| DSPM.RiskFindings.Status | String |The current status of the risk finding (e.g., Open, Closed). |
-| DSPM.RiskFindings.CloudEnvironment | String |The cloud environment (public or private) associated with the risk finding. |
-| DSPM.RiskFindings.ProjectID | String |The project ID where the asset resides. |
+| DSPM.RiskFinding.id | String |The unique ID of the risk finding. |
+| DSPM.RiskFinding.asset | String |The asset details associated with the risk finding. |
+| DSPM.RiskFinding.complianceStandards |String |The compliance standards relevant to the risk finding. |
+| DSPM.RiskFinding.severity | String |The severity of the risk finding (e.g., Low, Medium, High). |
+| DSPM.RiskFinding.ruleName | String |The rule name associated with the risk finding. |
+| DSPM.RiskFinding.firstDiscovered | Date |The date the risk finding was first discovered. |
+| DSPM.RiskFinding.cloudProvider | String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP). |
+| DSPM.RiskFinding.status | String |The current status of the risk finding (e.g., Open, Closed). |
+| DSPM.RiskFinding.cloudEnvironment | String |The cloud environment (public or private) associated with the risk finding. |
+| DSPM.RiskFinding.projectId | String |The project ID where the asset resides. |
 
 #### Command example
-```!dspm-get-risk-findings```
+```!dspm-list-risk-findings```
 #### Context Example
 ```json
 {
   "DSPM": {
-    "RiskFindings": [
+    "RiskFinding": [
       {
-        "ID": "riskfinding123",
-        "AssetID": "asset123",
-        "AssetName": "Example Asset",
-        "ComplianceStandards": "PCI-DSS",
-        "Severity": "High",
-        "RuleName": "Sensitive Data Exposure",
-        "FirstDiscovered": "2024-09-01T12:00:00Z",
-        "CloudProvider": "AWS",
-        "Status": "Open",
-        "CloudEnvironment": "Public",
-        "ProjectID": "project123"
-      }
+        "id": "**************",
+        "ruleName": "Empty storage asset",
+        "severity": "LOW",
+        "asset": {},
+        "status": "OPEN",
+        "projectId": "********",
+        "cloudProvider": "AWS",
+        "cloudEnvironment": "UNKNOWN",
+        "firstDiscovered": "2024-09-27T11:55:39.059125Z",
+        "complianceStandards": {}
+    }
     ]
   }
 }
@@ -115,9 +111,9 @@ Retrieves risk findings matching the input criteria.
 #### Human Readable Output
 
 >### Results
->|Asset ID|Asset Name|Cloud Environment|Cloud Provider|Compliance Standards|First Discovered|ID|Project ID|Rule Name|Severity|Status|
->|---|---|---|---|---|---|---|---|---|---|---|
->| arn:aws:s3:::emptybucketdspm-test | emptybucketdspm-test | UNKNOWN | AWS |  | 2024-09-05T13:40:33.565153Z | 00000000-0000-4f99-0000-616843b6b19e | 774305603864 | Empty storage asset | LOW | INVESTIGATING |
+>|Asset|Cloud Environment|Cloud Provider|Compliance Standards|First Discovered|ID|Project ID|Rule Name|Severity|Status|
+>|---|---|---|---|---|---|---|---|---|---|
+>|{}|UNKNOWN|AWS|{}|2024-09-27T11:55:39.059125Z|00000000-0000-4f99-0000-616843b6b19e|********|Empty storage asset|LOW|OPEN|
 
 ### dspm-get-risk-finding-by-id
 
@@ -139,17 +135,16 @@ Retrieves the details of a risk for the provided risk ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.RiskFinding.ID | String |The unique ID of the risk finding. |
-| DSPM.RiskFinding.AssetID | String |The ID of the asset associated with the risk finding. |
-| DSPM.RiskFinding.AssetName | String |The name of the asset associated with the risk finding. |
-| DSPM.RiskFinding.ComplianceStandards | String |The compliance standards relevant to the risk finding. |
-| DSPM.RiskFinding.Severity | String |The severity of the risk finding (e.g., Low, Medium, High). |
-| DSPM.RiskFinding.RuleName | String |The rule name associated with the risk finding. |
-| DSPM.RiskFinding.FirstDiscovered | Date |The date the risk finding was first discovered. |
-| DSPM.RiskFinding.CloudProvider | String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP). |
-| DSPM.RiskFinding.Status | String |The current status of the risk finding (e.g., Open, Closed). |
-| DSPM.RiskFinding.CloudEnvironment | String |The cloud environment (public or private) associated with the risk finding. |
-| DSPM.RiskFinding.ProjectID | String |The project ID where the asset resides. |
+| DSPM.RiskFinding.id | String |The unique ID of the risk finding. |
+| DSPM.RiskFinding.asset | String |The asset details associated with the risk finding. |
+| DSPM.RiskFinding.complianceStandards | String |The compliance standards relevant to the risk finding. |
+| DSPM.RiskFinding.severity | String |The severity of the risk finding (e.g., Low, Medium, High). |
+| DSPM.RiskFinding.ruleName | String |The rule name associated with the risk finding. |
+| DSPM.RiskFinding.firstDiscovered | Date |The date the risk finding was first discovered. |
+| DSPM.RiskFinding.cloudProvider | String |The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP). |
+| DSPM.RiskFinding.status | String |The current status of the risk finding (e.g., Open, Closed). |
+| DSPM.RiskFinding.cloudEnvironment | String |The cloud environment (public or private) associated with the risk finding. |
+| DSPM.RiskFinding.projectId | String |The project ID where the asset resides. |
 
 
 #### Command example
@@ -158,18 +153,17 @@ Retrieves the details of a risk for the provided risk ID.
 ```json
 {
     "DSPM": {
-        "RiskFinding": {
-            "Asset ID": "arn:aws:s3:::emptybucketdspm-test",
-            "Asset Name": "emptybucketdspm-test",
-            "Cloud Environment": "UNKNOWN",
-            "Cloud Provider": "AWS",
-            "Compliance Standards": {},
-            "First Discovered": "2024-09-05T13:40:33.565153Z",
-            "ID": "00000000-0000-4f99-0000-616843b6b19e",
-            "Project ID": "774305603864",
-            "Rule Name": "Empty storage asset",
-            "Severity": "LOW",
-            "Status": "INVESTIGATING"
+            "RiskFinding": {
+            "id": "00000000-0000-4f99-0000-616843b6b19e",
+            "ruleName": "Empty storage asset",
+            "severity": "LOW",
+            "asset": {},
+            "status": "OPEN",
+            "projectId": "********",
+            "cloudProvider": "AWS",
+            "cloudEnvironment": "UNKNOWN",
+            "firstDiscovered": "2024-09-27T11:55:39.059125Z",
+            "complianceStandards": {}
         }
     }
 }
@@ -178,75 +172,80 @@ Retrieves the details of a risk for the provided risk ID.
 #### Human Readable Output
 
 >### Results
->|Asset ID|Asset Name|Cloud Environment|Cloud Provider|Compliance Standards|First Discovered|ID|Project ID|Rule Name|Severity|Status|
->|---|---|---|---|---|---|---|---|---|---|---|
->| arn:aws:s3:::emptybucketdspm-test | emptybucketdspm-test | UNKNOWN | AWS |  | 2024-09-05T13:40:33.565153Z | 00000000-0000-4f99-0000-616843b6b19e | 774305603864 | Empty storage asset | LOW | INVESTIGATING |
+>|Asset|Cloud Environment|Cloud Provider|Compliance Standards|First Discovered|ID|Project ID|Rule Name|Severity|Status|
+>|---|---|---|---|---|---|---|---|---|---|
+>|{}|UNKNOWN|AWS|{}|2024-09-27T11:55:39.059125Z|00000000-0000-4f99-0000-616843b6b19e|********|Empty storage asset|LOW|OPEN|
 
-### dspm-get-list-of-assets
+### dspm-list-assets
 
 ***
 Retrieves a list of assets for the company.
 
 #### Base Command
 
-`dspm-get-list-of-assets`
+`dspm-list-assets`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| regionIn | List of regions (comma-separated values). | Optional | 
-| regionEqual | Exact region. | Optional | 
-| cloudProviderIn | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"] (comma separated values). | Optional | 
-| cloudProviderEqual | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
-| serviceTypeIn | List of Service Types (comma separated values). | Optional | 
-| serviceTypeEqual | Exact Service Type. | Optional | 
-| lifecycleIn | List of Life Cycles egs.['RUNNING', 'STOPPED', 'DELETED'](comma separated values). | Optional | 
-| lifecycleEqual | Exact Life Cycle ['RUNNING', 'STOPPED', 'DELETED']. | Optional | 
+| region_in | List of regions (comma-separated values). | Optional | 
+| region_equal | Exact region. | Optional | 
+| limit | The maximum number of assets to retrieve. If not specified, the default value is 50. | Optional | 
+| cloud_provider_in | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"] (comma separated values). | Optional | 
+| cloud_provider_equal | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
+| service_type_in | List of Service Types (comma separated values). | Optional | 
+| service_type_equal | Exact Service Type. | Optional | 
+| lifecycle_in | List of Life Cycles egs.['RUNNING', 'STOPPED', 'DELETED'](comma separated values). | Optional | 
+| lifecycle_equal | Exact Life Cycle ['RUNNING', 'STOPPED', 'DELETED']. | Optional | 
 | sort | Sorting criteria in the format: property,(asc\|desc). Default sort order is ascending. Multiple sort criteria are supported. | Optional | 
 
 #### Context Outputs
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.Assets.ProjectID | String | The ID of the project associated with the asset. |
-| DSPM.Assets.OpenAlertsCount | Number | The count of open alerts for the asset. |
-| DSPM.Assets.AssetDigTags | String | Digital tags associated with the asset. |
-| DSPM.Assets.OpenToWorld | Boolean | Indicates if the asset is open to the world. |
-| DSPM.Assets.OpenRisksCount | Number | The count of open risks for the asset. |
-| DSPM.Assets.Lifecycle | String | Lifecycle status of the asset. |
-| DSPM.Assets.ServiceType | String | The type of service associated with the asset. |
-| DSPM.Assets.Tags | String | Tags related to the asset. |
-| DSPM.Assets.ProjectName | String | The name of the project associated with the asset. |
-| DSPM.Assets.CloudEnvironment | String | The cloud environment in which the asset exists. |
-| DSPM.Assets.ID | String | The unique identifier of the asset. |
-| DSPM.Assets.CloudProvider | String | The cloud provider for the asset. |
-| DSPM.Assets.Encrypted | Boolean | Indicates if the asset is encrypted. |
-| DSPM.Assets.Name | String | The name of the asset. |
+| DSPM.Asset.projectId | String | The ID of the project associated with the asset. |
+| DSPM.Asset.openAlertsCount | Number | The count of open alerts for the asset. |
+| DSPM.Asset.assetDigTags | String | Dig tags associated with the asset. |
+| DSPM.Asset.openToWorld | Boolean | Indicates if the asset is open to the world. |
+| DSPM.Asset.openRisksCount | Number | The count of open risks for the asset. |
+| DSPM.Asset.lifecycle | String | Lifecycle status of the asset. |
+| DSPM.Asset.serviceType | String | The type of service associated with the asset. |
+| DSPM.Asset.tags | String | Tags related to the asset. |
+| DSPM.Asset.projectName | String | The name of the project associated with the asset. |
+| DSPM.Asset.cloudEnvironment | String | The cloud environment in which the asset exists. |
+| DSPM.Asset.id | String | The unique identifier of the asset. |
+| DSPM.Asset.cloudProvider | String | The cloud provider for the asset. |
+| DSPM.Asset.encrypted | Boolean | Indicates if the asset is encrypted. |
+| DSPM.Asset.name | String | The name of the asset. |
+| DSPM.Asset.dataTypeGroups | String | Groups of data types associated with the asset. |
+| DSPM.Asset.dataTypes | String | Data types associated with the asset. |
 
 
 #### Command example
-```!dspm-get-list-of-assets cloudProviderEqual=AWS serviceTypeEqual=S3```
+```!dspm-list-assets cloudProviderEqual=AWS serviceTypeEqual=S3```
 #### Context Example
 ```json
 {
     "DSPM": {
         "Assets": {
-            "Asset Dig Tags": [],
-            "Cloud Environment": "TESTING",
-            "Cloud Provider": "AWS",
-            "Encrypted": true,
-            "ID": "arn:aws:s3:::dummyS3-cifp-us-east-1",
-            "Lifecycle": "RUNNING",
-            "Name": "appcomposer-ci0jq3kgvjnccdfp-us-east-1",
-            "Open Alerts Count": 0,
-            "Open Risks Count": 0,
-            "Open To World": false,
-            "Project ID": "590183896679",
-            "Project Name": "590183896679",
-            "Service Type": "S3",
-            "Tags": {}
-        }
+        "projectId": "************",
+        "projectName": "************",
+        "name": "dymmy-ci0jq3kgvjnccdfp-us-east-1",
+        "cloudProvider": "AWS",
+        "cloudEnvironment": "TESTING",
+        "serviceType": "S3",
+        "dataTypeGroups": [],
+        "dataTypes": [],
+        "lifecycle": "RUNNING",
+        "openRisksCount": 0,
+        "openAlertsCount": 0,
+        "encrypted": true,
+        "openToWorld": false,
+        "tags": {},
+        "assetDigTags": [],
+        "id": "arn:aws:s3:::dymmy-ci0jq3kgvjnccdfp-us-east-1"
+    }
     }
 }
 ```
@@ -254,9 +253,9 @@ Retrieves a list of assets for the company.
 #### Human Readable Output
 
 >### Results
->|Asset Dig Tags|Cloud Environment|Cloud Provider|Encrypted|ID|Lifecycle|Name|Open Alerts Count|Open Risks Count|Open To World|Project ID|Project Name|Service Type|Tags|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | TESTING | AWS | true | arn:aws:s3:::dummyS3-cifp-us-east-1 | RUNNING | appcomposer-ci0jq3kgvjnccdfp-us-east-1 | 0 | 0 | false | 590183896679 | 590183896679 | S3 |  |
+>|Asset Dig Tags|Cloud Environment|Cloud Provider|Encrypted|ID|Lifecycle|Name|Open Alerts Count|Open Risks Count|Open To World|Project ID|Project Name|Service Type|Tags|Data Type Groups|Data Types|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | TESTING | AWS | true | arn:aws:s3:::dymmy-ci0jq3kgvjnccdfp-us-east-1 | RUNNING | dymmy-ci0jq3kgvjnccdfp-us-east-1 | 0 | 0 | false | ************ | ************ | S3 |  |  |  |
 
 ### dspm-get-asset-details
 
@@ -278,7 +277,7 @@ Retrieves details for the specified asset ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.AssetDetails.assetDigTags | Unknown | The digital tags associated with the asset. |
+| DSPM.AssetDetails.assetDigTags | Unknown | The dig tags associated with the asset. |
 | DSPM.AssetDetails.cloudEnvironment | String | The cloud environment in which the asset exists. |
 | DSPM.AssetDetails.cloudProvider | String | The cloud provider for the asset (e.g., AWS, Azure, GCP). |
 | DSPM.AssetDetails.dataTypeGroups | Unknown | Groups of data types associated with the asset. |
@@ -310,12 +309,12 @@ Retrieves details for the specified asset ID
             "encrypted": true,
             "id": "arn:aws:s3:::dummyS3-cifp-us-east-1",
             "lifecycle": "RUNNING",
-            "name": "appcomposer-ci0jq3kgvjnccdfp-us-east-1",
+            "name": "dymmy-ci0jq3kgvjnccdfp-us-east-1",
             "openAlertsCount": 0,
             "openRisksCount": 0,
             "openToWorld": false,
-            "projectId": "590183896679",
-            "projectName": "590183896679",
+            "projectId": "************",
+            "projectName": "************",
             "serviceType": "S3",
             "tags": {}
         }
@@ -328,7 +327,7 @@ Retrieves details for the specified asset ID
 >### Results
 >|assetDigTags|cloudEnvironment|cloudProvider|dataTypeGroups|dataTypes|encrypted|id|lifecycle|name|openAlertsCount|openRisksCount|openToWorld|projectId|projectName|serviceType|tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | TESTING | AWS |  |  | true | arn:aws:s3:::dummyS3-cifp-us-east-1 | RUNNING | appcomposer-ci0jq3kgvjnccdfp-us-east-1 | 0 | 0 | false | 590183896679 | 590183896679 | S3 |  |
+>|   | TESTING | AWS |  |  | true | arn:aws:s3:::dummyS3-cifp-us-east-1 | RUNNING | dymmy-ci0jq3kgvjnccdfp-us-east-1 | 0 | 0 | false | ************ | ************ | S3 |  |
 
 ### dspm-get-asset-files-by-id
 
@@ -607,11 +606,11 @@ There are no input arguments for this command.
 >| 5  | Certificate |
 
 
-### dspm-get-list-of-labels
+### dspm-list-labels
 
 #### Base Command
 
-`dspm-get-list-of-labels`
+`dspm-list-labels`
 
 #### Input
 
@@ -625,7 +624,7 @@ There are no input arguments for this command.
 | DSPM.Label.No | Number | Data types number. |
 
 #### Command example
-```!dspm-get-list-of-labels```
+```!dspm-list-labels```
 #### Context Example
 ```json
 {
@@ -668,50 +667,71 @@ There are no input arguments for this command.
 >| 5  | Sensitive |
 
 
-### dspm-get-data-types-findings
+### dspm-list-data-types-findings
 
 ***
 Retrieves a list of data type findings for the company.
 
 #### Base Command
 
-`dspm-get-data-types-findings`
+`dspm-list-data-types-findings`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| regionIn | List of regions (comma-separated values). | Optional | 
-| regionEqual | Exact region. | Optional | 
-| cloudProviderIn | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
-| cloudProviderEqual | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
-| serviceTypeIn | List of Service Types (comma separated values). | Optional | 
-| serviceTypeEqual | Exact Service Type. | Optional | 
-| lifecycleIn | List of Life Cycles (comma separated values). | Optional | 
-| projectIdIn | List of project IDs. | Optional | 
-| projectIdEqual | Exact project ID. | Optional | 
-| lifecycleEqual | Exact Life Cycle. | Optional | 
+| region_in | List of regions (comma-separated values). | Optional | 
+| region_equal | Exact region. | Optional | 
+| cloud_provider_in | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
+| cloud_provider_equal | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
+| service_type_in | List of Service Types (comma separated values). | Optional | 
+| service_type_equal | Exact Service Type. | Optional | 
+| lifecycle_in | List of Life Cycles (comma separated values). | Optional | 
+| projectId_in | List of project IDs. | Optional | 
+| projectId_equal | Exact project ID. | Optional | 
+| lifecycle_equal | Exact Life Cycle. | Optional | 
+| limit | The maximum number of data types findings to retrieve. If not specified, the default value is 50. | Optional | 
 | sort | Sorting criteria in the format: property,(asc\|desc). Default sort order is ascending. Multiple sort criteria are supported. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.DataTypeFindings.Key | String | Data type finding key. |
-| DSPM.DataTypeFindings.No | Number | Data type finding number. | 
+| DSPM.DataTypesFinding.dataTypeName | String | Represents the name of the data type being analyzed. |
+| DSPM.DataTypesFinding.label | String | Label associated with the data type, such as PII. |
+| DSPM.DataTypesFinding.records | Number | The number of records associated with the data type. |
+| DSPM.DataTypesFinding.publicRecords | Number | The number of public records found for this data type. |
+| DSPM.DataTypesFinding.assets | Number | The number of assets associated with this data type. |
+| DSPM.DataTypesFinding.clouds | String | The clouds where the data type was found (e.g., AWS). |
+| DSPM.DataTypesFinding.regions | String | The regions where the data type was found. |
+| DSPM.DataTypesFinding.lastFound | Date | The timestamp when the data type was last found. |
+| DSPM.DataTypesFinding.recordsAtRisk.high | Number | The number of high-risk records found for this data type. |
+| DSPM.DataTypesFinding.recordsAtRisk.medium | Number | The number of medium-risk records found for this data type. |
+| DSPM.DataTypesFinding.recordsAtRisk.low | Number | The number of low-risk records found for this data type. |
 
 #### Command example
-```!dspm-get-data-types-findings cloudProviderEqual=AWS```
+```!dspm-list-data-types-findings cloudProviderEqual=AWS```
 #### Context Example
 ```json
-{
-    "DSPM": {
-        "DataTypesFindings": {
-            "Key": "AADHAAR_INDIVIDUAL_IDENTIFICATION",
-            "No": 1
+[{
+        "dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION",
+        "label": "PII",
+        "records": 4,
+        "publicRecords": 0,
+        "assets": 1,
+        "clouds": [
+            "AWS"
+        ],
+        "regions": [
+            "us-east-1"
+        ],
+        "lastFound": "2024-05-09T03:24:29Z",
+        "recordsAtRisk": {
+            "high": 0,
+            "medium": 4,
+            "low": 0
         }
-    }
-}
+}]
 ```
 
 #### Human Readable Output
@@ -735,7 +755,7 @@ Updates the status of a risk finding.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| riskFindingId | Risk Finding ID. | Required | 
+| risk_finding_id | Risk Finding ID. | Required | 
 | status | Updated Status. | Required | 
 
 #### Context Output
@@ -771,40 +791,41 @@ Updates the status of a risk finding.
 ----------------
 
 
-### dspm-get-list-of-alerts
+### dspm-list-alerts
 
 ***
 Fetch list of alerts.
 
 #### Base Command
 
-`dspm-get-list-of-alerts`
+`dspm-list-alerts`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detectionTimeEquals | Exact detection time (equals). | Optional |
-| detectionTimeGreaterThanOrEqual | Detection time (greater than or equal). | Optional |
-| detectionTimeGreaterThan | Detection time (greater than). | Optional |
-| detectionTimeLessThanOrEqual | Detection time (less than or equal). | Optional |
-| detectionTimeLessThan | Detection time (less than). | Optional |
-| policyNameIn | List of policy names. | Optional |
-| policyNameEquals | Exact policy name. | Optional |
-| assetNameIn | List of asset names. | Optional |
-| assetNameEquals | Exact asset name. | Optional |
-| cloudProviderIn | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional |
-| cloudProviderEquals | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional |
-| destinationProjectVendorNameIn | List of destination project vendor names. | Optional |
-| destinationProjectVendorNameEquals | Exact destination project vendor name. | Optional |
-| cloudEnvironmentIn | List of cloud environments ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"]. | Optional |
-| cloudEnvironmentEquals | Exact cloud environment ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"]. | Optional |
-| policySeverityIn | List of policy severities ["HIGH", "MEDIUM", "LOW"]. | Optional |
-| policySeverityEquals | Exact policy severity ["HIGH", "MEDIUM", "LOW"]. | Optional |
-| categoryTypeIn | List of category types ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]. | Optional |
-| categoryTypeEquals | Exact category type ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]. | Optional |
-| statusIn | List of statuses ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional |
-| statusEquals | Exact status ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional |
+| detection_time_equals | Exact detection time (equals). | Optional |
+| detection_time_greater_than_or_equal | Detection time (greater than or equal). | Optional |
+| detection_time_greater_than | Detection time (greater than). | Optional |
+| detection_time_less_than_or_equal | Detection time (less than or equal). | Optional |
+| detection_time_less_than | Detection time (less than). | Optional |
+| policy_name_in | List of policy names. | Optional |
+| policy_name_equals | Exact policy name. | Optional |
+| asset_name_in | List of asset names. | Optional |
+| limit | The maximum number of alerts to retrieve. If not specified, the default value is 50. | Optional |
+| asset_name_equals | Exact asset name. | Optional |
+| cloud_provider_in | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional |
+| cloud_provider_equals | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional |
+| destination_project_vendor_name_in | List of destination project vendor names. | Optional |
+| destination_project_vendor_name_equals | Exact destination project vendor name. | Optional |
+| cloud_environment_in | List of cloud environments ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"]. | Optional |
+| cloud_environment_equals | Exact cloud environment ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"]. | Optional |
+| policy_severity_in | List of policy severities ["HIGH", "MEDIUM", "LOW"]. | Optional |
+| policy_severity_equals | Exact policy severity ["HIGH", "MEDIUM", "LOW"]. | Optional |
+| category_type_in | List of category types ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]. | Optional |
+| category_type_equals | Exact category type ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]. | Optional |
+| status_in | List of statuses ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional |
+| status_equals | Exact status ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional |
 | sort | Sort order (property, asc|desc). | Optional |
 
 
@@ -812,27 +833,27 @@ Fetch list of alerts.
 
 | **Path** | **Type** | **Description** | 
 | --- | --- | --- | 
-| DSPM.Alerts.id | String | Alert ID. | 
-| DSPM.Alerts.detectionTime | Date | Alert detection time. | 
-| DSPM.Alerts.policyName | String | Alert policy name. | 
-| DSPM.Alerts.assetName | String | Alert asset name. | 
-| DSPM.Alerts.assetLabels | Unknown | Alert asset label. | 
-| DSPM.Alerts.cloudProvider | String | Alert cloud provider. | 
-| DSPM.Alerts.destinationProjects | Unknown | Alert destination projects. | 
-| DSPM.Alerts.cloudEnvironment | String | Alert cloud enviroment. | 
-| DSPM.Alerts.policySeverity | String | Alert policy severity. | 
-| DSPM.Alerts.policyCategoryType | String | Alert policy category type. | 
-| DSPM.Alerts.status | String | Alert status. | 
-| DSPM.Alerts.eventActor | String | Alert event actor. | 
-| DSPM.Alerts.eventUserAgent | String | Alert event user agent. | 
-| DSPM.Alerts.eventActionMedium | String | Alert event action medium. | 
-| DSPM.Alerts.eventSource | String | Alert event source. | 
-| DSPM.Alerts.policyFrameWorks | String | Alert policy frameworks. | 
-| DSPM.Alerts.eventRawData | String | Alert event raw data. | 
+| DSPM.Alert.id | String | Alert ID. | 
+| DSPM.Alert.detectionTime | Date | Alert detection time. | 
+| DSPM.Alert.policyName | String | Alert policy name. | 
+| DSPM.Alert.assetName | String | Alert asset name. | 
+| DSPM.Alert.assetLabels | Unknown | Alert asset label. | 
+| DSPM.Alert.cloudProvider | String | Alert cloud provider. | 
+| DSPM.Alert.destinationProjects | Unknown | Alert destination projects. | 
+| DSPM.Alert.cloudEnvironment | String | Alert cloud enviroment. | 
+| DSPM.Alert.policySeverity | String | Alert policy severity. | 
+| DSPM.Alert.policyCategoryType | String | Alert policy category type. | 
+| DSPM.Alert.status | String | Alert status. | 
+| DSPM.Alert.eventActor | String | Alert event actor. | 
+| DSPM.Alert.eventUserAgent | String | Alert event user agent. | 
+| DSPM.Alert.eventActionMedium | String | Alert event action medium. | 
+| DSPM.Alert.eventSource | String | Alert event source. | 
+| DSPM.Alert.policyFrameWorks | String | Alert policy frameworks. | 
+| DSPM.Alert.eventRawData | String | Alert event raw data. | 
 
 
 #### Command example
-```!dspm-get-list-of-alerts cloudEnvironmentEquals="TESTING"```
+```!dspm-list-alerts cloudEnvironmentEquals="TESTING"```
 #### Context Example
 ```json
 {
@@ -885,7 +906,7 @@ Updates the status of a alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alertId | Alert ID. | Required | 
+| alert_id | Alert ID. | Required | 
 | status | Updated Status. | Required | 
 
 #### Context Output

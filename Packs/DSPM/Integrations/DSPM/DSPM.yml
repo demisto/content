@@ -45,47 +45,47 @@ script:
   - arguments:
     - description: 'List of rule names.'
       isArray: true
-      name: ruleNameIn
+      name: rule_name_in
       required: false
       secret: false
     - description: 'Exact rule name.'
       isArray: false
-      name: ruleNameEqual
+      name: rule_name_equal
       required: false
       secret: false
     - description: 'List of DSPM tag keys.'
       isArray: true
-      name: dspmTagKeyIn
+      name: dspm_tag_key_in
       required: false
       secret: false
     - description: 'Exact DSPM tag key.'
       isArray: false
-      name: dspmTagKeyEqual
+      name: dspm_tag_key_equal
       required: false
       secret: false
     - description: 'List of DSPM tag values.'
       isArray: true
-      name: dspmTagValueIn
+      name: dspm_tag_value_in
       required: false
       secret: false
     - description: 'Exact DSPM tag value.'
       isArray: false
-      name: dspmTagValueEqual
+      name: dspm_tag_value_equal
       required: false
       secret: false
     - description: 'List of project IDs.'
       isArray: true
-      name: projectIdIn
+      name: projectId_in
       required: false
       secret: false
     - description: 'Exact project ID.'
       isArray: false
-      name: projectIdEqual
+      name: projectId_equal
       required: false
       secret: false
     - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
       isArray: false
-      name: cloudProviderIn
+      name: cloud_provider_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -99,7 +99,7 @@ script:
       defaultValue: 'AWS'
     - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
       isArray: false
-      name: cloudProviderEqual
+      name: cloud_provider_equal
       required: false
       secret: false
       auto: PREDEFINED
@@ -112,7 +112,7 @@ script:
       - 'O365'
     - description: 'List of affects ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"].'
       isArray: true
-      name: affectsIn
+      name: affects_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -126,7 +126,7 @@ script:
       - 'SECURITY_AND_COMPLIANCE_AND_GOVERNANCE'
     - description: 'Exact affect ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"].'
       isArray: false
-      name: affectsEqual
+      name: affects_equal
       required: false
       secret: false
       auto: PREDEFINED
@@ -140,7 +140,7 @@ script:
       - 'SECURITY_AND_COMPLIANCE_AND_GOVERNANCE'
     - description: 'List of statuses ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"].'
       isArray: true
-      name: statusIn
+      name: status_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -153,7 +153,7 @@ script:
       - 'INVESTIGATING'
     - description: 'Exact status ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"].'
       isArray: false
-      name: statusEqual
+      name: status_equal
       required: false
       secret: false
       auto: PREDEFINED
@@ -169,40 +169,43 @@ script:
       name: sort
       required: false
       secret: false
+    - description: 'The maximum number of risk findings to retrieve. If not specified, the default value is 50.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 50
     description: Retrieves risk findings matching the input criteria.
-    name: dspm-get-risk-findings
+    name: dspm-list-risk-findings
     outputs:
-    - contextPath: DSPM.RiskFindings.AssetID
-      description: 'The ID of the asset associated with the risk finding.'
-      type: String
-    - contextPath: DSPM.RiskFindings.AssetName
-      description: 'The name of the asset associated with the risk finding.'
-      type: String
-    - contextPath: DSPM.RiskFindings.CloudEnvironment
+    - contextPath: DSPM.RiskFinding.asset
+      description: 'The asset details associated with the risk finding.'
+      type: Unknown
+    - contextPath: DSPM.RiskFinding.cloudEnvironment
       description: 'The cloud environment (public or private) associated with the risk finding.'
       type: String
-    - contextPath: DSPM.RiskFindings.CloudProvider
+    - contextPath: DSPM.RiskFinding.cloudProvider
       description: 'The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP).'
       type: String
-    - contextPath: DSPM.RiskFindings.ComplianceStandards
+    - contextPath: DSPM.RiskFinding.complianceStandards
       description: 'The compliance standards relevant to the risk finding.'
       type: Unknown
-    - contextPath: DSPM.RiskFindings.FirstDiscovered
+    - contextPath: DSPM.RiskFinding.firstDiscovered
       description: 'The date the risk finding was first discovered.'
       type: Date
-    - contextPath: DSPM.RiskFindings.ID
+    - contextPath: DSPM.RiskFinding.id
       description: 'The unique ID of the risk finding.'
       type: String
-    - contextPath: DSPM.RiskFindings.ProjectID
+    - contextPath: DSPM.RiskFinding.projectId
       description: 'The project ID where the asset resides.'
       type: String
-    - contextPath: DSPM.RiskFindings.RuleName
+    - contextPath: DSPM.RiskFinding.ruleName
       description: 'The rule name associated with the risk finding.'
       type: String
-    - contextPath: DSPM.RiskFindings.Severity
+    - contextPath: DSPM.RiskFinding.severity
       description: 'The severity of the risk finding (e.g., Low, Medium, High).'
       type: String
-    - contextPath: DSPM.RiskFindings.Status
+    - contextPath: DSPM.RiskFinding.status
       description: 'The current status of the risk finding (e.g., Open, Closed).'
       type: String
   - arguments:
@@ -212,54 +215,51 @@ script:
     description: Retrieves the details of a risk for the provided risk ID.
     name: dspm-get-risk-finding-by-id
     outputs:
-    - contextPath: DSPM.RiskFinding.AssetID
-      description: 'The ID of the asset associated with the risk finding.'
-      type: String
-    - contextPath: DSPM.RiskFinding.AssetName
-      description: 'The name of the asset associated with the risk finding.'
-      type: String
-    - contextPath: DSPM.RiskFinding.CloudEnvironment
+    - contextPath: DSPM.RiskFinding.asset
+      description: 'The asset details associated with the risk finding.'
+      type: Unknown
+    - contextPath: DSPM.RiskFinding.cloudEnvironment
       description: 'The cloud environment (public or private) associated with the risk finding.'
       type: String
-    - contextPath: DSPM.RiskFinding.CloudProvider
+    - contextPath: DSPM.RiskFinding.cloudProvider
       description: 'The cloud provider associated with the risk finding (e.g., AWS, Azure, GCP).'
       type: String
-    - contextPath: DSPM.RiskFinding.ComplianceStandards
+    - contextPath: DSPM.RiskFinding.complianceStandards
       description: 'The compliance standards relevant to the risk finding.'
       type: Unknown
-    - contextPath: DSPM.RiskFinding.FirstDiscovered
+    - contextPath: DSPM.RiskFinding.firstDiscovered
       description: 'The date the risk finding was first discovered.'
       type: Date
-    - contextPath: DSPM.RiskFinding.ID
+    - contextPath: DSPM.RiskFinding.id
       description: 'The unique ID of the risk finding.'
       type: String
-    - contextPath: DSPM.RiskFinding.ProjectID
+    - contextPath: DSPM.RiskFinding.projectId
       description: 'The project ID where the asset resides.'
       type: String
-    - contextPath: DSPM.RiskFinding.RuleName
+    - contextPath: DSPM.RiskFinding.ruleName
       description: 'The rule name associated with the risk finding.'
       type: String
-    - contextPath: DSPM.RiskFinding.Severity
+    - contextPath: DSPM.RiskFinding.severity
       description: 'The severity of the risk finding (e.g., Low, Medium, High).'
       type: String
-    - contextPath: DSPM.RiskFinding.Status
+    - contextPath: DSPM.RiskFinding.status
       description: 'The current status of the risk finding (e.g., Open, Closed).'
       type: String
   - arguments:
     - description: List of regions (comma separated values).
       isArray: false
-      name: regionIn
+      name: region_in
       required: false
       secret: false
     - description: Exact region.
       isArray: false
-      name: regionEqual
+      name: region_equal
       required: false
       secret: false
     - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE",
       "FILE_SHARE", "O365"] (comma separated values).'
       isArray: false
-      name: cloudProviderIn
+      name: cloud_provider_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -273,7 +273,7 @@ script:
     - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE",
       "FILE_SHARE", "O365"].'
       isArray: false
-      name: cloudProviderEqual
+      name: cloud_provider_equal
       required: false
       secret: false
       auto: PREDEFINED
@@ -286,17 +286,17 @@ script:
       - 'O365'
     - description: List of Service Types (comma separated values).
       isArray: false
-      name: serviceTypeIn
+      name: service_type_in
       required: false
       secret: false
     - description: Exact Service Type.
       isArray: false
-      name: serviceTypeEqual
+      name: service_type_equal
       required: false
       secret: false
     - description: List of Life Cycles egs.['RUNNING', 'STOPPED', 'DELETED'](comma separated values).
       isArray: false
-      name: lifecycleIn
+      name: lifecycle_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -306,7 +306,7 @@ script:
       - 'DELETED'
     - description: Exact Life Cycle ['RUNNING', 'STOPPED', 'DELETED'].
       isArray: false
-      name: lifecycleEqual
+      name: lifecycle_equal
       required: false
       secret: false
       auto: PREDEFINED
@@ -320,49 +320,61 @@ script:
       name: sort
       required: false
       secret: false
+    - description: 'The maximum number of assets to retrieve. If not specified, the default value is 50.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 50
     description: Retrieves a list of assets for the company.
-    name: dspm-get-list-of-assets
+    name: dspm-list-assets
     outputs:
-    - contextPath: DSPM.Assets.AssetDigTags
-      description: 'Digital tags associated with the asset.'
+    - contextPath: DSPM.Asset.dataTypes
+      description: 'dataTypes associated with the asset.'
       type: Unknown
-    - contextPath: DSPM.Assets.CloudEnvironment
+    - contextPath: DSPM.Asset.dataTypeGroups
+      description: 'dataTypeGroups associated with the asset.'
+      type: Unknown
+    - contextPath: DSPM.Asset.assetDigTags
+      description: 'Dig tags associated with the asset.'
+      type: Unknown
+    - contextPath: DSPM.Asset.cloudEnvironment
       description: 'The cloud environment in which the asset exists.'
       type: String
-    - contextPath: DSPM.Assets.CloudProvider
+    - contextPath: DSPM.Asset.cloudProvider
       description: 'The cloud provider for the asset.'
       type: String
-    - contextPath: DSPM.Assets.Encrypted
+    - contextPath: DSPM.Asset.encrypted
       description: 'Indicates if the asset is encrypted.'
       type: Boolean
-    - contextPath: DSPM.Assets.ID
+    - contextPath: DSPM.Asset.id
       description: 'The unique identifier of the asset.'
       type: String
-    - contextPath: DSPM.Assets.Lifecycle
+    - contextPath: DSPM.Asset.lifecycle
       description: 'Lifecycle status of the asset.'
       type: String
-    - contextPath: DSPM.Assets.Name
+    - contextPath: DSPM.Asset.name
       description: 'The name of the asset.'
       type: String
-    - contextPath: DSPM.Assets.OpenAlertsCount
+    - contextPath: DSPM.Asset.openAlertsCount
       description: 'The count of open alerts for the asset.'
       type: Number
-    - contextPath: DSPM.Assets.OpenRisksCount
+    - contextPath: DSPM.Asset.openRisksCount
       description: 'The count of open risks for the asset.'
       type: Number
-    - contextPath: DSPM.Assets.OpenToWorld
+    - contextPath: DSPM.Asset.openToWorld
       description: 'Indicates if the asset is open to the world.'
       type: Boolean
-    - contextPath: DSPM.Assets.ProjectID
+    - contextPath: DSPM.Asset.projectId
       description: 'The ID of the project associated with the asset.'
       type: String
-    - contextPath: DSPM.Assets.ProjectName
+    - contextPath: DSPM.Asset.projectName
       description: 'The name of the project associated with the asset.'
       type: String
-    - contextPath: DSPM.Assets.ServiceType
+    - contextPath: DSPM.Asset.serviceType
       description: 'The type of service associated with the asset.'
       type: String
-    - contextPath: DSPM.Assets.Tags    
+    - contextPath: DSPM.Asset.tags    
       description: 'Tags related to the asset.'
       type: Unknown
   - arguments:
@@ -373,7 +385,7 @@ script:
     name: dspm-get-asset-details
     outputs:
     - contextPath: DSPM.AssetDetails.assetDigTags
-      description: 'The digital tags associated with the asset.'
+      description: 'The dig tags associated with the asset.'
       type: Unknown
     - contextPath: DSPM.AssetDetails.cloudEnvironment
       description: 'The cloud environment in which the asset exists.'
@@ -527,7 +539,7 @@ script:
       type: Number
   - arguments: []
     description: Returns list of label names based on company
-    name: dspm-get-list-of-labels
+    name: dspm-list-labels
     outputs:
     - contextPath: DSPM.Label.Key
       description: 'Label key.'
@@ -537,17 +549,17 @@ script:
   - arguments:
     - description: List of regions (comma-separated values).
       isArray: false
-      name: regionIn
+      name: region_in
       required: false
       secret: false
     - description: Exact region.
       isArray: false
-      name: regionEqual
+      name: region_equal
       required: false
       secret: false
     - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
       isArray: false
-      name: cloudProviderIn
+      name: cloud_provider_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -561,7 +573,7 @@ script:
     - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE",
       "FILE_SHARE", "O365"].'
       isArray: false
-      name: cloudProviderEqual
+      name: cloud_provider_equal
       required: false
       secret: false
       auto: PREDEFINED
@@ -574,32 +586,32 @@ script:
       - 'O365'
     - description: List of Service Types (comma separated values).
       isArray: false
-      name: serviceTypeIn
+      name: service_type_in
       required: false
       secret: false
     - description: Exact Service Type.
       isArray: false
-      name: serviceTypeEqual
+      name: service_type_equal
       required: false
       secret: false
     - description: List of Life Cycles (comma separated values).
       isArray: false
-      name: lifecycleIn
+      name: lifecycle_in
       required: false
       secret: false
     - description: 'List of project IDs.'
       isArray: true
-      name: projectIdIn
+      name: projectId_in
       required: false
       secret: false
     - description: 'Exact project ID.'
       isArray: false
-      name: projectIdEqual
+      name: projectId_equal
       required: false
       secret: false
     - description: Exact Life Cycle.
       isArray: false
-      name: lifecycleEqual
+      name: lifecycle_equal
       required: false
       secret: false
     - description: 'Sorting criteria in the format: property,(asc|desc). Default sort
@@ -608,15 +620,48 @@ script:
       name: sort
       required: false
       secret: false
+    - description: 'The maximum number of data types findings to retrieve. If not specified, the default value is 50.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 50
     description: Retrieves a list of data type findings for the company.
-    name: dspm-get-data-types-findings
+    name: dspm-list-data-types-findings
     outputs:
-    - contextPath: DSPM.DataTypeFindings.Key
-      description: 'Data type finding key.'
+    - contextPath: DSPM.DataTypesFinding.dataTypeName
+      description: 'Represents the name of the data type being analyzed.'
       type: String
-    - contextPath: DSPM.DataTypeFindings.No
-      description: 'Data type finding number.'
-      type: Number
+    - contextPath: DSPM.DataTypesFinding.label
+      description: 'Label associated with the data type, such as PII.'
+      type: String
+    - contextPath: DSPM.DataTypesFinding.records
+      description: 'The number of records associated with the data type.'
+      type: Integer
+    - contextPath: DSPM.DataTypesFinding.publicRecords
+      description: 'The number of public records found for this data type.'
+      type: Integer
+    - contextPath: DSPM.DataTypesFinding.assets
+      description: 'The number of assets associated with this data type.'
+      type: Integer
+    - contextPath: DSPM.DataTypesFinding.clouds
+      description: 'The clouds where the data type was found (e.g., AWS, Azure).'
+      type: String
+    - contextPath: DSPM.DataTypesFinding.regions
+      description: 'The regions where the data type was found.'
+      type: String
+    - contextPath: DSPM.DataTypesFinding.lastFound
+      description: 'The timestamp when the data type was last found.'
+      type: Date
+    - contextPath: DSPM.DataTypesFinding.recordsAtRisk.high
+      description: 'The number of high-risk records found for this data type.'
+      type: Integer
+    - contextPath: DSPM.DataTypesFinding.recordsAtRisk.medium
+      description: 'The number of medium-risk records found for this data type.'
+      type: Integer
+    - contextPath: DSPM.DataTypesFinding.recordsAtRisk.low
+      description: 'The number of low-risk records found for this data type.'
+      type: Integer
   - arguments: []
     description: Retrieves integration configuration.
     name: dspm-get-integration-config
@@ -627,7 +672,7 @@ script:
   - arguments:
     - description: 'Risk Finding ID.'
       isArray: false
-      name: riskFindingId
+      name: risk_finding_id
       required: true
     - description: 'List of supported status [ "OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING" ].'
       isArray: false
@@ -657,7 +702,7 @@ script:
   - arguments:
     - description: 'Alert ID.'
       isArray: false
-      name: alertId
+      name: alert_id
       required: true
     - description: 'List of supported status [ "OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING" ].'
       isArray: false
@@ -686,52 +731,52 @@ script:
   - arguments:
     - description: 'Exact detection time (equals).'
       isArray: false
-      name: detectionTimeEquals
+      name: detection_time_equals
       required: false
       secret: false
     - description: 'Detection time (greater than or equal).'
       isArray: false
-      name: detectionTimeGreaterThanOrEqual
+      name: detection_time_greater_than_or_equal
       required: false
       secret: false
     - description: 'Detection time (greater than).'
       isArray: false
-      name: detectionTimeGreaterThan
+      name: detection_time_greater_than
       required: false
       secret: false
     - description: 'Detection time (less than or equal).'
       isArray: false
-      name: detectionTimeLessThanOrEqual
+      name: detection_time_less_than_or_equal
       required: false
       secret: false
     - description: 'Detection time (less than).'
       isArray: false
-      name: detectionTimeLessThan
+      name: detection_time_less_than
       required: false
       secret: false
     - description: 'List of policy names.'
       isArray: true
-      name: policyNameIn
+      name: policy_name_in
       required: false
       secret: false
     - description: 'Exact policy name.'
       isArray: false
-      name: policyNameEquals
+      name: policy_name_equals
       required: false
       secret: false
     - description: 'List of asset names.'
       isArray: true
-      name: assetNameIn
+      name: asset_name_in
       required: false
       secret: false
     - description: 'Exact asset name.'
       isArray: false
-      name: assetNameEquals
+      name: asset_name_equals
       required: false
       secret: false
     - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
       isArray: true
-      name: cloudProviderIn
+      name: cloud_provider_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -744,7 +789,7 @@ script:
       - 'O365'
     - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
       isArray: false
-      name: cloudProviderEquals
+      name: cloud_provider_equals
       required: false
       secret: false
       auto: PREDEFINED
@@ -757,17 +802,17 @@ script:
       - 'O365'
     - description: 'List of destination project vendor names.'
       isArray: true
-      name: destinationProjectVendorNameIn
+      name: destination_project_vendor_name_in
       required: false
       secret: false
     - description: 'Exact destination project vendor name.'
       isArray: false
-      name: destinationProjectVendorNameEquals
+      name: destination_project_vendor_name_equals
       required: false
       secret: false
     - description: 'List of cloud environments ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"].'
       isArray: true
-      name: cloudEnvironmentIn
+      name: cloud_environment_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -779,7 +824,7 @@ script:
       - 'PRODUCTION'
     - description: 'Exact cloud environment ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"].'
       isArray: false
-      name: cloudEnvironmentEquals
+      name: cloud_environment_equals
       required: false
       secret: false
       auto: PREDEFINED
@@ -791,7 +836,7 @@ script:
       - 'PRODUCTION'
     - description: 'List of policy severities ["HIGH", "MEDIUM", "LOW"].'
       isArray: true
-      name: policySeverityIn
+      name: policy_severity_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -801,7 +846,7 @@ script:
       - 'LOW'
     - description: 'Exact policy severity ["HIGH", "MEDIUM", "LOW"].'
       isArray: false
-      name: policySeverityEquals
+      name: policy_severity_equals
       required: false
       secret: false
       auto: PREDEFINED
@@ -811,7 +856,7 @@ script:
       - 'LOW'
     - description: 'List of category types ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"].'
       isArray: true
-      name: categoryTypeIn
+      name: category_type_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -823,7 +868,7 @@ script:
       - 'RECONNAISSANCE'
     - description: 'Exact category type ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"].'
       isArray: false
-      name: categoryTypeEquals
+      name: category_type_equals
       required: false
       secret: false
       auto: PREDEFINED
@@ -835,7 +880,7 @@ script:
       - 'RECONNAISSANCE'
     - description: 'List of statuses ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"].'
       isArray: true
-      name: statusIn
+      name: status_in
       required: false
       secret: false
       auto: PREDEFINED
@@ -848,7 +893,7 @@ script:
       - 'INVESTIGATING'
     - description: 'Exact status ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"].'
       isArray: false
-      name: statusEquals
+      name: status_equals
       required: false
       secret: false
       auto: PREDEFINED
@@ -864,58 +909,64 @@ script:
       name: sort
       required: false
       secret: false
+    - description: 'The maximum number of alerts to retrieve. If not specified, the default value is 50.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 50
     description: Fetch list of alerts.
-    name: dspm-get-list-of-alerts
+    name: dspm-list-alerts
     outputs:
-    - contextPath: DSPM.Alerts.id
+    - contextPath: DSPM.Alert.id
       description: 'Alert ID.'
       type: String
-    - contextPath: DSPM.Alerts.detectionTime
+    - contextPath: DSPM.Alert.detectionTime
       description: 'Alert detection time.'
       type: Date
-    - contextPath: DSPM.Alerts.policyName
+    - contextPath: DSPM.Alert.policyName
       description: 'Alert policy name.'
       type: String
-    - contextPath: DSPM.Alerts.assetName
+    - contextPath: DSPM.Alert.assetName
       description: 'Alert asset name.'
       type: String
-    - contextPath: DSPM.Alerts.assetLabels
+    - contextPath: DSPM.Alert.assetLabels
       description: 'Alert asset label.'
       type: Unknown
-    - contextPath: DSPM.Alerts.cloudProvider
+    - contextPath: DSPM.Alert.cloudProvider
       description: 'Alert cloud provider.'
       type: String
-    - contextPath: DSPM.Alerts.destinationProjects
+    - contextPath: DSPM.Alert.destinationProjects
       description: 'Alert destination projects.'
       type: Unknown
-    - contextPath: DSPM.Alerts.cloudEnvironment
+    - contextPath: DSPM.Alert.cloudEnvironment
       description: 'Alert cloud enviroment.'
       type: String
-    - contextPath: DSPM.Alerts.policySeverity
+    - contextPath: DSPM.Alert.policySeverity
       description: 'Alert policy severity.'
       type: String
-    - contextPath: DSPM.Alerts.policyCategoryType
+    - contextPath: DSPM.Alert.policyCategoryType
       description: 'Alert policy category type.'
       type: String
-    - contextPath: DSPM.Alerts.status
+    - contextPath: DSPM.Alert.status
       description: 'Alert status.'
       type: String
-    - contextPath: DSPM.Alerts.eventActor
+    - contextPath: DSPM.Alert.eventActor
       description: 'Alert event actor.'
       type: String
-    - contextPath: DSPM.Alerts.eventUserAgent
+    - contextPath: DSPM.Alert.eventUserAgent
       description: 'Alert event user agent.'
       type: String
-    - contextPath: DSPM.Alerts.eventActionMedium
+    - contextPath: DSPM.Alert.eventActionMedium
       description: 'Alert event action medium.'
       type: String
-    - contextPath: DSPM.Alerts.eventSource
+    - contextPath: DSPM.Alert.eventSource
       description: 'Alert event source.'
       type: String
-    - contextPath: DSPM.Alerts.policyFrameWorks
+    - contextPath: DSPM.Alert.policyFrameWorks
       description: 'Alert policy frameworks.'
       type: String
-    - contextPath: DSPM.Alerts.eventRawData
+    - contextPath: DSPM.Alert.eventRawData
       description: 'Alert event raw data.'
       type: String
 

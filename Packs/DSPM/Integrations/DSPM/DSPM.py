@@ -11,6 +11,7 @@ import re
 urllib3.disable_warnings()
 """ CONSTANTS """
 MAX_PAGE_SIZE: int = 50
+DEFAULT_LIMIT: str = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 GET_RISK_FINDINGS_ENDPOINT = "/v1/risk-findings"
 GET_ASSET_LISTS = "/v1/assets"
@@ -249,28 +250,28 @@ def test_module(client: Client) -> str:
             return f"Error: An unknown exception occurred: {e}"
 
 
-def dspm_get_risk_findings(
+def get_list_risk_findings(
     client: Client, args: dict[str, Any], page: int
 ) -> list[dict]:
     """Fetch list of DSPM Risk findings"""
     # Validate and process cloudProvider parameters
-    cloudProviderIn = args.get("cloudProviderIn", "")
-    cloudProviderEqual = args.get("cloudProviderEqual", "")
+    cloud_provider_in = args.get("cloud_provider_in", "")
+    cloud_provider_equal = args.get("cloud_provider_equal", "")
     validate_parameter(
-        "cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS
+        "cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS
     )
 
     # Check supported affects
-    affectsIn = args.get("affectsIn", "")
-    affectsEqual = args.get("affectsEqual", "")
+    affects_in = args.get("affects_in", "")
+    affects_equal = args.get("affects_equal", "")
     validate_parameter(
-        "affects", affectsIn, affectsEqual, SUPPORTED_CATEGORIES
+        "affects", affects_in, affects_equal, SUPPORTED_CATEGORIES
     )
 
     # Check supported Status
-    statusIn = args.get("statusIn", "")
-    statusEqual = args.get("statusEqual", "")
-    validate_parameter("status", statusIn, statusEqual, SUPPORTED_STATUSES)
+    status_in = args.get("status_in", "")
+    status_equal = args.get("status_equal", "")
+    validate_parameter("status", status_in, status_equal, SUPPORTED_STATUSES)
 
     # Check supported sorting order
     sort_order = args.get("sort")
@@ -281,20 +282,20 @@ def dspm_get_risk_findings(
             raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
-        "ruleName.in": args.get("ruleNameIn"),
-        "ruleName.equals": args.get("ruleNameEqual"),
-        "dspmTagKey.in": args.get("dspmTagKeyIn"),
-        "dspmTagKey.equals": args.get("dspmTagKeyEqual"),
-        "dspmTagValue.in": args.get("dspmTagValueIn"),
-        "dspmTagValue.equals": args.get("dspmTagValueEqual"),
-        "projectId.in": args.get("projectIdIn"),
-        "projectId.equals": args.get("projectIdEqual"),
-        "cloudProvider.in": args.get("cloudProviderIn"),
-        "cloudProvider.equals": args.get("cloudProviderEqual"),
-        "affects.in": args.get("affectsIn"),
-        "affects.equals": args.get("affectsEqual"),
-        "status.in": args.get("statusIn"),
-        "status.equals": args.get("statusEqual"),
+        "ruleName.in": args.get("rule_name_in"),
+        "ruleName.equals": args.get("rule_name_equal"),
+        "dspmTagKey.in": args.get("dspm_tag_key_in"),
+        "dspmTagKey.equals": args.get("dspm_tag_key_equal"),
+        "dspmTagValue.in": args.get("dspm_tag_value_in"),
+        "dspmTagValue.equals": args.get("dspm_tag_value_equal"),
+        "projectId.in": args.get("projectId_in"),
+        "projectId.equals": args.get("projectId_equal"),
+        "cloudProvider.in": args.get("cloud_provider_in"),
+        "cloudProvider.equals": args.get("cloud_provider_equal"),
+        "affects.in": args.get("affects_in"),
+        "affects.equals": args.get("affects_equal"),
+        "status.in": args.get("status_in"),
+        "status.equals": args.get("status_equal"),
         "sort": args.get("sort"),
         "page": page,
         "size": MAX_PAGE_SIZE,
@@ -309,23 +310,7 @@ def dspm_get_risk_findings(
     if not findings:
         return []  # No more findings to fetch
 
-    parsed_findings = [
-        {
-            "ID": finding.get("id", ""),
-            "Rule Name": finding.get("ruleName", ""),
-            "Severity": finding.get("severity", ""),
-            "Asset Name": finding.get("asset", {}).get("name", ""),
-            "Asset ID": finding.get("asset", {}).get("assetId", ""),
-            "Status": finding.get("status", ""),
-            "Project ID": finding.get("projectId", ""),
-            "Cloud Provider": finding.get("cloudProvider", ""),
-            "Cloud Environment": finding.get("cloudEnvironment", ""),
-            "First Discovered": finding.get("firstDiscovered", ""),
-            "Compliance Standards": finding.get("complianceStandards", {}),
-        }
-        for finding in findings
-    ]
-    return parsed_findings
+    return findings
 
 
 def get_risk_finding_by_id(
@@ -343,49 +328,35 @@ def get_risk_finding_by_id(
 
     finding = response if isinstance(response, dict) else response[0]
 
-    parsed_finding = {
-        "ID": finding.get("id", ""),
-        "Rule Name": finding.get("ruleName", ""),
-        "Severity": finding.get("severity", ""),
-        "Asset Name": finding.get("asset", {}).get("name", ""),
-        "Asset ID": finding.get("asset", {}).get("assetId", ""),
-        "Status": finding.get("status", ""),
-        "Project ID": finding.get("projectId", ""),
-        "Cloud Provider": finding.get("cloudProvider", ""),
-        "Cloud Environment": finding.get("cloudEnvironment", ""),
-        "First Discovered": finding.get("firstDiscovered", ""),
-        "Compliance Standards": finding.get("complianceStandards", {}),
-    }
-
-    headers = parsed_finding.keys()
-    readable_output = tableToMarkdown("Risk Finding", parsed_finding, headers=headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown("Risk Finding", finding, headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs_prefix="DSPM.RiskFinding",
         outputs_key_field="id",
-        outputs=parsed_finding,
-        readable_output=readable_output
+        outputs=finding,
+        readable_output=readable_output,
+        raw_response=finding
     )
 
 
 def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> list[dict]:
     # Validate and process cloudProvider parameters
-    cloudProviderIn = args.get("cloudProviderIn", "")
-    cloudProviderEqual = args.get("cloudProviderEqual", "")
+    cloud_provider_in = args.get("cloud_provider_in", "")
+    cloud_provider_equal = args.get("cloud_provider_equal", "")
     validate_parameter(
-        "cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS
+        "cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS
     )
 
     # Validate and process serviceType parameters
-    service_Type_In = args.get("serviceTypeIn", "")
-    service_Type_Equal = args.get("serviceTypeEqual", "")
+    service_Type_In = args.get("service_type_in", "")
+    service_Type_Equal = args.get("service_type_equal", "")
     validate_parameter(
         "serviceType", service_Type_In, service_Type_Equal, SUPPORTED_SERVICE_TYPES
     )
 
     # Validate and process lifecycle parameters
-    lifecycle_In = args.get("lifecycleIn", "")
-    lifecycle_Equal = args.get("lifecycleEqual", "")
+    lifecycle_In = args.get("lifecycle_in", "")
+    lifecycle_Equal = args.get("lifecycle_equal", "")
     validate_parameter(
         "lifecycle", lifecycle_In, lifecycle_Equal, SUPPORTED_LIFECYCLE
     )
@@ -399,16 +370,16 @@ def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> list[
             raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
-        "region.in": args.get("regionIn"),
-        "region.equals": args.get("regionEqual"),
-        "cloudProvider.in": args.get("cloudProviderIn"),
-        "cloudProvider.equals": args.get("cloudProviderEqual"),
-        "serviceType.in": args.get("serviceTypeIn"),
-        "serviceType.equals": args.get("serviceTypeEqual"),
-        "digTagKey.contains": args.get("digTagKeyContains"),
-        "digTagValue.contains": args.get("digTagValueContains"),
-        "lifecycle.in": args.get("lifecycleIn"),
-        "lifecycle.equals": args.get("lifecycleEqual"),
+        "region.in": args.get("region_in"),
+        "region.equals": args.get("region_equal"),
+        "cloudProvider.in": args.get("cloud_provider_in"),
+        "cloudProvider.equals": args.get("cloud_provider_equal"),
+        "serviceType.in": args.get("service_type_in"),
+        "serviceType.equals": args.get("service_type_equal"),
+        "digTagKey.contains": args.get("dig_tag_key_contains"),
+        "digTagValue.contains": args.get("dig_tag_value_contains"),
+        "lifecycle.in": args.get("lifecycle_in"),
+        "lifecycle.equals": args.get("lifecycle_equal"),
         "sort": args.get("sort"),
         "page": page,
         "size": MAX_PAGE_SIZE,
@@ -424,26 +395,7 @@ def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> list[
     if not assets:
         return []  # No more assets to fetch
 
-    parsed_assets = [
-        {
-            "ID": asset.get("id", ""),
-            "Project ID": asset.get("projectId", ""),
-            "Project Name": asset.get("projectName", ""),
-            "Name": asset.get("name", ""),
-            "Cloud Provider": asset.get("cloudProvider", ""),
-            "Cloud Environment": asset.get("cloudEnvironment", ""),
-            "Service Type": asset.get("serviceType", ""),
-            "Lifecycle": asset.get("lifecycle", ""),
-            "Open Risks Count": asset.get("openRisksCount", 0),
-            "Open Alerts Count": asset.get("openAlertsCount", 0),
-            "Encrypted": asset.get("encrypted", False),
-            "Open To World": asset.get("openToWorld", False),
-            "Tags": asset.get("tags", {}),
-            "Asset Dig Tags": asset.get("assetDigTags", []),
-        }
-        for asset in assets
-    ]
-    return parsed_assets
+    return assets
 
 
 def get_asset_details(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -452,18 +404,14 @@ def get_asset_details(client: Client, args: dict[str, Any]) -> CommandResults:
         raise ValueError("asset_id not specified")
 
     asset_details = client.get_asset_details(asset_id)
-    demisto.debug(f"Asset details of : {asset_id}")
-    demisto.debug(asset_details)
 
-    headers = ["assetDigTags", "cloudEnvironment", "cloudProvider", "dataTypeGroups", "dataTypes", "encrypted", "id",
-               "lifecycle", "name", "openAlertsCount", "openRisksCount", "openToWorld", "projectId",
-               "projectName", "serviceType", "tags"]
-    readable_output = tableToMarkdown("Asset Details", asset_details, headers=headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown("Asset Details", asset_details, headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix="DSPM.AssetDetails",
         outputs_key_field="id",
         outputs=asset_details,
         readable_output=readable_output,
+        raw_response=asset_details
     )
 
 
@@ -498,13 +446,13 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
     files_count = len(all_files)
 
     # Return the result without formatting the files structure
-    headers = ["filename", "path", "type", "size", "openToWorld", "isDeleted", "isMalicious", "dataTypes", "labels", "isDbDump"]
-    readable_output = tableToMarkdown("Asset Files", all_files, headers=headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown("Asset Files", all_files, headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix="DSPM.AssetFiles",
         outputs_key_field="filename",
         outputs={"files": all_files, "filesCount": files_count},
-        readable_output=readable_output
+        readable_output=readable_output,
+        raw_response=all_files
     )
 
 
@@ -517,16 +465,14 @@ def get_data_types(client: Client) -> CommandResults:
 
     table_name = "Data Types"
     headers = ['No', 'Key']
-    if data_types_formatted:
-        readable_output = tableToMarkdown(table_name, data_types_formatted, headers=headers)
-    else:
-        readable_output = tableToMarkdown(table_name, [], headers=headers)
+    readable_output = tableToMarkdown(table_name, data_types_formatted, headers=headers)
 
     return CommandResults(
         outputs_prefix="DSPM.DataTypes",
         outputs_key_field="Key",
         outputs=data_types_formatted,
         readable_output=readable_output,
+        raw_response=data_types
     )
 
 
@@ -535,24 +481,24 @@ def get_data_type_findings(
 ) -> list[dict]:
     """Fetch data type findings for a specific page."""
     # check supported cloud providers
-    cloudProviderIn = args.get("cloudProviderIn", "")
-    cloudProviderEqual = args.get("cloudProviderEqual", "")
+    cloud_provider_in = args.get("cloud_provider_in", "")
+    cloud_provider_equal = args.get("cloud_provider_equal", "")
     validate_parameter(
-        "cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS
+        "cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS
     )
 
     # check supported service type
-    serviceTypeIn = args.get("serviceTypeIn", "")
-    serviceTypeEqual = args.get("serviceTypeEqual", "")
+    service_type_in = args.get("service_type_in", "")
+    service_type_equal = args.get("service_type_equal", "")
     validate_parameter(
-        "serviceType", serviceTypeIn, serviceTypeEqual, SUPPORTED_SERVICE_TYPES
+        "serviceType", service_type_in, service_type_equal, SUPPORTED_SERVICE_TYPES
     )
 
     # check supported lifecycle
-    lifecycleIn = args.get("lifecycleIn", "")
-    lifecycleEqual = args.get("lifecycleEqual", "")
+    lifecycle_in = args.get("lifecycle_in", "")
+    lifecycle_equal = args.get("lifecycle_equal", "")
     validate_parameter(
-        "lifecycle", lifecycleIn, lifecycleEqual, SUPPORTED_LIFECYCLE
+        "lifecycle", lifecycle_in, lifecycle_equal, SUPPORTED_LIFECYCLE
     )
 
     # Check supported sorting order
@@ -564,27 +510,30 @@ def get_data_type_findings(
             raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
-        "region.in": args.get("regionIn"),
-        "region.equals": args.get("regionEqual"),
-        "projectId.in": args.get("projectIdIn"),
-        "projectId.equals": args.get("projectIdEqual"),
-        "cloudProvider.in": args.get("cloudProviderIn"),
-        "cloudProvider.equals": args.get("cloudProviderEqual"),
-        "serviceType.in": args.get("serviceTypeIn"),
-        "serviceType.equals": args.get("serviceTypeEqual"),
-        "lifecycle.in": args.get("lifecycleIn"),
-        "lifecycle.equals": args.get("lifecycleEqual"),
+        "region.in": args.get("region_in"),
+        "region.equals": args.get("region_equal"),
+        "projectId.in": args.get("projectId_in"),
+        "projectId.equals": args.get("projectId_equal"),
+        "cloudProvider.in": args.get("cloud_provider_in"),
+        "cloudProvider.equals": args.get("cloud_provider_equal"),
+        "serviceType.in": args.get("service_type_in"),
+        "serviceType.equals": args.get("service_type_equal"),
+        "lifecycle.in": args.get("lifecycle_in"),
+        "lifecycle.equals": args.get("lifecycle_equal"),
         "sort": args.get("sort"),
         "page": page,
         "size": MAX_PAGE_SIZE,
     }
+
+    # Remove None values from params
+    params = {k: v for k, v in params.items() if v is not None}
 
     data_type_findings = client.get_data_type_findings(params)
     return data_type_findings
 
 
 def update_risk_finding_status(client, args):
-    finding_id = args.get("riskFindingId")
+    finding_id = args.get("risk_finding_id")
     status = args.get("status")
     if status and status not in SUPPORTED_STATUSES:
         raise ValueError(f'This "{status}" status is not supported')
@@ -592,20 +541,14 @@ def update_risk_finding_status(client, args):
     try:
         response = client.update_risk_status(finding_id, status)
         # Format the response for display
-        headers = ["Risk Finding ID", "Old Status", "New Status"]
-        data = {
-            "Risk Finding ID": response.get("riskFindingId"),
-            "Old Status": response.get("oldStatus"),
-            "New Status": response.get("newStatus"),
-        }
-
-        markdown = tableToMarkdown("Risk Status Update", [data], headers=headers, headerTransform=pascalToSpace)
+        markdown = tableToMarkdown("Risk Status Update", [response], headerTransform=pascalToSpace)
 
         return CommandResults(
             readable_output=markdown,
             outputs_prefix="DSPM.RiskFindingStatusUpdate",
             outputs_key_field="riskFindingId",
-            outputs=data,
+            outputs=response,
+            raw_response=response
         )
     except Exception as e:
         return_error(
@@ -618,38 +561,38 @@ def get_list_of_alerts(
 ) -> list[dict]:
     """fetch list of dspm alerts"""
     # check supported cloud providers
-    cloudProviderIn = args.get("cloudProviderIn", "")
-    cloudProviderEqual = args.get("cloudProviderEqual", "")
+    cloud_provider_in = args.get("cloud_provider_in", "")
+    cloud_provider_equal = args.get("cloud_provider_equal", "")
     validate_parameter(
-        "cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS
+        "cloudProvider", cloud_provider_in, cloud_provider_equal, SUPPORTED_CLOUD_PROVIDERS
     )
 
     # check supported cloud environments
-    cloudEnvironmentIn = args.get("cloudEnvironmentIn", "")
-    cloudEnvironmentEqual = args.get("cloudEnvironmentEqual", "")
+    cloud_environment_in = args.get("cloud_environment_in", "")
+    cloud_environment_equal = args.get("cloud_environment_equal", "")
     validate_parameter(
-        "cloudEnvironment", cloudEnvironmentIn, cloudEnvironmentEqual, SUPPORTED_CLOUD_ENVIRONMENTS
+        "cloudEnvironment", cloud_environment_in, cloud_environment_equal, SUPPORTED_CLOUD_ENVIRONMENTS
     )
 
     # check supported policy severity
-    policySeverityIn = args.get("policySeverityIn", "")
-    policySeverityEqual = args.get("policySeverityEqual", "")
+    policy_severity_in = args.get("policy_severity_in", "")
+    policy_severity_equal = args.get("policy_severity_equal", "")
     validate_parameter(
-        "policySeverity", policySeverityIn, policySeverityEqual, SUPPORTED_POLICY_SEVERITIES
+        "policySeverity", policy_severity_in, policy_severity_equal, SUPPORTED_POLICY_SEVERITIES
     )
 
     # check supported category type
-    categoryTypeIn = args.get("categoryTypeIn", "")
-    categoryTypeEqual = args.get("categoryTypeEqual", "")
+    category_type_in = args.get("category_type_in", "")
+    category_type_equal = args.get("category_type_equal", "")
     validate_parameter(
-        "categoryType", categoryTypeIn, categoryTypeEqual, SUPPORTED_CATEGORY_TYPES
+        "categoryType", category_type_in, category_type_equal, SUPPORTED_CATEGORY_TYPES
     )
 
     # check supported category type
-    statusIn = args.get("statusIn", "")
-    statusEqual = args.get("statusEqual", "")
+    status_in = args.get("status_in", "")
+    status_equal = args.get("status_equal", "")
     validate_parameter(
-        "status", statusIn, statusEqual, SUPPORTED_STATUSES
+        "status", status_in, status_equal, SUPPORTED_STATUSES
     )
 
     # Check supported sorting order
@@ -661,27 +604,27 @@ def get_list_of_alerts(
             raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
-        "detectionTime.equals": args.get("detectionTimeEquals"),
-        "detectionTime.greaterThanOrEqual": args.get("detectionTimeGreaterThanOrEqual"),
-        "detectionTime.greaterThan": args.get("detectionTimeGreaterThan"),
-        "detectionTime.lessThanOrEqual": args.get("detectionTimeLessThanOrEqual"),
-        "detectionTime.lessThan": args.get("detectionTimeLessThan"),
-        "policyName.in": args.get("policyNameIn"),
-        "policyName.equals": args.get("policyNameEquals"),
-        "assetName.in": args.get("assetNameIn"),
-        "assetName.equals": args.get("assetNameEquals"),
-        "cloudProvider.in": args.get("cloudProviderIn"),
-        "cloudProvider.equals": args.get("cloudProviderEquals"),
-        "destinationProjectVendorName.in": args.get("destinationProjectVendorNameIn"),
-        "destinationProjectVendorName.equals": args.get("destinationProjectVendorNameEquals"),
-        "cloudEnvironment.in": args.get("cloudEnvironmentIn"),
-        "cloudEnvironment.equals": args.get("cloudEnvironmentEquals"),
-        "policySeverity.in": args.get("policySeverityIn"),
-        "policySeverity.equals": args.get("policySeverityEquals"),
-        "categoryType.in": args.get("categoryTypeIn"),
-        "categoryType.equals": args.get("categoryTypeEquals"),
-        "status.in": args.get("statusIn"),
-        "status.equals": args.get("statusEquals"),
+        "detectionTime.equals": args.get("detection_time_equals"),
+        "detectionTime.greaterThanOrEqual": args.get("detection_time_greater_than_or_equal"),
+        "detectionTime.greaterThan": args.get("detection_time_greater_than"),
+        "detectionTime.lessThanOrEqual": args.get("detection_time_less_than_or_equal"),
+        "detectionTime.lessThan": args.get("detection_time_less_than"),
+        "policyName.in": args.get("policy_name_in"),
+        "policyName.equals": args.get("policy_name_equals"),
+        "assetName.in": args.get("asset_name_in"),
+        "assetName.equals": args.get("asset_name_equals"),
+        "cloudProvider.in": args.get("cloud_provider_in"),
+        "cloudProvider.equals": args.get("cloud_provider_equals"),
+        "destinationProjectVendorName.in": args.get("destination_project_vendor_name_in"),
+        "destinationProjectVendorName.equals": args.get("destination_project_vendor_name_equals"),
+        "cloudEnvironment.in": args.get("cloud_environment_in"),
+        "cloudEnvironment.equals": args.get("cloud_environment_equals"),
+        "policySeverity.in": args.get("policy_severity_in"),
+        "policySeverity.equals": args.get("policy_severity_equals"),
+        "categoryType.in": args.get("category_type_in"),
+        "categoryType.equals": args.get("category_type_equals"),
+        "status.in": args.get("status_in"),
+        "status.equals": args.get("status_equals"),
         "sort": args.get("sort"),
         "page": page,
         "size": MAX_PAGE_SIZE
@@ -695,7 +638,7 @@ def get_list_of_alerts(
 
 
 def update_dspm_alert_status(client, args):
-    alert_id = args.get("alertId")
+    alert_id = args.get("alert_id")
     status = args.get("status")
     if status and status not in SUPPORTED_STATUSES:
         raise ValueError(f'This "{status}" status is not supported')
@@ -703,20 +646,15 @@ def update_dspm_alert_status(client, args):
     try:
         response = client.update_alert_status(alert_id, status)
         # Format the response for display
-        headers = ["Alert ID", "Old Status", "New Status"]
-        data = {
-            "Alert ID": response.get("alertId"),
-            "Old Status": response.get("oldStatus"),
-            "New Status": response.get("newStatus"),
-        }
 
-        markdown = tableToMarkdown("Alert Status Update", [data], headers=headers, headerTransform=pascalToSpace)
+        markdown = tableToMarkdown("Alert Status Update", [response], headerTransform=pascalToSpace)
 
         return CommandResults(
             readable_output=markdown,
             outputs_prefix="DSPM.AlertStatusUpdate",
             outputs_key_field="alertId",
-            outputs=data,
+            outputs=response,
+            raw_response=response
         )
     except Exception as e:
         return_error(
@@ -727,7 +665,6 @@ def update_dspm_alert_status(client, args):
 def get_integration_config():
 
     integration_config = {
-        "dspmApiKey": demisto.params().get("dspmApiKey", {}).get("password"),
         "slackMsgLifetime": demisto.params().get("slackMsgLifetime"),
         "defaultSlackUser": demisto.params().get("defaultSlackUser"),
     }
@@ -749,6 +686,7 @@ def get_integration_config():
         outputs_prefix="DSPM.IntegrationConfig",
         outputs_key_field="config",
         outputs={"integration_config": integration_config},
+        raw_response=integration_config
     )
 
 
@@ -761,161 +699,176 @@ def get_list_of_labels(client: Client):
 
     table_name = "Labels"
     headers = ['No', 'Key']
-    if labels_formatted:
-        readable_output = tableToMarkdown(table_name, labels_formatted, headers=headers)
-    else:
-        readable_output = tableToMarkdown(table_name, "No data found", headers=headers)
+    readable_output = tableToMarkdown(table_name, labels_formatted, headers=headers)
 
     return CommandResults(
-        outputs_prefix="DSPM.Labels",
+        outputs_prefix="DSPM.Label",
         outputs_key_field="Key",
         outputs=labels_formatted,
         readable_output=readable_output,
+        raw_response=labels
     )
 
 
-def dspm_get_risk_findings_command(client, args):
+def dspm_list_risk_findings_command(client, args):
+    limit = args.get("limit", DEFAULT_LIMIT)
+    if not limit.isdigit():
+        raise ValueError("The 'limit' parameter must be an integer.")
+    limit = int(limit)
     page = 0
-    headers = ["ID", "Rule Name", "Severity", "Asset Name", "Asset ID", "Status", "Project ID",
-               "Cloud Provider", "Cloud Environment", "First Discovered", "Compliance Standards"]
-    while True:
-        findings = dspm_get_risk_findings(client, args, page)
+    findings_collected: list = []
+
+    while len(findings_collected) < limit:
+        findings = get_list_risk_findings(client, args, page)
         if not findings:
-            if page == 0:
+            if page == 0 and not findings_collected:
                 demisto.info("No risks were fetched")
-                readable_output = tableToMarkdown("Risk Findings", [], headers=headers, headerTransform=pascalToSpace)
 
                 return_results(
                     CommandResults(
-                        outputs_prefix="DSPM.RiskFindings",
-                        outputs_key_field="id",
-                        readable_output=readable_output,
+                        readable_output="No Risk Findings found."
                     )
                 )
             break  # No more findings to fetch
 
-        readable_output = tableToMarkdown("Risk Findings", findings, headers=headers, headerTransform=pascalToSpace)
-        return_results(
-            CommandResults(
-                outputs_prefix="DSPM.RiskFindings",
-                outputs_key_field="id",
-                outputs=findings,
-                readable_output=readable_output,
-            )
-        )
+        findings_collected.extend(findings)
+        if len(findings_collected) >= limit:
+            break
+
         page += 1
 
+    # Trim findings to match the limit
+    findings_collected = findings_collected[:limit]
 
-def dspm_get_list_of_assets_command(client, args):
+    # Prepare the readable output
+    readable_output = tableToMarkdown("Risk Findings", findings_collected, headerTransform=pascalToSpace)
+
+    # Return a single CommandResults with all findings
+    return CommandResults(
+        outputs_prefix="DSPM.RiskFinding",
+        outputs_key_field="id",
+        outputs=findings_collected,
+        readable_output=readable_output,
+        raw_response=findings_collected
+    )
+
+
+def dspm_list_assets_command(client, args):
+    limit = args.get("limit", DEFAULT_LIMIT)
+    if not limit.isdigit():
+        raise ValueError("The 'limit' parameter must be an integer.")
+    limit = int(limit)
     page = 0
-    headers = ["ID", "Project ID", "Project Name", "Name", "Cloud Provider", "Cloud Environment", "Service Type",
-               "Lifecycle", "Open Risks Count", "Open Alerts Count", "Encrypted", "Open To World",
-               "Tags", "Asset Dig Tags"]
-    while True:
+    collected_assets: list = []
+
+    while len(collected_assets) < limit:
         assets = get_list_of_assets(client, args, page)
         if not assets:
-            if page == 0:
-                readable_output = tableToMarkdown("List of assets", [], headers=headers, headerTransform=pascalToSpace)
-
+            if page == 0 and not collected_assets:
                 return_results(
                     CommandResults(
-                        outputs_prefix="DSPM.Assets",
-                        outputs_key_field="id",
-                        outputs=[],
-                        readable_output=readable_output,
+                        readable_output="No assets found."
                     )
                 )
             break
 
-        readable_output = tableToMarkdown("List of assets", assets, headers=headers, headerTransform=pascalToSpace)
+        collected_assets.extend(assets)
+        if len(collected_assets) >= limit:
+            break
 
-        return_results(
-            CommandResults(
-                outputs_prefix="DSPM.Assets",
-                outputs_key_field="id",
-                outputs=assets,
-                readable_output=readable_output,
-            )
-        )
         page += 1
 
+    # Trim the results to match the limit
+    collected_assets = collected_assets[:limit]
 
-def dspm_get_data_types_findings_command(client, args):
+    # Generate readable output
+    readable_output = tableToMarkdown("List of Assets", collected_assets, headerTransform=pascalToSpace)
+
+    # Return the collected assets directly without parsing
+    return CommandResults(
+        outputs_prefix="DSPM.Asset",
+        outputs_key_field="id",
+        outputs=collected_assets,
+        readable_output=readable_output,
+        raw_response=collected_assets
+    )
+
+
+def dspm_list_data_types_findings_command(client, args):
+    limit = args.get("limit", DEFAULT_LIMIT)
+    if not limit.isdigit():
+        raise ValueError("The 'limit' parameter must be an integer.")
+    limit = int(limit)
     page = 0
-    all_data_type_findings = []
-    headers = ['No', 'Key']
+    collected_data_types: list = []
 
-    while True:
+    while len(collected_data_types) < limit:
         data_type_findings = get_data_type_findings(
             client, args, page
         )
-
         if not data_type_findings:
-            if page == 0:
-                readable_output = tableToMarkdown("Data Types", [], headers=headers)
+            if page == 0 and not collected_data_types:
                 return_results(
                     CommandResults(
-                        outputs_prefix="DSPM.DataTypesFindings",
-                        outputs_key_field="Key",
-                        outputs=[],
-                        readable_output=readable_output,
+                        readable_output="No Data Types findings found.",
                     )
                 )
             break
 
-        all_data_type_findings.extend(data_type_findings)
+        collected_data_types.extend(data_type_findings)
+        if len(collected_data_types) >= limit:
+            break
 
-        data_type_findings_formatted = [
-            {
-                "No": index + 1 + (page * MAX_PAGE_SIZE),
-                "Key": dt["dataTypeName"],
-            }
-            for index, dt in enumerate(data_type_findings)
-        ]
-
-        readable_output = tableToMarkdown("Data Types", data_type_findings_formatted, headers=headers)
-        return_results(
-            CommandResults(
-                outputs_prefix="DSPM.DataTypesFindings",
-                outputs_key_field="Key",
-                outputs=data_type_findings_formatted,
-                readable_output=readable_output,
-            )
-        )
         page += 1
 
+    # Trim the results to match the limit
+    collected_data_types = collected_data_types[:limit]
 
-def dspm_get_list_of_alerts_command(client, args):
+    readable_output = tableToMarkdown("Data Types Finding", collected_data_types, headerTransform=pascalToSpace)
+    return CommandResults(
+        outputs_prefix="DSPM.DataTypesFinding",
+        outputs_key_field="dataTypeName",
+        outputs=collected_data_types,
+        readable_output=readable_output,
+        raw_response=collected_data_types
+    )
+
+
+def dspm_list_alerts_command(client, args):
+    limit = args.get("limit", DEFAULT_LIMIT)
+    if not limit.isdigit():
+        raise ValueError("The 'limit' parameter must be an integer.")
+    limit = int(limit)
     page = 0
-    headers = ["id", "detectionTime", "policyName", "assetName", "assetLabels", "cloudProvider", "destinationProjects",
-               "cloudEnvironment", "policySeverity", "policyCategoryType", "status", "eventActor", "eventUserAgent",
-               "eventActionMedium", "eventSource", "policyFrameWorks", "eventRawData"]
-    while True:
+    collected_alerts: list = []
+
+    while len(collected_alerts) < limit:
         alerts = get_list_of_alerts(client, args, page)
         if not alerts:
-            if page == 0:
-                readable_output = tableToMarkdown("List Of Alerts", [], headers=headers, headerTransform=pascalToSpace)
-
+            if page == 0 and not collected_alerts:
                 return_results(
                     CommandResults(
-                        outputs_prefix="DSPM.Alerts",
-                        outputs_key_field="id",
-                        outputs=[],
-                        readable_output=readable_output,
+                        readable_output="No alerts found.",
                     )
                 )
             break
 
-        readable_output = tableToMarkdown("List Of Alerts", alerts, headers=headers, headerTransform=pascalToSpace)
-        return_results(
-            CommandResults(
-                outputs_prefix="DSPM.Alerts",
-                outputs_key_field="id",
-                outputs=alerts,
-                readable_output=readable_output,
-            )
-        )
+        collected_alerts.extend(alerts)
+        if len(collected_alerts) >= limit:
+            break
         page += 1
+
+    # Trim the results to match the limit
+    collected_alerts = collected_alerts[:limit]
+
+    readable_output = tableToMarkdown("List Of Alerts", collected_alerts, headerTransform=pascalToSpace)
+    return CommandResults(
+        outputs_prefix="DSPM.Alert",
+        outputs_key_field="id",
+        outputs=collected_alerts,
+        readable_output=readable_output,
+        raw_response=collected_alerts
+    )
 
 
 def dspm_get_list_of_asset_fields_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1003,14 +956,14 @@ def main() -> None:
         #
         # labels-resource
         #
-        elif demisto.command() == "dspm-get-list-of-labels":
+        elif demisto.command() == "dspm-list-labels":
             return_results(get_list_of_labels(client))
 
         #
         # risk-resource
         #
-        elif demisto.command() == "dspm-get-risk-findings":
-            return_results(dspm_get_risk_findings_command(client, demisto.args()))
+        elif demisto.command() == "dspm-list-risk-findings":
+            return_results(dspm_list_risk_findings_command(client, demisto.args()))
         elif demisto.command() == "dspm-get-risk-finding-by-id":
             return_results(get_risk_finding_by_id(client, demisto.args()))
         elif demisto.command() == "dspm-update-risk-finding-status":
@@ -1020,8 +973,8 @@ def main() -> None:
         # asset-resource
         #
 
-        elif demisto.command() == "dspm-get-list-of-assets":
-            return_results(dspm_get_list_of_assets_command(client, demisto.args()))
+        elif demisto.command() == "dspm-list-assets":
+            return_results(dspm_list_assets_command(client, demisto.args()))
         elif demisto.command() == "dspm-get-asset-details":
             return_results(get_asset_details(client, demisto.args()))
 
@@ -1038,16 +991,16 @@ def main() -> None:
         #
         # data-type-findings-resource
         #
-        elif demisto.command() == "dspm-get-data-types-findings":
-            return_results(dspm_get_data_types_findings_command(client, demisto.args()))
+        elif demisto.command() == "dspm-list-data-types-findings":
+            return_results(dspm_list_data_types_findings_command(client, demisto.args()))
 
         #
         # alert-resource
         #
         elif demisto.command() == "dspm-update-alert-status":
             return_results(update_dspm_alert_status(client, demisto.args()))
-        elif demisto.command() == "dspm-get-list-of-alerts":
-            return_results(dspm_get_list_of_alerts_command(client, demisto.args()))
+        elif demisto.command() == "dspm-list-alerts":
+            return_results(dspm_list_alerts_command(client, demisto.args()))
 
     except Exception as e:
         return_error(
