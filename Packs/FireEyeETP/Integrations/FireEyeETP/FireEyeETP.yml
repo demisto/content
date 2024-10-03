@@ -300,6 +300,60 @@ script:
     - contextPath: FireEyeETP.Alerts.id
       description: The alert unique ID
     description: Detailed information from any particular alert. Alerts more than 90 days old are not available.
+  - name: fireeye-etp-download-alert-artifact
+    arguments:
+    - name: alert_id
+      required: true
+      description: The alert id
+    description: 'Downloads all case files of the alert specified by alert ID, in
+      a zip file. You can obtain the ID from the Alert Summary response, for example
+      "id": "AV7zzRy7kvIwrKcfu0I".'
+  - name: fireeye-etp-list-yara-rulesets
+    arguments:
+    - name: policy_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the policy. (Can be found
+        on the URL of the ETP Policies)
+    outputs:
+    - contextPath: FireEyeETP.Policy
+    description: Fetch the list of YARA rulesets and return a list with all the rules.
+  - name: fireeye-etp-download-yara-file
+    arguments:
+    - name: policy_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the policy. (Can be found
+        on the URL of the ETP Policies)
+    - name: ruleset_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the ruleset.
+    description: Downloads a YARA file.
+  - name: fireeye-etp-upload-yara-file
+    arguments:
+    - name: policy_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the policy. (Can be found
+        on the URL of the ETP Policies)
+    - name: ruleset_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the ruleset.
+    - name: entryID
+      required: true
+      description: Entry ID of yara file to upload
+    description: Update or replace the YARA rule file in the existing ruleset.
+  - name: fireeye-etp-get-events-data
+    arguments:
+    - name: message_id
+      required: true
+      description: Message ID of alert.
+    outputs:
+    - contextPath: FireEyeETP.Events
+    description: Returns all events of alert by alert id.
+  - name: fireeye-etp-quarantine-release
+    arguments:
+    - name: message_id
+      description: The message ID.
+    description: Releases the email file present in the quarantine for the given Email
+      Cloud message ID.
   isfetch: true
   subtype: python3
   dockerimage: demisto/python3:3.10.13.86272
