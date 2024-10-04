@@ -19,7 +19,6 @@ function deleteKeys(keysToDelete = [], _keysToKeep = [], keepDBotScoreKey = fals
     var errors = []
     var message = '';
     for (var key of keysToDelete) {
-        // 'DBotScore' key shall not be deleted in order to prevent caching it repeatedly and impacting performance.
         if (key == DBOT_SCORE_KEY && keepDBotScoreKey){
             continue;
         }
