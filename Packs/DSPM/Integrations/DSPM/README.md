@@ -228,7 +228,7 @@ Retrieves a list of assets for the company.
 ```json
 {
     "DSPM": {
-        "Assets": {
+        "Assets": [{
         "projectId": "************",
         "projectName": "************",
         "name": "dymmy-ci0jq3kgvjnccdfp-us-east-1",
@@ -245,7 +245,7 @@ Retrieves a list of assets for the company.
         "tags": {},
         "assetDigTags": [],
         "id": "arn:aws:s3:::dymmy-ci0jq3kgvjnccdfp-us-east-1"
-    }
+    }]
     }
 }
 ```
@@ -541,9 +541,12 @@ Return list of fields for structured assets such as RDS, Aurora, and BigQuery.
 
 #### Human Readable Output
 
->|name|path|tableName|tableSize|databaseName|collectionName|type|dataTypes|schemaName|
->|---|---|---|---|---|---|---|---|---|---|
->|phone|public/dummy|dummy|29996|Hi|null|varchar|First Name|PII|100|As****|null|public|
+## Asset Fields
+
+| name | dataTypes | path | tableName | tableSize | databaseName | collectionName | type | schemaName |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| maidenname | [] | /public/dummy | dummy | 29996 | Hi | null | varchar | public |
+| maidenname | [] | /public/dummy | dummy | 29996 | Hi | null | varchar | public |
 
 
 ### dspm-get-data-types
@@ -736,10 +739,10 @@ Retrieves a list of data type findings for the company.
 
 #### Human Readable Output
 
->### Data Types
-> | No | Key  |
-> |----|------|
->| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |
+>### Data Types Findings
+| dataTypeName | label | records | publicRecords | assets | clouds | regions | lastFound | recordsAtRisk.high | recordsAtRisk.medium | recordsAtRisk.low |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| AADHAAR_INDIVIDUAL_IDENTIFICATION | PII | 4 | 0 | 1 | AWS | us-east-1 | 2024-05-09T03:24:29Z | 0 | 4 | 0 |
 
 
 ### dspm-update-risk-finding-status
@@ -826,7 +829,7 @@ Fetch list of alerts.
 | category_type_equals | Exact category type ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"]. | Optional |
 | status_in | List of statuses ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional |
 | status_equals | Exact status ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]. | Optional |
-| sort | Sort order (property, asc|desc). | Optional |
+| sort | Sort order (property, asc/desc). | Optional |
 
 
 #### Context Output
