@@ -13,13 +13,13 @@ function errorEntry(text) {
  * @param {Array<string>} keysToDelete - An array of keys to delete.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete = [], _keysToKeep = []) {
+function deleteKeys(keysToDelete = []) {
     var deletedKeys = []
     var errors = []
     var message = '';
     for (var key of keysToDelete) {
         // 'DBotScore' key shall not be deleted in order to prevent caching it repeatedly and impacting performance.
-        if (key === "DBotScore"){
+        if (key === DBOT_SCORE_KEY){
             continue;
         }
         const originalKey = typeof key === "string" ? key.trim() : key;
@@ -40,10 +40,10 @@ function deleteKeys(keysToDelete = [], _keysToKeep = []) {
     return errors.join(LINE_SEPARATOR) + LINE_SEPARATOR + message;
 }
 
+const DBOT_SCORE_KEY = 'DBotScore';
 var shouldDeleteAll = (args.all === 'yes');
 var isSubPlaybookKey = (args.subplaybook === 'yes');
 var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(item => item.trim()) : [];
-
 if (args.subplaybook === 'auto') {
     var res = executeCommand('Print', { value: 'id=${currentPlaybookID}' });
     if (res && res[0].Contents && res[0].Contents.startsWith('id=')) {
@@ -62,7 +62,6 @@ if (!shouldDeleteAll && !args.key) {
 
 if (shouldDeleteAll) {
     var keysToKeepObj = {};
-    var KeepDBotScoreKey = false;
     var value;
     // Collect all the keys to keep.
     for (var i = 0; i < keysToKeep.length; i++) {
