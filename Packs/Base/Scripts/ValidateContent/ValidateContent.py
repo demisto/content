@@ -31,7 +31,7 @@ from demisto_sdk.commands.validate.initializer import Initializer
 
 from ruamel.yaml import YAML
 
-from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
+from demisto_sdk.commands.content_graph.objects.base_content import (BaseContent, CONTENT_TYPE_TO_MODEL)
 from demisto_sdk.commands.validate.config_reader import (
     ConfigReader,
     ConfiguredValidations,
@@ -52,6 +52,8 @@ from demisto_sdk.commands.common.constants import (
     PACK_DEFAULT_MARKETPLACES,
     MarketplaceVersions,
 )
+
+
 class CustomContentItemParser(ContentItemParser):
 
     @staticmethod
@@ -68,7 +70,7 @@ class CustomContentItemParser(ContentItemParser):
         """
         from demisto_sdk.commands.content_graph.common import ContentType
 
-        demisto.debug(f"Parsing content item {path}")
+        demisto.debug(f"Parsing content item {path} | {git_sha=}")
         if not ContentItemParser.is_content_item(path):
             if ContentItemParser.is_content_item(path.parent):
                 path = path.parent
@@ -100,13 +102,11 @@ class CustomContentItemParser(ContentItemParser):
         raise NotAContentItemException
 
 
-
 ##############################################################################################################################
 from typing import Type
 from demisto_sdk.commands.content_graph.common import (
     ContentType,
 )
-CONTENT_TYPE_TO_MODEL: Dict[ContentType, Type["BaseContent"]] = {}
 from functools import cached_property, lru_cache
 
 from demisto_sdk.commands.content_graph.parsers import content_item
@@ -119,6 +119,7 @@ from demisto_sdk.commands.common.constants import (
     MarketplaceVersions,
 )
 from demisto_sdk.commands.content_graph.parsers.pack import PackParser
+
 
 class CustomBaseContent(BaseContent):
     @staticmethod
@@ -170,9 +171,18 @@ class CustomBaseContent(BaseContent):
             return model.from_orm(content_item_parser)  # type: ignore
         except Exception as e:
             demisto.error(
-                f"Could not parse content item from path {path} using {content_item_parser} | {str(e)}"
+                f"Could not parse content item from path {path} using {content_item_parser} | {str(e)} | {str(traceback.format_exc())}"
             )
-            return None
+
+            # Log the error message
+            demisto.error(f"Error: {str(e)}")
+
+            # Log the detailed stack trace
+            demisto.error("Stack Trace: " + traceback.format_exc())
+            traceback.print_exc()
+
+        return None
+
 
 ##############################################################################################################################
 from demisto_sdk.commands.content_graph.objects.repository import (
@@ -182,6 +192,7 @@ from demisto_sdk.commands.content_graph.parsers.content_item import (
     InvalidContentItemException,
     NotAContentItemException,
 )
+
 
 class CustomInitializer(Initializer):
 
@@ -280,6 +291,8 @@ class CustomInitializer(Initializer):
                 f"Invalid content path provided: {str(non_content_item)}. Please provide a valid content item or pack path."
             )
         return content_objects_to_run_with_packs, invalid_content_items
+
+
 ##############################################################################################################################
 
 
@@ -475,7 +488,6 @@ def run_validate(path_to_validate: str, json_output_file: str) -> None:
     initializer = CustomInitializer(
         staged=False,
         committed_only=False,
-        prev_ver="origin/master",
         file_path=str(path_to_validate),
         execution_mode=ExecutionMode.SPECIFIC_FILES
     )
