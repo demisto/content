@@ -13,13 +13,13 @@ function errorEntry(text) {
  * @param {Array<string>} keysToDelete - An array of keys to delete.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete = [], _keysToKeep = []) {
+function deleteKeys(keysToDelete = [], _keysToKeep = [], keepDBotScore = false) {
     var deletedKeys = []
     var errors = []
     var message = '';
     for (var key of keysToDelete) {
         // 'DBotScore' key shall not be deleted in order to prevent caching it repeatedly and impacting performance.
-        if (key === DBOT_SCORE_KEY){
+        if (DBOT_SCORE_KEY in _keysToKeep){
             continue;
         }
         const originalKey = typeof key === "string" ? key.trim() : key;
