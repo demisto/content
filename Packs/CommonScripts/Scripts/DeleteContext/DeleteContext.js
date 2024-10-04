@@ -11,6 +11,7 @@ function errorEntry(text) {
 /**
  * Deletes keys from the context and handles errors.
  * @param {Array<string>} keysToDelete - An array of keys to delete.
+ * @param {Array<string>} _keysToKeep - An array of keys to keep.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
 function deleteKeys(keysToDelete = [], _keysToKeep = []) {
