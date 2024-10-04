@@ -13,7 +13,7 @@ function errorEntry(text) {
  * @param {Array<string>} keysToDelete - An array of keys to delete.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete = []) {
+function deleteKeys(keysToDelete = [], _keysToKeep = []) {
     var deletedKeys = []
     var errors = []
     var message = '';
