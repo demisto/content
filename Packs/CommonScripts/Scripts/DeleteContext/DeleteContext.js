@@ -14,13 +14,13 @@ function errorEntry(text) {
  * @param {Array<string>} _keysToKeep - An array of keys to keep.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete = [], _keysToKeep = []) {
+function deleteKeys(keysToDelete = [], _keysToKeep = [], KeepDBotScoreKey = false) {
     var deletedKeys = []
     var errors = []
     var message = '';
     for (var key of keysToDelete) {
         // 'DBotScore' key shall not be deleted in order to prevent caching it repeatedly and impacting performance.
-        if (DBOT_SCORE_KEY in _keysToKeep){
+        if (DBOT_SCORE_KEY in _keysToKeep && KeepDBotScoreKey){
             continue;
         }
         const originalKey = typeof key === "string" ? key.trim() : key;
@@ -63,7 +63,15 @@ if (!shouldDeleteAll && !args.key) {
 
 if (shouldDeleteAll) {
     var keysToKeepObj = {};
+    var KeepDBotScoreKey = false;
     var value;
+    
+    index = keysToKeep.indexOf("DBotScore");
+    if (index > -1) {
+        keysToKeep.splice(index, 1);
+        KeepDBotScoreKey = true;
+    }
+    
     // Collect all the keys to keep.
     for (var i = 0; i < keysToKeep.length; i++) {
         value = dq(invContext, keysToKeep[i]);
@@ -84,7 +92,7 @@ if (shouldDeleteAll) {
     }
     var keysToDelete = Object.keys(invContext);
     // Delete all the keys, do not state deletion of keysToKeep since they are re-created.
-    var message = deleteKeys(keysToDelete, keysToKeep);
+    var message = deleteKeys(keysToDelete, keysToKeep, KeepDBotScoreKey);
 
     return {
         Type: entryTypes.note,
