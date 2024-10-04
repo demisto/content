@@ -18,6 +18,10 @@ function deleteKeys(keysToDelete = [], _keysToKeep = []) {
     var errors = []
     var message = '';
     for (var key of keysToDelete) {
+        // 'DBotScore' key shall not be deleted in order to prevent caching it repeatedly and impacting performance.
+        if (key === "DBotScore"){
+            continue
+        }
         const originalKey = typeof key === "string" ? key.trim() : key;
         const keyToDelete = isSubPlaybookKey ? 'subplaybook-${currentPlaybookID}.' + originalKey: originalKey;
         const result = executeCommand('delContext', { key: keyToDelete });
