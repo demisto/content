@@ -482,8 +482,8 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
 
 # @pytest.mark.parametrize(argnames='incident_status', argvalues=XDR_RESOLVED_STATUS_TO_XSOAR.keys())
 @pytest.mark.parametrize(argnames='incident_status, close_cortex_incident',
-                        argvalues=[(status, close_flag) for status in XDR_RESOLVED_STATUS_TO_XSOAR.keys() for close_flag in
-                                                                                                                [True, False]])
+                         argvalues=[(status, close_flag) for status in XDR_RESOLVED_STATUS_TO_XSOAR for close_flag in
+                                    [True, False]])
 def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker, incident_status, close_cortex_incident):
     """
     Given:
@@ -499,8 +499,7 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
     import copy
     from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False,
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     client._params['close_cortex_incident'] = close_cortex_incident
     args = {
         'id': 1,
@@ -528,7 +527,7 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
     if close_cortex_incident:
         expected_modified_incident['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR[incident_status]
         expected_modified_incident['closeNotes'] = close_notes
-        
+
         expected_closing_entry = {
             'Type': 1,
             'Contents': {
@@ -540,7 +539,6 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
         }
     else:
         expected_closing_entry = {}
-    
 
     # make sure get-extra-data is returning an incident
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
@@ -553,7 +551,7 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    
+
     if close_cortex_incident:
         # If close_cortex_incident is True, assert that the closing entry is present
         assert expected_closing_entry in response.entries

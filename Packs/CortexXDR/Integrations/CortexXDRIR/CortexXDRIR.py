@@ -1026,7 +1026,7 @@ def update_remote_system_command(client, args):
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
             # update_args = {'closeReason': 'Resolved', 'closeNotes': None}
-            
+
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"Before checking status {update_args=}")
@@ -1039,17 +1039,17 @@ def update_remote_system_command(client, args):
             closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
             remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
             demisto.debug(f"{remote_is_already_closed=}")
-            
+
             close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
 
             if is_closed and close_xdr_incident and closed_without_status and not remote_is_already_closed:
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
-                
+
             demisto.debug(f"After checking status {update_args=}")
             update_incident_command(client, update_args)
 
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-            
+
             # Check all relevant fields for an incident being closed in XSOAR UI
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
             if is_closed and closed_without_status and remote_is_already_closed:
