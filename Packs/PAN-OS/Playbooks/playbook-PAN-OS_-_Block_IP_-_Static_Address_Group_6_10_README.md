@@ -46,3 +46,4 @@ There are no outputs for this playbook.
 ---
 
 ![PAN-OS - Block IP - Static Address Group](../doc_files/PAN-OS_-_Block_IP_-_Static_Address_Group.png)
+
