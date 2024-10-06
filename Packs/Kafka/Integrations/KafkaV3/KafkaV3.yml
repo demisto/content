@@ -42,10 +42,10 @@ configuration:
   type: 8
 - display: SASL PLAIN Username
   name: plain_username
-  type: 0
+  type: 14
 - display: SASL PLAIN Password
   name: plain_password
-  type: 0
+  type: 14
 - display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   type: 0

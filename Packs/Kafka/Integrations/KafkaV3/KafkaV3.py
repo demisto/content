@@ -81,49 +81,22 @@ class KafkaCommunicator:
 
         self.kafka_logger = kafka_logger
 
-        """
-        if trust_any_cert:
-            self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})
-            self.conf_producer.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})
-                                       """
-
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
         demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
         demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
 
-        """
-        if ca_cert:
-            with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
-                self.ca_path = ca_descriptor.name
-                ca_descriptor.write(ca_cert)
-            self.conf_producer.update({'ssl.ca.location': self.ca_path})
-            self.conf_consumer.update({'ssl.ca.location': self.ca_path})
-        if client_cert:
-            with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_cert_descriptor:
-                self.client_cert_path = client_cert_descriptor.name
-                client_cert_descriptor.write(client_cert)
-            self.conf_producer.update({'ssl.certificate.location': self.client_cert_path,
-                                       'security.protocol': 'ssl'})
-            self.conf_consumer.update({'ssl.certificate.location': self.client_cert_path,
-                                       'security.protocol': 'ssl'})
-        if client_cert_key:
-            with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
-                self.client_key_path = client_key_descriptor.name
-                client_key_descriptor.write(client_cert_key)
-            self.conf_producer.update({'ssl.key.location': self.client_key_path})
-            self.conf_consumer.update({'ssl.key.location': self.client_key_path})
-        if ssl_password:
-            self.conf_producer.update({'ssl.key.password': ssl_password})
-            self.conf_consumer.update({'ssl.key.password': ssl_password})
-            """
-
 
     def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl,
                            plain_username, plain_password, brokers):
+        """
+        Updates the `conf_producer` or `conf_consumer` configuration based on the specified authentication method.
+
+        Args:
+            client_dict (dict): The configuration dictionary to be updated.
+            This should be either the producer's or consumer's conf_dict.
+        """
         
         client_dict.update({'bootstrap.servers': brokers})
             
@@ -405,6 +378,16 @@ class KafkaCommunicator:
 
 # unit test were modified
 def validate_params(params: dict):  # TODO add validation that trust any cert isn't with ssl or sasl?
+    """
+        Validates the provided parameters to ensure they meet the requirements for SSL and SASL_SSL authentication methods.
+        If any invalid configurations are detected, an error is raised.
+
+        For SSL authentication, the use_ssl parameter must be set to True, and the following certificates must be provided:
+        ca_cert, client_cert, and client_cert_key.
+        For SASL_SSL authentication, both use_ssl and use_sasl must be set to True.
+        and the following certificates must be provided: plain_username, plain_password, and ca_cert parameters.
+        Regardless of the authentication method, the brokers parameter must always be provided.
+    """
     use_ssl = params.get('use_ssl')
     use_sasl = params.get('use_sasl')
     plain_username = params.get('plain_username')
@@ -880,7 +863,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
 
 
 @capture_logs
-def commands_manager(demisto_args: dict, kafka_kwargs: dict, demisto_params: dict,  # pragma: no cover
+def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dict,  # pragma: no cover
                      demisto_command: str, kafka_logger: Optional[logging.Logger] = None,
                      log_stream: Optional[StringIO] = None) -> None:
     """Start command function according to demisto command."""
@@ -925,7 +908,6 @@ def main():  # pragma: no cover
     group_id = demisto_params.get('group_id', 'xsoar_group')
     offset = handle_empty(demisto_params.get('offset', 'earliest'), 'earliest')
     trust_any_cert = demisto_params.get('insecure', False)
-    ssl_password = demisto_params.get('additional_password', None)
     consumer_only = demisto_params.get('consumer_only') or False
 
     # Should we use SSL
@@ -936,40 +918,21 @@ def main():  # pragma: no cover
     ca_cert = demisto_params.get('ca_cert', None)
     client_cert = demisto_params.get('client_cert', None)
     client_cert_key = demisto_params.get('client_cert_key', None)
+    ssl_password = demisto_params.get('additional_password', None)
     plain_username = demisto_params.get('plain_username')
     plain_password = demisto_params.get('plain_password')
 
 
-    # SSL
-    if use_ssl and not use_sasl:
-        kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
-                        'client_cert_key': client_cert_key, 'offset': offset, 'use_sasl': use_sasl,
-                        'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
-        if ssl_password:
-            kafka_kwargs['ssl_password'] = ssl_password
-    
-    # SASL_PLAINTEXT
-    elif use_sasl and not use_ssl:
-        kafka_kwargs =  {'use_ssl': use_ssl, 'brokers': brokers, 'offset': offset,
-                        'use_sasl': use_sasl, 'plain_username': plain_username, 'plain_password': plain_password,
-                        'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
-    
-    elif use_sasl and use_ssl:
-    # SASL_SSL
-        kafka_kwargs =  {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
-                        'use_sasl': use_sasl, 'plain_username': plain_username, 'plain_password': plain_password,
-                        'trust_any_cert': trust_any_cert, 'group_id': group_id, 'consumer_only': consumer_only}
-        
-        if ssl_password:
-            kafka_kwargs['ssl_password'] = ssl_password
-    
-    # Trust any certificate
-    else:
-        kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert, 'group_id': group_id,
-                        'consumer_only': consumer_only, 'use_ssl': use_ssl, 'use_sasl': use_sasl}
+    kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
+                    'use_sasl': use_sasl, 'group_id': group_id, 'consumer_only': consumer_only,
+                    'trust_any_cert': trust_any_cert,
+                    'client_cert': client_cert, 'client_cert_key': client_cert_key,
+                    'plain_username': plain_username, 'plain_password': plain_password}
+    if ssl_password:
+        kafka_kwargs['ssl_password'] = ssl_password
 
     try:
-        commands_manager(demisto_args, kafka_kwargs, demisto_params, demisto_command)
+        commands_manager(kafka_kwargs, demisto_params, demisto_args, demisto_command)
 
     except Exception as e:
         debug_log = ''
