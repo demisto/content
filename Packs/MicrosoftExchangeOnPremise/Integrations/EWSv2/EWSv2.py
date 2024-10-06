@@ -229,8 +229,7 @@ def prepare():  # pragma: no cover
     else:
         if 'outlook.office365.com' in EWS_SERVER.lower():
             if not AUTH_METHOD_STR:
-                # TODO - what should we do now?
-                AUTH_METHOD_STR = 'Basic'
+                AUTH_METHOD_STR = 'ntlm'
             VERSION_STR = '2016'
         else:
             if MANUAL_USERNAME:
