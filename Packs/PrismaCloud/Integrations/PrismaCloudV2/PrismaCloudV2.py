@@ -2,6 +2,7 @@ from copy import deepcopy
 import json
 from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
+from ipaddress import ip_network
 
 ''' CONSTANTS '''
 
@@ -461,6 +462,53 @@ class Client(BaseClient):
             resp_type='content'
         )
 
+    def list_public_networks(self) -> list[dict[str, Any]]:
+        """
+        Retrieves a list of public networks from the allow list.
+
+        Returns:
+            list[dict[str, Any]]: A list of dictionaries representing the public networks.
+        """
+        return self._http_request(
+            method='GET',
+            url_suffix='/allow_list/network'
+        )
+
+    def block_ip(self, cidr: str, network_uuid: str, description: str = ''):
+        """
+        Blocks the given CIDR from the specified network.
+        """
+        self._http_request(
+            method='POST',
+            url_suffix=f'/allow_list/network/{network_uuid}/cidr',
+            json_data={
+                'cidr': cidr,
+                'description': description,
+            }
+        )
+
+    def unblock_ip(self, cidr_uuid: str, network_uuid: str):
+        """
+        Unblocks the given CIDR from the specified network.
+        """
+        self._http_request(
+            method='DELETE',
+            url_suffix=f'/allow_list/network/{network_uuid}/cidr/{cidr_uuid}',
+        )
+
+    def update_block_description(self, cidr: str, cidr_uuid: str, network_uuid: str, description: str):
+        """
+        Updates the description of a blocked CIDR.
+        """
+        self._http_request(
+            method='PUT',
+            url_suffix=f'/allow_list/network/{network_uuid}/cidr/{cidr_uuid}',
+            json_data={
+                'cidr': cidr,
+                'description': description,
+            }
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -677,6 +725,18 @@ def remove_additional_resource_fields(input_dict):
             for current_metadata_item in list(metadata_items):
                 if 'key' in current_metadata_item and current_metadata_item['key'] == 'configure-sh':
                     metadata_items.remove(current_metadata_item)
+
+
+def list_network_header_transform(header: str):
+    """
+    Converts a network list header string to readable format.
+    """
+    header_mappings = {
+        'name': 'Network Name',
+        'uuid': 'Network Id',
+        'cidr': 'cidr',
+    }
+    return header_mappings.get(header, header)
 
 
 ''' FETCH AND MIRRORING HELPER FUNCTIONS '''
@@ -2286,6 +2346,112 @@ def access_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
+def list_public_networks_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Get a list of public networks in the IP allow list.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (dict[str, Any]): A dictionary containing an optional limit parameter to restrict the amount of returned entries,
+                                and optional all_results parameter to retrieve all entries.
+
+    Returns:
+    - CommandResults: An object containing the raw response and the table representation of the public network list.
+    """
+    public_networks = client.list_public_networks()
+    if not args.get('all_results', False):
+        limit = int(args.get('limit', 50))
+        public_networks = public_networks[:limit]
+
+    networks_table = tableToMarkdown(name='Public Networks', t=public_networks, headers=['name', 'uuid', 'cidrs'],
+                                     headerTransform=list_network_header_transform, is_auto_json_transform=True)
+
+    return CommandResults(outputs_prefix='PrismaCloud.PublicNetworks',
+                          outputs=public_networks,
+                          readable_output=networks_table,
+                          raw_response=public_networks,
+                          )
+
+
+def block_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Block an IP address from the network.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (dict[str, Any]): A dictionary containing:
+                                - 'ip' or 'cidr' address to be blocked.
+                                - 'network_uuid' received from the list_public_networks_command.
+                                - 'description' (Optional) to be added for the block entry.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the IP address has been blocked.
+    """
+    address = args.get('ip', '') or args.get('cidr', '')
+    network_uuid = args.get('network_uuid', '')
+    description = args.get('description', '')
+    if not address:
+        raise DemistoException('Please provide either the "cidr" or the "ip" argument.')
+
+    try:
+        cidr = str(ip_network(address))
+    except ValueError as e:
+        raise DemistoException(f'Failed to parse the provided address. Error: {str(e)}')
+
+    client.block_ip(cidr, network_uuid, description)
+
+    return CommandResults(
+        readable_output=f'IP/CIDR {cidr} was blocked successfully.',
+    )
+
+
+def unblock_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Unblock an IP address from the network.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (dict[str, Any]): A dictionary containing 'cdr_uuid' and 'network_uuid' received from the list_public_networks_command.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the IP address has been unblocked.
+    """
+    cdr_uuid = args.get('cdr_uuid', '')
+    network_uuid = args.get('network_uuid', '')
+
+    client.unblock_ip(cdr_uuid, network_uuid)
+
+    return CommandResults(
+        readable_output=f'IP/CIDR {cdr_uuid} block was deleted successfully.',
+    )
+
+
+def update_blocked_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Update an existing block entry description.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (dict[str, Any]): A dictionary containing:
+                                - 'cidr_uuid' of the IP/CIDR to be updated.
+                                - 'network_uuid' received from the list_public_networks_command.
+                                - 'description' to be updated for the block entry.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the description has been updated.
+    """
+    cidr = args.get('cidr', '')
+    cdr_uuid = args.get('cdr_uuid', '')
+    network_uuid = args.get('network_uuid', '')
+    description = args.get('description', '')
+
+    client.update_block_description(cidr, cdr_uuid, network_uuid, description)
+
+    return CommandResults(
+        readable_output=f'IP/CIDR {cidr} block was updated successfully.'
+    )
+
+
 ''' MIRRORING COMMANDS '''
 
 
@@ -2688,6 +2854,10 @@ def main() -> None:
             'prisma-cloud-access-key-disable': access_key_disable_command,
             'prisma-cloud-access-key-enable': access_key_enable_command,
             'prisma-cloud-access-key-delete': access_key_delete_command,
+            'prisma-cloud-list-public-networks': list_public_networks_command,
+            'prisma-cloud-block-ip': block_ip_command,
+            'prisma-cloud-unblock-ip': unblock_ip_command,
+            'prisma-cloud-update-blocked-ip': update_blocked_ip_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,

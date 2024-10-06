@@ -2500,6 +2500,73 @@ script:
     description: Deletes the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-delete
+  - arguments:
+      - description: Limit for the number of results returned (Default - 50 entries).
+        name: limit
+        required: false
+      - description: Return all results.
+        name: all_results
+        required: false
+    deprecated: false
+    description: Returns the list of public networks in Prisma Cloud.
+    execution: false
+    name: prisma-cloud-list-public-networks
+  - arguments:
+      - description: |-
+          IP address to block (subnet mask will be assumed to be /32).
+          Provide either IP or CIDR address, not both.
+        name: ip
+        required: false
+      - description: |-
+          CIDR address to block.
+          Provide either IP or CIDR address, not both.
+        name: cidr
+        required: false
+      - description: |-
+          UUID of the network to block the IP/CIDR on.
+        name: network_uuid
+        required: true
+      - description: Description to be associated with the blocked address.
+        name: description
+        required: false
+    deprecated: false
+    description: |-
+      Blocks the specified address from accessing Prisma Cloud.
+      The CIDR block cannot overlap CIDR blocks that already exist in the networks you manage.
+      IP addresses in the CIDR block must be routable to the public internet.
+      Use prisma-cloud-list-public-networks in order to discover network_uuid.
+    execution: false
+    name: prisma-cloud-block-ip
+  - arguments:
+      - description: cdr_uuid of the blocked address to be unblocked.
+        name: cdr_uuid
+        required: true
+      - description: network_uuid of the blocked address to be unblocked.
+        name: network_uuid
+        required: true
+    deprecated: false
+    description: |-
+      Removes the block of the specified address from Prisma Cloud.
+      Use prisma-cloud-list-public-networks in order to discover network_id and cdr_id.
+    execution: false
+    name: prisma-cloud-unblock-ip
+  - arguments:
+      - description: network_uuid of the blocked address to be updated.
+        name: network_uuid
+        required: true
+      - description: cdr_uuid of the blocked address to be updated.
+        name: cdr_uuid
+        required: true
+      - description: new description for the blocked CIDR address.
+        name: description
+        required: false
+    deprecated: false
+    description: |-
+      Update the description for the CIDR block.
+      Providing a blank description will remove the existing block description.
+      Use prisma-cloud-list-public-networks in order to discover network_id.
+    execution: false
+    name: prisma-cloud-update-blocked-ip
 tests:
 - Prisma Cloud V2 Test
 defaultmapperin: RedLock-mapper
