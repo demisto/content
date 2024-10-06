@@ -494,6 +494,7 @@ class Client(BaseClient):
         self._http_request(
             method='DELETE',
             url_suffix=f'/allow_list/network/{network_uuid}/cidr/{cidr_uuid}',
+            resp_type='content',
         )
 
     def update_block_description(self, cidr: str, cidr_uuid: str, network_uuid: str, description: str):
@@ -506,7 +507,8 @@ class Client(BaseClient):
             json_data={
                 'cidr': cidr,
                 'description': description,
-            }
+            },
+            resp_type='content',
         )
 
 
@@ -2419,7 +2421,11 @@ def unblock_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     cdr_uuid = args.get('cdr_uuid', '')
     network_uuid = args.get('network_uuid', '')
 
-    client.unblock_ip(cdr_uuid, network_uuid)
+    try:
+        client.unblock_ip(cdr_uuid, network_uuid)
+    except DemistoException as e:
+        if '404' in str(e):
+            raise DemistoException(f'Block entry with {cdr_uuid=} not found.')
 
     return CommandResults(
         readable_output=f'IP/CIDR {cdr_uuid} block was deleted successfully.',
@@ -2445,7 +2451,11 @@ def update_blocked_ip_command(client: Client, args: dict[str, Any]) -> CommandRe
     network_uuid = args.get('network_uuid', '')
     description = args.get('description', '')
 
-    client.update_block_description(cidr, cdr_uuid, network_uuid, description)
+    try:
+        client.update_block_description(cidr, cdr_uuid, network_uuid, description)
+    except DemistoException as e:
+        if '404' in str(e):
+            raise DemistoException(f'Block entry with {cdr_uuid=} not found.')
 
     return CommandResults(
         readable_output=f'IP/CIDR {cidr} block was updated successfully.'
