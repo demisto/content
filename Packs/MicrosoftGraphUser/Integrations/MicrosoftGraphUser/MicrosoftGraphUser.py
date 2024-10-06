@@ -15,6 +15,7 @@ UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-user'
 INVALID_USER_CHARS_REGEX = re.compile(r'[%&*+/=?`{|}]')
+API_VERSION: str = 'v1.0'
 
 
 def camel_case_to_readable(text):
@@ -488,7 +489,7 @@ def revoke_user_session_command(client: MsGraphClient, args: dict):
 def main():
     params: dict = demisto.params()
     azure_cloud = get_azure_cloud(params, 'MicrosoftGraphUser')
-    url = urljoin(azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"), '/v1.0/')
+    url = urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, f'/{API_VERSION}/')
     tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
     auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id', '')
     enc_key = params.get('creds_enc_key', {}).get('password', '') or params.get('enc_key', '')
