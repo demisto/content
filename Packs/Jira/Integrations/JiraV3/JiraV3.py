@@ -2028,6 +2028,12 @@ def get_create_metadata_field_command(client: JiraBaseClient, args: Dict[str, An
     start_at = args.get('start_at', 0)
     max_results = args.get('max_results', 50)
 
+    if not project_id_or_key:
+        raise ValueError("No project_id_or_key specified for jira-get-create-metadata-field")
+
+    if not project_id_or_key:
+        raise issue_type_id("No issue_type_id specified for jira-get-create-metadata-field")
+
     res = client.get_create_metadata_field(
         project_id_or_key=project_id_or_key,
         issue_type_id=issue_type_id,
