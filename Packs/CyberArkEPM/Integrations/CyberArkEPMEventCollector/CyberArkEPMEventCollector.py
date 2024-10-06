@@ -65,7 +65,7 @@ class Client(BaseClient):
         demisto.debug(f"result is: {result}")
         if result.get("status", "") != "SUCCESS":
             raise DemistoException(f"Retrieving Okta session token returned status: {result.get('status')},"
-                                   f" check your okta credentials please.")
+                                   f" Check your Okta credentials and make sure the user is not blocked by a role.")
         return result.get('sessionToken')
 
     def get_saml_response(self) -> str:  # pragma: no cover
