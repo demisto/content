@@ -1793,10 +1793,9 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def test_credentials_command(server_ip, ntlm_connection):
+def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
     args = demisto.args()
     username = args.get('username')
-    server = Server(server_ip, get_info='ALL')
     try:
         connection = create_connection(
             server=server,
@@ -1804,7 +1803,7 @@ def test_credentials_command(server_ip, ntlm_connection):
             username=username,
             password=args.get('password'),
             ntlm_connection=argToBoolean(ntlm_connection),
-            auto_bind=True,
+            auto_bind=auto_bind,
         )
         connection.unbind()
     except LDAPBindError:
@@ -2004,7 +2003,7 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            return return_results(test_credentials_command(server_ip, ntlm_connection=ntlm_auth))
+            return return_results(test_credentials_command(server_ip, server, ntlm_connection=ntlm_auth, auto_bind=auto_bind))
 
         # IAM commands
         elif command == 'iam-get-user':
