@@ -109,6 +109,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -329,6 +330,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "12"
@@ -373,6 +375,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -463,6 +466,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "16"
@@ -507,6 +511,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "19"
@@ -537,6 +542,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "18"
@@ -581,6 +587,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -666,6 +673,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
