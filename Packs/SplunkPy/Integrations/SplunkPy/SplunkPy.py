@@ -1153,7 +1153,6 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                     f"Caught an exception while parsing the query name, using the original query name instead: {str(e)}")
                 parsed_query_name = query_name
 
-
             if searchable_query := build_drilldown_search(
                 notable_data, query_search, raw_dict
             ):
