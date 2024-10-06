@@ -977,12 +977,6 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """
     searchable_search: list = []
     start = 0
-    original_query = demisto.params().get('fetchQuery', '')
-
-    # When using expandtoken in the query, Splunk expands the values from the notable into the search,
-    # hence we do not need to do it manually.
-    if 'expandtoken' in original_query:
-        return search
 
     for match in re.finditer(DRILLDOWN_REGEX, search):
         groups = match.groups()

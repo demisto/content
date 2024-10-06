@@ -1119,7 +1119,7 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     ({'countryNameA': '"test\country"', 'countryNameB': '""'},
      'search countryA="$countryNameA|s$" countryB=$countryNameB|s$', {}, False,
      'search countryA="test\country" countryB=""'),
-    ({},
+    ({'test': 'test_user'},
      'search countryA=\$this is a test\$', {}, False,
      'search countryA=\$this is a test\$'),
 ], ids=[
