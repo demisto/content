@@ -523,6 +523,7 @@ tasks:
       id: 7d039298-b7e0-44c1-8f77-39e71f387d96
       version: -1
       name: Analyst approval to remove user from local Administrator group
+      description: Analyst approval is required to remove the user from local Administrator group.
       type: condition
       iscommand: false
       brand: ""
