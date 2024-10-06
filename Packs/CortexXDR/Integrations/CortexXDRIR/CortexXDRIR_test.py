@@ -478,7 +478,6 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     assert response.entries == []
 
 
-# @pytest.mark.parametrize(argnames='incident_status', argvalues=XDR_RESOLVED_STATUS_TO_XSOAR.keys())
 @pytest.mark.parametrize(argnames='incident_status, close_cortex_incident',
                          argvalues=[(status, close_flag) for status in XDR_RESOLVED_STATUS_TO_XSOAR for close_flag in
                                     [True, False]])
@@ -729,6 +728,50 @@ def test_update_remote_system_command(incident_changed, delta):
             }
     actual_remote_id = update_remote_system_command(client, args)
     assert actual_remote_id == expected_remote_id
+
+
+def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
+    """
+    Given:
+        - an XDR client with 'close_xdr_incident' set to False.
+        - arguments indicating the incident was closed in XSOAR.
+    When:
+        - running update_remote_system_command with 'close_xdr_incident' set to False.
+    Then:
+        - the incident in XDR should not be closed.
+        - other updates to the incident should still be applied.
+    """
+    from CortexXDRIR import update_remote_system_command, Client
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False,
+        params={'close_xdr_incident': False}
+    )
+
+    # Prepare the data as if the incident was closed in XSOAR
+    data = {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'test'}
+    delta = {'CortexXDRIRstatus': 'resolved'}
+    expected_remote_id = 'remote_id'
+
+    args = {
+        'remoteId': expected_remote_id,
+        'data': data,
+        'entries': [],
+        'incidentChanged': True,
+        'delta': delta,
+        'status': 2,
+    }
+
+    mock_update_incident_command = mocker.patch("CortexXDRIR.update_incident_command")
+
+    mocker.patch.object(client, 'get_incident_extra_data', return_value={'alerts': {'data': [{'alert_id': '123'}]}})
+    mocker.patch.object(client, 'update_alerts_in_xdr_request', return_value='1,2,3')
+
+    update_remote_system_command(client, args)
+
+    # Verify that 'status' is not set to a resolved state in the update_args
+    update_args = mock_update_incident_command.call_args[0][1]
+    assert 'status' not in update_args or update_args['status'] != XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
