@@ -253,7 +253,7 @@ tasks:
     task:
       id: 5b4b20fd-e0f6-43d0-843d-7d3c52c89fb7
       version: -1
-      name: Found any related alerts?
+      name: Found any alerts indicating this is malicious activity?
       description: Determines whether the incident contains related alerts by MITRE Techniques, indicating that the alert was part of an attack pattern.
       type: condition
       iscommand: false
