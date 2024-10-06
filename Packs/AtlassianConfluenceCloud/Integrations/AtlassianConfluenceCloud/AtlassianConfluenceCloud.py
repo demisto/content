@@ -202,19 +202,6 @@ def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[st
     Returns:
         dict[str, Any]: The API response containing the fetched events.
     """
-    # return {
-    #     "results": [{"creationDate": 59}],
-    #     "start": 0,
-    #     "limit": 1000,
-    #     "size": 25,
-    #     "_links": {
-    #         "base": "https://tenant.atlassian.net/wiki",
-    #         "context": "/wiki",
-    #         "next": "TEST_LINK",
-    #         "prev": "TEST_LINK",
-    #         "self": "https://tenant.atlassian.net/wiki/rest/api/audit/?end_date=1724658181290&startDate=1724583600000"
-    #     }
-    # }
     if not next_link:
         end_date = int((time.time() - 5) * 1000)
         last_end_date = last_run.get('end_date', 0)
@@ -1492,8 +1479,10 @@ def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
             # of the data, not the start of it. Therefore, we can return
             if events:
                 break
+            response = client.search_events(limit=AUDIT_FETCH_PAGE_SIZE, start_date=str(start_date), end_date=str(end_date))
+        else:
+            response = client.search_events(limit=AUDIT_FETCH_PAGE_SIZE, next_link=next_link)
 
-        response = run_fetch_mechanism(client, next_link, start_date, end_date)
         demisto.debug(json.dumps(response, indent=4))
         next_link = response['_links'].get('next', None)
         events.extend(response['results'])
