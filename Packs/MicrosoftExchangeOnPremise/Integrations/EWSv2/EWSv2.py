@@ -158,11 +158,9 @@ def get_auth_method(auth_method):  # pragma: no cover
     auth_method = auth_method.lower()
     if auth_method == 'ntlm':
         return NTLM
-    elif auth_method == 'basic':
-        return BASIC
     elif auth_method == 'digest':
         return DIGEST
-    raise Exception("{} auth method is not supported. Choose one of {}".format(auth_method, 'ntlm\\basic\\digest'))
+    raise Exception("{} auth method is not supported. Choose one of {}".format(auth_method, 'ntlm\\digest'))
 
 
 def get_build(version_str):  # pragma: no cover
@@ -231,6 +229,7 @@ def prepare():  # pragma: no cover
     else:
         if 'outlook.office365.com' in EWS_SERVER.lower():
             if not AUTH_METHOD_STR:
+                # TODO - what should we do now?
                 AUTH_METHOD_STR = 'Basic'
             VERSION_STR = '2016'
         else:
