@@ -480,23 +480,28 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     assert response.entries == []
 
 
-@pytest.mark.parametrize(argnames='incident_status', argvalues=XDR_RESOLVED_STATUS_TO_XSOAR.keys())
-def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker, incident_status):
+# @pytest.mark.parametrize(argnames='incident_status', argvalues=XDR_RESOLVED_STATUS_TO_XSOAR.keys())
+@pytest.mark.parametrize(argnames='incident_status, close_cortex_incident',
+                        argvalues=[(status, close_flag) for status in XDR_RESOLVED_STATUS_TO_XSOAR.keys() for close_flag in
+                                                                                                                [True, False]])
+def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker, incident_status, close_cortex_incident):
     """
     Given:
-        -  an XDR client
+        - an XDR client
         - arguments (id and lastUpdate time set to a lower than incident modification time)
         - a raw incident (get-extra-data results) indicating the incident was closed on XDR side
     When
         - running get_remote_data_command
     Then
-        - the mirrored_object in the GetRemoteDataResponse is the same as the modified raw incident
-        - the entries in the GetRemoteDataResponse holds the closing entry
+        - If close_cortex_incident is True, the mirrored_object in the GetRemoteDataResponse holds the closing entry.
+        - If close_cortex_incident is False, the mirrored_object in the GetRemoteDataResponse does NOT hold the closing entry.
     """
     import copy
     from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False,
+    )
+    client._params['close_cortex_incident'] = close_cortex_incident
     args = {
         'id': 1,
         'lastUpdate': 0
@@ -515,22 +520,27 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
     expected_modified_incident['assigned_user_mail'] = ''
     expected_modified_incident['assigned_user_pretty_name'] = ''
-    expected_modified_incident['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR[incident_status]
-    expected_modified_incident['closeNotes'] = close_notes
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
 
-    expected_closing_entry = {
-        'Type': 1,
-        'Contents': {
-            'dbotIncidentClose': True,
-            'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR[incident_status],
-            'closeNotes': close_notes
-        },
-        'ContentsFormat': 'json'
-    }
+    if close_cortex_incident:
+        expected_modified_incident['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR[incident_status]
+        expected_modified_incident['closeNotes'] = close_notes
+        
+        expected_closing_entry = {
+            'Type': 1,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR[incident_status],
+                'closeNotes': close_notes
+            },
+            'ContentsFormat': 'json'
+        }
+    else:
+        expected_closing_entry = {}
+    
 
     # make sure get-extra-data is returning an incident
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
@@ -543,7 +553,13 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
-    assert expected_closing_entry in response.entries
+    
+    if close_cortex_incident:
+        # If close_cortex_incident is True, assert that the closing entry is present
+        assert expected_closing_entry in response.entries
+    else:
+        # If close_cortex_incident is False, assert that the closing entry is NOT present
+        assert expected_closing_entry not in response.entries
 
 
 def test_get_remote_data_command_sync_owners(requests_mock, mocker):

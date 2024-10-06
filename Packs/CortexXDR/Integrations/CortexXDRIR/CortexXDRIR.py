@@ -1009,6 +1009,10 @@ def update_remote_system_command(client, args):
     demisto.debug(f'this is the remote args {remote_args}')
     demisto.debug(f'this is the remote args delta {remote_args.delta}')
     incident_id = remote_args.remote_incident_id
+    # incident_id = '700'
+    # remote_args.incident_changed = True
+    # remote_args = {'incident_changed' : True, 'data': None, 'delta': None, 'entries': None, 'inc_status': None, 'remote_incident_id': '700'}
+    # remote_data = {'closeReason': 'Resolved', 'closeNotes': None}
     remote_data = remote_args.data
     demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
     demisto.debug(f"update_remote_system_command {incident_id=} , {remote_data.get('closeReason')=}, "
@@ -1021,7 +1025,8 @@ def update_remote_system_command(client, args):
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
-
+            # update_args = {'closeReason': 'Resolved', 'closeNotes': None}
+            
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"Before checking status {update_args=}")
@@ -1300,7 +1305,7 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
-    command = 'test-module' #demisto.command()
+    command = demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
     # using two different credentials object as they both fields need to be encrypted
