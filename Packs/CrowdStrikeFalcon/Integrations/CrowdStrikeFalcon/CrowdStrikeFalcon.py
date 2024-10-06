@@ -3976,6 +3976,10 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
         ioc_id = f"{ioc_type}:{value}"
         if not device_count_res:
             return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+
+        if argToBoolean(device_count_res[0].get('limit_exceeded', False)):
+            return 'rate limit exceeded in CrowdStrike API, please check the rate limit in CrowdStrike'
+
         context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
         hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
         return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
