@@ -26,7 +26,7 @@ elif ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else: # Elasticsearch (<= v7)
-    from elasticsearch7 import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch7 import Elasticsearch, RequestsHttpConnection, NotFoundError  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
     
@@ -190,7 +190,8 @@ def elasticsearch_builder(proxies):
         es = Elasticsearch(**connection_args)
         # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
         if API_KEY_ID and hasattr(es, 'transport'):
-            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(  # type: ignore[attr-defined]
+            API_KEY)
     
     return es
 
@@ -534,7 +535,7 @@ def test_connectivity_auth(proxies):
             except requests.exceptions.HTTPError as e:
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
-                    return_error(f"Failed to connect. " \
+                    return_error("Failed to connect. "
                                  f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:

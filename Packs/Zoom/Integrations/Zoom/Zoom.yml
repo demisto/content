@@ -1245,6 +1245,7 @@ script:
       description: The UserID that allows a chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message.
       type: string
     - name: zoom_ask
+      hidden: true
       description: The message as a JSON for asking questions to the user.
       type: boolean
     outputs: []
@@ -1280,7 +1281,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:1.0.0.83979
+  dockerimage: demisto/fastapi:0.111.0.101615
   script: "-"
   subtype: python3
   type: python

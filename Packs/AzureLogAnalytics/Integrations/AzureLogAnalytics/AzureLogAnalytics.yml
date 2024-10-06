@@ -25,7 +25,6 @@ configuration:
   section: Connect
   display: Server URL
   advanced: true
-  defaultvalue: https://management.azure.com
   hidden: false
   additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - additionalinfo: Received from the authorization process or from the self-deployed configuration process (find the tenant ID in your app overview page in the Azure portal)
@@ -708,7 +707,7 @@ script:
       name: workspace_name
     description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
     name: azure-log-analytics-delete-search-job
-  dockerimage: demisto/crypto:1.0.0.97029
+  dockerimage: demisto/crypto:1.0.0.99611
   runonce: false
   script: '-'
   subtype: python3

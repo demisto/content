@@ -1,0 +1,12 @@
+{
+    "errors": [
+        {
+            "lineNumber": 1,
+            "errorMessage": "invalid cidr pattern L1"
+        },
+        {
+            "lineNumber": 3,
+            "errorMessage": "invalid cidr pattern L3"
+        }
+    ]
+}

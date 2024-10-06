@@ -1,0 +1,4 @@
+{
+  "breakingChanges":true,
+  "breakingChangesNotes":"Updated the parameter 'Types of Notifications to Send', since some options are not supported by XSIAM."
+}

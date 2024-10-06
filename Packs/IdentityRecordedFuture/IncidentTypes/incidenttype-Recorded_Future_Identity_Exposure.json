@@ -1,0 +1,30 @@
+{
+    "id": "Recorded Future Identity Exposure",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Recorded Future Identity Exposure",
+    "prevName": "Recorded Future Identity Exposure",
+    "color": "#EEC1C1",
+    "playbookId": "Recorded Future - Identity Exposure",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 1,
+    "onChangeRepAlg": 1,
+    "layout": "Recorded Future Playbook Alert Identity Exposure",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.10.0"
+}

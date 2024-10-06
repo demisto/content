@@ -280,5 +280,5 @@ script:
     - description: Dictionary with EntryID as the key and boolean if the file exists as a value in Context.
       contextPath: IsFileExists
 tests:
-- No tests
+- TestDemistoRestAPI
 fromversion: 5.0.0

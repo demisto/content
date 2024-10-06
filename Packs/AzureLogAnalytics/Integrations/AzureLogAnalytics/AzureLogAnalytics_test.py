@@ -523,3 +523,36 @@ def test_table_with_invalid_name(function: Callable, message: str) -> None:
     with pytest.raises(DemistoException, match=message):
         # in the run_search_job_command the args is the first argument instead of the second because it use the polling decorator
         function({'table_name': 'invalid'}, {'table_name': 'invalid'})
+
+
+@pytest.mark.parametrize("azure_cloud", [(AZURE_WORLDWIDE_CLOUD), (AZURE_US_GCC_CLOUD), (AZURE_US_GCC_HIGH_CLOUD)])
+def test_client_endpoints(azure_cloud) -> None:
+    """
+    Given:
+        - The instance is configured with the Azure Cloud parameter.
+    When:
+        - The client object is set.
+    Then:
+        - Validate the ms_client object (created in the scope of the
+          client object) is set with the correct set of  endpoints.
+    """
+    client = Client(
+        self_deployed=True,
+        refresh_token="refresh_token",
+        auth_and_token_url="auth_id",
+        redirect_uri="redirect_uri",
+        enc_key="enc_key",
+        auth_code="auth_code",
+        subscription_id=SUBSCRIPTION_ID,
+        resource_group_name=RESOURCE_GROUP_NAME,
+        workspace_name=WORKSPACE_NAME,
+        verify=False,
+        proxy=False,
+        certificate_thumbprint=None,
+        private_key=None,
+        azure_cloud=azure_cloud,
+        client_credentials=False,
+    )
+    assert client.ms_client.managed_identities_resource_uri == azure_cloud.endpoints.resource_manager
+    assert client.ms_client.azure_ad_endpoint == azure_cloud.endpoints.active_directory
+    assert client.azure_cloud.name == azure_cloud.name

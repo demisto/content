@@ -428,73 +428,93 @@
                     "simple": "owner"
                 },
                 "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "severity",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "low"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "2"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "medium"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "3"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "high"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
-                        ]
-                    }
-                }
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "high"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "4"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "critical"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				}
             }
         },
         "Cortex XDR Incident": {
@@ -746,84 +766,93 @@
                     "simple": "owner"
                 },
                 "severity": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "severity",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "low"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "medium"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "high"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                }
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "high"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "4"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "critical"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				}
             }
         },
         "Cortex XDR Port Scan": {
@@ -922,84 +951,93 @@
                     "simple": ""
                 },
                 "severity": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "severity",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "low"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "medium"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "high"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                }
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "high"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "4"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "critical"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				}
             }
         },
         "Malware Investigation and Response": {
@@ -1226,84 +1264,93 @@
                     "simple": "owner"
                 },
                 "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "severity",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "1",
-                                            "complex": null
-                                        },
-                                        "isContext": false
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "low",
-                                            "complex": null
-                                        },
-                                        "isContext": false
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "2",
-                                            "complex": null
-                                        },
-                                        "isContext": false
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "medium",
-                                            "complex": null
-                                        },
-                                        "isContext": false
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "3",
-                                            "complex": null
-                                        },
-                                        "isContext": false
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "high",
-                                            "complex": null
-                                        },
-                                        "isContext": false
-                                    }
-                                },
-                                "operator": "replace"
-                            }
-                        ],
-                        "accessor": ""
-                    },
-                    "simple": ""
-                }
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "high"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "4"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "critical"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				}
             }
         }
     }

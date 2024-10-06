@@ -156,6 +156,14 @@ def test_module():
         demisto.error('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
                       ' long running must be enabled.')
 
+    # validation for permitted_notifications since not all the options are supported by xsiam
+    if is_xsiam():
+        xsiam_permitted_notification_types = {"investigationClosed", "investigationDeleted", "incidentReminderSLA",
+                                              "taskCompleted", "failedFetchIncidents", "mentionNew", "mentionOld"}
+
+        if not_allowed := set(CUSTOM_PERMITTED_NOTIFICATION_TYPES).difference(xsiam_permitted_notification_types):
+            demisto.error(f"The {','.join(sorted(not_allowed))} 'Types of Notifications to Send' are not supported in XSIAM.")
+
     demisto.results('ok')
 
 
@@ -1997,12 +2005,15 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
         'name': file_path['name'],
         'comment': comment
     }
-
-    response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
-    if response:
-        demisto.results('File sent to Slack successfully.')
-    else:
-        demisto.results('Could not send the file to Slack.')
+    try:
+        response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
+        if response:
+            demisto.results('File sent to Slack successfully.')
+        else:
+            demisto.results('Could not send the file to Slack.')
+    except SlackApiError as e:
+        if 'method_deprecated' in str(e):
+            raise DemistoException('Command slack-send-file isn\'t available for newly created apps (from May 8, 2024).')
 
 
 def handle_tags_in_message_sync(message: str) -> str:

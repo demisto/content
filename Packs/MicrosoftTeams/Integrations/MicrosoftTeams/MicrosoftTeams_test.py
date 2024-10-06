@@ -616,7 +616,8 @@ def test_send_message_with_entitlement(mocker, requests_mock):
                 ],
                 'body': [{
                     'text': 'is this really working?',
-                    'type': 'TextBlock'
+                    'type': 'TextBlock',
+                    'wrap': True
                 }],
                 'type': 'AdaptiveCard',
                 'msteams': {
@@ -995,6 +996,12 @@ def test_is_investigation_mirrored():
      "[https://xsoar.pan.dev](https://xsoar.pan.dev)"),
     ("Link: https://xsoar.pan.dev/page?parametized=true",
      "Link: [https://xsoar.pan.dev/page?parametized=true](https://xsoar.pan.dev/page?parametized=true)"),
+    ("This is a link https://paloaltonetworks.com/. This is a [Custom URL](https://paloaltonetworks.com/)",
+     "This is a link [https://paloaltonetworks.com/.](https://paloaltonetworks.com/.) This is a [Custom URL]("
+     "https://paloaltonetworks.com/)"),
+    ("This is a [Custom URL](https://paloaltonetworks.com/), This is a link https://paloaltonetworks.com/",
+     "This is a [Custom URL](https://paloaltonetworks.com/), "
+     "This is a link [https://paloaltonetworks.com/](https://paloaltonetworks.com/)"),
 ])
 def test_urlify_hyperlinks(message: str, expected_result: str):
     from MicrosoftTeams import urlify_hyperlinks
@@ -1019,7 +1026,7 @@ def test_get_team_aad_id(mocker, requests_mock):
         'value': [
             {
                 'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
-                'displayName': 'MyGreatTeam',
+                'displayName': 'MyGreat #Team',
                 'groupTypes': [
                     'Unified'
                 ],
@@ -1055,11 +1062,11 @@ def test_get_team_aad_id(mocker, requests_mock):
         get_team_aad_id('The-B-Team')
     assert str(e.value) == 'Could not find requested team.'
 
-    url_b = f"{BASE_URL}?$filter=displayName eq 'MyGreatTeam' and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    url_b = f"{BASE_URL}?$filter=displayName eq 'MyGreat%20%23Team' and resourceProvisioningOptions/Any(x:x eq 'Team')"
     requests_mock.get(url_b, json=json_response)
 
     # verify team ID for team which is not in integration context
-    assert get_team_aad_id('MyGreatTeam') == '02bd9fd6-8f93-4758-87c3-1fb73740a315'
+    assert get_team_aad_id('MyGreat #Team') == '02bd9fd6-8f93-4758-87c3-1fb73740a315'
 
 
 def test_get_team_member():

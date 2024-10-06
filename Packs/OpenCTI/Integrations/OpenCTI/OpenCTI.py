@@ -644,9 +644,10 @@ def main():
     credentials = params.get('credentials', {})
     api_key = credentials.get('password')
     base_url = params.get('base_url').strip('/')
+    verify = not argToBoolean(params.get('insecure'))
 
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error',
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=verify, log_level='error',
                                   proxies=handle_proxy())
         command = demisto.command()
         demisto.info(f"Command being called is {command}")

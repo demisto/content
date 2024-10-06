@@ -6,7 +6,8 @@ import os
 import unicodedata
 import logging
 from tempfile import NamedTemporaryFile
-from typing import Any, Dict, Generator, List, Optional, Tuple
+from typing import Any
+from collections.abc import Generator
 
 import pyshark
 
@@ -14,7 +15,7 @@ TCP_FLAG_FIN = 0x01
 TCP_FLAG_SYN = 0x02
 TCP_FLAG_ACK = 0x10
 
-codecs.register_error('replace_with_space', lambda x: (u' ', x.start + 1))  # type: ignore[attr-defined]
+codecs.register_error('replace_with_space', lambda x: (' ', x.start + 1))  # type: ignore[attr-defined]
 
 
 def from_bytes_to_text(mode: str, binary: bytes) -> str:
@@ -28,7 +29,7 @@ def from_bytes_to_text(mode: str, binary: bytes) -> str:
         # Keep all the characters used in text based protocols
         # * The unicodedata category names of control code start with C
         return ''.join(' '
-                       if c == u'\ufffd'
+                       if c == '\ufffd'
                        or (c not in ('\n', '\r', '\t') and unicodedata.category(c)[0] == 'C')
                        else c
                        for c in binary.decode('utf-8', errors='replace'))
@@ -39,14 +40,14 @@ def from_bytes_to_text(mode: str, binary: bytes) -> str:
 
 
 class Streams:
-    def __init__(self, server_ports: List[Tuple[int, int]]):
-        self.__tcp_streams: Dict[tuple, Any] = {}
-        self.__udp_streams: Dict[tuple, Any] = {}
+    def __init__(self, server_ports: list[tuple[int, int]]):
+        self.__tcp_streams: dict[tuple, Any] = {}
+        self.__udp_streams: dict[tuple, Any] = {}
         self.__server_ports = server_ports
 
     def __make_item(self,
                     bin2txt_mode: str,
-                    filter_keys: Optional[List[str]],
+                    filter_keys: list[str] | None,
                     protocol: str,
                     sender_ip: str,
                     sender_port: int,
@@ -54,7 +55,7 @@ class Streams:
                     recipient_port: int,
                     stream_bytes: bytes,
                     outgoing_bytes: bytes,
-                    incoming_bytes: bytes) -> Dict[str, Any]:
+                    incoming_bytes: bytes) -> dict[str, Any]:
 
         return {k: v for k, v in {
                 'protocol': protocol,
@@ -80,7 +81,7 @@ class Streams:
                 sender_port: int,
                 recipient_ip: str,
                 recipient_port: int,
-                payload: Optional[bytes]) -> None:
+                payload: bytes | None) -> None:
         """
         Add a tcp packet to the streams.
 
@@ -95,11 +96,11 @@ class Streams:
         key1 = (sender_ip, sender_port, recipient_ip, recipient_port, stream_index)
         key2 = (recipient_ip, recipient_port, sender_ip, sender_port, stream_index)
 
-        if key1 in self.__tcp_streams.keys():
+        if key1 in self.__tcp_streams:
             if payload:
                 self.__tcp_streams[key1]['outgoing'] += payload
                 self.__tcp_streams[key1]['stream'] += payload
-        elif key2 in self.__tcp_streams.keys():
+        elif key2 in self.__tcp_streams:
             if payload:
                 self.__tcp_streams[key2]['incoming'] += payload
                 self.__tcp_streams[key2]['stream'] += payload
@@ -112,8 +113,8 @@ class Streams:
             elif (tcp_flags & mask) == (TCP_FLAG_SYN | TCP_FLAG_ACK):
                 outgoing = False
             else:
-                matchs = any([port_range[0] < sender_port < port_range[1] for port_range in self.__server_ports])
-                matchr = any([port_range[0] < recipient_port < port_range[1] for port_range in self.__server_ports])
+                matchs = any(port_range[0] < sender_port < port_range[1] for port_range in self.__server_ports)
+                matchr = any(port_range[0] < recipient_port < port_range[1] for port_range in self.__server_ports)
                 if matchs and (not matchr or (sender_port < recipient_port)):
                     outgoing = False
                 elif matchr and (not matchs or (recipient_port < sender_port)):
@@ -137,7 +138,7 @@ class Streams:
                 sender_port: int,
                 recipient_ip: str,
                 recipient_port: int,
-                payload: Optional[bytes]) -> None:
+                payload: bytes | None) -> None:
         """
         Add a udp packet to the streams.
 
@@ -150,11 +151,11 @@ class Streams:
         key1 = (sender_ip, sender_port, recipient_ip, recipient_port)
         key2 = (recipient_ip, recipient_port, sender_ip, sender_port)
 
-        if key1 in self.__udp_streams.keys():
+        if key1 in self.__udp_streams:
             if payload:
                 self.__udp_streams[key1]['outgoing'] += payload
                 self.__udp_streams[key1]['stream'] += payload
-        elif key2 in self.__udp_streams.keys():
+        elif key2 in self.__udp_streams:
             if payload:
                 self.__udp_streams[key2]['incoming'] += payload
                 self.__udp_streams[key2]['stream'] += payload
@@ -166,7 +167,7 @@ class Streams:
                 'stream': payload
             }
 
-    def build(self, bin2txt_mode: str, filter_keys: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+    def build(self, bin2txt_mode: str, filter_keys: list[str] | None = None) -> list[dict[str, Any]]:
         """
         Build the streams
 
@@ -207,7 +208,7 @@ class Streams:
 
 
 class PcapParser:
-    def __init__(self, server_ports: List[Tuple[int, int]]):
+    def __init__(self, server_ports: list[tuple[int, int]]):
         self.__server_ports = server_ports
 
     def __parse(self, pcap: pyshark.capture.capture.Capture) -> Streams:
@@ -253,7 +254,7 @@ class PcapParser:
                 )
         return streams
 
-    def parse_file(self, pcap_file_path: str, wpa_password: str, rsa_key_file_path: Optional[str], pcap_filter: str) -> Streams:
+    def parse_file(self, pcap_file_path: str, wpa_password: str, rsa_key_file_path: str | None, pcap_filter: str) -> Streams:
         """
         Parse a pcap file
 
@@ -286,7 +287,7 @@ class PcapParser:
             finally:
                 sys.stderr = sys.__stderr__
 
-    def parse_bytes(self, pcap: bytes, wpa_password: str, rsa_decrypt_key: Optional[bytes], pcap_filter: str) -> Streams:
+    def parse_bytes(self, pcap: bytes, wpa_password: str, rsa_decrypt_key: bytes | None, pcap_filter: str) -> Streams:
         """
         Parse a pcap bytes
 
@@ -361,7 +362,7 @@ def make_pcap_by_type(pcap_type: str, pcap_bytes: bytes) -> bytes:
         raise ValueError(f'Unknown pcap type: {pcap_type}')
 
 
-def split_context_path(path: str) -> Tuple[List[str], str]:
+def split_context_path(path: str) -> tuple[list[str], str]:
     """
     Split a context path separated by a dot with a replacement name
     following a comma into the key tree the replacement name.
@@ -398,13 +399,13 @@ def split_context_path(path: str) -> Tuple[List[str], str]:
 class MainProcess:
     def __init__(self,
                  pcap_type: str,
-                 rsa_decrypt_key: Optional[bytes],
+                 rsa_decrypt_key: bytes | None,
                  wpa_password: str,
                  pcap_filter: str,
                  bin2txt_mode: str,
-                 filter_keys: List[str],
+                 filter_keys: list[str],
                  error_action: str,
-                 server_ports: List[Tuple[int, int]]):
+                 server_ports: list[tuple[int, int]]):
         self.__pcap_type = pcap_type
         self.__rsa_decrypt_key = rsa_decrypt_key
         self.__wpa_password = wpa_password
@@ -439,8 +440,7 @@ class MainProcess:
                     ).build(
                         bin2txt_mode=self.__bin2txt_mode,
                         filter_keys=self.__filter_keys)
-                    for stream in streams:
-                        yield stream
+                    yield from streams
             except Exception:
                 if self.__error_action == 'abort':
                     raise
@@ -451,7 +451,7 @@ class MainProcess:
                 else:
                     raise ValueError(f'Invalid error action: {self.__error_action}')
 
-    def extract_and_replace(self, node: Any, key_tree: List[str], repl_name: str) -> None:
+    def extract_and_replace(self, node: Any, key_tree: list[str], repl_name: str) -> None:
         """
         Extract streams from pcaps specified with 'node' and 'key_tree',
         and set them into the node specified with 'repl_name'
@@ -483,7 +483,7 @@ class MainProcess:
         :param node: The pcap node.
         :return: The streams extracted from pcaps in the node.
         """
-        streams = [v for v in self.__make_streams(node)]
+        streams = list(self.__make_streams(node))
         if isinstance(node, list) or len(streams) != 1:
             return streams
         else:
@@ -505,7 +505,7 @@ def main():
     bin2txt_mode = args.get('bin2txt_mode') or 'text-based-protocol'
     filter_keys = argToList(args.get('filter_keys'))
 
-    server_ports: List[Tuple[int, int]] = []
+    server_ports: list[tuple[int, int]] = []
     for range_str in argToList(args.get('server_ports') or '1-49151'):
         port_range = range_str.split('-')
         if len(port_range) == 1:

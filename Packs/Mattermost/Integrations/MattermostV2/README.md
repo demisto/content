@@ -15,14 +15,16 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Bot Access Token | The Bot Access Token to use for connection. | True |
     | Personal Access Token | The Personal Access Token to use for connection. | True |
     | Team Name |  | True |
-    | Default Notifications Channel |  | False |
+    | Default Notifications Channel | If Notifications Channel name is not specified, will send notification to incidentNotificationChannel channel. | False |
     | Enable Incident Mirroring |  | False |
     | Allow external users to create incidents via DM. |  | False |
+    | Types of Notifications to Send | Notifications of type 'externalAskSubmit' or 'externalFormSubmit' are not configurable because they are required to allow Ask tasks to be sent correctly. | False |
     | Long running instance. Required for investigation mirroring and direct messages. |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
@@ -69,8 +71,11 @@ Must be authenticated and have the view_team permission.
 | Mattermost.Team.policy_id | String | The policy ID of the team. | 
 
 #### Command example
+
 ```!mattermost-get-team team_name=panw```
+
 #### Context Example
+
 ```json
 {
     "Mattermost": {
@@ -100,6 +105,7 @@ Must be authenticated and have the view_team permission.
 #### Human Readable Output
 
 >### Team details:
+
 >|allow_open_invite|allowed_domains|cloud_limits_archived|company_name|create_at|delete_at|description|display_name|email|group_constrained|id|invite_id|name|policy_id|scheme_id|type|update_at|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false |  | false |  | 1696486762638 | 0 |  | PANW | email | false | id | id | panw |  |  | O | 1696486762638 |
@@ -147,8 +153,11 @@ manage_system
 | Mattermost.Channel.creator_id | String | The creator ID of the channel. | 
 
 #### Command example
+
 ```!mattermost-list-channels limit=2 include_private_channels=true```
+
 #### Context Example
+
 ```json
 {
     "Mattermost": {
@@ -207,6 +216,7 @@ manage_system
 #### Human Readable Output
 
 >### Channels:
+
 >|name|display_name|type|id|
 >|---|---|---|---|
 >| name | Display_Name | O | id |
@@ -257,8 +267,11 @@ If creating a public channel, create_public_channel permission is required. If c
 | Mattermost.Channel.scheme_id | String | The scheme ID of the channel. | 
 
 #### Command example
+
 ```!mattermost-create-channel display_name=channel_name name=channel_name type=Private```
+
 #### Context Example
+
 ```json
 {
     "Mattermost": {
@@ -317,6 +330,7 @@ No permissions required.
 #### Context Output
 
 There is no context output for this command.
+
 ### mattermost-remove-channel-member
 
 ***
@@ -341,6 +355,7 @@ manage_public_channel_members permission if the channel is public. manage_privat
 #### Context Output
 
 There is no context output for this command.
+
 ### mattermost-list-users
 
 ***
@@ -385,8 +400,11 @@ Requires an active session and (if specified) membership to the channel or team 
 | Mattermost.User.timezone | Unknown | The timezone of the user. | 
 
 #### Command example
+
 ```!mattermost-list-users limit=2 team_name=panw```
+
 #### Context Example
+
 ```json
 {
     "Mattermost": {
@@ -443,6 +461,7 @@ Requires an active session and (if specified) membership to the channel or team 
 #### Human Readable Output
 
 >### Users:
+
 >|username|email|role|id|
 >|---|---|---|---|
 >| admin | admin@admin.com |  | 8a6t7whumbdbxrawretujh6rre |
@@ -463,6 +482,7 @@ Must have upload_file permission.
 `mattermost-send-file`
 
 #### Command example
+
 ```!mattermost-send-file message=check entry_id=85@109 channel=test```
 
 #### Input
@@ -510,6 +530,7 @@ Must have create_post permission for the channel the post is being created in.
 #### Context Output
 
 There is no context output for this command.
+
 ### mattermost-close-channel
 
 ***
@@ -533,6 +554,7 @@ delete_public_channel permission if the channel is public. delete_private_channe
 #### Context Output
 
 There is no context output for this command.
+
 ### close-channel
 
 ***
@@ -556,6 +578,7 @@ delete_public_channel permission if the channel is public. delete_private_channe
 #### Context Output
 
 There is no context output for this command.
+
 ### mirror-investigation
 
 ***
@@ -603,6 +626,7 @@ Closes a mirrored Mattermost channel. If not provided, the mirrored investigatio
 #### Context Output
 
 There is no context output for this command.
+
 ### mattermost-mirror-investigation
 
 ***

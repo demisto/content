@@ -1,6 +1,8 @@
 id: Cisco-Meraki-Test
 version: -1
 name: Cisco-Meraki-Test
+description: Deprecated. Use playbook-CiscoMerakiv2_Test.yml instead.
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

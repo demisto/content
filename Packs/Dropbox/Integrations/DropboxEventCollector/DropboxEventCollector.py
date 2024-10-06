@@ -42,21 +42,21 @@ class DropboxEventsClient(IntegrationEventsClient):
 
     def set_request_filter(self, cursor: str):
         if 'continue' not in str(self.request.url):
-            self.request.url = AnyUrl(f'{str(self.request.url).removesuffix("/")}/continue')
+            self.request.url = parse_obj_as(AnyUrl, f'{str(self.request.url).removesuffix("/")}/continue')
 
         self.request.data = json.dumps({'cursor': cursor})
 
     def get_access_token(self):
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url=f'{str(self.request.url).removesuffix("/")}/oauth2/token',
+            url=f'{str(self.request.url).removesuffix("/")}/oauth2/token',  # type: ignore[arg-type]
             data={'grant_type': 'refresh_token', 'refresh_token': f'{self.refresh_token}'},
             auth=HTTPBasicAuth(self.credentials.identifier, self.credentials.password),  # type: ignore[arg-type]
             verify=self.request.verify,
         )
         response = self.call(request)
         self.request.headers['Authorization'] = f'Bearer {response.json()["access_token"]}'
-        self.request.url = AnyUrl(f'{str(self.request.url).removesuffix("/")}/2/team_log/get_events')
+        self.request.url = parse_obj_as(AnyUrl, f'{str(self.request.url).removesuffix("/")}/2/team_log/get_events')
 
 
 class DropboxEventsGetter(IntegrationGetEvents):

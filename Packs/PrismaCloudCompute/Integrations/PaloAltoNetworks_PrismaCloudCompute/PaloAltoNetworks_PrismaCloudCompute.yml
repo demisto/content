@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.95137
   isfetch: true
   runonce: false
   script: "-"
@@ -815,16 +815,16 @@ script:
       description: A description of the CVE.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score of the indicator.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Reliability
       type: String

@@ -529,6 +529,24 @@ def test_get_on_call(mocker):
     assert (res.raw_response == util_load_json('test_data/delete_incident.json'))
 
 
+def test_get_on_call_wrong_date_format(mocker):
+    """
+    Given:
+        - An app client object
+        - schedule_id = 1234
+        - start_date = "wrong_date_format"
+    When:
+        - Calling function get_on_call
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_on_call',
+                        return_value=util_load_json('test_data/delete_incident.json'))
+    with pytest.raises(ValueError):
+        OpsGenieV3.get_on_call(mock_client, {"schedule_id": 1234, "starting_date": "wrong_date_format"})
+
+
 def test_create_incident_wrong_args():
     """
     Given:
