@@ -78,7 +78,7 @@ QUERY_NAME = 'query_name'
 QUERY_SEARCH = 'query_search'
 INCIDENT_CREATED = 'incident_created'
 
-DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
+DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\s\$]+\$)|(\$[^\s\$]+\$)'
 
 ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     DRILLDOWN_ENRICHMENT: 'successful_drilldown_enrichment',
@@ -977,6 +977,12 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """
     searchable_search: list = []
     start = 0
+    original_query = demisto.params().get('fetchQuery', '')
+
+    # When using expandtoken in the query, Splunk expands the values from the notable into the search,
+    # hence we do not need to do it manually.
+    if 'expandtoken' in original_query:
+        return search
 
     for match in re.finditer(DRILLDOWN_REGEX, search):
         groups = match.groups()
@@ -1146,6 +1152,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 demisto.error(
                     f"Caught an exception while parsing the query name, using the original query name instead: {str(e)}")
                 parsed_query_name = query_name
+
 
             if searchable_query := build_drilldown_search(
                 notable_data, query_search, raw_dict

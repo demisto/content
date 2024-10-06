@@ -1119,6 +1119,9 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     ({'countryNameA': '"test\country"', 'countryNameB': '""'},
      'search countryA="$countryNameA|s$" countryB=$countryNameB|s$', {}, False,
      'search countryA="test\country" countryB=""'),
+    ({},
+     'search countryA=\$this is a test\$', {}, False,
+     'search countryA=\$this is a test\$'),
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
@@ -1128,7 +1131,8 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     "query name without fields to replace",
     "search query with a user field that contains a backslash",
     "search query with a user field that is surrounded by quotation marks and contains a backslash",
-    "search query fields in notable data more than one value, with one empty value"
+    "search query fields in notable data more than one value, with one empty value",
+    "search query with $ as part of the search - no need to replace"
 
 ])
 def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
@@ -1154,6 +1158,7 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'params', return_value={})
     parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
     assert parsed_query == expected_search
 
@@ -2795,4 +2800,5 @@ def test_remove_double_quotes():
 
     assert remove_double_quotes('this is a ""test""') == 'this is a "test"'
     assert remove_double_quotes('no ""double quotes"" here, and here: ""') == 'no "double quotes" here, and here: ""'
-    assert remove_double_quotes('format mvsep="mvseparator" "","",",","",",",""') == 'format mvsep="mvseparator" "","",",","",",",""'
+    assert (remove_double_quotes('format mvsep="mvseparator" "","",",","",",",""') ==
+            'format mvsep="mvseparator" "","",",","",",",""')
