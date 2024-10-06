@@ -540,5 +540,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- PAN-OS Create Or Edit Rule Test
+- PAN-OS DAG Configuration Test
 fromversion: 6.10.0

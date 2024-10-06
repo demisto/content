@@ -770,7 +770,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 1630
+          "y": 1650
         }
       }
     note: false
@@ -857,5 +857,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- PAN-OS - Block URL - Custom URL Category Test
 fromversion: 6.10.0

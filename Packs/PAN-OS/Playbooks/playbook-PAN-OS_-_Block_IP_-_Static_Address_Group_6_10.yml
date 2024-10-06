@@ -341,8 +341,8 @@ tasks:
     task:
       id: e910a8ff-52dd-40db-8fe2-e39b357b4c15
       version: -1
-      name: PAN-OS Commit Configuration
-      playbookName: PAN-OS Commit Configuration
+      name: PAN-OS Commit Configuration v2
+      playbookName: PAN-OS Commit Configuration v2
       type: playbook
       iscommand: false
       brand: ""
@@ -617,7 +617,5 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- PAN-OS Create Or Edit Rule Test
-- palo_alto_panorama_test_pb
-- PAN-OS DAG Configuration Test
+- PAN-OS - Block IP - Static Address Group Test
 fromversion: 6.10.0

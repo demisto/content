@@ -48,4 +48,4 @@ There are no outputs for this playbook.
 
 ---
 
-![PAN-OS - Block URL - Custom URL Category](../doc_files/PAN-OS_Block_URL_Custom_URL_Category.png)
+![PAN-OS - Block URL - Custom URL Category](../doc_files/PAN-OS_-_Block_URL_-_Custom_URL_Category.png)
