@@ -19,7 +19,6 @@ Make sure the toggle at the bottom is switched on.
 | DLP Regions |  | False |
 | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
 | Bot Message | The message to send to the user to ask for feedback. | False |
-| Fetch incidents |  | False |
 
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
