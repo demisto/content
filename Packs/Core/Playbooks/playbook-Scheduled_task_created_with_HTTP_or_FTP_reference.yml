@@ -301,7 +301,7 @@ tasks:
     task:
       id: 7f8c3f22-69fa-442d-854f-b29ccb764512
       version: -1
-      name: Found any alerts indicating a malicious schedule task?
+      name: Found any alerts indicating this is a malicious scheduled task?
       description: Determines whether the incident contains agent alerts indicating that the alert was part of an attack pattern.
       type: condition
       iscommand: false
@@ -783,7 +783,7 @@ tasks:
       id: e5e0d51f-b834-47d0-81f2-326aaab123dc
       version: -1
       name: Disable the malicious scheduled task manually
-      description: "Dear Analyst,\nPlease note that during the remediation process, the playbook failed to disable the scheduled task ${ExtractedTaskName}\n\nPlease take manual action to disable the scheduled task. "
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook failed to disable the scheduled task ${ExtractedTaskName}\n\nPlease take manual action to disable the scheduled task. "
       type: regular
       iscommand: false
       brand: ""
