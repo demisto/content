@@ -273,6 +273,7 @@ tasks:
       id: 935f3d5b-a6b6-452a-81ca-0a3c31495999
       version: -1
       name: Did the involved user connect the device?
+      description: Checks if the user connected the device
       type: condition
       iscommand: false
       brand: ""
@@ -318,6 +319,7 @@ tasks:
       id: 2a3eb3b4-ac48-4526-8b8d-dcde62ec67d2
       version: -1
       name: Check if the device is approved for use
+      description: The analyst should decide whether the device is approved for use or not.
       type: regular
       iscommand: false
       brand: ""
@@ -417,6 +419,7 @@ tasks:
       id: e12bce4a-c80e-4907-8767-86102a491bd8
       version: -1
       name: Were current violations found?
+      description: Checks whether any device control violations were found.
       type: condition
       iscommand: false
       brand: ""
@@ -500,6 +503,7 @@ tasks:
       id: 1a497783-b55d-4aec-8764-2722b3d3216d
       version: -1
       name: Is the user's email retrieved?
+      description: Checks if the user's email was retrieved from Active Directory.
       type: condition
       iscommand: false
       brand: ""
