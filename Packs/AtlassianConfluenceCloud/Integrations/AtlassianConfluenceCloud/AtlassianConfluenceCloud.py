@@ -1444,7 +1444,7 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
     next_link = last_run.get('next_link', '')
     finished_last_query = not next_link
     no_events_in_confluence = False
-    all_events = []
+    all_events: List[Dict[str, Any]] = []
 
     while len(all_events) < fetch_limit and not no_events_in_confluence:
         page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - len(all_events))
@@ -1469,9 +1469,9 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
     end_date = args.get('end_date', int((time.time() - 5) * 1000))
     start_date = arg_to_number(args.get('start_date', end_date - ONE_MINUTE_IN_MILL_SECONDS))
-    fetch_limit = arg_to_number(args.get('limit', 50))
+    fetch_limit = int(arg_to_number(args.get('limit', 50)))
     next_link = ''
-    events = []
+    events: List[Dict[str, Any]] = []
 
     while len(events) < fetch_limit:
         if not next_link:
@@ -1546,7 +1546,7 @@ def main() -> None:
         args = demisto.args()
         strip_args(args)
         remove_nulls_from_dictionary(args)
-        limit = arg_to_number(params.get('max_events_per_fetch', 10000))
+        limit = int(arg_to_number(params.get('max_events_per_fetch', 10000)))
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
