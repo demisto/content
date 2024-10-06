@@ -8,7 +8,7 @@ import exchangelib
 
 from CommonServerPython import *
 from io import StringIO
-from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
+from exchangelib import (DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
                          ItemAttachment, Version, Body, FolderCollection)
