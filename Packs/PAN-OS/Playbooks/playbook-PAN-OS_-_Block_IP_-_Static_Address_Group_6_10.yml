@@ -111,6 +111,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -215,6 +216,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "7"
@@ -378,6 +380,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "13"
@@ -422,6 +425,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "14"
@@ -499,6 +503,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "3"
