@@ -404,7 +404,7 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
-  dockerimage: devdemisto/elasticsearch:1.0.0.99282
+  dockerimage: devdemisto/elasticsearch:1.0.0.113198
   isfetch: true
   runonce: false
   script: '-'
