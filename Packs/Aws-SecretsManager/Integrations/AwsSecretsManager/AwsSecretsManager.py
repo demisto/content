@@ -1,3 +1,8 @@
+# ruff: noqa: RUF001
+# we shouldnt break backwards compatibility for this error
+
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -5,7 +10,7 @@ import json
 from datetime import datetime, date
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 from AWSApiModule import *  # noqa: E402
 
@@ -31,6 +36,7 @@ class DatetimeEncoder(json.JSONEncoder):
 
 
 ''' COMMAND FUNCTIONS '''
+SENSITIVE_COMMANDS = ["aws-secrets-manager-secret–value-get"]
 
 
 def test_module(client: AWSClient):
@@ -44,7 +50,7 @@ def test_module(client: AWSClient):
         demisto.results('ok')
 
 
-def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, Any]):
+def aws_secrets_manager_secret_list_command(client: AWSClient, args: dict[str, Any]):
     aws_client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -98,7 +104,7 @@ def aws_secrets_manager_secret_list_command(client: AWSClient, args: Dict[str, A
     ))
 
 
-def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[str, Any]):
+def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: dict[str, Any]):
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -106,7 +112,7 @@ def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[s
         role_session_duration=args.get('roleSessionDuration'),
     )
 
-    kwargs = dict()
+    kwargs = {}
 
     if args.get('secret_id'):
         kwargs['SecretId'] = args.get('secret_id')
@@ -123,7 +129,7 @@ def aws_secrets_manager_secret_value_get_command(client: AWSClient, args: Dict[s
     output = json.dumps(response, cls=DatetimeEncoder)
     response = json.loads(output)
 
-    if not response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         return_error(f'Get command encountered an issue, got unexpected result! {response["ResponseMetadata"]}')
 
     readable_output = {'Name': response.get('Name', ''),
@@ -150,7 +156,7 @@ def aws_secrets_manager_secret_delete_command(client: AWSClient, args):
         role_session_duration=args.get('roleSessionDuration'),
     )
 
-    kwargs = dict()
+    kwargs = {}
 
     if args.get('secret_id'):
         kwargs['SecretId'] = args.get('secret_id')
@@ -167,7 +173,7 @@ def aws_secrets_manager_secret_delete_command(client: AWSClient, args):
         demisto.results("The Secret was Deleted")
 
 
-def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str, Any]):
+def aws_secrets_manager_secret_restore_command(client: AWSClient, args: dict[str, Any]):
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -184,7 +190,7 @@ def aws_secrets_manager_secret_restore_command(client: AWSClient, args: Dict[str
         demisto.results("the secret was restored successfully")
 
 
-def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[str, Any]):
+def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: dict[str, Any]):
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -213,7 +219,7 @@ def aws_secrets_manager_secret_policy_get_command(client: AWSClient, args: Dict[
     ))
 
 
-def fetch_credentials(client: AWSClient, args: Dict[str, Any]):  # pragma: no cover
+def fetch_credentials(client: AWSClient, args: dict[str, Any]):  # pragma: no cover
     client = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -221,7 +227,7 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]):  # pragma: no co
         role_session_duration=args.get('roleSessionDuration'),
     )
 
-    creds_dict = dict()
+    creds_dict = {}
     if args.get('secret_id'):
         try:
             creds_dict[args.get('secret_id')] = client.get_secret_value(SecretId=args.get('secret_id'))
@@ -232,11 +238,11 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]):  # pragma: no co
             creds_dict[secret.get('Name')] = client.get_secret_value(SecretId=secret.get('Name'))
 
     credentials = []
-    for cred_key in creds_dict.keys():
+    for cred_key in creds_dict:
         try:
             secret_as_dict = json.loads(creds_dict[cred_key].get("SecretString"))
 
-            if not any(key in ["user", "password", "workgroup", "certificate"] for key in secret_as_dict.keys()):
+            if should_create_credential(secret_as_dict):
                 credentials.append({
                     "user": secret_as_dict.get("username", ""),
                     "password": secret_as_dict.get("password", ""),
@@ -245,22 +251,29 @@ def fetch_credentials(client: AWSClient, args: Dict[str, Any]):  # pragma: no co
                     "name": f'{creds_dict[cred_key].get("Name")}',
                 })
             else:
-                LOG(f'({creds_dict[cred_key]}) has no keys supporting the format')
+                demisto.debug(f'({creds_dict[cred_key]}) has no keys supporting the format')
         except Exception as e:
+            demisto.debug(f'exception occured during parsing {e}')
             return_error(f'theres is a problem parsing ({creds_dict[cred_key]}) secret value, {e}')
     demisto.credentials(credentials)
+
+
+def should_create_credential(secret_as_dict):
+    return any(key in ["username", "password", "workgroup", "certificate"] for key in secret_as_dict)
 
 
 def main():  # pragma: no cover:
     try:
         params = demisto.params()
+        if argToBoolean(params.get('disable_sensitive_commands')) and demisto.command() in SENSITIVE_COMMANDS:
+            raise ValueError('Sensitive commands are disabled. You can reenable them in the integration settings.')
         aws_default_region = params.get('defaultRegion')
         aws_role_arn = params.get('roleArn')
         aws_role_session_name = params.get('roleSessionName')
         aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
-        aws_access_key_id = params.get('credentials').get('identifier')
-        aws_secret_access_key = params.get('credentials').get('password')
+        aws_access_key_id = params.get('credentials', {}).get('identifier')
+        aws_secret_access_key = params.get('credentials', {}).get('password')
         verify_certificate = not argToBoolean(params.get('insecure'))
         timeout = params.get('timeout')
         retries = int(params.get('retries')) if params.get('retries') else 5
@@ -290,6 +303,7 @@ def main():  # pragma: no cover:
             fetch_credentials(aws_client, args)
 
     except Exception as e:
+        demisto.debug(f'error from command {e}, {traceback.format_exc()}')
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
