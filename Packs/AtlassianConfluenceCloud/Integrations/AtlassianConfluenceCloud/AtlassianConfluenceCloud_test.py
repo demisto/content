@@ -1069,7 +1069,7 @@ def test_fetch_events_with_full_last_run(mocker: MockerFixture):
     expected_start_date = str(last_run["end_date"] + 1)
 
     actual_events, actual_last_run = fetch_events(client, fetch_limit, last_run)
-    assert actual_events == first_page_response['results']*2
+    assert actual_events == first_page_response['results'] * 2
     assert actual_last_run == {'end_date': first_page_response['results'][-1]['creationDate'], 'next_link': None}
     mock_search.assert_has_calls([
         mocker.call(limit=fetch_limit, next_link=last_run["next_link"]),
@@ -1086,7 +1086,8 @@ def test_fetch_events_fetch_limit_reached_with_link(mocker: MockerFixture):
         - The last response had no next link
     Then:
         - search_events is called ONCE with the correct page_size
-        - The returned last_run object contains a next_link property with the value from the response, indicating there are more pages to fetch
+        - The returned last_run object contains a next_link property with the value from the response, indicating there are more
+          pages to fetch
     """
     first_page_response = collector_test_data['get-audit-records-with-links']
     first_page_events = first_page_response['results']
@@ -1200,7 +1201,7 @@ def test_get_events_with_arguments_with_limit(mocker: MockerFixture):
     """
     args = {"start_date": 1670000000, "end_date": 1680000000, "limit": 10}
     mocked_response = collector_test_data['get-audit-records-no-links']
-    mocked_search = mocker.patch.object(client, 'search_events', return_value=mocked_response)
+    mocker.patch.object(client, 'search_events', return_value=mocked_response)
     actual_events, _ = get_events(client, args)
 
     assert actual_events == mocked_response['results'][:args['limit']]
