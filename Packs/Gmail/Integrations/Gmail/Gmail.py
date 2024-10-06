@@ -1392,7 +1392,7 @@ def search_all_mailboxes():
             search_all_mailboxes()
 
 
-def search_command(mailbox: str = None, only_return_account_names: bool = False) -> dict[str, Any] | None:
+def search_command(mailbox: str = None, only_return_account_names: bool = False, first_time: bool = True) -> dict[str, Any] | None:
     """
     Searches for Gmail records of a specified Google user.
     """
@@ -1428,8 +1428,16 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
                           include_spam_trash, has_attachments, only_return_account_names,
                           )
     except HttpError as err:
-        if only_return_account_names and err.status_code == 429:
+        if err.status_code == 500 and first_time:
+            # retry mechanism - try just one time more
+            search_command(mailbox, only_return_account_names, False)
+        elif (
+            err.status_code == 500
+            or only_return_account_names
+            and err.status_code == 429
+        ):
             return {'Mailbox': mailbox, 'Error': {'message': str(err.error_details), 'status_code': err.status_code}}
+
         raise
 
     # In case the user wants only account list without content.
