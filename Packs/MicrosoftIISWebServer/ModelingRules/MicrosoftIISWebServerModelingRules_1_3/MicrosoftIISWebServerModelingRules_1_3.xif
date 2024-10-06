@@ -72,7 +72,7 @@ alter // extract pre-parsed fields from the parsed_fields JSON object
     xdm.network.ip_protocol = if(transport = "-" or transport = null, null, transport="TCP", XDM_CONST.IP_PROTOCOL_TCP, transport="UDP", XDM_CONST.IP_PROTOCOL_UDP, transport),
     xdm.network.session_id = streamid,
     xdm.session_context_id = streamid,
-    xdm.source.host.ipv4_addresses = c_ipv4,
+    xdm.source.host.ipv4_addresses = if(c_ipv4 != null, arraycreate(c_ipv4)),
     xdm.source.host.ipv4_public_addresses = if(c_ipv4 != null and not incidr(c_ipv4, "10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12, 127.0.0.0/8, 169.254.0.0/16, 100.64.0.0/10"), arraycreate(c_ipv4)),
     xdm.source.ipv4 = c_ipv4,
     xdm.source.ipv6 = c_ipv6,
