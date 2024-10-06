@@ -1,0 +1,37 @@
+{
+    "Contents": {
+        "isLast": true,
+        "maxResults": 50,
+        "startAt": 0,
+        "total": 1,
+        "values": [
+            {
+                "description": "An error in the code",
+                "iconUrl": "https://your-domain.atlassian.net/images/icons/issuetypes/bug.png",
+                "id": "1",
+                "name": "Bug",
+                "self": "https://your-domain.atlassian.net/rest/api/2/issueType/1",
+                "subtask": false
+            }
+        ]
+    },
+    "ContentsFormat": "json",
+    "Type": 1,
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": [],
+    "HumanReadable": "### Issue types for project test_project_id\n|Description|Icon Url|Id|Name|Self|Subtask|\n|---|---|---|---|---|---|\n| An error in the code | https://your-domain.atlassian.net/images/icons/issuetypes/bug.png | 1 | Bug | https://your-domain.atlassian.net/rest/api/2/issueType/1 | false |\n",
+    "EntryContext": {
+        "Jira.IssueType(val.id && val.id == obj.id)": [
+            {
+                "description": "An error in the code",
+                "iconUrl": "https://your-domain.atlassian.net/images/icons/issuetypes/bug.png",
+                "id": "1",
+                "name": "Bug",
+                "self": "https://your-domain.atlassian.net/rest/api/2/issueType/1",
+                "subtask": false
+            }
+        ]
+    }
+}

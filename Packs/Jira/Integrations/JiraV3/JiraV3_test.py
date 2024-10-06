@@ -2673,3 +2673,48 @@ class TestJiraIssueAssign:
 
         with pytest.raises(DemistoException):
             update_issue_assignee_command(client=client, args=args)
+
+
+class TestJiraCreateMetadataIssueTypes:
+    @pytest.mark.parametrize(
+        "project_id_or_key",
+        [
+            ("test_project_id"),
+            ("")
+        ]
+    )
+    def test_get_create_metadata_issue_types(self, mocker, project_id_or_key):
+        """
+        Given:
+            - project_id_or_key
+        When:
+            - running get_create_metadata_issue_types_command
+        Then:
+            - ensure the body request is ok
+        """
+
+        from JiraV3 import get_create_metadata_issue_types_command
+
+        args = {
+            "project_id_or_key": project_id_or_key,
+        }
+
+        client: JiraBaseClient = jira_base_client_mock()
+
+        raw_response_path = "test_data/get_create_metadata_issue_types_test/raw_response.json"
+        parsed_result_path = "test_data/get_create_metadata_issue_types_test/parsed_result.json"
+        metadata_response = util_load_json(raw_response_path)
+        expected_context = util_load_json(parsed_result_path)
+        mock_request = mocker.patch.object(
+            client,
+            "get_create_metadata_issue_types",
+            return_value=metadata_response
+        )
+
+        if project_id_or_key:
+            command_results = get_create_metadata_issue_types_command(client=client, args=args)
+            assert expected_context == command_results.to_context()
+            mock_request.assert_called_with(project_id_or_key=project_id_or_key, start_at=0, max_results=50)
+        else:
+            with pytest.raises(ValueError):
+                get_create_metadata_issue_types_command(client=client, args=args)
