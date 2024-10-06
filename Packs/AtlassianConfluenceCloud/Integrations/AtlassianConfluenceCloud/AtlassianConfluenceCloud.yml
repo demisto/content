@@ -1948,16 +1948,18 @@ script:
       type: String
   - arguments:
       - name: should_push_events
+        description: Set this argument to True in order to create events, otherwise the command will only display them.
         auto: PREDEFINED
         predefined:
           - "true"
           - "false"
-        defaultvalue: "false"
+        defaultValue: "false"
       - name: start_date
         description: Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds.
       - name: limit
         description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
     name: confluence-cloud-get-events
+    description: Retrieves a list of events from the Atlassian Confluence Cloud instance.
     outputs:
       - contextPath: ConfluenceCloud.Event.author.type
         description: The type of author who created this event
@@ -1967,7 +1969,7 @@ script:
         type: String
       - contextPath: ConfluenceCloud.Event.author.operations
         description: Nullable. Author's operations.
-        type:
+        type: String
       - contextPath: ConfluenceCloud.Event.author.username
         description: Username of the author of this event.
         type: String
@@ -1997,7 +1999,7 @@ script:
         type: Number
       - contextPath: ConfluenceCloud.Event.summary
         description: Summary of the audit.
-        type: String
+        type: Strings
       - contextPath: ConfluenceCloud.Event.description
         description: Description of the audit.
         type: String

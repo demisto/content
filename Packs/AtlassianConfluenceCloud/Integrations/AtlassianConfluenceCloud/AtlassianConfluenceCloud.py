@@ -1469,7 +1469,7 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
     end_date = args.get('end_date', int((time.time() - 5) * 1000))
     start_date = arg_to_number(args.get('start_date', end_date - ONE_MINUTE_IN_MILL_SECONDS))
-    fetch_limit = int(arg_to_number(args.get('limit', 50)))
+    fetch_limit = int(arg_to_number(args.get('limit', 50)))  # type:ignore
     next_link = ''
     events: List[Dict[str, Any]] = []
 
@@ -1546,7 +1546,7 @@ def main() -> None:
         args = demisto.args()
         strip_args(args)
         remove_nulls_from_dictionary(args)
-        limit = int(arg_to_number(params.get('max_events_per_fetch', 10000)))
+        limit = int(arg_to_number(params.get('max_events_per_fetch', 10000)))   # type:ignore
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
