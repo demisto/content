@@ -207,3 +207,6 @@ extrahop-watchlist-edit
 [file:ExtraHopTrackIncidents.yml]
 ignore=BA124
 
+[file:playbook-ExtraHop_-_CVE-2019-0708_BlueKeep.yml]
+ignore=GR107
+
