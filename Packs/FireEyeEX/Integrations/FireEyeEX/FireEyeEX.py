@@ -467,8 +467,11 @@ def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 @logger
-def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch: int = 50,
-                    info_level: str = 'concise') -> Tuple[dict, list]:
+def fetch_incidents(
+    client: Client, last_run: dict, first_fetch: str,
+    max_fetch: int = 50, info_level: str = 'concise',
+    timeout: int = 120
+) -> Tuple[dict, list]:
     if not last_run:  # if first time fetching
         next_run = {
             'time': to_fe_datetime_converter(first_fetch),
@@ -482,7 +485,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         'start_time': to_fe_datetime_converter(next_run['time']),  # type: ignore
         'info_level': info_level,
         'duration': '48_hours'
-    })
+    }, timeout=timeout)
     all_alerts = raw_response.get('alert')
 
     ten_minutes_date = dateparser.parse('10 minutes')
@@ -586,7 +589,8 @@ def main() -> None:
                 last_run=demisto.getLastRun(),
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
-                info_level=info_level
+                info_level=info_level,
+                timeout=arg_to_number(params.get('timeout', 120))
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
