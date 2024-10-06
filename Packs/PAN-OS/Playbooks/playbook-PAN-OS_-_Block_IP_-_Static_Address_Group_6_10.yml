@@ -590,7 +590,7 @@ inputs:
   playbookInputQuery:
 - key: AddressGroupName
   value:
-    simple: Demisto Remediation - Static Address Group
+    simple: Remediation - Static Address Group
   required: false
   description: Static address group name
   playbookInputQuery:

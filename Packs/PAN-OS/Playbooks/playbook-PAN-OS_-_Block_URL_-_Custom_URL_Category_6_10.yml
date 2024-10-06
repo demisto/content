@@ -49,6 +49,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -232,7 +233,7 @@ tasks:
         complex:
           root: inputs.pre-post
       rulename:
-        simple: Demisto Block Rule - ${alert.id}
+        simple: Block Rule - ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -637,7 +638,7 @@ tasks:
         complex:
           root: inputs.pre-post
       rulename:
-        simple: Demisto Block Rule - ${alert.id}
+        simple: Block Rule - ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -816,7 +817,7 @@ inputs:
   playbookInputQuery:
 - key: CustomURLCategory
   value:
-    simple: Demisto Remediation - Malicious URLs
+    simple: Remediation - Malicious URLs
   required: false
   description: Custom URL Category name
   playbookInputQuery:
