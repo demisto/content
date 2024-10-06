@@ -54,28 +54,22 @@ Commands affected by this limitation are:
 - ***rsa-nw-scan-stop-request***
 - ***rsa-nw-system-dump-download-request***
 
-## Configure RSA NetWitness on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RSA NetWitness v11.5.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., <https://192.168.0.1>) |  | True |
-    | User name |  | True |
-    | Password |  | True |
-    | Service Id | The service ID that is automatically used in every command where service ID is required. Retrieve all service IDs with the rsa-nw-services-list command. To overwrite with another service ID, use the command argument 'service_id'. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Fetch Limit | The maximum number of incidents to fetch | False |
-    | Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, for example, 12 hours, 7 days\) | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | On 'Fetch incidents' import all alerts related to the incident | | False |
+## Configure RSA NetWitness in Cortex
 
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., <https://192.168.0.1>) |  | True |
+| User name |  | True |
+| Password |  | True |
+| Service Id | The service ID that is automatically used in every command where service ID is required. Retrieve all service IDs with the rsa-nw-services-list command. To overwrite with another service ID, use the command argument 'service_id'. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Fetch Limit | The maximum number of incidents to fetch | False |
+| Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, for example, 12 hours, 7 days\) | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| On 'Fetch incidents' import all alerts related to the incident | | False |
 
 ### Configure incident mirroring
  
@@ -106,7 +100,7 @@ Newly fetched incidents will be mirrored in the chosen direction.  However, this
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### rsa-nw-list-incidents

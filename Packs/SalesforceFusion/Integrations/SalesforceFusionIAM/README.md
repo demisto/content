@@ -1,31 +1,27 @@
 Integrate with Salesforce Fusion Identity Access Management service to execute CRUD (create, read, update, and delete) operations for employee lifecycle processes.
 For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
-## Configure Salesforce Fusion IAM on Cortex XSOAR
+## Configure Salesforce Fusion IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Salesforce Fusion IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL | True |
-    | Username | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Allow creating users | False |
-    | Allow updating users | False |
-    | Allow enabling users | False |
-    | Allow disabling users | False |
-    | Automatically create user if not found in update command | False |
-    | Incoming Mapper | True |
-    | Outgoing Mapper | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Base URL | True |
+| Username | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Allow creating users | False |
+| Allow updating users | False |
+| Allow enabling users | False |
+| Allow disabling users | False |
+| Automatically create user if not found in update command | False |
+| Incoming Mapper | True |
+| Outgoing Mapper | True |
 
-4. Click **Test** to check that you are able to connect to the integration.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***

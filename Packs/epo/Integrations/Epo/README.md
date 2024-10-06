@@ -1,18 +1,15 @@
 
 This integration was integrated and tested with McAfee ePO v5.3.2.
 
-## Configure McAfee ePO on Cortex XSOAR
+## Configure McAfee ePO in Cortex
 
-1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2.  Search for McAfee ePO.
-3.  Click **Add instance** to create and configure a new integration instance.
-    *   **Name**: a textual name for the integration instance.
-    *   **Url**: for example: `https://****:port`
-    *   **Username**
-    *   **Password**
-    *   **Trust any certificate (not secure)** Mark to trust Certificate Authority.
-    *   **Use system proxy settings**
-4.  Click **Test** to validate the URLs, credentials, and connection.
+*   **Name**: a textual name for the integration instance.
+*   **Url**: for example: `https://****:port`
+*   **Username**
+*   **Password**
+*   **Trust any certificate (not secure)** Mark to trust Certificate Authority.
+*   **Use system proxy settings**
+
 
 ## Permissions
 McAfee ePO has a highly flexible and powerful permissions system. The permissions required for the user that uses this integration depend on which operations they need to perform. The API user should have the same permissions a regular user would have in order to access the data via the UI. It is possible to view the exact permissions needed for a specific command by running the `!epo-help` command. The `!epo-help` command's output will include help information for the specific command including required permissions. 
@@ -32,7 +29,7 @@ Example `!epo-help` outputs with permission information:
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1.  Print help for ePO commands: epo-help
 2.  Get the latest DAT file: epo-get-latest-dat
