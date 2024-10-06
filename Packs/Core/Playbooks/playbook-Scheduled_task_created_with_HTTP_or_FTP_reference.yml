@@ -89,12 +89,12 @@ tasks:
     task:
       id: 1726e203-af36-4ddf-88ea-b94006caadeb
       version: -1
-      name: Check for unsigned CGO or malicious IP or Url
+      name: Check for unsigned CGO or malicious IP or URL
       description: |-
         Determines the appropriate verdict based on:
         - Process Signature (CGO Process)
         - IP Reputation
-        -URL Reputation
+        - URL Reputation
       type: condition
       iscommand: false
       brand: ""
@@ -871,7 +871,7 @@ tasks:
       to:
       subject:
       body:
-        simple: 'Block the following malicious URL: ${BadUrl}   using PAN-OS?'
+        simple: 'Should Block the following malicious URL: ${BadUrl}   using PAN-OS?'
       methods: []
       format: ""
       bcc:
