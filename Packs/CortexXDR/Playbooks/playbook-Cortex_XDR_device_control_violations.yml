@@ -87,6 +87,7 @@ tasks:
       id: 5201332f-5be8-49ca-8a34-ba282ec5ff82
       version: -1
       name: Were device control violations found?
+      description: Checks whether any device control violations were found.
       type: condition
       iscommand: false
       brand: ""
@@ -419,7 +420,7 @@ tasks:
       id: e12bce4a-c80e-4907-8767-86102a491bd8
       version: -1
       name: Were current violations found?
-      description: Checks whether any device control violations were found.
+      description: Checks whether any current device control violations were found.
       type: condition
       iscommand: false
       brand: ""
