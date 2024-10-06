@@ -1836,11 +1836,11 @@ def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transit
     raise DemistoException(f'Transition "{transition_name}" not found. \nValid transitions are: {transitions_name} \n')
 
 
-def get_issue_forms(client: JiraBaseClient, issue_id: str) -> tuple[List, List]:
+def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[List, List]:
     """Gets the forms from the client and processes them into a usable JSON format.
 
     :param client: Client to make the API call with
-    :type client: JiraBaseClient
+    :type client: JiraOnPremClient
     :param issue_id: Issue ID to get the forms for
     :type issue_id: str
     :return: The raw JSON response and the formatted outputs
@@ -3596,7 +3596,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
 
     # Fetch any forms for the issue
     if isinstance(client, JiraOnPremClient):
-        _, forms = get_issue_forms(client, issue.get('key'))
+        _, forms = get_issue_forms(client, str(issue.get('key')))
         issue['forms'] = forms
 
     return {
@@ -4008,7 +4008,7 @@ def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> Lis
 
     raw, forms = get_issue_forms(client, issue_id)
     if not forms:
-        return CommandResults(readable_output="No forms found")
+        return [CommandResults(readable_output="No forms found")]
 
     results = []
     for form in forms:
