@@ -2861,7 +2861,7 @@ SEARCHES
 
 def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
     if 'searchId' not in args:
-        demisto.debug(f"searchId is not in the args, starting a new search")
+        demisto.debug("searchId is not in the args, starting a new search")
         list_of_args = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]
         arg = oneFromList(list_of_args=list_of_args, args=args)
         if arg is False:
