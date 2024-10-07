@@ -597,6 +597,7 @@ def msgraph_user_get_manager(
 
 def xdr_list_risky_users(
     command: Command,
+    user_name: str,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
@@ -609,11 +610,12 @@ def xdr_list_risky_users(
     )
     output_key = get_output_key("PaloAltoNetworksXDR.RiskyUser", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
-    # TODO : Add username
+
     account_output = create_account(
         id=outputs.get("id"),
         source_id=command.brand,
         risk_level=outputs.get("risk_level"),
+        username=user_name,
     )
 
     return readable_outputs_list, account_output
@@ -824,7 +826,7 @@ def main():
                 xdr_list_risky_users_command
             ) and is_valid_args(xdr_list_risky_users_command):
                 readable_outputs, outputs = xdr_list_risky_users(
-                    xdr_list_risky_users_command
+                    xdr_list_risky_users_command, user_name
                 )
                 single_user_readable_outputs.extend(readable_outputs)
                 single_user_outputs.append(outputs)
