@@ -2985,10 +2985,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: d8dce25e-2340-4844-88e3-e2549b4739c1
+    taskid: 28b796cd-2500-497f-898c-d0a69ea1789a
     type: condition
     task:
-      id: d8dce25e-2340-4844-88e3-e2549b4739c1
+      id: 28b796cd-2500-497f-898c-d0a69ea1789a
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the 'large upload HTTPS' Cortex XDR alerts.
@@ -3174,17 +3174,19 @@ tasks:
               complex:
                 root: PaloAltoNetworksXDR.RiskyUser
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: PaloAltoNetworksXDR.RiskyUser.id
                       iscontext: true
                     right:
                       value:
-                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user.username
+                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.user_id
                       iscontext: true
                     ignorecase: true
                 accessor: risk_level
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -3196,7 +3198,7 @@ tasks:
               complex:
                 root: PaloAltoNetworksXDR.RiskyHost
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: PaloAltoNetworksXDR.RiskyHost.id
@@ -3206,17 +3208,19 @@ tasks:
                         simple: PaloAltoNetworksXDR.Incident.alerts.host_name
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.RiskyHost.id
+                        simple: PaloAltoNetworksXDR.RiskyHost
                       iscontext: true
                     right:
                       value:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
                       iscontext: true
                     ignorecase: true
-                accessor: 'risk_level '
+                accessor: 'risk_level'
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -3388,20 +3392,16 @@ tasks:
               complex:
                 root: inputs.InternalIPRanges
             iscontext: true
-        - operator: isEqualString
+        - operator: inList
           left:
             value:
               complex:
                 root: PaloAltoNetworksXDR.Incident.alerts
                 filters:
-                - - operator: inList
+                - - operator: isNotEmpty
                     left:
                       value:
                         simple: PaloAltoNetworksXDR.Incident.alerts.host_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Analysis.FTP_Server
                       iscontext: true
                 - - operator: isEqualString
                     left:
@@ -3418,37 +3418,19 @@ tasks:
             iscontext: true
           right:
             value:
-              complex:
-                root: PaloAltoNetworksXDR.Endpoint
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AGENT_TYPE_SERVER
-                    ignorecase: true
-                accessor: endpoint_name
-                transformers:
-                - operator: uniq
+              simple: Analysis.FTP_Server
             iscontext: true
           ignorecase: true
-        - operator: isEqualString
+        - operator: inList
           left:
             value:
               complex:
                 root: PaloAltoNetworksXDR.Incident.alerts
                 filters:
-                - - operator: inList
+                - - operator: isNotEmpty
                     left:
                       value:
                         simple: PaloAltoNetworksXDR.Incident.alerts.host_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Analysis.SMTP_Server
                       iscontext: true
                     ignorecase: true
                 - - operator: isEqualString
@@ -3467,18 +3449,8 @@ tasks:
           right:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Endpoint
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AGENT_TYPE_SERVER
-                    ignorecase: true
-                accessor: endpoint_name
+                root: Analysis
+                accessor: SMTP_Server
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -3877,10 +3849,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "115":
     id: "115"
-    taskid: 1e763f1b-bed9-4c69-8508-dcb37f640bdd
+    taskid: a133c78a-48df-4da8-823e-7bc50fbf50f1
     type: regular
     task:
-      id: 1e763f1b-bed9-4c69-8508-dcb37f640bdd
+      id: a133c78a-48df-4da8-823e-7bc50fbf50f1
       version: -1
       name: Set Indicator Relationships Analysis Results
       description: |-
@@ -3898,7 +3870,7 @@ tasks:
       - "32"
     scriptarguments:
       key:
-        simple: Investigation.IndicatorRelationshipsAnalysisResults
+        simple: Investigation.IndicatorRelationshipsAnalysis
       value:
         complex:
           root: RelatedAttackPatterns
@@ -3953,7 +3925,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Related Campaign
+    - incidentfield: Part of Campaign
       output:
         complex:
           root: RelatedCampaign
@@ -3963,6 +3935,8 @@ tasks:
                 value:
                   simple: RelatedCampaign
                 iscontext: true
+          transformers:
+          - operator: uniq
     - incidentfield: Related Report
       output:
         complex:
@@ -3973,6 +3947,47 @@ tasks:
                 value:
                   simple: RelatedReport
                 iscontext: true
+          transformers:
+          - operator: uniq
+    - incidentfield: Additional Indicators
+      output:
+        complex:
+          root: RelatedFiles
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RelatedFiles
+                iscontext: true
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: RelatedDomains
+                iscontext: true
+              raw:
+                value:
+                  simple: "false"
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: RelatedIPs
+                iscontext: true
+              raw:
+                value:
+                  simple: "false"
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: RelatedURLs
+                iscontext: true
+              raw:
+                value:
+                  simple: "false"
+          - operator: uniq
     - incidentfield: Attack Patterns
       output:
         complex:
@@ -3983,29 +3998,7 @@ tasks:
                 value:
                   simple: RelatedAttackPatterns
                 iscontext: true
-    - incidentfield: Additional Indicators
-      output:
-        complex:
-          root: RelatedFiles
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedDomains
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedIPs
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedURLs
-                iscontext: true
           - operator: uniq
     skipunavailable: false
     quietmode: 0
