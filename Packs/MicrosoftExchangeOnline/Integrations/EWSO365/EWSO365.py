@@ -1978,7 +1978,7 @@ def add_additional_headers(additional_headers):
     return headers
 
 
-def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
+def send_email(client: EWSClient, to=None, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
                additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
