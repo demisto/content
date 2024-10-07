@@ -521,7 +521,7 @@ script:
       description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
       type: String
   - arguments:
-    - description: The User ID or userPrincipalName of the user for which to get the manager properties.
+    - description: User ID or userPrincipalName of the user for which to get the manager properties.
       name: user
       required: true
     description: Retrieves the properties from the manager of a user.
@@ -605,7 +605,7 @@ script:
       required: true
     description: "Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.\nPermission: Directory.AccessAsUser.All(Delegated)."
     name: msgraph-user-session-revoke
-  - description: Generate the login url used for Authorization code flow.
+  - description: Generate the login URL used for authorization code flow.
     name: msgraph-user-generate-login-url
     arguments: []
   - description: Run this command if for some reason you need to rerun the authentication process.
@@ -1346,24 +1346,24 @@ script:
             Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
             It also provides common logic to handle responses from Microsoft.
             Args:
-                tenant_id: If self deployed it's the tenant for the app url, otherwise (oproxy) it's the token
-                auth_id: If self deployed it's the client id, otherwise (oproxy) it's the auth id and may also
-                contain the token url
-                enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
+                tenant_id: If self-deployed it's the tenant for the app URL, otherwise (oproxy) it's the token.
+                auth_id: If self-deployed, it's the client ID, otherwise (oproxy) it's the auth ID and may also
+                contain the token URL.
+                enc_key: If self-deployed. it's the client secret, otherwise (oproxy) it's the encryption key.
                 refresh_token: The current used refresh token.
-                scope: The scope of the application (only if self deployed)
-                resource: The resource of the application (only if self deployed)
-                multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
-                resources: Resources of the application (for multi-resource mode)
-                verify: Demisto insecure parameter
-                self_deployed: Indicates whether the integration mode is self deployed or oproxy
-                timeout: Connection timeout
-                azure_ad_endpoint: Custom endpoint to Azure Active Directory URL
+                scope: The scope of the application (only if self-deployed).
+                resource: The resource of the application (only if self-deployed).
+                multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only).
+                resources: Resources of the application (for multi-resource mode).
+                verify: Demisto insecure parameter.
+                self_deployed: Indicates whether the integration mode is self-deployed or oproxy.
+                timeout: Connection timeout.
+                azure_ad_endpoint: Custom endpoint to Azure Active Directory URL.
                 azure_cloud: Azure Cloud.
-                certificate_thumbprint: Certificate's thumbprint that's associated to the app
-                private_key: Private key of the certificate
-                managed_identities_client_id: The Azure Managed Identities client id
-                managed_identities_resource_uri: The resource uri to get token for by Azure Managed Identities
+                certificate_thumbprint: Certificate's thumbprint that's associated to the app.
+                private_key: Private key of the certificate.
+                managed_identities_client_id: The Azure Managed Identities client ID.
+                managed_identities_resource_uri: The resource URI to get token for by Azure Managed Identities.
                 retry_on_rate_limit: If the http request returns with a 429 - Rate limit reached response,
                                      retry the request using a scheduled command.
                 base_url: Optionally override the calculated Azure endpoint, used for self-deployed and backward-compatibility with
