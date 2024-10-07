@@ -4264,7 +4264,7 @@ Retrieves a list of events from the Atlassian Confluence Cloud instance.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ConfluenceCloud.Event.author.type | String | The type of author who created this event. | 
-| ConfluenceCloud.Event.author.displayName | String | The displayName of the author who created this event. | 
+| ConfluenceCloud.Event.author.displayName | String | The display nName of the author who created this event. | 
 | ConfluenceCloud.Event.author.operations | String | Nullable. Author's operations. | 
 | ConfluenceCloud.Event.author.username | String | Username of the author of this event. | 
 | ConfluenceCloud.Event.author.userKey | String | User key of the author of this event. | 
