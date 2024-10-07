@@ -2383,3 +2383,97 @@ def test_is_teams_ask_message(message, result):
     from MicrosoftTeams import is_teams_ask_message
 
     assert is_teams_ask_message(message) == result
+
+
+def test_add_data_to_actions_simple_card():
+    from MicrosoftTeams import add_data_to_actions
+    card_json = {
+        "type": "Action.Submit",
+        "title": "Submit"
+    }
+    data_value = {"key": "value"}
+    add_data_to_actions(card_json, data_value)
+    assert card_json["data"] == data_value
+
+
+def test_add_data_to_actions_nested_card():
+    from MicrosoftTeams import add_data_to_actions
+    card_json = {
+        "type": "AdaptiveCard",
+        "actions": [
+            {
+                "type": "Action.Submit",
+                "title": "Submit 1"
+            },
+            {
+                "type": "Action.Execute",
+                "title": "Execute 1"
+            }
+        ]
+    }
+    data_value = {"key": "value"}
+    add_data_to_actions(card_json, data_value)
+    assert card_json["actions"][0]["data"] == data_value
+    assert card_json["actions"][1]["data"] == data_value
+
+
+def test_add_data_to_actions_show_card():
+    from MicrosoftTeams import add_data_to_actions
+    card_json = {
+        "type": "Action.ShowCard",
+        "title": "Show Card",
+        "card": {
+            "type": "AdaptiveCard",
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Nested Submit"
+                }
+            ]
+        }
+    }
+    data_value = {"key": "value"}
+    add_data_to_actions(card_json, data_value)
+    assert card_json["card"]["actions"][0]["data"] == data_value
+
+
+def test_add_data_to_actions_mixed_types():
+    from MicrosoftTeams import add_data_to_actions
+    card_json = [
+        {
+            "type": "Action.Submit",
+            "title": "Submit"
+        },
+        {
+            "type": "TextBlock",
+            "text": "Some text"
+        },
+        {
+            "type": "Action.Execute",
+            "title": "Execute"
+        }
+    ]
+    data_value = {"key": "value"}
+    add_data_to_actions(card_json, data_value)
+    assert card_json[0]["data"] == data_value
+    assert "data" not in card_json[1]
+    assert card_json[2]["data"] == data_value
+
+
+def test_add_data_to_actions_empty_input():
+    from MicrosoftTeams import add_data_to_actions
+    card_json = {}
+    data_value = {"key": "value"}
+    add_data_to_actions(card_json, data_value)
+    assert card_json == {}
+
+
+def test_add_data_to_actions_non_dict_data():
+    from MicrosoftTeams import add_data_to_actions
+    card_json = {
+        "type": "Action.Submit",
+        "title": "Submit"
+    }
+    data_value = "string_data"
+    add_data_to_actions(card_json, data_value)
+    assert card_json["data"] == data_value
