@@ -951,7 +951,7 @@ Fetches the results for a specific enterprise search.
 | **Argument Name** | **Description** | **Required** |
 |-------------------| --- |--------------|
 | searchId          | The Unique search ID. | Required     | 
-| limit             | limit of results to return per search. | Optional     | 
+| limit             | Limit the number of results to return per search. | Optional     | 
 
 #### Context Output
 
