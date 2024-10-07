@@ -9,7 +9,7 @@ class MockClient:
 
 class MockHit:
     def __init__(self, hit_val):
-        self._hit_val = hit_val
+        self._hit_val = dict(hit_val)
 
     def to_dict(self):
         return self._hit_val
@@ -178,6 +178,22 @@ def test_hit_to_indicator():
     ioc = esf.hit_to_indicator(MockHit(no_type_hit), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, 'IP', ['tag1', 'tag2'], 'AMBER')
     assert ioc['type'] == 'IP'
     assert ioc[CUSTOM_TYPE_KEY] == ''
+
+
+def test_hit_to_indicator_enrichment_excluded():
+    """
+    Given:
+        - The `hit_to_indicator` function in the `FeedElasticsearch` module is used to convert a hit to an indicator.
+    When:
+        - Enrichment excluded is True
+    Then:
+        - 'enrichmentExcluded' = True should be added to the indicator.
+    """
+    import FeedElasticsearch as esf
+    ioc = esf.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None, ['tag1', 'tag2'], 'AMBER',
+                               enrichment_excluded=True)
+    assert ioc.pop('enrichmentExcluded')
+    assert ioc == PARSED_CUSTOM_HIT
 
 
 def test_extract_indicators_from_insight_hit2(mocker):
