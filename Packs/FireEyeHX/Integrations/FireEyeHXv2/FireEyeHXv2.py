@@ -2895,7 +2895,10 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
     searchInfo = client.get_search_by_id_request(search_id)["data"]
     matched = searchInfo.get('stats', {}).get('search_state', {}).get('MATCHED', 0)
     pending = searchInfo.get('stats', {}).get('search_state', {}).get('PENDING', 0)
-    no_limit = matched < int(args.get('limit')) if args.get('limit') else True
+    if args.get('limit'):
+        no_limit = matched < int(args.get('limit'))
+    else:
+        no_limit = True
 
     if searchInfo.get("state") != "STOPPED" and ((no_limit and pending != 0) or (matched == 0 and pending == 0)):
         return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), False, search_id
