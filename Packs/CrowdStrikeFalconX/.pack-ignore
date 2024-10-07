@@ -5,3 +5,7 @@ ignore=RM104
 X
 csfalconx
 FalconX
+
+# GR103 is temporary, see CIAC-11705
+[file:CrowdStrike_Falcon_X_-Test-Detonate_URL.yml]
+ignore=GR103

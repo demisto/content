@@ -59,7 +59,7 @@ class CommvaultClientMock(Client):
         elif endpoint == "/Subclient/11351":
             return {"subClientProperties": [{"content": []}]}
         elif endpoint == "/V4/recoverytargets":
-            return {"recoveryTargets": [{"id": "123"}]}
+            return {"recoveryTargets": [{"id": "123", "applicationType": "CLEAN_ROOM"}]}
         elif endpoint == "/recoverygroup/recid/entity":
             return {"errorCode": 0, "errorMessage": ""}
         elif endpoint == "/v4/virtualmachines":
