@@ -163,32 +163,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_last_run() -> dict:
-    """
-    Retrieve the last run data from the cache or Demisto's getLastRun.
-
-    Returns:
-        dict: The last run data.
-    """
-    global _last_run_cache
-    if _last_run_cache is None:
-        _last_run_cache = demisto.getLastRun()
-    return _last_run_cache
-
-
-def set_last_run(last_run: dict):
-    """
-    Set the last run data in both the cache and Demisto's setLastRun.
-
-    Args:
-        last_run (dict): The last run data to set.
-    """
-    global _last_run_cache
-    _last_run_cache = last_run
-    demisto.setLastRun(last_run)
-
-
-def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[str, Any], page_size: int) -> dict[str, Any]:
+def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[str, Any], page_size: int) -> dict[str, Any] | None:
     """
     Retrieve events from the Atlassian Confluence Cloud API according to the following logic:
         - If next_link is not provided, it searches for events within the specified date range.
@@ -207,18 +182,16 @@ def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[st
         last_end_date = last_run.get('end_date', 0)
         start_date = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
         if end_date < start_date or end_date - start_date < 30000:
-            # end run
-            pass
+            demisto.debug(f'Ignoring the fetch as the time range is less invalid. Start date: {start_date}, End date: {end_date}')
+            return
         demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
         response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
         demisto.debug(f'Found {response["size"]} events between {start_date} and {end_date}')
-        demisto.debug(json.dumps(response, indent=4))
 
     else:
         demisto.debug(f'searching events with next_link: {next_link} and page size: {AUDIT_FETCH_PAGE_SIZE}')
         response = client.search_events(limit=page_size, next_link=next_link)
         demisto.debug(f'Found {response["size"]} events in the current page')
-        demisto.debug(json.dumps(response, indent=4))
 
     return response
 
@@ -231,10 +204,9 @@ def add_time_to_events(events: list[dict] | None):
     Returns:
         list: The events with the _time key.
     """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get('creationDate'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+    for event in events:
+        create_time = arg_to_datetime(arg=event.get('creationDate'))
+        event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def get_error_message(errors):
@@ -1449,6 +1421,8 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
     while len(all_events) < fetch_limit and not no_events_in_confluence:
         page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - len(all_events))
         response = run_fetch_mechanism(client, next_link, last_run, page_size)
+        if not response:
+            break
         events = response['results']
         next_link = response['_links'].get('next', None)
         demisto.debug(f'Fetched {len(events)} events, total_length: {len(all_events)}, next_link: {next_link}')
@@ -1478,17 +1452,15 @@ def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
             # there is no next link, but we already have events in the list. That means the lack of next link is due to the end
             # of the data, not the start of it. Therefore, we can return
             if events:
+                demisto.debug(f'Reached the end of the data, returning {len(events)} events')
                 break
             response = client.search_events(limit=AUDIT_FETCH_PAGE_SIZE, start_date=str(start_date), end_date=str(end_date))
         else:
             response = client.search_events(limit=AUDIT_FETCH_PAGE_SIZE, next_link=next_link)
 
-        demisto.debug(json.dumps(response, indent=4))
         next_link = response['_links'].get('next', None)
         events.extend(response['results'])
 
-    if events:
-        demisto.debug(f'Finished paging, events: {events}')
     if len(events) > fetch_limit:
         demisto.debug('Fetched events exceed the limit, trimming to the limit')
         events = events[:fetch_limit]
@@ -1556,11 +1528,11 @@ def main() -> None:
 
         elif command == 'fetch-events':
 
-            events, last_run_object = fetch_events(client, limit, get_last_run())
+            events, last_run_object = fetch_events(client, limit, demisto.getLastRun())
             if events:
                 add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT, should_update_health_module=False)
-                set_last_run(last_run_object)
+                demisto.setLastRun(last_run_object)
 
             demisto.updateModuleHealth({'eventsPulled': len(events)})
         elif command == 'confluence-cloud-get-events':
