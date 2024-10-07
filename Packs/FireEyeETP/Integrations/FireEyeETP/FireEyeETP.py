@@ -80,7 +80,7 @@ class Client(BaseClient):
         response = self._http_request(
             method='PUT',
             headers={
-                'x-fireeye-api-key': f'{API_KEY}'
+                'x-fireeye-api-key': API_KEY
             },
             url_suffix=url,
             files=files,
@@ -106,7 +106,7 @@ class Client(BaseClient):
         response = self._http_request(
             method='POST',
             headers={
-                'x-fireeye-api-key': f'{API_KEY}'
+                'x-fireeye-api-key': API_KEY
             },
             url_suffix=url,
             resp_type='response'
@@ -567,17 +567,16 @@ def upload_yara_file_command(client, args):
     file_obj = demisto.getFilePath(entry_id)
     file_path = file_obj['path']
 
-    with open(file_obj.get('path'), "rb") as file:
+    with open(file_path, "rb") as file:
         data=file.read()
         files = {
             'file': ('new.yara', data)
         }
         response = client.upload_yara_file(policy_uuid, ruleset_uuid, files)
-        #print (response2)
         if response.status_code == 202:
-            return "Upload of Yara file succesfully."
+            return CommandResults(readable_output='Upload of Yara file succesfully.')
         else :
-            return "Upload of Yara file failed."
+            return CommandResults(readable_output='Upload of Yara file failed.')
 
 
 def get_events_data_command(client, args):
@@ -599,7 +598,7 @@ def get_events_data_command(client, args):
             result_output['Delivered_msg'] = log['display_msg']
             result_output['Delivered_status'] = "Failed"
 
-    command_results = CommandResults(outputs=result_output, outputs_prefix='FireEyeETP.Events')
+    command_results = CommandResults(outputs=result_output, readable_output=tableToMarkdown("Events", result_output, headers=["Logs", "Delivered_msg", "Delivered_status"]), outputs_prefix='FireEyeETP.Events')
     return command_results
 
 
@@ -609,7 +608,7 @@ def download_alert_artifacts_command(client,args):
     response = client.get_artifacts(alert_id)
     file_entry = fileResult(alert_id + '.zip', data=response.content, file_type=EntryType.FILE)
 
-    return file_entry
+    return [CommandResults(readable_output='Download alert artifact completed successfully'), file_entry]
 
 
 def list_yara_rulesets_command(client, args):
@@ -619,9 +618,7 @@ def list_yara_rulesets_command(client, args):
 
     response = client.get_yara_rulesets(policy_uuid)
 
-    results[policy_uuid] = response['data']['rulesets']
-
-    command_results = CommandResults(outputs=results[policy_uuid], outputs_prefix=f'FireEyeETP.Policy.{policy_uuid}')
+    command_results = CommandResults(outputs=response['data']['rulesets'], readable_output=tableToMarkdown("Rulesets", response['data']['rulesets'], headers=["name", "description", "uuid", "yara_file_name"]), outputs_prefix=f'FireEyeETP.Policy.{policy_uuid}')
 
     return command_results
 
@@ -634,8 +631,9 @@ def download_yara_file_command(client, args):
 
     response = client.get_yara_file(policy_uuid, ruleset_uuid)
 
-    result = fileResult('original.yara', data=response.content, file_type=EntryType.FILE)
-    return result
+    file_entry = fileResult('original.yara', data=response.content, file_type=EntryType.FILE)
+
+    return [CommandResults(readable_output='Download yara file completed successfully'), file_entry]
 
 
 def get_alert_request(alert_id):
@@ -654,7 +652,7 @@ def quarantine_release_command(client, args):
 
     response = client.quarantine_release(message_id)
 
-    return response.text
+    return CommandResults(readable_output=response.text)
 
 
 
@@ -787,7 +785,7 @@ def main():
 
     # If your Client class inherits from BaseClient, SSL verification is handled out-of-the-box by it.
     # Just pass ``verify_certificate`` to the Client constructor
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get('unsecure', False)
 
     if not API_KEY:
         return_error('API key must be provided.')
@@ -796,7 +794,7 @@ def main():
     try:
         headers = {
             'Content-Type': 'application/json',
-            'x-fireeye-api-key': f'{API_KEY}'
+            'x-fireeye-api-key': API_KEY
         }
 
         client = Client(
