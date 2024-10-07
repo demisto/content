@@ -347,7 +347,7 @@ script:
       required: true
     - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
       name: properties
-    description: "Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).\nPermissions: - User.Read (Delegated) - User.Read.All (Application)."
+    description: "Retrieves the properties and relationships of a user object. For more information, see: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).\nPermissions: - User.Read (Delegated) - User.Read.All (Application)."
     name: msgraph-user-get
     outputs:
     - contextPath: MSGraphUser.ID
