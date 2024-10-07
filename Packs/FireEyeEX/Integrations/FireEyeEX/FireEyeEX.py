@@ -472,20 +472,24 @@ def fetch_incidents(
     max_fetch: int = 50, info_level: str = 'concise',
     timeout: int = 120
 ) -> Tuple[dict, list]:
-    if not last_run:  # if first time fetching
-        next_run = {
-            'time': to_fe_datetime_converter(first_fetch),
-            'last_alert_ids': []
-        }
-    else:
-        next_run = last_run
+
+    next_run = last_run or {
+        'time': to_fe_datetime_converter(first_fetch),
+        'last_alert_ids': []
+    }
 
     demisto.info(f'{INTEGRATION_NAME} executing fetch with: {str(next_run.get("time"))}')
-    raw_response = client.fe_client.get_alerts_request(request_params={
-        'start_time': to_fe_datetime_converter(next_run['time']),  # type: ignore
-        'info_level': info_level,
-        'duration': '48_hours'
-    }, timeout=timeout)
+    request_parameters = {
+        'request_params': {
+            'start_time': to_fe_datetime_converter(next_run['time']),  # type: ignore
+            'info_level': info_level,
+            'duration': '48_hours'
+        },
+        'timeout': timeout
+    }
+
+    demisto.debug(f'{request_parameters=}')
+    raw_response = client.fe_client.get_alerts_request(**request_parameters)
     all_alerts = raw_response.get('alert')
 
     ten_minutes_date = dateparser.parse('10 minutes')
@@ -511,6 +515,7 @@ def fetch_incidents(
     incidents = []
 
     for alert in alerts:
+        demisto.debug(f'{list(alert)=}')
         alert_id = str(alert.get('id'))
         if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
             incident = {
