@@ -47,7 +47,7 @@ configuration:
   hidden:
   - xsoar
 - display: Fetch Events
-  defaultValue: false
+  defaultvalue: false
   name: isFetchEvents
   type: 8
   required: false
@@ -1963,10 +1963,10 @@ script:
     description: Retrieves a list of events from the Atlassian Confluence Cloud instance.
     outputs:
       - contextPath: ConfluenceCloud.Event.author.type
-        description: The type of author who created this event
+        description: The type of author who created this event.
         type: String
       - contextPath: ConfluenceCloud.Event.author.displayName
-        description: The displayName of the author who created this event
+        description: The displayName of the author who created this event.
         type: String
       - contextPath: ConfluenceCloud.Event.author.operations
         description: Nullable. Author's operations.
