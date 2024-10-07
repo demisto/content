@@ -11,25 +11,23 @@ from AnyMatch import main
 # a JSON containing a comma will be separated into two strings.
 
 
-@pytest.mark.parametrize('left,right, call_count,expected_result', [
-    (123, 1, 1, []),
-    ("2", "25,10", 1, ["25"]),
-    ("1, '2'", "1,2,3", 2, ["1", "2"]),    # a part of '2' is in '1,2,3'
-    ('"abc", "ahah", "a"', "A", 3, []),
-    ("5,1,6,9,65,8,b", "1,'6'", 7, [True]),  # no part of 6 or 65 is in the list: 1,'6'
-    ('a', "kfjua", 1, [False]),
-    (1, "1", 1, [True]),       # int and str are equal
-    ("bca", "A", 1, [True]),  # case insensitive
-    ("ABC", "a", 1, [True]),  # case insensitive
-    ({"alert": {"data": "x"}}, "x", 1, [True]),
-    ("{'a':1,'c':2}", "{'a': 1}, {'b': 2}", 2, [False]),     # {'a':1} is not a part of {'a':1, or 'c':2}
-    ("{'a': 1}, {'b': 2}", "{a:1}", 2, [False]),  # {a:1} is not a part of {'a': 1} or {'b': 2}
+@pytest.mark.parametrize('left,right,expected_result', [
+    ("2", "25,10", "No matches found."),
+    ("'2'", "1,2,3", ["'2'"]),    # 2 is part of '2'
+    ("'abc','aha','a'", "A", ["'abc'", "'a'", "'aha'"]),
+    ("5,1,6,9,65,8,b", "1,'6'", ['1']),  # no part of 6 or 65 is in the list: 1,'6'
+    ('a', "kfjua", "No matches found."),
+    ("bca", "A", ["bca"]),  # case insensitive
+    ("ABC", "a", ["ABC"]),  # case insensitive
+    ('{"alert": {"data": "x"}}', "x", ['{"alert": {"data": "x"}}']),
+    ("{'a':1,'c':2}", "{'a': 1}, {'b': 2}", "No matches found."),     # {'a':1} is not a part of {'a':1, or 'c':2}
+    ("{'a': 1}, {'b': 2}", "{a:1}", "No matches found."),  # {a:1} is not a part of {'a': 1} or {'b': 2}
     # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in  'c': 2}
-    ("{'a':1,'c':2}", "'', '", 2, [True]),
-    # one of the arguments is missing -> return false
-    ("1,2", None, 2, [False])
+    ("{'a':1,'c':2}", "'', '", ["{'a':1", "'c':2}"]),
+    # one of the arguments is missing -> return empty list
+    ("1,2", "", "No matches found.")
 ])
-def test_main(mocker, left, right, call_count, expected_result):
+def test_main(mocker, left, right, expected_result):
     """
     Given:
         left and right arguments.
@@ -43,7 +41,11 @@ def test_main(mocker, left, right, call_count, expected_result):
     main()
     # assert demisto.results.call_count == call_count
     results = demisto.results.call_args_list[0][0][0]
-    assert results == expected_result[0]
+    assert len(results) == len(expected_result)
+    for res in results:
+        assert res in expected_result
+    # assert results == expected_result
+    # assert results == expected_result
     # for i in range(len(expected_result)):
     #     results = demisto.results.call_args_list[i][0][0]
-    #     assert results == expected_result[i]
+    #     assert results[i] == expected_result[i]

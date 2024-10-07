@@ -23,11 +23,11 @@ def main():
     right_list = argToList(rightArg)
 
     if not (leftArg and rightArg):
-        return_results("")
+        return_results("No matches found.")
     results = set()
-    for left_val in left_list:
-        results = results.union(list(filter(lambda right_val: left_val.lower() in right_val.lower(), right_list)))
-    return return_results(str(list(results)))
+    for right_val in right_list:
+        results = results.union(list(filter(lambda left_val: right_val.lower() in left_val.lower(), left_list)))
+    return return_results(list(results)) if results else return_results("No matches found.")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
