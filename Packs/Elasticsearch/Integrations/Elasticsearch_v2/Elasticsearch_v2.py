@@ -16,12 +16,14 @@ import urllib3
 urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
+ELASTICSEARCH_V8 = 'Elasticsearch_v8'
+OPEN_SEARCH = 'OpenSearch'
 ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
-if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
+if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection, NotFoundError
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
-elif ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
     from elasticsearch import Elasticsearch, NotFoundError
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
@@ -150,30 +152,14 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    # if ELASTIC_SEARCH_CLIENT == 'Elasticsearch':
-    #     # Set the environment variable for REST API compatibility
-    #     os.environ['ELASTIC_CLIENT_APIVERSIONING'] = 'true'
-
-    #     # Create the Elasticsearch client instance
-    #     es = Elasticsearch(
-    #     SERVER,
-    #     verify_certs=INSECURE,
-    #     basic_auth=(USERNAME, PASSWORD),
-    #     headers={'Accept': "application/vnd.elasticsearch+json;compatible-with=7",
-    #              'Content-Type': "application/vnd.elasticsearch+json;compatible-with=7"}
-    #     )
-
-    #     print(f"headers are {es._headers}")
-    #     print(f"env var is: {os.environ.get('ELASTIC_CLIENT_APIVERSIONING')}")
-
-    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         # Create the Elasticsearch v8 client instance
         es = Elasticsearch(
             SERVER,
             verify_certs=INSECURE,
             basic_auth=(USERNAME, PASSWORD)
         )
-    else:  # Elasticsearch version v7 or below, OpenSearch
+    else:  # Create client for Elasticsearch version v7 and below or OpenSearch (BC)
 
         connection_args = {
             "hosts": [SERVER],
@@ -341,10 +327,11 @@ def search_command(proxies):
         if sort_field is not None:
             search = search.sort({sort_field: {'order': sort_order}})
 
-        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
             response = search.execute().to_dict()
 
-        else:  # Elasticsearch v7 and below, OpenSearch
+        else:  # Elasticsearch v7 and below or OpenSearch
+            # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     total_dict, total_results = get_total_results(response)
@@ -391,10 +378,11 @@ def test_query_to_fetch_incident_index(es):
         query = QueryString(query='*')
         search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
 
-        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
             response = search.execute().to_dict()
 
-        else:  # Elasticsearch v7 and below, OpenSearch
+        else:  # Elasticsearch v7 and below or OpenSearch
+            # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
         _, total_results = get_total_results(response)
@@ -413,10 +401,11 @@ def test_general_query(es):
         query = QueryString(query='*')
         search = Search(using=es, index='*').query(query)[0:1]
 
-        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
             response = search.execute().to_dict()
 
-        else:  # Elasticsearch v7 and below, OpenSearch
+        else:  # Elasticsearch v7 and below or OpenSearch
+            # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
         get_total_results(response)
@@ -441,10 +430,11 @@ def test_time_field_query(es):
     query = QueryString(query=TIME_FIELD + ':*')
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
 
-    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         response = search.execute().to_dict()
 
-    else:  # Elasticsearch v7 and below, OpenSearch
+    else:  # Elasticsearch v7 and below or OpenSearch
+        # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
         response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     _, total_results = get_total_results(response)
@@ -472,10 +462,11 @@ def test_fetch_query(es):
     query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
 
-    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         response = search.execute().to_dict()
 
-    else:  # Elasticsearch v7 and below, OpenSearch
+    else:  # Elasticsearch v7 and below or OpenSearch
+        # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
         response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     _, total_results = get_total_results(response)
@@ -810,10 +801,11 @@ def fetch_incidents(proxies):
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
 
-        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
             response = search.execute().to_dict()
 
-        else:  # Elasticsearch v7 and below, OpenSearch
+        else:  # Elasticsearch v7 and below or OpenSearch
+            # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     _, total_results = get_total_results(response)
@@ -950,13 +942,13 @@ def index_document(args, proxies):
     doc_id = args.get('id', '')
     es = elasticsearch_builder(proxies)
 
-    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         if doc_id:
             response = es.index(index=index, id=doc_id, document=doc)
         else:
             response = es.index(index=index, document=doc)
 
-    else:  # Elasticsearch version v7 or below, OpenSearch
+    else:  # Elasticsearch version v7 or below, OpenSearch (BC)
         # In elasticsearch lib <8 'document' param is called 'body'
         if doc_id:
             response = es.index(index=index, id=doc_id, body=doc)
@@ -988,7 +980,7 @@ def index_document_command(args, proxies):
         headers=headers
     )
 
-    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         resp = resp.body
 
     result = CommandResults(
@@ -1022,6 +1014,7 @@ def list_indices_command(proxies):
                       }
         indices.append(index_data)
 
+    # TODO: consider adding the number of indices in elasticsearch
     readable_output = tableToMarkdown(
         name="Indices:",
         t=indices,
@@ -1031,7 +1024,7 @@ def list_indices_command(proxies):
 
     result = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Elasticsearch.Indices',
+        outputs_prefix='Elasticsearch.Indices', # TODO: need to consult about the naming here ('index' is already taken)
         outputs=indices,
         outputs_key_field='UUID',
         raw_response=list(raw_indices)
