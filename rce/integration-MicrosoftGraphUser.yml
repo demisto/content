@@ -1788,7 +1788,7 @@ script:
         def _get_self_deployed_token_auth_code(
                 self, refresh_token: str = '', resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
             """
-            Gets a token by authorizing a self deployed Azure application.
+            Gets a token by authorizing a self-deployed Azure application.
             Returns:
                 tuple: An access token, its expiry and refresh token.
             """
