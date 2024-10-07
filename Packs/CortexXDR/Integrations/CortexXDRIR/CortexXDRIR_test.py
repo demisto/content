@@ -521,6 +521,7 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
 
+    expected_closing_entry = {}
     if close_cortex_incident:
         expected_modified_incident['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR[incident_status]
         expected_modified_incident['closeNotes'] = close_notes
@@ -534,10 +535,7 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
             },
             'ContentsFormat': 'json'
         }
-    else:
-        expected_closing_entry = {}
-
-    # make sure get-extra-data is returning an incident
+        
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
