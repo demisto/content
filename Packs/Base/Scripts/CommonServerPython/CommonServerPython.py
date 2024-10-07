@@ -50,6 +50,7 @@ ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
+MASK_WITH_BRACKETS = "<XX_REPLACED>'}"
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
@@ -1652,7 +1653,7 @@ class IntegrationLogger(object):
         return res
 
     def __call__(self, message):
-        text = self.encode(message)
+        text = censor_request_logs(self.encode(message))
         if self.buffering:
             self.messages.append(text)
             if self.debug_logging:
@@ -8448,6 +8449,8 @@ def censor_request_logs(request_log):
                 # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
                 if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
+                elif request_log_lst[i + 1].endswith("}'"):
+                    request_log_lst[i + 1] = f"\"{MASK}\"}}'"
                 else:
                     request_log_lst[i + 1] = MASK
 

@@ -122,8 +122,8 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
                                    resp_type=resp_type)
 
     except Exception as e:
-        demisto.debug(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
-        demisto.debug(e)
+        LOG(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
+        LOG(e)
         raise e
     return res
 
@@ -168,6 +168,7 @@ def login():
                 f"Zscaler encountered an authentication error.\nError: {str(e)}"
             )
     ts, key = obfuscateApiKey(API_KEY)
+    add_sensitive_log_strs(key)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
     result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
@@ -1304,6 +1305,9 @@ def delete_ip_destination_groups(args: dict):
 
 def main():  # pragma: no cover
     command = demisto.command()
+
+    add_sensitive_log_strs(USERNAME)
+    add_sensitive_log_strs(PASSWORD)
 
     demisto.debug(f"command is {command}")
     args = demisto.args()
