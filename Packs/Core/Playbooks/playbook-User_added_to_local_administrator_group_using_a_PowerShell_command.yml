@@ -616,6 +616,7 @@ tasks:
       id: 24e90eb8-1d77-4ca6-80a9-f5020bff758c
       version: -1
       name: Is the extracted username defined?
+      description: Check whether the extracted username is defined.
       type: condition
       iscommand: false
       brand: ""
