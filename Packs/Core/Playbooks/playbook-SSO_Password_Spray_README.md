@@ -1,5 +1,5 @@
 Playbook Overview:
-This playbook is designed to address the following alerts:
+This playbook addresses the following alerts:
 
 - SSO Password Spray Threat Detected
 - SSO Password Spray Activity Observed
@@ -9,22 +9,22 @@ Playbook Stages:
 
 Triage:
 
-- The playbook will check the IP reputation and will fetch the events related to the SSO login attempts.
+- The playbook checks the IP reputation and fetches the events related to the SSO login attempts.
 
 Early Containment:
 
-- The playbook will check if the IP is suspicious. If it is, the playbook will suggest blocking the IP.
+- The playbook checks if the IP is suspicious. If it is, the playbook suggests blocking the IP.
 
 Investigation:
 
-- The playbook assess the risk score of the user who successfully logged in and examine the legitimacy of the user agent. It verifies if the user has MFA configured. And analyzes the timestamps of the login attempts to detect patterns.
+- The playbook assess the risk score of the user who successfully logged in and examines the legitimacy of the user agent. It verifies if the user has MFA configured and analyzes the timestamps of the login attempts to detect patterns.
 
 Containment:
-- If there is a successful login attempt and the user's risk score is high, or if the user agent is detected as suspicious, or if the time intervals were automated, the playbook will clear the user's session. If the user doesn't have MFA, the playbook will recommend expiring the user's password.
+- If there is a successful login attempt and the user's risk score is high, or if the user agent is detected as suspicious, or if the time intervals were automated, the playbook clears the user's session. If the user doesn't have MFA, the playbook recommends expiring the user's password.
 
 Requirements:
 
-For any response action, you will need one of the following integrations:
+For any response action, you need one of the following integrations:
 
 - Microsoft Graph User
 - Okta
