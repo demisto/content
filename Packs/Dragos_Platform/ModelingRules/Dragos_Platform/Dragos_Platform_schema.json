@@ -1,7 +1,75 @@
 {
   "msft_azure_raw": {
-      "callerIpAddress": {
+      "src_asset_ip": {
           "type": "string",
+          "is_array": false
+      },
+      "asset_ip": {
+          "type": "string",
+          "is_array": false
+      },
+      "src_asset_mac": {
+          "type": "string",
+          "is_array": false
+      },
+      "asset_mac": {
+          "type": "string",
+          "is_array": false
+      },
+      "src_asset_id": {
+          "type": "",
+          "is_array": false
+      },
+      "asset_id": {
+          "type": "string",
+          "is_array": false
+      },
+      "content": {
+          "type": "string",
+          "is_array": false
+      },
+      "detection_quad": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefSeverity": {
+          "type": "",
+          "is_array": false
+      },
+      "matchedRuleId": {
+          "type": "",
+          "is_array": false
+      },
+      "type": {
+          "type": "string",
+          "is_array": false
+      },
+      "id": {
+          "type": "",
+          "is_array": false
+      },
+      "src_asset_hostname": {
+          "type": "string",
+          "is_array": false
+      },
+      "asset_hostname": {
+          "type": "string",
+          "is_array": false
+      },
+      "dst_asset_ip": {
+          "type": "string",
+          "is_array": false
+      },
+      "dst_asset_hostname": {
+          "type": "string",
+          "is_array": false
+      },
+      "dst_asset_mac": {
+          "type": "string",
+          "is_array": false
+      },
+      "dst_asset_id": {
+          "type": "",
           "is_array": false
       }
   }

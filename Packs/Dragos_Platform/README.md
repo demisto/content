@@ -22,7 +22,7 @@ To configure Dragos Platform to send logs to Cortex XSIAM, follow the below step
     |:--------------------------------------|:--------------------------------------------------------------------------------------|
     | Name                                  | Cortex XSIAM Broker VM.                                                               |
     | Hostname/IP                           | Enter the Broker VM IP Address.                                                       |
-    | Port                                  | Enter the syslog service port htat you want to use for sending logs to the Broker VM. |
+    | Port                                  | Enter the syslog service port that you want to use for sending logs to the Broker VM. |
     | Protocol                              | TCP/TLS.                                                                              |
     | Source Hostname                       | Leave the default value / set a value of your choice.                                 |
     | Source Process                        | Leave the default value / set a value of your choice.                                 |
@@ -32,8 +32,9 @@ To configure Dragos Platform to send logs to Cortex XSIAM, follow the below step
 6. Check the "Use newline delimiter for TCP and TLS streams" checkbox under **Message Delimiter**.
 7. Click on **Next: SET TEMPLATE**.
 8. From the **Output Message Format** dropdown, select CEF.
-9. Leave all other fields set to their default state.
-10. Click Save.
+9. Use the recommended CEF template suggested by Dragos documentation, under **Message**.
+10. Leave all other fields set to their default state.
+11. Click **Save**.
 
 For more information contact Dragos support.
 
