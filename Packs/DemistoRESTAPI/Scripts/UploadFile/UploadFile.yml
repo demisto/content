@@ -17,7 +17,7 @@ args:
   required: true
 - description: Integration instance used to run the script.
   name: using
-  required: true
+  required: false
 - description: Request body.
   name: body
 - auto: PREDEFINED
