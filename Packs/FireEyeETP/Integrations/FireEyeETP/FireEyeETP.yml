@@ -195,7 +195,7 @@ script:
     - contextPath: FireEyeETP.Alerts.meta.last_modified_on
       description: Last modified timestamp.
     - contextPath: FireEyeETP.Alerts.meta.legacy_id
-      description: 'Alert ID as shown in ETP Web Portal '.
+      description: Alert ID as shown in ETP Web Portal.
     - contextPath: FireEyeETP.Alerts.alert.product
       description: Product alerted.
     - contextPath: FireEyeETP.Alerts.alert.timestamp
@@ -238,7 +238,7 @@ script:
     - contextPath: FireEyeETP.Alerts.meta.last_modified_on
       description: Last modified timestamp.
     - contextPath: FireEyeETP.Alerts.meta.legacy_id
-      description: 'Alert ID as shown in ETP Web Portal '.
+      description: Alert ID as shown in ETP Web Portal.
     - contextPath: FireEyeETP.Alerts.meta.acknowledged
       description: Acknowledged.
     - contextPath: FireEyeETP.Alerts.alert.product
@@ -290,7 +290,7 @@ script:
     - contextPath: FireEyeETP.Alerts.email.headers.to
       description: Email recipients.
     - contextPath: FireEyeETP.Alerts.email.headers.from
-      description: 'Email sender '.
+      description: Email sender.
     - contextPath: FireEyeETP.Alerts.email.headers.subject
       description: Email subject.
     - contextPath: FireEyeETP.Alerts.email.attachment
