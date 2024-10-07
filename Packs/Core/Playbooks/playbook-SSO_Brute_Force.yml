@@ -479,7 +479,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Select to which user you like to expire password to
-      description: 'Decide whether the password should be expired for the user '
+      description: Decide whether the password should be expired for the user.
       sender: ""
       expired: false
       totalanswers: 0
@@ -575,7 +575,7 @@ tasks:
       id: f858553c-8b06-41fc-8cb7-4f39bc3b081e
       version: -1
       name: Check if the user agent is suspicious
-      description: Extracts regex data from the provided text. The script support groups and looping.
+      description: Extracts regex data from the provided text. The script supports groups and looping.
       scriptName: MatchRegexV2
       type: regular
       iscommand: false
@@ -1038,11 +1038,11 @@ inputs: []
 inputSections:
 - inputs: []
   name: General (Inputs group)
-  description: Generic group for inputs
+  description: Generic group for inputs.
 outputSections:
 - outputs: []
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: Generic group for outputs.
 outputs: []
 tests:
 - No tests (auto formatted)
