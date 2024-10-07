@@ -184,7 +184,7 @@ def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[st
         start_date = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
         if end_date < start_date or end_date - start_date < 30000:
             demisto.debug(f'Ignoring the fetch as the time range is less invalid. Start date: {start_date}, End date: {end_date}')
-            return
+            return None
         demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
         response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
         demisto.debug(f'Found {response["size"]} events between {start_date} and {end_date}')
@@ -197,7 +197,7 @@ def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[st
     return response
 
 
-def add_time_to_events(events: list[dict] | None):
+def add_time_to_events(events: list[dict]):
     """
     Adds the _time key to the events.
     Args:
@@ -1475,7 +1475,7 @@ def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
