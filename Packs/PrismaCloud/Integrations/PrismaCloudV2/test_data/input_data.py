@@ -381,3 +381,19 @@ resolved_closed_xsoar_entry = {'dbotIncidentClose': True,
                                'closeNotes': 'resolved'}
 
 reopened_closed_xsoar_entry = {'dbotIncidentReopen': True}
+
+networks_list = [
+    {
+        "name": "TestName",
+        "uuid": "1234-abcd-420ree-sssa-123456789",
+        "cidrs": [
+            {
+                "cidr": "1.2.3.4/32",
+                "uuid": "1234-abcd-420ree-sssa-123456789",
+                "createdOn": 1000000000000,
+                "description": "Very not fake description"
+            }
+        ],
+        "cidrCount": 1
+    } for _ in range(10)  # create a list of 10 networks for limit testing
+]
