@@ -5,10 +5,10 @@ import json
 import pytest
 
 MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id',
-                             'task_id', 'form_type'} 
+                             'task_id', 'form_type'}
 
 MS_TEAMS_ASK_AC_KEYS = {'adaptive_card', 'entitlement', 'investigation_id',
-                             'task_id'} # must be synced with ones in MicrosoftTeams.py
+                        'task_id'}  # must be synced with ones in MicrosoftTeams.py
 
 
 def execute_command(name, args=None):
@@ -31,37 +31,37 @@ def execute_command(name, args=None):
             'investigation_id': '32',
             'task_id': '44',
             'form_type': 'predefined-options'}
-        
+
         if "message" in args:
-            json_message['message_text']= 'How are you today?'
+            json_message['message_text'] = 'How are you today?'
             expected_message: str = json.dumps(json_message)
             assert json_message.keys() == MS_TEAMS_ASK_MESSAGE_KEYS
             expected_script_arguments["message"] = expected_message
-            
+
         if "adaptive_card" in args:
             json_message['adaptive_card'] = {"contentType": "application/vnd.microsoft.card.adaptive",
-                                            "content": {
-                                                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                                                "type": "AdaptiveCard",
-                                                "version": "1.0",
-                                                "body": [
-                                                    {
-                                                        "type": "Container",
-                                                        "items": [{
+                                             "content": {
+                                                 "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                                                 "type": "AdaptiveCard",
+                                                 "version": "1.0",
+                                                 "body": [
+                                                     {
+                                                         "type": "Container",
+                                                         "items": [{
                                                             "type": "TextBlock",
                                                             "text": "What a pretty adaptive card"
-                                                        }]
-                                                    }]
-                                                }
-                                            }
+                                                         }]
+                                                     }]
+                                             }
+                                             }
             json_message.pop("options")
             json_message.pop("form_type")
             expected_message: str = json.dumps(json_message)
             assert json_message.keys() == MS_TEAMS_ASK_AC_KEYS
             expected_script_arguments["adaptive_card"] = expected_message
-            
+
         expected_script_arguments['using-brand'] = 'Microsoft Teams'
-        
+
         if 'team_member' in args:
             expected_script_arguments['team_member'] = 'Shaq'
         elif 'channel' in args:
@@ -113,7 +113,7 @@ def test_microsoft_teams_ask(mocker):
         main()
     assert str(e.value) == 'Either team member or channel should be provided, not both.'
     script_arguments.pop('team_member')
-    
+
     mocker.patch.object(
         demisto,
         'args',
@@ -121,22 +121,22 @@ def test_microsoft_teams_ask(mocker):
     )
     main()
     assert demisto.executeCommand.call_count == 2
-    
+
     script_arguments['adaptive_card'] = {"contentType": "application/vnd.microsoft.card.adaptive",
-                                        "content": {
-                                            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                                            "type": "AdaptiveCard",
-                                            "version": "1.0",
-                                            "body": [
-                                                {
-                                                    "type": "Container",
-                                                    "items": [{
+                                         "content": {
+                                             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                                             "type": "AdaptiveCard",
+                                             "version": "1.0",
+                                             "body": [
+                                                 {
+                                                     "type": "Container",
+                                                     "items": [{
                                                         "type": "TextBlock",
                                                         "text": "What a pretty adaptive card"
-                                                    }]
-                                                }]
-                                            }
-                                        }
+                                                     }]
+                                                 }]
+                                         }
+                                         }
     mocker.patch.object(
         demisto,
         'args',
@@ -150,7 +150,7 @@ def test_microsoft_teams_ask(mocker):
     script_arguments.pop('option2')
     script_arguments.pop('additional_options')
     script_arguments.pop('form_type')
-    
+
     mocker.patch.object(
         demisto,
         'args',
@@ -158,4 +158,3 @@ def test_microsoft_teams_ask(mocker):
     )
     main()
     assert demisto.executeCommand.call_count == 2
-    

@@ -44,7 +44,7 @@ def main():
     second_option: str = script_arguments.get('option2', '')
     options: list = [first_option, second_option]
     command_arguments: dict = {}
-    
+
     if adaptive_card:
         adaptive_card_object: dict = {
             "adaptive_card": json.loads(adaptive_card),
