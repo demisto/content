@@ -148,3 +148,37 @@ def test_microsoft_teams_ask(mocker):
         main()
     assert str(e.value) == 'Provide either message or adaptive card to send, not both.'
 
+
+def test_microsoft_teams_ask_persistent(mocker):
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '32'})
+    script_arguments = {
+        'message': 'How are you today?',
+        'option1': 'Great',
+        'option2': 'Wonderful',
+        'additional_options': 'SSDD,Wooah',
+        'task_id': "44",
+        'team_member': 'Shaq',
+        'persistent': 'true'
+    }
+    mocker.patch.object(demisto, 'args', return_value=script_arguments)
+    main()
+    assert demisto.executeCommand.call_count == 2
+
+
+def test_microsoft_teams_ask_error_response(mocker):
+    def error_execute_command(name, args=None):
+        if name == 'addEntitlement':
+            return [{'Type': entryTypes['error'], 'Contents': 'Error adding entitlement'}]
+        return None
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=error_execute_command)
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '32'})
+    script_arguments = {
+        'message': 'Test message',
+        'team_member': 'Charlie'
+    }
+    mocker.patch.object(demisto, 'args', return_value=script_arguments)
+    mocker.patch.object(demisto, 'results')
+    main()
+    demisto.results.assert_called_once()
