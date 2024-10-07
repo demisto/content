@@ -236,7 +236,7 @@ script:
     - description: The password profile for the user.
       name: password
       required: true
-    - description: ' The user principal name, for example: foo@test.com. '
+    - description: 'The user principal name, for example: foo@test.com. '
       name: user_principal_name
       required: true
     - description: 'Optional properties for the user, for example: "displayName=name,mobilePhone=phone-num".'
