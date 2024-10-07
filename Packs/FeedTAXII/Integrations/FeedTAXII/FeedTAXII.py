@@ -508,7 +508,7 @@ class TAXIIClient:
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
                  credentials: dict = None, creds_certificate: dict = {}, cert_text: str = None, key_text: str = None,
-                 feedTags: str = None, tlp_color: str | None = None, **kwargs):
+                 feedTags: str = None, tlp_color: str | None = None, enrichmentExcluded: bool = False, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
@@ -552,6 +552,8 @@ class TAXIIClient:
         self.tags = argToList(feedTags)
         self.tlp_color = tlp_color
         self.ttps: dict[str, dict] = {}
+        self.enrichment_excluded = enrichmentExcluded
+
         # authentication
         if credentials:
             if '_header:' in credentials.get('identifier', None):
@@ -1187,6 +1189,9 @@ def fetch_indicators_command(client):
 
             if client.tlp_color:
                 indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+            if client.enrichment_excluded:
+                indicator_obj['enrichmentExcluded'] = client.enrichment_excluded
 
             indicator_obj['rawJSON'] = item
 
