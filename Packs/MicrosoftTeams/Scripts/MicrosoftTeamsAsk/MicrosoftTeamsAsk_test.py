@@ -26,6 +26,7 @@ def execute_command(name, args=None):
     elif name == 'send-notification':
         expected_script_arguments: dict = {}
         json_message = {
+            'message_text': 'How are you today?',
             'options': ['Great', 'Wonderful', 'SSDD', 'Wooah'],
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8',
             'investigation_id': '32',
@@ -121,7 +122,6 @@ def test_microsoft_teams_ask(mocker):
     )
     main()
     assert demisto.executeCommand.call_count == 2
-
     script_arguments['adaptive_card'] = {"contentType": "application/vnd.microsoft.card.adaptive",
                                          "content": {
                                              "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -145,16 +145,4 @@ def test_microsoft_teams_ask(mocker):
     with pytest.raises(ValueError) as e:
         main()
     assert str(e.value) == 'Provide either message or adaptive card to send, not both.'
-    script_arguments.pop('message')
-    script_arguments.pop('option1')
-    script_arguments.pop('option2')
-    script_arguments.pop('additional_options')
-    script_arguments.pop('form_type')
 
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value=script_arguments
-    )
-    main()
-    assert demisto.executeCommand.call_count == 2

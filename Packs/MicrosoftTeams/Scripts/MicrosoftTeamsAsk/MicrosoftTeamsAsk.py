@@ -37,7 +37,7 @@ def main():
     adaptive_card: str = script_arguments.get('adaptive_card', '')
 
     if message_text and adaptive_card:
-        raise ValueError('Provide either message or adaptive to send, not both.')
+        raise ValueError('Provide either message or adaptive card to send, not both.')
 
     form_type = FormType(script_arguments.get('form_type', FormType.PREDEFINED_OPTIONS.value))
     first_option: str = script_arguments.get('option1', '')
