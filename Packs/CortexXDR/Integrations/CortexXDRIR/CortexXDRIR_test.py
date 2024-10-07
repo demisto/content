@@ -763,7 +763,7 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
 
     update_remote_system_command(client, args)
     update_args = mock_update_incident_command.call_args[0][1]
-    
+
     assert 'status' not in update_args or update_args['status'] != XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
 
 
@@ -1632,4 +1632,3 @@ def test_get_xsoar_close_reasons(mocker):
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
-    
