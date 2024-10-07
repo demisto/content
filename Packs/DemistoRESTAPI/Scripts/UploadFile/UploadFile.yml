@@ -15,6 +15,9 @@ args:
 - description: Incident ID to upload the file to.
   name: incID
   required: true
+- description: Integration instance used to run the script.
+  name: using
+  required: false
 - description: Request body.
   name: body
 - auto: PREDEFINED
