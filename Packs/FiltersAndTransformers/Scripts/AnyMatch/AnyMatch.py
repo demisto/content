@@ -12,7 +12,7 @@ def main():
 
     if not (leftArg and rightArg):
         return_results("No matches found.")
-    results = set()
+    results: set[str] = set()
     for right_val in right_list:
         results = results.union(list(filter(lambda left_val: right_val.lower() in left_val.lower(), left_list)))
     return return_results(list(results)) if results else return_results("No matches found.")
