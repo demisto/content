@@ -1,6 +1,3 @@
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Microsoft Graph User - test
   version: -1
