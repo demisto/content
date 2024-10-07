@@ -828,7 +828,7 @@ tasks:
     task:
       id: 44f1ee78-30f3-46e4-8321-95c1c44e5317
       version: -1
-      name: User has 2FA Configured)? (For Okta Only)
+      name: User has MFA Configured? (For Okta Only)
       type: condition
       iscommand: false
       brand: ""
