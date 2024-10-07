@@ -184,17 +184,6 @@ def to_search_attribute_object(value, filter=None, is_list=False, valid_values=N
     return attribute
 
 
-def unicode_to_str(data):
-    if isinstance(data, dict):
-        return {unicode_to_str(key): unicode_to_str(value) for key, value in data.items()}
-    elif isinstance(data, list):
-        return [unicode_to_str(element) for element in data]
-    elif isinstance(data, unicode):
-        return data.encode('utf-8')
-    else:
-        return data
-
-
 def format_search_attributes(from_email=None, from_email_not_in=None, recipients=None,
                              recipients_not_in=None, subject=None, from_accepted_date_time=None,
                              to_accepted_date_time=None, rejection_reason=None, sender_ip=None, status=None,
@@ -614,7 +603,6 @@ def download_alert_artifacts_command(client,args):
 def list_yara_rulesets_command(client, args):
 
     policy_uuid = args.get('policy_uuid')
-    results = {}
 
     response = client.get_yara_rulesets(policy_uuid)
 
@@ -780,7 +768,6 @@ def main():
 
     params = demisto.params()
     args = demisto.args()
-    command = demisto.command()
     proxy = params.get('proxy')
 
     # If your Client class inherits from BaseClient, SSL verification is handled out-of-the-box by it.
