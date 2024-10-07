@@ -12,8 +12,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* PAN-OS Commit Configuration v2
 * PAN-OS - Create Or Edit Rule
-* PAN-OS Commit Configuration
 
 ### Integrations
 

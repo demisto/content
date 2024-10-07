@@ -1,12 +1,12 @@
 id: PAN-OS - Block URL - Custom URL Category
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: PAN-OS - Block URL - Custom URL Category
 description: |-
   This playbook blocks URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories.
   The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
 starttaskid: "0"
-fromversion: 5.0.0
-toversion: 6.9.9
 tasks:
   "0":
     id: "0"
@@ -23,6 +23,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -45,10 +46,10 @@ tasks:
       id: e12beb96-60f4-4279-8122-884f57440b1e
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -82,6 +83,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -104,10 +106,10 @@ tasks:
       id: d8aa9ca9-1af0-4c39-81b4-46c18e53167b
       version: -1
       name: Is there a URL to block?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -123,6 +125,7 @@ tasks:
               complex:
                 root: inputs.URL
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -178,6 +181,7 @@ tasks:
         complex:
           root: inputs.type
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -207,7 +211,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "23"
     scriptarguments:
       device-group:
         complex:
@@ -230,8 +234,9 @@ tasks:
         complex:
           root: inputs.pre-post
       rulename:
-        simple: Demisto Block Rule - ${incident.id}
+        simple: Block Rule - ${alert.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -259,6 +264,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -296,8 +302,9 @@ tasks:
       name:
         complex:
           root: inputs.CustomURLCategory
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -320,10 +327,10 @@ tasks:
       id: 0519c3cc-452b-4c33-8fc0-45e60f6edcb9
       version: -1
       name: Malicious URLs already exist in the Custom URL Category?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "12"
@@ -342,6 +349,7 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -364,10 +372,10 @@ tasks:
       id: 1d9d896f-0796-4e86-8dd9-d6072875a535
       version: -1
       name: Custom URL Category exists?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -382,6 +390,7 @@ tasks:
             value:
               simple: Panorama.CustomURLCategory.Name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -431,73 +440,12 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 180,
           "y": 1290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 1a6f474c-5f1a-4408-8bbc-25d7e892933f
-    type: playbook
-    task:
-      id: 1a6f474c-5f1a-4408-8bbc-25d7e892933f
-      version: -1
-      name: PAN-OS Commit Configuration
-      playbookName: PAN-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 770,
-          "y": 1290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: de76b9d7-bb2a-4757-89ee-9d906a278683
-    type: playbook
-    task:
-      id: de76b9d7-bb2a-4757-89ee-9d906a278683
-      version: -1
-      name: PAN-OS Commit Configuration
-      playbookName: PAN-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 330,
-          "y": 1650
         }
       }
     note: false
@@ -515,15 +463,15 @@ tasks:
       id: 80060245-606b-4c59-8baa-c985a309745f
       version: -1
       name: AutoCommit defined?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "16"
       "yes":
-      - "13"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -537,6 +485,7 @@ tasks:
           right:
             value:
               simple: "Yes"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -559,14 +508,15 @@ tasks:
       id: bc336c13-48d4-4f99-8225-9a6a53af8861
       version: -1
       name: Commit PAN-OS Instance manually
-      description: ""
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "19"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -589,15 +539,15 @@ tasks:
       id: 3c782409-7469-45c5-80e0-c95308ad57bf
       version: -1
       name: AutoCommit defined?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "18"
       "yes":
-      - "14"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -611,6 +561,7 @@ tasks:
           right:
             value:
               simple: "Yes"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -633,14 +584,15 @@ tasks:
       id: 73abf18f-a70f-4c67-81a3-3e9724cc9c5e
       version: -1
       name: Commit PAN-OS Instance manually
-      description: ""
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -693,8 +645,9 @@ tasks:
         complex:
           root: inputs.pre-post
       rulename:
-        simple: Demisto Block Rule - ${incident.id}
+        simple: Block Rule - ${alert.id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -717,14 +670,15 @@ tasks:
       id: ae0d8023-81e3-4c95-8ccb-08f02de687e7
       version: -1
       name: Commit PAN-OS Instance manually
-      description: ""
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -741,21 +695,86 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: b20b0525-f692-4321-8b43-2e9f18de1073
+    taskid: a0948c6e-e3a0-45bb-822d-5faf1bedcd5c
     type: playbook
     task:
-      id: b20b0525-f692-4321-8b43-2e9f18de1073
+      id: a0948c6e-e3a0-45bb-822d-5faf1bedcd5c
       version: -1
-      name: PAN-OS Commit Configuration
-      description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified as Panorama, will also push the Policies to the specified Device Group in the instance. "
-      playbookName: PAN-OS Commit Configuration
+      name: PAN-OS Commit Configuration v2
+      playbookName: PAN-OS Commit Configuration v2
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
     separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 778665ed-c06d-4481-82ce-1249d3bd7b40
+    type: playbook
+    task:
+      id: 778665ed-c06d-4481-82ce-1249d3bd7b40
+      version: -1
+      name: PAN-OS Commit Configuration v2
+      playbookName: PAN-OS Commit Configuration v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: bb715a35-d833-4924-8fc9-aa42c45823a1
+    type: playbook
+    task:
+      id: bb715a35-d833-4924-8fc9-aa42c45823a1
+      version: -1
+      name: PAN-OS Commit Configuration v2
+      playbookName: PAN-OS Commit Configuration v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -806,7 +825,7 @@ inputs:
   playbookInputQuery:
 - key: CustomURLCategory
   value:
-    simple: Demisto Remediation - Malicious URLs
+    simple: Remediation - Malicious URLs
   required: false
   description: Custom URL Category name
   playbookInputQuery:
@@ -848,5 +867,4 @@ inputs:
 outputs: []
 tests:
 - PAN-OS - Block URL - Custom URL Category Test
-contentitemexportablefields:
-  contentitemfields: {}
+fromversion: 6.10.0
