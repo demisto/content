@@ -1,7 +1,7 @@
 id: SSO Brute Force
 version: -1
 name: SSO Brute Force
-description: "This playbook is designed to address the following alerts:\n\n- SSO Brute Force\n- SSO Brute Force Threat Detected\n- SSO Brute Force Activity Observed\n\nPlaybook Stages:\nTriage:\n\n- The playbook will check the IP reputation and will fetch the events related to the brute force login attempts.\n\nEarly Containment:\n\n- The playbook will check if the IP is suspicious. If it is, the playbook will suggest blocking the IP using PAN-OS. The investigation will continue in parallel to this phase.\n\nInvestigation:\n\n- The playbook will assess the risk score of the user who successfully logged in after a brute force attempt, examine the legitimacy of the user agent and if the brute force attempt is likely automated based on the timestamp interval. It will also verify if the user has MFA configured when the alert source is Okta.\n\nContainment:\n- If the user's risk score is high, or if the user agent is detected as suspicious, or if the time intervals indicates that the login attempts is likely automated, and there is a successful login attempt, the playbook will clear the user's session. \nIf the user doesn't have MFA configured, the playbook will recommend expiring the user's password. If there is no successful login detected, the playbook will add the investigation findings as a note.\n\n\nRequirements:\n\nFor any response action, you will need one of the following integrations:\n\n- Microsoft Graph User\n- Okta v2\n\nFor eradication step,  you will need the following integration:\n\n- Palo Alto Networks PAN-OS."
+description: "This playbook is designed to address the following alerts:\n\n- SSO Brute Force Threat Detected\n- SSO Brute Force Activity Observed\n\nPlaybook Stages:\nTriage:\n\n- The playbook will check the IP reputation and will fetch the events related to the brute force login attempts.\n\nEarly Containment:\n\n- The playbook will check if the IP is suspicious. If it is, the playbook will suggest blocking the IP using PAN-OS. The investigation will continue in parallel to this phase.\n\nInvestigation:\n\n- The playbook will assess the risk score of the user who successfully logged in after a brute force attempt, examine the legitimacy of the user agent and if the brute force attempt is likely automated based on the timestamp interval. It will also verify if the user has MFA configured when the alert source is Okta.\n\nContainment:\n- If the user's risk score is high, or if the user agent is detected as suspicious, or if the time intervals indicates that the login attempts is likely automated, and there is a successful login attempt, the playbook will clear the user's session. \nIf the user doesn't have MFA configured, the playbook will recommend expiring the user's password. If there is no successful login detected, the playbook will add the investigation findings as a note.\n\n\nRequirements:\n\nFor any response action, you will need one of the following integrations:\n\n- Microsoft Graph User\n- Okta v2\n\nFor eradication step,  you will need the following integration:\n\n- Palo Alto Networks PAN-OS."
 tags:
 - TA0006 - Credential Access
 - T1110 - Brute Force
@@ -76,7 +76,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1730,
+          "x": 1510,
           "y": 1290
         }
       }
@@ -198,7 +198,7 @@ tasks:
     task:
       id: 1133c2aa-8085-44e8-8708-791dc0ea0a95
       version: -1
-      name: Check user risk level
+      name: Check if the user risk level is high
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-users'
       type: regular
@@ -220,7 +220,7 @@ tasks:
           "y": 620
         }
       }
-    note: false
+    note: true
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -265,7 +265,7 @@ tasks:
     task:
       id: 3b710eeb-d4b7-428a-8eb7-f30a4e06e716
       version: -1
-      name: Any suspicious characteristics found during the investigation phase?
+      name: Any suspicious evidences identified during the investigation phase?
       type: condition
       iscommand: false
       brand: ""
@@ -379,7 +379,7 @@ tasks:
           "y": 620
         }
       }
-    note: false
+    note: true
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
@@ -406,7 +406,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1950,
+          "x": 1730,
           "y": 1620
         }
       }
@@ -489,7 +489,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1950,
+          "x": 1730,
           "y": 1780
         }
       }
@@ -524,7 +524,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2150,
+          "x": 1930,
           "y": 1950
         }
       }
@@ -542,7 +542,7 @@ tasks:
     task:
       id: f858553c-8b06-41fc-8cb7-4f39bc3b081e
       version: -1
-      name: Check if the user agent suspicious
+      name: Check if the user agent is suspicious
       description: Extracts regex data from the provided text. The script support groups and looping.
       scriptName: MatchRegexV2
       type: regular
@@ -572,7 +572,7 @@ tasks:
           "y": 620
         }
       }
-    note: false
+    note: true
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -758,7 +758,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "42"
+      - "41"
       "yes":
       - "2"
     separatecontext: false
@@ -833,7 +833,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1730,
+          "x": 1510,
           "y": 1450
         }
       }
@@ -879,44 +879,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: 5979e1b1-c81a-4f02-8f0a-cc07ef9ce6d0
-    type: regular
-    task:
-      id: 5979e1b1-c81a-4f02-8f0a-cc07ef9ce6d0
-      version: -1
-      name: Add Investigation Findings
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      value:
-        simple: |-
-          No successful login was detected following to the brute force attempt. However, The following suspicious characteristics found during the investigation:
-
-          The attempt executed from ${SuspiciousAgent} user agent
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": 1290
-        }
-      }
-    note: true
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "43":
     id: "43"
     taskid: 40cfbee3-783c-49d1-840e-f6b5b326b239
@@ -924,7 +886,7 @@ tasks:
     task:
       id: 40cfbee3-783c-49d1-840e-f6b5b326b239
       version: -1
-      name: Analyze intervals of login attempts
+      name: Check if the login attempts are likely automated
       description: Analyze a list of Unix timestamps in milliseconds, to detect simple patterns of consistency or high frequency. The script can aid in the investigation of multi-event alerts that contain a list of timestamps.
       scriptName: AnalyzeTimestampIntervals
       type: regular
@@ -946,7 +908,7 @@ tasks:
           "y": 620
         }
       }
-    note: false
+    note: true
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -1016,24 +978,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "21_41_#default#": 0.42,
+      "21_41_#default#": 0.19,
       "25_26_Yes": 0.49,
       "25_41_#default#": 0.34,
+      "31_32_yes": 0.31,
       "40_24_No MFA": 0.42,
-      "40_25_#default#": 0.67,
+      "40_25_#default#": 0.26,
       "40_41_yes": 0.51
     },
     "paper": {
       "dimensions": {
         "height": 2485,
-        "width": 2510,
+        "width": 2290,
         "x": 20,
         "y": -130
       }
