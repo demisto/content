@@ -1868,7 +1868,7 @@ script:
             self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
         ) -> tuple[str, int, str]:
             """
-            Gets a token by authorizing a self deployed Azure application.
+            Gets a token by authorizing a self-deployed Azure application.
 
             Returns:
                 tuple: An access token, its expiry and refresh token.
