@@ -17,13 +17,7 @@ Investigation:
 - The playbook assesses the risk score of the user who successfully logged in after a brute force attempt, examines the legitimacy of the user agent and if the brute force attempt is likely automated based on the timestamp interval. It also verifies if the user has MFA configured when the alert source is Okta.
 
 Containment:
-- If one of the following evidences is identified:
-
-The user's risk score is high
-The user agent is detected as suspicious
-The time intervals indicates that the login attempts is likely automated
-
-and there is a successful login attempt, the playbook clears the user's session. If the user doesn't have MFA configured, the playbook recommends expiring the user's password. If there is no successful login detected, no action is taken.
+- If there is a successful login attempt and the user's risk score is high, or if the user agent is detected as suspicious, or if the time intervals indicates that the login attempts is likely automated, the playbook clears the user's session. If the user doesn't have MFA configured, the playbook recommends expiring the user's password. If there is no successful login detected, no action is taken.
 
 
 Requirements:
@@ -48,7 +42,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-Cortex Core - IR
+* Cortex Core - IR
 
 ### Scripts
 
@@ -58,11 +52,11 @@ Cortex Core - IR
 ### Commands
 
 * okta-get-user-factors
-* okta-expire-password
-* core-get-cloud-original-alerts
-* core-list-risky-users
-* closeInvestigation
 * ip
+* closeInvestigation
+* core-list-risky-users
+* core-get-cloud-original-alerts
+* okta-expire-password
 
 ## Playbook Inputs
 
