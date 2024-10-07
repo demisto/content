@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The Dataset information used for this pack has been changed from *msft_azure_raw* to *msft_intune_raw*.\nPlease update your existing integration in order to continue to use this content pack."
+    "breakingChangesNotes": "The Dataset name used for this pack has been changed from *msft_azure_raw* to *msft_intune_raw*.\nPlease update your existing integration in order to continue to use this content pack."
 }
