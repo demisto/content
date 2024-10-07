@@ -85,7 +85,7 @@ script:
       description: Determines whether the host is queued for containment.
       type: Boolean
     - contextPath: FireEyeHX.Hosts.containment_state
-      description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu
+      description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu.
       type: String
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.
@@ -453,7 +453,7 @@ script:
       name: offset
     - description: Limits the number of results.
       name: limit
-    - description: 'Must be from type of -> String: date-time'
+    - description: 'Must be from type of -> String: date-time'.
       name: state_update_time
     name: fireeye-hx-list-containment
     description: Fetches all containment states across known hosts.
@@ -521,12 +521,12 @@ script:
       - update_actor.username
       - create_actor._id
       - create_actor.username
-    - description: Filters searches by host set ID - <Integer>
+    - description: Filters searches by host set ID - <Integer>.
       name: hostSetId
     - description: Returns a single enterprise search record. If you enter this argument, there is no need for other arguments.
       name: searchId
       isArray: true
-    - description: Filters searches by username that created searches - <String>
+    - description: Filters searches by username that created searches - <String>.
       name: actorUsername
     description: Fetches all enterprise searches.
     name: fireeye-hx-search-list
@@ -604,7 +604,7 @@ script:
       description: The name of the search.
       type: String
   - arguments:
-    - description: Unique search ID - Required
+    - description: Unique search ID - Required.
       name: searchId
       required: true
       isArray: true
@@ -669,7 +669,7 @@ script:
       description: The terms for the operation.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts.settings.query_terms.exhaustive_terms
-      description: The exhaustive terms for the operation
+      description: The exhaustive terms for the operation.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.search_type
       description: The type of search.
@@ -712,7 +712,7 @@ script:
       description: The object containing data relating to the search result for the host.
       type: Unknown
   - arguments:
-    - description: searchId
+    - description: searchId.
       name: searchId
     - description: The IDs of the gents to be searched.
       name: agentsIds
@@ -1424,7 +1424,7 @@ script:
       description: The indicator name, as displayed in the UI.
       type: string
     - contextPath: FireEyeHX.Indicators.created_by
-      description: The "Created By" field, as displayed in UI
+      description: The "Created By" field, as displayed in UI.
       type: string
     - contextPath: FireEyeHX.Indicators.url
       description: The data URL.
