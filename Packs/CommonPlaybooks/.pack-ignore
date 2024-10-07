@@ -105,7 +105,7 @@ ignore=PB121
 ignore=PB121
 
 [file:playbook-IP_Enrichment_-_External_-_Generic_v2.yml]
-ignore=PB121
+ignore=PB121,GR107
 
 [file:pack_metadata.json]
 ignore=PA129
@@ -121,3 +121,19 @@ ignore=RM108
 
 [file:playbook-Containment_Plan_-_Block_Indicators.yml]
 ignore=PB118
+
+[file:playbook-Containment_Plan_-_Clear_User_Sessions.yml]
+ignore=PB118
+
+[file:playbook-Detonate_URL_-_Generic_v1.5.yml]
+ignore=GR107
+
+[file:playbook-Endpoint_Enrichment_-_Generic_v2.1.yml]
+ignore=GR107
+
+[file:playbook-Block_Email_-_Generic_v2.yml]
+ignore=GR107
+
+[file:playbook-Isolate_Endpoint_-_Generic_V2.yml]
+ignore=GR107
+

@@ -98,6 +98,7 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
             'EncryptedApplications': agent.get('encryptedApplications'),
             'OSName': agent.get('osName'),
             'ComputerName': agent.get('computerName'),
+            'MachineType': agent.get('machineType'),
             'Domain': agent.get('domain'),
             'CreatedAt': agent.get('createdAt'),
             'SiteName': agent.get('siteName'),
@@ -935,6 +936,27 @@ class Client(BaseClient):
     def get_s1_threats_information(self, threat_ids: str) -> dict:
         response = self._http_request(method="GET", url_suffix=f"threats?ids={threat_ids}")
         return response.get("data", [])
+
+    def get_power_query_request(self, account_ids: list, site_ids: list, query: str, from_date: str, to_date: str, limit: Any):
+        endpoint_url = 'dv/events/pq'
+        payload = assign_params(
+            accountIds=account_ids,
+            siteIds=site_ids,
+            limit=limit,
+            query=query,
+            toDate=to_date,
+            fromDate=from_date
+        )
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def get_ping_power_query_request(self, query_id: str):
+        endpoint_url = 'dv/events/pq-ping'
+        params = assign_params(
+            queryId=query_id
+        )
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', {})
 
     def run_remote_script_request(self,
                                   account_ids: list, script_id: str, output_destination: str,
@@ -3341,6 +3363,71 @@ def remote_script_automate_results(client: Client, args: dict):
     return_results(run_polling_command(client=client, cmd="sentinelone-remote-script-automate-results", args=args))
 
 
+def get_columns_from_result(columns: list):
+    return [column["name"] for column in columns if column.get("name")]
+
+
+def get_power_query_output(cmd: str, interval: int, timeout: int, args: dict, query_response: dict):
+    """
+    This method checks if the status of the Power Query results is finished. If it is finished,
+    it will return the results; otherwise, it will call the schedule command.
+    """
+    if query_response.get("status") == "FINISHED" and query_response.get("progress") == 100:
+        headers = get_columns_from_result(query_response.get("columns", []))
+        context_entries = [dict(zip(headers, row)) for row in query_response.get("data", [])]
+        readable_text = f"SentinelOne - Get Power Query Results - for ID {query_response.get('queryId', '')}"
+        recommendations = query_response.get("recommendations", [])
+        if recommendations and len(recommendations) >= 1:
+            recommendation = recommendations[0]
+            readable_text += f"\nRecommendation: {str(recommendation)}"
+        return CommandResults(
+            readable_output=tableToMarkdown(readable_text, context_entries, headers=headers, removeNull=True),
+        )
+    else:
+        scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
+        command_results = CommandResults(scheduled_command=scheduled_command)
+        return command_results
+
+
+def poll_power_query_results(client: Client, cmd: str, args: dict) -> CommandResults:
+    """
+    This command polls the Power Query results when the status is 'finished'. If the status is not 'finished',
+    it will continue to schedule the command next time it will ping Power Query
+    and return the results once the status is 'finished'.
+    Otherwise, it will schedule the command according to the specified interval.
+    Args:
+        cmd (str): The command name.
+        client (Client): SentinelOne API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    interval = int(args.get('interval', 10))
+    timeout = int(args.get('timeout', 300))
+
+    # Get arguments
+    account_ids = argToList(args.get("account_ids"))
+    site_ids = account_ids = argToList(args.get("site_ids"))
+    limit = args.get('limit')
+    query = args.get('query', '')
+    from_date = args.get('from_date', '')
+    to_date = args.get('to_date', '')
+    if 'query_id' not in args:
+        power_query_response = client.get_power_query_request(account_ids, site_ids, query, from_date, to_date, limit)
+        if isinstance(power_query_response, dict):
+            args["query_id"] = power_query_response.get('queryId', '')
+            return get_power_query_output(cmd, interval, timeout, args, power_query_response)
+    query_id = args.get("query_id", "")
+    ping_power_query_response = client.get_ping_power_query_request(query_id)
+    return get_power_query_output(cmd, interval, timeout, args, ping_power_query_response)
+
+
+def get_power_query_results(client: Client, args: dict):
+    return_results(poll_power_query_results(client=client, cmd="sentinelone-get-power-query-results", args=args))
+
+
 def get_mapping_fields_command():
     """
     Returns the list of fields to map in outgoing mirroring, for incidents.
@@ -3775,6 +3862,7 @@ def main():
             'sentinelone-get-remote-script-task-status': get_remote_script_status,
             'sentinelone-get-remote-script-task-results': get_remote_script_results,
             'sentinelone-remote-script-automate-results': remote_script_automate_results,
+            'sentinelone-get-power-query-results': get_power_query_results,
         },
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,

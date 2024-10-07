@@ -123,7 +123,7 @@ There is no context output
 
 ### MITRE Get Indicator Name
 ***
-Gets the Attack Pattern value from the Attack Pattern ID.
+Gets the Attack Pattern value from the Attack Pattern ID in the Enterprise collection only.
 
 ##### Base Command
 
@@ -153,7 +153,7 @@ Gets the Attack Pattern value from the Attack Pattern ID.
 | T1111 | Some Attack Value |
 ### attack-pattern
 ***
-Looks up the reputation of the indicator.
+Looks up the reputation of the indicator in the Enterprise collection only.
 
 
 #### Base Command

@@ -7117,7 +7117,11 @@ def is_integration_command_execution():
     try:
         return demisto.callingContext['context']['ExecutedCommands'][0]['moduleBrand'] != 'Scripts'
     except (KeyError, IndexError, TypeError):
-        return True
+        try:
+            # In dynamic-section scripts ExecutedCommands is None and another way is needed to verify if we are in a Script.
+            return demisto.callingContext['context']['ScriptName'] == ''
+        except (KeyError, IndexError, TypeError):
+            return True
 
 
 EXECUTION_METRICS_SCRIPT_SKIP_MSG = "returning results with Type=EntryType.EXECUTION_METRICS isn't fully supported for scripts. dropping result."
@@ -10141,12 +10145,13 @@ class IndicatorsSearcher:
                  value='',
                  limit=None,
                  sort=None,
+                 search_after=None
                  ):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = True
         # populateFields merged in https://github.com/demisto/server/pull/18398
         self._can_use_filter_fields = True
-        self._search_after_param = None
+        self._search_after_param = search_after
         self._page = page
         self._filter_fields = filter_fields
         self._total = None
