@@ -2,7 +2,7 @@
 
 This pack includes Cortex XSIAM content.
 
-Note: The logs will be stored in the dataset named *msft_azure_raw*. 
+Note: The logs will be stored in the dataset named *msft_intune_raw*. 
 To filter a query to focus only on Microsoft Intune logs, use the following filters:
 - In XQL queries, use: *|filter _collector_name=<Name_of_Intune_Instance_from_Azure_Event_Hub_Configuration>*
 - In Datamodel queries, use: *|xdm.observer.name=<Name_of_Intune_Instance_from_Azure_Event_Hub_Configuration>*
