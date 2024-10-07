@@ -153,12 +153,12 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    
-    connection_args = {
+
+    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str]]] = {
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
     }
-    
+
     if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         if SERVER and CLOUD_ID:
             raise DemistoException("ConfigurationError: The parameters 'Server URL' and 'Cloud ID' are mutually exclusive."
@@ -168,22 +168,22 @@ def elasticsearch_builder(proxies):
             connection_args["cloud_id"] = CLOUD_ID
         else:
             connection_args["hosts"] = [SERVER]
-    
+
     if ELASTIC_SEARCH_CLIENT != ELASTICSEARCH_V8:
         # Adding the following params to maintain BC for Elasticsearch version v7 and below or OpenSearch
         connection_args["hosts"] = [SERVER]
         connection_args["connection_class"] = RequestsHttpConnection
         connection_args["proxies"] = proxies
-    
+
     if API_KEY_ID:
         connection_args["api_key"] = API_KEY
-        
+
     elif USERNAME:
         if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
             connection_args["basic_auth"] = (USERNAME, PASSWORD)
-        else: # Elasticsearch version v7 and below or OpenSearch (BC)
+        else:  # Elasticsearch version v7 and below or OpenSearch (BC)
             connection_args["http_auth"] = (USERNAME, PASSWORD)
-    
+
     es = Elasticsearch(**connection_args)
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     if API_KEY_ID and hasattr(es, 'transport'):
@@ -955,9 +955,9 @@ def index_document(args, proxies):
 
     if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         if doc_id:
-            response = es.index(index=index, id=doc_id, document=doc) # pylint: disable=E1123
+            response = es.index(index=index, id=doc_id, document=doc)  # pylint: disable=E1123,E1120
         else:
-            response = es.index(index=index, document=doc) # pylint: disable=E1120
+            response = es.index(index=index, document=doc)  # pylint: disable=E1123,E1120
 
     else:  # Elasticsearch version v7 or below, OpenSearch (BC)
         # In elasticsearch lib <8 'document' param is called 'body'
@@ -1013,7 +1013,7 @@ def list_indices_command(proxies):
     es = elasticsearch_builder(proxies)
 
     # Retrieve the list of all indices
-    raw_indices = es.cat.indices(format='json')
+    raw_indices = es.cat.indices(format='json')  # pylint: disable=E1123
 
     for raw_index in raw_indices:
         index_data = {'Name': raw_index.get('index', ''),
@@ -1024,7 +1024,7 @@ def list_indices_command(proxies):
                       'Documents Deleted': raw_index.get('docs.deleted', ''),
                       }
         indices.append(index_data)
-              
+
     readable_output = tableToMarkdown(
         name="Indices:",
         t=indices,
