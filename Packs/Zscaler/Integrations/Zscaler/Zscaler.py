@@ -122,8 +122,8 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
                                    resp_type=resp_type)
 
     except Exception as e:
-        LOG(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
-        LOG(e)
+        demisto.debug(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
+        demisto.debug(e)
         raise e
     return res
 
