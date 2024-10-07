@@ -198,6 +198,7 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
+    try:
         headers: dict = {"TOKEN": api_key}
 
         client = Client(
