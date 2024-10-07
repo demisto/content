@@ -1,6 +1,5 @@
 This playbook is designed to address the following alerts:
 
-- SSO Brute Force
 - SSO Brute Force Threat Detected
 - SSO Brute Force Activity Observed
 
@@ -39,28 +38,27 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS - Block IP
 * Containment Plan - Clear User Sessions
+* PAN-OS - Block IP
 
 ### Integrations
 
-* CortexCoreXQLQueryEngine
-* CoreIOCs
 * CortexCoreIR
+* CoreIOCs
+* CortexCoreXQLQueryEngine
 
 ### Scripts
 
-* Print
 * AnalyzeTimestampIntervals
 * MatchRegexV2
 
 ### Commands
 
-* closeInvestigation
-* okta-expire-password
-* core-get-cloud-original-alerts
 * okta-get-user-factors
 * ip
+* okta-expire-password
+* closeInvestigation
+* core-get-cloud-original-alerts
 * core-list-risky-users
 
 ## Playbook Inputs
