@@ -491,7 +491,7 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
         - running get_remote_data_command
     Then
         - If close_cortex_incident is True, the mirrored_object in the GetRemoteDataResponse holds the closing entry.
-        - If close_cortex_incident is False, the mirrored_object in the GetRemoteDataResponse does NOT hold the closing entry.
+        - If close_cortex_incident is False, the mirrored_object in the GetRemoteDataResponse does not hold the closing entry.
     """
     import copy
     from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
@@ -550,10 +550,8 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
     assert response.mirrored_object == expected_modified_incident
 
     if close_cortex_incident:
-        # If close_cortex_incident is True, assert that the closing entry is present
         assert expected_closing_entry in response.entries
     else:
-        # If close_cortex_incident is False, assert that the closing entry is NOT present
         assert expected_closing_entry not in response.entries
 
 
@@ -748,7 +746,6 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
         params={'close_xdr_incident': False}
     )
 
-    # Prepare the data as if the incident was closed in XSOAR
     data = {'CortexXDRIRstatus': 'resolved', 'close_reason': 'Resolved', 'status': 'test'}
     delta = {'CortexXDRIRstatus': 'resolved'}
     expected_remote_id = 'remote_id'
@@ -764,13 +761,9 @@ def test_update_remote_system_command_should_not_close_xdr_incident(mocker):
 
     mock_update_incident_command = mocker.patch("CortexXDRIR.update_incident_command")
 
-    mocker.patch.object(client, 'get_incident_extra_data', return_value={'alerts': {'data': [{'alert_id': '123'}]}})
-    mocker.patch.object(client, 'update_alerts_in_xdr_request', return_value='1,2,3')
-
     update_remote_system_command(client, args)
-
-    # Verify that 'status' is not set to a resolved state in the update_args
     update_args = mock_update_incident_command.call_args[0][1]
+    
     assert 'status' not in update_args or update_args['status'] != XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
 
 
@@ -1639,3 +1632,4 @@ def test_get_xsoar_close_reasons(mocker):
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
+    
