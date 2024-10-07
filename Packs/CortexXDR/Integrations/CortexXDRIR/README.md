@@ -14,7 +14,7 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Server URL (copy URL from XDR) |  | True |
     | API Key ID |  | False |
     | API Key |  | False |
-    | Remove legacy incident fields | Not selected for backwards compatibility. Recommended to select. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts \(like client_id, clientid.\) | False |
+    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.) | False |
     | Incident Mirroring Direction |  | False |
     | Close Mirrored XSOAR Incident | When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR. | False |
     | Close Mirrored Cortex XDR Incident | When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR | False |
