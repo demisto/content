@@ -22,7 +22,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreIR
+CortexCoreIR
 
 ### Scripts
 
