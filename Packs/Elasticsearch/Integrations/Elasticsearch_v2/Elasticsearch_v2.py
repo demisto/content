@@ -37,6 +37,7 @@ ES_DEFAULT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSSSS'
 PYTHON_DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
+CLOUD_ID = demisto.params().get('cloud_id', '')
 USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD: str = demisto.params().get('credentials', {}).get('password')
 API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
@@ -152,32 +153,42 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
+    
+    connection_args = {
+        "verify_certs": INSECURE,
+        "timeout": TIMEOUT,
+    }
+    
     if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-        # Create the Elasticsearch v8 client instance
-        es = Elasticsearch(
-            SERVER,
-            verify_certs=INSECURE,
-            basic_auth=(USERNAME, PASSWORD)
-        )
-    else:  # Create client for Elasticsearch version v7 and below or OpenSearch (BC)
-
-        connection_args = {
-            "hosts": [SERVER],
-            "connection_class": RequestsHttpConnection,
-            "proxies": proxies,
-            "verify_certs": INSECURE,
-            "timeout": TIMEOUT,
-        }
-        if API_KEY_ID:
-            connection_args["api_key"] = API_KEY
-        elif USERNAME:
+        if SERVER and CLOUD_ID:
+            raise DemistoException("ConfigurationError: The parameters 'Server URL' and 'Cloud ID' are mutually exclusive."
+                                   "Please use either 'Server URL' for an on-premises deployment or 'Cloud ID' for a deployment"
+                                   "on Elastic Cloud, but not both at the same time.")
+        elif CLOUD_ID:
+            connection_args["cloud_id"] = CLOUD_ID
+        else:
+            connection_args["hosts"] = [SERVER]
+    
+    if ELASTIC_SEARCH_CLIENT != ELASTICSEARCH_V8:
+        # Adding the following params to maintain BC for Elasticsearch version v7 and below or OpenSearch
+        connection_args["hosts"] = [SERVER]
+        connection_args["connection_class"] = RequestsHttpConnection
+        connection_args["proxies"] = proxies
+    
+    if API_KEY_ID:
+        connection_args["api_key"] = API_KEY
+        
+    elif USERNAME:
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+            connection_args["basic_auth"] = (USERNAME, PASSWORD)
+        else: # Elasticsearch version v7 and below or OpenSearch (BC)
             connection_args["http_auth"] = (USERNAME, PASSWORD)
-
-        es = Elasticsearch(**connection_args)
-        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-        if API_KEY_ID and hasattr(es, 'transport'):
-            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(  # type: ignore[attr-defined]
-                API_KEY)
+    
+    es = Elasticsearch(**connection_args)
+    # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+    if API_KEY_ID and hasattr(es, 'transport'):
+        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(  # type: ignore[attr-defined]
+            API_KEY)
 
     return es
 
@@ -944,9 +955,9 @@ def index_document(args, proxies):
 
     if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         if doc_id:
-            response = es.index(index=index, id=doc_id, document=doc)
+            response = es.index(index=index, id=doc_id, document=doc) # pylint: disable=E1123
         else:
-            response = es.index(index=index, document=doc)
+            response = es.index(index=index, document=doc) # pylint: disable=E1120
 
     else:  # Elasticsearch version v7 or below, OpenSearch (BC)
         # In elasticsearch lib <8 'document' param is called 'body'
@@ -1013,8 +1024,7 @@ def list_indices_command(proxies):
                       'Documents Deleted': raw_index.get('docs.deleted', ''),
                       }
         indices.append(index_data)
-
-    # TODO: consider adding the number of indices in elasticsearch
+              
     readable_output = tableToMarkdown(
         name="Indices:",
         t=indices,
