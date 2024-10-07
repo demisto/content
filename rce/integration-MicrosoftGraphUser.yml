@@ -1542,7 +1542,7 @@ script:
 
         def get_access_token(self, resource: str = '', scope: str | None = None) -> str:
             """
-            Obtains access and refresh token from oproxy server or just a token from a self deployed app.
+            Obtains access and refresh token from oproxy server or just a token from a self-deployed app.
             Access token is used and stored in the integration context
             until expiration time. After expiration, new refresh token and access token are obtained and stored in the
             integration context.
