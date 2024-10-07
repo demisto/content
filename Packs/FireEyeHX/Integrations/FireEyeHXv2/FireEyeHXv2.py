@@ -2889,18 +2889,13 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
         except Exception as e:
             raise ValueError(e)
 
-    if not args.get("limit"):
-        args['limit'] = 1000
+    limit = int(args.get('limit', 1000))
     search_id = str(args.get('searchId')) if args.get('searchId') else str(search_id)
     searchInfo = client.get_search_by_id_request(search_id)["data"]
     matched = searchInfo.get('stats', {}).get('search_state', {}).get('MATCHED', 0)
     pending = searchInfo.get('stats', {}).get('search_state', {}).get('PENDING', 0)
-    if args.get('limit'):
-        no_limit = matched < int(args.get('limit'))
-    else:
-        no_limit = True
 
-    if searchInfo.get("state") != "STOPPED" and ((no_limit and pending != 0) or (matched == 0 and pending == 0)):
+    if searchInfo.get("state") != "STOPPED" and ((matched < int(limit) and pending != 0) or (matched == 0 and pending == 0)):
         return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), False, search_id
 
     return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), True, search_id

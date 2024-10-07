@@ -724,8 +724,9 @@ script:
       name: hostSet
     - description: The name of host set to be searched.
       name: hostSetName
-    - description: Limits the results count (once the limit is reached, the search is stopped).
+    - description: Limits the results count (default is 1000).
       name: limit
+      defaultValue: '1000'
     - auto: PREDEFINED
       defaultValue: 'true'
       description: Whether a search is exhaustive or quick.
