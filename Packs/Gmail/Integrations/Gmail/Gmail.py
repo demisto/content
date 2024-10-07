@@ -1388,7 +1388,7 @@ def search_all_mailboxes():
 
 
 def search_command(mailbox: str = None, only_return_account_names: bool = False, first_time: bool = True) -> dict[
-                                                                                                                 str, Any] | None:
+        str, Any] | None:
     """
     Searches for Gmail records of a specified Google user.
     """
