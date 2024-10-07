@@ -349,6 +349,14 @@ script:
     outputs:
     - contextPath: FireEyeETP.Events
       description: The Events of alert.
+    - contextPath: FireEyeETP.Events.Delivered_msg
+      description: Display message of delivered outbound.
+    - contextPath: FireEyeETP.Events.Delivered_status
+      description: The status of message.
+    - contextPath: FireEyeETP.Events.InternetMessageId
+      description: The Internet Message ID of alert.
+    - contextPath: FireEyeETP.Events.Logs
+      description: The Logs of alert.
     description: Returns all events of alert by alert id.
   - name: fireeye-etp-quarantine-release
     arguments:
