@@ -100,7 +100,7 @@ configuration:
   displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
   hiddenusername: true
   required: false
-- display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
+- display: Authorization code (for Authorization Code flow mode - received from the authorization step. See Detailed Instructions (?) section)
   name: auth_code
   type: 4
   hidden: true
