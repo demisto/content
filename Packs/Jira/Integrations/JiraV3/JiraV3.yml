@@ -1461,6 +1461,65 @@ script:
     description: Use this command to create a link between two issues.
     name: jira-issue-to-issue-link
   - arguments:
+    - description: The issue ID.
+      name: issue_id
+      required: true
+    description: Fetches questions and answers for forms tied to a Jira issue. This command requires Jira Service Desk, the ProForma plugin and an API user with `Service Desk Team` or higher permissions on the Jira project the forms are being pulled from.
+    name: jira-issue-get-forms
+    outputs:
+    - contextPath: JiraForms.ID
+      description: The ID of the form.
+      type: Unknown
+    - contextPath: JiraForms.Issue
+      description: Issue the form belongs to.
+      type: Unknown
+    - contextPath: JiraForms.Questions
+      description: Questions for the form.
+      type: Unknown
+  - arguments:
+    - description: The user's key (On-prem only).
+      name: key
+      required: false
+    - description: The user's username (On-prem only).
+      name: username
+      required: false
+    - description: The user's account ID (Cloud only).
+      name: account_id
+      required: false
+    description: Retrieves information about a specified Jira user. For on-prem instances, you should use the user's key and username to retrieve their details. For Cloud instances, user's `account_id` is required. If no identifier is supplied, information for the user the API credentials belong to is returned.
+    name: jira-get-user-info
+    outputs:
+    - contextPath: Jira.Users.Key
+      description: The user's key or ID.
+      type: Unknown
+    - contextPath: Jira.Users.Name
+      description: Name of the user.
+      type: Unknown
+    - contextPath: Jira.Users.Email
+      description: User's email address.
+      type: Unknown
+    - contextPath: Jira.Users.Display Name
+      description: Display name for the user.
+      type: Unknown
+    - contextPath: Jira.Users.Active
+      description: If the user is active or not.
+      type: Unknown
+    - contextPath: Jira.Users.Deleted
+      description: If the user is deleted or not.
+      type: Unknown
+    - contextPath: Jira.Users.Timezone
+      description: Timezone setting for the user.
+      type: Unknown
+    - contextPath: Jira.Users.Locale
+      description: Locale setting for the user.
+      type: Unknown
+    - contextPath: Jira.Users.AccountID
+      description: The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5. Required in requests.
+      type: Unknown
+    - contextPath: Jira.Users.AccountType
+      description: "The user account type. Can take the following values: atlassian, app, customer."
+      type: Unknown
+  - arguments:
     - description: The remote incident ID.
       name: id
       required: true
@@ -1480,7 +1539,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.107991
+  dockerimage: demisto/btfl-soup:1.0.1.111953
   isfetch: true
   ismappable: true
   isremotesyncin: true
