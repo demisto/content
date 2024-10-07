@@ -441,7 +441,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.EndpoiPaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
