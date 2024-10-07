@@ -1024,7 +1024,7 @@ def list_indices_command(proxies):
 
     result = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Elasticsearch.Indices', # TODO: need to consult about the naming here ('index' is already taken)
+        outputs_prefix='Elasticsearch.Indices',  # TODO: need to consult about the naming here ('index' is already taken)
         outputs=indices,
         outputs_key_field='UUID',
         raw_response=list(raw_indices)
