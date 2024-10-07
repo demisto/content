@@ -168,7 +168,7 @@ script:
     - description: User ID or userPrincipalName to update properties for.
       name: user
       required: true
-    - description: 'User fields to update (in a key=value format. Example: displayName=John.'
+    - description: 'User fields to update (in a key=value format). Example: displayName=John.'
       name: updated_fields
       required: true
     - description: "Delimiter to use for passing multiple fields to the 'updated_fields' argument. Example using ',' as a delimiter: displayName=John,givenName=John,surname=Doe."
