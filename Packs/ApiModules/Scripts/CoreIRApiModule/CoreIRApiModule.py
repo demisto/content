@@ -2110,9 +2110,9 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
 
 
 def retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_list, public_ip_list,
-                        group_name, platform, alias_name, isolate, hostname, page_number,
-                        limit, first_seen_gte, first_seen_lte, last_seen_gte, last_seen_lte,
-                        sort_by_first_seen, sort_by_last_seen, status, username):
+                           group_name, platform, alias_name, isolate, hostname, page_number,
+                           limit, first_seen_gte, first_seen_lte, last_seen_gte, last_seen_lte,
+                           sort_by_first_seen, sort_by_last_seen, status, username):
     endpoints_page = endpoints
     # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
     while endpoints_page:
