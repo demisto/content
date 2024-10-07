@@ -1744,7 +1744,7 @@ script:
         def _get_self_deployed_token_client_credentials(self, scope: str | None = None,
                                                         resource: str | None = None) -> tuple[str, int, str]:
             """
-            Gets a token by authorizing a self deployed Azure application in client credentials grant type.
+            Gets a token by authorizing a self-deployed Azure application in client credentials grant type.
 
             Args:
                 scope: A scope to add to the headers. Else will get self.scope.
