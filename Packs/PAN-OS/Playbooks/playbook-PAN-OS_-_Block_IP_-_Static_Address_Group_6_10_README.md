@@ -9,7 +9,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS Commit Configuration
+* PAN-OS Commit Configuration v2
 
 ### Integrations
 
@@ -32,9 +32,9 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IP | IP address to block | IP.Address | Optional |
-| AddressGroupName | Static address group name | Demisto Remediation - Static Address Group | Optional |
+| AddressGroupName | Static address group name | Remediation - Static Address Group | Optional |
 | AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
-| IPDescription | The description of the IP in case it will get created by the playbook. | Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSOAR. | Optional |
+| IPDescription | The description of the IP in case it will get created by the playbook. | Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSIAM. | Optional |
 
 ## Playbook Outputs
 
@@ -46,4 +46,3 @@ There are no outputs for this playbook.
 ---
 
 ![PAN-OS - Block IP - Static Address Group](../doc_files/PAN-OS_Block_IP_Static_Address_Group.png)
-
