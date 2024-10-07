@@ -75,7 +75,8 @@ OUTPUT_PREFIX = {
     "CONTENT": "ConfluenceCloud.Content",
     "COMMENT": "ConfluenceCloud.Comment",
     "SPACE": "ConfluenceCloud.Space",
-    "PAGETOKEN": "ConfluenceCloud.PageToken.Content"
+    "PAGETOKEN": "ConfluenceCloud.PageToken.Content",
+    "EVENT": "ConfluenceCloud.Event"
 }
 DEFAULT_LIMIT = "50"
 DEFAULT_START = "0"
@@ -1457,14 +1458,18 @@ def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
             response = client.search_events(limit=AUDIT_FETCH_PAGE_SIZE, start_date=str(start_date), end_date=str(end_date))
         else:
             response = client.search_events(limit=AUDIT_FETCH_PAGE_SIZE, next_link=next_link)
-
+        if not response['results']:
+            break
         next_link = response['_links'].get('next', None)
         events.extend(response['results'])
 
     if len(events) > fetch_limit:
         demisto.debug('Fetched events exceed the limit, trimming to the limit')
         events = events[:fetch_limit]
-    return events, CommandResults(readable_output=tableToMarkdown('Events', t=events, removeNull=True))
+    return events, CommandResults(outputs=events,
+                                  outputs_prefix=OUTPUT_PREFIX['EVENT'],
+                                  readable_output=tableToMarkdown('Events', t=events, removeNull=True)
+                                  )
 
 
 ''' MAIN FUNCTION '''
