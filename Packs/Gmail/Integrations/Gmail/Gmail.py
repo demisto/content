@@ -1426,12 +1426,15 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False,
     except HttpError as err:
         if err.status_code == 500 and first_time:
             # retry mechanism - try just one time more
+            demisto.debug(f'Gmail Integration: Got an error {err.status_code} for {user_id=}, trying again to search fot it')
             search_command(mailbox, only_return_account_names, False)
         elif (
             err.status_code == 500
             or only_return_account_names
             and err.status_code == 429
         ):
+            demisto.debug(f'Gmail Integration: Got another time the {err.status_code} error for {user_id=}, '
+                          f'continuing to the next user')
             return {'Mailbox': mailbox, 'Error': {'message': str(err.error_details), 'status_code': err.status_code}}
 
         raise
