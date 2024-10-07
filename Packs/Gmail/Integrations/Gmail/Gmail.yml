@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Gmail - dev
+  id: Gmail
   version: -1
 configuration:
 - display: Email of user with admin privileges
@@ -76,8 +76,8 @@ configuration:
   advanced: true
   defaultvalue: 'false'
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
-display: Gmail - dev
-name: Gmail - dev
+display: Gmail
+name: Gmail
 script:
   commands:
   - arguments:
