@@ -2,13 +2,13 @@ args:
 - description: List of users IDs of the user to retrieve.
   name: user_id
   isArray: true
-- description: List of users names of the user to retrieve.
+- description: List of names of the users to retrieve.
   name: user_name
   isArray: true
-- description: List of users emails of the user to retrieve.
+- description: List of emails of the users to retrieve.
   name: user_email
   isArray: true
-- description: The domain to retrieve users from, available only for the iam-get-user command.
+- description: The domain to retrieve users from. Available only for the iam-get-user command.
   name: domain
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
@@ -25,7 +25,7 @@ args:
   - 'SailPointIdentityIQ'
   - 'Cortex XDR - IR'
   - 'iam-get-user'
-- description: Whether to retrieve human readable entry for every command or only the final result.
+- description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
   name: verbose
   auto: PREDEFINED
   predefined:

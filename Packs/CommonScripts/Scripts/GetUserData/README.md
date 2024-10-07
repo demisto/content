@@ -15,12 +15,12 @@ This script gathers user data from multiple integrations and returns an Account 
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| user_id | List of users IDs of the user to retrieve. |
-| user_name | List of users names of the user to retrieve. |
-| user_email | List of users emails of the user to retrieve. |
-| domain | The domain to retrieve users from, available only for the iam-get-user command. |
+| user_id | List of IDs of the user to retrieve. |
+| user_name | List of names of the users to retrieve. |
+| user_email | List of emails of the users to retrieve. |
+| domain | The domain to retrieve users from. Available only for the iam-get-user command. |
 | brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne". |
-| verbose | Whether to retrieve human readable entry for every command or only the final result. |
+| verbose | Whether to retrieve human readable entry for every command or only the final result.  True means to retrieve human readable entry for every command. False means to human readable only for the final result. |
 
 ## Outputs
 
