@@ -18,22 +18,18 @@ This integration was integrated and tested with version 0.40.1 of M2Crypto.
 
 - While decrypting or verifying a message, S/MIME Messaging will attempt to parse the message into readable text, as well as extract any attachments and images if present. If you wish to get the raw message instead, use the raw_output argument.
 
-## Configure SMIME Messaging on Cortex XSOAR
+## Configure SMIME Messaging in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SMIME Messaging.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Public Key | Sender public key required for signing emails. | True |
-    | Private Key | Sender private key required for decrypting and signing emails. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Public Key | Sender public key required for signing emails. | True |
+| Private Key | Sender private key required for decrypting and signing emails. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### smime-verify-sign
@@ -421,4 +417,3 @@ Encrypts and signs an email message with S/MIME protocol by using a public RSA c
 >bInc/R7JrBNTGmj/EVWf9OOxLEqO1wbTXKlOW4etDik5uz9TL+4JLlmRAzB4HJkC
 >kuj3
 >
-

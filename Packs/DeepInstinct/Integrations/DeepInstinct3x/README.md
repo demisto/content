@@ -3,26 +3,22 @@ This integration was integrated and tested with version 3.3.x of DeepInstinct v3
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure DeepInstinct v3 on Cortex XSOAR
+## Configure DeepInstinct v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DeepInstinct v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base server URL | True |
-    | API Key | True |
-    | First event ID to fetch from | False |
-    | Fetch incidents | False |
-    | Incidents Fetch Interval | False |
-    | Incident type | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Base server URL | True |
+| API Key | True |
+| First event ID to fetch from | False |
+| Fetch incidents | False |
+| Incidents Fetch Interval | False |
+| Incident type | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### deepinstinctv3-get-device
 ***

@@ -1,23 +1,19 @@
 JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. This Integration can be used to Generate New JWT Tokens, Encode and Decode Existing Ones.
 This integration was integrated and tested with generic JWT authentication service.
-## Configure JWT on Cortex XSOAR
+## Configure JWT in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for JWT.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL | The authentication server URL | True |
-    | Secret Key | The secret key to sign the authentication token. | True |
-    | Issuer Claim | The “iss” \(issuer\) claim identifies the principal that issued the JWT. | False |
-    | Audience Claim | The “aud” \(audience\) claim identifies the recipients that the JWT is intended for. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL | The authentication server URL | True |
+| Secret Key | The secret key to sign the authentication token. | True |
+| Issuer Claim | The “iss” \(issuer\) claim identifies the principal that issued the JWT. | False |
+| Audience Claim | The “aud” \(audience\) claim identifies the recipients that the JWT is intended for. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### jwt-generate-access-token
 ***
@@ -176,4 +172,3 @@ There is no context output for this command.
 >|exp|iat|iss|jti|parameter1|sub|
 >|---|---|---|---|---|---|
 >| 1622050583 | 1622050283 | http://example.com | 009eb036-1e60-43e5-aad2-1187462db0be | 23323-323-4854-893c-b59610423ad | 3233-2344-4b52-2323-fc0bfb11e673 |
-

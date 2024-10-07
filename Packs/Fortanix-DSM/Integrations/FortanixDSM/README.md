@@ -7,27 +7,23 @@ These fields accept  the *Username*  and *Password* parameters for a user or App
 An easy and quick way to test the integration is to specify the *Basic Authentication token* parameter from the Fortanix DSM App's API KEY.
 
 
-## Configure Fortanix DSM on Cortex XSOAR
+## Configure Fortanix DSM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Fortanix DSM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fortanix DSM server endpoint | URL e.g., https://amer.smartkey.io | True |
-    | Username / App UUID / Certificate | If Certificate, specify PEM | False |
-    | Password / App Secret / Private Key | Private key cannot be encrypted | False |
-    | API Key | Alternative to Username and Password | False |
-    | Trust any server certificate (insecure) | Ignores TLS, not recommended | False |
-    | Use system proxy settings | Whether to use proxy settings from the Environment  | False |
-    | Group UUID to list secrets from | Filter the secrets accessible to a single DSM Group | False |
-    | Data protection key used for encryption and decryption | Also configure the Cipher Mode | False |
-    | Encryption and decryption mode | e.g. FPE, GCM, CBC | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fortanix DSM server endpoint | URL e.g., https://amer.smartkey.io | True |
+| Username / App UUID / Certificate | If Certificate, specify PEM | False |
+| Password / App Secret / Private Key | Private key cannot be encrypted | False |
+| API Key | Alternative to Username and Password | False |
+| Trust any server certificate (insecure) | Ignores TLS, not recommended | False |
+| Use system proxy settings | Whether to use proxy settings from the Environment  | False |
+| Group UUID to list secrets from | Filter the secrets accessible to a single DSM Group | False |
+| Data protection key used for encryption and decryption | Also configure the Cipher Mode | False |
+| Encryption and decryption mode | e.g. FPE, GCM, CBC | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortanix-list-secrets
 ***
@@ -233,4 +229,3 @@ Reveal data using key configured in Fortanix DSM
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Fortanix.Data.Plain | unknown | Decryption output | 
-

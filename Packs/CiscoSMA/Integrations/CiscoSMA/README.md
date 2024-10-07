@@ -1,33 +1,29 @@
 The Security Management Appliance (SMA) is used to centralize services from Email Security Appliances (ESAs) and Web Security Appliances (WSAs).
 This integration was integrated and tested with version 12.0 of Cisco Security Management Appliance.
 
-## Configure Cisco Security Management Appliance on Cortex XSOAR
+## Configure Cisco Security Management Appliance in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Security Management Appliance.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Timestamp in ISO format or &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
-    | Filter by | Message field by which to filter the results. | False |
-    | Filter operator | Operator on the message field. | False |
-    | Filter value | The value to search for. | False |
-    | Recipient filter operator | Recipient operator filter. | False |
-    | Recipient filter value | Recipient filter value to fetch by message field. | False |
-    | Timeout | HTTP requests timeout in seconds. The default is 60 seconds. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
+| Username |  | True |
+| Password |  | True |
+| Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Timestamp in ISO format or &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
+| Filter by | Message field by which to filter the results. | False |
+| Filter operator | Operator on the message field. | False |
+| Filter value | The value to search for. | False |
+| Recipient filter operator | Recipient operator filter. | False |
+| Recipient filter value | Recipient filter value to fetch by message field. | False |
+| Timeout | HTTP requests timeout in seconds. The default is 60 seconds. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cisco-sma-spam-quarantine-message-search
 ***
@@ -1433,4 +1429,3 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/security_management/sma/sma12
 >|Blocked Dmarc|Blocked Invalid Recipient|Blocked Reputation|Blocked Sdr|Bulk Mail|Detected Amp|Detected Spam|Detected Spam Certain|Detected Spam Suspect|Detected Virus|Detected Virus Per Msg|Failed Dkim|Failed Spf|Ims Spam Increment Over Case|Malicious Url|Marketing Mail|Social Mail|Threat Content Filter|Total Clean Recipients|Total Graymail Recipients|Total Mailbox Auto Remediated Recipients|Total Recipients|Total Spoofed Emails|Total Threat Recipients|Verif Decrypt Fail|Verif Decrypt Success|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 6 | 3454 | 0 | 1 | 0 | 35 | 35 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 5 | 0 | 1 | 565 | 6 | 0 | 4069 | 0 | 3498 | 0 | 0 |
-

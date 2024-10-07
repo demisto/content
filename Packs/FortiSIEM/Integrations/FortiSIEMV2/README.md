@@ -6,30 +6,26 @@ This is the default integration for this content pack when configured by the Dat
 Changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-fortisiem-v2).
 
-## Configure FortiSIEM v2 on Cortex XSOAR
+## Configure FortiSIEM v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FortiSIEM v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | For example: https://192.168.1.1 | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Maximum incidents per fetch. | Default is 20. Maximum is 200. Setting a value greater than 20 may harm performance, if used with 'Fetch With Events' mode. | False |
-    | First fetch timestamp (number, time unit. e.g., 12 hours, 7 days). |  | False |
-    | Filter incidents by status. |  | False |
-    | Fetch Mode | Fetch With Events mode is currently available only for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance. | False |
-    | Maximum events to fetch per incident. | Default is 20. Maximum is 50. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | For example: https://192.168.1.1 | True |
+| Username |  | True |
+| Password |  | True |
+| Maximum incidents per fetch. | Default is 20. Maximum is 200. Setting a value greater than 20 may harm performance, if used with 'Fetch With Events' mode. | False |
+| First fetch timestamp (number, time unit. e.g., 12 hours, 7 days). |  | False |
+| Filter incidents by status. |  | False |
+| Fetch Mode | Fetch With Events mode is currently available only for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance. | False |
+| Maximum events to fetch per incident. | Default is 20. Maximum is 50. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortisiem-event-search
 ***

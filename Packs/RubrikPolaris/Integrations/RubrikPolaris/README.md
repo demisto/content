@@ -1,30 +1,26 @@
 The Rubrik Security Cloud integration will fetch the Rubrik Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
 This integration was integrated and tested with version 1.0.0 of Rubrik Security Cloud
 
-## Configure Rubrik Security Cloud on Cortex XSOAR
+## Configure Rubrik Security Cloud in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rubrik Security Cloud.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Service Account JSON |  | False |
-    | Rubrik Account (e.g. ${rubrikAccount}.my.rubrik.com) |  | False |
-    | Email |  | False |
-    | Password |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch time | The time interval for the first fetch \(retroactive\). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/\#relative-dates. | False |
-    | Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000. | False |
-    | Anomaly Event Critical Severity Level Mapping | When a Anomaly event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
-    | Anomaly Event Warning Severity Level Mapping | When a Anomaly event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
-    | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
-    | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Service Account JSON |  | False |
+| Rubrik Account (e.g. ${rubrikAccount}.my.rubrik.com) |  | False |
+| Email |  | False |
+| Password |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch time | The time interval for the first fetch \(retroactive\). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/\#relative-dates. | False |
+| Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000. | False |
+| Anomaly Event Critical Severity Level Mapping | When a Anomaly event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
+| Anomaly Event Warning Severity Level Mapping | When a Anomaly event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
+| Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
+| Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### rubrik-radar-analysis-status
 ***

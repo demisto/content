@@ -5,11 +5,8 @@ This integration was integrated and tested with OTRS versions 5, 6, and 7.
 
 Before configuring OTRS on Cortex XSOAR, you need to enable the webservices in your OTRS instance. It is recommended to use the provided [YAML webservice configuration template](https://gitlab.com/rhab/PyOTRS/raw/master/webservices_templates/GenericTicketConnectorREST.yml), which includes the Route: /TicketList endpoint required for PyOTRS but which is not included in the default OTRS webservice setup. If you use a different file than the template, make sure to name your file `GenericTicketConnectorREST.yml`.
 
-## Configure OTRS on Cortex XSOAR
+## Configure OTRS in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OTRS.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -24,9 +21,8 @@ Before configuring OTRS on Cortex XSOAR, you need to enable the webservices in y
 | fetch_time | First fetch timestamp \(formatted as &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days, 3 months, 1 year\) | False |
 | look_back | Days to look back when fetching | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### otrs-get-ticket
 ***

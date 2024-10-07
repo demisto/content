@@ -3,29 +3,25 @@ This integration was integrated and tested with API v1.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Workday Event Collector on Cortex XSOAR
+## Configure Workday Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Workday Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
     
 | **Parameter**                                                                    | **Description**                                                                                                                | **Required** |
 |----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | Server URL (e.g. https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT_NAME)                   | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application                       | True         |
-    | Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT_NAME/token)          | Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.                     | True         |
-    | Client ID                                                                        | Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.                                  | True         |
-    | Client Secret                                                                    |                                                                                                                                | True         |
-    | Refresh Token                                                                    | Non-expiry Workday API refresh token.                                                                                          | True         |
-    | Trust any certificate (not secure)                                               |                                                                                                                                | False        |
-    | Use system proxy settings                                                        |                                                                                                                                | False        |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                | False        |
-    | Max events per fetch                                                             | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False        |
+| Server URL (e.g. https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT_NAME)                   | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application                       | True         |
+| Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT_NAME/token)          | Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.                     | True         |
+| Client ID                                                                        | Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.                                  | True         |
+| Client Secret                                                                    |                                                                                                                                | True         |
+| Refresh Token                                                                    | Non-expiry Workday API refresh token.                                                                                          | True         |
+| Trust any certificate (not secure)                                               |                                                                                                                                | False        |
+| Use system proxy settings                                                        |                                                                                                                                | False        |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                | False        |
+| Max events per fetch                                                             | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### workday-get-activity-logging

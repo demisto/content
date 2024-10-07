@@ -1,10 +1,7 @@
 BMC Helix Remedyforce integration allows customers to create/update service requests and incidents. It also allows to update status, resolve service requests and incidents with customer notes. This integration exposes standard ticketing capabilities that can be utilized as part of automation & orchestration.
 This integration was integrated and tested with version 202002.79 of BMC Helix Remedyforce.
-## Configure BMC Helix Remedyforce on Cortex XSOAR
+## Configure BMC Helix Remedyforce in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for **BMC Helix Remedyforce**.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -28,9 +25,8 @@ This integration was integrated and tested with version 202002.79 of BMC Helix R
 | firstFetchTimestamp | First Fetch Timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bmc-remedy-service-request-definition-get
 ***
@@ -1125,4 +1121,3 @@ This command helps to get the service request details.
 >|Number|Priority|Status|Queue|
 >|---|---|---|---|
 >| 00000929 | 5 | OPENED | Incident Queue |
-

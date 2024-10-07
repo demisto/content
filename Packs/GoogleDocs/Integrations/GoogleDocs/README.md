@@ -1,9 +1,6 @@
 Use the Google Docs integration to create and modify Google Docs documents.
-## Configure GoogleDocs on Cortex XSOAR
+## Configure GoogleDocs in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GoogleDocs.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -11,9 +8,8 @@ Use the Google Docs integration to create and modify Google Docs documents.
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google-docs-get-document
 ***
@@ -154,4 +150,3 @@ Updates the document with the specified document ID.
 >|DocumentId|RevisionId|Title|
 >|---|---|---|
 >| 1MjtBlFLwFNsjVwCF0mZLxpRoblVHjLcR3VmZcUuNvzo | ALm37BWCZhPcqsQ0g1oatbiEtHz2vLXIkZwn9Rt-y0riIUKiuQOfvByrPlJsDW9uW3DRkSwZ7vLBgLgDrrnW9g | testing |
-

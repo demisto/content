@@ -1,21 +1,17 @@
 Manage secrets and protect sensitive data through Thales CipherTrust security platform.
 This integration was integrated and tested with version v1 of CipherTrust.
 
-## Configure Thales CipherTrust Manager on Cortex XSOAR
+## Configure Thales CipherTrust Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Thales CipherTrust Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Username | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Username | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Main Use Cases for the Thales CipherTrust Manager Integration
 
@@ -92,7 +88,7 @@ Managing digital certificates is crucial for maintaining secure communications a
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ciphertrust-csr-generate

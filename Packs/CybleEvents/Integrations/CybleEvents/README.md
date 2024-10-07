@@ -1,29 +1,25 @@
 Cyble Events is an integration which will help Existing Cyble Vision users. This integration would allow users to access
 the API available as part of Vision Licensing and integrate the data into XSOAR.
 
-## Configure Cyble Events on Cortex XSOAR
+## Configure Cyble Events in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cyble Events.
-3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Description** | **Required** |
-          | --- | --- | --- |
-   | Server URL (e.g. https://example.net) |  | True |
-   | Access Token |  | True |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
-   | Fetch incidents |  | False |
-   | Incidents Fetch Interval |  | False |
-   | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | True |
-   | Incident type |  | False |
-   | Priority | Fetch the events based on priority. All priorities will be considered by default. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://example.net) |  | True |
+| Access Token |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | True |
+| Incident type |  | False |
+| Priority | Fetch the events based on priority. All priorities will be considered by default. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you
 successfully execute a command, a DBot message appears in the War Room with the command details.
 
 This integration provides the following command(s) which can be used to access Threat Intelligence

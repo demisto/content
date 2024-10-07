@@ -1,30 +1,26 @@
 Rapid7’s InsightIDR is your security center for incident detection and response, authentication monitoring, and endpoint visibility. Together, these form Extended Detection and Response (XDR). InsightIDR identifies unauthorized access from external and internal threats and highlights suspicious activity so you don’t have to weed through thousands of data streams.
 This integration was integrated and tested with cloud version of Rapid7 InsightIDR.
 
-## Configure Rapid7 InsightIDR on Cortex XSOAR
+## Configure Rapid7 InsightIDR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rapid7 InsightIDR.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Insight cloud server region |  | True |
-    | InsightIDR API key |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Fetch Limit | Max number of alerts per fetch. Default is 50. | False |
-    | Multi customer | Indicates whether the requester has multi-customer access. | False |
-    | Use API Version 2 by default | Whether to use API version 2 by default for investigation commands (Can be overriden by passing the api_version argument). | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Insight cloud server region |  | True |
+| InsightIDR API key |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Fetch Limit | Max number of alerts per fetch. Default is 50. | False |
+| Multi customer | Indicates whether the requester has multi-customer access. | False |
+| Use API Version 2 by default | Whether to use API version 2 by default for investigation commands (Can be overriden by passing the api_version argument). | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### rapid7-insight-idr-list-investigations

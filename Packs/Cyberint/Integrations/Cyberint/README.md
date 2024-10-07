@@ -1,33 +1,29 @@
 Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
 This integration was integrated and tested with version v1 of cyberint
 
-## Configure cyberint on Cortex XSOAR
+## Configure cyberint in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for cyberint.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident type |  | False |
-    | Cyberint Access Token | Cyberint API access token. | True |
-    | Cyberint API Environment | Cyberint environment on which the services run \(i.e http://\{environment\}.cyberint.io/...\) | True |
-    | Fetch incidents |  | False |
-    | Create an incident per CSV record | An incident will be created with the originated Alert details per CSV file record | False |
-    | Fetch Severity | Severities to fetch. If none is chosen, all severity levels will be returned. | False |
-    | Fetch Status | Statuses to fetch. If none is chosen, all statuses will be returned. | False |
-    | Fetch Environment | Environments to fetch \(comma separated\). If empty, all available environments will be returned. | False |
-    | Fetch Types | Types to fetch. If none is chosen, all types will be returned. | False |
-    | Fetch Limit | Max number of alerts per fetch. Defaults to  the minimum 10, max is 100. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Incident type |  | False |
+| Cyberint Access Token | Cyberint API access token. | True |
+| Cyberint API Environment | Cyberint environment on which the services run \(i.e http://\{environment\}.cyberint.io/...\) | True |
+| Fetch incidents |  | False |
+| Create an incident per CSV record | An incident will be created with the originated Alert details per CSV file record | False |
+| Fetch Severity | Severities to fetch. If none is chosen, all severity levels will be returned. | False |
+| Fetch Status | Statuses to fetch. If none is chosen, all statuses will be returned. | False |
+| Fetch Environment | Environments to fetch \(comma separated\). If empty, all available environments will be returned. | False |
+| Fetch Types | Types to fetch. If none is chosen, all types will be returned. | False |
+| Fetch Limit | Max number of alerts per fetch. Defaults to  the minimum 10, max is 100. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cyberint-alerts-fetch

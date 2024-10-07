@@ -1,26 +1,23 @@
 Agentless, context-aware and full-stack security and compliance for AWS, Azure and GCP.
 This integration was integrated and tested with Wiz
 
-## Configure Wiz on Cortex XSOAR
+## Configure Wiz in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Wiz. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | name | Integration Name. Default: `Wiz_instance_1` | True |
-    | said | Service Account ID | True |
-    | sasecret | Service Account Secret | True |
-    | auth_endpoint | Wiz Authentication Endpoint, e.g., `https://auth.app.wiz.io/oauth/token` | True |
-    | api_endpoint | Wiz API Endpoint. Default: `https://api.us1.app.wiz.io/graphql` <br /> To find your API endpoint URL: <br />1. Log in to Wiz, then open your <a href="https://app.wiz.io/user/profile">user profile</a> <br />2. Copy the **API Endpoint URL** to use here. | True
-    | first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
-    | Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues)| False |
-    | max_fetch | Max Issues to fetch | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Integration Name. Default: `Wiz_instance_1` | True |
+| said | Service Account ID | True |
+| sasecret | Service Account Secret | True |
+| auth_endpoint | Wiz Authentication Endpoint, e.g., `https://auth.app.wiz.io/oauth/token` | True |
+| api_endpoint | Wiz API Endpoint. Default: `https://api.us1.app.wiz.io/graphql` <br /> To find your API endpoint URL: <br />1. Log in to Wiz, then open your <a href="https://app.wiz.io/user/profile">user profile</a> <br />2. Copy the **API Endpoint URL** to use here. | True
+| first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
+| Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues)| False |
+| max_fetch | Max Issues to fetch | False |
 
-3. Click **Test** to validate the API Endpoint, Service Account and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook or War Room.
+You can execute these commands from the CLI, as part of an automation, or in a playbook or War Room.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### wiz-get-issue

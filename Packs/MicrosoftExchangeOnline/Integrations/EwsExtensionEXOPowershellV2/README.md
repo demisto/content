@@ -6,22 +6,18 @@ This integration was integrated and tested with version v2 of EWS Extension Onli
 **Note:** This integration does not replace the **O365 - EWS - Extension** integration, but an additional EWS extension integration
 which utilizes the [EXO v2 module](https://docs.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps).
 
-## Configure EWS Extension Online Powershell v2 on Cortex XSOAR
+## Configure EWS Extension Online Powershell v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EWS Extension Online Powershell v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Exchange Online URL |  | True |
-    | Certificate | A pfx certificate encoded in Base64. | True |
-    | The organization used in app-only authentication. |  | True |
-    | The application ID from the Azure portal |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Exchange Online URL |  | True |
+| Certificate | A pfx certificate encoded in Base64. | True |
+| The organization used in app-only authentication. |  | True |
+| The application ID from the Azure portal |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ews-mailbox-list
 ***

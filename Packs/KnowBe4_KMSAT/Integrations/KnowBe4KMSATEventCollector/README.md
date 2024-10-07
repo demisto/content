@@ -1,21 +1,17 @@
 Allows you to push and pull your external data to and from the KnowBe4 console.
 
-## Configure KnowBe4 KMSAT Event Collector on Cortex XSIAM
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Data Sources**.
-2. Search for KnowBe4KMSATEventCollector.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure KnowBe4 KMSAT Event Collector in Cortex
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | API Key | The API Key to use for connection. For more information about how to generate an API Key, refer to https://support.knowbe4.com/hc/en-us/articles/360024863474-User-Event-API| True |
-    | First fetch time interval | The time range to consider for the initial data fetch. \(&amp;lt;number&amp;gt; &amp;lt;unit&amp;gt;, e.g., 2 days, 2 months, 2 years\). Default is 1 day. | False |
-    | Events Fetch Interval | The Fetch interval. It is recommended to set it to 5 hours as there are not many events for this API and there's an api-calls daily-limit for the basic API key. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL |  | True |
+| API Key | The API Key to use for connection. For more information about how to generate an API Key, refer to https://support.knowbe4.com/hc/en-us/articles/360024863474-User-Event-API| True |
+| First fetch time interval | The time range to consider for the initial data fetch. \(&amp;lt;number&amp;gt; &amp;lt;unit&amp;gt;, e.g., 2 days, 2 months, 2 years\). Default is 1 day. | False |
+| Events Fetch Interval | The Fetch interval. It is recommended to set it to 5 hours as there are not many events for this API and there's an api-calls daily-limit for the basic API key. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
     
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 **Important Notes**
 The basic API-Key has a daily limit of calls per seat.
@@ -23,7 +19,7 @@ Therefore, the default and recommended **Events Fetch Interval** value is 5 hour
 **First fetch time interval** is 1 day.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### kms-get-events

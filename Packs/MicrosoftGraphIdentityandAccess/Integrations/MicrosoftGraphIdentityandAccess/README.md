@@ -1,22 +1,18 @@
 Use the Azure Active Directory Identity And Access integration to manage roles and members.
-## Configure Azure Active Directory Identity and Access on Cortex XSOAR
+## Configure Azure Active Directory Identity and Access in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Active Directory Identity and Access.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Application ID | False |
-    | Private Key | False |
-    | Certificate Thumbprint | False |
-    | Use Azure Managed Identities | False |
-    | Azure Managed Identities Client ID | False |
-    | Azure AD endpoint | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Application ID | False |
+| Private Key | False |
+| Certificate Thumbprint | False |
+| Use Azure Managed Identities | False |
+| Azure Managed Identities Client ID | False |
+| Azure AD endpoint | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Required Permissions
@@ -29,7 +25,7 @@ To use this integration, the following permissions are required on the Azure app
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### msgraph-identity-auth-start

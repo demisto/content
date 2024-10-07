@@ -83,25 +83,20 @@ To revoke or fetch a user role, you need an Immutable Google Apps ID.
 | Add the send as email ID | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing)  |
 | Add the forwarding address for the user | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
 
-## Configure Gmail in Cortex XSOAR
+## Configure Gmail in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for Gmail.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | adminEmail | The email of the user with admin privileges \(the Password refers to the content of the Service Account file\). | True |
-    | gappsID | The immutable Google Apps ID. | False |
-    | query | The events search query \(for example, "from:example@demisto.com"\) Used for searching emails in the inbox. The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
-    | queryUserKey | Events user key \(for example, example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
-    | isFetch | Whether to fetch incidents. | False |
-    | insecure | Whether to trust any certificate. \(not secure\) | False |
-    | proxy | Whether to use system proxy settings. | False |
-    | incidentType | The incident type to map incoming events to. | False |
-    | fetch_time | The first fetch timestamp, in days. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| adminEmail | The email of the user with admin privileges \(the Password refers to the content of the Service Account file\). | True |
+| gappsID | The immutable Google Apps ID. | False |
+| query | The events search query \(for example, "from:example@demisto.com"\) Used for searching emails in the inbox. The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
+| queryUserKey | Events user key \(for example, example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
+| isFetch | Whether to fetch incidents. | False |
+| insecure | Whether to trust any certificate. \(not secure\) | False |
+| proxy | Whether to use system proxy settings. | False |
+| incidentType | The incident type to map incoming events to. | False |
+| fetch_time | The first fetch timestamp, in days. | False |
 
 ### Use Cases
 
@@ -131,7 +126,7 @@ To revoke or fetch a user role, you need an Immutable Google Apps ID.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook.
+You can execute these commands from the CLI as part of an automation or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 * **gmail-delete-user**: Deletes a Gmail user.

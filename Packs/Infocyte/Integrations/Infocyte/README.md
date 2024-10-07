@@ -1,10 +1,7 @@
 Infocyte can pivot off incidents to automate triage, validate events with forensic data and enabling dynamic response actions against any or all host using both agentless or agented endpoint access.
 This integration was integrated and tested with version 3008.0.1.2800 of Infocyte
-## Configure Infocyte on Cortex XSOAR
+## Configure Infocyte in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Infocyte.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,9 +14,8 @@ This integration was integrated and tested with version 3008.0.1.2800 of Infocyt
 | insecure | Trust any certificate -- not secure | False |
 | proxy | Use system proxy settings | False |
 
-1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### infocyte-scan-host
 ***

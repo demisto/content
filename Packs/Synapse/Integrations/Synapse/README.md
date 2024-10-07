@@ -1,11 +1,8 @@
 Synapse intelligence analysis platform.
 This integration was integrated and tested with version `2.7.0` of Synapse
 
-## Configure Synapse on Cortex XSOAR
+## Configure Synapse in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Synapse.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,11 +16,10 @@ This integration was integrated and tested with version `2.7.0` of Synapse
 | good_tag | Benign Tag | False |
 | use_optic | Synapse is running Optic | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ip
@@ -801,4 +797,3 @@ Query the Synapse data model and return details for given type or form (i.e. "in
 >|.seen|.created|size|md5|sha1|sha256|sha512|name|mime|mime:x509:cn|mime:pe:size|mime:pe:imphash|mime:pe:compiled|mime:pe:pdbpath|mime:pe:exports:time|mime:pe:exports:libname|mime:pe:richhdr|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| The time interval for first/last observation of the node. | The time the node was created in the cortex. | The file size in bytes. | The md5 hash of the file. | The sha1 hash of the file. | The sha256 hash of the file. | The sha512 hash of the file. | The best known base name for the file. | The "best" mime type name for the file. | The Common Name (CN) attribute of the x509 Subject. | The size of the executable file according to the PE file header. | The PE import hash of the file as calculated by pefile; <https://github.com/erocarrera/pefile> . | The compile time of the file according to the PE header. | The PDB string according to the PE. | The export time of the file according to the PE. | The export library name according to the PE. | The sha256 hash of the rich header bytes. |
-

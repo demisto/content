@@ -1,31 +1,27 @@
 Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service, with built-in high availability and unrestricted cloud scalability.
 This integration was integrated and tested with version 2021-03-01 of Azure Firewall.
 
-## Configure Azure Firewall on Cortex XSOAR
+## Configure Azure Firewall in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Firewall.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Resource Group Name. |  | True |
-    | Client ID. |  | True |
-    | Subscription ID. |  | True |
-    | Tenant ID. |  | False |
-    | Client Secret. |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Resource Group Name. |  | True |
+| Client ID. |  | True |
+| Subscription ID. |  | True |
+| Tenant ID. |  | False |
+| Client Secret. |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-firewall-auth-test

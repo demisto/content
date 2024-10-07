@@ -4,23 +4,19 @@ This service is available for free (with a throttle) - or paid.
 
 This integration was integrated and tested with IP-API
 
-## Configure IP-API on Cortex XSOAR
+## Configure IP-API in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IP-API.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Use HTTPS to communicate with the API | Use of HTTPS requires an API key | False |
-    | API Key | Only required to bypass rate limits and/or use HTTPS | False |
-    | Fields to return | See https://members.ip-api.com/docs/json for details | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Use HTTPS to communicate with the API | Use of HTTPS requires an API key | False |
+| API Key | Only required to bypass rate limits and/or use HTTPS | False |
+| Fields to return | See https://members.ip-api.com/docs/json for details | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -78,5 +74,4 @@ Return IP information
 ```!ip ip=8.8.8.8```
 
 #### Human Readable Output
-
 

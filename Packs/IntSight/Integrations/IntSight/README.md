@@ -1,32 +1,28 @@
 Use IntSights to manage and mitigate threats.
 This integration was tested with Intsights API version 3.
 
-## Configure IntSights on Cortex XSOAR
+## Configure IntSights in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IntSights.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. <https://192.168.0.1>) | True |
-    | Credentials | True |
-    | Password | True |
-    | Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP" | False |
-    | Minimum Alert severity level to fetch incidents incidents from, allowed values are: 'All', 'Low', 'Medium','High'(Setting to All will fetch all incidents) | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Max fetch | False |
-    | Incident type | False |
-    | Sub Account ID (MSSP accounts only) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. <https://192.168.0.1>) | True |
+| Credentials | True |
+| Password | True |
+| Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP" | False |
+| Minimum Alert severity level to fetch incidents incidents from, allowed values are: 'All', 'Low', 'Medium','High'(Setting to All will fetch all incidents) | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| Max fetch | False |
+| Incident type | False |
+| Sub Account ID (MSSP accounts only) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### intsights-get-alert-image

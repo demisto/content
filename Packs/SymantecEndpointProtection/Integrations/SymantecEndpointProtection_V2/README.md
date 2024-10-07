@@ -16,26 +16,22 @@ The following role is required to use the Symantec Endpoint Protection API:
 - sysadmin
 Note: An **Administrator** role does not have enough permissions for this integration. A **System Administrator** (sysadmin) role is required. 
 
-## Configure Symantec Endpoint Protection V2 on Cortex XSOAR
+## Configure Symantec Endpoint Protection V2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Symantec Endpoint Protection V2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server (e.g., https://1.2.3.4:8446) | True |
-    | Authentication | True |
-    | Password | True |
-    | SEPM domain for the user | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Local time zone (e.g., +02:30,-06:00) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server (e.g., https://1.2.3.4:8446) | True |
+| Authentication | True |
+| Password | True |
+| SEPM domain for the user | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Local time zone (e.g., +02:30,-06:00) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### sep-endpoints-info
 ***

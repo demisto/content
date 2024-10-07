@@ -1,21 +1,17 @@
 Team Cymru provides various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
 This integration was integrated and tested with version 1.0 of TeamCymru
 
-## Configure Team Cymru on Cortex XSOAR
+## Configure Team Cymru in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Team Cymru.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Use system proxy settings | False |
-    | Proxy URL | Supports socks4/socks5/http connect proxies \(e.g., socks5h://host:1080\). | False | 
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Use system proxy settings | False |
+| Proxy URL | Supports socks4/socks5/http connect proxies \(e.g., socks5h://host:1080\). | False | 
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***

@@ -4,24 +4,20 @@ This integration was integrated and tested with version 3.18.0 of [jbxapi](https
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes).
 
-## Configure Joe Security v2 on Cortex XSOAR
+## Configure Joe Security v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Joe Security v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API Key |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API Key |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Create relationships | Create relationships between indicators as part of Enrichment. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 **Note**: Most of the commands have the *full_display* boolean argument that when set to true, indicators information, including their DBot Scores, will be displayed.   
@@ -1231,5 +1227,4 @@ Notice: Submitting indicators using this command might make the indicator data p
 **Detonate File - JoeSecurity** - Use the ***joe-submit-sample*** command instead.
 **Detonate File From URL - JoeSecurity** - Use the ***joe-submit-sample*** command instead.
 **Detonate URL - JoeSecurity** - Use the ***joe-submit-url*** command instead.
-
 

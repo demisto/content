@@ -1,18 +1,14 @@
 Query the ja3er API for MD5 hashes of JA3 fingerprints.
 
-## Configure Ja3er on Cortex XSOAR
+## Configure Ja3er in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ja3er.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ja3-search
 ***
@@ -74,4 +70,3 @@ Search for "User-Agents" matching an MD5 hash of a JA3 fingerprint.
 >| 45 | 2020-12-03 19:19:15 | Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.60 Safari/537.36 |
 >| 32 | 2021-02-11 20:41:53 | PostmanRuntime/7.26.8 |
 >| 22 | 2020-07-14 10:18:18 | Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36 |
-

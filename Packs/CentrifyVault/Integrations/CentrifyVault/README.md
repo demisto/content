@@ -1,24 +1,20 @@
 Leverage the Centrify Vault integration to create and manage Secrets.
 
-## Configure Centrify Vault on Cortex XSOAR
+## Configure Centrify Vault in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Centrify Vault.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | tenantUrl | Centrify Tenant URL \(e.g. https://vault.example.local\) | True |
-    | clientId | Client ID of the Centrify Vault OAuth App | True |
-    | clientSecret | Client Secret of the Centrify Vault OAuth App | True |
-    | appId | ID of the Centrify OAuth App | True |
-    | scope | Scope of the Centrify OAuth App | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| tenantUrl | Centrify Tenant URL \(e.g. https://vault.example.local\) | True |
+| clientId | Client ID of the Centrify Vault OAuth App | True |
+| clientSecret | Client Secret of the Centrify Vault OAuth App | True |
+| appId | ID of the Centrify OAuth App | True |
+| scope | Scope of the Centrify OAuth App | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### centrify-retrieve-secrets
 ***
@@ -322,4 +318,3 @@ There is no context output for this command.
             type="video/mp4"/>
     Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/58ada3506ba4082dc5aa36044f02bc212af73f96/Assets/CentrifyVault/CentrifyVault_demo.mp4
 </video>
-

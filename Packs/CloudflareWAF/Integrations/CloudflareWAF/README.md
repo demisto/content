@@ -1,26 +1,22 @@
 Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
 This integration was integrated and tested with version 4 of CloudflareWAF
 
-## Configure Cloudflare WAF on Cortex XSOAR
+## Configure Cloudflare WAF in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cloudflare WAF.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | User Token |  | True |
-    | Password |  | True |
-    | Account ID | Account identifier. | True |
-    | Password |  | True |
-    | Default Zone ID | The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands. | False |
-    | Password |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| User Token |  | True |
+| Password |  | True |
+| Account ID | Account identifier. | True |
+| Password |  | True |
+| Default Zone ID | The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands. | False |
+| Password |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cloudflare-waf-firewall-rule-create
 ***
@@ -1032,4 +1028,3 @@ List all items in the List or details of individual item by ID.
 >| eab6abfa0d754c629a9bce69ab3cc5fb | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
 >| eccdf2f286804a988850accbaaeaa462 | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
 >| d3b69c4d7bc34384a7448498dd8d9b45 | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
-

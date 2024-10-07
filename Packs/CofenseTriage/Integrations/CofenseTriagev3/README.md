@@ -7,31 +7,27 @@ This is the default integration for this content pack when configured by the Dat
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#Breaking-changes-from-the-previous-version-of-this-integration---Cofense-Triage-v3).
 
-## Configure Cofense Triage v3 on Cortex XSOAR
+## Configure Cofense Triage v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cofense Triage v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Server URL to connect to Cofense Triage. | True |
-    | Client ID | Client ID and Client Secret associated with the Server URL to connect to Cofense Triage. | True |
-    | Maximum number of incidents per fetch | The maximum limit is 200. | False |
-    | First fetch time interval | Date or relative timestamp to start fetching incidents from. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
-    | Report Location | Fetches the report based on the location within Cofense Triage. If not specified, it fetches all the reports. | False |
-    | Match Priority | Fetches reports based on the priority of the rules that match the reports. If not specified, it fetches all the reports. | False |
-    | Category ID | Fetches reports based on the unique identifier of the category. If not specified, it fetches all the reports. Note: Only the reports that have been processed will be retrieved. | False |
-    | Tags | Fetches reports based on the tags associated with the reports. If not specified, it fetches all the reports. Supports comma separated values. Note: Tags are associated with reports which are in Reconnaissance. | False |
-    | Categorization Tags | Fetches reports based on the tags assigned when the reported email was processed. If not specified, it fetches all the reports. Supports comma separated values. Note: Categorization tags are associated with the reports which are processed. | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming (from Cofens Triage to XSOAR). | False |
-    | Advanced Filters | Fetches incidents based on the advanced filters and type of the incident to be fetched. Specify the filters to filter the incidents by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Format accepted: \{"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"\} For example: \{"updated_at_gt":"2020-10-26T10:48:16.834Z","categorization_tags_any":"test, snow"\} | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Server URL to connect to Cofense Triage. | True |
+| Client ID | Client ID and Client Secret associated with the Server URL to connect to Cofense Triage. | True |
+| Maximum number of incidents per fetch | The maximum limit is 200. | False |
+| First fetch time interval | Date or relative timestamp to start fetching incidents from. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
+| Report Location | Fetches the report based on the location within Cofense Triage. If not specified, it fetches all the reports. | False |
+| Match Priority | Fetches reports based on the priority of the rules that match the reports. If not specified, it fetches all the reports. | False |
+| Category ID | Fetches reports based on the unique identifier of the category. If not specified, it fetches all the reports. Note: Only the reports that have been processed will be retrieved. | False |
+| Tags | Fetches reports based on the tags associated with the reports. If not specified, it fetches all the reports. Supports comma separated values. Note: Tags are associated with reports which are in Reconnaissance. | False |
+| Categorization Tags | Fetches reports based on the tags assigned when the reported email was processed. If not specified, it fetches all the reports. Supports comma separated values. Note: Categorization tags are associated with the reports which are processed. | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming (from Cofens Triage to XSOAR). | False |
+| Advanced Filters | Fetches incidents based on the advanced filters and type of the incident to be fetched. Specify the filters to filter the incidents by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Format accepted: \{"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"\} For example: \{"updated_at_gt":"2020-10-26T10:48:16.834Z","categorization_tags_any":"test, snow"\} | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Integration Settings Preferences
 
@@ -106,7 +102,7 @@ The data in Cofense Triage Report can be mirrored to Cortex XSOAR to view the mo
 For example: When the report is processed, the fields like Report Category ID and Report location get modified, and hence the user will be able to see the modified field's value in XSOAR.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cofense-threat-indicator-list
 ***

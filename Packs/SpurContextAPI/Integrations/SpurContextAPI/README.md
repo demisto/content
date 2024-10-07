@@ -1,21 +1,17 @@
 Enrich indicators using the Spur Context API.
 This integration was integrated and tested with version 2 of SpurContextAPI.
 
-## Configure SpurContextAPI on Cortex XSOAR
+## Configure SpurContextAPI in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SpurContextAPI.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Token | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| API Token | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### spur-context-api-enrich

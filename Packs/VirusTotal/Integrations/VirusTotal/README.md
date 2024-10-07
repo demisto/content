@@ -1,32 +1,28 @@
 Analyze suspicious hashes, URLs, domains, and IP addresses.
-## Configure VirusTotal on Cortex XSOAR
+## Configure VirusTotal in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VirusTotal.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) |  | True |
-    | API Key |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | File Threshold. Minimum number of positive results from VT scanners to consider the file malicious. |  | False |
-    | IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. |  | False |
-    | URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. |  | False |
-    | Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. |  | False |
-    | Preferred Vendors List. CSV list of vendors which are considered more trustworthy. |  | False |
-    | Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  |  | False |
-    | Determines whether to return all results, which can number in the thousands. If “true”, returns all results and overrides the _fullResponse_, _long_ arguments (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments in the command determines how results are returned. |  | False |
-    | IP Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
-    | Domain Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
-    | URL Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
-    | File Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://192.168.0.1) |  | True |
+| API Key |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| File Threshold. Minimum number of positive results from VT scanners to consider the file malicious. |  | False |
+| IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. |  | False |
+| URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. |  | False |
+| Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. |  | False |
+| Preferred Vendors List. CSV list of vendors which are considered more trustworthy. |  | False |
+| Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  |  | False |
+| Determines whether to return all results, which can number in the thousands. If “true”, returns all results and overrides the _fullResponse_, _long_ arguments (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments in the command determines how results are returned. |  | False |
+| IP Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
+| Domain Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
+| URL Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
+| File Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### file
 ***
@@ -1997,5 +1993,4 @@ There is no context output for this command.
 ```!vt-comments-get resource=https://paloaltonetworks.com using=vt```
 
 #### Human Readable Output
-
 

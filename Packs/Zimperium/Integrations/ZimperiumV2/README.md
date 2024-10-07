@@ -6,31 +6,27 @@ This is the default integration for this content pack when configured by the Dat
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration).
 
-## Configure Zimperium v2 on Cortex XSOAR
+## Configure Zimperium v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zimperium v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., https://mtduat.zimperium.com) |  | True |
-    | Client ID |  | True |
-    | Client Secret |  | True |
-    | Fetch incidents |  | False |
-    | Search Params (e.g, severityName=CRITICAL,teamId=myId) | Comma-separated list of search parameters and its values. Same as for the "zimperium-threat-search" command. | False |
-    | Max fetch |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Advanced: Minutes to look back when fetching | Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  |  |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://mtduat.zimperium.com) |  | True |
+| Client ID |  | True |
+| Client Secret |  | True |
+| Fetch incidents |  | False |
+| Search Params (e.g, severityName=CRITICAL,teamId=myId) | Comma-separated list of search parameters and its values. Same as for the "zimperium-threat-search" command. | False |
+| Max fetch |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Advanced: Minutes to look back when fetching | Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### zimperium-users-search

@@ -2,11 +2,8 @@ RF monitoring for wireless intrusion detection and policy enforcement. Visit htt
 
 This integration was integrated and tested with Bastille Networks product version 1.5.0.
 
-## Configure BastilleNetworks on Cortex XSOAR
+## Configure BastilleNetworks in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BastilleNetworks.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -20,9 +17,8 @@ This integration was integrated and tested with Bastille Networks product versio
 | tags | Tags | False |
 | event_types | Event types | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bastille-get-device-events
 ***

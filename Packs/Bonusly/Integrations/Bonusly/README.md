@@ -10,11 +10,8 @@ Use Cases
 
 
 
-## Configure Bonusly on Cortex XSOAR
+## Configure Bonusly in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Bonusly.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -30,9 +27,8 @@ Use Cases
 | fetch_time | Start fetching from X days ago \(defaults to 1 day\) | False |
 | isFetch | Fetch incidents | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bonusly-list-bonuses
 ***

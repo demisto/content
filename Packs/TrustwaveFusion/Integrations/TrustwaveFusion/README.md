@@ -8,27 +8,23 @@ they arise.
 
 This integration was integrated and tested with version 1.0.68 of TrustwaveFusion
 
-## Configure TrustwaveFusion on Cortex XSOAR
+## Configure TrustwaveFusion in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for TrustwaveFusion.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fusion API URL |  | True |
-    | API Key | The API Key to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Maximum number of incidents per fetch |  | False |
-    | First fetch time | Format: \[number\] \[time unit\]. e.g., 12 hours, 7 days, 2 seconds etc. | False |
-    | Ticket Types | Types of tickets to fetch | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fusion API URL |  | True |
+| API Key | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Maximum number of incidents per fetch |  | False |
+| First fetch time | Format: \[number\] \[time unit\]. e.g., 12 hours, 7 days, 2 seconds etc. | False |
+| Ticket Types | Types of tickets to fetch | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trustwave-get-ticket
 ***
@@ -944,4 +940,3 @@ Search for Assets
 >|cidr|createdOn|customerName|id|ips|lastActivity|name|networkInterfaces|notes|os|services|status|tags|type|updatedOn|uri|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | 2019-10-04T18:13:30.941+00:00 | Sample Customer | 765432:DNA#DEVICE:AW2X-hCmXdgvNlcDpVGf | 10.103.201.47 |  | host.example.com | {'gateway': None, 'hostnames': ['host.example.com'], 'ip': '10.103.201.47', 'macAddress': None, 'macVendor': None, 'subnet': None} |  |  | {'applicationName': None, 'applicationProtocol': None, 'port': 80, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'sunrpcportmap', 'port': 111, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'sunrpcportmap', 'port': 111, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': 'ntp', 'port': 123, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': 'snmp', 'port': 161, 'transportProtocol': 'udp'},<br/>{'applicationName': None, 'applicationProtocol': None, 'port': 443, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'mysql', 'port': 3306, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': None, 'port': 5672, 'transportProtocol': 'tcp'},<br/>{'applicationName': None, 'applicationProtocol': 'snmp', 'port': 16161, 'transportProtocol': 'udp'} |  |  | Device | 2019-10-04T19:09:59.907+00:00 |  |
-

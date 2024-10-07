@@ -1,26 +1,22 @@
 Hashicorp Terraform provide infrastructure automation to provision and manage resources in any cloud or data center with Terraform.
 This integration was integrated and tested with version v1.4.4 of HashicorpTerraform.
 
-## Configure HashiCorp Terraform on Cortex XSOAR
+## Configure HashiCorp Terraform in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HashiCorp Terraform.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API Token | The API Key to use for connection. | True |
-    | Default Organization Name | There is an option to override with a command input parameter. If not provided, policy commands should require the organization name. | False |
-    | Default Workspace ID | There is an option to override with an input parameter. If not provided, some commands should require the workspace ID. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API Token | The API Key to use for connection. | True |
+| Default Organization Name | There is an option to override with a command input parameter. If not provided, policy commands should require the organization name. | False |
+| Default Workspace ID | There is an option to override with an input parameter. If not provided, some commands should require the workspace ID. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### terraform-runs-list
@@ -750,4 +746,3 @@ List the policy checks for a Terraform run.
 
 >### Terraform Policy Checks
 >**No entries.**
-

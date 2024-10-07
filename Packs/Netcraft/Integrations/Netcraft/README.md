@@ -1,22 +1,18 @@
 An integration for Netcraft, allowing you to open and handle takedown requests.
 
-## Configure Netcraft on Cortex XSOAR
+## Configure Netcraft in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Netcraft.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Credentials | True |
-    | Password | True |
-    | The maximum number of entries (takedowns/notes) to return. Default is 100. | False |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Credentials | True |
+| Password | True |
+| The maximum number of entries (takedowns/notes) to return. Default is 100. | False |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### netcraft-report-attack
 ***

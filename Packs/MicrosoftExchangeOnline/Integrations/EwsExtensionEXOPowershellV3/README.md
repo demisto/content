@@ -4,21 +4,17 @@ This integration was integrated and tested with version v3 of EWS Extension Onli
 **Note:** This integration does not replace the **O365 - EWS - Extension** integration, but an additional EWS extension integration
 which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps).
 
-## Configure EWS Extension Online Powershell v3 on Cortex XSOAR
+## Configure EWS Extension Online Powershell v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EWS Extension Online Powershell v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Name | The name of the integration | True |
-    | Exchange Online URL | https://outlook.office365.com | True |
-    | Certificate | A txt certificate encoded in Base64. | True |
-    | The organization used in app-only authentication. |  | True |
-    | The application ID from the Azure portal |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Name | The name of the integration | True |
+| Exchange Online URL | https://outlook.office365.com | True |
+| Certificate | A txt certificate encoded in Base64. | True |
+| The organization used in app-only authentication. |  | True |
+| The application ID from the Azure portal |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ### Important Notes
@@ -27,7 +23,7 @@ which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/
 * If your instance does experience memory management issues, please configure your playbooks to use *Retry on error*.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ews-mailbox-list
 ***

@@ -2,27 +2,23 @@ TwinWave’s threat analysis platform analyzes both URLs and files to detect cre
 
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
-## Configure Twinwave on Cortex XSOAR
+## Configure Twinwave in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Twinwave.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | isFetch | Fetch incidents | False |
-    | incidentType | Incident type | False |
-    | api-token | Twinwave API token | True |
-    | first_fetch | Number of jobs to first fetch | False |
-    | max_fetch |  | False |
-    | source | Filter incidents by submission source. | False |
-    | username | Filter UI incidents by username. Exact match only. \(Cannot use if source is all or api\) | False |
-    | proxy | Use system proxy settings | False |
-    | insecure | Trust any certificate \(not secure\) | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+| api-token | Twinwave API token | True |
+| first_fetch | Number of jobs to first fetch | False |
+| max_fetch |  | False |
+| source | Filter incidents by submission source. | False |
+| username | Filter UI incidents by username. Exact match only. \(Cannot use if source is all or api\) | False |
+| proxy | Use system proxy settings | False |
+| insecure | Trust any certificate \(not secure\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### twinwave-submit-url
 ***

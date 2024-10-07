@@ -3,28 +3,24 @@
 Get alerts and events, manage quarantine files as well as URL and hash lists using Netskope API v1.
 This integration was integrated and tested with version 93.0.7.625 of Netskope.
 
-## Configure Netskope on Cortex XSOAR
+## Configure Netskope in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Netskope.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | API token |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Maximum incidents per fetch |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, like 12 hours, 7 days) |  | False |
-    | Fetch Events | Fetch events as incidents, in addition to the alerts. | False |
-    | Event types to fetch |  | False |
-    | Maximum events as incidents per fetch |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API token |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Maximum incidents per fetch |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, like 12 hours, 7 days) |  | False |
+| Fetch Events | Fetch events as incidents, in addition to the alerts. | False |
+| Event types to fetch |  | False |
+| Maximum events as incidents per fetch |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### netskope-event-list
 ***
@@ -751,4 +747,3 @@ List all hosts related to a certain username.
 >|hostname|os_version|agent_status|
 >|---|---|---|
 >| TEST82A5 | 10.0 (2009) | Enabled |
-

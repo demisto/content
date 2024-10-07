@@ -1,26 +1,22 @@
 Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.
 This integration was integrated and tested with version 2 of the Lacework APIs
 
-## Configure Lacework on Cortex XSOAR
+## Configure Lacework in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Lacework.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Lacework Account Name (i.e. Sub-Domain of the URL: &lt;ACCOUNT&gt;.lacework.net) | True |
-    | Lacework Sub-Account Name (If Required) | False |
-    | Lacework API Key | True |
-    | Lacework API Secret | True |
-    | Lacework Alert Severity Threshold | True |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Lacework Alert History to Import (in days) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Lacework Account Name (i.e. Sub-Domain of the URL: &lt;ACCOUNT&gt;.lacework.net) | True |
+| Lacework Sub-Account Name (If Required) | False |
+| Lacework API Key | True |
+| Lacework API Secret | True |
+| Lacework Alert Severity Threshold | True |
+| Fetch incidents | False |
+| Incident type | False |
+| Lacework Alert History to Import (in days) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lw-get-alert-details
 ***

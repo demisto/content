@@ -1,30 +1,26 @@
 Veeam ONE REST API allows you to query information about Veeam ONE entities and perform operations with these entities using HTTP requests and standard HTTP methods.
 This integration was integrated and tested with version 12.2.0 of Veeam ONE.
 
-## Configure Veeam ONE REST API on Cortex XSOAR
+## Configure Veeam ONE REST API in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Veeam ONE REST API.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Username |  | True |
-    | Password |  | True |
-    | Resource URL |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | First fetch time |  | False |
-    | Triggered Alarms Per Request | The maximum number of triggered alarms that can be fetched during command execution. | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Username |  | True |
+| Password |  | True |
+| Resource URL |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| First fetch time |  | False |
+| Triggered Alarms Per Request | The maximum number of triggered alarms that can be fetched during command execution. | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### veeam-vone-get-triggered-alarms

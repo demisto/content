@@ -1,23 +1,18 @@
 
-## Configure Core REST API on Cortex XSIAM/XSOAR
+## Configure Core REST API in Cortex
 
-1. When using XSIAM: Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
-   When using XSOAR: Navigate to **Settings** > **Integrations**.
-2. Search for Core REST API.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Core Server URL | For Cortex XSOAR 8 or Cortex XSIAM, use the Copy API URL button on the **API Keys** page. For Cortex XSOAR 6, use the server URL. | True |
-    | API Key ID | The API Key ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
-    | API Key (Password) | The core server API key. | True |
-    | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Use system proxy settings | Use system proxy settings. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Core Server URL | For Cortex XSOAR 8 or Cortex XSIAM, use the Copy API URL button on the **API Keys** page. For Cortex XSOAR 6, use the server URL. | True |
+| API Key ID | The API Key ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
+| API Key (Password) | The core server API key. | True |
+| Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+| Use system proxy settings | Use system proxy settings. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSIAM/XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ***Please Note:*** When updating or making changes to a custom content item (integration, script, list, etc.), it may be necessary to increment the version of the item. To do so, first fetch the current version (usually via a GET command) and then increment the version by 1. Lastly, when updating an item, please use this incremented value for the `version` field.

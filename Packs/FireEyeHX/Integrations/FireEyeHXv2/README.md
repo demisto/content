@@ -4,28 +4,24 @@ FireEye Endpoint Security is an integrated solution that detects what others mis
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-fireeye-endpoint-security-(hx)-v2).
 
-## Configure FireEye Endpoint Security (HX) v2 on Cortex XSOAR
+## Configure FireEye Endpoint Security (HX) v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireEye Endpoint Security (HX) v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://192.168.0.1:3000) | True |
-    | User Name | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Fetch limit | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 3 days) | False |
-    | Incidents Fetch Interval | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://192.168.0.1:3000) | True |
+| User Name | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Incident type | False |
+| Fetch limit | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 3 days) | False |
+| Incidents Fetch Interval | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fireeye-hx-get-host-information
 ***

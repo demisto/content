@@ -49,28 +49,24 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
    - This playbook will extract indicators from given text (default will be entire incident context).
    - After that it will retrieve alerts for each indicator and will store those alerts into context with key `RetrievedDataminrAlerts`.
 
-## Configure Dataminr Pulse on Cortex XSOAR
+## Configure Dataminr Pulse in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Dataminr Pulse.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Client ID | The Client ID required to authenticate to the service. | True |
-    | Client Secret | The Client Secret required to authenticate to the service. | True |
-    | Watchlist Names | A comma-separated string of watchlist names, from which to fetch the alerts. If not provided, then it will fetch alerts from all available watchlists on the platform. | False |
-    | Query | Terms to search within Dataminr Alerts. | False |
-    | Alert Type | Filters the incoming alerts with the provided alert type. Default All. | False |
-    | Max Fetch | The maximum number of alerts to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
-    | Trust any certificate (not secure) | Indicates whether to allow connections without verifying the SSL certificate's validity. | False |
-    | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval | The incident fetch interval. | False |
-    | First Fetch Time (not supported) | This parameter is not supported as Dataminr Pulse API doesn't have time based filtering for fetching of alerts. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Client ID | The Client ID required to authenticate to the service. | True |
+| Client Secret | The Client Secret required to authenticate to the service. | True |
+| Watchlist Names | A comma-separated string of watchlist names, from which to fetch the alerts. If not provided, then it will fetch alerts from all available watchlists on the platform. | False |
+| Query | Terms to search within Dataminr Alerts. | False |
+| Alert Type | Filters the incoming alerts with the provided alert type. Default All. | False |
+| Max Fetch | The maximum number of alerts to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
+| Trust any certificate (not secure) | Indicates whether to allow connections without verifying the SSL certificate's validity. | False |
+| Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval | The incident fetch interval. | False |
+| First Fetch Time (not supported) | This parameter is not supported as Dataminr Pulse API doesn't have time based filtering for fetching of alerts. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 #### Note
@@ -80,7 +76,7 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### dataminrpulse-watchlists-get

@@ -1,9 +1,6 @@
 Digital Shadows monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
-## Configure Digital Shadows on Cortex XSOAR
+## Configure Digital Shadows in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Digital Shadows.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -15,9 +12,8 @@ Digital Shadows monitors and manages an organization's digital risk across the w
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ds-get-breach-reviews
 ***

@@ -4,23 +4,19 @@ Threat Emulation performs remote analysis by uploading files to a virtual SandBo
 Upload files using polling, the service supports Microsoft Office files, as well as PDF, SWF, archives and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Query on existing IOCs, file status, analysis, reports. Download files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.
 This integration was integrated and tested with version v1 of CheckPointSandBlast
 
-## Configure Check Point Threat Emulation (SandBlast) on Cortex XSOAR
+## Configure Check Point Threat Emulation (SandBlast) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Check Point Threat Emulation (SandBlast).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                            | **Required** |
-    |------------------------------------------------------------| --- | --- |
-    | Server URL | https://te.checkpoint.com                                  | True |
-    | Authorization - API Key |                                                            | False |
-    | Trust any certificate (not secure) |                                                            | False |
-    | Use system proxy settings |                                                            | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True
+| **Parameter** | **Description**                                            | **Required** |
+|------------------------------------------------------------| --- | --- |
+| Server URL | https://te.checkpoint.com                                  | True |
+| Authorization - API Key |                                                            | False |
+| Trust any certificate (not secure) |                                                            | False |
+| Use system proxy settings |                                                            | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### file
 ***
@@ -562,4 +558,3 @@ There are no input arguments for this command.
 >|Remainquotahour|Remainquotamonth|Assignedquotahour|Assignedquotamonth|Hourlyquotanextreset|Monthlyquotanextreset|Quotaid|Cloudmonthlyquotaperiodstart|Cloudmonthlyquotausageforthisgw|Cloudhourlyquotausageforthisgw|Cloudmonthlyquotausageforquotaid|Cloudhourlyquotausageforquotaid|Monthlyexceededquota|Hourlyexceededquota|Cloudquotamaxallowtoexceedpercentage|Podtimegmt|Quotaexpiration|Action|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 498 | 9996 | 500 | 10000 | 2022-08-01T15:00:00.000Z | 2022-09-01T00:00:00.000Z | D21T63R | 2022-08-01T00:00:00.000Z | 4 | 2 | 4 | 2 | 0 | 0 | 1000 | 2022-08-01T14:42:44.000Z | 2022-09-22T00:00:00.000Z | ALLOW |
-

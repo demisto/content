@@ -14,11 +14,8 @@ Following are the required permissions for the integration commands:
 The eligible predefined administrator profiles are: **Super User**, **Standard User**, and **Package User**.
 For more information about administrator permissions see the [FortiManager documentation](https://docs.fortinet.com/document/fortimanager/6.2.2/administration-guide/392019/permissions).
 
-## Configure FortiManager on Cortex XSOAR
+## Configure FortiManager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FortiManager.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -28,9 +25,8 @@ For more information about administrator permissions see the [FortiManager docum
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortimanager-devices-list
 ***
@@ -2057,5 +2053,4 @@ Get installation status.
 
 #### Command Example
 ```!fortimanager-policy-package-install-status task_id=175 ```
-
 

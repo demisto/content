@@ -1,30 +1,26 @@
 Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
 
-## Configure Proofpoint Threat Response on Cortex XSOAR
+## Configure Proofpoint Threat Response in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Proofpoint Threat Response.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) |  | True |
-    | API Key |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp ("number" "time unit", e.g., 12 hours, 7 days) | The time range for the initial data fetch. If timeout errors occur, consider changing this value. | False |
-    | Fetch limit - maximum number of incidents per fetch  |  | False |
-    | Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.  | The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value. | False |
-    | Fetch incidents with specific event sources. Can be a list of comma separated values. |  | False |
-    | Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma separated values. |  | False |
-    | Fetch incident with specific states. |  | False |
-    | POST URL of the JSON alert source. | You can find this value by navigating to Sources -> JSON event source -> POST URL. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://192.168.0.1) |  | True |
+| API Key |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp ("number" "time unit", e.g., 12 hours, 7 days) | The time range for the initial data fetch. If timeout errors occur, consider changing this value. | False |
+| Fetch limit - maximum number of incidents per fetch  |  | False |
+| Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.  | The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value. | False |
+| Fetch incidents with specific event sources. Can be a list of comma separated values. |  | False |
+| Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma separated values. |  | False |
+| Fetch incident with specific states. |  | False |
+| POST URL of the JSON alert source. | You can find this value by navigating to Sources -> JSON event source -> POST URL. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### proofpoint-tr-get-list
 ***

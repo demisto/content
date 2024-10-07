@@ -1,28 +1,24 @@
 This is the SailPoint IdentityNow event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 3 of SailPoint API.
 
-## Configure SailPoint IdentityNow Event Collector on Cortex XSOAR
+## Configure SailPoint IdentityNow Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SailPoint IdentityNow Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | IdentityNow Server URL (e.g., https://{tenant}.api.identitynow.com)  <br /> In order to get the tenant name, follow this [link](https://developer.sailpoint.com/docs/api/getting-started/#find-your-tenant-name).| True |
-    | Client ID <br /> In order to generate the Client ID and Client Secret, follow this [link](https://developer.sailpoint.com/docs/api/authentication/#generate-a-personal-access-token).  | True |
-    | Client Secret | True |
-    | Max number of events per fetch | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| IdentityNow Server URL (e.g., https://{tenant}.api.identitynow.com)  <br /> In order to get the tenant name, follow this [link](https://developer.sailpoint.com/docs/api/getting-started/#find-your-tenant-name).| True |
+| Client ID <br /> In order to generate the Client ID and Client Secret, follow this [link](https://developer.sailpoint.com/docs/api/authentication/#generate-a-personal-access-token).  | True |
+| Client Secret | True |
+| Max number of events per fetch | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 Note: After generating client credentials, it is required to allow the following scopes: sp, search, read.
 
 ## Commands
 
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### identitynow-get-events

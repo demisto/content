@@ -7,25 +7,20 @@ Supports FMC 7.2.0 and above
 
 Authentication from a REST API Client
 Cisco recommends that you use different accounts for interfacing with the API and the Firepower User Interface. Credentials cannot be used for both interfaces simultaneously, and will be logged out without warning if used for both.
-## Configure Cisco Firepower on Cortex XSOAR
+## Configure Cisco Firepower in Cortex
 ---
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Firepower.
-3. Click **Add instance** to create and configure a new integration instance.
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., https://192.168.0.1) | True |
+| Username | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., https://192.168.0.1) | True |
-    | Username | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 ---
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ciscofp-list-zones
 2. ciscofp-list-ports

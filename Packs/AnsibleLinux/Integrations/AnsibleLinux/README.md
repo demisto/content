@@ -30,22 +30,19 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 * [Ansible Getting Started](https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html)
 * [Module Documentation](https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html)
 
-## Configure Ansible Linux on Cortex XSOAR
+## Configure Ansible Linux in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible Linux.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Username | The credentials to associate with the instance. SSH keys can be configured using the credential manager. | True |
-    | Password |  | True |
-    | Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
-    | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
-    | Escalate Privileges | Ansible allows you to ‘become’ another user, different from the user that<br/>logged into the machine \(remote user\).<br/> | True |
-    | Privilege Escalation Method | Which privilege escalation method should be used. | True |
-    | Privilege Escalation User | Set the user you become through privilege escalation | False |
-    | Privilege Escalation Password | Set the privilege escalation password. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Username | The credentials to associate with the instance. SSH keys can be configured using the credential manager. | True |
+| Password |  | True |
+| Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
+| Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
+| Escalate Privileges | Ansible allows you to ‘become’ another user, different from the user that<br/>logged into the machine \(remote user\).<br/> | True |
+| Privilege Escalation Method | Which privilege escalation method should be used. | True |
+| Privilege Escalation User | Set the user you become through privilege escalation | False |
+| Privilege Escalation Password | Set the privilege escalation password. | False |
 
 ## Testing
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!linux-gather-facts`command providing an example `host` as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output general information about the host.
@@ -67,7 +64,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### linux-alternatives
 ***

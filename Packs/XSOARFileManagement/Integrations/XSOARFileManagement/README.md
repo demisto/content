@@ -1,23 +1,19 @@
 This integration uses the XSOAR API to perform basic but essentials actions on files.
 
-## Configure XSOAR File Management on Cortex XSOAR
+## Configure XSOAR File Management in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for XSOAR File Management.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://example.net) | Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work. | False |
-    | XSOAR Server API Key |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://example.net) | Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work. | False |
+| XSOAR Server API Key |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### file-management-upload-file-to-incident

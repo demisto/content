@@ -1,26 +1,22 @@
 This is the RunZero event collector integration for XSIAM.
 This integration was integrated and tested with version 3.3.0 of RunZero Event Collector
 
-## Configure RunZero Event Collector on Cortex XSOAR
+## Configure RunZero Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RunZero Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., https://console.runzero.com/) |  | True |
-    | Fetch incidents |  | False |
-    | Maximum number of incidents per fetch |  | False |
-    | Client secret | The client secret to access the service REST API. | True |
-    | Client id | The client ID as defined in RunZero. | True |
-    | First fetch time |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://console.runzero.com/) |  | True |
+| Fetch incidents |  | False |
+| Maximum number of incidents per fetch |  | False |
+| Client secret | The client secret to access the service REST API. | True |
+| Client id | The client ID as defined in RunZero. | True |
+| First fetch time |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### runzero-get-events
 ***

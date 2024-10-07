@@ -42,23 +42,19 @@ This integration was integrated and tested with version 20.0 of Trend Micro Deep
 37. trendmicro-modify-default-policy-setting - New command.
 38. trendmicro-reset-default-policy-setting - New command.
 
-## Configure Trend Micro Deep Security on Cortex XSOAR
+## Configure Trend Micro Deep Security in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trend Micro Deep Security.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Server URL for TrendMicro console. e.g: https://ip:port/ | True |
-    | API Secret | The API secret key | True |
-    | API Version | The API version used | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Server URL for TrendMicro console. e.g: https://ip:port/ | True |
+| API Secret | The API secret key | True |
+| API Version | The API version used | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trendmicro-create-computer
 ***

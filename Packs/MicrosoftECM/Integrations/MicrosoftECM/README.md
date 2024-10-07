@@ -17,11 +17,8 @@ If you configured the server to run Docker images with a non-root internal user 
 - To use the ***ms-ecm-script-approve*** command, your account must have Approve permissions for SMS Scripts.
 - To use the ***ms-ecm-script-invoke*** command, your account must have Run Script permissions for Collections.
 - To use the ***ms-ecm-service-stop***, ***ms-ecm-service-start***, and ***ms-ecm-service-restart*** commands, your account must have permissions to use **all** scripts commands
-## Configure Microsoft Endpoint Configuration Manager on Cortex XSOAR
+## Configure Microsoft Endpoint Configuration Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Endpoint Configuration Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -29,9 +26,8 @@ If you configured the server to run Docker images with a non-root internal user 
 | credentials | Username. \(i.e, DOMAIN\\username\)  | True |
 | SiteCode | ECM Site Code. | True |
 
-4. Click **Test** to validate the ComputerName, credentials, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-ecm-user-last-log-on
 ***
@@ -1573,4 +1569,3 @@ Gets the relationships between a device and its primary users.
 >| --- | --- | --- | --- | --- | ---
 >| True | EC2AMAZ\-2AKQ815 | 16777220 | 2020\-09\-07T14:52:57Z | demisto\\sccmadmin | 25165825
 >| True | EC2AMAZ\-2AKQ815 | 16777220 | 2020\-11\-05T17:44:33Z | demisto\\administrator | 25165830
-

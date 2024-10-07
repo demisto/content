@@ -1,18 +1,14 @@
 Cryptocurrency will help classify Cryptocurrency indicators as suspicious when ingested.
-## Configure Cryptocurrency on Cortex XSOAR
+## Configure Cryptocurrency in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cryptocurrency.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | reliability | Source Reliability | False |
-    | reputation | Reputation | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| reliability | Source Reliability | False |
+| reputation | Reputation | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### crypto
 ***
@@ -68,4 +64,3 @@ Return Cryptocurrency reputation.
 >|Address|Cryptocurrency Address Type|Reputation|
 >|---|---|---|
 >| bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i | bitcoin | Suspicious |
-

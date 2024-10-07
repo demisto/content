@@ -2,24 +2,20 @@ Use the Kenna v2 integration to search and update vulnerabilities, schedule a ru
 This integration was integrated and tested with version 1.0 of Kenna.
 
 
-## Configure Kenna v2 on Cortex XSOAR
+## Configure Kenna v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for Kenna v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g.  <https://api.kennasecurity.com>) | False |
-    | Kenna API key | False |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g.  <https://api.kennasecurity.com>) | False |
+| Kenna API key | False |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### kenna-search-vulnerabilities
@@ -747,4 +743,3 @@ Search assets by external ID.
 >|---|---|---|---|
 >| 0.0.0 | Windows | 1000 | 0 |
 >| 0.0.0 | Windows | 1000 | 0 |
-

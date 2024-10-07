@@ -1,29 +1,25 @@
 Integrate with Envoy Identity Access Management services to execute CRUD operations to employee lifecycle processes.
 This integration was integrated and tested with version v2 of Envoy SCIM API.
 
-## Configure Envoy IAM on Cortex XSOAR
+## Configure Envoy IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Envoy IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL |  | True |
-    | API Key |  | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Use system proxy settings | Use system proxy settings. | False |
-    | Allow creating users |  | False |
-    | Allow updating users |  | False |
-    | Allow enabling users |  | False |
-    | Allow disabling users |  | False |
-    | Automatically create user if not found in update command |  | False |
-    | Incoming Mapper |  | True |
-    | Outgoing Mapper |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL |  | True |
+| API Key |  | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+| Use system proxy settings | Use system proxy settings. | False |
+| Allow creating users |  | False |
+| Allow updating users |  | False |
+| Allow enabling users |  | False |
+| Allow disabling users |  | False |
+| Automatically create user if not found in update command |  | False |
+| Incoming Mapper |  | True |
+| Outgoing Mapper |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***
@@ -176,7 +172,6 @@ Disable an active user.
 ``` !iam-disable-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}` ```
 
 #### Human Readable Output
-
 
 
 

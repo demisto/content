@@ -12,29 +12,25 @@ The API key is free and can be achieved by doing the following:
 4. Give your API token a name, and click on "Create", a screen containing your generated API key
 will appear.
 
-## Configure BitcoinAbuse on Cortex XSOAR
+## Configure BitcoinAbuse in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BitcoinAbuse.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | feed | Fetch indicators | False |
-    | api_key | API Key | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | initial_fetch_interval | First Fetch Time | True |
-    | feedReputation | Indicator Reputation | False |
-    | feedReliability | Source Reliability | True |
-    | feedExpirationPolicy |  | False |
-    | tlp_color | Traffic Light Protocol Color | False |
-    | feedFetchInterval | Feed Fetch Interval | False |
-    | feedExpirationInterval |  | False |
-    | feedBypassExclusionList | Bypass exclusion list | False |
-    | feedTags | Tags | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| feed | Fetch indicators | False |
+| api_key | API Key | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| initial_fetch_interval | First Fetch Time | True |
+| feedReputation | Indicator Reputation | False |
+| feedReliability | Source Reliability | True |
+| feedExpirationPolicy |  | False |
+| tlp_color | Traffic Light Protocol Color | False |
+| feedFetchInterval | Feed Fetch Interval | False |
+| feedExpirationInterval |  | False |
+| feedBypassExclusionList | Bypass exclusion list | False |
+| feedTags | Tags | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetching indicators
 
@@ -59,7 +55,7 @@ Each fetch after the initial fetch will return indicators reported on the previo
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### bitcoinabuse-report-address

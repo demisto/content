@@ -2,11 +2,8 @@ ServiceNow CMDB is a service‑centric foundation that proactively
   analyzes service‑impacting changes, identifies issues, and eliminates outages.
 
 
-## Configure ServiceNow_CMDB on Cortex XSOAR
+## Configure ServiceNow_CMDB in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ServiceNow_CMDB.
-3. Click **Add instance** to create and configure a new integration instance.
 
 ### Instance Configuration
 The integration supports two types of authorization:
@@ -46,7 +43,7 @@ If MFA is enabled for your user, perform the following steps:
 | proxy | Use system proxy settings | False |
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### servicenow-cmdb-records-list
 ***

@@ -1,31 +1,27 @@
 # Proofpoint TAP
 Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 This integration was integrated and tested with version v2 of Proofpoint TAP v2
-## Configure Proofpoint TAP v2 on Cortex XSOAR
+## Configure Proofpoint TAP v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Proofpoint TAP v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | e.g., https://tap-api-v2.proofpoint.com | True |
-    | Service Principal | The password refers to secret | True |
-    | API Version | v1 is deprecated for new instances. The current API version is v2. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Threat type | A string specifying which threat type to return. If empty, all threat types are returned. Can be "url", "attachment", or "messageText". | False |
-    | Threat status | A string specifying which threat statuses to return. If empty, will return "active" and "cleared" threats. Can be "active", "cleared", or "falsePositive". | False |
-    | Events to fetch |  | False |
-    | Maximum number of incident per fetch |  | False |
-    | First fetch time range | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Proofpoint supports a maximum 1 week fetch back. | False |
-    | Advanced: Raw message encoding | The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | e.g., https://tap-api-v2.proofpoint.com | True |
+| Service Principal | The password refers to secret | True |
+| API Version | v1 is deprecated for new instances. The current API version is v2. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Threat type | A string specifying which threat type to return. If empty, all threat types are returned. Can be "url", "attachment", or "messageText". | False |
+| Threat status | A string specifying which threat statuses to return. If empty, will return "active" and "cleared" threats. Can be "active", "cleared", or "falsePositive". | False |
+| Events to fetch |  | False |
+| Maximum number of incident per fetch |  | False |
+| First fetch time range | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Proofpoint supports a maximum 1 week fetch back. | False |
+| Advanced: Raw message encoding | The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### proofpoint-get-events
 ***
@@ -1378,4 +1374,3 @@ Decodes URLs that have been rewritten by TAP to their original, target URL.
 >|Encoded Url|Decoded Url|
 >|---|---|
 >| https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e= | http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0 |
-

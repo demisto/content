@@ -1,24 +1,20 @@
 Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users and groups. Users can also manage the space permissions.
 This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of Atlassian Confluence Cloud.
 
-## Configure Atlassian Confluence Cloud on Cortex XSOAR
+## Configure Atlassian Confluence Cloud in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Atlassian Confluence Cloud.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
-    | Email | The Atlassian account email. | True |
-    | API Token |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
+| Email | The Atlassian account email. | True |
+| API Token |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### confluence-cloud-space-create
 ***
@@ -4237,4 +4233,3 @@ Returns all user groups.
 >|---|---|
 >| 10453df5-f7fc-47be-8ca7-bc2949c1bd5b | administrators |
 >| e50e7fe6-7961-4775-9bbf-99e4b50f8701 | confluence-users |
-

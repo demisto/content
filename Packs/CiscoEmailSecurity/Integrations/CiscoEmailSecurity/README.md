@@ -1,10 +1,7 @@
 Cisco Email Security is an email security gateway . It detects and blocks a wide variety of email-borne threats, such as malware, spam and phishing.
 This integration was integrated and tested with version 13 of CiscoEmailSecurity
-## Configure CiscoEmailSecurity on Cortex XSOAR
+## Configure CiscoEmailSecurity in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CiscoEmailSecurity.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -14,9 +11,8 @@ This integration was integrated and tested with version 13 of CiscoEmailSecurity
 | proxy | Use system proxy settings | False |
 | timeout | request timeout | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cisco-email-security-report-get
 ***
@@ -519,6 +515,5 @@ Deletes a list entry.
 #### Context Output
 
 There is no context output for this command.
-
 
 

@@ -1,10 +1,7 @@
 Google Compute Engine delivers virtual machines running in Google's innovative data centers and worldwide fiber network. Compute Engine's tooling and workflow support enable scaling from single instances to global, load-balanced cloud computing.
 
-## Configure Google Cloud Compute on Cortex XSOAR
+## Configure Google Cloud Compute in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Cloud Compute.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,7 +10,6 @@ Google Compute Engine delivers virtual machines running in Google's innovative d
 | default_search_scope | What is the top level object to search in (usually a project or organization in format of organization/XX). | False |
 
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Create a Service Account
 1. Go to the [Google documentation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) and follow the procedure in the Creating a Service Account section. After you create a service account, a Service Account Private Key file is downloaded. You will need this file when configuring an instance of the integration.
@@ -21,7 +17,7 @@ Google Compute Engine delivers virtual machines running in Google's innovative d
 3. In Cortex XSOAR, configure an instance of the Google Cloud Compute integration. For the Service Account Private Key parameter, add the Service Account Private Key file contents (JSON).
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gcp-compute-insert-instance
@@ -6947,4 +6943,3 @@ Add network tag for the specified instance.
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | setTags | 0 | RUNNING |
-

@@ -28,20 +28,16 @@ The following articles describe how to configure TSIG on popular DNS servers/ser
 
 Note: Microsoft Window DNS Server utilizes the GSS-TSIG protocol which is unsupported by this integration.
 
-## Configure Ansible DNS on Cortex XSOAR
+## Configure Ansible DNS in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible DNS.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server Address | DNS Server Address | True |
-    | DNS Server Port | Use this port when connecting to the Server | True |
-    | TSIG Key Name | Use TSIG key name to authenticate against DNS \`server' | True |
-    | TSIG Key Secret | Use TSIG key secret, associated with \`key_name', to authenticate against \`server' | True |
-    | Key Algorithm | Specify key algorithm used by TSIG Key Secret | True |
-    | Protocol | Sets the transport protocol \(TCP or UDP\). TCP is the recommended and a more robust option. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server Address | DNS Server Address | True |
+| DNS Server Port | Use this port when connecting to the Server | True |
+| TSIG Key Name | Use TSIG key name to authenticate against DNS \`server' | True |
+| TSIG Key Secret | Use TSIG key secret, associated with \`key_name', to authenticate against \`server' | True |
+| Key Algorithm | Specify key algorithm used by TSIG Key Secret | True |
+| Protocol | Sets the transport protocol \(TCP or UDP\). TCP is the recommended and a more robust option. | True |
 
 ## Testing
 
@@ -65,7 +61,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### dns-nsupdate
 ***

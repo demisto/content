@@ -1,22 +1,18 @@
 A utility for testing incident fetching with mock JSON data.
 
-## Configure JSON Sample Incident Generator on Cortex XSOAR
+## Configure JSON Sample Incident Generator in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for JSONSampleIncidentGenerator.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Incidents Fetch Interval | False |
-    | The raw JSON string to use as the sample data | True |
-    | The incident name to give to the created incident | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Fetch incidents | False |
+| Incident type | False |
+| Incidents Fetch Interval | False |
+| The raw JSON string to use as the sample data | True |
+| The incident name to give to the created incident | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### json-sample-incident-generator-command
 ***
@@ -60,4 +56,3 @@ There is no context output for this command.
 >|description|somekey|type|
 >|---|---|---|
 >| something bad happened | somevalue | Malware |
-
