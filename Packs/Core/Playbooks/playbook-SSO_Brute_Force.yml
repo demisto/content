@@ -574,7 +574,7 @@ tasks:
     task:
       id: f858553c-8b06-41fc-8cb7-4f39bc3b081e
       version: -1
-      name: Extracting auspicious user agent
+      name: Extracting suspicious user agents
       description: Extracts regex data from the provided text. The script support groups and looping.
       scriptName: MatchRegexV2
       type: regular
