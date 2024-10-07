@@ -535,7 +535,7 @@ def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker
             },
             'ContentsFormat': 'json'
         }
-        
+
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
