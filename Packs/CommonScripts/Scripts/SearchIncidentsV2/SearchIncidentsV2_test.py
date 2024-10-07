@@ -232,8 +232,8 @@ def test_transform_to_alert_data():
 def test_summarize_incidents():
     assert summarize_incidents({'add_fields_to_summarize_context': 'test'}, [{'id': 'test', 'CustomFields': {}}],
                                platform='xsoar') == [
-               {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
-                'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]
+        {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
+         'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]
 
 
 @pytest.mark.parametrize('amount_of_mocked_incidents, args, expected_incidents_length', [
