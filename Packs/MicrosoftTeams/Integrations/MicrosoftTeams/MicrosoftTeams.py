@@ -2137,7 +2137,7 @@ def send_message():
 
     recipient: str = channel_id or personal_conversation_id
 
-    conversation: dict
+    conversation: dict = {}
 
     if message:
         entitlement_match_msg: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)

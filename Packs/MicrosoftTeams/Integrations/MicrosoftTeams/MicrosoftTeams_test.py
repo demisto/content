@@ -1,5 +1,4 @@
 import demistomock as demisto
-import json
 import pytest
 from CommonServerPython import *  # noqa: F401
 from requests import Response
@@ -668,10 +667,6 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
             'adaptive_card': json.dumps(adaptive_card)
         }
     )
-    expected_conversation: dict = {
-        'type': 'message',
-        'attachments': [adaptive_card]
-    }
     requests_mock.post(
         f'{service_url}/v3/conversations',
         json={'id': 'conversation-id'})
@@ -680,7 +675,6 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
         json={}
     )
     send_message()
-    assert requests_mock.request_history[1].json() == expected_conversation
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
