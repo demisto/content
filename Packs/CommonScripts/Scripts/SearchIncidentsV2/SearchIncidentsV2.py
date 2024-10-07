@@ -77,16 +77,29 @@ def apply_filters(incidents: List, args: Dict):
     return filtered_incidents
 
 
-def summarize_incidents(args, incidents):
-    summerized_fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
+def summarize_incidents(args, incidents, platform):
+    summerized_fields = [
+        'id',
+        'name',
+        'type',
+        'severity',
+        'status',
+        'owner',
+        'created',
+        'closed',
+        'alertLink' if platform == 'x2' else 'incidentLink',
+    ]
     if args.get("add_fields_to_summarize_context"):
-        summerized_fields = summerized_fields + args.get("add_fields_to_summarize_context", '').split(",")
+        summerized_fields += args.get("add_fields_to_summarize_context", '').split(",")
         summerized_fields = [x.strip() for x in summerized_fields]  # clear out whitespace
     summarized_incidents = []
     for incident in incidents:
-        summarizied_incident = {}
-        for field in summerized_fields:
-            summarizied_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
+        summarizied_incident = {
+            field: incident.get(
+                field, incident["CustomFields"].get(field, "n/a")
+            )
+            for field in summerized_fields
+        }
         summarized_incidents.append(summarizied_incident)
     return summarized_incidents
 
@@ -185,7 +198,7 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     add_headers: List[str] = []
     if is_summarized_version:
-        all_found_incidents = summarize_incidents(args, all_found_incidents)
+        all_found_incidents = summarize_incidents(args, all_found_incidents, platform)
         if args.get("add_fields_to_summarize_context"):
             add_headers = args.get("add_fields_to_summarize_context", '').split(",")
 
@@ -193,6 +206,7 @@ def search_incidents(args: Dict):   # pragma: no cover
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
                    'owner', 'targetprocessname', 'username', 'alertLink']
+
         all_found_incidents = transform_to_alert_data(all_found_incidents)
         md = tableToMarkdown(name="Alerts found", t=all_found_incidents, headers=headers + add_headers, removeNull=True,
                              url_keys=['alertLink'])
