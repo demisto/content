@@ -18,7 +18,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-Panorama
+* Panorama
 
 ### Scripts
 
@@ -26,8 +26,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* pan-os-list-address-groups
 * pan-os-list-tag
+* pan-os-list-address-groups
 
 ## Playbook Inputs
 

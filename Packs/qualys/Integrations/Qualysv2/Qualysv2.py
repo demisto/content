@@ -2962,7 +2962,7 @@ def fetch_assets(client, assets_last_run):
     return assets, new_last_run, amount_to_send, snapshot_id
 
 
-def check_fetch_duration_time(start_time, limit):
+def check_fetch_duration_time(start_time, limit=HOST_LIMIT):
     if (time.time() - start_time) > FETCH_ASSETS_COMMAND_TIME_OUT:
         demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
                       'because there is not enough time left, and we will lower the limit for the next time')
@@ -3486,7 +3486,7 @@ def main():  # pragma: no cover
                 start_time = time.time()
                 demisto.debug(f'Starting fetch for assets, {start_time=}')
                 assets, new_last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
-                check_fetch_duration_time(start_time, last_run.get('limit'))
+                check_fetch_duration_time(start_time, last_run.get('limit', HOST_LIMIT))
 
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
