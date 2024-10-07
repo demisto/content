@@ -485,7 +485,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Select to which user you like to expire password to
-      description: 'Decide whether the password should be expired for the user '
+      description: Decide whether the password should be expired for the user.
       sender: ""
       expired: false
       totalanswers: 0
