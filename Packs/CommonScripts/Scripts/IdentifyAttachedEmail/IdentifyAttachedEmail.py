@@ -22,7 +22,7 @@ EMAIL_FILE_TYPES = (
 def is_email(file_metadata: dict, file_name: str) -> bool:
     file_info = file_metadata.get('info', '').strip().lower()
     file_name = file_name.strip().lower()
-    file_type = file_metadata.get('type').strip().lower()
+    file_type = file_metadata.get('type', '').strip().lower()
     return any((
         file_type in EMAIL_FILE_TYPES,
         any(info in file_info for info in CONFIDENT_EMAIL_INFOS),
