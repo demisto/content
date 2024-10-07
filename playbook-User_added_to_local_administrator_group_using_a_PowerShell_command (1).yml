@@ -9,7 +9,7 @@ description: |-
 
   Investigation:
   Check the following parameters to determine if remediation actions are needed:
-  - Cortex XDR alerts related to the hostname by MITRE tactics indicating malicious activity.
+  - XDR alerts related to the hostname by MITRE tactics indicating malicious activity.
   - Whether the process is unsigned.
 
   Remediation:
@@ -83,10 +83,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 22756e65-c2a2-43a1-8192-b98244e84591
+    taskid: 0b6de1a1-9d18-4a22-8434-5d277d1bd13a
     type: condition
     task:
-      id: 22756e65-c2a2-43a1-8192-b98244e84591
+      id: 0b6de1a1-9d18-4a22-8434-5d277d1bd13a
       version: -1
       name: Check for unassigned CGO or OS process
       description: |
@@ -184,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 88be804e-5e38-4909-87d4-f83461f24630
+    taskid: c89ecd2b-444d-4203-8a2d-03d09b8f257e
     type: regular
     task:
-      id: 88be804e-5e38-4909-87d4-f83461f24630
+      id: c89ecd2b-444d-4203-8a2d-03d09b8f257e
       version: -1
       name: Close Alert - True Positive
       description: commands.local.cmd.close.inv
@@ -370,7 +370,7 @@ tasks:
       id: 43d9acfc-9cd7-43f6-8675-484582c3ac4d
       version: -1
       name: Terminate the causality process
-      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -404,10 +404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 94f27bbd-224a-47ef-8892-edb62f47292e
+    taskid: 8855fe3c-36ce-4dc2-8355-14e4bdee64ca
     type: regular
     task:
-      id: 94f27bbd-224a-47ef-8892-edb62f47292e
+      id: 8855fe3c-36ce-4dc2-8355-14e4bdee64ca
       version: -1
       name: Search for related alerts by MITRE Technique
       description: |
@@ -465,10 +465,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 052a58a3-8922-40dd-851e-4212df94e9c2
+    taskid: 10a2a069-f2d7-45dc-8fd4-fbbb59db0029
     type: regular
     task:
-      id: 052a58a3-8922-40dd-851e-4212df94e9c2
+      id: 10a2a069-f2d7-45dc-8fd4-fbbb59db0029
       version: -1
       name: Extract Username
       description: Set a value in context under the key you entered.
@@ -498,6 +498,7 @@ tasks:
                   simple: (?i)Administrators[\\]?[\"|']?\s+-Member\s+([^\s;}]+)
               unpack_matches: {}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -515,13 +516,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 7d039298-b7e0-44c1-8f77-39e71f387d96
+    taskid: 4ec5dbc4-7340-4774-8011-00edb0664b3d
     type: condition
     task:
-      id: 7d039298-b7e0-44c1-8f77-39e71f387d96
+      id: 4ec5dbc4-7340-4774-8011-00edb0664b3d
       version: -1
       name: Analyst approval to remove user from local Administrator group
-      description: Analyst approval is required to remove the user from the local Administrator group.
+      description: Analyst approval is required to remove the user from local Administrator group.
       type: condition
       iscommand: false
       brand: ""
@@ -566,10 +567,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 4861afe9-34c3-4415-8e53-ac6b0e3fbbba
+    taskid: 3404eafb-1638-40a4-8607-53851e00782c
     type: regular
     task:
-      id: 4861afe9-34c3-4415-8e53-ac6b0e3fbbba
+      id: 3404eafb-1638-40a4-8607-53851e00782c
       version: -1
       name: Remove user from local Administrator group
       description: Initiate a new endpoint script execution of shell commands.
@@ -713,12 +714,11 @@ inputs: []
 inputSections:
 - inputs: []
   name: General (Inputs group)
-  description: Generic group for inputs.
+  description: Generic group for inputs
 outputSections:
 - outputs: []
   name: General (Outputs group)
-  description: Generic group for outputs.
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0

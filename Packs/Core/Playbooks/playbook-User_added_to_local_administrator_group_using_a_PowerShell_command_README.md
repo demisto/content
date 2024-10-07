@@ -5,11 +5,11 @@ The playbook executes the following stages:
 
 Investigation:
 Check the following parameters to determine if remediation actions are needed:
-- XDR alerts related to the hostname by MITRE tactics indicating malicious activity.
-- Whether the process is signed.
+- Cortex XDR alerts related to the hostname by MITRE tactics indicating malicious activity.
+- Whether the process is unsigned.
 
 Remediation:
-Handles malicious alerts by terminating the relevant processes and removing the user from the local Administrators group.
+Handles malicious alerts by terminating the relevant processes and requesting the analyst's approval to remove the user from the local Administrators group.
 Handles non-malicious alerts identified during the investigation.
 
 ## Dependencies
@@ -26,14 +26,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* Set
 * SearchAlertsV2
+* Set
 
 ### Commands
 
-* core-run-script-execute-commands
 * core-terminate-causality
 * closeInvestigation
+* core-run-script-execute-commands
 
 ## Playbook Inputs
 
