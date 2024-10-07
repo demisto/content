@@ -14,6 +14,8 @@ In order to use the collector, you need to use the following option:
   - [Collect Events from Vendor](#collect-events-from-vendor)
     - [Azure Event Hub Integration](#azure-event-hub-integration)
 
+![MSFT_Intune_Collector_Settings](https://raw.githubusercontent.com/demisto/content/cd66df26a298fa4abc7cb2c1a8bbeb12eafaad0b/Packs/Office365/doc_files/Office_365_Collector_Settings.png)
+
 To collect logs from Microsoft Intune, use the information described [here](https://learn.microsoft.com/en-us/mem/intune/fundamentals/review-logs-using-azure-monitor) to configure log streaming from Microsoft Intune to Azure Event Hub.
 
 * Pay attention: Timestamp parsing is available for the default UTC (+0000) format for Microsoft Intune.
