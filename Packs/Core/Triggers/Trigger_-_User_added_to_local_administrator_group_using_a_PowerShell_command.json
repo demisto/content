@@ -4,6 +4,7 @@
   "suggestion_reason": "Recommended for the 'User added to local administrator group using a PowerShell command' alert",
   "description": "This trigger is responsible for handling 'User added to local administrator group using a PowerShell command' alert",
   "trigger_name": "User added to local administrator group using a PowerShell command",
+  "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
       "AND": [
