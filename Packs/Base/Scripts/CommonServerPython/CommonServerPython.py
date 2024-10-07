@@ -50,7 +50,6 @@ ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
-MASK_WITH_BRACKETS = "<XX_REPLACED>'}"
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
@@ -1653,7 +1652,7 @@ class IntegrationLogger(object):
         return res
 
     def __call__(self, message):
-        text = censor_request_logs(self.encode(message))
+        text = self.encode(message)
         if self.buffering:
             self.messages.append(text)
             if self.debug_logging:
