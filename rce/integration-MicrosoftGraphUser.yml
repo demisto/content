@@ -156,7 +156,7 @@ script:
     - description: User ID or userPrincipalName.
       name: user
       required: true
-    description: "Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,\nbut does not terminate an existing session. Supported only in a self deployed app flow with the\nPermission: Directory.AccessAsUser.All(Delegated)."
+    description: "Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,\nbut does not terminate an existing session. Supported only in a self-deployed app flow with the\nPermission: Directory.AccessAsUser.All(Delegated)."
     name: msgraph-user-account-disable
   - arguments:
     - description: User ID or userPrincipalName.
