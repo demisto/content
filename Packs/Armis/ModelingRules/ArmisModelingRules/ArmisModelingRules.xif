@@ -15,6 +15,7 @@ alter
 	xdm.source.host.device_id = arraystring(deviceIds -> [], ";"),
 	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";"),
 	xdm.network.rule = to_string(policyId);
+	TESTING BAD MODELING RULE
 
 [MODEL: dataset=armis_security_activities_raw] 
 alter // extract the device name from the activity title, according to the activity type 

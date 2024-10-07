@@ -1,4 +1,5 @@
 [MODEL: dataset="aws_guardduty_raw"]
+TESTING BAD MODELING RULE
 alter // init aliases for root level & common objects for supporting both camelCase and PascalCase field naming convention extractions
     finding_resource = coalesce(Resource, resource), 
     finding_service = coalesce(Service, service)

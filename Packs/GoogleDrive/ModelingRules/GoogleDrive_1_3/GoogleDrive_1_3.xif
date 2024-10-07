@@ -22,3 +22,4 @@ alter type = json_extract_scalar(events, "$.0.type"),
     xdm.target.resource.type = kind,
     xdm.observer.vendor = _vendor,
     xdm.observer.product = _product;
+    TESTING BAD MODELING RULE
