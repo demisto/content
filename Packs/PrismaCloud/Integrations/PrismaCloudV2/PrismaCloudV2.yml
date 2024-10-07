@@ -2564,9 +2564,16 @@ script:
       - description: new description for the blocked CIDR address.
         name: description
         required: false
-      - description: CIDR to update.
+      - description: |-
+          IP address to update (subnet mask will be assumed to be /32).
+          Provide either IP or CIDR address, not both.
+        name: ip
+        required: false
+      - description: |-
+          CIDR address to update.
+          Provide either IP or CIDR address, not both.
         name: cidr
-        required: true
+        required: false
     deprecated: false
     description: |-
       Update the description for the CIDR block.

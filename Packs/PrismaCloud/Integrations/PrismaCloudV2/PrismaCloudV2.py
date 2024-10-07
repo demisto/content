@@ -2389,16 +2389,17 @@ def block_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
     - CommandResults: An object containing the readable output to announce that the IP address has been blocked.
     """
-    address = args.get('ip', '') or args.get('cidr', '')
+    ip = args.get('ip', '')
+    cidr = args.get('cidr', '')
     network_uuid = args.get('network_uuid', '')
     description = args.get('description', '')
-    if not address:
+    if (ip and cidr) or (not ip and not cidr):
         raise DemistoException('Please provide either the "cidr" or the "ip" argument.')
 
     try:
-        cidr = str(ip_network(address))
+        cidr = str(ip_network(ip or cidr))
     except ValueError as e:
-        raise DemistoException(f'Failed to parse the provided address. Error: {str(e)}')
+        raise DemistoException(f'Failed to parse the provided IP/CIDR. Error: {str(e)}')
 
     client.block_ip(cidr, network_uuid, description)
 
@@ -2446,10 +2447,19 @@ def update_blocked_ip_command(client: Client, args: dict[str, Any]) -> CommandRe
     Returns:
     - CommandResults: An object containing the readable output to announce that the description has been updated.
     """
+    ip = args.get('ip', '')
     cidr = args.get('cidr', '')
     cdr_uuid = args.get('cdr_uuid', '')
     network_uuid = args.get('network_uuid', '')
     description = args.get('description', '')
+
+    if (ip and cidr) or (not ip and not cidr):
+        raise DemistoException('Please provide either the "cidr" or the "ip" argument.')
+
+    try:
+        cidr = str(ip_network(ip or cidr))
+    except ValueError as e:
+        raise DemistoException(f'Failed to parse the provided IP/CIDR. Error: {str(e)}')
 
     try:
         client.update_block_description(cidr, cdr_uuid, network_uuid, description)
