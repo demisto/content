@@ -12,10 +12,10 @@ from AnyMatch import main
 
 
 @pytest.mark.parametrize('left,right, call_count,expected_result', [
-    (123, 1, 1, [True]),
-    ("2", "25,10", 1, [False]),
-    ("1, '2'", "1,2,3", 2, [True]),    # a part of '2' is in '1,2,3'
-    ('"abc", "ahah", "a"', "A", 3, [True]),
+    (123, 1, 1, []),
+    ("2", "25,10", 1, ["25"]),
+    ("1, '2'", "1,2,3", 2, ["1", "2"]),    # a part of '2' is in '1,2,3'
+    ('"abc", "ahah", "a"', "A", 3, []),
     ("5,1,6,9,65,8,b", "1,'6'", 7, [True]),  # no part of 6 or 65 is in the list: 1,'6'
     ('a', "kfjua", 1, [False]),
     (1, "1", 1, [True]),       # int and str are equal

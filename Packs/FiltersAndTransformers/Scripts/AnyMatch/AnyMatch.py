@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def is_substring_in_list(single_str: str, str_list: list[str]) -> bool:
+def is_substring_in_list(single_str: str, str_list: list[str]) -> list:
     """
     This function checks if a string is in a list of strings, fully or partially, case insensitive.
     Args:
@@ -11,8 +11,7 @@ def is_substring_in_list(single_str: str, str_list: list[str]) -> bool:
     Returns:
         True or False
     """
-    lower_list = [x.lower() for x in str_list]
-    return any(i in single_str.lower() for i in lower_list)
+    return list(filter(lambda x: single_str in x.lower(), str_list))
 
 
 def main():
@@ -24,11 +23,11 @@ def main():
     right_list = argToList(rightArg)
 
     if not (leftArg and rightArg):
-        return_results(False)
-    results = []
+        return_results("")
+    results = set()
     for left_val in left_list:
-        results.append(is_substring_in_list(left_val, right_list))
-    return return_results(any(i for i in results))
+        results = results.union(list(filter(lambda right_val: left_val.lower() in right_val.lower(), right_list)))
+    return return_results(str(list(results)))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
