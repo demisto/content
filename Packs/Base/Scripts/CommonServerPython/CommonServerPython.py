@@ -8449,7 +8449,7 @@ def censor_request_logs(request_log):
                 if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
-                    request_log_lst[i + 1] = f"\"{MASK}\"}}'"
+                    request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
                 else:
                     request_log_lst[i + 1] = MASK
 
