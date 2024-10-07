@@ -639,7 +639,6 @@ def add_data_to_actions(card_json, data_value):
             add_data_to_actions(card_json["card"], data_value)
 
 
-
 def process_adaptive_card(adaptive_card_obj: dict) -> dict:
     """
     Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
@@ -653,7 +652,7 @@ def process_adaptive_card(adaptive_card_obj: dict) -> dict:
     data_obj: dict = {}
     data_obj["entitlement"] = str(adaptive_card_obj.get('entitlement', ''))
     data_obj["investigation_id"] = str(adaptive_card_obj.get('investigation_id', ''))
-    data_obj["task_id"]= str(adaptive_card_obj.get('task_id', ''))
+    data_obj["task_id"] = str(adaptive_card_obj.get('task_id', ''))
 
     add_data_to_actions(adaptive_card.get('content', ''), data_obj)
     return adaptive_card
