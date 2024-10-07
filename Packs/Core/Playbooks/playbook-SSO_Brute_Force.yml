@@ -230,7 +230,7 @@ tasks:
     task:
       id: 1133c2aa-8085-44e8-8708-791dc0ea0a95
       version: -1
-      name: Check if the user risk level is high
+      name: Get the user risk level to examine its threat potential
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-users'
       type: regular
@@ -297,7 +297,7 @@ tasks:
     task:
       id: 3b710eeb-d4b7-428a-8eb7-f30a4e06e716
       version: -1
-      name: Any suspicious evidences identified during the investigation phase?
+      name: Checking if suspicious evidence where found during the investigation phase
       type: condition
       iscommand: false
       brand: ""
@@ -383,7 +383,7 @@ tasks:
     task:
       id: d766566f-458b-49b1-87dc-59bfc76ce5ca
       version: -1
-      name: Check if 2FA is configured for the user in Okta
+      name: Get user MFA configuration to assess their resilience
       description: Returns all the enrolled factors for the specified user.
       script: '|||okta-get-user-factors'
       type: regular
@@ -574,8 +574,8 @@ tasks:
     task:
       id: f858553c-8b06-41fc-8cb7-4f39bc3b081e
       version: -1
-      name: Check if the user agent is suspicious
-      description: Extracts regex data from the provided text. The script supports groups and looping.
+      name: Extracting auspicious user agent
+      description: Extracts regex data from the provided text. The script support groups and looping.
       scriptName: MatchRegexV2
       type: regular
       iscommand: false
@@ -918,7 +918,7 @@ tasks:
     task:
       id: 40cfbee3-783c-49d1-840e-f6b5b326b239
       version: -1
-      name: Check if the login attempts are likely automated
+      name: Analyze login timestamps for automated login patterns
       description: Analyze a list of Unix timestamps in milliseconds, to detect simple patterns of consistency or high frequency. The script can aid in the investigation of multi-event alerts that contain a list of timestamps.
       scriptName: AnalyzeTimestampIntervals
       type: regular
