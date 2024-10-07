@@ -2059,7 +2059,7 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     return standard_endpoints
 
 
-def page_over_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_list, public_ip_list,
+def retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_list, public_ip_list,
                         group_name, platform, alias_name, isolate, hostname, page_number,
                         limit, first_seen_gte, first_seen_lte, last_seen_gte, last_seen_lte,
                         sort_by_first_seen, sort_by_last_seen, status, username):
@@ -2112,7 +2112,7 @@ def get_endpoints_command(client, args):
     integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
     integration_name = args.pop("integration_name", "CoreApiModule")
     all_results = argToBoolean(args.get('all_results', False))
-    # If we are getting all endpoints, start at page 0 and use the max limit supported by the API of 100
+    # When we want to get all endpoints, start at page 0 and use the max limit supported by the API (100)
     if all_results:
         page_number = 0
         limit = 100
@@ -2187,9 +2187,8 @@ def get_endpoints_command(client, args):
         username=username
     )
 
-    # Return all endpoints vs single page
     if all_results:
-        endpoints = page_over_endpoints(client, endpoints, endpoint_id_list, dist_name,
+        endpoints = retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name,
                                         ip_list, public_ip_list, group_name, platform,
                                         alias_name, isolate, hostname, page_number,
                                         limit, first_seen_gte, first_seen_lte,
