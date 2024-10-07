@@ -1333,8 +1333,9 @@ def search_in_mailboxes(accounts: list[str], only_return_account_names: bool) ->
     entries: list = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for user in accounts:
-            futures.append(executor.submit(search_command, mailbox=user,
-                                           only_return_account_names=only_return_account_names))
+            futures.append(executor.submit(search_command, first_time=True, mailbox=user,
+                                           only_return_account_names=only_return_account_names,
+                                           ))
         for account in concurrent.futures.as_completed(futures):
             if found := account.result():
                 entries.append(found)
@@ -1387,7 +1388,7 @@ def search_all_mailboxes():
             search_all_mailboxes()
 
 
-def search_command(mailbox: str = None, only_return_account_names: bool = False, first_time: bool = True) -> dict[
+def search_command(first_time: bool, mailbox: str = None, only_return_account_names: bool = False) -> dict[
         str, Any] | None:
     """
     Searches for Gmail records of a specified Google user.
@@ -1427,7 +1428,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False,
         if err.status_code == 500 and first_time:
             # retry mechanism - try just one time more
             demisto.debug(f'Gmail Integration: Got an error {err.status_code} for {user_id=}, trying again to search fot it')
-            search_command(mailbox, only_return_account_names, False)
+            search_command(first_time=False, mailbox=mailbox, only_return_account_names=only_return_account_names)
         elif (
             err.status_code == 500
             or (err.status_code == 429
