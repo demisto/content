@@ -2632,6 +2632,8 @@ def sub_main():  # pragma: no cover
         elif command == "send-mail":
             commands_res = send_email(client, **args)
             return_results(commands_res)
+        elif command == 'send-mail-test':
+            return_results("test done")
 
         # special outputs commands
         elif command in special_output_commands:
