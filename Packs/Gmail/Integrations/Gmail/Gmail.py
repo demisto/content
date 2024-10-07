@@ -1430,8 +1430,8 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False,
             search_command(mailbox, only_return_account_names, False)
         elif (
             err.status_code == 500
-            or (err.status_code == 429 
-            and only_return_account_names)
+            or (err.status_code == 429
+                and only_return_account_names)
         ):
             demisto.debug(f'Gmail Integration: Got another time the {err.status_code} error for {user_id=}, '
                           f'continuing to the next user')
