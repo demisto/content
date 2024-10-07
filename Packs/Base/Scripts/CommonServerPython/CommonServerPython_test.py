@@ -6319,7 +6319,7 @@ class TestCommonTypes:
             'HumanReadable': None,
             'EntryContext': {
                 'Account(val.id && val.id == obj.id)': [
-                    {'Id': 'test_account_id',
+                    {'ID': 'test_account_id',
                      'Type': 'test_account_type',
                      'Blocked': True,
                      'CreationDate': 'test_creation_date',
