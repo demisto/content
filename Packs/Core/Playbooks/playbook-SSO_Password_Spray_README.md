@@ -1,5 +1,4 @@
-Playbook Overview:
-This playbook addresses the following alerts:
+This playbook is designed to handle the following alerts:
 
 - SSO Password Spray Threat Detected
 - SSO Password Spray Activity Observed
