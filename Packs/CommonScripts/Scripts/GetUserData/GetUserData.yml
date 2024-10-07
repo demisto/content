@@ -10,7 +10,6 @@ args:
   isArray: true
 - description: The domain to retrieve users from, available only for the iam-get-user command.
   name: domain
-  isArray: true
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
     For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne".
@@ -32,7 +31,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: Returns the user data.
+comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
 commonfields:
   id: get-user-data
   version: -1

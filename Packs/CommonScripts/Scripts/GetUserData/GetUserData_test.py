@@ -1289,13 +1289,15 @@ class TestGetUserData:
         Then:
             It returns the expected tuple of readable outputs and account output.
         """
+        user_name = "xdr_user"
         command = Command(
-            "Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "xdr_user"}
+            "Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name}
         )
         mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
         expected_account = {
             "id": {"Value": "xdr_user", "Source": "Cortex XDR - IR"},
             "risk_level": "HIGH",
+            "username": user_name,
         }
 
         mocker.patch(
@@ -1308,7 +1310,7 @@ class TestGetUserData:
         mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
-        result = xdr_list_risky_users(command)
+        result = xdr_list_risky_users(command, user_name)
 
         assert isinstance(result, tuple)
         assert len(result) == 2

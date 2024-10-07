@@ -1,4 +1,4 @@
-Returns the user data.
+This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
 
 ## Script Data
 
