@@ -133,7 +133,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Suppress Errors for Non Found Users
+- display: Suppress Errors for Unfound Users
   name: handle_error
   defaultvalue: 'true'
   type: 8
