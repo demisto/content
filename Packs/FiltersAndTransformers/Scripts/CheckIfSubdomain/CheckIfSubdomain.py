@@ -20,7 +20,7 @@ def main():
 
     try:
 
-        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)
+        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)  # type: ignore[arg-type]
 
         for domain in domains:
             ext = no_fetch_extract(domain)

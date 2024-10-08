@@ -4929,11 +4929,12 @@ class Common(object):
         """
         CONTEXT_PATH = 'Account(val.id && val.id == obj.id)'
 
-        def __init__(self, id, type=None, username=None, display_name=None, groups=None,
+        def __init__(self, id=None, type=None, username=None, display_name=None, groups=None,
                      domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
                      dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
-                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None):
+                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None,
+                     manager_email=None, manager_display_name=None, risk_level=None):
 
             self.id = id
             self.type = type
@@ -4960,16 +4961,20 @@ class Common(object):
             self.traffic_light_protocol = traffic_light_protocol
             self.user_id = user_id
             self.relationships = relationships
+            self.manager_email_address = manager_email
+            self.manager_display_name = manager_display_name
+            self.risk_level = risk_level
 
-            if not isinstance(dbot_score, Common.DBotScore):
+            if dbot_score and not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
 
             self.dbot_score = dbot_score
 
         def to_context(self):
-            account_context = {
-                'Id': self.id
-            }
+            account_context = {}
+
+            if self.id:
+                account_context['ID'] = self.id
 
             if self.type:
                 account_context['Type'] = self.type
@@ -4980,15 +4985,22 @@ class Common(object):
             if self.creation_date:
                 account_context['CreationDate'] = self.creation_date
 
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id', 'create_context_table']
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
 
             for detail in details:
-                if self.__getattribute__(detail):
+                if self.__getattribute__(detail) is not None:
                     if detail == 'email_address':
                         account_context['Email'] = {
                             'Address': self.email_address
                         }
+                    elif detail in ('manager_email_address', 'manager_display_name'):
+                        if 'Manager' not in account_context:
+                            account_context['Manager'] = {}
+                        if detail == 'manager_email_address':
+                            account_context['Manager']['Email'] = self.manager_email_address
+                        elif detail == 'manager_display_name':
+                            account_context['Manager']['DisplayName'] = self.manager_display_name
                     else:
                         Detail = camelize_string(detail, '_')
                         account_context[Detail] = self.__getattribute__(detail)
@@ -7117,7 +7129,11 @@ def is_integration_command_execution():
     try:
         return demisto.callingContext['context']['ExecutedCommands'][0]['moduleBrand'] != 'Scripts'
     except (KeyError, IndexError, TypeError):
-        return True
+        try:
+            # In dynamic-section scripts ExecutedCommands is None and another way is needed to verify if we are in a Script.
+            return demisto.callingContext['context']['ScriptName'] == ''
+        except (KeyError, IndexError, TypeError):
+            return True
 
 
 EXECUTION_METRICS_SCRIPT_SKIP_MSG = "returning results with Type=EntryType.EXECUTION_METRICS isn't fully supported for scripts. dropping result."
@@ -10141,12 +10157,13 @@ class IndicatorsSearcher:
                  value='',
                  limit=None,
                  sort=None,
+                 search_after=None
                  ):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = True
         # populateFields merged in https://github.com/demisto/server/pull/18398
         self._can_use_filter_fields = True
-        self._search_after_param = None
+        self._search_after_param = search_after
         self._page = page
         self._filter_fields = filter_fields
         self._total = None

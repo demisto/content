@@ -623,7 +623,8 @@ class RecoClient(BaseClient):
                 },
             }
         }
-        if only_sensitive:
+
+        if only_sensitive is True:
             params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"][
                 "fieldFilters"
             ].append(
@@ -633,6 +634,7 @@ class RecoClient(BaseClient):
                         "filters": [
                             {
                                 "field": "sensitivity_level",
+                                # 30 confidential
                                 "stringEquals": {"value": "30"},
                             },
                             {
@@ -760,6 +762,7 @@ class RecoClient(BaseClient):
     def get_sensitive_assets_information(self,
                                          asset_name: str | None,
                                          asset_id: str | None,
+                                         sensitive_only: bool,
                                          regex_search: bool) -> list[dict[str, Any]]:
         """Get sensitive assets' information. Returns a list of assets."""
         filter = "regexCaseInsensitive" if regex_search else "stringEquals"
@@ -785,27 +788,32 @@ class RecoClient(BaseClient):
                                         }
                                     ]
                                 },
-                            },
-                            {
-                                "relationship": "FILTER_RELATIONSHIP_OR",
-                                "filters": {
-                                    "filters": [
-                                        {
-                                            "field": "sensitivity_level",
-                                            "stringEquals": {"value": "30"},
-                                        },
-                                        {
-                                            "field": "sensitivity_level",
-                                            "stringEquals": {"value": "40"},
-                                        },
-                                    ]
-                                },
                             }
                         ]
                     },
                 },
             }
         }
+        if sensitive_only:
+            params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"][
+                "fieldFilters"
+            ].append(
+                {
+                    "relationship": "FILTER_RELATIONSHIP_OR",
+                    "filters": {
+                        "filters": [
+                            {
+                                "field": "sensitivity_level",
+                                "stringEquals": {"value": "30"},
+                            },
+                            {
+                                "field": "sensitivity_level",
+                                "stringEquals": {"value": "40"},
+                            },
+                        ]
+                    },
+                }
+            )
         try:
             response = self._http_request(
                 method="POST",
@@ -1302,7 +1310,13 @@ def get_files_shared_with_3rd_parties(reco_client: RecoClient,
 
 def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex_search: bool) -> CommandResults:
     """Get sensitive assets from Reco. If contains is True, the asset name will be searched as a regex."""
-    assets = reco_client.get_sensitive_assets_information(asset_name, None, regex_search)
+    assets = reco_client.get_sensitive_assets_information(asset_name, None, True, regex_search)
+    return assets_to_command_result(assets)
+
+
+def get_assets_by_id(reco_client: RecoClient, asset_id: str) -> CommandResults:
+    """Get assets from Reco by file id."""
+    assets = reco_client.get_sensitive_assets_information(None, asset_id, False, False)
     return assets_to_command_result(assets)
 
 
@@ -1368,7 +1382,7 @@ def assets_to_command_result(assets: list[dict[str, Any]]) -> CommandResults:
 
 def get_sensitive_assets_by_id(reco_client: RecoClient, asset_id: str) -> CommandResults:
     """Get sensitive assets from Reco by file id."""
-    assets = reco_client.get_sensitive_assets_information(None, asset_id, False)
+    assets = reco_client.get_sensitive_assets_information(None, asset_id, True, False)
     return assets_to_command_result(assets)
 
 
@@ -1615,6 +1629,9 @@ def main() -> None:
             return_results(result)
         elif command == "reco-get-private-email-list-with-access":
             result = get_private_email_list_with_access(reco_client)
+            return_results(result)
+        elif command == "reco-get-assets-by-id":
+            result = get_assets_by_id(reco_client, demisto.args()["asset_id"])
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

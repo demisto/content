@@ -5,7 +5,7 @@ import urllib3
 import traceback
 import dateparser
 from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, Tuple, List, Optional
+from typing import Any
 
 import cyjax as cyjax_sdk
 from cyjax.exceptions import UnauthorizedException, TooManyRequestsException
@@ -25,7 +25,7 @@ INDICATORS_LIMIT = 50
 ''' CLIENT CLASS '''
 
 
-class Client(object):
+class Client:
     """Client class to interact with the Cyjax API using Cyjax SDK"""
 
     def __init__(self, base_url, api_key, proxies=None, verify_ssl=True):
@@ -50,7 +50,7 @@ class Client(object):
         if self.__verify_ssl is False:
             cyjax_sdk.verify_ssl = False
 
-    def test_connection(self) -> Tuple[bool, str]:
+    def test_connection(self) -> tuple[bool, str]:
         """Test connection to the Cyjax API using Cyjax SDK. Call indicator list API, and check if it's valid list
 
         :return: A tuple with connection result and the error message if test failed.
@@ -72,7 +72,7 @@ class Client(object):
                 if str(e):
                     error_msg = str(e)
 
-            demisto.debug('Error when testing connection to Cyjax API {}'.format(error_msg))
+            demisto.debug(f'Error when testing connection to Cyjax API {error_msg}')
 
         return result, error_msg
 
@@ -111,11 +111,11 @@ class Client(object):
                                                                 limit=limit)
         except Exception as e:
             indicators = []
-            demisto.debug('Error when fetching Indicators from Cyjax SDK {}'.format(str(e)))
+            demisto.debug(f'Error when fetching Indicators from Cyjax SDK {str(e)}')
 
         return indicators
 
-    def sighting(self, value: str) -> Optional[dict]:
+    def sighting(self, value: str) -> dict | None:
         """
         Get the sighting for an indicator
 
@@ -166,7 +166,7 @@ def get_indicators_last_fetch_date() -> datetime:
         else:
             raise ValueError('Invalid first_fetch date config param')
 
-    date = datetime.utcfromtimestamp(int(last_fetch_timestamp)).replace(tzinfo=timezone.utc)
+    date = datetime.utcfromtimestamp(int(last_fetch_timestamp)).replace(tzinfo=timezone.utc)  # noqa: UP017
 
     return date
 
@@ -188,7 +188,7 @@ def set_indicators_last_fetch_date(timestamp: int) -> None:
     demisto.setIntegrationContext(integration_context)
 
 
-def map_indicator_type(cyjax_type: str) -> Optional[str]:
+def map_indicator_type(cyjax_type: str) -> str | None:
     """Map Cyjax indicator type to XSOAR indicator type
 
     :param cyjax_type: The Cyjax indicator type
@@ -233,8 +233,8 @@ def map_reputation_to_score(reputation: str) -> int:
     return reputation_map.get(reputation.lower(), 0)
 
 
-def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, tlp: Optional[str] = None,
-                            tags: Optional[list] = None) -> Dict[str, Any]:
+def convert_cyjax_indicator(cyjax_indicator: dict, score: int | None = None, tlp: str | None = None,
+                            tags: list | None = None) -> dict[str, Any]:
     """Convert Cyjax indicator into XSOAR indicator
 
     :type cyjax_indicator: ``dict``
@@ -329,11 +329,11 @@ def test_module(client: Client) -> str:
     if result:
         return 'ok'
     else:
-        return 'Could not connect to Cyjax API ({})'.format(error_msg)
+        return f'Could not connect to Cyjax API ({error_msg})'
 
 
-def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str, tlp: Optional[str] = None,
-                             tags: Optional[list] = None) -> Tuple[int, List[dict]]:
+def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str, tlp: str | None = None,
+                             tags: list | None = None) -> tuple[int, list[dict]]:
     """Fetch indicators from Cyjax API.
     This function retrieves new indicators every interval (default is 60 minutes).
 
@@ -381,7 +381,7 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
     return last_run_timestamp, indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+def get_indicators_command(client: Client, args: dict[str, Any]) -> dict[str, Any] | None:
     """Get indicators command
 
     :type client: ``Client``
@@ -445,7 +445,7 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dic
     }
 
 
-def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+def indicator_sighting_command(client: Client, args: dict[str, Any]) -> dict[str, Any] | None:
     """Get sighting of an indicator command
 
     :type client: ``Client``
@@ -470,7 +470,7 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
                                                                           indicator_sighting.get('last_seen_timestamp'))
     else:
         sightings_list = []
-        description = 'No events found for indicator "{}"'.format(value)
+        description = f'No events found for indicator "{value}"'
 
     return_object = {
         'Type': EntryType.NOTE,
@@ -489,7 +489,7 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
     return return_object
 
 
-def unset_indicators_last_fetch_date_command() -> Optional[Dict[str, Any]]:
+def unset_indicators_last_fetch_date_command() -> dict[str, Any] | None:
     """Unset the indicators last fetch date
 
     :return: A dict with result options that is then passed to ``return_results``,
