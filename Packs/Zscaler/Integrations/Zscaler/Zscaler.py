@@ -168,6 +168,7 @@ def login():
                 f"Zscaler encountered an authentication error.\nError: {str(e)}"
             )
     ts, key = obfuscateApiKey(API_KEY)
+    add_sensitive_log_strs(key)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
     result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
@@ -1304,6 +1305,9 @@ def delete_ip_destination_groups(args: dict):
 
 def main():  # pragma: no cover
     command = demisto.command()
+
+    add_sensitive_log_strs(USERNAME)
+    add_sensitive_log_strs(PASSWORD)
 
     demisto.debug(f"command is {command}")
     args = demisto.args()
