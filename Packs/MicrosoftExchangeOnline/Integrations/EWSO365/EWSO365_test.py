@@ -1013,7 +1013,7 @@ def test_handle_attached_email_with_incorrect_from_header_fixes_malformed_header
         The From header is corrected and the email message object is updated.
     """
     message = email.message_from_bytes(b"From: =?UTF-8?Q?Task_One=0DTest?= <info@test.com>", policy=SMTP)
-    
+
     result = handle_attached_email_with_incorrect_from_header(message)
 
     assert result['From'] == 'Task One Test <info@test.com>'
