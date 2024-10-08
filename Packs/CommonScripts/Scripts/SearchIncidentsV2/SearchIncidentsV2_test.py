@@ -22,7 +22,6 @@ def create_sample_incidents(start, end, incident_type):
 
 
 def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
-
     mocked_incidents = []
 
     default_jump = 100
@@ -231,7 +230,8 @@ def test_transform_to_alert_data():
 
 
 def test_summarize_incidents():
-    assert summarize_incidents({'add_fields_to_summarize_context': 'test'}, [{'id': 'test', 'CustomFields': {}}]) == [
+    assert summarize_incidents({'add_fields_to_summarize_context': 'test'}, [{'id': 'test', 'CustomFields': {}}],
+                               platform='xsoar') == [
         {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
          'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]
 
