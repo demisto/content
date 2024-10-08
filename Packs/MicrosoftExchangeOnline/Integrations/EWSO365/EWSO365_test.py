@@ -27,7 +27,7 @@ from EWSO365 import (
     cast_mime_item_to_message,
     decode_email_data,
     get_attachment_name,
-    get_attachment_headers,
+    handle_attached_email_with_incorrect_from_header,
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
@@ -1003,19 +1003,17 @@ def test_get_attachment_name_legacy_name(monkeypatch, attachment_name, content_i
                                is_inline=is_inline) == expected_result
 
 
-def test_get_attachment_headers_with_encoded_header():
+def test_handle_attached_email_with_incorrect_from_header_fixes_malformed_header():
     """
     Given:
-        An EmailMessage object created from bytes with an encoded 'From' header.
+        An email message with a malformed From header.
     When:
-        get_attachment_headers is called with this message.
+        The handle_attached_email_with_incorrect_from_header function is called.
     Then:
-        It should return the correctly decoded header information.
+        The From header is corrected and the email message object is updated.
     """
     message = email.message_from_bytes(b"From: =?UTF-8?Q?Task_One=0DTest?= <info@test.com>", policy=SMTP)
+    
+    result = handle_attached_email_with_incorrect_from_header(message)
 
-    headers = get_attachment_headers(message)
-
-    assert len(headers) == 1
-    assert headers[0][0] == "From"
-    assert headers[0][1] == "Task One Test <info@test.com>"
+    assert result['From'] == 'Task One Test <info@test.com>'

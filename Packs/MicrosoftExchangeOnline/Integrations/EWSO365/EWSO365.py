@@ -2130,6 +2130,45 @@ def handle_attached_email_with_incorrect_message_id(attached_email: EmailMessage
     return attached_email
 
 
+def handle_attached_email_with_incorrect_from_header(attached_email: EmailMessage):
+    """This function handles a malformed From value which can be returned in the header of certain email objects.
+    This issue happens due to a current bug in "email" library.
+    Public issue link: https://github.com/python/cpython/issues/114906
+
+    The function will run on every attached email if exists, check its From header value and fix it if possible.
+    Args:
+        attached_email (EmailMessage): attached email object.
+
+    Returns:
+        Message: attached email object.
+    """
+    for i in range(len(attached_email._headers)):
+        if attached_email._headers[i][0].lower() == "from":
+            from_header = attached_email._headers[i][0]
+            value = attached_email._headers[i][1]
+            demisto.debug(f'Handling From header, {value=}.')
+            try:
+                new_value = parser.get_address_list(value)[0].value
+                new_value = new_value.replace("\n", " ").replace("\r", " ").strip()
+                if value != new_value:
+                    # If the From header was fixed in the context of this function
+                    # the header will be replaced in _headers list
+                    attached_email._headers.pop(i)
+                    attached_email._headers.insert(i, (from_header, new_value))
+                    demisto.debug(f'From header fixed, new value: {new_value}')
+
+            except Exception as e:
+                # The function is designed to handle a specific format error for the From header
+                # as explained in the docstring.
+                # That being said, we do expect the header to be in a known format.
+                # If this function encounters a header format which is not in the known format and can't be fixed,
+                # the header will be ignored completely to prevent crashing the fetch command.
+                demisto.debug(f"Invalid Error: {e}")
+                break
+            break
+    return attached_email
+
+
 def handle_incorrect_message_id(message_id: str) -> str:
     """
     Use regex to identify and correct one of the following invalid message_id formats:
@@ -2179,55 +2218,6 @@ def cast_mime_item_to_message(item):
         if isinstance(mime_content, bytes) \
         else email.message_from_string(mime_content, policy=email_policy)
     return message
-
-
-def get_attachment_headers(message: EmailMessage):
-    """Get all the message's header fields and values.
-    These will be sorted in the order they appeared in the original
-    message, or were added to the message, and may contain duplicates.
-    Any fields deleted and re-inserted are always appended to the header
-    list.
-    """
-    headers_list = []
-    try:
-        headers_list = message.items()
-    except ValueError as exception:
-        demisto.debug(
-            f"We got an exception items method, The exception is {exception=}"
-        )
-        if "invalid arguments; address parts cannot contain CR or LF" in str(exception):
-
-            for k, v in message._headers:
-                try:
-                    headers_list.append((k, message.policy.header_fetch_parse(k, v)))
-                except ValueError as ex:
-                    demisto.debug(
-                        f"We got an exception regrading to the {k=},{v=} header, The exception is {ex=}"
-                    )
-                    if (
-                        "invalid arguments; address parts cannot contain CR or LF"
-                        in str(ex)
-                    ):
-                        address_list, _ = parser.get_address_list(v)
-                        value = address_list.value
-                        demisto.debug(
-                            f"The header after parsing is {value=}"
-                        )
-                        if "\r" in value or "\n" in value:
-                            demisto.debug(
-                                f"The header contains \\r or \\n {value=}"
-                            )
-                            headers_list.append(
-                                (
-                                    k,
-                                    message.policy.header_fetch_parse(
-                                        k, value.replace("\r", " ").replace("\n", " ")
-                                    ),
-                                )
-                            )
-        else:  # We are not familiar with this error.
-            raise exception
-    return headers_list
 
 
 def parse_incident_from_item(item):  # pragma: no cover
@@ -2339,7 +2329,8 @@ def parse_incident_from_item(item):  # pragma: no cover
                         # compare header keys case-insensitive
                         attached_email_headers = []
                         attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
-                        for h, v in get_attachment_headers(attached_email):
+                        attached_email = handle_attached_email_with_incorrect_from_header(attached_email)
+                        for h, v in attached_email.items():
                             if not isinstance(v, str):
                                 try:
                                     v = str(v)
