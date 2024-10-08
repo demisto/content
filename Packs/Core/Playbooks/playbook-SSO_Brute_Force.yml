@@ -8,6 +8,7 @@ description: |-
   - SSO Brute Force Activity Observed
 
   Playbook Stages:
+  
   Triage:
 
   - The playbook checks the IP reputation and fetches the events related to the brute force login attempts.

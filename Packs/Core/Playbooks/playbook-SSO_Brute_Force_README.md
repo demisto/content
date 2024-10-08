@@ -4,6 +4,7 @@ This playbook addresses the following alerts:
 - SSO Brute Force Activity Observed
 
 Playbook Stages:
+
 Triage:
 
 - The playbook checks the IP reputation and fetches the events related to the brute force login attempts.
@@ -46,17 +47,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* AnalyzeTimestampIntervals
 * MatchRegexV2
+* AnalyzeTimestampIntervals
 
 ### Commands
 
-* okta-get-user-factors
-* ip
-* closeInvestigation
-* core-list-risky-users
 * core-get-cloud-original-alerts
 * okta-expire-password
+* okta-get-user-factors
+* core-list-risky-users
+* ip
+* closeInvestigation
 
 ## Playbook Inputs
 
