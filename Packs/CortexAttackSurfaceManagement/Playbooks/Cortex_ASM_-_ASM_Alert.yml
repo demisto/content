@@ -3372,7 +3372,7 @@ tasks:
       BypassDevCheck:
         simple: ${inputs.BypassDevCheck}
       ExternallyDetectedProviders:
-        simple: ${ASM.ExternalService.externally_detected_providers}
+        simple: ${alert.asmprovider}
     separatecontext: true
     skipunavailable: false
     task:
