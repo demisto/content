@@ -11,7 +11,7 @@ The playbook executes the following stages:
 
 Investigation:
 Check the following parameters to determine if remediation actions are needed:
-- XDR alerts related to the hostname by MITRE tactics indicating malicious activity.
+- Cortex XDR alerts related to the hostname by MITRE tactics indicating malicious activity.
 - Whether the process is signed.
 - The prevalence of the process.
 
@@ -29,11 +29,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreIR
+CortexCoreIR
 
 ### Scripts
 
-* SearchAlertsV2
+SearchAlertsV2
 
 ### Commands
 

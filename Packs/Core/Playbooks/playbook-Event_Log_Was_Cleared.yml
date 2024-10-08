@@ -1,7 +1,7 @@
 id: Event Log Was Cleared
 version: -1
 name: Event Log Was Cleared
-description: "This playbook is designed to handle the following alerts:  \n- Windows Event Log was cleared using wevtutil.exe\n- Security Event Log was cleared using wevtutil.exe\n- A Sensitive Windows Event Log was cleared using wevtutil.exe\n- Windows event logs were cleared with PowerShell\n- Suspicious clear or delete security provider event logs with PowerShell\n- Suspicious clear or delete default providers event logs with PowerShell\n- Windows event logs cleared using wmic.exe\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- XDR alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the process is signed.\n- The prevalence of the process.\n\nRemediation:\nHandles malicious alerts by terminating the relevant processes.\nHandles non-malicious alerts identified during the investigation."
+description: "This playbook is designed to handle the following alerts:  \n- Windows Event Log was cleared using wevtutil.exe\n- Security Event Log was cleared using wevtutil.exe\n- A Sensitive Windows Event Log was cleared using wevtutil.exe\n- Windows event logs were cleared with PowerShell\n- Suspicious clear or delete security provider event logs with PowerShell\n- Suspicious clear or delete default providers event logs with PowerShell\n- Windows event logs cleared using wmic.exe\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XDR alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the process is signed.\n- The prevalence of the process.\n\nRemediation:\nHandles malicious alerts by terminating the relevant processes.\nHandles non-malicious alerts identified during the investigation."
 tags:
 - T1070 - Indicator Removal
 - T1490 - Inhibit System Recovery
@@ -366,7 +366,7 @@ tasks:
     task:
       id: 11e37dbd-4664-442a-8b48-737b5e95ad75
       version: -1
-      name: 'Get prevalence for the processes in the causality '
+      name: Get prevalence for the processes in the causality
       description: Get the prevalence of a process, identified by process name.
       script: '|||core-get-process-analytics-prevalence'
       type: regular
@@ -418,7 +418,7 @@ tasks:
       id: 7c9f23f6-7986-4c42-835f-f31c037a9fde
       version: -1
       name: Terminate the causality process
-      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -558,11 +558,11 @@ inputs: []
 inputSections:
 - inputs: []
   name: General (Inputs group)
-  description: Generic group for inputs
+  description: Generic group for inputs.
 outputSections:
 - outputs: []
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: Generic group for outputs.
 outputs: []
 tests:
 - No tests (auto formatted)
