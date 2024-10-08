@@ -9,7 +9,7 @@ description: |-
 
   Investigation:
   Check the following parameters to determine if remediation actions are needed:
-  - Cortex XDR alerts related to the hostname by MITRE tactics indicating malicious activity.
+  - Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.
   - Whether the process is unsigned.
 
   Remediation:
@@ -88,7 +88,7 @@ tasks:
     task:
       id: 22756e65-c2a2-43a1-8192-b98244e84591
       version: -1
-      name: Check for unassigned CGO or OS process
+      name: Check for unsigned CGO or OS process
       description: |
         Determines the appropriate verdict based on process signature.
       type: condition
@@ -420,7 +420,7 @@ tasks:
 
         And the following alert:
         - "Suspicious local user account creation"
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
