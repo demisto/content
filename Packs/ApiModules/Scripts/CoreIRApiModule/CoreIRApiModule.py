@@ -2239,11 +2239,11 @@ def get_endpoints_command(client, args):
 
     if all_results:
         endpoints = retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name,
-                                        ip_list, public_ip_list, group_name, platform,
-                                        alias_name, isolate, hostname, page_number,
-                                        limit, first_seen_gte, first_seen_lte,
-                                        last_seen_gte, last_seen_lte, sort_by_first_seen,
-                                        sort_by_last_seen, status, username)
+                                           ip_list, public_ip_list, group_name, platform,
+                                           alias_name, isolate, hostname, page_number,
+                                           limit, first_seen_gte, first_seen_lte,
+                                           last_seen_gte, last_seen_lte, sort_by_first_seen,
+                                           sort_by_last_seen, status, username)
 
     # Convert Unix epoch timestamps to human-readable timestamps
     if use_hr_timestamps:
