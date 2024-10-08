@@ -8,6 +8,8 @@ import sys
 import traceback
 import uuid
 import warnings
+from email import _header_value_parser as parser
+from email.message import Message as EmailMessage
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
 from multiprocessing import Process
@@ -2090,7 +2092,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
     return None
 
 
-def handle_attached_email_with_incorrect_message_id(attached_email: Message):
+def handle_attached_email_with_incorrect_message_id(attached_email: EmailMessage):
     """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
     This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
     Public issue link: https://github.com/python/cpython/issues/105802
@@ -2143,7 +2145,7 @@ def handle_incorrect_message_id(message_id: str) -> str:
     return message_id
 
 
-def decode_email_data(email_obj: Message):
+def decode_email_data(email_obj: EmailMessage):
     attached_email_bytes = email_obj.as_bytes()
     chardet_detection = chardet.detect(attached_email_bytes)
     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
@@ -2177,6 +2179,55 @@ def cast_mime_item_to_message(item):
         if isinstance(mime_content, bytes) \
         else email.message_from_string(mime_content, policy=email_policy)
     return message
+
+
+def get_attachment_headers(message: EmailMessage):
+    """Get all the message's header fields and values.
+    These will be sorted in the order they appeared in the original
+    message, or were added to the message, and may contain duplicates.
+    Any fields deleted and re-inserted are always appended to the header
+    list.
+    """
+    headers_list = []
+    try:
+        headers_list = message.items()
+    except ValueError as exception:
+        demisto.debug(
+            f"We got an exception items method, The exception is {exception=}"
+        )
+        if "invalid arguments; address parts cannot contain CR or LF" in str(exception):
+
+            for k, v in message._headers:
+                try:
+                    headers_list.append((k, message.policy.header_fetch_parse(k, v)))
+                except ValueError as ex:
+                    demisto.debug(
+                        f"We got an exception regrading to the {k=},{v=} header, The exception is {ex=}"
+                    )
+                    if (
+                        "invalid arguments; address parts cannot contain CR or LF"
+                        in str(ex)
+                    ):
+                        address_list, _ = parser.get_address_list(v)
+                        value = address_list.value
+                        demisto.debug(
+                            f"The header after parsing is {value=}"
+                        )
+                        if "\r" in value or "\n" in value:
+                            demisto.debug(
+                                f"The header contains \\r or \\n {value=}"
+                            )
+                            headers_list.append(
+                                (
+                                    k,
+                                    message.policy.header_fetch_parse(
+                                        k, value.replace("\r", " ").replace("\n", " ")
+                                    ),
+                                )
+                            )
+        else:  # We are not familiar with this error.
+            raise exception
+    return headers_list
 
 
 def parse_incident_from_item(item):  # pragma: no cover
@@ -2288,7 +2339,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         # compare header keys case-insensitive
                         attached_email_headers = []
                         attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
-                        for h, v in attached_email.items():
+                        for h, v in get_attachment_headers(attached_email):
                             if not isinstance(v, str):
                                 try:
                                     v = str(v)
