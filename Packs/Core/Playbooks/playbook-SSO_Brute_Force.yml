@@ -297,7 +297,7 @@ tasks:
     task:
       id: 3b710eeb-d4b7-428a-8eb7-f30a4e06e716
       version: -1
-      name: Checking if suspicious evidence where found during the investigation phase
+      name: Found any suspicious evidence during investigation?
       type: condition
       iscommand: false
       brand: ""
@@ -425,7 +425,7 @@ tasks:
     task:
       id: 44da91f4-abdd-4773-819e-fadd023d4614
       version: -1
-      name: Decide if to expire the user password
+      name: Decide whether to expire the user's password
       type: collection
       iscommand: false
       brand: ""
@@ -494,7 +494,7 @@ tasks:
     task:
       id: be42e18c-391c-4925-8eb2-c2984464dca2
       version: -1
-      name: Should enforce password expire for the user?
+      name: Should enforce password expiration for the user?
       type: condition
       iscommand: false
       brand: ""
