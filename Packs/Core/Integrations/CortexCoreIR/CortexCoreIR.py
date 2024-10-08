@@ -26,7 +26,7 @@ PREVALENCE_COMMANDS = {
     'core-get-cmd-analytics-prevalence': 'cmd',
 }
 
-TERMINATE_BUILD_NUM = '1398786'
+TERMINATE_BUILD_NUM = '1433003'
 TERMINATE_SERVER_VERSION = '8.8.0'
 
 
