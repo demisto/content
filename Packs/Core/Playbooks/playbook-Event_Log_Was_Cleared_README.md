@@ -11,9 +11,9 @@ The playbook executes the following stages:
 
 Investigation:
 Check the following parameters to determine if remediation actions are needed:
-- Cortex XDR alerts related to the hostname by MITRE tactics indicating malicious activity.
-- Whether the process is signed.
-- The prevalence of the process.
+- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.
+- Whether the CGO or the OSParent process is unsigned.
+- The prevalence of the OSParent process.
 
 Remediation:
 Handles malicious alerts by terminating the relevant processes.
@@ -33,7 +33,7 @@ CortexCoreIR
 
 ### Scripts
 
-SearchAlertsV2
+SearchIncidentsV2
 
 ### Commands
 

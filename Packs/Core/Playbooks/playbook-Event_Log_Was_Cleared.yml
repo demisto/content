@@ -1,7 +1,7 @@
 id: Event Log Was Cleared
 version: -1
 name: Event Log Was Cleared
-description: "This playbook is designed to handle the following alerts:  \n- Windows Event Log was cleared using wevtutil.exe\n- Security Event Log was cleared using wevtutil.exe\n- A Sensitive Windows Event Log was cleared using wevtutil.exe\n- Windows event logs were cleared with PowerShell\n- Suspicious clear or delete security provider event logs with PowerShell\n- Suspicious clear or delete default providers event logs with PowerShell\n- Windows event logs cleared using wmic.exe\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XDR alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the process is signed.\n- The prevalence of the process.\n\nRemediation:\nHandles malicious alerts by terminating the relevant processes.\nHandles non-malicious alerts identified during the investigation."
+description: "This playbook is designed to handle the following alerts:  \n- Windows Event Log was cleared using wevtutil.exe\n- Security Event Log was cleared using wevtutil.exe\n- A Sensitive Windows Event Log was cleared using wevtutil.exe\n- Windows event logs were cleared with PowerShell\n- Suspicious clear or delete security provider event logs with PowerShell\n- Suspicious clear or delete default providers event logs with PowerShell\n- Windows event logs cleared using wmic.exe\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the CGO or the OSParent process is unsigned.\n- The prevalence of the OSParent process.\n\nRemediation:\nHandles malicious alerts by terminating the relevant processes.\nHandles non-malicious alerts identified during the investigation."
 tags:
 - T1070 - Indicator Removal
 - T1490 - Inhibit System Recovery
@@ -461,7 +461,7 @@ tasks:
       version: -1
       name: Search for suspicious-related alerts by MITRE Technique
       description: "This task searches for Cortex XSIAM suspicious alerts related to the current incident by Mitre Technique, indicating that the alert is part of an attack pattern.\n\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1055 - Process Injection \n- T1059 - Command and Scripting Interpreter"
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
