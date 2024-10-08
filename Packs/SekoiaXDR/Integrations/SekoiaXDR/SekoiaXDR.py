@@ -800,19 +800,7 @@ def update_remote_system_command(client: Client, args):
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
-    """
-     this command pulls the remote schema for the different incident types, and their associated incident fields,
-     from the remote system.
-    :return: A list of keys you want to map
-    """
-    sekoia_incident_type_scheme = SchemeTypeMapping(type_name=INCIDENT_TYPE_NAME)
-    for argument, description in SEKOIA_INCIDENT_FIELDS.items():
-        sekoia_incident_type_scheme.add_field(name=argument, description=description)
-
-    mapping_response = GetMappingFieldsResponse()
-    mapping_response.add_scheme_type(sekoia_incident_type_scheme)
-
-    return mapping_response
+    pass
 
 
 # =========== Mirroring Mechanism ===========
@@ -1459,8 +1447,6 @@ def main() -> None:
             )
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
-        elif command == "get-mapping-fields":
-            return_results(get_mapping_fields_command())
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 

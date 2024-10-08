@@ -742,24 +742,6 @@ Command to retrieve the definition of a Cyber Kill Chain Step.
 | SekoiaXDR.KillChain.short_id | unknown | The short identifier of the STIX object. | 
 | SekoiaXDR.KillChain.order_id | unknown | The order identifier of the STIX object. | 
 
-### get-mapping-fields
-
-***
-This command pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
-
-#### Base Command
-
-`get-mapping-fields`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-
 ### sekoia-xdr-remove-attribute-asset
 
 ***

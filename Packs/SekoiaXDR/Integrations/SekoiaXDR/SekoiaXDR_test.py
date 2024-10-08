@@ -488,18 +488,6 @@ def test_get_user(client, requests_mock):
     assert result.outputs["lastname"] == "done"
 
 
-def test_get_mapping_fields():
-    expected_mapping = {
-        "Sekoia XDR": {
-            "short_id": "The ID of the alert to edit",
-            "status": "The name of the status.",
-        }
-    }
-    schema_result = SekoiaXDR.get_mapping_fields_command()
-
-    assert schema_result.extract_mapping() == expected_mapping
-
-
 def test_modified_remote_data(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_get_alerts.json")
     requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)

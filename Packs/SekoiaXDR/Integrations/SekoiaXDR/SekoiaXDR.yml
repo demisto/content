@@ -1144,9 +1144,6 @@ script:
     - contextPath: SekoiaXDR.KillChain.order_id
       description: The order identifier of the STIX object.
     description: Command to retrieve the definition of a Cyber Kill Chain Step.
-  - name: get-mapping-fields
-    arguments: []
-    description: This command pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
   - name: sekoia-xdr-remove-attribute-asset
     arguments:
     - name: asset_uuid
@@ -1190,5 +1187,4 @@ fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
 defaultmapperin: Sekoia XDR - Incoming Mapper
-defaultmapperout: Sekoia XDR - Outgoing Mapper
 defaultclassifier: Sekoia XDR - Classifier
