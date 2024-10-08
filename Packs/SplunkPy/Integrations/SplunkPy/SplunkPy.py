@@ -78,7 +78,7 @@ QUERY_NAME = 'query_name'
 QUERY_SEARCH = 'query_search'
 INCIDENT_CREATED = 'incident_created'
 
-DRILLDOWN_REGEX = r'([^\s\$]+)\s*=\s*["]*(\$[^\s\$]+\$)["]*|"*(\$[^\s\$]+\$)"*'
+DRILLDOWN_REGEX = r'([^\s\$]+)\s*=\s*"?(\$[^\s\$\\]+\$)"?|"?(\$[^\s\$\\]+\$)"?'
 
 ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     DRILLDOWN_ENRICHMENT: 'successful_drilldown_enrichment',
