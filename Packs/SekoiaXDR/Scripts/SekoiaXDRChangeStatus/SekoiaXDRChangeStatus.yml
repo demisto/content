@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - incident-action-button
-comment: This script changes the status of the Sekoia alert in XSOAR.
+comment: This script changes the status of the Sekoia alert.
 enabled: true
 args:
 - name: short_id
@@ -19,6 +19,8 @@ args:
   - Ongoing
   - Acknowledged
   description: Status to change on the Sekoia alert.
+- name: comment
+  description: The comment to add to the alert on the status change.
 scripttarget: 0
 subtype: python3
 runonce: false

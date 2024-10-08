@@ -32,6 +32,13 @@ STATUS_TRANSITIONS = {
     "Closed": "Close",
 }
 
+MIRROR_DIRECTION = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming and Outgoing": "Both",
+}
+
 
 """ CLIENT CLASS """
 
@@ -473,6 +480,7 @@ def fetch_incidents(
     alert_urgency: Optional[str],
     alert_type: Optional[str],
     fetch_mode: Optional[str],
+    mirror_direction: Optional[str],
     fetch_with_assets: Optional[bool],
     fetch_with_kill_chain: Optional[bool],
 ) -> Tuple[Dict[str, int], List[dict]]:
@@ -493,6 +501,7 @@ def fetch_incidents(
         alert_urgency (str): alert urgency range to search for. Format: "MIN_urgency,MAX_urgency". i.e: 80,100.
         alert_type (str): type of alerts to search for.
         fetch_mode (str): If the alert will be fetched with or without the events.
+        mirror_direction (str): The direction of the mirroring can be set to None or to Incoming.
         fetch_with_assets (bool): If the alert will include the assets information on the fetching.
         fetch_with_kill_chain (bool): If the alert will include the kill chain information on the fetching.
     Returns:
@@ -605,6 +614,8 @@ def fetch_incidents(
         # If the integration parameter is set to mirror add the appropriate fields to the incident
         alert["mirror_instance"] = demisto.integrationInstance()
         incident["rawJSON"] = json.dumps(alert)
+        incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
+        incident["dbotMirrorId"] = alert["short_id"]
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
@@ -626,6 +637,7 @@ def get_remote_data_command(
     close_note: str,
     mirror_events: bool,
     mirror_kill_chain: bool,
+    reopen_incident: bool,
 ):
     """get-remote-data command: Returns an updated alert and error entry (if needed)
 
@@ -637,6 +649,8 @@ def get_remote_data_command(
         close_note (str): Indicates the notes to be including when the incident gets closed by mirroring.
         mirror_events (bool): If the events will be included in the mirroring of the alerts or not.
         mirror_kill_chain: If the kill chain information from the alerts will be mirrored.
+        reopen_incident: Indicates whether to reopen the corresponding XSOAR incident if the alert
+            has been reopened on Sekoia's end.
     Returns:
         GetRemoteDataResponse: The Response containing the update alert to mirror and the entries
     """
@@ -721,6 +735,23 @@ def get_remote_data_command(
                     "closeReason": f"{alert_status} - Mirror",
                     "closeNotes": close_note,
                 },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+
+    # Reopen the XSOAR incident using mirroring
+    if (
+        (reopen_incident)
+        and (alert_status not in ["Closed", "Rejected"])
+        and (investigation["status"] == 1)
+    ):
+        demisto.debug(
+            f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, reopening incident {incident_id} in XSOAR"
+        )
+        entries = [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
                 "ContentsFormat": EntryFormat.JSON,
             }
         ]
@@ -848,6 +879,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 
 def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
     alerts = client.list_alerts(
         alerts_limit=args.get("limit"),
         alerts_status=args.get("status"),
@@ -1406,12 +1438,13 @@ def main() -> None:
             fetch_mode = params.get("fetch_mode")
             fetch_with_assets = params.get("fetch_with_assets")
             fetch_with_kill_chain = params.get("fetch_with_kill_chain")
+            mirror_direction = params.get("mirror_direction")
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(params["max_fetch"])
-            last_run: Dict[
-                str, Any
-            ] = demisto.getLastRun()  # getLastRun() gets the last run dict
+            last_run: Dict[str, Any] = (
+                demisto.getLastRun()
+            )  # getLastRun() gets the last run dict
 
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -1422,6 +1455,7 @@ def main() -> None:
                 alert_urgency=alerts_urgency,
                 alert_type=alerts_type,
                 fetch_mode=fetch_mode,
+                mirror_direction=mirror_direction,
                 fetch_with_assets=fetch_with_assets,
                 fetch_with_kill_chain=fetch_with_kill_chain,
             )
@@ -1471,6 +1505,24 @@ def main() -> None:
             return_results(get_kill_chain_command(client, args))
         elif command == "sekoia-xdr-http-request":
             return_results(http_request_command(client, args))
+        elif command == "get-remote-data":
+            return_results(
+                get_remote_data_command(
+                    client,
+                    args,
+                    close_incident=demisto.params().get("close_incident"),  # type: ignore
+                    close_note=demisto.params().get("close_note"),  # type: ignore
+                    mirror_events=demisto.params().get("mirror_events"),  # type: ignore
+                    mirror_kill_chain=demisto.params().get("mirror_kill_chain"),  # type: ignore
+                    reopen_incident=demisto.params().get("reopen_incident"),  # type: ignore
+                )
+            )
+        elif command == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(client, args))
+        elif command == "update-remote-system":
+            return_results(update_remote_system_command(client, args))
+        elif command == "get-mapping-fields":
+            return_results(get_mapping_fields_command())
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 

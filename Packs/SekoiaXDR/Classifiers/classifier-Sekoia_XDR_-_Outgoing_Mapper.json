@@ -11,7 +11,7 @@
                 },
 				"status": {
 					"simple": "sekoiaxdralertstatus"
-				}
+                }
             }
         },
         "dbot_classification_incident_type_all": {

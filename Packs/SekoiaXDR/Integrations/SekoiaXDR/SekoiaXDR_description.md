@@ -12,10 +12,7 @@
 - **First fetch timestamp**: -7d
 - **Maximum incidents to fetch per interval**: 10
 - **Alerts status**: Pending, Acknowledge, Ongoing
-
-### Important Note
-
-For the case of reopening an incident from Sekoia to Cortex after it has been closed, it is not functional for now. However, the reverse is achievable.
+- **Close notes**: Closed by Sekoia
 
 ### API Key Creation
 

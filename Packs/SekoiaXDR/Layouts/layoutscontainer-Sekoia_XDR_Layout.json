@@ -7,6 +7,18 @@
                     {
                         "fieldId": "incident_sekoiaxdralertreject",
                         "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closereason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
@@ -712,7 +724,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sekoiaxdrkillchain",
-                                "height": 106,
+                                "height": 22,
                                 "id": "d4996120-d848-11ed-a2c5-afbbb72993fe",
                                 "index": 0,
                                 "sectionItemType": "field",

@@ -1,6 +1,6 @@
 from CommonServerPython import *
 
-import SekoiaXDR  # type: ignore
+import SekoiaXDR
 
 from datetime import datetime
 import pytest
@@ -377,9 +377,9 @@ def test_search_events(client, requests_mock, mocker):
     }
     result: PollResult = SekoiaXDR.search_events_command(client=client, args=args)
 
-    assert result.outputs[0]["action_id"]  # type: ignore
-    assert result.outputs[0]["action_outcome"]  # type: ignore
-    assert result.outputs[0]["action_name"]  # type: ignore
+    assert result.outputs[0]["action_id"]
+    assert result.outputs[0]["action_outcome"]
+    assert result.outputs[0]["action_name"]
 
 
 def test_list_assets(client, requests_mock):

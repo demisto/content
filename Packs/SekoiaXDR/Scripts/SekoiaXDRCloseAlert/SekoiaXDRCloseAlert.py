@@ -7,6 +7,34 @@ def get_status_name(alert_id: str):
     return get_alert["status"]["name"]  # type: ignore
 
 
+def get_username(username: str):
+    user = execute_command("getUserByUsername", {"username": username})
+    return user["name"]  # type: ignore
+
+
+def post_closure_comment(
+    alert_id: str,
+    close_reason: Optional[str],
+    close_notes: Optional[str],
+    username: Optional[str],
+):
+    try:
+        execute_command(
+            "sekoia-xdr-post-comment-alert",
+            {
+                "id": alert_id,
+                "comment": (
+                    f"{close_reason}-{close_notes}"
+                    if close_reason and close_notes
+                    else None
+                ),
+                "author": get_username(username),  # type: ignore
+            },
+        )
+    except Exception as e:
+        return_error(f"Failed to post comment: {str(e)}")
+
+
 def close_alert(
     alert_id: str,
     reject: str,
@@ -23,6 +51,13 @@ def close_alert(
         if reject == "true":
             execute_command("setIncident", {"sekoiaxdralertstatus": "Rejected"})
             readable_output = f"**** The alert {alert_id} has been rejected. ****"
+
+        post_closure_comment(alert_id, close_reason, close_notes, username)
+
+    else:
+        execute_command("setIncident", {"sekoiaxdralertstatus": alert_status})
+        readable_status = "closed" if alert_status == "closed" else "rejected"
+        readable_output = f"**** The alert {alert_id} has been {readable_status}. ****"
 
     return_results(
         {
