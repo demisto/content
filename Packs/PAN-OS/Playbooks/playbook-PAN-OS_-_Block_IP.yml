@@ -1,0 +1,517 @@
+id: PAN-OS - Block IP
+version: -1
+name: PAN-OS - Block IP
+description: |-
+  This playbook blocks IP addresses with 2 optional actions:
+
+  - Block IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall. The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
+
+
+  - Utilize the Dynamic Address Group (DAG) capability of PAN-OS. DAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.
+  The playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.
+  If the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 70bdbc42-0d11-49f1-8c8f-a414e12ddacf
+    type: start
+    task:
+      id: 70bdbc42-0d11-49f1-8c8f-a414e12ddacf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7a321a75-c645-473f-8b3c-6dabafec52c1
+    type: regular
+    task:
+      id: 7a321a75-c645-473f-8b3c-6dabafec52c1
+      version: -1
+      name: List pan-os address groups
+      description: Returns a list of address groups.
+      script: Panorama|||pan-os-list-address-groups
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 41e68360-ec33-44a1-8f43-9b4777bca693
+    type: collection
+    task:
+      id: 41e68360-ec33-44a1-8f43-9b4777bca693
+      version: -1
+      name: Block IP (Pan-OS)
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Choose the action
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Do nothing
+        - simple: Add IP to static group
+        - simple: Tag the IP
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: If you chose "Add to static group", please choose the relevant group
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: N/A
+        - complex:
+            root: Panorama.AddressGroups
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: Panorama.AddressGroups.Type
+                  iscontext: true
+                right:
+                  value:
+                    simple: static
+                ignorecase: true
+            accessor: Name
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: If you chose "Tag the IP", please choose the relevant tags
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${Panorama.Tag.name}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: BlockIPAction
+      description: |-
+        This task will define the action which will be done on the enumerating IPs. Note that chosen actions will be automatically committed.
+        1. Do nothing - the playbook will continue without blocking the enumerating IP.
+        2. Add IP to static group - Choosing this option also requires you to choose the relevant address group in the 3rd question. The playbook will add the internal IP to the chosen address group. Make sure to choose an address group that is configured in a relevant policy rule.
+        3. Tag the IP - Choosing this option also requires you to choose the relevant tag in the 3rd question. The playbook will create the IP address object (in case it doesn't exist) and will tag it with the chosen tag. Please make sure to choose a tag which is configured in a relevant dynamic address group or any other method that depends on the relevant tag.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7bb9a17b-2dc7-4018-838c-a8ad9f784cbe
+    type: regular
+    task:
+      id: 7bb9a17b-2dc7-4018-838c-a8ad9f784cbe
+      version: -1
+      name: List pan-os tags
+      description: Returns a list of tags from Panorama.
+      script: '|||pan-os-list-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e4024736-ee47-4860-8776-4ac5d65635ed
+    type: condition
+    task:
+      id: e4024736-ee47-4860-8776-4ac5d65635ed
+      version: -1
+      name: Which action should be performed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      Do Nothing:
+      - "7"
+      Static:
+      - "5"
+      Tag IP:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Do Nothing
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockIPAction.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Do nothing
+          ignorecase: true
+    - label: Static
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockIPAction.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Add IP to static group
+          ignorecase: true
+    - label: Tag IP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockIPAction.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Tag the IP
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2bd67a58-3ca7-4218-8cd3-f80a07a81f05
+    type: playbook
+    task:
+      id: 2bd67a58-3ca7-4218-8cd3-f80a07a81f05
+      version: -1
+      name: PAN-OS - Block IP - Static Address Group
+      description: |-
+        This playbook blocks IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall.
+        The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
+
+        ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
+      playbookName: PAN-OS - Block IP - Static Address Group
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AddressGroupName:
+        simple: ${BlockIPAction.Answers.1}
+      AutoCommit:
+        simple: "Yes"
+      IP:
+        simple: ${inputs.MaliciousIPs}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3fd620d3-29ac-417d-8f72-5768c65da800
+    type: playbook
+    task:
+      id: 3fd620d3-29ac-417d-8f72-5768c65da800
+      version: -1
+      name: PAN-OS DAG Configuration
+      description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed. \n"
+      playbookName: PAN-OS DAG Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action-type:
+        simple: deny
+      address_group_name:
+        simple: XSIAM-Blocked-IPs-DAG
+      auto_commit:
+        simple: "Yes"
+      inbound-or-outbound-rule:
+        simple: inbound
+      ip_list:
+        simple: ${inputs.MaliciousIPs}
+      pre-post-rulebase:
+        simple: pre-rulebase
+      rule-position:
+        simple: top
+      rule_name:
+        simple: XSIAM-Block-Malicious-IPs
+      tag_name:
+        simple: ${BlockIPAction.Answers.2}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3ee29442-21f5-41c8-8dd6-cd0e8a1f47bc
+    type: title
+    task:
+      id: 3ee29442-21f5-41c8-8dd6-cd0e8a1f47bc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c29cc840-c2f6-423f-8ed7-5e98a41d63a2
+    type: condition
+    task:
+      id: c29cc840-c2f6-423f-8ed7-5e98a41d63a2
+      version: -1
+      name: Is Palo Alto Networks PAN-OS enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_Static": 0.49,
+      "4_6_Tag IP": 0.61,
+      "4_7_Do Nothing": 0.46,
+      "8_1_yes": 0.67,
+      "8_7_#default#": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 1400,
+        "x": -150,
+        "y": 10
+      }
+    }
+  }
+inputs:
+- key: MaliciousIPs
+  value: {}
+  required: false
+  description: 'IP or list of IPs.'
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - MaliciousIPs
+  name: General (Inputs group)
+  description: Generic group for inputs.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs.
+outputs: []
+quiet: true
+tests:
+- PAN-OS - Block IP - Static Address Group Test
+- PAN-OS DAG Configuration Test
+fromversion: 6.10.0
