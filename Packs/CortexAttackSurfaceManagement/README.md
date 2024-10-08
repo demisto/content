@@ -47,7 +47,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - TFTP Server
   - Libssh
   - Insecure Bitvise SSH Server
-  - nsecure SFTPGo
+  - Insecure SFTPGo
   - Unclaimed S3 Bucket*
 - Asset one of the following:
   - AWS EC2 Instance
