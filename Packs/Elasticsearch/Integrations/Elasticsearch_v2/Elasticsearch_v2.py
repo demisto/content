@@ -1004,29 +1004,37 @@ def index_document_command(args, proxies):
     return result
 
 
-def list_indices_command(proxies):
+def get_indices_statistics_command(args, proxies):
     """
-    Lists Elasticsearch indices.
-    return: A List with Elasticsearch indices names.
+    Returns statistics and information of the Elasticsearch indices.
+    
+    return: A List with Elasticsearch indices info and statistics.
+    API reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html
     """
+    limit = arg_to_number(args.get('limit', 50))
+    all_results = argToBoolean(args.get('all_results', False))
     indices = []
     es = elasticsearch_builder(proxies)
-
-    # Retrieve the list of all indices
-    raw_indices = es.cat.indices(format='json')  # pylint: disable=E1123
-
-    for raw_index in raw_indices:
-        index_data = {'Name': raw_index.get('index', ''),
-                      'Status': raw_index.get('status', ''),
-                      'Health': raw_index.get('health', ''),
-                      'UUID': raw_index.get('uuid', ''),
-                      'Documents Count': raw_index.get('docs.count', ''),
-                      'Documents Deleted': raw_index.get('docs.deleted', ''),
+    
+    # Fetch the statistics for all indices
+    stats = es.indices.stats()
+    raw_indices_data = stats.get('indices')
+    for index, index_data in raw_indices_data.items():
+        index_stats = {'Name': index,
+                      'Status': index_data.get('status', ''),
+                      'Health': index_data.get('health', ''),
+                      'UUID': index_data.get('uuid', ''),
+                      'Documents Count': index_data.get('total', {}).get('docs', {}).get('count', ''),
+                      'Documents Deleted': index_data.get('total', {}).get('docs', {}).get('deleted', '')
                       }
-        indices.append(index_data)
+        indices.append(index_stats)
 
+    
+    if not all_results:
+        indices = indices[:limit]
+    
     readable_output = tableToMarkdown(
-        name="Indices:",
+        name="Indices Statistics:",
         t=indices,
         removeNull=True,
         headers=[str(k) for k in indices[0]]
@@ -1034,10 +1042,10 @@ def list_indices_command(proxies):
 
     result = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Elasticsearch.Indices',  # TODO: need to consult about the naming here ('index' is already taken)
+        outputs_prefix='Elasticsearch.IndexStatistics',
         outputs=indices,
         outputs_key_field='UUID',
-        raw_response=list(raw_indices)
+        raw_response=raw_indices_data
     )
     return result
 
@@ -1045,6 +1053,7 @@ def list_indices_command(proxies):
 def main():
     proxies = handle_proxy()
     proxies = proxies if proxies else None
+    args = demisto.args()
     try:
         LOG(f'command is {demisto.command()}')
         if demisto.command() == 'test-module':
@@ -1056,13 +1065,13 @@ def main():
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
         elif demisto.command() == 'es-eql-search':
-            return_results(search_eql_command(demisto.args(), proxies))
+            return_results(search_eql_command(args, proxies))
         elif demisto.command() == 'es-index':
-            return_results(index_document_command(demisto.args(), proxies))
+            return_results(index_document_command(args, proxies))
         elif demisto.command() == 'es-integration-health-check':
             return_results(integration_health_check(proxies))
-        elif demisto.command() == 'es-list-indices':
-            return_results(list_indices_command(proxies))
+        elif demisto.command() == 'es-get-indices-statistics':
+            return_results(get_indices_statistics_command(args, proxies))
 
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):

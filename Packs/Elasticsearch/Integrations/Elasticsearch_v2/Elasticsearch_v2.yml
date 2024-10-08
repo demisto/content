@@ -296,25 +296,38 @@ script:
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
   - name: es-integration-health-check
     description: Returns the health status of the integration. This commmand should be used for debugging purposes.
-  - name: es-list-indices
-    description: Returns a list of Elasticsearch indices. This command is not supported for client type OpenSearch.
+  - name: es-get-indices-statistics
+    description: Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
+    arguments:
+    - description: The maximum number of indices to return.
+      name: limit
+      required: false
+      defaultValue: '50'
+    - description: Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored.
+      name: all_results
+      required: false
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
     outputs:
-    - contextPath: Elasticsearch.Indices.Name
+    - contextPath: Elasticsearch.IndexStatistics.Name
       description: The Name of the index.
       type: String
-    - contextPath: Elasticsearch.Indices.Status
+    - contextPath: Elasticsearch.IndexStatistics.Status
       description: The Status of the index.
       type: String
-    - contextPath: Elasticsearch.Indices.Health
+    - contextPath: Elasticsearch.IndexStatistics.Health
       description: The Health status of the index.
       type: String
-    - contextPath: Elasticsearch.Indices.UUID
+    - contextPath: Elasticsearch.IndexStatistics.UUID
       description: The UUID of the index.
       type: String
-    - contextPath: Elasticsearch.Indices.Documents Count
+    - contextPath: Elasticsearch.IndexStatistics.Documents Count
       description: The amount of documents that are indexed in the index.
       type: Number
-    - contextPath: Elasticsearch.Indices.Documents Deleted
+    - contextPath: Elasticsearch.IndexStatistics.Documents Deleted
       description: The amount of documents that were deleted from the index.
       type: Number
   - description: Search using EQL query.

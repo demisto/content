@@ -246,26 +246,31 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-### es-list-indices
+
+
+### es-get-indices-statistics
 
 ***
-Returns a list of Elasticsearch indices. This command is not supported for client type OpenSearch.
+Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
 
 #### Base Command
 
-`es-list-indices`
+`es-get-indices-statistics`
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of indices to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Indices.Name | String | The Name of the index. | 
-| Elasticsearch.Indices.Status | String | The Status of the index. | 
-| Elasticsearch.Indices.Health | String | The Health status of the index. | 
-| Elasticsearch.Indices.UUID | String | The UUID of the index. | 
-| Elasticsearch.Indices.Documents Count | Number | The amount of documents that are indexed in the index. | 
-| Elasticsearch.Indices.Documents Deleted | Number | The amount of documents that were deleted from the index. | 
+| Elasticsearch.IndexStatistics.Name | String | The Name of the index. |
+| Elasticsearch.IndexStatistics.Status | String | The Status of the index. |
+| Elasticsearch.IndexStatistics.Health | String | The Health status of the index. |
+| Elasticsearch.IndexStatistics.UUID | String | The UUID of the index. |
+| Elasticsearch.IndexStatistics.Documents Count | Number | The amount of documents that are indexed in the index. |
+| Elasticsearch.IndexStatistics.Documents Deleted | Number | The amount of documents that were deleted from the index. |
