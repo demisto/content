@@ -62,7 +62,7 @@ args:
   description: The option to choose which value matched to return.
   defaultValue: first_match
 - name: context
-  description: '`demisto` context: Input . (single dot) on `From previous tasks` to enable to extract the context data.'
+  description: 'The context: Input . (single dot) on `From previous tasks` to enable to extract the context data.'
 - name: flags
   description: The comma separated flags for pattern matching in regex. "dotall" (s), "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported. This will apply to all the algorithms.
 - name: compare_fields
