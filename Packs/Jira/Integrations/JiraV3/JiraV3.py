@@ -637,9 +637,11 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
         Args:
             project_id_or_key (str): The id or key of the project to return.
+            start_at (int, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int, optional): The maximum number of issues to return per page. Defaults to None.
 
         Returns:
-            Dict[str, Any]L The result of the API, which will hold the issue types.
+            Dict[str, Any]: The result of the API, which will hold the issue types.
         """
 
         query_params = assign_params(
@@ -660,9 +662,11 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Args:
             project_id_or_key (str): The id or key of the project to return.
             issue_type_id (str): The id of the issue type.
+            start_at (int, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int, optional): The maximum number of issues to return per page. Defaults to None.
 
         Returns:
-            Dict[str, Any]L The result of the API, which will hold the fields.
+            Dict[str, Any]: The result of the API, which will hold the fields.
         """
 
         query_params = assign_params(
