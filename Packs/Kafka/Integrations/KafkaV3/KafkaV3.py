@@ -22,11 +22,9 @@ PRODUCER_SUPPORTED_COMMANDS = ['kafka-publish-msg']  # These commands can be run
 
 class KConsumer(Consumer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-    pass
 
 class KProducer(Producer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-    pass
 
 
 class KafkaCommunicator:
@@ -209,7 +207,6 @@ class KafkaCommunicator:
         if not consumer_only:
             try:
                 producer = self.get_kafka_producer()
-
                 producer_topics = producer.list_topics(timeout=self.REQUESTS_TIMEOUT)
                 producer_topics.topics
 
@@ -626,6 +623,8 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[Comma
         return 'No message was consumed.'
     else:
         message_value = message.value()
+        if 'Group authorization failed' in message_value:
+            raise DemistoException(f'{message_value} Make sure you configured the right Consumer group ID.')
         readable_output = tableToMarkdown(f'Message consumed from topic {topic}',
                                           [{'Offset': message.offset(), 'Message': message_value.decode("utf-8")}])
         content = {
