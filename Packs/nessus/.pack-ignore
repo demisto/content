@@ -1,2 +1,6 @@
 [file:Nessus_image.png]
 ignore=IM111
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Nessus_Test.yml]
+ignore=GR103

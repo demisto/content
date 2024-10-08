@@ -1,6 +1,6 @@
 name: McAfeeEpo Parsing Rule
 id: McAfeeEpo Parsing Rule
-fromversion: 6.10.0
+fromversion: 8.5.0
 tags: []
 rules: ''
 samples: ''

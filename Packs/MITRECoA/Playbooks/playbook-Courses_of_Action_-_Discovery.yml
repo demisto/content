@@ -9,13 +9,12 @@ inputs:
   value: {}
 outputs:
 - contextPath: Handled.Techniques
-  description: The techniques handled in this playbook
+  description: The techniques handled in this playbook.
   type: unknown
 - contextPath: Discovery.ProductList
   description: Products used for remediation.
   type: unknown
 starttaskid: "0"
-system: true
 tasks:
   "0":
     id: "0"
@@ -48,11 +47,13 @@ tasks:
           "y": 50
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "1":
     conditions:
     - condition:
       - - left:
-            iscontext: true
             value:
               simple: T1083
           operator: inList
@@ -81,13 +82,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 69a4b4eb-dded-463d-81b4-1c055e074606
+      id: 1916b208-5035-432f-8dda-d16752dc03d8
       iscommand: false
       name: File and Directory Discovery
-      description: ""
       type: condition
       version: -1
-    taskid: 69a4b4eb-dded-463d-81b4-1c055e074606
+      description: ''
+    taskid: 1916b208-5035-432f-8dda-d16752dc03d8
     timertriggers: []
     type: condition
     view: |-
@@ -97,6 +98,9 @@ tasks:
           "y": 190
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "3":
     id: "3"
     ignoreworker: false
@@ -122,6 +126,9 @@ tasks:
           "y": 1160
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "5":
     id: "5"
     ignoreworker: false
@@ -151,6 +158,9 @@ tasks:
           "y": 360
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "6":
     id: "6"
     ignoreworker: false
@@ -180,6 +190,9 @@ tasks:
           "y": 360
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "7":
     id: "7"
     ignoreworker: false
@@ -209,6 +222,9 @@ tasks:
           "y": 360
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "8":
     id: "8"
     ignoreworker: false
@@ -238,6 +254,9 @@ tasks:
           "y": 360
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "9":
     id: "9"
     ignoreworker: false
@@ -267,11 +286,13 @@ tasks:
           "y": 360
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "10":
     conditions:
     - condition:
       - - left:
-            iscontext: true
             value:
               simple: T1057
           operator: inList
@@ -300,13 +321,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 69e9c1bf-3cc3-403a-8eac-316cd590b970
+      id: d08b0d1c-6df8-4d00-87e3-4edff8f3aed2
       iscommand: false
       name: Process Discovery
-      description: ""
       type: condition
       version: -1
-    taskid: 69e9c1bf-3cc3-403a-8eac-316cd590b970
+      description: ''
+    taskid: d08b0d1c-6df8-4d00-87e3-4edff8f3aed2
     timertriggers: []
     type: condition
     view: |-
@@ -316,11 +337,13 @@ tasks:
           "y": 190
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "11":
     conditions:
     - condition:
       - - left:
-            iscontext: true
             value:
               simple: T1135
           operator: inList
@@ -349,13 +372,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f13cf9ec-0639-46fd-87e7-17e8b77a6d58
+      id: 811df866-f5a7-4605-87ab-a1b794113d2e
       iscommand: false
       name: Network Share Discovery
-      description: ""
       type: condition
       version: -1
-    taskid: f13cf9ec-0639-46fd-87e7-17e8b77a6d58
+      description: ''
+    taskid: 811df866-f5a7-4605-87ab-a1b794113d2e
     timertriggers: []
     type: condition
     view: |-
@@ -365,11 +388,13 @@ tasks:
           "y": 190
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "12":
     conditions:
     - condition:
       - - left:
-            iscontext: true
             value:
               simple: T1518
           operator: inList
@@ -398,13 +423,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2168cb53-3524-4b97-8078-46c50e3818c7
+      id: 4ca705b5-6d4a-47ae-89bf-6ecbffbf8243
       iscommand: false
       name: Software Discovery
-      description: ""
       type: condition
       version: -1
-    taskid: 2168cb53-3524-4b97-8078-46c50e3818c7
+      description: ''
+    taskid: 4ca705b5-6d4a-47ae-89bf-6ecbffbf8243
     timertriggers: []
     type: condition
     view: |-
@@ -414,11 +439,13 @@ tasks:
           "y": 190
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "13":
     conditions:
     - condition:
       - - left:
-            iscontext: true
             value:
               simple: T1082
           operator: inList
@@ -447,13 +474,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7b8a146e-3d53-4398-8b2e-955857fd8f91
+      id: ba627e36-ac2f-43f4-82bf-5277d3d34696
       iscommand: false
       name: System Information Discovery
-      description: ""
       type: condition
       version: -1
-    taskid: 7b8a146e-3d53-4398-8b2e-955857fd8f91
+      description: ''
+    taskid: ba627e36-ac2f-43f4-82bf-5277d3d34696
     timertriggers: []
     type: condition
     view: |-
@@ -463,6 +490,9 @@ tasks:
           "y": 190
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "14":
     id: "14"
     ignoreworker: false
@@ -486,9 +516,9 @@ tasks:
       id: 7c1e59c6-e08b-47fc-848e-d3127b3966dd
       iscommand: false
       name: Set remediation products
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 7c1e59c6-e08b-47fc-848e-d3127b3966dd
     timertriggers: []
     type: regular
@@ -499,6 +529,9 @@ tasks:
           "y": 530
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "15":
     id: "15"
     ignoreworker: false
@@ -522,9 +555,9 @@ tasks:
       id: bd68cc4d-86b5-4fcd-8653-e2b9f867b5c8
       iscommand: false
       name: Set remediation products
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: bd68cc4d-86b5-4fcd-8653-e2b9f867b5c8
     timertriggers: []
     type: regular
@@ -535,6 +568,9 @@ tasks:
           "y": 530
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "16":
     id: "16"
     ignoreworker: false
@@ -558,9 +594,9 @@ tasks:
       id: 3f167fa2-fdc8-4188-8fb6-e6a154a5963b
       iscommand: false
       name: Set remediation products
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 3f167fa2-fdc8-4188-8fb6-e6a154a5963b
     timertriggers: []
     type: regular
@@ -571,6 +607,9 @@ tasks:
           "y": 530
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "17":
     id: "17"
     ignoreworker: false
@@ -594,9 +633,9 @@ tasks:
       id: 02a59d28-ce80-4c7c-8e6d-52015c487997
       iscommand: false
       name: Set remediation products
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: 02a59d28-ce80-4c7c-8e6d-52015c487997
     timertriggers: []
     type: regular
@@ -607,6 +646,9 @@ tasks:
           "y": 530
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "18":
     id: "18"
     ignoreworker: false
@@ -630,9 +672,9 @@ tasks:
       id: fe80d8bc-3930-42da-8333-7274e06736a2
       iscommand: false
       name: Set remediation products
-      script: Set
       type: regular
       version: -1
+      scriptName: Set
     taskid: fe80d8bc-3930-42da-8333-7274e06736a2
     timertriggers: []
     type: regular
@@ -643,6 +685,9 @@ tasks:
           "y": 530
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "19":
     id: "19"
     ignoreworker: false
@@ -680,6 +725,9 @@ tasks:
           "y": 700
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "20":
     id: "20"
     ignoreworker: false
@@ -695,9 +743,9 @@ tasks:
       id: 4b369291-ca87-4120-8935-2a0a4ec834fb
       iscommand: false
       name: Set techniques information to the layout
-      description: ""
       type: title
       version: -1
+      description: ''
     taskid: 4b369291-ca87-4120-8935-2a0a4ec834fb
     timertriggers: []
     type: title
@@ -708,6 +756,9 @@ tasks:
           "y": 870
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "21":
     fieldMapping:
     - incidentfield: Remediated Techniques
@@ -738,7 +789,6 @@ tasks:
         simple: "false"
       key:
         simple: Unhandled.Techniques
-      stringify: {}
       value:
         complex:
           filters:
@@ -760,9 +810,9 @@ tasks:
       id: 5a19c8ee-225c-44d0-8a8a-01ec94bfc92f
       iscommand: false
       name: Set techniques information to the layout
-      script: SetAndHandleEmpty
       type: regular
       version: -1
+      scriptName: SetAndHandleEmpty
     taskid: 5a19c8ee-225c-44d0-8a8a-01ec94bfc92f
     timertriggers: []
     type: regular
@@ -773,6 +823,9 @@ tasks:
           "y": 990
         }
       }
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
 version: -1
 view: |-
   {
@@ -796,6 +849,10 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 marketplaces:
   - xsoar
   - marketplacev2
