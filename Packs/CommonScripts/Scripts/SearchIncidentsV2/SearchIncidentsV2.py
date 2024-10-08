@@ -77,7 +77,7 @@ def apply_filters(incidents: List, args: Dict):
     return filtered_incidents
 
 
-def summarize_incidents(args, incidents, platform):
+def summarize_incidents(args: dict, incidents: List[dict], platform: str):
     summerized_fields = [
         'id',
         'name',
@@ -196,11 +196,11 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     all_found_incidents = all_found_incidents[:limit]
 
-    add_headers: List[str] = []
+    additional_headers: List[str] = []
     if is_summarized_version:
         all_found_incidents = summarize_incidents(args, all_found_incidents, platform)
         if args.get("add_fields_to_summarize_context"):
-            add_headers = args.get("add_fields_to_summarize_context", '').split(",")
+            additional_headers = args.get("add_fields_to_summarize_context", '').split(",")
 
     headers: List[str]
     if platform == 'x2':
@@ -208,11 +208,11 @@ def search_incidents(args: Dict):   # pragma: no cover
                    'owner', 'targetprocessname', 'username', 'alertLink']
 
         all_found_incidents = transform_to_alert_data(all_found_incidents)
-        md = tableToMarkdown(name="Alerts found", t=all_found_incidents, headers=headers + add_headers, removeNull=True,
+        md = tableToMarkdown(name="Alerts found", t=all_found_incidents, headers=headers + additional_headers, removeNull=True,
                              url_keys=['alertLink'])
     else:
         headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
-        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers + add_headers,
+        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers + additional_headers,
                              url_keys=['incidentLink'])
 
     demisto.debug(f'amount of all the incidents that were found {len(all_found_incidents)}')
