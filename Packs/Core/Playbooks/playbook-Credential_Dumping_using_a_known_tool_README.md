@@ -29,11 +29,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreIR
+CortexCoreIR
 
 ### Scripts
 
-* SearchAlertsV2
+SearchAlertsV2
 
 ### Commands
 
