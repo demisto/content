@@ -4,10 +4,8 @@
         "responseCode": 200,
         "responseText": "",
         "additionalText": "",
-        "recordsNumber": 1,
+        "recordsNumber": 0,
         "scrollId": ""
     },
-    "responseData": [
-        "mt-rnd-ng-1:test"
-    ]
+    "responseData": []
 }

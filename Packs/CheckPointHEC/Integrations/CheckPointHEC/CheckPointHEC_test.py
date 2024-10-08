@@ -1,10 +1,20 @@
 import json
 
 import demistomock as demisto
-from CheckPointHEC import (Client, fetch_incidents, checkpointhec_get_entity, checkpointhec_get_events,
-                           checkpointhec_get_scan_info, checkpointhec_search_emails, checkpointhec_send_action,
-                           checkpointhec_get_action_result, checkpointhec_send_notification,
-                           test_module as check_module)
+from CheckPointHEC import (
+    Client, fetch_incidents, checkpointhec_get_entity, checkpointhec_get_events, checkpointhec_get_scan_info,
+    checkpointhec_search_emails, checkpointhec_send_action, checkpointhec_get_action_result, checkpointhec_send_notification,
+    checkpointhec_get_ap_exceptions, checkpointhec_create_ap_exception, checkpointhec_update_ap_exception,
+    checkpointhec_delete_ap_exception, checkpointhec_get_cp2_exception, checkpointhec_create_cp2_exception,
+    checkpointhec_update_cp2_exception, checkpointhec_delete_cp2_exception, checkpointhec_get_cp2_exceptions,
+    checkpointhec_delete_cp2_exceptions, checkpointhec_get_anomaly_exceptions, checkpointhec_create_anomaly_exception,
+    checkpointhec_delete_anomaly_exceptions, checkpointhec_get_ctp_lists, checkpointhec_get_ctp_list,
+    checkpointhec_get_ctp_list_items, checkpointhec_get_ctp_list_item, checkpointhec_create_ctp_list_item,
+    checkpointhec_update_ctp_list_item, checkpointhec_delete_ctp_list_item, checkpointhec_delete_ctp_list_items,
+    checkpointhec_delete_ctp_lists, checkpointhec_create_avurl_exception, checkpointhec_update_avurl_exception,
+    checkpointhec_delete_avurl_exception, checkpointhec_create_avdlp_exception, checkpointhec_update_avdlp_exception,
+    checkpointhec_delete_avdlp_exception, test_module as check_module
+)
 
 
 def util_load_json(path):
@@ -516,7 +526,7 @@ def test_send_notification(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-test_api.json')
+    mock_response = util_load_json('./test_data/checkpointhec-send_notification.json')
     call_api = mocker.patch.object(
         Client,
         '_call_api',
@@ -526,3 +536,1209 @@ def test_send_notification(mocker):
     result = checkpointhec_send_notification(client, '0000', ['a@b.c', 'd@e.f'])
     call_api.assert_called_once()
     assert result.outputs == mock_response
+
+
+def test_get_ap_exceptions_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ap_exceptions(client, 'whitelist')
+    call_api.assert_called_once()
+    assert result.readable_output == 'No Anti-Phishing exceptions found'
+
+
+def test_get_ap_exceptions_non_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-get_ap_exceptions.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ap_exceptions(client, 'whitelist')
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
+
+
+def test_create_ap_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_ap_exception(client, 'whitelist', comment='From Unit Tests')
+    call_api.assert_called()
+    assert result.readable_output == 'Anti-Phishing exception created successfully'
+
+
+def test_create_ap_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_ap_exception(client, 'not_whitelist', comment='From Unit Tests')
+    call_api.assert_called()
+    assert result.readable_output == 'Error creating Anti-Phishing exception'
+
+
+def test_update_ap_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_ap_exception(client, 'whitelist', '0000', comment='New comment')
+    call_api.assert_called()
+    assert result.readable_output == 'Anti-Phishing exception updated successfully'
+
+
+def test_update_ap_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_ap_exception(client, 'not_whitelist', '0000', comment='New comment')
+    call_api.assert_called()
+    assert result.readable_output == 'Error updating Anti-Phishing exception'
+
+
+def test_delete_ap_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_ap_exception(client, 'whitelist', '0000')
+    call_api.assert_called()
+    assert result.readable_output == 'Anti-Phishing exception deleted successfully'
+
+
+def test_delete_ap_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_ap_exception(client, 'not_whitelist', '0000')
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting Anti-Phishing exception'
+
+
+def test_get_cp2_exception_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_cp2_exception(client, 'hash', '00000000000000000000000000000000')
+    call_api.assert_called_once()
+    assert result.readable_output == 'No Anti-Malware exception found'
+
+
+def test_get_cp2_exception_not_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-get_cp2_exception.json')
+    mock_response['responseData'] = mock_response['responseData'][0]
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_cp2_exception(client, 'hash', '00000000000000000000000000000000')
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
+
+
+def test_create_cp2_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 201
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_cp2_exception(client, 'file_type', '.pdf', comment='From Unit Tests')
+    call_api.assert_called()
+    assert result.readable_output == 'Anti-Malware exception created successfully'
+
+
+def test_create_cp2_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_cp2_exception(client, 'not_file_type', '.pdf', comment='From Unit Tests')
+    call_api.assert_called()
+    assert result.readable_output == 'Error creating Anti-Malware exception'
+
+
+def test_update_cp2_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_cp2_exception(client, 'file_type', '.pdf', comment='New comment')
+    call_api.assert_called()
+    assert result.readable_output == 'Anti-Malware exception updated successfully'
+
+
+def test_update_cp2_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_cp2_exception(client, 'not_file_type', '.pdf', comment='New comment')
+    call_api.assert_called()
+    assert result.readable_output == 'Error updating Anti-Malware exception'
+
+
+def test_delete_cp2_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_cp2_exception(client, 'file_type', '.pdf')
+    call_api.assert_called()
+    assert result.readable_output == 'Anti-Malware exception deleted successfully'
+
+
+def test_delete_cp2_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_cp2_exception(client, 'not_file_type', '.pdf')
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting Anti-Malware exception'
+
+
+def test_get_cp2_exceptions_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_cp2_exceptions(client, 'hash')
+    call_api.assert_called_once()
+    assert result.readable_output == 'No Anti-Malware exceptions found'
+
+
+def test_get_cp2_exceptions_not_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-get_cp2_exception.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_cp2_exceptions(client, 'hash')
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
+
+
+def test_delete_cp2_exceptions_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_cp2_exceptions(client, 'file_type', ['.pdf'])
+    call_api.assert_called()
+    assert result.readable_output == 'Anti-Malware exceptions deleted successfully'
+
+
+def test_delete_cp2_exceptions_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_cp2_exceptions(client, 'not_file_type', ['.pdf'])
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting Anti-Malware exceptions'
+
+
+def test_get_anomaly_exceptions_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_anomaly_exceptions(client)
+    call_api.assert_called_once()
+    assert result.readable_output == 'No Anomaly exceptions found'
+
+
+def test_get_anomaly_exceptions_not_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-get_anomaly_exceptions.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_anomaly_exceptions(client)
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
+
+
+def test_create_anomaly_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 201
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    request_json = {
+        "whitelist-option:superman_anomaly": "0" * 32,
+        "apply-to-past": "Yes",
+        "anomaly-comment": "Test for XSOAR",
+        "event_id": "0" * 32
+    }
+    result = checkpointhec_create_anomaly_exception(client, request_json, 'a@b.test')
+    call_api.assert_called()
+    assert result.readable_output == 'Anomaly exception created successfully'
+
+
+def test_create_anomaly_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    request_json = {
+        "whitelist-option:superman_anomaly": "0" * 32,
+        "apply-to-past": "Yes",
+        "anomaly-comment": "Test for XSOAR",
+        "event_id": "0" * 32
+    }
+    result = checkpointhec_create_anomaly_exception(client, request_json, 'a@b.test')
+    call_api.assert_called()
+    assert result.readable_output == 'Error creating Anomaly exception'
+
+
+def test_delete_anomaly_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_anomaly_exceptions(client, ['00000'])
+    call_api.assert_called()
+    assert result.readable_output == 'Anomaly exceptions deleted successfully'
+
+
+def test_delete_anomaly_exceptions_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_anomaly_exceptions(client, ['00000'])
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting Anomaly exceptions'
+
+
+def test_get_ctp_lists_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ctp_lists(client)
+    call_api.assert_called_once()
+    assert result.readable_output == 'No CTP lists found'
+
+
+def test_get_ctp_lists_not_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-get_ctp_lists.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ctp_lists(client)
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
+
+
+def test_get_ctp_list_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ctp_list(client, '0')
+    call_api.assert_called_once()
+    assert result.readable_output == 'No CTP list found'
+
+
+def test_get_ctp_list_not_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-get_ctp_list.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ctp_list(client, '0')
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
+
+
+def test_get_ctp_list_items_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ctp_list_items(client)
+    call_api.assert_called_once()
+    assert result.readable_output == 'No CTP list items found'
+
+
+def test_get_ctp_list_items_not_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-get_ctp_list_items.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ctp_list_items(client)
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
+
+
+def test_get_ctp_list_item_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ctp_list_item(client, '0000000000000000')
+    call_api.assert_called_once()
+    assert result.readable_output == 'No CTP list items found'
+
+
+def test_get_ctp_list_item_not_empty(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-get_ctp_list_item.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_get_ctp_list_item(client, '0000000000000000')
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
+
+
+def test_create_ctp_list_item_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 201
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_ctp_list_item(client, '0', 'example.com', created_by='a@b.test')
+    call_api.assert_called()
+    assert result.readable_output == 'CTP list item created successfully'
+
+
+def test_create_ctp_list_item_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_ctp_list_item(client, '-1', 'example.com', created_by='a@b.test')
+    call_api.assert_called()
+    assert result.readable_output == 'Error creating CTP list item'
+
+
+def test_update_ctp_list_item_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_ctp_list_item(client, '00000000000', '0', 'new.example.com', created_by='a@b.test')
+    call_api.assert_called()
+    assert result.readable_output == 'CTP list item updated successfully'
+
+
+def test_update_ctp_list_item_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_ctp_list_item(client, '00000000000', '-1', 'example.com', created_by='a@b.test')
+    call_api.assert_called()
+    assert result.readable_output == 'Error updating CTP list item'
+
+
+def test_delete_ctp_list_item_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_ctp_list_item(client, '00000000000')
+    call_api.assert_called()
+    assert result.readable_output == 'CTP list item deleted successfully'
+
+
+def test_delete_ctp_list_item_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 404
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_ctp_list_item(client, '00000000000')
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting CTP list item'
+
+
+def test_delete_ctp_list_items_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_ctp_list_items(client, ['00000000000'])
+    call_api.assert_called()
+    assert result.readable_output == 'CTP list items deleted successfully'
+
+
+def test_delete_ctp_list_items_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 404
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_ctp_list_items(client, ['00000000000'])
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting CTP list items'
+
+
+def test_delete_ctp_lists_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_ctp_lists(client)
+    call_api.assert_called()
+    assert result.readable_output == 'CTP lists deleted successfully'
+
+
+def test_delete_ctp_lists_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 404
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_ctp_lists(client)
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting CTP lists'
+
+
+def test_create_avurl_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 201
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_avurl_exception(client, 'allow-url', 'example.com', comment='From Unit Tests')
+    call_api.assert_called()
+    assert result.readable_output == 'Avanan URL exception created successfully'
+
+
+def test_create_avurl_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_avurl_exception(client, 'not-allow-url', 'example.com', comment='From Unit Tests')
+    call_api.assert_called()
+    assert result.readable_output == 'Error creating Avanan URL exception'
+
+
+def test_update_avurl_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_avurl_exception(client, 'allow-url', 'example.com', comment='New comment')
+    call_api.assert_called()
+    assert result.readable_output == 'Avanan URL exception updated successfully'
+
+
+def test_update_avurl_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_avurl_exception(client, 'not-allow-url', 'example.com', comment='New comment')
+    call_api.assert_called()
+    assert result.readable_output == 'Error updating Avanan URL exception'
+
+
+def test_delete_avurl_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_avurl_exception(client, 'allow-url', 'example.com')
+    call_api.assert_called()
+    assert result.readable_output == 'Avanan URL exception deleted successfully'
+
+
+def test_delete_avurl_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_avurl_exception(client, 'not-allow-url', 'example.com')
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting Avanan URL exception'
+
+
+def test_create_avdlp_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 201
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_avdlp_exception(client, 'hash', '0' * 32, comment='From Unit Tests')
+    call_api.assert_called()
+    assert result.readable_output == 'Avanan DLP exception created successfully'
+
+
+def test_create_avdlp_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_create_avdlp_exception(client, 'not_hash', '0' * 32, comment='From Unit Tests')
+    call_api.assert_called()
+    assert result.readable_output == 'Error creating Avanan DLP exception'
+
+
+def test_update_avdlp_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_avdlp_exception(client, 'hash', '0' * 32, comment='New comment')
+    call_api.assert_called()
+    assert result.readable_output == 'Avanan DLP exception updated successfully'
+
+
+def test_update_avdlp_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_update_avdlp_exception(client, 'not_hash', '0' * 32, comment='New comment')
+    call_api.assert_called()
+    assert result.readable_output == 'Error updating Avanan DLP exception'
+
+
+def test_delete_avdlp_exception_success(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    mock_response['responseEnvelope']['responseCode'] = 204
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_avdlp_exception(client, 'hash', '0' * 32)
+    call_api.assert_called()
+    assert result.readable_output == 'Avanan DLP exception deleted successfully'
+
+
+def test_delete_avdlp_exception_fail(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    result = checkpointhec_delete_avdlp_exception(client, 'not_hash', '0' * 32)
+    call_api.assert_called()
+    assert result.readable_output == 'Error deleting Avanan DLP exception'
