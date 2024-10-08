@@ -1,0 +1,6 @@
+name: CrowdStrike Falcon Parsing Rule
+id: CrowdStrike_Falcon_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''
