@@ -1552,76 +1552,76 @@ script:
       defaultValue: "50"
     description: Returns a page of issue type metadata for a specified project.
     outputs:
-    - contextPath: Jira.IssueType.avatarId
+    - contextPath: Jira.IssueType.AvatarID
       description: The ID of the issue type's avatar.
       type: Number
-    - contextPath: Jira.IssueType.description
+    - contextPath: Jira.IssueType.Description
       description: The description of the issue type.
       type: String
-    - contextPath: Jira.IssueType.entityId
+    - contextPath: Jira.IssueType.EntityID
       description: Unique ID for next-gen projects.
       type: String
-    - contextPath: Jira.IssueType.expand
+    - contextPath: Jira.IssueType.Expand
       description: Expand options that include additional issue type metadata details in the response.
       type: String
-    - contextPath: Jira.IssueType.iconUrl
+    - contextPath: Jira.IssueType.IconURL
       description: The URL of the issue type's avatar.
       type: String
-    - contextPath: Jira.IssueType.id
+    - contextPath: Jira.IssueType.ID
       description: The ID of the issue type.
       type: String
-    - contextPath: Jira.IssueType.name
+    - contextPath: Jira.IssueType.Name
       description: The name of the issue type.
       type: String
-    - contextPath: Jira.IssueType.self
+    - contextPath: Jira.IssueType.Self
       description: The URL of these issue type details.
       type: String
-    - contextPath: Jira.IssueType.subtask
+    - contextPath: Jira.IssueType.Subtask
       description: Whether this issue type is used to create subtasks.
       type: Boolean
-    - contextPath: Jira.IssueType.scope
+    - contextPath: Jira.IssueType.Scope
       description: Details of the next-gen projects the issue type is available in.
       type: Object
-    - contextPath: Jira.IssueType.scope.type
+    - contextPath: Jira.IssueType.Scope.type
       description: 'The type of scope. Valid values: PROJECT, TEMPLATE.'
       type: String
-    - contextPath: Jira.IssueType.scope.project
+    - contextPath: Jira.IssueType.Scope.project
       description: The project the item has scope in.
       type: Object
-    - contextPath: Jira.IssueType.scope.project.self
+    - contextPath: Jira.IssueType.Scope.project.self
       description: The URL of the project details.
       type: String
-    - contextPath: Jira.IssueType.scope.project.id
+    - contextPath: Jira.IssueType.Scope.project.id
       description: The ID of the project.
       type: String
-    - contextPath: Jira.IssueType.scope.project.key
+    - contextPath: Jira.IssueType.Scope.project.key
       description: The key of the project.
       type: String
-    - contextPath: Jira.IssueType.scope.project.name
+    - contextPath: Jira.IssueType.Scope.project.name
       description: The name of the project.
       type: String
-    - contextPath: Jira.IssueType.scope.project.projectTypeKey
+    - contextPath: Jira.IssueType.Scope.project.projectTypeKey
       description: 'The project type of the project. Valid values: software, service_desk, business.'
       type: String
-    - contextPath: Jira.IssueType.scope.project.simplified
+    - contextPath: Jira.IssueType.Scope.project.simplified
       description: Whether or not the project is simplified.
       type: Boolean
-    - contextPath: Jira.IssueType.scope.project.avatarUrls
+    - contextPath: Jira.IssueType.Scope.project.avatarUrls
       description: The URLs of the project's avatars.
       type: Object
-    - contextPath: Jira.IssueType.scope.project.projectCategory
+    - contextPath: Jira.IssueType.Scope.project.projectCategory
       description: The category the project belongs to.
       type: Object
-    - contextPath: Jira.IssueType.scope.project.projectCategory.self
+    - contextPath: Jira.IssueType.Scope.project.projectCategory.self
       description: The URL of the project category.
       type: String
-    - contextPath: Jira.IssueType.scope.project.projectCategory.id
+    - contextPath: Jira.IssueType.Scope.project.projectCategory.id
       description: The ID of the project category.
       type: String
-    - contextPath: Jira.IssueType.scope.project.projectCategory.description
+    - contextPath: Jira.IssueType.Scope.project.projectCategory.description
       description: The name of the project category.
       type: String
-    - contextPath: Jira.IssueType.scope.project.projectCategory.name
+    - contextPath: Jira.IssueType.Scope.project.projectCategory.name
       description: The description of the project category.
       type: String
   - name: jira-get-create-metadata-field

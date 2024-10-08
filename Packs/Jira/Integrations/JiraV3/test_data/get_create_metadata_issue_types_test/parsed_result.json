@@ -21,16 +21,20 @@
     "IgnoreAutoExtract": false,
     "Note": false,
     "Relationships": [],
-    "HumanReadable": "### Issue types for project test_project_id\n|Description|Icon Url|Id|Name|Self|Subtask|\n|---|---|---|---|---|---|\n| An error in the code | https://your-domain.atlassian.net/images/icons/issuetypes/bug.png | 1 | Bug | https://your-domain.atlassian.net/rest/api/2/issueType/1 | false |\n",
+    "HumanReadable": "### Issue types for project test_project_id\n|Description|ID|Icon URL|Name|Self|Subtask|\n|---|---|---|---|---|---|\n| An error in the code | 1 | https://your-domain.atlassian.net/images/icons/issuetypes/bug.png | Bug | https://your-domain.atlassian.net/rest/api/2/issueType/1 | false |\n",
     "EntryContext": {
-        "Jira.IssueType(val.id && val.id == obj.id)": [
+        "Jira.IssueType(val.ID && val.ID == obj.ID)": [
             {
-                "description": "An error in the code",
-                "iconUrl": "https://your-domain.atlassian.net/images/icons/issuetypes/bug.png",
-                "id": "1",
-                "name": "Bug",
-                "self": "https://your-domain.atlassian.net/rest/api/2/issueType/1",
-                "subtask": false
+                "AvatarID": null,
+                "Description": "An error in the code",
+                "EntityID": null,
+                "Expand": null,
+                "IconURL": "https://your-domain.atlassian.net/images/icons/issuetypes/bug.png",
+                "ID": "1",
+                "Name": "Bug",
+                "Scope": null,
+                "Self": "https://your-domain.atlassian.net/rest/api/2/issueType/1",
+                "Subtask": false
             }
         ]
     }

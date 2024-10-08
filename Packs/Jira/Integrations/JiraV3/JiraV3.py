@@ -2088,15 +2088,33 @@ def get_create_metadata_issue_types_command(client: JiraBaseClient, args: Dict[s
         max_results=max_results
     )
 
+    outputs = []
+    for result in res.get('values', []):
+        outputs.append(
+            {
+                "AvatarID": result.get('avatarId'),
+                "Description": result.get('description'),
+                "EntityID": result.get('entityId'),
+                "Expand": result.get('expand'),
+                "IconURL": result.get('iconUrl'),
+                "ID": result.get('id'),
+                "Name": result.get('name'),
+                "Self": result.get('self'),
+                "Subtask": result.get('subtask'),
+                "Scope": result.get('scope'),
+            }
+        )
+
     command_results = CommandResults(
         outputs_prefix="Jira.IssueType",
-        outputs=res.get('values', []),
-        outputs_key_field="id",
+        outputs=outputs,
+        outputs_key_field="ID",
         raw_response=res,
         readable_output=tableToMarkdown(
             name=f"Issue types for project {project_id_or_key}",
-            t=res.get('values', []),
-            headerTransform=pascalToSpace
+            t=outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True
         )
     )
 

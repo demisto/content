@@ -3108,6 +3108,52 @@ In the *jira-get-issue* command:
 * *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
 
 
+### jira-get-create-metadata-issue-types
+
+***
+Returns a page of issue type metadata for a specified project.
+
+#### Base Command
+
+`jira-get-create-metadata-issue-types`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id_or_key | The ID or the Key of the project. | Required | 
+| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
+| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.IssueType.AvatarID | Number | The ID of the issue type's avatar. | 
+| Jira.IssueType.Description | String | The description of the issue type. | 
+| Jira.IssueType.EntityID | String | Unique ID for next-gen projects. | 
+| Jira.IssueType.Expand | String | Expand options that include additional issue type metadata details in the response. | 
+| Jira.IssueType.IconURL | String | The URL of the issue type's avatar. | 
+| Jira.IssueType.ID | String | The ID of the issue type. | 
+| Jira.IssueType.Name | String | The name of the issue type. | 
+| Jira.IssueType.Self | String | The URL of these issue type details. | 
+| Jira.IssueType.Subtask | Boolean | Whether this issue type is used to create subtasks. | 
+| Jira.IssueType.Scope | Object | Details of the next-gen projects the issue type is available in. | 
+| Jira.IssueType.Scope.type | String | The type of scope. Valid values: PROJECT, TEMPLATE. | 
+| Jira.IssueType.Scope.project | Object | The project the item has scope in. | 
+| Jira.IssueType.Scope.project.self | String | The URL of the project details. | 
+| Jira.IssueType.Scope.project.id | String | The ID of the project. | 
+| Jira.IssueType.Scope.project.key | String | The key of the project. | 
+| Jira.IssueType.Scope.project.name | String | The name of the project. | 
+| Jira.IssueType.Scope.project.projectTypeKey | String | The project type of the project. Valid values: software, service_desk, business. | 
+| Jira.IssueType.Scope.project.simplified | Boolean | Whether or not the project is simplified. | 
+| Jira.IssueType.Scope.project.avatarUrls | Object | The URLs of the project's avatars. | 
+| Jira.IssueType.Scope.project.projectCategory | Object | The category the project belongs to. | 
+| Jira.IssueType.Scope.project.projectCategory.self | String | The URL of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.id | String | The ID of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.description | String | The name of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.name | String | The description of the project category. | 
+
 ### jira-get-create-metadata-field
 
 ***
@@ -3147,50 +3193,4 @@ Returns a page of field metadata for a specified project and issue type.
 | Jira.IssueField.schema.custom | String | If the field is a custom field, the URI of the field. | 
 | Jira.IssueField.schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
 | Jira.IssueField.schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
-
-### jira-get-create-metadata-issue-types
-
-***
-Returns a page of issue type metadata for a specified project.
-
-#### Base Command
-
-`jira-get-create-metadata-issue-types`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id_or_key | The ID of Key of the project. | Required | 
-| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
-| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Jira.IssueType.avatarId | Number | The ID of the issue type's avatar. | 
-| Jira.IssueType.description | String | The description of the issue type. | 
-| Jira.IssueType.entityId | String | Unique ID for next-gen projects. | 
-| Jira.IssueType.expand | String | Expand options that include additional issue type metadata details in the response. | 
-| Jira.IssueType.iconUrl | String | The URL of the issue type's avatar. | 
-| Jira.IssueType.id | String | The ID of the issue type. | 
-| Jira.IssueType.name | String | The name of the issue type. | 
-| Jira.IssueType.self | String | The URL of these issue type details. | 
-| Jira.IssueType.subtask | Boolean | Whether this issue type is used to create subtasks. | 
-| Jira.IssueType.scope | Object | Details of the next-gen projects the issue type is available in. | 
-| Jira.IssueType.scope.type | String | The type of scope. Valid values: PROJECT, TEMPLATE. | 
-| Jira.IssueType.scope.project | Object | The project the item has scope in. | 
-| Jira.IssueType.scope.project.self | String | The URL of the project details. | 
-| Jira.IssueType.scope.project.id | String | The ID of the project. | 
-| Jira.IssueType.scope.project.key | String | The key of the project. | 
-| Jira.IssueType.scope.project.name | String | The name of the project. | 
-| Jira.IssueType.scope.project.projectTypeKey | String | The project type of the project. Valid values: software, service_desk, business. | 
-| Jira.IssueType.scope.project.simplified | Boolean | Whether or not the project is simplified. | 
-| Jira.IssueType.scope.project.avatarUrls | Object | The URLs of the project's avatars. | 
-| Jira.IssueType.scope.project.projectCategory | Object | The category the project belongs to. | 
-| Jira.IssueType.scope.project.projectCategory.self | String | The URL of the project category. | 
-| Jira.IssueType.scope.project.projectCategory.id | String | The ID of the project category. | 
-| Jira.IssueType.scope.project.projectCategory.description | String | The name of the project category. | 
-| Jira.IssueType.scope.project.projectCategory.name | String | The description of the project category. | 
 
