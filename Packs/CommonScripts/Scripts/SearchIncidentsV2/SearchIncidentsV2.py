@@ -77,16 +77,29 @@ def apply_filters(incidents: List, args: Dict):
     return filtered_incidents
 
 
-def summarize_incidents(args, incidents):
-    summerized_fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
+def summarize_incidents(args: dict, incidents: List[dict], platform: str):
+    summerized_fields = [
+        'id',
+        'name',
+        'type',
+        'severity',
+        'status',
+        'owner',
+        'created',
+        'closed',
+        'alertLink' if platform == 'x2' else 'incidentLink',
+    ]
     if args.get("add_fields_to_summarize_context"):
-        summerized_fields = summerized_fields + args.get("add_fields_to_summarize_context", '').split(",")
+        summerized_fields += args.get("add_fields_to_summarize_context", '').split(",")
         summerized_fields = [x.strip() for x in summerized_fields]  # clear out whitespace
     summarized_incidents = []
     for incident in incidents:
-        summarizied_incident = {}
-        for field in summerized_fields:
-            summarizied_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
+        summarizied_incident = {
+            field: incident.get(
+                field, incident["CustomFields"].get(field, "n/a")
+            )
+            for field in summerized_fields
+        }
         summarized_incidents.append(summarizied_incident)
     return summarized_incidents
 
@@ -148,7 +161,7 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
-    if incident_found is False:
+    if not incident_found:
         if platform == 'x2':
             return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
@@ -183,21 +196,27 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     all_found_incidents = all_found_incidents[:limit]
 
+    additional_headers: List[str] = []
+    if is_summarized_version:
+        all_found_incidents = summarize_incidents(args, all_found_incidents, platform)
+        if args.get("add_fields_to_summarize_context"):
+            additional_headers = args.get("add_fields_to_summarize_context", '').split(",")
+
     headers: List[str]
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
                    'owner', 'targetprocessname', 'username', 'alertLink']
+
         all_found_incidents = transform_to_alert_data(all_found_incidents)
-        md = tableToMarkdown(name="Alerts found", t=all_found_incidents, headers=headers, removeNull=True, url_keys=['alertLink'])
+        md = tableToMarkdown(name="Alerts found", t=all_found_incidents, headers=headers + additional_headers, removeNull=True,
+                             url_keys=['alertLink'])
     else:
         headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
-        if is_summarized_version:
-            all_found_incidents = summarize_incidents(args, all_found_incidents)
-            if args.get("add_fields_to_summarize_context"):
-                add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
-                headers = headers + add_headers
-        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers, url_keys=['incidentLink'])
+        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers + additional_headers,
+                             url_keys=['incidentLink'])
+
     demisto.debug(f'amount of all the incidents that were found {len(all_found_incidents)}')
+
     return md, all_found_incidents, res
 
 
