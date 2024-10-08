@@ -37,7 +37,7 @@ When unmatched or the input value is structured (dict or list), it will simply r
 | algorithm | The default algorithm for pattern match. Available algorithm: `literal`, `wildcard`, `regex`, `regmatch` and `dt`. |
 | caseless | Set to true for caseless comparison, false otherwise. |
 | priority | The option to choose which value matched to return. Available options: `first_match` (default) and `last_match`. |
-| context | The context: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
+| context | \`demisto\` context: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
 | flags | The comma separated flags for pattern matching in regex. `dotall` (s), `multiline` (m), `ignorecase` (i) and `unicode` (u) are supported. This will apply to all the algorithms. |
 | compare_fields | Set to true if you want pattern matching for each field, otherwise false. |
 | wildcards | The list of the special patterns which match to any values regardless of algorithm. |
@@ -50,7 +50,7 @@ There are no outputs for this script.
 
 ---
 ## Syntax for `mappings`
-    
+
     mappings ::= pattern-mapping | field-mapping
                  # `field-mapping` must be used when you set `compare_fields` to true. `pattern-mapping` is used if it is not set.
 
@@ -59,15 +59,15 @@ There are no outputs for this script.
     list-pattern-mapping ::= List[base-pattern-mapping]
 
     base-pattern-mapping ::= Dict[pattern, repl]
-    
+
     field-mapping ::= Dict[field-name, pattern-mapping]
- 
+
     field-name ::= str
 
     pattern ::= str   # The pattern string which depends on the algorithm given to match with the value.
-    
+
     repl ::= output-str | config
-    
+
     output-str ::= str  # The data to replace to the value.
                         # - Backslash substitution on the template string is available in `regex`
                         # - DT syntax (${}) is available when `context` is enabled.
@@ -76,13 +76,13 @@ There are no outputs for this script.
 
     output-any ::= output-str | Any  # The data to replace to the value.
                                      # `null` is the special value to identify the input value given in this transformer.
-    
+
     algorithm ::= "literal" | "wildcard" | "regex" | "regmatch" | "dt"
-    
+
     comp-fields ::= List[field] | comma-separated-fields
-    
+
     comma-separated-fields ::= str # Comma separated field
-    
+
     config ::= Dict[str, Any]
               
            The structure is:
@@ -109,19 +109,12 @@ In python, null, boolean False, integer 0, empty string, empty list and empty di
 Transform a severity name to the corresponding number.
 
 > algorithm: regmatch
-
 > caseless: true
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     {
@@ -145,19 +138,12 @@ Transform a severity name to the corresponding number.
 Normalize a human readable phrase to a cannonical name.
 
 > algorithm: wildcard
-
 > caseless: true
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     {
@@ -180,19 +166,12 @@ Normalize a human readable phrase to a cannonical name.
 Remove all the heading "Re:" or "Fw:" from an email subject.
 
 > algorithm: regex
-
 > caseless: true
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     {
@@ -210,19 +189,12 @@ Remove all the heading "Re:" or "Fw:" from an email subject.
 Extract the user name field from an text in an Active Directory user account format.
 
 > algorithm: regex
-
 > caseless: true
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     {
@@ -245,19 +217,12 @@ Extract the user name field from an text in an Active Directory user account for
 Extract the user name field from an quoted text in an Active Directory user account format.
 
 > algorithm: regex
-
 > caseless: true
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     {
@@ -293,19 +258,12 @@ Extract the user name field from an quoted text in an Active Directory user acco
 Extract first name and last name from an email address in `firstname.lastname@domain`, but the format is `lastname.firstname@domain` in some particular domains.
 
 > algorithm: regex
-
 > caseless: true
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     [
@@ -335,19 +293,12 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 
 
 > algorithm: regex
-
 > caseless: true
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     {
@@ -457,19 +408,12 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 
 
 > algorithm: regex
-
 > caseless: true
-
 > priority: first_match
-
 > context: . [From previous tasks]
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     {
@@ -506,19 +450,12 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 Pattern matching for different nodes
 
 > algorithm: wildcard
-
 > caseless: true
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields: true
-
 > wildcards:
-
 #### mappings:
 
     {
@@ -547,19 +484,12 @@ Pattern matching for different nodes
 Make a text with the `value` field corresponding to the `score` field.
 
 > algorithm: regex
-
 > caseless: true
-
 > priority: first_match
-
 > context: . [From previous tasks]
-
 > flags:
-
 > compare_fields: true
-
 > wildcards: *
-
 #### mappings:
 
     {
@@ -583,19 +513,12 @@ Make a text with the `value` field corresponding to the `score` field.
 Make a text with the `value` field corresponding to the `score` field.
 
 > algorithm: dt
-
 > caseless: 
-
 > priority: first_match
-
 > context: . [From previous tasks]
-
 > flags:
-
 > compare_fields: true
-
 > wildcards: *
-
 #### mappings:
 
     {
@@ -621,19 +544,12 @@ Make a text with the `value` field corresponding to the `score` field.
 Make a phrase based on the values of `score` and `type`.
 
 > algorithm: dt
-
 > caseless: 
-
 > priority: first_match
-
 > context: . [From previous tasks]
-
 > flags:
-
 > compare_fields: true
-
 > wildcards: *
-
 #### mappings:
 
     {
@@ -688,19 +604,12 @@ Make a phrase based on the values of `score` and `type`.
 Check if the date is a leap day.
 
 > algorithm: regex
-
 > caseless: 
-
 > priority: first_match
-
 > context:
-
 > flags:
-
 > compare_fields:
-
 > wildcards:
-
 #### mappings:
 
     {
