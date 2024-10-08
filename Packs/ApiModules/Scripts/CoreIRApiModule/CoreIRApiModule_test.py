@@ -63,6 +63,46 @@ def return_extra_data_result(*args):
         return {}, {}, {"incident": incident_from_extra_data_command}
 
 
+def test_retrieve_all_endpoints(requests_mock):
+    from CoreIRApiModule import retrieve_all_endpoints, CoreClient
+    
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )  
+    nonexistent_page_res = retrieve_all_endpoints(client, endpoints=[], 
+                                                  endpoint_id_list=None, 
+                                                  dist_name=None, 
+                                                  ip_list=None, 
+                                                  public_ip_list=None, 
+                                                  group_name=None,
+                                                  platform=None, alias_name=None, 
+                                                  isolate=None, hostname=None, 
+                                                  page_number=123, limit=1, 
+                                                  first_seen_gte=None, 
+                                                  first_seen_lte=None, 
+                                                  last_seen_gte=None, 
+                                                  last_seen_lte=None,
+                                                  sort_by_first_seen=None, 
+                                                  sort_by_last_seen=None,
+                                                  status=None, username=None)
+    assert nonexistent_page_res == []
+    
+
+def test_convert_to_hr_timestamps():
+    from CoreIRApiModule import convert_to_hr_timestamps
+    
+    expected_first_seen = "2019-12-08T09:06:09.000Z"
+    expected_last_seen = "2019-12-09T07:10:04.000Z"
+    endpoints_res = load_test_data('./test_data/get_endpoints.json').get('reply').get('endpoints')
+    
+    converted_endpoint = convert_to_hr_timestamps(endpoints_res)[0]
+    assert converted_endpoint.get('first_seen') == expected_first_seen
+    assert converted_endpoint.get('last_seen') == expected_last_seen
+        
+
 def test_get_endpoints(requests_mock):
     from CoreIRApiModule import get_endpoints_command, CoreClient
 
