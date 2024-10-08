@@ -1007,7 +1007,7 @@ def index_document_command(args, proxies):
 def get_indices_statistics_command(args, proxies):
     """
     Returns statistics and information of the Elasticsearch indices.
-    
+
     return: A List with Elasticsearch indices info and statistics.
     API reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html
     """
@@ -1015,24 +1015,23 @@ def get_indices_statistics_command(args, proxies):
     all_results = argToBoolean(args.get('all_results', False))
     indices = []
     es = elasticsearch_builder(proxies)
-    
+
     # Fetch the statistics for all indices
     stats = es.indices.stats()
     raw_indices_data = stats.get('indices')
     for index, index_data in raw_indices_data.items():
         index_stats = {'Name': index,
-                      'Status': index_data.get('status', ''),
-                      'Health': index_data.get('health', ''),
-                      'UUID': index_data.get('uuid', ''),
-                      'Documents Count': index_data.get('total', {}).get('docs', {}).get('count', ''),
-                      'Documents Deleted': index_data.get('total', {}).get('docs', {}).get('deleted', '')
-                      }
+                       'Status': index_data.get('status', ''),
+                       'Health': index_data.get('health', ''),
+                       'UUID': index_data.get('uuid', ''),
+                       'Documents Count': index_data.get('total', {}).get('docs', {}).get('count', ''),
+                       'Documents Deleted': index_data.get('total', {}).get('docs', {}).get('deleted', '')
+                       }
         indices.append(index_stats)
 
-    
     if not all_results:
         indices = indices[:limit]
-    
+
     readable_output = tableToMarkdown(
         name="Indices Statistics:",
         t=indices,
