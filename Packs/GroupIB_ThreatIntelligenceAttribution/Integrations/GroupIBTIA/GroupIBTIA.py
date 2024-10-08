@@ -14,7 +14,8 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 from cyberintegrations import TIPoller
 from traceback import format_exc
-from cyberintegrations.utils import ParserHelper
+from functools import wraps
+import re
 
 
 # Disable insecure warnings
@@ -210,10 +211,10 @@ PREFIXES = {
     "attacks/deface": "Attacks Deface",
     "attacks/phishing_group": "Phishing Group",
     "attacks/phishing_kit": "Phishing Kit",
-    "apt/threat": "APT Threat",
-    "apt/threat_actor": "APT Threat Actor",
-    "hi/threat": "HI Threat",
-    "hi/threat_actor": "HI Threat Actor",
+    "apt/threat": "Nation-State Cybercriminals Threat Threat",
+    "apt/threat_actor": "Nation-State Cybercriminals Threat Actor",
+    "hi/threat": "GIB Cybercriminal Threat",
+    "hi/threat_actor": "GIB Cybercriminal Threat Actor",
     "suspicious_ip/tor_node": "Suspicious IP Tor Node",
     "suspicious_ip/open_proxy": "Suspicious IP Open Proxy",
     "suspicious_ip/socks_proxy": "Suspicious IP Socks Proxy",
@@ -226,38 +227,27 @@ PREFIXES = {
 INCIDENT_CREATED_DATES_MAPPING = {
     "compromised/account_group": "dateFirstSeen",
     "compromised/breached": "uploadTime",
-    "compromised/mule": "dateAdd",
-    "compromised/bank_card_group": "dateLastSeen",
+    "compromised/mule": ["dateAdd", "dateIncident"],
+    "compromised/bank_card_group": "dateFirstCompromised",
     "osi/git_repository": "dateDetected",
     "osi/public_leak": "created",
     "osi/vulnerability": "datePublished",
-    "attacks/ddos": "dateBegin",
+    "attacks/ddos": "dateReg",
     "attacks/deface": "date",
     "attacks/phishing_kit": "dateFirstSeen",
-    "attacks/phishing_group": "detected",
+    "attacks/phishing_group": ["detected", "updated"],
     "apt/threat": "createdAt",
     "apt/threat_actor": "createdAt",
     "hi/threat": "createdAt",
     "hi/threat_actor": "createdAt",
     "suspicious_ip/tor_node": "dateFirstSeen",
-    "suspicious_ip/open_proxy": "dateDetected",
-    "suspicious_ip/socks_proxy": "dateDetected",
+    "suspicious_ip/open_proxy": "dateFirstSeen",
+    "suspicious_ip/socks_proxy": "dateFirstSeen",
     "suspicious_ip/vpn": "dateFirstSeen",
     "suspicious_ip/scanner": "dateFirstSeen",
-    "malware/cnc": "dateDetected",
+    "malware/cnc": "dateFirstSeen",
     "malware/malware": "updatedAt",
 }
-
-COLLECTIONS_WITH_MARKDOWN = [
-    "compromised/account_group",
-    "compromised/bank_card_group",
-    "osi/git_repository",
-    "osi/public_leak",
-    "osi/vulnerability",
-    "attacks/phishing_kit",
-    "hi/threat_actor",
-    "apt/threat_actor",
-]
 
 COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED = [
     "suspicious_ip/tor_node",
@@ -287,12 +277,62 @@ SET_WITH_ALL_DATE_FIELDS = {
     "datePublished",
     "dateReg",
     "date",
+    "validThruDate",
+    "datecompromised",
+    "dateDetected",
+}
+
+TABLES_MAPPING = {
+    "compromised/account_group": ["events_table"],
+    "compromised/bank_card_group": ["threatActor", "compromised_events", "malware"],
+    "osi/git_repository": ["files"],
+    "osi/public_leak": ["linkList", "matches"],
+    "osi/vulnerability": ["cpeTable", "affectedSoftware"],
+    "attacks/phishing_kit": ["downloadedFrom"],
+    "malware/cnc": ["threatActor"],
+    "malware/malware": ["attachedFile", "taList"],
+    "hi/threat": ["forumsAccounts"],
+    "hi/threat_actor": ["reports"],
+    "apt/threat_actor": ["reports"],
+    "apt/threat": ["forumsAccounts"],
+}
+
+HTML_FIELDS = {
+    "apt/threat_actor": ["description"],
+    "apt/threat": ["description"],
+    "malware/malware": ["description", "shortDescription"],
+    "hi/threat": ["description"],
+    "hi/threat_actor": ["description"],
+}
+
+PORTAL_LINKS = {
+    "compromised/account_group": "https://tap.group-ib.com/cd/accounts?id=",
+    "compromised/breached": "https://tap.group-ib.com/ta/darkweb?id=",
+    "compromised/bank_card_group": "https://tap.group-ib.com/cd/cards?id=",
+    "compromised/mule": "https://tap.group-ib.com/cd/mules?id=",
+    "hi/threat": "https://tap.group-ib.com/ta/last-threats?id=",
+    "hi/threat_actor": "https://tap.group-ib.com/ta/actors?type=hi&id=",
+    "apt/threat": "https://tap.group-ib.com/ta/last-threats?id=",
+    "apt/threat_actor": "https://tap.group-ib.com/ta/actors?type=apt&id=",
+    "attacks/ddos": "https://tap.group-ib.com/attacks/ddos?id=",
+    "attacks/deface": "https://tap.group-ib.com/attacks/deface?id=",
+    "attacks/phishing_group": "https://tap.group-ib.com/attacks/phishing?scope=all&id=",
+    "attacks/phishing_kit": "https://tap.group-ib.com/malware/phishing-kit?p=1&q=",
+    "malware/malware": "https://tap.group-ib.com/malware/reports/",
+    "osi/git_repository": "https://tap.group-ib.com/cd/git-leaks?id=",
+    "osi/public_leak": "https://tap.group-ib.com/cd/leaks?id=",
+    "osi/vulnerability": "https://tap.group-ib.com/malware/vulnerabilities?q=",
+    "suspicious_ip/tor_node": "https://tap.group-ib.com/suspicious/tor?q=",
+    "suspicious_ip/open_proxy": "https://tap.group-ib.com/suspicious/proxies?q=",
+    "suspicious_ip/socks_proxy": "https://tap.group-ib.com/suspicious/socks?q=",
+    "suspicious_ip/scanner": "https://tap.group-ib.com/suspicious/scanning?ip=",
+    "suspicious_ip/vpn": "https://tap.group-ib.com/suspicious/vpn?q=",
 }
 
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "login",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "login": "login",  # GIB Compromised Login
         "password": "password",  # GIB Password
@@ -300,45 +340,49 @@ MAPPING = {
             "domain": "parsedLogin.domain",  # GIB Parsed Login Domain
             "ip": "parsedLogin.ip",  # GIB Parsed Login IP
         },
-        "client": {
-            "ip": "events.client.ipv4.ip",  # GIB Victim IP
-        },
-        "malware": {"name": "malware.name"},  # GIB Malware Name
         "service": {
             "domain": "service.domain",  # GIB Service Domain
             "ip": "service.ip",  # GIB Service IP
+            "url": "service.url",  # GIB Service URL
         },
-        # END Information from GIB
-        # Threat Actor Info
-        "threatActor": {
-            "id": "threatActor.id",  # GIB Threat Actor ID
-            "name": "threatActor.name",  # GIB Threat Actor Name
-            "isAPT": "threatActor.isAPT",  # GIB Threat Actor is APT
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("compromised/account_group"),
+                "dynamic": "id",
+            }
         },
-        # END Threat Actor Info
-        # GIB Dates
+        "events_table": {  # GIB Compromised Events Information Table
+            "cnc": "events.cnc.cnc",
+            "asn": "events.client.ipv4.asn",
+            "city": "events.client.ipv4.city",
+            "region": "events.client.ipv4.region",
+            "provider": "events.client.ipv4.provider",
+            "countryCode": "events.client.ipv4.countryCode",
+            "ip": "events.client.ipv4.ip",
+            "malware": "events.malware.name",
+            "threatActor": "events.threatActor.name",
+            "dateDetected": "events.dateDetected",
+            "dateCompromised": "events.dateCompromised",
+            "phone": "events.person.phone",
+            "name": "events.person.name",
+            "email": "events.person.email",
+            "address": "events.person.address",
+        },
+        # END Information from Group-IB
+        # Group-IB Dates
         "dateFirstCompromised": "dateFirstCompromised",  # GIB Date First Compromised
         "dateLastCompromised": "dateLastCompromised",  # GIB Date Last Compromised
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
-        # END GIB Dates
-        # GIB Evaluation
+        # END Group-IB Dates
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
-        # Person Information from GIB
-        "person": {  # GIB Victim Person:Markdown
-            "phone": "events.person.phone",
-            "name": "events.person.name",
-            "email": "events.person.email",
-            "address": "events.person.address",
-            "dateDetected": "events.dateDetected",
-        },
-        # End Person Information from GIB
+        # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
             "event_url": "events.cnc.url",
             "event_domain": "events.cnc.domain",
@@ -350,53 +394,55 @@ MAPPING = {
     },
     "compromised/bank_card_group": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "cardInfo.number",
-        # Card Info From GIB
+        # Card Info From Group-IB
         "issuer": "cardInfo.issuer.issuer",  # GIB Card Issuer
         "number": "cardInfo.number",  # GIB Card Number
         "type": "cardInfo.type",  # GIB Card Type
         "payment_system": "cardInfo.system",  # GIB Payment System
-        # End Card Info From GIB
-        # Information from GIB
+        # End Card Info From Group-IB
+        # Information from Group-IB
         "id": "id",  # GIB ID
-        "malware_name": "malware.name",  # GIB Malware Name
-        "validThruDate_list": "events.cardInfo.validThruDate",  # GIB Card Valid Thru Dates
-        "validThru_list": "events.cardInfo.validThru",  # GIB Card Valid Thru List
-        "threatActor_name_list": "events.threatActor.name",  # GIB Threat Actors
-        "victim_names": "events.owner.name",  # GIB Compromised Card Victim Names
-        "victim_phones": "events.owner.phone",  # GIB Compromised Card Victim Phones
-        "dateDetected_list": "events.dateDetected",  # GIB Compromised Card Date Detected List
-        "compromised_events": {  # GIB Compromised Events Data
-            "validThruDate": "events.cardInfo.validThruDate",
-            "validThru": "events.cardInfo.validThru",
+        "compromised_events": {  # GIB Compromised Events Table
+            "valid_thru_date": "events.cardInfo.validThruDate",
+            "valid_thru": "events.cardInfo.validThru",
             "client_ip": "events.client.ipv4.ip",
             "cnc": "events.cnc.cnc",
             "cnc_ip": "events.cnc.ipv4.ip",
-            "threatActor_name": "events.threatActor.name",
-            "dateCompromised": "events.dateCompromised",
+            "threat_actor_name": "events.threatActor.name",
+            "date_compromised": "events.dateCompromised",
             "victim_phone": "events.owner.phone",
             "victim_name": "events.owner.name",
             "malware": "events.malware.name",
         },
-        # End Information from GIB
-        # GIB Evaluation
+        "malware": {  # GIB Malware Table
+            "id": "malware.id",
+            "name": "malware.name",
+        },
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("compromised/bank_card_group"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
-        # GIB Dates
+        # END Group-IB Evaluation
+        # Group-IB Dates
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "dateFirstCompromised": "dateFirstCompromised",  # GIB Date First Compromised
         "dateLastCompromised": "dateLastCompromised",  # GIB Date Last Compromised
-        # END GIB Dates
+        # END Group-IB Dates
         # Threat Actor
-        "threatActor": {
-            "id": "threatActor.id",  # GIB Threat Actor ID
-            "name": "threatActor.name",  # GIB Threat Actor Name
-            "isAPT": "threatActor.isAPT",  # GIB Threat Actor is APT
+        "threatActor": {  # GIB Threat Actors Table
+            "id": "threatActor.id",
+            "name": "threatActor.name",
         },
         # End Threat Actor
         "indicators": {  # GIB Related Indicators Data
@@ -408,23 +454,39 @@ MAPPING = {
             "cnc_ipv4_region": "events.cnc.ipv4.region",
         },
     },
-    "compromised/breached": {  # Freezed
-        "email": "email",
-        "id": "id",
-        "leakName": "leakName",
-        "password": "password",
-        "uploadTime": "uploadTime",
-        "name": "email",
+    "compromised/breached": {  # GIB Source:sourceType, severity:systemSeverity
+        "name": "id",
+        # Information from Group-IB
+        "id": "id",  # GIB ID
+        "leakName": "leakName",  # GIB Leak Name
+        "passwords": "password",  # GIB Passwords
+        "description": "description",  # Description
+        "emails": "email",  # GIB Emails
+        "emailDomains": "addInfo.emailDomain",  # GIB Email Domains
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("compromised/breached"),
+                "dynamic": "id",
+            }
+        },
+        # END Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
+        # END Group-IB Evaluation
+        # Group-IB Dates
+        "leakPublished": "leakPublished",  # GIB Leak Published
+        "updateTime": "updateTime",  # GIB Update Time
+        "uploadTime": "uploadTime",  # GIB Upload Time
+        # END Group-IB Dates
     },
     "compromised/mule": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "account",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "hash": "hash",  # GIB Data Hash
         "dateAdd": "dateAdd",  # GIB Date Add
@@ -438,15 +500,21 @@ MAPPING = {
             "clabe": "organization.clabe",  # GIB Organization CLABE
         },
         "account": "account",  # GIB Compromised Account
-        # END Information from GIB
-        # GIB Evaluation
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("compromised/mule"),
+                "dynamic": "id",
+            }
+        },
+        # END Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
             "cnc_url": "cnc.url",
             "cnc_domain": "cnc.domain",
@@ -457,58 +525,81 @@ MAPPING = {
         },
     },
     "osi/git_repository": {  # GIB Source:sourceType, severity:systemSeverity
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "name": "name",
         "leaked_file_name": "name",  # GIB Leaked File Name
         "source": "source",  # GIB GIT Source
         "dateDetected": "dateDetected",  # GIB Date of Detection
         "dateCreated": "dateCreated",  # GIB Date Created
-        "revisions": "files",  # GIB Revisions
-        # END Information from GIB
-        # GIB Evaluation
+        "files": {  # GIB OSI Git Repository Files Table
+            "file_id": "files.id",
+            "file_name": "files.name",
+            "hash": "files.revisions.hash",
+            "dateCreated": "files.dateCreated",
+            "dateDetected": "files.dateDetected",
+            "authorName": "files.revisions.info.authorName",
+            "authorEmail": "files.revisions.info.authorEmail",
+            "url": "files.url",
+            "dataFound": "files.dataFound",
+        },
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("osi/git_repository"),
+                "dynamic": "id",
+            }
+        },
+        # END Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
     },
     "osi/public_leak": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "hash",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "hash": "hash",  # GIB Data Hash
         "created": "created",  # GIB Date Created
         "data": "data",  # GIB Leaked Data
-        "linkList": {  # GIB Link List
+        "linkList": {  # GIB Link List Table
             "author": "linkList.author",
-            "detected": "linkList.dateDetected",
-            "published": "linkList.datePublished",
             "hash": "linkList.hash",
             "link": "linkList.link",
+            "title": "linkList.title",
             "source": "linkList.source",
+            "dateDetected": "linkList.dateDetected",
+            "datePublished": "linkList.datePublished",
         },
-        "matches": "matches",  # GIB Matches
-        # END Information from GIB
-        # GIB Evaluation
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("osi/public_leak"),
+                "dynamic": "id",
+            }
+        },
+        "matches": "matches",  # GIB Matches Table
+        # END Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
     },
     "osi/vulnerability": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "id",
-        # GIB Dates
+        # Group-IB Dates
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "dateModified": "dateModified",  # GIB Date Modified
         "datePublished": "datePublished",  # GIB Date Published
-        # END GIB Dates
-        # Information from GIB
+        # END Group-IB Dates
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "bulletinFamily": "bulletinFamily",  # GIB Bulletin Family
         "description": "description",  # Description
@@ -519,7 +610,13 @@ MAPPING = {
         "mergedCvss": "mergedCvss",  # GIB Merged Cvss
         "provider": "provider",  # GIB Provider
         "type": "type",  # GIB Vulnerability Type
-        "cpeTable": {  # GIB CPE Table:Markdown
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("osi/vulnerability"),
+                "dynamic": "id",
+            }
+        },
+        "cpeTable": {  # GIB CPE Table
             "product": "cpeTable.product",
             "string": "cpeTable.string",
             "string23": "cpeTable.string23",
@@ -527,15 +624,15 @@ MAPPING = {
             "vendor": "cpeTable.vendor",
             "version": "cpeTable.version",
         },
-        # END Information from GIB
-        # GIB Affected Software
-        "affectedSoftware": {
-            "name": "affectedSoftware.name",  # GIB Affected Software Name
-            "operator": "affectedSoftware.operator",  # GIB Affected Software Operator
-            "version": "affectedSoftware.version",  # GIB Affected Software Version
+        # END Information from Group-IB
+        # Group-IB Affected Software
+        "affectedSoftware": {  # GIB Affected Software Table
+            "name": "affectedSoftware.name",
+            "operator": "affectedSoftware.operator",
+            "version": "affectedSoftware.version",
         },
-        # END GIB Affected Software
-        # GIB CVSS Information
+        # END Group-IB Affected Software
+        # Group-IB CVSS Information
         "cvss": {
             "score": "cvss.score",  # GIB CVSS Score
             "vector": "cvss.vector",  # GIB CVSS Vector
@@ -550,15 +647,15 @@ MAPPING = {
             "temporal": "extCvss.temporal",  # GIB Extended CVSS Temporal
             "vector": "extCvss.vector",  # GIB Extended CVSS Vector
         },
-        # END GIB CVSS Information
-        # GIB Evaluation
+        # END Group-IB CVSS Information
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
             "severity": "evaluation.severity",
             "id": "id",
@@ -570,7 +667,7 @@ MAPPING = {
     },
     "attacks/ddos": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "target.ipv4.ip",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "dateBegin": "dateBegin",  # GIB DDOS Date Begin
         "dateEnd": "dateEnd",  # GIB DDOS Date End
@@ -580,31 +677,37 @@ MAPPING = {
         "source": "source",  # GIB DDOS Source
         "type": "type",  # GIB DDOS Type
         "malwareName": "malware.name",  # GIB Malware Name
-        # END Information from GIB
-        # GIB Evaluation
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("attacks/ddos"),
+                "dynamic": "id",
+            }
+        },
+        # END Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
-        # CNC Information from GIB
+        # END Group-IB Evaluation
+        # CNC Information from Group-IB
         "cnc": {
             "cnc": "cnc.cnc",  # GIB CNC
             "domain": "cnc.domain",  # GIB CNC Domain
             "port": "cnc.port",  # GIB CNC Port
             "url": "cnc.url",  # GIB CNC URL
         },
-        # END CNC Information from GIB
-        # Threat Actor
+        # END CNC Information from Group-IB
+        # Group-IB Threat Actor
         "threatActor": {
             "id": "threatActor.id",  # GIB Threat Actor ID
             "name": "threatActor.name",  # GIB Threat Actor Name
             "isAPT": "threatActor.isAPT",  # GIB Threat Actor is APT
         },
-        # End Threat Actor
-        # GIB DDOS Target
+        # End Group-IB Threat Actor
+        # Group-IB DDOS Target
         "target": {
             "url": "target.url",  # GIB DDOS Target URL
             "asn": "target.ipv4.asn",  # GIB DDOS Target ASN
@@ -618,15 +721,15 @@ MAPPING = {
             "category": "target.category",  # GIB DDOS Target Category
             "domain": "target.domain",  # GIB DDOS Target Domain
         },
-        # END GIB DDOS Target
-        # GIB DDOS Request
+        # END Group-IB DDOS Target
+        # Group-IB DDOS Request
         "requestData": {
             "link": "requestData.link",  # GIB DDOS Request Data Link
             "headersHash": "requestData.headersHash",  # GIB DDOS Request Headers Hash
             "body": "requestData.body",  # GIB DDOS Request Body
             "bodyHash": "requestData.bodyHash",  # GIB DDOS Request Body Hash
         },
-        # END GIB DDOS Request
+        # END Group-IB DDOS Request
         "indicators": {  # GIB Related Indicators Data
             "cnc_url": "cnc.url",
             "cnc_domain": "cnc.domain",
@@ -638,10 +741,9 @@ MAPPING = {
     },
     "attacks/deface": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "url",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "mirrorLink": "mirrorLink",  # GIB Mirror Link
-        "portalLink": "portalLink",  # GIB Portal Link
         "providerDomain": "providerDomain",  # GIB Provider Domain
         "siteUrl": "siteUrl",  # GIB Deface Site URL
         "source": "source",  # GIB Deface Source
@@ -649,16 +751,22 @@ MAPPING = {
         "targetDomainProvider": "targetDomainProvider",  # GIB Target Domain Provider
         "date": "date",  # GIB Deface Date
         "contacts": "contacts",  # GIB Deface Contacts
-        # END Information from GIB
-        # GIB Evaluation
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("attacks/deface"),
+                "dynamic": "id",
+            }
+        },
+        # END Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
-        # GIB Target IP
+        # END Group-IB Evaluation
+        # Group-IB Target IP
         "targetIp": {
             "asn": "targetIp.asn",  # GIB Target ASN
             "city": "targetIp.city",  # GIB Target City
@@ -668,14 +776,14 @@ MAPPING = {
             "provider": "targetIp.provider",  # GIB Target Provider
             "region": "targetIp.region",  # GIB Target Region
         },
-        # END GIB Target IP
-        # Threat Actor
+        # END Group-IB Target IP
+        # Group-IB Threat Actor
         "threatActor": {
             "id": "threatActor.id",  # GIB Threat Actor ID
             "name": "threatActor.name",  # GIB Threat Actor Name
             "isAPT": "threatActor.isAPT",  # GIB Threat Actor is APT
         },
-        # End Threat Actor
+        # End Group-IB Threat Actor
         "indicators": {  # GIB Related Indicators Data
             "url": "url",
             "target_domain": "targetDomain",
@@ -686,45 +794,63 @@ MAPPING = {
         },
     },
     "attacks/phishing_group": {  # GIB Source:sourceType, severity:systemSeverity
-        "name": "domainInfo.domain",
-        # Information from GIB
+        "name": "brand",
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "brand": "brand",  # GIB Phishing Brand
-        "phishing": {
-            "url": "phishing.url",  # GIB Phishing URL
-        },
+        "phishing_urls": "phishing.url",  # GIB Phishing URLs
         "status": "status",  # GIB Phishing Status
-        "phishing_domain_domain": "domainInfo.domain",  # GIB Phishing Domain
-        "phishing_domain_registrar": "domainInfo.registrar",  # GIB Phishing Registrar
-        "date":{
-            "blocked": "date.blocked",  # GIB Phishing Date Blocked
-            "added": "date.added",  # GIB Phishing Date Added
-            "detected": "date.detected",  # GIB Phishing Date Detected
-            "updated": "date.updated",  # GIB Phishing Date Updated
+        "objective": "objective",  #  GIB Phishing Objectives
+        "source": "source",  # GIB Phishing Sources
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("attacks/phishing_group"),
+                "dynamic": "id",
+            }
         },
-        # End Information from GIB
-        # GIB Evaluation
+        # End Information from Group-IB
+        # Group-IB Dates
+        "blocked": "date.blocked",  # GIB Phishing Date Blocked
+        "added": "date.added",  # GIB Phishing Date Added
+        "detected": "date.detected",  # GIB Phishing Date Detected
+        "updated": "date.updated",  # GIB Phishing Date Updated
+        # END Group-IB Dates
+        # Group-IB Domain Information
+        "domainInfo": {
+            "domain": "domainInfo.domain",  # GIB Phishing Domain
+            "domainPuny": "domainInfo.domainPuny",  # GIB Phishing Domain Puny
+            "expirationDate": "domainInfo.expirationDate",  # GIB Phishing Domain Expiration Date
+            "registrar": "domainInfo.registrar",  # GIB Phishing Registrar
+        },
+        # END Group-IB Domain Information
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
-        # GIB Phishing Information
-        "phishing_ip": {
-            "ip": "phishing_ip.ip",  # GIB Phishing IP
-            "countryCode": "phishing_ip.countryCode",  # Country Code
-            "countryName": "phishing_ip.countryName",  # GIB Country Name
-            "provider": "phishing_ip.provider",  # GIB Phishing Provider
+        # END Group-IB Evaluation
+        # Group-IB Phishing Information
+        "phishing_ip": {  # GIB Phishing IP Table
+            "ip": "ip.ip",
+            "countryCode": "ip.countryCode",
+            "countryName": "ip.countryName",
+            "provider": "ip.provider",
         },
-        # End Phishing Information from GIB
-        # GIB Threat Actor Information
+        # End Phishing Information from Group-IB
+        # Group-IB Threat Actor Information
         "threatActor": {
             "id": "threatActor.id",  # GIB Threat Actor ID
             "name": "threatActor.name",  # GIB Threat Actor Name
         },
-        # End Threat Actor
+        # End Group-IB Threat Actor Information
+        # Group-IB Phishing Kit Table
+        "phishing_kit_table": {  # GIB Phishing Kit Table
+            "name": "phishing.phishingKit.name",
+            "email": "phishing.phishingKit.email",
+        },
+        # END Group-IB Phishing Kit Table
         "indicators": {  # GIB Related Indicators Data
             "url": "url",
             "phishing_domain_domain": "phishing.domain.domain",
@@ -735,48 +861,58 @@ MAPPING = {
     },
     "attacks/phishing_kit": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "hash",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "hash": "hash",  # GIB Data Hash
         "dateDetected": "dateDetected",  # GIB Date of Detection
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
-        "path": "path",  # GIB Phishing Kit Path
         "source": "source",  # GIB Phishing Kit Source
-        "downloadedFrom": {  # GIB Downloaded From:Markdown
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("attacks/phishing_kit"),
+                "dynamic": "id",
+            }
+        },
+        "downloadedFrom": {  # GIB Downloaded From Table
             "date": "downloadedFrom.date",
             "url": "downloadedFrom.url",
             "phishingUrl": "downloadedFrom.phishingUrl",
             "domain": "downloadedFrom.domain",
             "fileName": "downloadedFrom.fileName",
         },
-        # End Information from GIB
-        # GIB Evaluation
+        # End Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
         "indicators": {"emails": "emails"},  # GIB Related Indicators Data
     },
     "suspicious_ip/tor_node": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "ipv4.ip",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
-        "portalLink": "portalLink",  # GIB Portal Link
-        # End Information from GIB
-        # GIB Evaluation
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("suspicious_ip/tor_node"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
@@ -786,7 +922,7 @@ MAPPING = {
     },
     "suspicious_ip/open_proxy": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "ipv4.ip",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
@@ -795,16 +931,21 @@ MAPPING = {
         "source": "source",  # GIB Proxy Source
         "sources": "sources",  # GIB Proxy Sources
         "type": "type",  # GIB Proxy Type
-        "portalLink": "portalLink",  # GIB Portal Link
-        # End Information from GIB
-        # GIB Evaluation
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("suspicious_ip/open_proxy"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
@@ -814,21 +955,26 @@ MAPPING = {
     },
     "suspicious_ip/socks_proxy": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "ipv4.ip",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "dateDetected": "dateDetected",  # GIB Date of Detection
-        "portalLink": "portalLink",  # GIB Portal Link
-        # End Information from GIB
-        # GIB Evaluation
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("suspicious_ip/socks_proxy"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
@@ -838,22 +984,27 @@ MAPPING = {
     },
     "suspicious_ip/vpn": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "id",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "sources": "sources",  # GIB VPN Sources
         "names": "names",  # GIB VPN Names
-        "portalLink": "portalLink",  # GIB Portal Link
-        # End Information from GIB
-        # GIB Evaluation
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("suspicious_ip/vpn"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
@@ -863,22 +1014,27 @@ MAPPING = {
     },
     "suspicious_ip/scanner": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "id",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
-        "portalLink": "portalLink",  # GIB Portal Link
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("suspicious_ip/scanner"),
+                "dynamic": "id",
+            }
+        },
         "categories": "categories",  # GIB Scanner Categories
         "sources": "sources",  # GIB Scanner Sources
-        # End Information from GIB
-        # GIB Evaluation
+        # End Information from Group-IB
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
+        # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
@@ -888,7 +1044,7 @@ MAPPING = {
     },
     "malware/cnc": {  # GIB Source:sourceType
         "name": "cnc",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "cnc": "cnc",  # GIB CNC URL
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
@@ -899,13 +1055,13 @@ MAPPING = {
             "id": "malwareList.id",  # GIB Malware ID
             "name": "malwareList.name",  # GIB Malware Name
         },
-        # End Information from GIB
-        # Threat Actor
-        "threatActor": {
-            "id": "threatActor.id",  # GIB Threat Actor ID
-            "name": "threatActor.name",  # GIB Threat Actor Name
+        # End Information from Group-IB
+        # Group-IB Threat Actor
+        "threatActor": {  # GIB Threat Actors Table
+            "id": "threatActor.id",
+            "name": "threatActor.name",
         },
-        # End Threat Actor
+        # End Group-IB Threat Actor
         "indicators": {  # GIB Related Indicators Data
             "url": "url",
             "domain": "domain",
@@ -916,9 +1072,9 @@ MAPPING = {
         },
     },
     "malware/malware": {  # GIB Source:sourceType
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
-        "name":"name",
+        "name": "name",
         "malware_name": "name",  # GIB Malware Name
         "updatedAt": "updatedAt",  # GIB Date Updated At
         "aliases": "aliases",  # GIB Malware Aliases
@@ -927,47 +1083,52 @@ MAPPING = {
         "shortDescription": "shortDescription",  # GIB Malware Short Description
         "geoRegion": "geoRegion",  # GIB Malware Regions
         "langs": "langs",  # GIB Malware Langs
-        "portalLink": "portalLink",  # GIB Portal Link
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("malware/malware"),
+                "dynamic": "id",
+            }
+        },
         "sourceCountry": "sourceCountry",  # GIB Malware Source Countries
         "platform": "platform",  # GIB Malware Platforms
         "threatLevel": "threatLevel",  # GIB Threat Level
-        "attachedFile": {
-            "hash": "attachedFile.hash",  # GIB Malware File Hashs
-            "mime": "attachedFile.mime",  # GIB Malware File Mimes
+        "attachedFile": {  # GIB Malware Files Table
+            "hash": "attachedFile.hash",
+            "mime": "attachedFile.mime",
         },
-        # End Information from GIB
-        # GIB Threat Actor
-        "taList": {
-            "id": "taList.id",  # GIB Threat Actor ID
-            "name": "taList.name",  # GIB Threat Actor Name
+        # End Information from Group-IB
+        # Group-IB Threat Actor
+        "taList": {  # GIB Threat Actors Table
+            "id": "taList.id",
+            "name": "taList.name",
         },
-        # END GIB Threat Actor
+        # END Group-IB Threat Actor
     },
     "hi/threat": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "threatActor.name",
-        # GIB Threat Actor
+        # Group-IB Threat Actor
         "threatActor": {
             "country": "threatActor.country",  # GIB Threat Actor Country
             "id": "threatActor.id",  # GIB Threat Actor ID
             "isAPT": "threatActor.isAPT",  # GIB Threat Actor is APT
             "name": "threatActor.name",  # GIB Threat Actor Name
         },
-        # END GIB Threat Actor
-        # GIB Evaluation
+        # END Group-IB Threat Actor
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
-        # GIB Cybercriminal Forum Information
-        "forumsAccounts ": {
-            "nickname": "forumsAccounts.nickname",  # GIB Cybercriminal Forums Nicknames
-            "url": "forumsAccounts.url",  # GIB Cybercriminal Forums URLs For Profiles
+        # END Group-IB Evaluation
+        # Group-IB Cybercriminal Forum Information
+        "forumsAccounts": {  # GIB Cybercriminal Forums Table
+            "nickname": "forumsAccounts.nickname",
+            "url": "forumsAccounts.url",
         },
-        # END GIB Cybercriminal Forum Information
-        # Information from GIB
+        # END Group-IB Cybercriminal Forum Information
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "title": "title",  # GIB Cybercriminal Threat Title
         "description": "description",  # GIB Cybercriminal Threat Description
@@ -980,7 +1141,13 @@ MAPPING = {
         "regions": "regions",  # GIB Cybercriminal Regions
         "sectors": "sectors",  # GIB Cybercriminal Sectors
         "reportNumber": "reportNumber",  # GIB Report Number
-        # End Information from GIB
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("hi/threat"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
         "indicators": {  # GIB Related Indicators Data
             "ipv4": "indicators.params.ipv4",
             "domain": "indicators.params.domain",
@@ -992,9 +1159,9 @@ MAPPING = {
             "size": "indicators.params.size",
         },
     },
-    "hi/threat_actor": {  # GIB Source:sourceType, severity:systemSeverity
-        # Information from GIB
-        "name":"name",
+    "hi/threat_actor": {  # GIB Source:sourceType
+        # Information from Group-IB
+        "name": "name",
         "id": "id",  # GIB ID
         "aliases": "aliases",  # GIB Cybercriminal Threat Actor Aliases
         "description": "description",  # GIB Cybercriminal Threat Actor Description
@@ -1004,22 +1171,29 @@ MAPPING = {
         "regions": "stat.regions",  # GIB Cybercriminal Regions
         "sectors": "stat.sectors",  # GIB Cybercriminal Sectors
         "malware": "stat.malware",  # GIB Cybercriminal Malware
-        "reports": {  # GIB Cybercriminal Threat Actor Reports:Markdown
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("hi/threat_actor"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
+        # Group-IB Threat Actor Reports
+        "reports": {  # GIB Cybercriminal Threat Actor Reports Table
             "id": "stat.reports.id",
             "name": "stat.reports.name.en",
             "datePublished": "stat.reports.datePublished",
         },
-        # End Information from GIB
-        
-        # GIB Dates
+        # END Group-IB Threat Actor Reports
+        # Group-IB Dates
         "createdAt": "createdAt",  # GIB Date Created At
         "updatedAt": "updatedAt",  # GIB Date Updated At
         "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
-        # END GIB Dates
+        # END Group-IB Dates
     },
-    "apt/threat_actor": {  # GIB Source:sourceType, severity:systemSeverity
-        # Information from GIB
+    "apt/threat_actor": {  # GIB Source:sourceType
+        # Information from Group-IB
         "name": "name",
         "id": "id",  # GIB ID
         "aliases": "aliases",  # GIB Nation-State Cybercriminals Threat Actor Aliases
@@ -1035,26 +1209,31 @@ MAPPING = {
         "expertise": "stat.expertise",  # GIB Nation-State Cybercriminals Expertises
         "malware": "stat.malware",  # GIB Nation-State Cybercriminals Malware
         "regions": "stat.regions",  # GIB Nation-State Cybercriminals Regions
-        "reports": {  # GIB Nation-State Cybercriminals Threat Actor Reports:Markdown
+        "sectors": "stat.sectors",  # GIB Nation-State Cybercriminals Sectors
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("apt/threat_actor"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
+        # Group-IB Threat Actor Reports
+        "reports": {  # GIB Nation-State Cybercriminals Threat Actor Reports Table
             "id": "stat.reports.id",
             "name": "stat.reports.name.en",
             "datePublished": "stat.reports.datePublished",
         },
-        "sectors": "stat.sectors",  # GIB Nation-State Cybercriminals Sectors
-        
-        # End Information from GIB
-        
-        # GIB Dates
+        # END Group-IB Threat Actor Reports
+        # Group-IB Dates
         "createdAt": "createdAt",  # GIB Date Created At
         "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
         "updatedAt": "updatedAt",  # GIB Date Updated At
-        # END GIB Dates
-        
+        # END Group-IB Dates
     },
     "apt/threat": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "threatActor.name",
-        # Information from GIB
+        # Information from Group-IB
         "id": "id",  # GIB ID
         "title": "title",  # GIB Nation-State Cybercriminals Threat Title
         "countries": "countries",  # GIB Nation-State Cybercriminals Threat Countries
@@ -1066,35 +1245,41 @@ MAPPING = {
         "regions": "regions",  # GIB Nation-State Cybercriminals Threat Regions
         "reportNumber": "reportNumber",  # GIB Nation-State Cybercriminals Threat Report Number
         "sectors": "sectors",  # GIB Nation-State Cybercriminals Threat Sectors
-        # End Information from GIB
-        # GIB Dates
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("apt/threat"),
+                "dynamic": "id",
+            }
+        },
+        # End Information from Group-IB
+        # Group-IB Dates
         "createdAt": "createdAt",  # GIB Date Created At
         "dateFirstSeen": "stat.dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "stat.dateLastSeen",  # GIB Date Last Seen
         "datePublished": "datePublished",  # GIB Date Published
-        # END GIB Dates
-        # GIB Threat Actor
+        # END Group-IB Dates
+        # Group-IB Threat Actor
         "threatActor": {
             "country": "threatActor.country",  # GIB Threat Actor Country
             "id": "threatActor.id",  # GIB Threat Actor ID
             "isAPT": "threatActor.isAPT",  # GIB Threat Actor is APT
             "name": "threatActor.name",  # GIB Threat Actor Name
         },
-        # END GIB Threat Actor
-        # GIB Evaluation
+        # END Group-IB Threat Actor
+        # Group-IB Evaluation
         "evaluation": {
             "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
         },
-        # END GIB Evaluation
-        # GIB Cybercriminal Forum Information
-        "forumsAccounts": {
-            "nickname": "forumsAccounts.nickname",  # GIB Nation-State Cybercriminals Threat Forums Nicknames
-            "url": "forumsAccounts.url",  # GIB Nation-State Cybercriminals Threat Forums URLs For Profiles
+        # END Group-IB Evaluation
+        # Group-IB Cybercriminal Forum Information
+        "forumsAccounts": {  # GIB Nation-State Cybercriminal Forums Table
+            "nickname": "forumsAccounts.nickname",
+            "url": "forumsAccounts.url",
         },
-        # END GIB Cybercriminal Forum Information
+        # END Group-IB Cybercriminal Forum Information
         "indicators": {  # GIB Related Indicators Data
             "ipv4": "indicators.params.ipv4",
             "domain": "indicators.params.domain",
@@ -1154,6 +1339,20 @@ class Client(BaseClient):
 
         return last_fetch, date_from  # type: ignore
 
+    def json_errors_interceptor():
+        def decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                try:
+                    return func(*args, **kwargs)
+                except requests.exceptions.JSONDecodeError as e:
+                    demisto.error(format_exc())
+
+            return wrapper
+
+        return decorator
+
+    @json_errors_interceptor()
     def create_poll_generator(
         self, collection_name: str, max_requests: int, hunting_rules: bool, **kwargs
     ):
@@ -1204,21 +1403,119 @@ class Client(BaseClient):
             )
 
 
-def test_module(client: Client) -> str:
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    :param client: GIB_TI client
-    :return: 'ok' if test passed, anything else will fail the test.
-    """
-
-    for collection in client.poller.get_available_collections():
-        if collection not in MAPPING.keys():
-            return f"Test failed, some problems with getting available collections. Error in collection {str(collection)}"
-    return "ok"
-
-
 """ Support functions """
+
+
+class CommonHelpers:
+    @staticmethod
+    def transform_dict(
+        input_dict: dict[str, list[Union[str, list[Any]]] | str | None]
+    ) -> list[dict[str, Any]]:
+        if not input_dict:
+            return [{}]
+
+        normalized_dict = {
+            k: v if isinstance(v, list) else [v] for k, v in input_dict.items()
+        }
+
+        max_length = max(
+            (len(v) for v in normalized_dict.values() if isinstance(v, list)), default=1
+        )
+
+        result = []
+        for i in range(max_length):
+            result.append(
+                {
+                    k: (v[i] if i < len(v) else (v[0] if v else None))
+                    for k, v in normalized_dict.items()
+                }
+            )
+
+        return result
+
+    @staticmethod
+    def remove_underscore_and_lowercase_keys(
+        dict_list: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        updated_dicts = []
+
+        for d in dict_list:
+            new_dict = {}
+            for key, value in d.items():
+                new_key = key.replace("_", "").lower()
+                new_dict[new_key] = value
+
+            updated_dicts.append(new_dict)
+
+        return updated_dicts
+
+    @staticmethod
+    def replace_empty_values(
+        data: dict[str, Any] | list[dict[str, Any]]
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+
+        if isinstance(data, dict):
+            return {
+                key: CommonHelpers.replace_empty_values(value)
+                for key, value in data.items()
+            }
+
+        elif isinstance(data, list):
+            if not data:
+                return None
+
+            if all(isinstance(item, list) and not item for item in data):
+                return None
+
+            return [CommonHelpers.replace_empty_values(item) for item in data]
+
+        else:
+            if data == "":
+                return None
+            return data
+
+    @staticmethod
+    def all_lists_empty(data: dict[str, Any] | list[Any]) -> bool:
+        all_empty = True
+
+        if isinstance(data, dict):
+            for value in data.values():
+                if isinstance(value, list):
+                    if value:
+                        all_empty = False
+                elif isinstance(value, dict):
+                    if not CommonHelpers.all_lists_empty(value):
+                        all_empty = False
+        elif isinstance(data, list):
+            for item in data:
+                if isinstance(item, dict):
+                    if not CommonHelpers.all_lists_empty(item):
+                        all_empty = False
+
+        return all_empty
+
+    @staticmethod
+    def date_parse(date: str, arg_name: str) -> str:
+        date_from_parsed = dateparser_parse(date)
+        if date_from_parsed is None:
+            raise DemistoException(
+                f"Inappropriate {arg_name} format, "
+                "please use something like this: 2020-01-01 or January 1 2020"
+            )
+        date_from_parsed = date_from_parsed.strftime(DATE_FORMAT)
+        return date_from_parsed
+
+    @staticmethod
+    def remove_html_tags(entry: dict, collection_name: str) -> dict:
+        if collection_name in HTML_FIELDS.keys():
+            fields = HTML_FIELDS.get(collection_name, [])
+            for field in fields:
+                entry_field_value = entry.get(field, None)
+                if isinstance(entry_field_value, str):
+                    entry_field_value = re.sub(r"<[^>]+>", "", entry_field_value)
+                    entry[field] = entry_field_value
+
+        return entry
 
 
 class IndicatorsHelper:
@@ -1358,321 +1655,7 @@ class IndicatorsHelper:
         return indicators
 
 
-class TransformFieldsToMarkdown:
-    """
-    Some fields can have complex nesting, so this function transforms them into an appropriate state.
-
-    :param collection_name: which collection this feed belongs to.
-    :param feed: feed from GIB TI&A that needs transformation.
-    :return: given feed with transformed fields.
-    """
-
-    def __init__(self, collection_name: str, feed: dict) -> None:
-        self.collection_name: str = collection_name
-        self.feed: dict = feed
-        self.funcs: dict[str, function] = {
-            "osi/git_repository": self.transform_osi_git_repository,
-            "osi/public_leak": self.transform_osi_publick_leak,
-            "compromised/account_group": self.compromised_account_group_transform_person,
-            "osi/vulnerability": self.osi_vulnerability_transform_cpe_table,
-            "attacks/phishing_kit": self.attacks_phishing_kit_downloaded_from,
-            "hi/threat_actor": self.hi_threat_actor_reports,
-            "apt/threat_actor": self.apt_threat_actor_reports,
-            "compromised/bank_card_group": self.compromised_bank_card_group_transform_compromised_events,
-        }
-
-    @staticmethod
-    def format_link(link: str | Any) -> str:
-        return f"[{link}]({link})"
-
-    @staticmethod
-    def formed_str_for_markdown(feed: dict, key: str) -> str | int | None:
-        value: str | list | int | None = ParserHelper.find_element_by_key(feed, key)
-        if isinstance(value, str):
-            return value
-        elif isinstance(value, list):
-            if all(isinstance(v, int) for v in value):
-                # If all elements are integers, convert them to strings and join with ", "
-                return ", ".join(map(str, value))
-            else:
-                # Convert each element to a string (this handles None and any other type)
-                return ", ".join(str(v) for v in value)
-        else:
-            # Directly return if value is int or None
-            return value
-
-    @staticmethod
-    def process_revision(file: dict, date_created: str) -> str:
-        author_email = TransformFieldsToMarkdown.formed_str_for_markdown(
-            file, "revisions.info.authorEmail"
-        )
-        author_name = TransformFieldsToMarkdown.formed_str_for_markdown(
-            file, "revisions.info.authorName"
-        )
-        timestamp = TransformFieldsToMarkdown.formed_str_for_markdown(
-            file, "revisions.info.timestamp"
-        )
-        url = TransformFieldsToMarkdown.formed_str_for_markdown(file, "url")
-        return f"| {url} | {author_email} | {author_name} | {date_created} | {timestamp} |\n"
-
-    def transform_osi_git_repository(self) -> dict:
-        revisions = self.feed.get("revisions")
-        date_created = self.feed.get("dateCreated")
-
-        buffer = ""
-        if isinstance(revisions, dict):
-            buffer += TransformFieldsToMarkdown.process_revision(revisions, date_created=date_created)  # type: ignore
-        elif isinstance(revisions, list):
-            for file in revisions:
-                buffer += TransformFieldsToMarkdown.process_revision(file, date_created=date_created)  # type: ignore
-
-        if buffer:
-            buffer = (
-                "| URL  |   Author Email  | Author Name  | Date Created  |   TimeStamp  |\n"
-                "| ---- | --------------- | ------------ | ------------- | ------------ |\n"
-                + buffer
-            )
-            self.feed["revisions"] = buffer
-        else:
-            del self.feed["revisions"]
-
-        return self.feed
-
-    def transform_osi_publick_leak(self) -> dict:
-        def link_list_process(item: dict) -> str:
-            author = TransformFieldsToMarkdown.formed_str_for_markdown(item, "author")
-            detected = TransformFieldsToMarkdown.formed_str_for_markdown(
-                item, "detected"
-            )
-            published = TransformFieldsToMarkdown.formed_str_for_markdown(
-                item, "published"
-            )
-            hash_ = TransformFieldsToMarkdown.formed_str_for_markdown(item, "hash")
-            formatted_link = TransformFieldsToMarkdown.format_link(
-                TransformFieldsToMarkdown.formed_str_for_markdown(item, "link")
-            )
-            source = TransformFieldsToMarkdown.formed_str_for_markdown(item, "source")
-            return f"| {author} | {detected} | {published} | {hash_} | {formatted_link} | {source} |\n"
-
-        link_list = self.feed.get("linkList")
-        buffer = ""
-
-        if isinstance(link_list, dict):
-            buffer += link_list_process(link_list)
-        elif isinstance(link_list, list):
-            for item in link_list:
-                buffer += link_list_process(item)
-
-        if buffer:
-            buffer = (
-                "| Author | Date Detected | Date Published | Hash | Link | Source |\n"
-                "| ------ | ------------- | -------------- | ---- |----- | ------ |\n"
-                + buffer
-            )
-            self.feed["linkList"] = buffer
-        else:
-            del self.feed["linkList"]
-
-        buffer = ""
-        matches = self.feed.get("matches", {})
-        if isinstance(matches, list):
-            matches = {}
-        for type_, sub_dict in matches.items():
-            for sub_type, sub_list in sub_dict.items():
-                for value in sub_list:
-                    buffer += f"| {type_} | {sub_type} | {value} |\n"
-        if buffer:
-            buffer = (
-                "| Type | Sub Type | Value |\n"
-                "| ---- | -------- | ----- |\n" + buffer  # noqa: ISC001
-            )
-            self.feed["matches"] = buffer
-        else:
-            del self.feed["matches"]
-
-        return self.feed
-
-    def compromised_account_group_transform_person(self) -> dict:
-        def person_process(data: dict):
-            phone = data.get("phone")
-            name = data.get("name")
-            email = data.get("email")
-            address = data.get("address")
-            dateDetected = data.get("dateDetected")
-            return f"| {phone} | {name} | {email} | {address} | {dateDetected} |\n"
-
-        person = self.feed.get("person")
-        buffer = ""
-        if isinstance(person, dict):
-            buffer += person_process(person)
-        elif isinstance(person, list):
-            for item in person:
-                buffer += person_process(item)
-
-        if buffer:
-            buffer = (
-                "| Phone | Name | Email | Address | Date Detected |\n"
-                "| ----- | ---- | ----- | ------- | ------------- |\n" + buffer
-            )
-            self.feed["person"] = buffer
-        else:
-            del self.feed["person"]
-
-        return self.feed
-
-    def osi_vulnerability_transform_cpe_table(self) -> dict:
-        def cpe_table_process(data: dict):
-            product = data.get("product")
-            string = data.get("string")
-            string23 = data.get("string23")
-            type = data.get("type")
-            vendor = data.get("vendor")
-            version = data.get("version")
-            return f"| {product} | {string} | {string23} | {type} | {vendor} | {version} |\n"
-
-        cpe_table = self.feed.get("cpeTable")
-        buffer = ""
-        if isinstance(cpe_table, dict):
-            buffer += cpe_table_process(cpe_table)
-        elif isinstance(cpe_table, list):
-            for item in cpe_table:
-                buffer += cpe_table_process(item)
-
-        if buffer:
-            buffer = (
-                "| Product | String | String23 | Type | vendor | version |\n"
-                "| ------- | ------ | -------- | ---- | ------ | ------- |\n" + buffer
-            )
-            self.feed["cpeTable"] = buffer
-        else:
-            del self.feed["cpeTable"]
-
-        return self.feed
-
-    def attacks_phishing_kit_downloaded_from(self) -> dict:
-        def downloaded_from_process(data: dict):
-            date = data.get("date")
-            url = data.get("url")
-            phishingUrl = data.get("phishingUrl")
-            domain = data.get("domain")
-            fileName = data.get("fileName")
-            return f"| {date} | {url} | {phishingUrl} | {domain} | {fileName} |\n"
-
-        downloaded_from = self.feed.get("downloadedFrom")
-        buffer = ""
-        if isinstance(downloaded_from, dict):
-            buffer += downloaded_from_process(downloaded_from)
-        elif isinstance(downloaded_from, list):
-            for item in downloaded_from:
-                buffer += downloaded_from_process(item)
-
-        if buffer:
-            buffer = (
-                "| date | url | phishing Url | domain | fileName |\n"
-                "| ---- | --- | ------------ | ------ | -------- |\n" + buffer
-            )
-            self.feed["downloadedFrom"] = buffer
-        else:
-            del self.feed["downloadedFrom"]
-
-        return self.feed
-
-    def hi_threat_actor_reports(self) -> dict:
-        def hi_threat_actor_reports_processes(data: dict):
-            id = data.get("id")
-            name = data.get("name")
-            date_published = data.get("datePublished")
-            return f"| {id} | {name} | {date_published} |\n"
-
-        reports = self.feed.get("reports")
-        buffer = ""
-        if isinstance(reports, dict):
-            buffer += hi_threat_actor_reports_processes(reports)
-        elif isinstance(reports, list):
-            for item in reports:
-                buffer += hi_threat_actor_reports_processes(item)
-
-        if buffer:
-            buffer = (
-                "| id | name | date Published |\n"
-                "| -- | ---- | -------------- |\n" + buffer
-            )
-            self.feed["reports"] = buffer
-        else:
-            del self.feed["reports"]
-
-        return self.feed
-
-    def apt_threat_actor_reports(self) -> dict:
-        def apt_threat_actor_reports_processes(data: dict):
-            id = data.get("id")
-            name = data.get("name")
-            date_published = data.get("datePublished")
-            return f"| {id} | {name} | {date_published} |\n"
-
-        reports = self.feed.get("reports")
-        buffer = ""
-        if isinstance(reports, dict):
-            buffer += apt_threat_actor_reports_processes(reports)
-        elif isinstance(reports, list):
-            for item in reports:
-                buffer += apt_threat_actor_reports_processes(item)
-
-        if buffer:
-            buffer = (
-                "| id | name | date Published |\n"
-                "| -- | ---- | -------------- |\n" + buffer
-            )
-            self.feed["reports"] = buffer
-        else:
-            del self.feed["reports"]
-
-        return self.feed
-
-    def compromised_bank_card_group_transform_compromised_events(self) -> dict:
-        def compromised_events_processes(data: dict):
-            validThruDate = data.get("validThruDate")
-            validThru = data.get("validThru")
-            client_ip = data.get("client_ip")
-            cnc = data.get("cnc")
-            cnc_ip = data.get("cnc_ip")
-            threatActor_name = data.get("threatActor_name")
-            dateCompromised = data.get("dateCompromised")
-            victim_phone = data.get("victim_phone")
-            victim_name = data.get("victim_name")
-            malware = data.get("malware")
-            return (
-                f"| {validThruDate} | {validThru} | {client_ip} | {cnc} |"
-                f" {cnc_ip} | {threatActor_name} | {dateCompromised} | {victim_phone} | {victim_name} | {malware} \n"
-            )
-
-        compromised_events = self.feed.get("compromised_events")
-        buffer = ""
-        if isinstance(compromised_events, dict):
-            buffer += compromised_events_processes(compromised_events)
-        elif isinstance(compromised_events, list):
-            for item in compromised_events:
-                buffer += compromised_events_processes(item)
-
-        if buffer:
-            buffer = (
-                "| Valid Thru Date | Valid Thru | Client IP | CNC | CNC IP |"
-                "Threat Actor Name | Date Compromised | Victim Phone | Victim Name | Malware |\n"
-                "| --------------- | ---------- | --------- | --- | ------ |"
-                "----------------- | ---------------- | ------------ | ----------- | ------- |\n"
-                + buffer
-            )
-            self.feed["compromised_events"] = buffer
-        else:
-            del self.feed["compromised_events"]
-
-        return self.feed
-
-    def run_transform(self) -> dict:
-        return self.funcs[self.collection_name]()  # type: ignore
-
-
-class IncidentsHelper:
+class IncidentBuilder:
 
     def __init__(self, collection_name: str, incident: dict, mapping: dict) -> None:
         self.collection_name = collection_name
@@ -1690,9 +1673,6 @@ class IncidentsHelper:
         return related_indicators_data
 
     def get_system_severity(self) -> int:
-        demisto.debug(
-            f"{self.collection_name}, {self.incident.get('id')}, {self.incident.get('evaluation', {})}"
-        )
         severity = self.incident.get("evaluation", {}).get("severity")
         system_severity = 0
         if severity == "green":
@@ -1704,17 +1684,33 @@ class IncidentsHelper:
         return system_severity
 
     def get_incident_created_time(self) -> str:
-        created_date_field = INCIDENT_CREATED_DATES_MAPPING.get(
+        occured_date_field = INCIDENT_CREATED_DATES_MAPPING.get(
             self.collection_name, "-"
         )
-        incident_created_time = dateparser_parse(
-            date_string=self.incident.get(created_date_field, "")
+
+        if isinstance(occured_date_field, str):
+            occured_date_field = [occured_date_field]
+
+        assert isinstance(
+            occured_date_field, list
+        ), f"Expected list or string for occured_date_field, got {type(occured_date_field).__name__}"
+
+        for variant in occured_date_field:
+            try:
+                incident_occured_date = dateparser_parse(
+                    date_string=self.incident.get(variant, "")
+                )
+                assert incident_occured_date is not None, (
+                    f"{self.incident} incident_occured_date cannot be None, "
+                    f"occured_date_field: {variant}, incident_occured_date: {incident_occured_date}"
+                )
+                return incident_occured_date.strftime(DATE_FORMAT)
+            except AssertionError as e:
+                last_exception = e
+
+        raise AssertionError(
+            f"None of the date fields {occured_date_field} returned a valid date. Last error: {last_exception}"
         )
-        assert incident_created_time is not None, (
-            f"{self.incident} incident_created_time cannot be None, "
-            "created_date_field: {created_date_field}, incident_created_time: {incident_created_time}"
-        )
-        return incident_created_time.strftime(DATE_FORMAT)
 
     def get_incident_name(self) -> str:
         name = ""
@@ -1738,7 +1734,7 @@ class IncidentsHelper:
             elif severity == "orange":
                 set_severity = "Medium"
             elif severity == "red":
-                set_severity == "High"
+                set_severity = "High"
 
             self.incident["evaluation"]["severity"] = set_severity
 
@@ -1757,9 +1753,68 @@ class IncidentsHelper:
     def check_dates(self):
         for field, value in self.incident.items():
             if field in SET_WITH_ALL_DATE_FIELDS:
-                new_value = self.date_conversion(value)
-                if new_value:
-                    self.incident[field] = new_value
+                if value is not None:
+                    new_value = self.date_conversion(value)
+                    if new_value:
+                        self.incident[field] = new_value
+
+    def osi_public_leak_mathes_transform_to_grid_table(self, field: str):
+        field_data = self.incident.get(field, {})
+        if field_data:
+            new_matches = []
+            if isinstance(field_data, list):
+                field_data = {}
+            for type_, sub_dict in field_data.items():
+                for sub_type, sub_list in sub_dict.items():
+                    for value in sub_list:
+                        new_matches.append(
+                            {"type": type_, "sub_type": sub_type, "value": value}
+                        )
+
+            transformed_and_replaced_empty_values_data = (
+                CommonHelpers.replace_empty_values(new_matches)
+            )
+            clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
+                transformed_and_replaced_empty_values_data
+            )
+            demisto.debug(
+                f"osi_public_leak_mathes_transform_to_grid_table, {self.collection_name}, {clean_data}"
+            )
+            self.incident[field] = clean_data
+
+    def transform_fields_to_grid_table(self):
+        fields_for_modify_in_table = TABLES_MAPPING.get(self.collection_name, {})
+        demisto.debug(
+            f"transform_fields_to_grid_table_start, {fields_for_modify_in_table}, {self.collection_name}, {self.incident['id']}"
+        )
+        if fields_for_modify_in_table:
+            for field in fields_for_modify_in_table:
+                if self.collection_name == "osi/public_leak" and field == "matches":
+                    self.osi_public_leak_mathes_transform_to_grid_table(field=field)
+                else:
+                    field_data = self.incident.get(field, {})
+                    demisto.debug(
+                        f"transform_fields_to_grid_table_field_data {field_data}, {type(field_data)}"
+                    )
+                    if (
+                        field_data
+                        and CommonHelpers.all_lists_empty(field_data) == False
+                    ):
+                        transformed_data = CommonHelpers.transform_dict(
+                            input_dict=field_data
+                        )
+                        transformed_and_replaced_empty_values_data = (
+                            CommonHelpers.replace_empty_values(transformed_data)
+                        )
+                        clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
+                            transformed_and_replaced_empty_values_data
+                        )
+                        demisto.debug(
+                            f"transform_fields_to_grid_table_transformed_data, {self.collection_name}, {clean_data}"
+                        )
+                        self.incident[field] = clean_data
+                    else:
+                        self.incident[field] = None
 
     def build_incident(self) -> dict:
         incident_name = self.get_incident_name()
@@ -1774,13 +1829,13 @@ class IncidentsHelper:
             }
         )
 
-        if self.collection_name in COLLECTIONS_WITH_MARKDOWN:
-            self.incident = TransformFieldsToMarkdown(
-                collection_name=self.collection_name, feed=self.incident
-            ).run_transform()
-
         self.set_custom_severity()
         self.check_dates()
+        self.transform_fields_to_grid_table()
+        self.incident = CommonHelpers.remove_html_tags(
+            self.incident, self.collection_name
+        )
+
         return {
             "name": self.incident["name"],
             "occurred": self.get_incident_created_time(),
@@ -1789,45 +1844,19 @@ class IncidentsHelper:
         }
 
 
-class CommandHelper:
+class BuilderCommandResponses:
 
     def __init__(self, client: Client, collection_name: str, args: dict) -> None:
         self.client = client
         self.collection_name = collection_name
         self.args = args
 
-    @staticmethod
-    def transform_dict(
-        input_dict: Dict[str, List[Union[str, List[Any]]] | str | None]
-    ) -> List[Dict[str, Any]]:
-        if not input_dict:
-            return [{}]
-
-        normalized_dict = {
-            k: v if isinstance(v, list) else [v] for k, v in input_dict.items()  # type: ignore
-        }
-
-        max_length = max(
-            (len(v) for v in normalized_dict.values() if isinstance(v, list)), default=1
-        )
-
-        result = []
-        for i in range(max_length):
-            result.append(
-                {
-                    k: (v[i] if i < len(v) else (v[0] if v else None))
-                    for k, v in normalized_dict.items()
-                }
-            )
-
-        return result
-
     def transform_additional_fields_to_markdown_tables(self, feed: dict):
         additional_tables = []
         delete_keys = []
         for key, value in feed.items():
             if key not in ("evaluation", "indicators") and isinstance(value, dict):
-                additional_data = CommandHelper.transform_dict(value)
+                additional_data = CommonHelpers.transform_dict(value)
                 for index, item in enumerate(additional_data):
                     table = self.get_human_readable_feed(
                         table=item, name=f"{key} table {index}"
@@ -1919,18 +1948,21 @@ class CommandHelper:
         return feed, main_table_data, additional_tables, indicators, readable_output
 
 
-def date_parse(date: str, arg_name: str) -> str:
-    date_from_parsed = dateparser_parse(date)
-    if date_from_parsed is None:
-        raise DemistoException(
-            f"Inappropriate {arg_name} format, "
-            "please use something like this: 2020-01-01 or January 1 2020"
-        )
-    date_from_parsed = date_from_parsed.strftime(DATE_FORMAT)
-    return date_from_parsed
-
-
 """ Commands """
+
+
+def test_module(client: Client) -> str:
+    """
+    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+
+    :param client: GIB_TI client
+    :return: 'ok' if test passed, anything else will fail the test.
+    """
+
+    for collection in client.poller.get_available_collections():
+        if collection not in MAPPING.keys():
+            return f"Test failed, some problems with getting available collections. Error in collection {str(collection)}"
+    return "ok"
 
 
 def fetch_incidents_command(
@@ -1975,7 +2007,7 @@ def fetch_incidents_command(
             if isinstance(new_parsed_json, list):
                 for i in new_parsed_json:
                     for incident in i:
-                        constructed_incident = IncidentsHelper(
+                        constructed_incident = IncidentBuilder(
                             collection_name=collection_name,
                             incident=incident,
                             mapping=mapping,
@@ -2029,7 +2061,7 @@ def get_info_by_id_command(collection_name: str):
         results = []
 
         feed, main_table_data, additional_tables, indicators, readable_output = (
-            CommandHelper(
+            BuilderCommandResponses(
                 client=client, collection_name=collection_name, args=args
             ).build_feed()
         )
@@ -2101,12 +2133,14 @@ def local_search_command(client: Client, args: dict):
     collection_name = str(args.get("collection_name"))
 
     date_from_parsed = (
-        date_parse(date=date_from, arg_name="date_from")
+        CommonHelpers.date_parse(date=date_from, arg_name="date_from")
         if date_from is not None
         else date_from
     )
     date_to_parsed = (
-        date_parse(date=date_to, arg_name="date_to") if date_to is not None else date_to
+        CommonHelpers.date_parse(date=date_to, arg_name="date_to")
+        if date_to is not None
+        else date_to
     )
 
     portions = client.poller.create_search_generator(

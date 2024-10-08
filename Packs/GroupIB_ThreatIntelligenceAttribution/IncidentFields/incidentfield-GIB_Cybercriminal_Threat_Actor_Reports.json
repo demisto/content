@@ -2,9 +2,7 @@
 	"aliasTo": "",
 	"aliases": null,
 	"associatedToAll": false,
-	"associatedTypes": [
-		"GIB Cybercriminal Threat Actor"
-	],
+	"associatedTypes": null,
 	"autoCompleteTags": null,
 	"breachScript": "",
 	"cacheVersn": 0,

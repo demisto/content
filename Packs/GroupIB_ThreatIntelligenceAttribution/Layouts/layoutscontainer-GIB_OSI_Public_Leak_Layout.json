@@ -125,7 +125,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 10,
+                        "y": 14,
                         "maxW": 3
                     },
                     {
@@ -138,7 +138,7 @@
                         "type": "childInv",
                         "w": 1,
                         "x": 2,
-                        "y": 4,
+                        "y": 10,
                         "maxW": 3
                     },
                     {
@@ -151,7 +151,7 @@
                         "type": "evidence",
                         "w": 1,
                         "x": 2,
-                        "y": 2,
+                        "y": 8,
                         "maxW": 3
                     },
                     {
@@ -164,8 +164,8 @@
                         "static": false,
                         "type": "team",
                         "w": 1,
-                        "x": 2,
-                        "y": 6,
+                        "x": 0,
+                        "y": 8,
                         "maxW": 3
                     },
                     {
@@ -180,7 +180,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 8,
+                        "y": 12,
                         "maxW": 3
                     },
                     {
@@ -239,7 +239,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4,
+                        "y": 10,
                         "maxW": 3
                     },
                     {
@@ -281,7 +281,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 10,
+                        "y": 14,
                         "maxW": 3
                     },
                     {
@@ -305,7 +305,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 6,
+                        "y": 10,
                         "maxW": 3
                     },
                     {
@@ -354,62 +354,82 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "GIB Evaluation",
+                        "name": "Group-IB Evaluation",
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 6,
                         "hideName": false,
                         "i": "caseinfoid-3ee4b320-71a6-11ef-8c49-f9d8b5e80cf6",
                         "items": [
                             {
-                                "endCol": 4,
+                                "dropEffect": "move",
+                                "endCol": 6,
                                 "fieldId": "gibid",
                                 "height": 22,
                                 "id": "55c44290-71a6-11ef-8c49-f9d8b5e80cf6",
                                 "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibdatahash",
-                                "height": 22,
-                                "id": "5c1c19b0-71a6-11ef-8c49-f9d8b5e80cf6",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibdatecreated",
-                                "height": 22,
-                                "id": "624e6770-71a6-11ef-8c49-f9d8b5e80cf6",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "gibleakeddata",
-                                "height": 44,
-                                "id": "680c4880-71a6-11ef-8c49-f9d8b5e80cf6",
-                                "index": 3,
                                 "listId": "caseinfoid-3ee4b320-71a6-11ef-8c49-f9d8b5e80cf6",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 4,
-                                "fieldId": "giblinklist",
+                                "endCol": 6,
+                                "fieldId": "gibdatecreated",
+                                "height": 22,
+                                "id": "624e6770-71a6-11ef-8c49-f9d8b5e80cf6",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "gibleakeddata",
                                 "height": 44,
-                                "id": "792ac290-71a6-11ef-8c49-f9d8b5e80cf6",
+                                "id": "680c4880-71a6-11ef-8c49-f9d8b5e80cf6",
+                                "index": 2,
+                                "listId": "caseinfoid-3ee4b320-71a6-11ef-8c49-f9d8b5e80cf6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "gibdatahash",
+                                "height": 22,
+                                "id": "4c981e80-8088-11ef-a600-b99923f2ff53",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "gibportallink",
+                                "height": 22,
+                                "id": "53e63730-8493-11ef-87c7-cfae65ac92d0",
                                 "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "gibmatchestable",
+                                "height": 106,
+                                "id": "0b598b20-8088-11ef-a600-b99923f2ff53",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "giblinklisttable",
+                                "height": 106,
+                                "id": "152b6dd0-8088-11ef-a600-b99923f2ff53",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -417,9 +437,9 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Information from GIB",
+                        "name": "Information from Group-IB",
                         "static": false,
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
                         "y": 2
                     }
@@ -458,5 +478,5 @@
     "name": "GIB OSI Public Leak Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "0.0.0"
 }

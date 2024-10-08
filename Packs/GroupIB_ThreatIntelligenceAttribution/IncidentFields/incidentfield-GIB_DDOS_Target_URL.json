@@ -23,7 +23,7 @@
 	"hidden": false,
 	"id": "incident_gibddostargeturl",
 	"isReadOnly": false,
-	"itemVersion": "",
+	"itemVersion": "1.4.2",
 	"locked": false,
 	"mergeStrategy": "",
 	"name": "GIB DDOS Target URL",
@@ -31,8 +31,11 @@
 	"openEnded": false,
 	"orgType": "url",
 	"ownerOnly": false,
-	"packID": "",
-	"packName": "",
+	"packID": "GroupIB_ThreatIntelligenceAttribution",
+	"packName": "Group-IB Threat Intelligence",
+	"packPropagationLabels": [
+		"all"
+	],
 	"placeholder": "",
 	"propagationLabels": [
 		"all"

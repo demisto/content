@@ -117,7 +117,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 15
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -172,7 +172,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 13
+                        "y": 12
                     },
                     {
                         "displayType": "CARD",
@@ -231,7 +231,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 11
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -273,7 +273,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 15
+                        "y": 14
                     },
                     {
                         "displayType": "CARD",
@@ -297,7 +297,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 11
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -345,7 +345,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "GIB Evaluation",
+                        "name": "Group-IB Evaluation",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -353,7 +353,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 5,
+                        "h": 4,
                         "hideName": false,
                         "i": "caseinfoid-31ce88a0-71ab-11ef-8c49-f9d8b5e80cf6",
                         "items": [
@@ -371,7 +371,7 @@
                                 "fieldId": "gibcybercriminalthreattitle",
                                 "height": 22,
                                 "id": "71d908d0-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -380,7 +380,7 @@
                                 "fieldId": "gibcybercriminalthreatdescription",
                                 "height": 44,
                                 "id": "7565d910-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -389,7 +389,7 @@
                                 "fieldId": "gibdatecreatedat",
                                 "height": 22,
                                 "id": "77d1d000-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -398,7 +398,7 @@
                                 "fieldId": "gibdatefirstseen",
                                 "height": 22,
                                 "id": "7a5c2460-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 5,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -407,7 +407,7 @@
                                 "fieldId": "gibdatelastseen",
                                 "height": 22,
                                 "id": "7edd18a0-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -416,7 +416,7 @@
                                 "fieldId": "gibistailored",
                                 "height": 22,
                                 "id": "8220f900-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 7,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -425,7 +425,7 @@
                                 "fieldId": "gibcybercriminalexpertises",
                                 "height": 22,
                                 "id": "8567e6a0-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 8,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -434,7 +434,7 @@
                                 "fieldId": "gibcybercriminallangs",
                                 "height": 22,
                                 "id": "883ba010-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 9,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -443,7 +443,7 @@
                                 "fieldId": "gibcybercriminalregions",
                                 "height": 22,
                                 "id": "8bb33aa0-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 10,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -452,7 +452,7 @@
                                 "fieldId": "gibcybercriminalsectors",
                                 "height": 22,
                                 "id": "8f6c4b00-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 11,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -461,6 +461,15 @@
                                 "fieldId": "gibreportnumber",
                                 "height": 22,
                                 "id": "921ff950-71ab-11ef-8c49-f9d8b5e80cf6",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibportallink",
+                                "height": 22,
+                                "id": "fa2b7b60-8492-11ef-87c7-cfae65ac92d0",
                                 "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -469,7 +478,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Information from GIB",
+                        "name": "Information from Group-IB",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -483,19 +492,10 @@
                         "items": [
                             {
                                 "endCol": 4,
-                                "fieldId": "gibcybercriminalforumsnicknames",
-                                "height": 22,
-                                "id": "60c479d0-71ab-11ef-8c49-f9d8b5e80cf6",
+                                "fieldId": "gibcybercriminalforumstable",
+                                "height": 106,
+                                "id": "17921b70-8176-11ef-84bc-e146948281c8",
                                 "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibcybercriminalforumsurlsforprofiles",
-                                "height": 22,
-                                "id": "63f19de0-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -503,7 +503,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "GIB Cybercriminal Forum Information",
+                        "name": "Group-IB Cybercriminal Forum Information",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -555,7 +555,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "GIB Threat Actor",
+                        "name": "Group-IB Threat Actor",
                         "static": false,
                         "w": 1,
                         "x": 0,

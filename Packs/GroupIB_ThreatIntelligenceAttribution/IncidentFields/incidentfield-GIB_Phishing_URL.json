@@ -2,9 +2,7 @@
 	"aliasTo": "",
 	"aliases": null,
 	"associatedToAll": false,
-	"associatedTypes": [
-		"GIB Attacks Phishing Group"
-	],
+	"associatedTypes": [],
 	"autoCompleteTags": null,
 	"breachScript": "",
 	"cacheVersn": 0,
@@ -23,7 +21,7 @@
 	"hidden": false,
 	"id": "incident_gibphishingurl",
 	"isReadOnly": false,
-	"itemVersion": "",
+	"itemVersion": "1.4.2",
 	"locked": false,
 	"mergeStrategy": "",
 	"name": "GIB Phishing URL",
@@ -31,8 +29,11 @@
 	"openEnded": false,
 	"orgType": "url",
 	"ownerOnly": false,
-	"packID": "",
-	"packName": "",
+	"packID": "GroupIB_ThreatIntelligenceAttribution",
+	"packName": "Group-IB Threat Intelligence",
+	"packPropagationLabels": [
+		"all"
+	],
 	"placeholder": "",
 	"propagationLabels": [
 		"all"
@@ -40,7 +41,7 @@
 	"required": false,
 	"runScriptAfterUpdate": false,
 	"script": "",
-	"selectValues": null,
+	"selectValues": [],
 	"sla": 0,
 	"system": false,
 	"systemAssociatedTypes": null,
@@ -51,7 +52,7 @@
 	"unmapped": false,
 	"unsearchable": false,
 	"useAsKpi": false,
-	"validatedError": "",
+	"validatedError": "fe8f1696fad0da88e2267a9685e7d844",
 	"validationRegex": "",
 	"version": -1,
 	"x2_fields": ""

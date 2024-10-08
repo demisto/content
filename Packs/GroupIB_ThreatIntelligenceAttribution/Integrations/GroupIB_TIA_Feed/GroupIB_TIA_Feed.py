@@ -758,8 +758,8 @@ class Client(BaseClient):
             product_type="SOAR",
             product_name="CortexSOAR",
             product_version="unknown",
-            integration_name=self._auth[0],
-            integration_version="unknown",
+            integration_name="Group-IB Threat Intelligence",
+            integration_version="1.4.2",
         )
 
 

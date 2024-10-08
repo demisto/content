@@ -1,0 +1,103 @@
+{
+	"aliasTo": "",
+	"aliases": null,
+	"associatedToAll": false,
+	"associatedTypes": [
+		"GIB OSI Public Leak"
+	],
+	"autoCompleteTags": null,
+	"breachScript": "",
+	"cacheVersn": 0,
+	"caseInsensitive": true,
+	"cliName": "gibmatchestable",
+	"closeForm": true,
+	"columns": [
+		{
+			"displayName": "Type",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "type",
+			"orgType": "shortText",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Sub Type",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "subtype",
+			"orgType": "shortText",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Value",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "value",
+			"orgType": "shortText",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": false,
+	"defaultRows": [
+		{}
+	],
+	"definitionId": "",
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"fromServerVersion": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_gibmatchestable",
+	"isReadOnly": false,
+	"itemVersion": "1.4.2",
+	"locked": false,
+	"mergeStrategy": "",
+	"name": "GIB Matches Table",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"orgType": "grid",
+	"ownerOnly": false,
+	"packID": "GroupIB_ThreatIntelligenceAttribution",
+	"packName": "Group-IB Threat Intelligence",
+	"packPropagationLabels": [
+		"all"
+	],
+	"placeholder": "",
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"runScriptAfterUpdate": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"template": "",
+	"threshold": 72,
+	"toServerVersion": "",
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1,
+	"x2_fields": ""
+}

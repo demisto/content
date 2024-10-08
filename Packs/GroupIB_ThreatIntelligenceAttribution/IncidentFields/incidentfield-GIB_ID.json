@@ -42,7 +42,7 @@
 	"content": true,
 	"defaultRows": null,
 	"definitionId": "",
-	"description": "ID of event in GIB",
+	"description": "ID of event in GIB TIA",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"fromServerVersion": "6.0.0",

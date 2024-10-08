@@ -23,7 +23,7 @@
 	"hidden": false,
 	"id": "incident_gibcncdomain",
 	"isReadOnly": false,
-	"itemVersion": "",
+	"itemVersion": "1.4.2",
 	"locked": false,
 	"mergeStrategy": "",
 	"name": "GIB CNC Domain",
@@ -31,8 +31,11 @@
 	"openEnded": false,
 	"orgType": "shortText",
 	"ownerOnly": false,
-	"packID": "",
-	"packName": "",
+	"packID": "GroupIB_ThreatIntelligenceAttribution",
+	"packName": "Group-IB Threat Intelligence",
+	"packPropagationLabels": [
+		"all"
+	],
 	"placeholder": "",
 	"propagationLabels": [
 		"all"

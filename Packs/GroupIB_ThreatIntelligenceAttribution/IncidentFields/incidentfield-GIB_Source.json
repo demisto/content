@@ -26,7 +26,8 @@
 		"GIB Cybercriminal Threat",
 		"GIB Cybercriminal Threat Actor",
 		"GIB Nation-State Cybercriminals Threat Actor",
-		"GIB Nation-State Cybercriminals Threat"
+		"GIB Nation-State Cybercriminals Threat",
+		"GIB Data Breach"
 	],
 	"autoCompleteTags": null,
 	"breachScript": "",

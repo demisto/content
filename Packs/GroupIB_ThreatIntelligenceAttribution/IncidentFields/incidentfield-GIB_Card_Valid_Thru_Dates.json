@@ -2,9 +2,7 @@
 	"aliasTo": "",
 	"aliases": null,
 	"associatedToAll": false,
-	"associatedTypes": [
-		"GIB Compromised Card Group"
-	],
+	"associatedTypes": null,
 	"autoCompleteTags": null,
 	"breachScript": "",
 	"cacheVersn": 0,
