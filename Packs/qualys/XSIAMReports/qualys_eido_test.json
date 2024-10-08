@@ -116,8 +116,7 @@
         "additional_info": {
           "query_tables": [],
           "query_uses_library": false
-        },
-        "creator_mail": "N/A"
+        }
       },
       {
         "widget_key": "xql_1687779507172",
@@ -153,8 +152,7 @@
         "additional_info": {
           "query_tables": [],
           "query_uses_library": false
-        },
-        "creator_mail": "N/A"
+        }
       }
     ]
   }
