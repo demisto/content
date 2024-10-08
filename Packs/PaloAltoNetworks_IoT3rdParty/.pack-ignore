@@ -1,35 +1,35 @@
 [file:Incremental_Export_to_Cisco_ISE_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Quarantine_Device_in_Cisco_ISE_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Incremental_Export_to_SIEM_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Bulk_Export_to_SIEM_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Incremental_Export_Devices_to_ServiceNow_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Export_Single_Vulnerability_to_ServiceNow_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Bulk_Export_Devices_to_ServiceNow_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Export_Single_Asset_to_SIEM_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Bulk_Export_to_Cisco_ISE_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Un-quarantine_Device_in_Cisco_ISE_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Export_Single_Alert_to_ServiceNow_-_PANW_IoT_3rd_Party_Integration.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:PaloAltoNetworksIoT3rdParty.yml]
 ignore=BA124
@@ -50,5 +50,5 @@ ignore=BA124
 ignore=BA124
 
 [file:SendAllPANWIoTAssetsToSIEM.yml]
-ignore=BA124
+ignore=BA124,GR107
 

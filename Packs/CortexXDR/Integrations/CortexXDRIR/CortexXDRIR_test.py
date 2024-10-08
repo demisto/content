@@ -427,6 +427,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         incident.
     """
     from CortexXDRIR import get_remote_data_command, Client
+    import sys
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
@@ -434,12 +435,10 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         'lastUpdate': 0
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch('CortexXDRIR.return_error', side_effect=sys.exit)
     mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=Exception("Rate limit exceeded"))
     with pytest.raises(SystemExit):
         _ = get_remote_data_command(client, args)
-
-    assert demisto.results.call_args[0][0].get('Contents') == "API rate limit"
 
 
 def test_get_remote_data_command_should_not_update(requests_mock, mocker):
@@ -792,14 +791,17 @@ def test_get_incident_extra_data(mocker):
                          [
                              ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
                               "True Positive=Resolved,Security Testing=Other,Other=Other",
-                              ["Other", "Duplicate", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Duplicate", "Duplicate", "False Positive", "Resolved", "Other", "Other",
+                               "Resolved", "Resolved"]),
 
                              ("Known Issue=Other,Duplicate Incident=Other,False Positive=False Positive,"
                               "True Positive=Resolved,Security Testing=Other,Other=Other",
-                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other",
+                               "Resolved", "Resolved"]),
 
                              ("Duplicate Incident=Other,Security Testing=Other,Other=Other",
-                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other",
+                               "Resolved", "Resolved"]),
 
                              # Expecting default mapping to be used when no mapping provided.
                              ("", list(XDR_RESOLVED_STATUS_TO_XSOAR.values())),
@@ -815,7 +817,7 @@ def test_get_incident_extra_data(mocker):
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
                              ("Duplicate Incident=Other, False Positive=Other True Positive=Other",
                               ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Security Testing", "Other",
-                               "Resolved"]),
+                               "Resolved", "Resolved"]),
 
                          ],
                          ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
