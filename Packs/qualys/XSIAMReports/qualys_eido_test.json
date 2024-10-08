@@ -2,7 +2,7 @@
     "fromVersion": "8.4.0",
     "templates_data": [
       {
-        "report_name": "Eido's Report",
+        "report_name": "Eido Report",
         "report_description": "Test",
         "layout": [
           {
