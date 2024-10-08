@@ -11,8 +11,12 @@ def group_by_type(indicators):
     """
 
     grouped = {}
-    indicators = indicators[0]['Contents']
-    for indicator in indicators:
+    if indicators and 'Contents' in indicators[0]:
+        indicators_res: dict = indicators[0]['Contents']
+    else:
+        indicators_res = {}
+
+    for indicator in indicators_res:
         if indicator['indicator_type'] not in grouped:
             grouped[indicator['indicator_type']] = [indicator['value']]
         else:
