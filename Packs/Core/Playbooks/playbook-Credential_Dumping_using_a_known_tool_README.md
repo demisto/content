@@ -14,10 +14,10 @@ This playbook is designed to handle the following alerts:
 The playbook executes the following stages:
 
 Early Containment:
-Handles malicious alerts by terminating the relevant processes.
+- Handles malicious alerts by terminating the relevant processes.
 
 Remediation:
-Handles malicious alerts by isolating the endpoint.
+- Handles malicious alerts by isolating the endpoint.
 
 ## Dependencies
 
@@ -33,7 +33,7 @@ CortexCoreIR
 
 ### Scripts
 
-SearchAlertsV2
+SearchIncidentsV2
 
 ### Commands
 
