@@ -350,6 +350,7 @@ tasks:
                       value:
                         simple: ip
                     ignorecase: true
+                accessor: Indicator
             iscontext: true
           ignorecase: true
         - operator: isEqualString
