@@ -16,8 +16,8 @@ Check the following parameters to determine if remediation actions are needed:
 - The prevalence of the OSParent process.
 
 Remediation:
-Handles malicious alerts by terminating the relevant processes.
-Handles non-malicious alerts identified during the investigation.
+- Handles malicious alerts by terminating the relevant processes.
+- Handles non-malicious alerts identified during the investigation.
 
 ## Dependencies
 
