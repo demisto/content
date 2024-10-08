@@ -1640,55 +1640,55 @@ script:
       defaultValue: "50"
     description: Returns a page of field metadata for a specified project and issue type.
     outputs:
-    - contextPath: Jira.IssueField.allowedValues
+    - contextPath: Jira.IssueField.AllowedValues
       description: The list of values allowed in the field.
       type: Array
-    - contextPath: Jira.IssueField.autoCompleteUrl
+    - contextPath: Jira.IssueField.AutoCompleteUrl
       description: The URL that can be used to automatically complete the field.
       type: String
-    - contextPath: Jira.IssueField.configuration
+    - contextPath: Jira.IssueField.Configuration
       description: The configuration properties.
       type: Object
-    - contextPath: Jira.IssueField.defaultValue
+    - contextPath: Jira.IssueField.DefaultValue
       description: The default value of the field.
       type: String
-    - contextPath: Jira.IssueField.fieldId
+    - contextPath: Jira.IssueField.FieldID
       description: The field id.
       type: String
-    - contextPath: Jira.IssueField.hasDefaultValue
+    - contextPath: Jira.IssueField.HasDefaultValue
       description: Whether the field has a default value.
       type: Boolean
-    - contextPath: Jira.IssueField.key
+    - contextPath: Jira.IssueField.Key
       description: The key of the field.
       type: String
-    - contextPath: Jira.IssueField.name
+    - contextPath: Jira.IssueField.Name
       description: The name of the field.
       type: String
-    - contextPath: Jira.IssueField.operations
+    - contextPath: Jira.IssueField.Operations
       description: The list of operations that can be performed on the field.
       type: Array
-    - contextPath: Jira.IssueField.required
+    - contextPath: Jira.IssueField.Required
       description: Whether the field is required.
       type: Boolean
-    - contextPath: Jira.IssueField.schema
+    - contextPath: Jira.IssueField.Schema
       description: The data type for the field.
       type: Object
-    - contextPath: Jira.IssueField.schema.type
+    - contextPath: Jira.IssueField.Schema.type
       description: The data type of the field.
       type: String
-    - contextPath: Jira.IssueField.schema.items
+    - contextPath: Jira.IssueField.Schema.items
       description: When the data type is an array, the name of the field items within the array.
       type: String
-    - contextPath: Jira.IssueField.schema.system
+    - contextPath: Jira.IssueField.Schema.system
       description: If the field is a system field, the name of the field.
       type: String
-    - contextPath: Jira.IssueField.schema.custom
+    - contextPath: Jira.IssueField.Schema.custom
       description: If the field is a custom field, the URI of the field.
       type: String
-    - contextPath: Jira.IssueField.schema.customId
+    - contextPath: Jira.IssueField.Schema.customId
       description: If the field is a custom field, the custom ID of the field.
       type: Number
-    - contextPath: Jira.IssueField.schema.configuration
+    - contextPath: Jira.IssueField.Schema.configuration
       description: If the field is a custom field, the configuration of the field.
       type: Object
   dockerimage: demisto/btfl-soup:1.0.1.111953

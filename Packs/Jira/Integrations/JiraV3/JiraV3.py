@@ -2149,15 +2149,34 @@ def get_create_metadata_field_command(client: JiraBaseClient, args: Dict[str, An
         max_results=max_results
     )
 
+    outputs = []
+    for result in res.get('values', []):
+        outputs.append(
+            {
+                "AllowedValues": result.get('allowedValues'),
+                "AutoCompleteURL": result.get('autoCompleteUrl'),
+                "Configuration": result.get('configuration'),
+                "DefaultValue": result.get('defaultValue'),
+                "FieldID": result.get('fieldId'),
+                "HasDefaultValue": result.get('hasDefaultValue'),
+                "Key": result.get('key'),
+                "Operations": result.get('operations'),
+                "Required": result.get('required'),
+                "Schema": result.get('schema'),
+                "Name": result.get('name'),
+            }
+        )
+
     command_results = CommandResults(
         outputs_prefix="Jira.IssueField",
-        outputs=res.get('values', []),
-        outputs_key_field="fieldId",
+        outputs=outputs,
+        outputs_key_field="FieldID",
         raw_response=res,
         readable_output=tableToMarkdown(
             name=f"Issue fields for project {project_id_or_key} and issue type {issue_type_id}",
-            t=res.get('values', []),
-            headerTransform=pascalToSpace
+            t=outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True
         )
     )
 
