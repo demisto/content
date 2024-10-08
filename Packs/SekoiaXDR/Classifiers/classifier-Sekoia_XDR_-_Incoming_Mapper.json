@@ -57,6 +57,12 @@
                 "Source IP": {
                     "simple": "source"
                 },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "short_id"
+                },
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
                 }
