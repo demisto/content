@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 65
         }
       }
@@ -56,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 225
         }
       }
@@ -91,7 +91,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 400
         }
       }
@@ -229,7 +229,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 575
         }
       }
@@ -261,7 +261,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 750
         }
       }
@@ -334,7 +334,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 925
         }
       }
@@ -372,7 +372,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 1100
         }
       }
@@ -450,7 +450,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 1275
         }
       }
@@ -485,7 +485,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 1450
         }
       }
@@ -523,7 +523,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 6700
         }
       }
@@ -583,7 +583,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 6875
         }
       }
@@ -615,7 +615,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 1625
         }
       }
@@ -673,7 +673,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 1800
         }
       }
@@ -705,7 +705,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 1975
         }
       }
@@ -763,7 +763,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 2150
         }
       }
@@ -798,7 +798,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 2325
         }
       }
@@ -841,7 +841,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 2500
         }
       }
@@ -873,7 +873,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 2850
         }
       }
@@ -921,7 +921,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 3025
         }
       }
@@ -956,7 +956,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 5650
         }
       }
@@ -991,8 +991,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 8100
+          "x": 50,
+          "y": 7925
         }
       }
     note: false
@@ -1015,7 +1015,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "63"
+      - "68"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1066,8 +1066,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 8275
+          "x": 50,
+          "y": 8100
         }
       }
     note: false
@@ -1101,7 +1101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 377.5,
           "y": 6175
         }
       }
@@ -1168,7 +1168,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 377.5,
           "y": 6350
         }
       }
@@ -1203,7 +1203,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 3550
         }
       }
@@ -1281,7 +1281,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 3725
         }
       }
@@ -1310,7 +1310,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 695,
           "y": 50
         }
       }
@@ -1345,7 +1345,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 3900
         }
       }
@@ -1428,7 +1428,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 4075
         }
       }
@@ -1465,7 +1465,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 4250
         }
       }
@@ -1555,7 +1555,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 4425
         }
       }
@@ -1595,7 +1595,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 5125
         }
       }
@@ -1627,8 +1627,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 7400
+          "x": 1125,
+          "y": 50
         }
       }
     note: false
@@ -1663,7 +1663,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 5300
         }
       }
@@ -1708,7 +1708,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 2675
         }
       }
@@ -1744,7 +1744,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 7050
         }
       }
@@ -1804,7 +1804,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 7225
         }
       }
@@ -1837,7 +1837,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1555,
           "y": 50
         }
       }
@@ -1892,7 +1892,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1555,
           "y": 225
         }
       }
@@ -1928,7 +1928,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 3200
         }
       }
@@ -2003,7 +2003,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 3375
         }
       }
@@ -2036,7 +2036,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 1985,
           "y": 50
         }
       }
@@ -2096,7 +2096,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 1985,
           "y": 225
         }
       }
@@ -2131,7 +2131,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 4775
         }
       }
@@ -2241,7 +2241,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 4950
         }
       }
@@ -2268,7 +2268,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 9150
         }
       }
@@ -2343,7 +2343,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 4600
         }
       }
@@ -2378,7 +2378,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 5475
         }
       }
@@ -2478,7 +2478,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 5825
         }
       }
@@ -2520,7 +2520,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 6000
         }
       }
@@ -2560,7 +2560,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 6525
         }
       }
@@ -2583,10 +2583,9 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "63"
       "yes":
       - "22"
+      - "69"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2602,8 +2601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 7925
+          "x": 265,
+          "y": 7750
         }
       }
     note: false
@@ -2639,8 +2638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 7750
+          "x": 265,
+          "y": 7575
         }
       }
     note: false
@@ -2673,8 +2672,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 7575
+          "x": 265,
+          "y": 7400
         }
       }
     note: false
@@ -2715,7 +2714,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 8450
         }
       }
@@ -2752,7 +2751,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 8800
         }
       }
@@ -2787,7 +2786,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 8975
         }
       }
@@ -2821,8 +2820,80 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 265,
           "y": 8625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: eeb6074a-6d21-4d96-858b-e98e945f7a90
+    type: regular
+    task:
+      id: eeb6074a-6d21-4d96-858b-e98e945f7a90
+      version: -1
+      name: delete search
+      description: Deletes the search by ID.
+      script: FireEyeHX v2|||fireeye-hx-search-delete
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      searchId:
+        simple: ${FireEyeHX.Search._id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 4043f3ac-870b-49a8-8fc2-cde3f2f84b9b
+    type: regular
+    task:
+      id: 4043f3ac-870b-49a8-8fc2-cde3f2f84b9b
+      version: -1
+      name: search searches
+      description: Fetches all enterprise searches.
+      script: '|||fireeye-hx-search-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      limit:
+        simple: "1"
+      state:
+        simple: STOPPED
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8100
         }
       }
     note: false
@@ -2847,7 +2918,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 9165,
-        "width": 1782.5,
+        "width": 2315,
         "x": 50,
         "y": 50
       }
