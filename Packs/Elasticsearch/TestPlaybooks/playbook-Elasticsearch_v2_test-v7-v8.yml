@@ -1,9 +1,7 @@
 id: Elasticsearch_v2_test-v7-v8
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Elasticsearch_v2_test-v7-v8
-description: 'Tests the Elasticsearch_V2 integration''s commands on Elastic server
-  versions 7 and 8. '
+description: 'Tests the Elasticsearch_V2 integration''s commands on Elastic server versions 7 and 8. '
 starttaskid: "0"
 tasks:
   "0":
@@ -16,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -257,8 +256,7 @@ tasks:
       id: 30fa2bb0-4276-4997-8f68-962d9baf7771
       version: -1
       name: Run 'es-integration-health-check' Command
-      description: Returns the health status of the integration. This commmand should
-        be used for debugging purposes.
+      description: Returns the health status of the integration. This commmand should be used for debugging purposes.
       script: '|||es-integration-health-check'
       type: regular
       iscommand: true
@@ -290,8 +288,7 @@ tasks:
       id: 6d5a2c61-e325-490d-8a94-cdcf77404c6f
       version: -1
       name: Run 'es-get-indices-statistics' Command
-      description: Returns Elasticsearch indices statistics and information. This
-        command is not supported for client type OpenSearch.
+      description: Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
       script: '|||es-get-indices-statistics'
       type: regular
       iscommand: true
@@ -366,6 +363,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -397,3 +395,4 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.10.0
