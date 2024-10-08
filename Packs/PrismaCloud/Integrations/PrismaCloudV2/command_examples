@@ -20,3 +20,4 @@
 !prisma-cloud-error-file-list repository=chanduusc/AWS-GWLB-VMSeries source_types=Github limit=2
 !prisma-cloud-host-finding-list rrn=rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25 finding_types=guard_duty_host,guard_duty_iam limit=2
 !prisma-cloud-permission-list query="config from iam where source.cloud.service.name = 'EC2'" limit=2
+!prisma-cloud-list-public-networks limit=5

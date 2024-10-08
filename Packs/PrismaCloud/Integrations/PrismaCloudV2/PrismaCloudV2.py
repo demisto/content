@@ -2361,7 +2361,8 @@ def list_public_networks_command(client: Client, args: dict[str, Any]) -> Comman
     - CommandResults: An object containing the raw response and the table representation of the public network list.
     """
     public_networks = client.list_public_networks()
-    if not args.get('all_results', False):
+    all_results = argToBoolean(args.get('all_results', False))
+    if not all_results:
         limit = int(args.get('limit', 50))
         public_networks = public_networks[:limit]
 
@@ -2429,7 +2430,7 @@ def unblock_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
             raise DemistoException(f'Block entry with {cdr_uuid=} not found.')
 
     return CommandResults(
-        readable_output=f'IP/CIDR {cdr_uuid} block was deleted successfully.',
+        readable_output=f'CIDR UUID {cdr_uuid} block was deleted successfully.',
     )
 
 

@@ -3006,3 +3006,170 @@ Retrieves the code errors detected by Application Security during periodic scans
 | PrismaCloud.CodeIssue.riskFactors | String | Risk factors associated with the code issue, such as high-impact areas or sensitive data. | 
 | PrismaCloud.CodeIssue.isIndirectPackage | String | Indicates whether the issue is from an indirect package \(true/false\). | 
 
+
+### prisma-cloud-unblock-ip
+
+***
+Removes the block of the specified address from Prisma Cloud.
+Use prisma-cloud-list-public-networks in order to discover network_id and cdr_id.
+
+#### Base Command
+
+`prisma-cloud-unblock-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cdr_uuid | cdr_uuid of the blocked address to be unblocked. | Required | 
+| network_uuid | network_uuid of the blocked address to be unblocked. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-cloud-block-ip
+
+***
+Blocks the specified address from accessing Prisma Cloud.
+The CIDR block cannot overlap CIDR blocks that already exist in the networks you manage.
+IP addresses in the CIDR block must be routable to the public internet.
+Use prisma-cloud-list-public-networks in order to discover network_uuid.
+
+#### Base Command
+
+`prisma-cloud-block-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address to block (subnet mask will be assumed to be /32).<br/>Provide either IP or CIDR address, not both. | Optional | 
+| cidr | CIDR address to block.<br/>Provide either IP or CIDR address, not both. | Optional | 
+| network_uuid | ID of the network to block the IP/CIDR on. | Required | 
+| description | Description to be associated with the blocked address. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-cloud-update-blocked-ip
+
+***
+Update the description for the CIDR block.
+Providing a blank description will remove the existing block description.
+Use prisma-cloud-list-public-networks in order to discover network_id.
+
+#### Base Command
+
+`prisma-cloud-update-blocked-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| network_uuid | network_uuid of the blocked address to be updated. | Required | 
+| cdr_uuid | cdr_uuid of the blocked address to be updated. | Required | 
+| description | new description for the blocked CIDR address. | Optional | 
+| ip | IP address to update (subnet mask will be assumed to be /32).<br/>Provide either IP or CIDR address, not both. | Optional | 
+| cidr | CIDR address to update.<br/>Provide either IP or CIDR address, not both. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-cloud-list-public-networks
+
+***
+Returns the list of public networks in Prisma Cloud.
+
+#### Base Command
+
+`prisma-cloud-list-public-networks`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Limit for the number of results returned (Default - 50 entries). | Optional | 
+| all_results | Return all results. Possible values are: true, false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!prisma-cloud-list-public-networks limit=5```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "PublicNetworks": [
+            {
+                "cidrCount": 3,
+                "cidrs": [
+                    {
+                        "cidr": "1.2.3.4/32",
+                        "createdOn": 1725975971625,
+                        "uuid": "c75913c7-0357-44d8-b91b-277541485759"
+                    },
+                    {
+                        "cidr": "1.2.3.4/32",
+                        "createdOn": 1725959705770,
+                        "description": "single_ip_2",
+                        "uuid": "a2bb53a8-1904-41c1-9da0-ec0a95dcb04e"
+                    },
+                    {
+                        "cidr": "1.2.3.4/32",
+                        "createdOn": 1725960647116,
+                        "description": "single_ip updated description",
+                        "uuid": "e4d14bc6-7b3d-4bb6-a8b4-e846670240ac"
+                    }
+                ],
+                "name": "vygygg",
+                "uuid": "d15373aa-530d-485a-9cfe-2efb124554aa"
+            },
+            {
+                "cidrCount": 0,
+                "cidrs": [],
+                "name": "HCL Trusted",
+                "uuid": "7b7dcbae-7951-477a-9e73-32c03ede8b51"
+            },
+            {
+                "cidrCount": 0,
+                "cidrs": [],
+                "name": "klf-trusted-ip",
+                "uuid": "7af83ae1-608f-4b60-bd17-bb8d17f8776b"
+            },
+            {
+                "cidrCount": 0,
+                "cidrs": [],
+                "name": "test12345",
+                "uuid": "bb6dedaa-4c94-47c5-b4ee-af2115b94029"
+            },
+            {
+                "cidrCount": 1,
+                "cidrs": [
+                    {
+                        "cidr": "1.2.3.4/24",
+                        "createdOn": 1712737814372,
+                        "description": "test Socgen 1",
+                        "uuid": "0ff352ad-99c6-4bf1-a2fd-07769bad3d26"
+                    }
+                ],
+                "name": "SOCGEN",
+                "uuid": "c9368dca-0ad5-4bdf-8601-cda67229ca76"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Public Networks
+>|Network Name|Network Id|cidrs|
+>|---|---|---|
+>| vygygg | d15373aa-530d-485a-9cfe-2efb124554aa | **-**	***cidr***: 1.2.3.4/32<br/>	***uuid***: c75913c7-0357-44d8-b91b-277541485759<br/>	***createdOn***: 1725975971625<br/>**-**	***cidr***: 1.2.3.4/32<br/>	***uuid***: a2bb53a8-1904-41c1-9da0-ec0a95dcb04e<br/>	***createdOn***: 1725959705770<br/>	***description***: single_ip_2<br/>**-**	***cidr***: 1.2.3.4/32<br/>	***uuid***: e4d14bc6-7b3d-4bb6-a8b4-e846670240ac<br/>	***createdOn***: 1725960647116<br/>	***description***: single_ip updated description |
+>| HCL Trusted | 7b7dcbae-7951-477a-9e73-32c03ede8b51 | ***values***:  |
+>| klf-trusted-ip | 7af83ae1-608f-4b60-bd17-bb8d17f8776b | ***values***:  |
+>| test12345 | bb6dedaa-4c94-47c5-b4ee-af2115b94029 | ***values***:  |
+>| SOCGEN | c9368dca-0ad5-4bdf-8601-cda67229ca76 | **-**	***cidr***: 1.2.3.4/24<br/>	***uuid***: 0ff352ad-99c6-4bf1-a2fd-07769bad3d26<br/>	***createdOn***: 1712737814372<br/>	***description***: test Socgen 1 |
+
+

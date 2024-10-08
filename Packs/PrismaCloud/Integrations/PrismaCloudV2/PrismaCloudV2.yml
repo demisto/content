@@ -2509,8 +2509,8 @@ script:
         name: all_results
         required: false
         predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
     deprecated: false
     description: Returns the list of public networks in Prisma Cloud.
     execution: false
