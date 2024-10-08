@@ -1,3 +1,8 @@
+from demisto_sdk.commands.validate.validators.base_validator import InvalidContentItemResult, ValidationResult, ValidationCaughtExceptionResult, \
+    BaseValidator
+from pydantic.errors import ConfigError
+from pydantic.utils import ROOT_KEY
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
@@ -40,6 +45,202 @@ from demisto_sdk.commands.common.logger import logger
 
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 yaml = YAML()
+
+##############################################################################################################################
+
+from pydantic import BaseModel, validate_model
+from typing import Type, Any
+
+object_setattr = object.__setattr__
+
+
+def new_from_orm(cls, obj):
+    demisto.debug("Entering new_from_orm method")
+
+    if not cls.__config__.orm_mode:
+        demisto.error("ConfigError: orm_mode must be set to True to use from_orm")
+        raise ConfigError('You must have the config attribute orm_mode=True to use from_orm')
+
+    demisto.debug(f"orm_mode is enabled for class {cls.__name__=}")
+
+    obj = {ROOT_KEY: obj} if cls.__custom_root_type__ else cls._decompose_class(obj)
+    # demisto.debug(f"Object decomposed: {obj=}")
+
+    m = cls.__new__(cls)
+    demisto.debug(f"New instance of class {cls.__name__=} created")
+    demisto.debug(f"Attributes of the instance: {dir(m)=}")
+    demisto.debug(f'#########################')
+    demisto.debug(f'{m.__validators__=}')
+    demisto.debug(f'{m.__get_validators__=}')
+    demisto.debug(f'{m.__pre_root__validators__=}')
+    demisto.debug(f'{m.__post_root_validators__=}')
+    demisto.debug(f'#########################')
+
+    demisto.debug(f"Passing model {cls.__name__} and object {obj=} to validate_model")
+    values, fields_set, validation_error = validate_model(cls, obj)
+    demisto.debug(f"Model validated. Values: {values=}, Fields set:{fields_set}")
+
+    if validation_error:
+        demisto.error(f"Validation error: {validation_error=}")
+        raise validation_error
+
+    object_setattr(m, '__dict__', values)
+    object_setattr(m, '__fields_set__', fields_set)
+    demisto.debug(f"Attributes set on the instance of class {cls.__name__=}")
+
+    m._init_private_attributes()
+    demisto.debug(f"Private attributes initialized for instance of class {cls.__name__=}")
+
+    demisto.debug("Exiting new_from_orm method")
+    return m
+
+
+BaseModel.from_orm = classmethod(new_from_orm)
+
+
+
+##############################################################################################################################
+class CustomResultsWriter(ResultWriter):
+    def post_results(
+        self,
+        only_throw_warning: Optional[List[str]] = None,
+    ) -> int:
+        """
+            Go through the validation results list,
+            posting the warnings / failure message for failed validation,
+            and calculates the exit_code.
+
+        Returns:
+            int: The exit code number - 1 if the validations failed, otherwise return 0
+        """
+        fixed_objects_set: Set[BaseContent] = set()
+        exit_code = 0
+        if self.json_file_path:
+            self.write_results_to_json_file()
+        for result in self.validation_results:
+            if only_throw_warning and result.validator.error_code in only_throw_warning:
+                demisto.debug(f"<yellow>{result.format_readable_message}</yellow>")
+            else:
+                demisto.error(f"<red>{result.format_readable_message}</red>")
+                exit_code = 1
+        for fixing_result in self.fixing_results:
+            fixed_objects_set.add(fixing_result.content_object)
+            if (
+                not only_throw_warning
+                or fixing_result.validator.error_code not in only_throw_warning
+            ):
+                exit_code = 1
+            demisto.debug(f"<yellow>{fixing_result.format_readable_message}</yellow>")
+        for result in self.invalid_content_item_results:
+            demisto.error(f"<red>{result.format_readable_message}</red>")
+            exit_code = 1
+        for result in self.validation_caught_exception_results:
+            demisto.error(f"<red>{result.format_readable_message}</red>")
+            exit_code = 1
+        if not exit_code:
+            demisto.info("<green>All validations passed.</green>")
+        for fixed_object in fixed_objects_set:
+            fixed_object.save()
+        return exit_code
+
+    def write_results_to_json_file(self):
+        """
+        If the json path argument is given,
+        Writing all the results into a json file located in the given path.
+        """
+        json_validations_list = [
+            result.format_json_message for result in self.validation_results
+        ]
+        demisto.debug(f'write_results_to_json_file {json_validations_list=}')
+        json_fixing_list = [
+            fixing_result.format_json_message for fixing_result in self.fixing_results
+        ]
+        demisto.debug(f'write_results_to_json_file {json_fixing_list=}')
+        json_invalid_content_item_list = [
+            result.format_json_message for result in self.invalid_content_item_results
+        ]
+        demisto.debug(f'write_results_to_json_file {json_invalid_content_item_list=}')
+        json_validation_caught_exception_list = [
+            result.format_json_message
+            for result in self.validation_caught_exception_results
+        ]
+        demisto.debug(f'write_results_to_json_file {json_validation_caught_exception_list=}')
+
+        results = {
+            "validations": json_validations_list,
+            "fixed validations": json_fixing_list,
+            "invalid content items": json_invalid_content_item_list,
+            "Validations that caught exceptions": json_validation_caught_exception_list,
+        }
+        json_object = json.dumps(results, indent=4)
+        demisto.debug(f'write_results_to_json_file: {json_object}')
+
+        demisto.debug(f'write_results_to_json_file writing to json_file: {self.json_file_path}')
+        # Writing to sample.json
+        with open(self.json_file_path, "w") as outfile:
+            outfile.write(json_object)
+        demisto.debug(f'write_results_to_json_file writing to json_file: Success!')
+
+##############################################################################################################################
+from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
+
+
+def new_format_message(self):
+    try:
+        relative_file_path: str = str(self.content_object.path.relative_to(CONTENT_PATH))
+        demisto.debug(f'new_format_message try: {relative_file_path=}')
+    except ValueError:
+        relative_file_path = str(self.content_object.path)
+        demisto.debug(f'new_format_message except: {relative_file_path=}')
+
+    return {
+        "file path": relative_file_path,
+        "error code": self.validator.error_code,
+        "message": self.message,
+    }
+
+def format_readable_message(self):
+    path: Path = self.content_object.path
+    if path.is_absolute():
+        try:
+            path = path.relative_to(CONTENT_PATH)
+            demisto.debug(f'BaseValidator format_readable_message try: {path=}')
+        except ValueError:
+            demisto.debug(f'BaseValidator format_readable_message except: {path=}')
+    return f"{str(path)}: [{self.validator.error_code}] - {self.message}"
+
+
+BaseValidator.format_json_message = property(new_format_message)
+BaseValidator.format_readable_message = property(format_readable_message)
+
+
+def new_invalid_content_item_format_message(self):
+    try:
+        relative_file_path: str = str(self.path.relative_to(CONTENT_PATH))
+        demisto.debug(f'new_invalid_content_item_format_message try: {relative_file_path=}')
+    except ValueError:
+        relative_file_path = str(self.path)
+        demisto.debug(f'new_invalid_content_item_format_message except: {relative_file_path=}')
+
+    return {
+        "file path": relative_file_path,
+        "error code": self.error_code,
+        "message": self.message,
+    }
+
+def format_readable_message(self):
+    path: Path = self.path
+    if path.is_absolute():
+        try:
+            path = path.relative_to(CONTENT_PATH)
+            demisto.debug(f'InvalidContentItemResult format_readable_message try: {path=}')
+        except ValueError:
+            demisto.debug(f'InvalidContentItemResult format_readable_message except: {path=}')
+        return f"{path}: [{self.error_code}] - {self.message}"
+
+
+InvalidContentItemResult.format_readable_message = property(format_readable_message)
+InvalidContentItemResult.format_json_message = property(new_invalid_content_item_format_message)
 
 ##############################################################################################################################
 from demisto_sdk.commands.content_graph.parsers.content_item import (
@@ -138,6 +339,7 @@ class CustomBaseContent(BaseContent):
             or path.name == PACKS_PACK_META_FILE_NAME
         ):  # if the path given is a pack
             try:
+
                 return CONTENT_TYPE_TO_MODEL[ContentType.PACK].from_orm(
                     PackParser(path, git_sha=git_sha, metadata_only=metadata_only)
                 )
@@ -147,8 +349,8 @@ class CustomBaseContent(BaseContent):
 
         try:
             content_item.MARKETPLACE_MIN_VERSION = "0.0.0"
+            demisto.debug(f'################################# CustomContentItemParser.from_path({path}, {git_sha=})')
             content_item_parser = CustomContentItemParser.from_path(path, git_sha=git_sha)
-
             content_item.MARKETPLACE_MIN_VERSION = MARKETPLACE_MIN_VERSION
 
         except (NotAContentItemException, InvalidContentItemException) as e:
@@ -168,6 +370,12 @@ class CustomBaseContent(BaseContent):
             return None
 
         try:
+            import inspect
+            source_code = inspect.getsource(model.from_orm)
+            demisto.debug(f"Source code of {model.from_orm.__name__=}:\n{source_code=}")
+        except Exception as e:
+            demisto.error(f"Could not retrieve source code for {model.from_orm.__name__=}: {e=}")
+
             return model.from_orm(content_item_parser)  # type: ignore
         except Exception as e:
             demisto.error(
@@ -320,6 +528,7 @@ class CustomValidateManger(ValidateManager):
             self.objects_to_run,
             self.invalid_items,
         ) = self.initializer.gather_objects_to_run_on()
+        demisto.debug(f'CustomValidateManger __init__ {self.objects_to_run=} | {self.invalid_items=}')
         self.committed_only = self.initializer.committed_only
         self.configured_validations: ConfiguredValidations = self.config_reader.read(
             ignore_support_level=ignore_support_level,
@@ -327,6 +536,77 @@ class CustomValidateManger(ValidateManager):
             codes_to_ignore=ignore,
         )
         self.validators = self.filter_validators()
+        demisto.debug(f'CustomValidateManger __init__ {self.validators=}')
+
+    def run_validations(self) -> int:
+        """
+            Running all the relevant validation on all the filtered files based on the should_run calculations,
+            calling the fix method if the validation fail, has an autofix, and the allow_autofix flag is given,
+            and calling the post_results at the end.
+        Returns:
+            int: the exit code to obtained from the calculations of post_results.
+        """
+        demisto.info("Starting validate items.")
+        for validator in self.validators:
+            demisto.debug(f"Starting execution for {validator.error_code} validator.")
+            if filtered_content_objects_for_validator := list(
+                filter(
+                    lambda content_object: validator.should_run(
+                        content_item=content_object,
+                        ignorable_errors=self.configured_validations.ignorable_errors,
+                        support_level_dict=self.configured_validations.support_level_dict,
+                        running_execution_mode=self.initializer.execution_mode,
+                    ),
+                    self.objects_to_run,
+                )
+            ):
+                validation_results: List[ValidationResult] = (
+                    validator.obtain_invalid_content_items(
+                        filtered_content_objects_for_validator
+                    )
+                )  # type: ignore
+                if (
+                    validator.expected_execution_mode == [ExecutionMode.ALL_FILES]
+                    and self.initializer.execution_mode == ExecutionMode.ALL_FILES
+                ):
+                    validation_results = [
+                        validation_result
+                        for validation_result in validation_results
+                        if validation_result.content_object
+                           in filtered_content_objects_for_validator
+                    ]
+                try:
+                    if self.allow_autofix and validator.is_auto_fixable:
+                        for validation_result in validation_results:
+                            try:
+                                self.validation_results.append_fix_results(
+                                    validator.fix(validation_result.content_object)  # type: ignore
+                                )
+                            except Exception:
+                                demisto.error(
+                                    f"Could not fix {validation_result.validator.error_code} error for content item {str(validation_result.content_object.path)}"
+                                )
+                                self.validation_results.append_validation_results(
+                                    validation_result
+                                )
+                    else:
+                        self.validation_results.extend_validation_results(
+                            validation_results
+                        )
+                except Exception as e:
+                    validation_caught_exception_result = ValidationCaughtExceptionResult(
+                        message=f"Encountered an error when validating {validator.error_code} validator: {e}"
+                    )
+                    self.validation_results.append_validation_caught_exception_results(
+                        validation_caught_exception_result
+                    )
+        if BaseValidator.graph_interface:
+            logger.info("Closing graph.")
+            BaseValidator.graph_interface.close()
+        self.add_invalid_content_items()
+        return self.validation_results.post_results(
+            only_throw_warning=self.configured_validations.warning
+        )
 
 
 def _create_pack_base_files(self):
@@ -483,7 +763,7 @@ def run_validate(path_to_validate: str, json_output_file: str) -> None:
     #     staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
     # old_validate_manager.run_validation()
 
-    result_writer = ResultWriter(json_file_path=json_output_file)
+    result_writer = CustomResultsWriter(json_file_path=json_output_file)
     config_reader = ConfigReader(category="xsoar_best_practices_path_based_validations")
     initializer = CustomInitializer(
         staged=False,
@@ -492,8 +772,8 @@ def run_validate(path_to_validate: str, json_output_file: str) -> None:
         execution_mode=ExecutionMode.SPECIFIC_FILES
     )
     new_validate_manager = CustomValidateManger(result_writer, config_reader, initializer, allow_autofix=False)
-    new_validate_manager.run_validations()
-
+    exit_code = new_validate_manager.run_validations()
+    demisto.info(f'run_validate {exit_code=}')
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
@@ -591,7 +871,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
-    demisto.debug(f'validate_content {tmp_directory=} | {filename=} | {data=}')
+    demisto.debug(f'validate_content {tmp_directory=} | {filename=} ')
     with redirect_stderr(output_capture):
         with TemporaryFile(mode='w+') as tmp:
             logging_setup(
@@ -617,22 +897,22 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
             all_outputs = []
             with open(json_output_path, 'r') as json_outputs:
                 outputs_as_json = json.load(json_outputs)
-                demisto.debug(f'validate_content {outputs_as_json=}')
+                demisto.debug(f'2 {outputs_as_json=}')
                 if outputs_as_json:
                     if type(outputs_as_json) == list:
                         all_outputs.extend(outputs_as_json)
                     else:
                         all_outputs.append(outputs_as_json)
 
-            with open(lint_output_path, 'r') as json_outputs:
-                outputs_as_json = json.load(json_outputs)
-                if outputs_as_json:
-                    if type(outputs_as_json) == list:
-                        for validation in outputs_as_json:
-                            adjust_linter_row_and_col(validation, code_fp_to_row_offset)
-                        all_outputs.extend(outputs_as_json)
-                    else:
-                        all_outputs.append(outputs_as_json)
+            # with open(lint_output_path, 'r') as json_outputs:
+            #     outputs_as_json = json.load(json_outputs)
+            #     if outputs_as_json:
+            #         if type(outputs_as_json) == list:
+            #             for validation in outputs_as_json:
+            #                 adjust_linter_row_and_col(validation, code_fp_to_row_offset)
+            #             all_outputs.extend(outputs_as_json)
+            #         else:
+            #             all_outputs.append(outputs_as_json)
     return all_outputs
 
 
