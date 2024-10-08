@@ -1113,9 +1113,9 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
      'View all wineventlogs involving user="test"'),
     ({}, 'Test query name', {}, True, 'Test query name'),
     ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
-     'index="test" | where user = "test\\\\crusher"'),
+     'index="test" | where user="test\\\\crusher"'),
     ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
-     'index="test" | where user = "test\\\\crusher"'),
+     'index="test" | where user="test\\\\crusher"'),
     ({'countryNameA': '"test\country"', 'countryNameB': '""'},
      'search countryA="$countryNameA|s$" countryB=$countryNameB|s$', {}, False,
      'search countryA="test\country" countryB=""'),
@@ -1542,7 +1542,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = "\'test_user\'"')]),
+       'search index="test"\n| where user="\'test_user\'"')]),
     ({'event_id': 'test_id3', 'drilldown_searches':
         ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
          "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
@@ -1552,7 +1552,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = "\'test_user\'"')]),
+       'search index="test"\n| where user="\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
     "A notable data with two drilldown searches which contained the earlies in 'earliest' key ",
