@@ -1,0 +1,389 @@
+id: 08655808-4525-45cd-8540-48e7d75e6610
+version: 14
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM Valid User Response
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bf838bc6-fd32-4cfb-8907-d8ab44600b88
+    type: start
+    task:
+      id: bf838bc6-fd32-4cfb-8907-d8ab44600b88
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e9b21790-2263-4948-8f44-939925dec2e5
+    type: condition
+    task:
+      id: e9b21790-2263-4948-8f44-939925dec2e5
+      version: -1
+      name: Check if the Action is value
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Jira action:
+      - "58"
+      No Response from user:
+      - "48"
+      Remediation action for Empty storage asset:
+      - "44"
+      Remedition action (Sensitive asset open to world):
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: Jira action
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: jira
+    - label: Remedition action (Sensitive asset open to world)
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: remediate
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.riskname
+            iscontext: true
+          right:
+            value:
+              simple: Sensitive asset open to world
+    - label: No Response from user
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: no_response
+    - label: Remediation action for Empty storage asset
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: remediate
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.riskname
+            iscontext: true
+          right:
+            value:
+              simple: Empty storage asset
+    - label: Invalid response
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: invalid_response
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 01e7668f-2a5e-4277-8e18-e82655ff284c
+    type: regular
+    task:
+      id: 01e7668f-2a5e-4277-8e18-e82655ff284c
+      version: -1
+      name: Send slack notification to ${userSlackEmail}
+      description: SlackBlockBuilder will format a given Slack block into a format
+        readable by the SlackV3 integration. The script will also send the block to
+        the given destination. Make sure to mark **Trust any certificate** and fill
+        the **XSOAR API Key integration** parameters if you want to get a response
+        to the incident context.
+      scriptName: SlackBlockBuilder
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      user:
+        simple: ${userSlackEmail}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: d3792edc-ef0c-4b03-8ed2-9b8b80bfd174
+    type: playbook
+    task:
+      id: d3792edc-ef0c-4b03-8ed2-9b8b80bfd174
+      version: -1
+      name: DSPM Remediation playbook for Sensitive asset open to world.
+      playbookName: DSPM Remediation playbook for Sensitive asset open to world.
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 50fe4308-911d-4d45-807c-f73fd158856a
+    type: playbook
+    task:
+      id: 50fe4308-911d-4d45-807c-f73fd158856a
+      version: -1
+      name: DSPM Remediation playbook for Empty storage asset
+      playbookName: DSPM Remediation playbook for Empty storage asset
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: a16ad3e1-f369-4428-8af3-f1122e12ac74
+    type: regular
+    task:
+      id: a16ad3e1-f369-4428-8af3-f1122e12ac74
+      version: -1
+      name: OverwriteListAndNotify
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMOverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: |-
+          You have not responded on incident ID : ${incident_object.incidentId} in timely manner.
+          We are coming to an end of the ${incident_object.incidentId} incident playbook from XSOAR. You are welcome to reopen it. Regards.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 5df01203-bf70-447d-80d1-68b3cad379f5
+    type: playbook
+    task:
+      id: 5df01203-bf70-447d-80d1-68b3cad379f5
+      version: -1
+      name: DSPM Jira Ticket Creation
+      playbookName: DSPM Jira Ticket Creation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: f0f4f8d9-75af-4676-8e57-32fd8c50b8e1
+    type: regular
+    task:
+      id: f0f4f8d9-75af-4676-8e57-32fd8c50b8e1
+      version: -1
+      name: Add incident for re-run
+      scriptName: DSPMIncidentList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      action:
+        simple: add
+      incident_data:
+        simple: ${incident_object}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1195,
+        "width": 1890,
+        "x": 410,
+        "y": 850
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
+dirtyInputs: true

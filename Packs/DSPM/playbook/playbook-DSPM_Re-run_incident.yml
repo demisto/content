@@ -1,0 +1,115 @@
+id: a15685ad-bfab-427a-8b1d-22c4cdad063e
+version: 22
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM Re-run incident
+description: The "DSPM Re-run Incident" playbook is designed to automatically re-run
+  DSPM incidents. It starts by executing the RerunDSPMIncidents task, which reinitiates
+  the incidents for further investigation or processing. After completing this task,
+  the playbook proceeds to close the current incident using the closeInvestigation
+  script. This playbook ensures that DSPM incidents can be efficiently retried and
+  closed upon completion.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e7fa86fe-de47-4a54-8dbf-8b064efc55c1
+    type: start
+    task:
+      id: e7fa86fe-de47-4a54-8dbf-8b064efc55c1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 694e2f05-8646-4575-84bf-83915e437da9
+    type: regular
+    task:
+      id: 694e2f05-8646-4575-84bf-83915e437da9
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 58a0683c-e5a3-4b0c-8f7d-c704007b0506
+    type: regular
+    task:
+      id: 58a0683c-e5a3-4b0c-8f7d-c704007b0506
+      version: -1
+      name: RerunDSPMIncidents
+      scriptName: DSPMRerunIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 465,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

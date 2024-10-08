@@ -1,0 +1,432 @@
+id: c7f9a77b-18e3-45ca-8307-b39035938abe
+version: 16
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM Remediation playbook for Sensitive asset open to world.
+description: 'The DSPM Remediation Playbook for Sensitive Asset Open to World is designed
+  to handle incidents where sensitive assets are exposed to the public, with specific
+  focus on remediating this vulnerability across different cloud providers (AWS).
+  Below is an overview of the key steps and actions included in this playbook:'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 23f5f10a-7c89-4e93-8d46-76b53e2098e3
+    type: start
+    task:
+      id: 23f5f10a-7c89-4e93-8d46-76b53e2098e3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 062aa348-995d-4c9b-8ba9-8b83ccd86d9e
+    type: regular
+    task:
+      id: 062aa348-995d-4c9b-8ba9-8b83ccd86d9e
+      version: -1
+      name: aws-s3-put-public-access-block
+      description: Creates or modifies the PublicAccessBlock configuration for an
+        Amazon S3 bucket.
+      script: AWS - S3|||aws-s3-put-public-access-block
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      BlockPublicAcls:
+        simple: "true"
+      BlockPublicPolicy:
+        simple: "true"
+      IgnorePublicAcls:
+        simple: "true"
+      RestrictPublicBuckets:
+        simple: "true"
+      bucket:
+        simple: ${incident.assetname}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 19e7a8bf-75a4-46fa-856e-d43a6125dd7a
+    type: regular
+    task:
+      id: 19e7a8bf-75a4-46fa-856e-d43a6125dd7a
+      version: -1
+      name: Slack block list overwritten with a success message
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMOverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: "For XSOAR incident ID : ${incident.id} successfully applied public
+          access block to the ${incident_object.assetName} bucket. Also updated risk:
+          ${incident.riskfindingid} status to 'INVESTIGATION'.\nThanks. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1560,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f4bcb2f8-4688-4c65-8495-f809e6838bc1
+    type: condition
+    task:
+      id: f4bcb2f8-4688-4c65-8495-f809e6838bc1
+      version: -1
+      name: Check the Cloud Provider of asset
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      AWS:
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+    - label: Azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: AZURE
+    - label: GCP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0340a84f-f267-4199-8252-0fbf8656bc58
+    type: condition
+    task:
+      id: 0340a84f-f267-4199-8252-0fbf8656bc58
+      version: -1
+      name: Have you encountered any errors with mitigating asset risk?
+      description: This script checks for error entries based on provided entry IDs
+        and returns "yes" if any errors are found or "no" if no errors are present.
+        If errors are detected, it sets the error messages in the XSOAR context.
+      scriptName: DSPMCheckAndSetErrorEntries
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "10"
+      "yes":
+      - "7"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1f93e962-3a59-4105-85ba-bad3ce9297bf
+    type: regular
+    task:
+      id: 1f93e962-3a59-4105-85ba-bad3ce9297bf
+      version: -1
+      name: Slack block list overwritten with a error message
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMOverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: 'For XSOAR incident ID : ${incident.id} got error while applying public
+          access block to the ${incident_object.assetName} bucket.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 7990b107-582d-4d79-8805-7bc1aff60d43
+    type: regular
+    task:
+      id: 7990b107-582d-4d79-8805-7bc1aff60d43
+      version: -1
+      name: Updating DSPM risk - ${incident.riskFindingId} status to 'INVESTIGATING'.
+      description: Updates the status of a risk finding.
+      script: DSPM|||dspm-update-risk-finding-status
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      risk_finding_id:
+        simple: ${incident.riskfindingid}
+      riskFindingId:
+        simple: ${incident.riskfindingid}
+      status:
+        simple: INVESTIGATING
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 266bf836-a3af-40ea-85dd-77d7c970cc2e
+    type: condition
+    task:
+      id: 266bf836-a3af-40ea-85dd-77d7c970cc2e
+      version: -1
+      name: Have encountered any errors while updating risk status on DSPM portal?
+      description: This script checks for error entries based on provided entry IDs
+        and returns "yes" if any errors are found or "no" if no errors are present.
+        If errors are detected, it sets the error messages in the XSOAR context.
+      scriptName: DSPMCheckAndSetErrorEntries
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "12"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d06d3932-5974-4337-89bb-464d256683b4
+    type: regular
+    task:
+      id: d06d3932-5974-4337-89bb-464d256683b4
+      version: -1
+      name: Slack block list overwritten with a error message
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMOverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: "For XSOAR incident ID : ${incident.id} successfully applied public
+          access block to the ${incident_object.assetName} bucket. \nBut while updating
+          risk: ${incident.riskfindingid} status to 'INVESTIGATION' got error.\nThanks. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 06111885-d05d-4d1b-8aee-adcd6e97b5e1
+    type: regular
+    task:
+      id: 06111885-d05d-4d1b-8aee-adcd6e97b5e1
+      version: -1
+      name: Add incident for re-run
+      scriptName: DSPMIncidentList
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      incident_data:
+        simple: ${incident_object}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1325,
+        "width": 1350,
+        "x": 590,
+        "y": -190
+      }
+    }
+  }
+inputs: []
+outputs: []

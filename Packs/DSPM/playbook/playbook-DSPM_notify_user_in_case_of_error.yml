@@ -1,0 +1,198 @@
+id: 69a93ff8-cb41-4514-8c2e-53fe46eadf40
+version: 26
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM notify user in case of error
+description: The DSPM Notify User in Case of Error playbook is designed to handle
+  errors in DSPM incidents by notifying users and managing Slack notifications.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3567892c-d111-48c0-81c4-e34848980867
+    type: start
+    task:
+      id: 3567892c-d111-48c0-81c4-e34848980867
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5e0234ae-2647-4079-810a-8c833013a2e6
+    type: regular
+    task:
+      id: 5e0234ae-2647-4079-810a-8c833013a2e6
+      version: -1
+      name: Create Slack Notification Message
+      scriptName: DSPMNotifyUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      dspm_incident:
+        simple: ${incident}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: ${OnError.Message}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 37ee3189-d41a-4044-8405-b518eba23fdc
+    type: regular
+    task:
+      id: 37ee3189-d41a-4044-8405-b518eba23fdc
+      version: -1
+      name: Send Slack Notification
+      description: SlackBlockBuilder will format a given Slack block into a format
+        readable by the SlackV3 integration. The script will also send the block to
+        the given destination. Make sure to mark **Trust any certificate** and fill
+        the **XSOAR API Key integration** parameters if you want to get a response
+        to the incident context.
+      scriptName: SlackBlockBuilder
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      user:
+        simple: ${userSlackEmail}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 714d27a5-f76e-41a6-874e-b75bf8f873d5
+    type: regular
+    task:
+      id: 714d27a5-f76e-41a6-874e-b75bf8f873d5
+      version: -1
+      name: Remove slack block from XSOAR list
+      scriptName: DSPMRemoveSlackBlockList
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 07680ced-be5a-4568-8d49-bfdb5a22541d
+    type: regular
+    task:
+      id: 07680ced-be5a-4568-8d49-bfdb5a22541d
+      version: -1
+      name: Add incident for re-run
+      scriptName: DSPMIncidentList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action:
+        simple: add
+      incident_data:
+        simple: ${incident_object}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
