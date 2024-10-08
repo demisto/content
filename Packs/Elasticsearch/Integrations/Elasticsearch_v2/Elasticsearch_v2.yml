@@ -428,4 +428,4 @@ autoUpdateDockerImage: false
 fromversion: 5.0.0
 defaultmapperin: Elasticsearch - Incoming Mapper
 tests:
-- No tests (auto formatted)
+- Elasticsearch_v2_test-v7-v8
