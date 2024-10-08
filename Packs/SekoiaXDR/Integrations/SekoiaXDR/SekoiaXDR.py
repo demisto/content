@@ -613,9 +613,8 @@ def fetch_incidents(
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
         alert["mirror_instance"] = demisto.integrationInstance()
+        alert["mirror_direction"] = MIRROR_DIRECTION.get(str(mirror_direction))
         incident["rawJSON"] = json.dumps(alert)
-        incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
-        incident["dbotMirrorId"] = alert["short_id"]
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
@@ -797,66 +796,7 @@ def get_modified_remote_data_command(client: Client, args):
 
 
 def update_remote_system_command(client: Client, args):
-    """update-remote-system command: pushes local changes to the remote system
-
-    :type client: ``Client``
-    :param client: XSOAR client to use
-
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['data']`` the data to send to the remote system
-        ``args['entries']`` the entries to send to the remote system
-        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
-        ``args['remoteId']`` the remote incident id
-        args: A dictionary containing the data regarding a modified incident, including: data, entries, incident_changed,
-         remote_incident_id, inc_status, delta
-
-    :return:
-        ``str`` containing the remote incident id - really important if the incident is newly created remotely
-
-    :rtype: ``str``
-    """
-    demisto.debug("#### Entering MIRRORING OUT - update_remote_system_command ####")
-    parsed_args = UpdateRemoteSystemArgs(args)
-    delta = parsed_args.delta
-    remote_incident_id = parsed_args.remote_incident_id
-    demisto.debug(
-        f"Remote_incident_id {remote_incident_id} \
-        had this changes {parsed_args.incident_changed} \
-        with delta {delta} and parsed_args {parsed_args.data}"
-    )
-    try:
-        if parsed_args.incident_changed:
-            sekoia_status = delta.get("status", None)
-            if sekoia_status:
-                demisto.debug(
-                    f"The incident {remote_incident_id} status changed to: {sekoia_status}.\
-                    Sending changes to Sekoia."
-                )
-                sekoia_transition = STATUS_TRANSITIONS.get(sekoia_status)
-
-                workflow = client.get_workflow_alert(alert_uuid=remote_incident_id)
-                for action in workflow["actions"]:
-                    if action["name"] == sekoia_transition:
-                        change_status = client.update_status_alert(
-                            alert_uuid=remote_incident_id,
-                            action_uuid=action["id"],
-                            comment=None,
-                        )
-                        demisto.debug(f"Changing status : {change_status}")
-        else:
-            demisto.debug(
-                "There's no changes in our incident"
-            )
-
-    except Exception as e:
-        demisto.error(
-            f"Error in Sekoia outgoing mirror for incident {remote_incident_id}. "
-            f"Error message: {str(e)}"
-        )
-
-    return remote_incident_id
+    pass
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
@@ -1519,8 +1459,6 @@ def main() -> None:
             )
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
-        elif command == "update-remote-system":
-            return_results(update_remote_system_command(client, args))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
         else:

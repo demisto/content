@@ -742,24 +742,6 @@ Command to retrieve the definition of a Cyber Kill Chain Step.
 | SekoiaXDR.KillChain.short_id | unknown | The short identifier of the STIX object. | 
 | SekoiaXDR.KillChain.order_id | unknown | The order identifier of the STIX object. | 
 
-### update-remote-system
-
-***
-Pushes local changes to the remote system.
-
-#### Base Command
-
-`update-remote-system`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-
 ### get-mapping-fields
 
 ***
