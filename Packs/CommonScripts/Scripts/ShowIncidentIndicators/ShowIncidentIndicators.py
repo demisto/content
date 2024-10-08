@@ -40,7 +40,7 @@ def get_indicators_from_incident():
     return {"hidden": False, "options": group_by_type(all_indicator_data)}
 
 
-def main():
+def main():  # pragma: no cover
     return_results(get_indicators_from_incident())
 
 
