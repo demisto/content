@@ -1098,7 +1098,7 @@
                     "all"
                 ],
                 "params": {
-                    "text": "# **SLA Status**"
+                    "text": "# **SLA  Status**"
                 },
                 "prevName": "Text Widget",
                 "propagationLabels": [],
@@ -1493,10 +1493,10 @@
     },
     "toDate": "0001-01-01T00:00:00Z",
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": "",
-    "isPredefined": true,
     "marketplaces": [
-        "xsoar_on_prem"
+        "xsoar"
     ]
+    "fromVersion": "6.10.0",
+    "description": "",
+    "isPredefined": true
 }
