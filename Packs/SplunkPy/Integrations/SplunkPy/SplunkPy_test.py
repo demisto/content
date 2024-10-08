@@ -2790,15 +2790,3 @@ def test_get_drilldown_searches(drilldown_data, expected):
     assert splunk.get_drilldown_searches(drilldown_data) == expected
 
 
-def test_remove_double_quotes():
-    """
-        Given: string with double quotes
-        When: replacing a var in a query
-        Then: make sure no double double quotes are returned.
-    """
-    from SplunkPy import remove_double_quotes
-
-    assert remove_double_quotes('this is a ""test""') == 'this is a "test"'
-    assert remove_double_quotes('no ""double quotes"" here, and here: ""') == 'no "double quotes" here, and here: ""'
-    assert (remove_double_quotes('format mvsep="mvseparator" "","",",","",",",""')
-            == 'format mvsep="mvseparator" "","",",","",",",""')

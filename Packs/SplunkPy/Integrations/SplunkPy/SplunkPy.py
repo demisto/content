@@ -951,20 +951,6 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
     return "", ""
 
 
-def remove_double_quotes(query: str) -> str:
-    """
-        query (str): query with double double quotes.
-
-        Return: query with no double double quotes. Example: "this is a ""test""\" -> "this is a "test""
-    """
-    # Regular expression to match two consecutive quotation marks with any character(s) in between.
-    # Separation marks such as comma are ignored.
-    pattern = re.compile(r'""([^",]*([,][^",]+)*)""')
-
-    # Substitute the pattern with single quotes around the matched content
-    return pattern.sub(r'"\1"', query)
-
-
 def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """ Replaces all needed fields in a drilldown search query, or a search query name
     Args:
