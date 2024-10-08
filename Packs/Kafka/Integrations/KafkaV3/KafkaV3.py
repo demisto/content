@@ -623,8 +623,8 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[Comma
         return 'No message was consumed.'
     else:
         message_value = message.value()
-        if 'Group authorization failed' in message_value:
-            raise DemistoException(f'{message_value} Make sure you configured the right Consumer group ID.')
+        if 'Group authorization failed' in message_value.decode('utf-8'):
+           raise DemistoException(f'{message_value} Make sure you configured the right Consumer group ID.')
         readable_output = tableToMarkdown(f'Message consumed from topic {topic}',
                                           [{'Offset': message.offset(), 'Message': message_value.decode("utf-8")}])
         content = {
