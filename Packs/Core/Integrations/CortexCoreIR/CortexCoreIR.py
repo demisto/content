@@ -475,7 +475,8 @@ def main():  # pragma: no cover
             return_outputs(*get_incidents_command(client, args))
 
         elif command == 'core-terminate-process':
-            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION):
+            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
+                                         build_number=TERMINATE_BUILD_NUM):
                 raise DemistoException('This command is only available for XSIAM 2.4')
             return_results(run_polling_command(client=client,
                                                args=args,
@@ -494,7 +495,8 @@ def main():  # pragma: no cover
                                                                    "CANCELED"]))
 
         elif command == 'core-terminate-causality':
-            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION):
+            if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION,
+                                         build_number=TERMINATE_BUILD_NUM):
                 raise DemistoException("This command is only available for XSIAM 2.4")
             return_results(run_polling_command(client=client,
                                                args=args,
