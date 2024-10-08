@@ -69,7 +69,11 @@ class MsGraphClient:
             json_data=request_body,
             resp_type='resp',
         )
-        return res.json() if res.content else None
+        try:
+            return res.json() if res.content else None
+        except json.decoder.JSONDecodeError as e:
+            demisto.debug(f"Failed to decode JSON: {str(e)}. Response content: {res.content}")
+            return res.content
 
 
 def start_auth(client: MsGraphClient) -> CommandResults:  # pragma: no cover
