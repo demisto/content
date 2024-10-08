@@ -3355,8 +3355,7 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
         return final_command_results
     else:
         scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
-        return_results(CommandResults(scheduled_command=scheduled_command))
-    return None
+        return CommandResults(scheduled_command=scheduled_command)
 
 
 def remote_script_automate_results(client: Client, args: dict):
@@ -3389,8 +3388,7 @@ def get_power_query_output(cmd: str, interval: int, timeout: int, args: dict, qu
             raw_response=query_response)
     else:
         scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
-        return_results(CommandResults(scheduled_command=scheduled_command))
-    return None
+        return CommandResults(scheduled_command=scheduled_command)
 
 
 def poll_power_query_results(client: Client, cmd: str, args: dict) -> CommandResults:

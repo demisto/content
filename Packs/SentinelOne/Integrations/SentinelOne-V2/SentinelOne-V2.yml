@@ -2538,7 +2538,7 @@ script:
     description: Automate a power query and return the query results. (The maximum timeout of 300 seconds is allowed.)
     name: sentinelone-get-power-query-results
     outputs:
-    - contextPath: SentinelOne.PowerQuery.[result_index]
+    - contextPath: SentinelOne.PowerQuery.ResultIndex
       description: Result from the query in array string format.
     polling: true
   - arguments: []
