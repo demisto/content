@@ -1470,8 +1470,9 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: Initiates a new endpoint script execution action using a script from the script library.
+    description: Deprecated. Use core-script-run instead.
     name: core-run-script
+    deprecated: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
       description: ID of the action initiated.
@@ -2945,6 +2946,140 @@ script:
     - contextPath: Core.UserGroup.source
       description: Type of user group.
       type: String
+  - arguments:
+    - description: Allows linking the response action to the incident that triggered it.
+      name: incident_id
+    - description: A comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      name: endpoint_ids
+      required: true
+    - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
+      name: script_uid
+      required: true
+    - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
+      name: parameters
+    - defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      name: timeout
+    - description: Interval in seconds between each poll.
+      defaultValue: '10'
+      name: polling_interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: polling_timeout_in_seconds
+      defaultValue: '600'
+    - description: The action ID for polling use.
+      name: action_id
+      hidden: true
+    - name: hide_polling_output
+      hidden: true
+      description: Whether to hide the polling result (automatically filled by polling).
+    - name: is_core
+      hidden: true
+      description: Is the command being called from a core pack.
+      defaultValue: true
+    description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
+    name: core-script-run
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptResult.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptResult.results.retrieved_files
+      description: Number of successfully retrieved files.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_ip_address
+      description: Endpoint IP address.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_name
+      description: Name of successfully retrieved files.
+      type: String
+    - contextPath: Core.ScriptResult.results.failed_files
+      description: Number of files failed to be retrieved.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_status
+      description: Endpoint status.
+      type: String
+    - contextPath: Core.ScriptResult.results.domain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_id
+      description: Endpoint ID.
+      type: String
+    - contextPath: Core.ScriptResult.results.execution_status
+      description: Execution status of this endpoint.
+      type: String
+    - contextPath: Core.ScriptResult.results.return_value
+      description: Value returned by the script in case the type is not a dictionary.
+      type: String
+    - contextPath: Core.ScriptResult.results.standard_output
+      description: The STDOUT and the STDERR logged by the script during the execution.
+      type: String
+    - contextPath: Core.ScriptResult.results.retention_date
+      description: Timestamp in which the retrieved files will be deleted from the server.
+      type: Date
+  - arguments:
+    - description: The agent ID.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The instance ID.
+      name: instance_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident ID.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: The action ID. For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-process
+    description: Terminate a process by its instance ID. Available only for XSIAM 2.4.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateProcess.action_id
+      description: The action ID.
+      type: String
+  - arguments:
+    - description: The agent ID.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The causality ID.
+      name: causality_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident ID.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: The action ID. For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-causality
+    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateCausality.action_id
+      description: The action id.
+      type: String 
   runonce: false
   script: '-'
   subtype: python3
