@@ -980,23 +980,6 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  - arguments:
-    - description: Email addresses for the 'To' field. Supports comma-separated values.
-      isArray: true
-      default: true
-      name: to
-    - description: Email addresses for the 'Cc' field. Supports comma-separated values.
-      isArray: true
-      name: cc
-    - description: Email addresses for the 'Bcc' field. Supports comma-separated values.
-      isArray: true
-      name: bcc
-    - description: The email subject.
-      name: subject
-    - description: The content (body) of the email (in plain text).
-      name: body
-    description: Sends an email.
-    name: send-mail-test
   dockerimage: demisto/py3ews:5.4.1.100430
   isfetch: true
   script: ''
