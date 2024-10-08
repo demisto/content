@@ -37,7 +37,6 @@ ES_DEFAULT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSSSS'
 PYTHON_DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
-CLOUD_ID = demisto.params().get('cloud_id', '')
 USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD: str = demisto.params().get('credentials', {}).get('password')
 API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
@@ -155,23 +154,12 @@ def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
 
     connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str]]] = {
+        "hosts": [SERVER],
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
     }
-
-    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-        if SERVER and CLOUD_ID:
-            raise DemistoException("ConfigurationError: The parameters 'Server URL' and 'Cloud ID' are mutually exclusive."
-                                   "Please use either 'Server URL' for an on-premises deployment or 'Cloud ID' for a deployment"
-                                   "on Elastic Cloud, but not both at the same time.")
-        elif CLOUD_ID:
-            connection_args["cloud_id"] = CLOUD_ID
-        else:
-            connection_args["hosts"] = [SERVER]
-
     if ELASTIC_SEARCH_CLIENT != ELASTICSEARCH_V8:
         # Adding the following params to maintain BC for Elasticsearch version v7 and below or OpenSearch
-        connection_args["hosts"] = [SERVER]
         connection_args["connection_class"] = RequestsHttpConnection
         connection_args["proxies"] = proxies
 
