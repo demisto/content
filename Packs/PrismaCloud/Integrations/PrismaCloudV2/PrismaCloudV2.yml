@@ -112,7 +112,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.111039
+  dockerimage: demisto/python3:3.11.10.111526
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -171,33 +171,33 @@ script:
       - build.gradle
       - gradle.properties
       - build.gradle.kts
-      - pom.xml 
+      - pom.xml
       - requirements.txt
       - package-lock.json
       - package.json
-      - bower.json 
-      - go.sum 
+      - bower.json
+      - go.sum
       - go.mod
       - tf
-      - json 
-      - yml    
-      - yaml 
+      - json
+      - yml
+      - yaml
       - Template
-      - .checkov.baseline 
+      - .checkov.baseline
       - Hcl
       - Dockerfile
       - gradle-wrapper.properties
-      - METADATA 
+      - METADATA
       - Bicep
       - Pipfile.lock
-      - Pipfile   
+      - Pipfile
       - Yarn.lock
-      - Gemfile 
+      - Gemfile
       - Gemfile.lock
       - gemspec
       - env
       - settings.py
-      - main.py 
+      - main.py
       - application.py
       - config.py
       - app.js
@@ -210,20 +210,20 @@ script:
       - Index.php
       - config.php
       - config.xml
-      - strings.xml 
+      - strings.xml
       - app.module.ts
       - environment.ts
-      - tpl 
+      - tpl
       - tfvars
-      - unknown 
-      - csproj 
+      - unknown
+      - csproj
       - packages.config
       - Directory.Packages.props
       - paket.dependencies
       - paket.references
       - paket.lock
       - sln
-      - config      
+      - config
       - composer.json
       - composer.lock
     - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument (code_categories, file_types, iac_categories...)
@@ -2420,119 +2420,119 @@ script:
     execution: false
     name: update-remote-system
   - arguments:
-      - description: Access key name.
-        name: name
-        required: true
-      - description: Timestamp in milliseconds when access key expires. Default:0.
-        name: expires-on
+    - description: Access key name.
+      name: name
+      required: true
+    - description: Timestamp in milliseconds when access key expires. Default:0.
+      name: expires-on
     deprecated: false
     description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
     execution: false
     name: prisma-cloud-access-key-create
     outputs:
-      - contextPath: PrismaCloud.AccessKeys.id
-        description: Access key ID.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.secretKey
-        description: Access key secret.
-        type: String
+    - contextPath: PrismaCloud.AccessKeys.id
+      description: Access key ID.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.secretKey
+      description: Access key secret.
+      type: String
   - arguments:
-      - description: Returns the metadata of the access key that has the specified ID.
-        name: access-key
-      - description: Maximum number of entries to return.
-        name: limit
+    - description: Returns the metadata of the access key that has the specified ID.
+      name: access-key
+    - description: Maximum number of entries to return.
+      name: limit
     deprecated: false
     description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
     execution: false
     name: prisma-cloud-access-keys-list
     outputs:
-      - contextPath: PrismaCloud.AccessKeys.id
-        description: Access key ID.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.createdBy
-        description: The user who created the access key.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.createdTs
-        description: Time access key was created.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.expiresOn
-        description: The time the access key expires.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.lastUsedTime
-        description: The last time the access key was used.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.name
-        description: The name of the access key.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.role
-        description: Access key user role.
-        type: Object
-      - contextPath: PrismaCloud.AccessKeys.roleType
-        description: User role permission type.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.status
-        description: Access key status.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.username
-        description: Access key user name.
-        type: String
+    - contextPath: PrismaCloud.AccessKeys.id
+      description: Access key ID.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.createdBy
+      description: The user who created the access key.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.createdTs
+      description: Time access key was created.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.expiresOn
+      description: The time the access key expires.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.lastUsedTime
+      description: The last time the access key was used.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.name
+      description: The name of the access key.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.role
+      description: Access key user role.
+      type: Object
+    - contextPath: PrismaCloud.AccessKeys.roleType
+      description: User role permission type.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.status
+      description: Access key status.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.username
+      description: Access key user name.
+      type: String
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Deactivates the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-disable
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Activates the access key that has the specified ID. You cannot activate an expired access key.
     execution: false
     name: prisma-cloud-access-key-enable
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Deletes the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-delete
   - arguments:
-      - description: Limit for the number of results returned (Default - 50 entries).
-        name: limit
-        required: false
-      - auto: PREDEFINED
-        description: Return all results.
-        name: all_results
-        required: false
-        predefined:
-        - 'true'
-        - 'false'
+    - description: Limit for the number of results returned (Default - 50 entries).
+      name: limit
+      required: false
+    - auto: PREDEFINED
+      description: Return all results.
+      name: all_results
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Returns the list of public networks in Prisma Cloud.
     execution: false
     name: prisma-cloud-list-public-networks
   - arguments:
-      - description: |-
-          IP address to block (subnet mask will be assumed to be /32).
-          Provide either IP or CIDR address, not both.
-        name: ip
-        required: false
-      - description: |-
-          CIDR address to block.
-          Provide either IP or CIDR address, not both.
-        name: cidr
-        required: false
-      - description: |-
-          ID of the network to block the IP/CIDR on.
-        name: network_uuid
-        required: true
-      - description: Description to be associated with the blocked address.
-        name: description
-        required: false
+    - description: |-
+        IP address to block (subnet mask will be assumed to be /32).
+        Provide either IP or CIDR address, not both.
+      name: ip
+      required: false
+    - description: |-
+        CIDR address to block.
+        Provide either IP or CIDR address, not both.
+      name: cidr
+      required: false
+    - description: |-
+        ID of the network to block the IP/CIDR on.
+      name: network_uuid
+      required: true
+    - description: Description to be associated with the blocked address.
+      name: description
+      required: false
     deprecated: false
     description: |-
       Blocks the specified address from accessing Prisma Cloud.
@@ -2542,12 +2542,12 @@ script:
     execution: false
     name: prisma-cloud-block-ip
   - arguments:
-      - description: cdr_uuid of the blocked address to be unblocked.
-        name: cdr_uuid
-        required: true
-      - description: network_uuid of the blocked address to be unblocked.
-        name: network_uuid
-        required: true
+    - description: cdr_uuid of the blocked address to be unblocked.
+      name: cdr_uuid
+      required: true
+    - description: network_uuid of the blocked address to be unblocked.
+      name: network_uuid
+      required: true
     deprecated: false
     description: |-
       Removes the block of the specified address from Prisma Cloud.
@@ -2555,25 +2555,25 @@ script:
     execution: false
     name: prisma-cloud-unblock-ip
   - arguments:
-      - description: network_uuid of the blocked address to be updated.
-        name: network_uuid
-        required: true
-      - description: cdr_uuid of the blocked address to be updated.
-        name: cdr_uuid
-        required: true
-      - description: new description for the blocked CIDR address.
-        name: description
-        required: false
-      - description: |-
-          IP address to update (subnet mask will be assumed to be /32).
-          Provide either IP or CIDR address, not both.
-        name: ip
-        required: false
-      - description: |-
-          CIDR address to update.
-          Provide either IP or CIDR address, not both.
-        name: cidr
-        required: false
+    - description: network_uuid of the blocked address to be updated.
+      name: network_uuid
+      required: true
+    - description: cdr_uuid of the blocked address to be updated.
+      name: cdr_uuid
+      required: true
+    - description: new description for the blocked CIDR address.
+      name: description
+      required: false
+    - description: |-
+        IP address to update (subnet mask will be assumed to be /32).
+        Provide either IP or CIDR address, not both.
+      name: ip
+      required: false
+    - description: |-
+        CIDR address to update.
+        Provide either IP or CIDR address, not both.
+      name: cidr
+      required: false
     deprecated: false
     description: |-
       Update the description for the CIDR block.
