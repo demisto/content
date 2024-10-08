@@ -1667,7 +1667,7 @@ class Client(BaseClient):
 
         return response.text
 
-    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> Union[str, bytes]:
+    def get_host_list_detection(self, since_datetime, next_page=None, limit=HOST_LIMIT) -> tuple[Union[str, bytes], bool]:
         """
         Make a http request to Qualys API to get assets
         Args:
@@ -1676,6 +1676,7 @@ class Client(BaseClient):
         Raises:
             DemistoException: can be raised by the _http_request function
         """
+        set_new_limit = False
         self._headers.update({"Content-Type": 'application/json'})
         params: dict[str, Any] = {
             "truncation_limit": limit,
@@ -1694,11 +1695,10 @@ class Client(BaseClient):
                 error_handler=self.error_handler,
             )
         except requests.exceptions.ReadTimeout:
-            new_limit = set_last_run_with_new_limit(limit)
-            raise TimeoutError(f"Request to get host_list_detection exceeded the defined timeout ({timeout} secs). "
-                               f"The integration will automatically reduce the request host limit from {limit} "
-                               f"to {new_limit} in the next iteration")
-        return response
+            set_new_limit = True
+            response = ''
+
+        return response, set_new_limit
 
     def get_vulnerabilities(self, since_datetime) -> Union[str, bytes]:
         """
@@ -2946,18 +2946,23 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
         Host list detections assets
     """
     demisto.debug('Pulling host list detections')
-    host_list_detections = client.get_host_list_detection(since_datetime=since_datetime, next_page=next_page, limit=limit)
-    host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
+    assets = []
+    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime=since_datetime,
+                                                                         next_page=next_page,
+                                                                         limit=limit)
+    if not set_new_limit:
+        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
 
-    next_page = get_next_page_from_url(next_url, 'id_min')
+        next_page = get_next_page_from_url(next_url, 'id_min')
 
-    assets = get_detections_from_hosts(host_list_assets) if host_list_assets and not is_test else []
-    demisto.debug(f'Parsed detections from hosts, got {len(assets)=} assets.')
+        assets = get_detections_from_hosts(host_list_assets) if host_list_assets and not is_test else []
+        demisto.debug(f'Parsed detections from hosts, got {len(assets)=} assets.')
+        add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
+
     demisto.debug(f'size={get_size(assets)}')
 
-    add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
 
-    return assets, next_page
+    return assets, next_page, set_new_limit
 
 
 def get_vulnerabilities(client, since_datetime) -> list:
@@ -2995,7 +3000,7 @@ def fetch_assets(client, assets_last_run):
     if not since_datetime:
         since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
 
-    assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page, limit)
+    assets, next_run_page, set_new_limit = get_host_list_detections_events(client, since_datetime, next_page, limit)
 
     total_assets += len(assets)
     stage = 'assets' if next_run_page else 'vulnerabilities'
@@ -3005,24 +3010,22 @@ def fetch_assets(client, assets_last_run):
                     'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
                     'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
 
-    return assets, new_last_run, amount_to_report, snapshot_id
+    return assets, new_last_run, amount_to_report, snapshot_id, set_new_limit
 
 
-def check_fetch_duration_time(start_time, limit=HOST_LIMIT):
+def check_fetch_duration_time(start_time):
     if (time.time() - start_time) > FETCH_ASSETS_COMMAND_TIME_OUT:
         demisto.debug('We passed the defined timeout, so we will not send the results to XSIAM,'
                       'because there is not enough time left, and we will lower the limit for the next time')
-        new_limit = set_last_run_with_new_limit(limit)
-        raise TimeoutError(f"passed the defined timeout, we will lower the limit {limit=} for the next run {new_limit}")
+        return True
+    return False
 
 
-def set_last_run_with_new_limit(limit):
+def set_last_run_with_new_limit(last_run, limit):
     new_limit = int(limit / 2) if limit > 1 else 1
     demisto.debug(f'Setting host limit to: {new_limit}')
-    last_run = demisto.getAssetsLastRun()
     last_run['limit'] = new_limit
-    demisto.setAssetsLastRun(last_run)
-    return new_limit
+    return last_run
 
 
 def fetch_vulnerabilities(client, last_run):
@@ -3500,7 +3503,7 @@ def main():  # pragma: no cover
         elif command == "qualys-get-assets":
             should_push_events = argToBoolean(args.get('should_push_assets', False))
             since_datetime = arg_to_datetime('1 hour').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-            assets, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1)
+            assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1)
             if should_push_events:
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='host_detections', data_type='assets')
             return_results(assets)
@@ -3531,12 +3534,14 @@ def main():  # pragma: no cover
             if fetch_stage == 'assets':
                 start_time = time.time()
                 demisto.debug(f'Starting fetch for assets, {start_time=}')
-                assets, new_last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
-                check_fetch_duration_time(start_time, last_run.get('limit', HOST_LIMIT))
-
-                demisto.debug(f'sending {len(assets)} assets to XSIAM.')
-                send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
-                                   snapshot_id=snapshot_id, items_count=str(total_assets), should_update_health_module=False)
+                assets, new_last_run, total_assets, snapshot_id, set_new_limit = fetch_assets(client=client,
+                                                                                              assets_last_run=last_run)
+                if set_new_limit or check_fetch_duration_time(start_time):
+                    new_last_run = set_last_run_with_new_limit(new_last_run, last_run.get('limit', HOST_LIMIT))
+                else:
+                    demisto.debug(f'sending {len(assets)} assets to XSIAM.')
+                    send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
+                                       snapshot_id=snapshot_id, items_count=str(total_assets), should_update_health_module=False)
                 demisto.setAssetsLastRun(new_last_run)
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
 
