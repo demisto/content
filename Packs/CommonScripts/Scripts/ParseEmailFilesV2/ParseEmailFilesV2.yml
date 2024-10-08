@@ -1,6 +1,6 @@
 args:
 - default: true
-  description: Entry ID with the Email as a file in msg or eml format.
+  description: Entry ID with the Email as a file in msg or eml format..
   name: entryid
   required: true
 - auto: PREDEFINED
@@ -116,4 +116,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFilesV2-test
-dockerimage: demisto/parse-emails:1.0.0.113216
+dockerimage: demisto/parse-emails:1.0.0.108364
