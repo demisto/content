@@ -2,6 +2,7 @@ import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from datetime import datetime, timedelta
 from time import time as get_current_time_in_seconds
 
 disable_warnings()
@@ -25,12 +26,15 @@ class Client(BaseClient):
         proxy: bool,
         fetch_interval: int,
     ) -> None:
+
         self.headers: dict[str, str] = {}
         self.client_id = client_id
         self.client_secret = client_secret
         self.stream_id = stream_id
         self.channel_id = channel_id
         self.fetch_interval = fetch_interval
+        self.latest_event_time: datetime = self.get_latest_event_time
+        self.events_suspected_duplicates: set = self.get_events_suspected_duplicates
 
         super().__init__(
             base_url=base_url,
@@ -73,6 +77,43 @@ class Client(BaseClient):
             params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
             stream=True,
         )
+
+    def is_duplicate(self, event_id: str, event_time: datetime) -> bool:
+        if event_time < self.latest_event_time:
+            return True
+        elif event_time == self.latest_event_time and event_id in self.events_suspected_duplicates:
+            return True
+        return False
+
+    @property
+    def get_latest_event_time(self) -> datetime:
+        integration_context = get_integration_context()
+        latest_event_time = integration_context.get("latest_event_time", self.fetch_interval)
+        return datetime.strptime(latest_event_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    @property
+    def get_events_suspected_duplicates(self) -> set:
+        integration_context = get_integration_context()
+        return set(integration_context.get("events_suspected_duplicates", []))
+
+    def get_event(self):
+        ...
+
+def parse_event_time(event):
+    return datetime.strptime(event["event_time"], "%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
+
+    # Find the maximum event_time
+    latest_event_time = max(events, key=parse_event_time)["event_time"]
+
+    # Filter all JSONs with the maximum event_time
+    filtered_events = filter(lambda x: x["event_time"] == latest_event_time, events)
+
+    # Extract the event_ids from the filtered events
+    events_suspected_duplicates = [x["event_id"] for x in filtered_events]
+    return events_suspected_duplicates
 
 
 def get_events_command(client: Client): ...
