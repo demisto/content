@@ -4,6 +4,7 @@
   "suggestion_reason": "Recommended for 'Windows Event Log Was Cleared' alerts",
   "description": "This trigger is responsible for handling the 'Windows Event Log Was Cleared' alerts",
   "trigger_name": "Event Log Was Cleared",
+  "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
         "AND": [
