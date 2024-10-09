@@ -29,7 +29,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * Sleep
 * InferWhetherServiceIsDev
-* GetTime
 * GridFieldSetup
 
 ### Commands
