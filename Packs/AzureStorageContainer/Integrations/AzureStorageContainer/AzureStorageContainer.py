@@ -999,62 +999,58 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
 
     """
 
-    try:
-        account_key = demisto.params().get('shared_key', {}).get('password')
-        if not account_key:
-            raise Exception("Shared access key is not provided.")
-        else:
-            account_name = storage_account_name
-            container_name = args.get("container_name")
-            api_version = client.get_api_version()
-            request_url = f"https://{account_name}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
-            request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+    account_key = demisto.params().get('shared_key', {}).get('password')
+    if not account_key:
+        raise Exception("Shared access key is not provided.")
+    else:
+        account_name = storage_account_name
+        container_name = args.get("container_name")
+        api_version = client.get_api_version()
+        request_url = f"https://{account_name}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
+        request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-            # string for API signature
-            string_to_sign = (
-                f"PUT\n"  # HTTP Verb
-                f"\n"  # Content-Encoding
-                f"\n"  # Content-Language
-                f"\n"  # Content-Length
-                f"\n"  # Content-MD5
-                f"\n"  # Content-Type
-                f"\n"  # Date
-                f"\n"  # If-Modified-Since
-                f"\n"  # If-Match
-                f"\n"  # If-None-Match
-                f"\n"  # If-Unmodified-Since
-                f"\n"  # Range
-                f"x-ms-date:{request_date}\n"
-                f"x-ms-version:{api_version}\n"
-                f"/{account_name}/{container_name}\n"
-                "comp:acl\n"
-                "restype:container"
-            )
+        # string for API signature
+        string_to_sign = (
+            f"PUT\n"  # HTTP Verb
+            f"\n"  # Content-Encoding
+            f"\n"  # Content-Language
+            f"\n"  # Content-Length
+            f"\n"  # Content-MD5
+            f"\n"  # Content-Type
+            f"\n"  # Date
+            f"\n"  # If-Modified-Since
+            f"\n"  # If-Match
+            f"\n"  # If-None-Match
+            f"\n"  # If-Unmodified-Since
+            f"\n"  # Range
+            f"x-ms-date:{request_date}\n"
+            f"x-ms-version:{api_version}\n"
+            f"/{account_name}/{container_name}\n"
+            "comp:acl\n"
+            "restype:container"
+        )
 
-            # create signature token for API auth
-            try:
-                decoded_key = base64.b64decode(account_key)
-                signature = hmac.new(
-                    decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256
-                ).digest()
-                encoded_signature = base64.b64encode(signature).decode("utf-8")
-            except Exception:
-                raise Exception("Incorrect shared key provided")
-            authorization_header = f"SharedKey {account_name}:{encoded_signature}"
-            headers = {
-                "x-ms-date": request_date,
-                "Authorization": authorization_header,
-                'x-ms-version': api_version,
-            }
-            response = client.block_public_access(request_url, headers)
-            demisto.debug(f"Response from block public access API:- {response}")
-            command_results = CommandResults(
-                readable_output=f"Public access to container '{container_name}' has been successfully blocked",
-            )
-            return command_results
-    except Exception as ex:
-        raise Exception(f"Error while blocking public access:- {str(ex)}")
-
+        # create signature token for API auth
+        try:
+            decoded_key = base64.b64decode(account_key)
+            signature = hmac.new(
+                decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256
+            ).digest()
+            encoded_signature = base64.b64encode(signature).decode("utf-8")
+        except Exception:
+            raise Exception("Incorrect shared key provided")
+        authorization_header = f"SharedKey {account_name}:{encoded_signature}"
+        headers = {
+            "x-ms-date": request_date,
+            "Authorization": authorization_header,
+            'x-ms-version': api_version,
+        }
+        response = client.block_public_access(request_url, headers)
+        demisto.debug(f"Response from block public access API:- {response}")
+        command_results = CommandResults(
+            readable_output=f"Public access to container '{container_name}' has been successfully blocked",
+        )
+        return command_results
 
 def test_module(client: Client) -> None:
     """

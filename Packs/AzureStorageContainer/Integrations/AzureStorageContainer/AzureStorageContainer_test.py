@@ -317,6 +317,10 @@ def test_block_public_accesss(requests_mock):
     expected_response = f"Public access to container '{container_name}' has been successfully blocked"
     assert result.readable_output == expected_response
 
+    invalid_shared_key = "test-key"
+    with pytest.raises(Exception):
+        block_public_access_command(client, {'shared_key': invalid_shared_key})
+
 
 def test_azure_storage_set_blob_tags_command(requests_mock):
     """
