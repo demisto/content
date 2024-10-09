@@ -9,7 +9,6 @@ import traceback
 import uuid
 import warnings
 from email import _header_value_parser as parser
-from email.message import Message as EmailMessage
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
 from multiprocessing import Process
@@ -2092,7 +2091,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
     return None
 
 
-def handle_attached_email_with_incorrect_message_id(attached_email: EmailMessage):
+def handle_attached_email_with_incorrect_message_id(attached_email: Message):
     """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
     This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
     Public issue link: https://github.com/python/cpython/issues/105802
@@ -2130,14 +2129,14 @@ def handle_attached_email_with_incorrect_message_id(attached_email: EmailMessage
     return attached_email
 
 
-def handle_attached_email_with_incorrect_from_header(attached_email: EmailMessage):
+def handle_attached_email_with_incorrect_from_header(attached_email: Message):
     """This function handles a malformed From value which can be returned in the header of certain email objects.
     This issue happens due to a current bug in "email" library.
     Public issue link: https://github.com/python/cpython/issues/114906
 
     The function will run on every attached email if exists, check its From header value and fix it if possible.
     Args:
-        attached_email (EmailMessage): attached email object.
+        attached_email (Message): attached email object.
 
     Returns:
         Message: attached email object.
@@ -2174,7 +2173,7 @@ def handle_incorrect_message_id(message_id: str) -> str:
     return message_id
 
 
-def decode_email_data(email_obj: EmailMessage):
+def decode_email_data(email_obj: Message):
     attached_email_bytes = email_obj.as_bytes()
     chardet_detection = chardet.detect(attached_email_bytes)
     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
@@ -2199,7 +2198,7 @@ def decode_email_data(email_obj: EmailMessage):
     return data
 
 
-def cast_mime_item_to_message(item) -> EmailMessage:
+def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, str) and not mime_content.isascii():
