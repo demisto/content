@@ -17,7 +17,7 @@
             {
                 "SEARCH_FIELD": "alert_name",
                 "SEARCH_TYPE": "CONTAINS",
-                "SEARCH_VALUE": "Suspicious SaaS API call from a Tor exit node via Mobile Device                "
+                "SEARCH_VALUE": "Suspicious SaaS API call from a Tor exit node via Mobile Device"
             },
             {
                 "SEARCH_FIELD": "alert_name",
