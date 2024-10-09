@@ -299,6 +299,7 @@ def _create_indicator(item: dict) -> dict:
             'value': indicator_id,
             'attributes': attributes,
         },
+        'id': indicator_id,
         'detections': str(detection_ratio),
         'origin': context_attributes.get('origin'),
         'sources': ', '.join([f'[{x["type"]}] {x["label"]}'
