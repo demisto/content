@@ -430,7 +430,7 @@ tasks:
     task:
       id: 18c3946f-fa28-4478-8a74-3bf627d7f137
       version: -1
-      name: Convert Sigma to XQL query
+      name: Convert Sigma to Splunk query
       description: Allows converting a Sigma Rule indicator into a SIEM query.
       scriptName: SigmaConverttoQuery
       type: regular
