@@ -1,0 +1,2 @@
+[MODEL: dataset="veeam_veeam_raw"]
+alter _raw_log = "eido_test";
