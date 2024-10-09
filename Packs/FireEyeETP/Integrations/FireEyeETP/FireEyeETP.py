@@ -43,6 +43,7 @@ STATUS_VALUES = ["accepted", "deleted", "delivered", "delivered (retroactive)", 
 BASIC FUNCTIONS
 '''
 
+
 class Client(BaseClient):
 
     def get_artifacts(self, alert_id):
@@ -112,6 +113,7 @@ class Client(BaseClient):
             resp_type='response'
         )
         return response
+
 
 def set_proxies():
     if not demisto.params().get('proxy', False):
@@ -557,14 +559,14 @@ def upload_yara_file_command(client, args):
     file_path = file_obj['path']
 
     with open(file_path, "rb") as file:
-        data=file.read()
+        data = file.read()
         files = {
             'file': ('new.yara', data)
         }
         response = client.upload_yara_file(policy_uuid, ruleset_uuid, files)
         if response.status_code == 202:
             return CommandResults(readable_output='Upload of Yara file succesfully.')
-        else :
+        else:
             return CommandResults(readable_output='Upload of Yara file failed.')
 
 
@@ -574,8 +576,7 @@ def get_events_data_command(client, args):
 
     response = client.get_events_data(message_id)
 
-
-    result_output = dict()
+    result_output = {}
     result_output['Logs'] = response['data'][message_id]
 
     for log in result_output['Logs']:
@@ -589,13 +590,15 @@ def get_events_data_command(client, args):
 
     command_results = CommandResults(
         outputs=result_output,
-        readable_output=tableToMarkdown("Events", result_output, headers=["Logs", "Delivered_msg", "Delivered_status"], is_auto_json_transform=True),
+        readable_output=tableToMarkdown("Events", result_output, headers=[
+                                        "Logs", "Delivered_msg", "Delivered_status"],
+                                        is_auto_json_transform=True),
         outputs_prefix='FireEyeETP.Events'
-        )
+    )
     return command_results
 
 
-def download_alert_artifacts_command(client,args):
+def download_alert_artifacts_command(client, args):
     alert_id = args.get('alert_id')
 
     response = client.get_artifacts(alert_id)
@@ -603,9 +606,9 @@ def download_alert_artifacts_command(client,args):
 
     return [
         CommandResults(
-        readable_output='Download alert artifact completed successfully'),
+            readable_output='Download alert artifact completed successfully'),
         file_entry
-        ]
+    ]
 
 
 def list_yara_rulesets_command(client, args):
@@ -614,7 +617,17 @@ def list_yara_rulesets_command(client, args):
 
     response = client.get_yara_rulesets(policy_uuid)
 
-    command_results = CommandResults(outputs=response['data']['rulesets'], readable_output=tableToMarkdown("Rulesets", response['data']['rulesets'], headers=["name", "description", "uuid", "yara_file_name"]), outputs_prefix=f'FireEyeETP.Policy.{policy_uuid}')
+    command_results = CommandResults(outputs=response['data']['rulesets'],
+                                     readable_output=tableToMarkdown("Rulesets",
+                                                                     response['data']['rulesets'],
+                                                                     headers=[
+                                                                         "name",
+                                                                         "description",
+                                                                         "uuid",
+                                                                         "yara_file_name"
+                                                                         ]
+                                                                     ),
+                                     outputs_prefix=f'FireEyeETP.Policy.{policy_uuid}')
 
     return command_results
 
@@ -624,12 +637,11 @@ def download_yara_file_command(client, args):
     policy_uuid = args.get('policy_uuid')
     ruleset_uuid = args.get('ruleset_uuid')
 
-
     response = client.get_yara_file(policy_uuid, ruleset_uuid)
 
     file_entry = fileResult('original.yara', data=response.content, file_type=EntryType.FILE)
 
-    return [CommandResults(readable_output='Download yara file completed successfully'), file_entry]
+    return [CommandResults(readable_output='Download yara file completed successfully.'), file_entry]
 
 
 def get_alert_request(alert_id):
@@ -649,7 +661,6 @@ def quarantine_release_command(client, args):
     response = client.quarantine_release(message_id)
 
     return CommandResults(readable_output=response.text)
-
 
 
 def get_alert_command():
