@@ -132,7 +132,6 @@ select = [
     "E742", # ambiguous-class-name
     "E743", # ambiguous-function-name
     "E902", # io-error
-    "E999", # syntax-error
 
     "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
@@ -199,9 +198,6 @@ select = [
     "PD013", # pandas-use-of-dot-stack
     "PD015", # pandas-use-of-pd-merge
 
-    "PGH001", # eval
-    "PGH002", # deprecated-log-warn
-
     "PIE790", # unnecessary-pass
     "PIE794", # duplicate-class-field-definition
     "PIE796", # non-unique-enums
@@ -235,7 +231,6 @@ select = [
     "PLR0133", # comparison-of-constant
     "PLR0206", # property-with-parameters
     "PLR0402", # manual-from-import
-    "PLR1701", # repeated-isinstance-calls
     "PLR1711", # useless-return
     "PLR1722", # sys-exit-alias
 
@@ -351,7 +346,6 @@ select = [
     "UP024", # os-error-alias
     "UP025", # unicode-kind-prefix
     "UP026", # deprecated-mock-import
-    "UP027", # unpacked-list-comprehension
     "UP028", # yield-in-for-loop
     "UP029", # unnecessary-builtin-import
     "UP030", # format-literals
