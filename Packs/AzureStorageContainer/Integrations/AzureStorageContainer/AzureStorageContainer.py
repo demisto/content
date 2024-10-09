@@ -1001,7 +1001,7 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
 
     account_key = demisto.params().get('shared_key', {}).get('password')
     if not account_key:
-        raise Exception("Shared access key is not provided.")
+        raise KeyError("The 'shared_key' parameter must be provided.")
     else:
         account_name = storage_account_name
         container_name = args.get("container_name")

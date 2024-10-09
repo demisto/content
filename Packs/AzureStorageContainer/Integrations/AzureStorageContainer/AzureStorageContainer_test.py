@@ -284,7 +284,7 @@ def test_azure_storage_get_blob_tags_command(requests_mock):
     assert result.outputs.get('Blob').get('Tag')[0].get('Value') == 'Azure'
 
 
-def test_block_public_accesss(requests_mock):
+def test_azure_storage_block_public_access_command(requests_mock):
     """
     Scenario: Block public access for the specified container.
     Given:
@@ -292,7 +292,6 @@ def test_block_public_accesss(requests_mock):
     When:
      - azure-storage-container-block-public-access called.
     Then:
-     - Ensure that the output is empty (None).
      - Ensure readable output message content.
     """
     from AzureStorageContainer import Client, block_public_access_command
