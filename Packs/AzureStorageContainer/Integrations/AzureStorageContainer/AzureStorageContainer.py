@@ -1002,7 +1002,7 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
     try:
         account_key = demisto.params().get('shared_key', {}).get('password')
         if not account_key:
-            message = "Shared access key is not provided."
+            raise Exception("Shared access key is not provided.")
         else:
             account_name = storage_account_name
             container_name = args.get("container_name")
@@ -1048,14 +1048,10 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
             }
             response = client.block_public_access(request_url, headers)
             demisto.debug(f"Response from block public access API:- {response}")
-            if response:
-                message = f"Public access to container '{container_name}' has been successfully blocked"
-            else:
-                message = f"Failed to block public access, Status code: {response.status_code}"
-        command_results = CommandResults(
-            readable_output=message,
-        )
-        return command_results
+            command_results = CommandResults(
+                readable_output=f"Public access to container '{container_name}' has been successfully blocked",
+            )
+            return command_results
     except Exception as ex:
         raise Exception(f"Error while blocking public access:- {str(ex)}")
 
