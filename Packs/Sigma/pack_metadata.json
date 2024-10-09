@@ -13,7 +13,8 @@
     "useCases": [],
     "keywords": [],
     "excludedDependencies": [
-        "Splunk"
+        "Splunk",
+        "SentinelOne"
     ]
     "marketplaces": [
         "xsoar",
