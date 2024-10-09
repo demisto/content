@@ -587,7 +587,11 @@ def get_events_data_command(client, args):
             result_output['Delivered_msg'] = log['display_msg']
             result_output['Delivered_status'] = "Failed"
 
-    command_results = CommandResults(outputs=result_output, readable_output=tableToMarkdown("Events", result_output, headers=["Logs", "Delivered_msg", "Delivered_status"]), outputs_prefix='FireEyeETP.Events')
+    command_results = CommandResults(
+        outputs=result_output,
+        readable_output=tableToMarkdown("Events", result_output, headers=["Logs", "Delivered_msg", "Delivered_status"], is_auto_json_transform=True),
+        outputs_prefix='FireEyeETP.Events'
+        )
     return command_results
 
 
@@ -597,7 +601,11 @@ def download_alert_artifacts_command(client,args):
     response = client.get_artifacts(alert_id)
     file_entry = fileResult(alert_id + '.zip', data=response.content, file_type=EntryType.FILE)
 
-    return [CommandResults(readable_output='Download alert artifact completed successfully'), file_entry]
+    return [
+        CommandResults(
+        readable_output='Download alert artifact completed successfully'),
+        file_entry
+        ]
 
 
 def list_yara_rulesets_command(client, args):

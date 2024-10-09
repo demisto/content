@@ -79,7 +79,7 @@ script:
     - name: to_accepted_date_time
       description: ' The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''from_accepted_date_time''  as well to set the complete date range for the search.'
     - name: rejection_reason
-      description: 'list of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405") '
+      description: 'list of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). '
     - name: sender_ip
       description: List of sender IP addresses, max limit of entries is 10.
     - name: status
@@ -304,7 +304,7 @@ script:
     arguments:
     - name: alert_id
       required: true
-      description: The alert id
+      description: The alert id.
     description: 'Downloads all case files of the alert specified by alert ID, in
       a zip file. You can obtain the ID from the Alert Summary response, for example
       "id": "AV7zzRy7kvIwrKcfu0I".'
@@ -313,7 +313,7 @@ script:
     - name: policy_uuid
       required: true
       description: Universally unique identifier (UUID) of the policy. (Can be found
-        on the URL of the ETP Policies)
+        on the URL of the ETP Policies).
     outputs:
     - contextPath: FireEyeETP.Policy
       description: The policy id.
@@ -323,7 +323,7 @@ script:
     - name: policy_uuid
       required: true
       description: Universally unique identifier (UUID) of the policy. (Can be found
-        on the URL of the ETP Policies)
+        on the URL of the ETP Policies).
     - name: ruleset_uuid
       required: true
       description: Universally unique identifier (UUID) of the ruleset.
@@ -333,13 +333,13 @@ script:
     - name: policy_uuid
       required: true
       description: Universally unique identifier (UUID) of the policy. (Can be found
-        on the URL of the ETP Policies)
+        on the URL of the ETP Policies).
     - name: ruleset_uuid
       required: true
       description: Universally unique identifier (UUID) of the ruleset.
     - name: entryID
       required: true
-      description: Entry ID of yara file to upload
+      description: Entry ID of yara file to upload.
     description: Update or replace the YARA rule file in the existing ruleset.
   - name: fireeye-etp-get-events-data
     arguments:
