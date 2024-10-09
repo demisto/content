@@ -181,7 +181,6 @@ configuration:
   - marketplacev2
   required: false
 - additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
-  defaultvalue: ''
   display: Mirrored XSOAR Ticket custom close state code
   name: server_close_custom_state
   type: 0
@@ -236,12 +235,18 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
-- defaultvalue: 0
+- defaultvalue: '0'
   display: 'Advanced: Minutes to look back when fetching'
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
   type: 0
   required: false
+- additionalinfo: Mirror all war room entries marked as Note to ServiceNow even if not tagged as comment or work_note.
+  defaultvalue: 'false'
+  display: Mirror All Notes to ServiceNow
+  name: mirror_all_notes
+  required: false
+  type: 8
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
@@ -1329,7 +1334,7 @@ script:
       - sc_req_item
       - sn_si_incident
     - auto: PREDEFINED
-      defaultValue: false
+      defaultValue: 'false'
       description: Whether to add ticket notes and work notes as notes in the War Room.
       name: add_as_entry
       predefined:
@@ -1525,7 +1530,6 @@ script:
       required: true
     - description: Whether to force-use the default api version (not versioned), ignoring the API version parameter.
       name: force_default_url
-      required: false
       defaultValue: 'false'
     description: Create a change request from a template.
     name: servicenow-create-co-from-template
@@ -1629,7 +1633,13 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.14.90585
+  - arguments:
+    - description: sys_id of the ticket containing the file.
+      name: sys_id
+      required: true
+    description: Retrieve file attachments from tickets.
+    name: servicenow-get-attachments
+  dockerimage: demisto/python3:3.11.10.111526
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1637,7 +1647,9 @@ script:
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 5.0.0
 tests:
 - servicenow_test_v2
 - ServiceNow_OAuth_Test
+- ServiceNow_Fetch_Incidents_Test

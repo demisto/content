@@ -5,9 +5,11 @@ IT service management. Cortex XSOAR interfaces with ServiceNow to help streamlin
 - Query ServiceNow data with the ServiceNow query syntax.
 - Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
 
-Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/sandiego-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html?cshalt=yes) page.
+Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/xanadu-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
 
-This integration was integrated and tested with the Orlando version of ServiceNow.
+This integration was integrated and tested with the Xanadu version of ServiceNow.
+
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Use cases
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
@@ -57,7 +59,7 @@ This integration supports two types of authorization:
 
 #### OAuth 2.0 Authorization
 To use OAuth 2.0 authorization follow the next steps:
-1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) for more information). 
+1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information). 
 2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `Username` and `Password` fields of the instance configuration.
 3. Select the `Use OAuth Login` checkbox and click the `Done` button.
 4. Run the command `!servicenow-oauth-login` from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates an access token to the ServiceNow instance and is required only in the first time after configuring a new instance in the XSOAR platform.
@@ -66,10 +68,10 @@ To use OAuth 2.0 authorization follow the next steps:
 **Notes:**
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
 2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend setting the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
-3. The grant type used to get an access token is `Client credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/tokyo-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information.
+3. The grant type used to get an access token is `Resource owner password credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
 
-### Using Multi Factor Authentication (MFA)
+### Using Multi-Factor Authentication (MFA)
 MFA can be used both when using basic authorization and when using OAuth 2.0 authorization, however we strongly recommend using OAuth 2.0 when using MFA.
 If MFA is enabled for your user, follow the next steps:
 1. Open the Google Authenticator application on your mobile device and make note of the number. The number refreshes every 30 seconds.
@@ -535,23 +537,24 @@ Retrieves ticket information by ticket ID.
 
 
 ### servicenow-create-ticket
+
 ***
 Creates new ServiceNow ticket.
-
 
 #### Base Command
 
 `servicenow-create-ticket`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
-| urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
-| severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
-| impact | Ticket impact. | Optional | 
-| active | Whether to set the ticket as Active. Can be "true" or "false". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident". Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. Default is incident. | Optional | 
+| urgency | Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5". Possible values are: 3 - Low, 2 - Medium, 1 - High. | Optional | 
+| severity | Ticket severity. You can either select from the predefined options or enter another value. For example, "Urgent" or "5". Possible values are: 3 - Low, 2 - Medium, 1 - High. | Optional | 
+| impact | Ticket impact. Possible values are: 3 - Low, 2 - Medium, 1 - High. | Optional | 
+| active | Whether to set the ticket as Active. Can be "true" or "false". Possible values are: true, false. | Optional | 
 | activity_due | The ticket activity due date, in the format "2016-07-02 21:51:11". | Optional | 
 | additional_assignee_list | List of users assigned to the ticket. | Optional | 
 | approval_history | Ticket history approval. | Optional | 
@@ -560,12 +563,11 @@ Creates new ServiceNow ticket.
 | business_duration | Business duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | business_service | Business service. | Optional | 
 | business_stc | Business source. | Optional | 
-| business_criticality | Business criticality of the ticket. | Optional |
-| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
+| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | caller_id | Caller ID (UID format). | Optional | 
 | category | Category of the ticket. | Optional | 
-| caused_by | UID Format | Optional | 
-| close_code | Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller". | Optional | 
+| caused_by | UID Format. | Optional | 
+| close_code | Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller". Possible values are: Solved (Work Around), Solved (Permanently), Solved Remotely (Work Around), Solved Remotely (Permanently), Not Solved (Not Reproducible), Not Solved (Too Costly), Closed/Resolved by Caller. | Optional | 
 | close_notes | Close notes of the ticket. | Optional | 
 | closed_at | When the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | closed_by | User who closed the ticket. | Optional | 
@@ -577,115 +579,68 @@ Creates new ServiceNow ticket.
 | correlation_display | Correlation display. | Optional | 
 | correlation_id | Correlation ID. | Optional | 
 | delivery_plan | Delivery plan (UID format). | Optional | 
-| display | Whether to display comments, work notes, and so on. Can be "true" or "false". | Optional | 
 | description | Ticket description. | Optional | 
 | due_date | Ticket due date, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| escalation | Escalation | Optional | 
 | expected_start | Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | follow_up | Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | group_list | UID format list (group). | Optional | 
-| knowledge | Whether the ticket is solved in the knowledge base. Can be "true" or "false". | Optional | 
+| knowledge | Whether the ticket is solved in the knowledge base. Can be "true" or "false". Possible values are: true, false. | Optional | 
 | location | Location of the ticket. | Optional | 
 | made_sla | SLA of the ticket. | Optional | 
-| notify | Whether to be notified about this ticket. Can be "1" or "0". | Optional | 
+| notify | Whether to be notified about this ticket. Can be "1" or "0". Possible values are: 1, 0. | Optional | 
 | order | Order number. | Optional | 
-| parent | UID Format | Optional | 
-| parent_incident | UID Format | Optional | 
-| problem_id | UID Format | Optional | 
+| parent | UID Format. | Optional | 
+| parent_incident | UID Format. | Optional | 
+| problem_id | UID Format. | Optional | 
 | reassignment_count | The number of users included in this ticket. | Optional | 
-| reopen_count | How many times the ticket has been reopened. | Optional |
-| resolved_at | The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
-| resolved_by | ID of the user that resolved the ticket. | Optional |
-| risk_score | Incident risk score. | Optional |
-| rfc | UID | Optional | 
+| reopen_count | How many times the ticket has been reopened. | Optional | 
+| resolved_at | The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| resolved_by | ID of the user that resolved the ticket. | Optional | 
+| rfc | UID. | Optional | 
 | sla_due | SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | subcategory | Ticket subcategory. | Optional | 
 | sys_updated_by | Last updated by. | Optional | 
 | sys_updated_on | Last date/time that the system was updated, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | user_input | Input from the end user. | Optional | 
 | watch_list | A list of watched tickets. | Optional | 
-| work_end | Format: YYYY-MM-DD HH:MM:SS | Optional | 
-| work_notes | Format journal list | Optional | 
+| work_end | Format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| work_notes | Format journal list. | Optional | 
 | work_notes_list | List work notes UIDs. | Optional | 
 | work_start | Date/time when work started on the ticket. | Optional | 
 | assignment_group | The sys_id of the group to assign. | Optional | 
 | incident_state | The number that represents the incident state. | Optional | 
 | number | Ticket number. | Optional | 
-| priority | Priority of the ticket. | Optional | 
-| template | Template name to use as a base to create new tickets. | Optional | 
+| priority | Priority of the ticket. Possible values are: 5 - Planning, 4 - Low, 3 - Moderate, 2 - High, 1 - Critical. | Optional | 
+| template | Template name to use as the basis to create new tickets. | Optional | 
 | custom_fields | Custom (user defined) fields in the format: fieldname1=value;fieldname2=value; custom fields start with a "u_". | Optional | 
-| change_type | Type of Change Request ticket. Can be "normal", "standard", or "emergency". Default is "normal". | Optional | 
+| change_type | Type of Change Request ticket. Can be "normal", "standard", or "emergency". Default is "normal". Possible values are: normal, standard, emergency. Default is normal. | Optional | 
 | state | State of the ticket, for example: "Closed" or "7" or "7 - Closed". | Optional | 
 | opened_at |  Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | caller | Caller system ID. | Optional | 
 | approval | Ticket approval. | Optional | 
-| additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
-| input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
-
-For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
-
+| additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value;. | Optional | 
+| input_display_value | Flag that indicates whether to set field values using the display value or the actual value. 'true' treats input values as the display value. 'false' treats input values as actual values. Default is false. Possible values are: false, true. Default is false. | Optional | 
+| fields_delimiter | The delimiter character to use as a separator for a list of fields in an argument for this command. Default is ';'. Default is ;. | Optional | 
+| business_criticality | Business criticality of the ticket. Possible values are: 3 - Non-Critical, 2 - High, 1 - Critical. | Optional | 
+| risk_score | Incident risk score. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ServiceNow.Ticket.ID | string | ServiceNow ticket ID. | 
-| ServiceNow.Ticket.OpenedBy | string | ServiceNow ticket opener ID. | 
-| ServiceNow.Ticket.CreatedOn | date | ServiceNow ticket creation date. | 
-| ServiceNow.Ticket.Assignee | string | ServiceNow ticket assignee ID. | 
-| ServiceNow.Ticket.State | string | ServiceNow ticket state. | 
-| ServiceNow.Ticket.Summary | string | ServiceNow ticket short summary. | 
-| ServiceNow.Ticket.Number | string | ServiceNow ticket number. | 
-| ServiceNow.Ticket.Active | boolean | ServiceNow ticket active. | 
-| ServiceNow.Ticket.AdditionalComments | string | ServiceNow ticket comments. | 
-| ServiceNow.Ticket.Priority | string | ServiceNow ticket priority. | 
-| ServiceNow.Ticket.OpenedAt | date | ServiceNow ticket opening time. | 
-| ServiceNow.Ticket.ResolvedBy | string | ServiceNow ticket resolver ID. | 
-| ServiceNow.Ticket.CloseCode | string | ServiceNow ticket close code. | 
-
-
-#### Command Example
-```!servicenow-create-ticket active=true severity="2 - Medium" short_description="Ticket example"```
-
-#### Context Example
-```
-{
-    "ServiceNow": {
-        "Ticket": {
-            "Active": "true",
-            "CreatedOn": "2020-05-10 09:04:06",
-            "Creator": "admin",
-            "ID": "id",
-            "Number": "INC0010002",
-            "OpenedAt": "2020-05-10 09:04:06",
-            "OpenedBy": "admin",
-            "Priority": "5 - Planning",
-            "State": "1",
-            "Summary": "Ticket exmaple"
-        }
-    },
-    "Ticket": {
-        "Active": "true",
-        "CreatedOn": "2020-05-10 09:04:06",
-        "Creator": "admin",
-        "ID": "id",
-        "Number": "INC0010002",
-        "OpenedAt": "2020-05-10 09:04:06",
-        "OpenedBy": "admin",
-        "Priority": "5 - Planning",
-        "State": "1",
-        "Summary": "Ticket example"
-    }
-}
-```
-
-#### Human Readable Output
-
->### ServiceNow ticket was created successfully.
->|System ID|Number|Impact|Urgency|Severity|Priority|State|Created On|Created By|Active|Opened At|Short Description|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| id | INC0010002 | 3 - Low | 3 - Low | 2 - Medium | 5 - Planning | 1 - New | 2020-05-10 09:04:06 | admin | true | 2020-05-10 09:04:06 | Ticket example |
-
+| ServiceNow.Ticket.ID | string | Ticket ID. | 
+| ServiceNow.Ticket.OpenedBy | string | Ticket opener ID. | 
+| ServiceNow.Ticket.CreatedOn | date | Ticket creation date. | 
+| ServiceNow.Ticket.Assignee | string | Ticket assignee ID. | 
+| ServiceNow.Ticket.State | string | Ticket state. | 
+| ServiceNow.Ticket.Summary | string | Ticket short summary. | 
+| ServiceNow.Ticket.Number | string | Ticket number. | 
+| ServiceNow.Ticket.Active | boolean | Ticket active. | 
+| ServiceNow.Ticket.AdditionalComments | string | Ticket comments. | 
+| ServiceNow.Ticket.Priority | string | Ticket priority. | 
+| ServiceNow.Ticket.OpenedAt | date | Ticket opening time. | 
+| ServiceNow.Ticket.ResolvedBy | string | Ticket resolver ID. | 
+| ServiceNow.Ticket.CloseCode | string | Ticket close code. | 
 
 ### servicenow-update-ticket
 ***
@@ -775,7 +730,7 @@ Updates the specified ticket.
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 | clear_fields | A comma-separated list of fields to clear. | Optional | 
 
-For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 #### Context Output
 
@@ -1274,7 +1229,7 @@ Creates a new record in the specified ServiceNow table.
 | custom_fields | Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;... | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 
-For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 
 #### Context Output
@@ -1333,7 +1288,7 @@ Updates a record in the specified ServiceNow table.
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 | clear_fields | A comma-separated list of fields to clear. | Optional | 
 
-For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/xanadu-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 #### Context Output
 
@@ -1974,88 +1929,36 @@ Gets notes from the specified ServiceNow ticket. Notes can be retrieved either b
                     "Type": "Comment",
                     "Value": "JavaScript error (line 202) on the home page. Not sure what is\n\t\t\tgoing on, does not happen on my Windows machine!\n\t\t"
                 },
-                {
-                    "CreatedBy": "admin",
-                    "CreatedOn": "2020-04-17 23:12:43",
-                    "Type": "Comment",
-                    "Value": "Added an attachment"
-                },
-                {
-                    "CreatedBy": "admin",
-                    "CreatedOn": "2020-05-10 09:04:15",
-                    "Type": "Work Note",
-                    "Value": "[code]<a class=\"web\" target=\"_blank\" href=\"http://www.demisto.com\" >demsito_link</a>[/code]"
-                },
-                {
-                    "CreatedBy": "admin",
-                    "CreatedOn": "2020-05-10 09:04:18",
-                    "Type": "Work Note",
-                    "Value": "Nice work!"
-                }
-            ]
-        }
-    }
-}
-```
+### servicenow-get-ticket-notes
 
-#### Human Readable Output
-
->### ServiceNow notes for ticket 471d4732a9fe198100affbf655e59172
->|Value|Created On|Created By|Type|
->|---|---|---|---|
->| JavaScript error (line 202) on the home page. Not sure what is<br/>			going on, does not happen on my Windows machine!<br/>		 | 2020-01-26 00:43:54 | admin | Comment |
->| Added an attachment | 2020-04-17 23:12:43 | admin | Comment |
->| [code]<a class="web" target="_blank" href="http://www.demisto.com" >demsito_link</a>[/code] | 2020-05-10 09:04:15 | admin | Work Note |
->| Nice work! | 2020-05-10 09:04:18 | admin | Work Note |
-
-
-### servicenow-add-tag
 ***
-Adds a tag to a ticket. The tag will be visible in the label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry fields=title,table,sys_id,id_display,id_type" command.
-
+Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions" for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
 
 #### Base Command
 
-`servicenow-add-tag`
+`servicenow-get-ticket-notes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| tag_id | Tag system ID. Can be retrieved using the "!servicenow-query-table table_name=label fields=name,active,sys_id" command. | Required | 
-| title | Tag title. For example: "Incident - INC000001". | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
-
+| limit | Maximum number of ticket notes. Default is 10. Default is 10. | Optional | 
+| offset | Offset of the ticket notes. Default is 0. | Optional | 
+| use_display_value | Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration. Possible values are: true, false. | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident". Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. Default is incident. | Optional | 
+| add_as_entry | Whether to add ticket notes and work notes as notes in the War Room. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ServiceNow.Ticket.ID | String | The unique ticket identifier. | 
-| ServiceNow.Ticket.TagTitle | String | Ticket tag title. | 
-| ServiceNow.Ticket.TagID | String | Ticket tag ID. | 
+| ServiceNow.Ticket.ID | string | Ticket ID. | 
+| ServiceNow.Ticket.Note.Value | unknown | Ticket note value. | 
+| ServiceNow.Ticket.Note.CreatedOn | date | Date/time the ticket note was created. | 
+| ServiceNow.Ticket.Note.CreatedBy | string | User who created the ticket note. | 
+| ServiceNow.Ticket.Note.Type | string | Ticket note type. | 
 
-
-### servicenow-query-items
-***
-Queries the sc_cat_item table in ServiceNow.
-
-
-#### Base Command
-
-`servicenow-query-items`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Query by name. Does not require an exact match. | Optional | 
-| offset | Starting record index to begin retrieving records from. | Optional | 
-| limit | Maximum number of query results. Default is 10. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ServiceNow.CatalogItem.ID | String | Catalog item system ID. | 
 | ServiceNow.CatalogItem.Name | String | Catalog item name. | 
@@ -2434,117 +2337,55 @@ Create a change request from a template.
                     "display_value": "",
                     "value": ""
                 },
-                "CreatedOn": {
-                    "display_value": "03/05/2022 08:17:00",
-                    "display_value_internal": "2022-05-03 08:17:00",
-                    "value": "2022-05-03 15:17:00"
-                },
-                "Creator": "1234",
-                "ID": {
-                    "display_value": "1234",
-                    "value": "1234"
-                },
-                "Number": {
-                    "display_value": "CHG001234",
-                    "value": "CHG001234"
-                },
-                "OpenedAt": {
-                    "display_value": "03/05/2022 08:17:00",
-                    "display_value_internal": "2022-05-03 08:17:00",
-                    "value": "2022-05-03 15:17:00"
-                },
-                "OpenedBy": "6b0e49021b158150042611b4bd4bcb5e",
-                "Priority": [
-                    "4 - Low"
-                ],
-                "State": {
-                    "display_value": "New",
-                    "value": -5
-                },
-                "Summary": {
-                    "display_value": "Add network switch to cabinet",
-                    "value": "Add network switch to cabinet"
-                }
-            }
-        }
-    }
-}
-```
+### servicenow-create-co-from-template
 
-#### Human Readable Output
-
->### ServiceNow ticket was created successfully.
->|System ID|Number|Impact|Urgency|Priority|State|Created On|Created By|Active|Description|Opened At|Short Description|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1234 | CHG001234 | 3 - Ministry | 3 - Low | 4 - Low | -5 - New | 2022-05-03 15:17:00 | admin_cnt_test_Jan2022-01 | true | This standard change template describes adding a new network switch to a datacenter cabinet | 2022-05-03 15:17:00 | Add network switch to cabinet |
-
-### servicenow-generic-api-call
 ***
-Generic call to ServiceNow api
-
+Create a change request from a template.
 
 #### Base Command
 
-`servicenow-generic-api-call`
+`servicenow-create-co-from-template`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| method | action to be performed on path. Possible values are: GET, POST, PATCH, DELETE. Default is 0. | Required | 
-| path | the API path starting with forward slash (/). | Required | 
-| json_body | whether or not the request body is json. Possible values are: true, false. Default is false. | Optional |
-| body | json to send in body. | Optional | 
-| headers | json of headers to add. | Optional | 
-| sc_api | Service Catalog Call. Possible values are: true, false. Default is false. | Optional | 
-| cr_api | Change Request Call. Possible values are: true, false. Default is false. | Optional | 
-| custom_api | Define a custom API root (like /api/custom/tasks). | Optional | 
-
+| template | Template for creating a standard change request. | Required | 
+| force_default_url | Whether to force-use the default api version (not versioned), ignoring the API version parameter. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ServiceNow.Generic.Response | string | Generic response to servicenow api | 
+| ServiceNow.Ticket.ID | Unknown | ServiceNow ticket ID. | 
+| ServiceNow.Ticket.OpenedBy | Unknown | ServiceNow ticket opener ID. | 
+| ServiceNow.Ticket.CreatedOn | Unknown | ServiceNow ticket creation date. | 
+| ServiceNow.Ticket.Assignee | Unknown | ServiceNow ticket assignee ID. | 
+| ServiceNow.Ticket.State | Unknown | ServiceNow ticket state. | 
+| ServiceNow.Ticket.Summary | Unknown | ServiceNow ticket short summary. | 
+| ServiceNow.Ticket.Number | Unknown | ServiceNow ticket number. | 
+| ServiceNow.Ticket.Active | Unknown | ServiceNow ticket active. | 
+| ServiceNow.Ticket.AdditionalComments | Unknown | ServiceNow ticket comments. | 
+| ServiceNow.Ticket.Priority | Unknown | ServiceNow ticket priority. | 
+| ServiceNow.Ticket.OpenedAt | Unknown | ServiceNow ticket opening time. | 
+| ServiceNow.Ticket.ResolvedBy | Unknown | ServiceNow ticket resolver ID. | 
+| ServiceNow.Ticket.CloseCode | Unknown | ServiceNow ticket close code. | 
 
-#### Command example
-```!servicenow-generic-api-call method=GET path="/table/sn_cmdb_workspace_cmdb_ci_demo"```
-#### Context Example
-```json
-{
-    "ServiceNow": {
-        "Generic": {
-            "Response": {
-                "result": [
-                    {
-                        "sys_created_by": "admin_test_Nov2020-01",
-                        "sys_created_on": "2021-02-13 13:36:55",
-                        "sys_id": "1234",
-                        "sys_mod_count": "0",
-                        "sys_tags": "",
-                        "sys_updated_by": "admin_test_Nov2020-01",
-                        "sys_updated_on": "2021-02-13 13:36:55"
-                    }
-                ]
-            }
-        }
-    }
-}
-```
+### servicenow-get-attachments
 
-#### Human Readable Output
+***
+Retrieve file attachments from tickets
 
->Request for GET method is successful
+#### Base Command
 
+`servicenow-get-attachments`
 
-### Troubleshooting  
-The following are tips for handling issues with mirroring incidents between ServiceNow and Cortex XSOAR.
+#### Input
 
-| **Issue** | **Recommendation**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Unauthorized connection error. | Check the credentials. <br></br>Make sure the oauth ID and secret are created using the account configured on Cortex XSOAR. [Refer the KB](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0783632).<br></br>Check the roles to ensure the following roles are granted - itil (For ServiceNow v2), cmdb_inst_admin (For ServiceNow CMDB), rest_api_explorer, snc_platform_rest_api_access, web_service_admin.<br></br>Use the client ID and secret in place of username and password in the instance configuration. And use the account's username and password during the oauth step in the pop up window.<br></br>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |   
-| Mirroring is not working. | Open Context Data and search for dbot. Confirm the dbot fields are configured correctly either through the mapper for that specific incident type or using setIncident. Specifically, make sure the integration instance is configured correctly for the mirroring direction (ingoing, outgoing, both) - dbotMirrorId, dbotMirrorDirection, dbotMirrorInstance, dbotMirrorTags                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |   
-| Comments and work notes from before incident creation are not fetched/mirrored. | Mirroring settings apply only for incidents that are fetched after applying the settings. <br></br> For example, if a user creates a ServiceNow incident with added comments/work notes and then defines a ServiceNow integration instance with mirroring in Cortex XSOAR, those comments/work notes are not fetched with the incident in Cortex XSOAR. <br></br> To fetch pre-existing comments/work notes, you can use the ***servicenow-get-ticket-notes*** command.  <br></br> To retrieve comments and work notes using this command follow one of these steps: <br></br> - Grant elevated privileges to the **sys_journal_field**. This is done by assigning the **Itil** role (see this ServiceNow community link on [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks). <br></br> - Select the `Use Display Value` checkbox in the instance configuration. This will retrieve comments and work notes using their display value from ServiceNow. When choosing this option, you must select the date format of your instance from the `Instance Date Format` dropdown menu (see the [ServiceNow documentation](https://docs.servicenow.com/bundle/tokyo-platform-administration/page/administer/time/task/t_PersonalizeTheSystemDateFormat.html) for an explanation how to find the date format of your instance). Note that in this case, the values that will appear under the `sys_created_by` field of the retrieved notes are the display values from ServiceNow and not the system values, e.g., "System Administrator" instead of "admin". |  
-| Ticket is not closing. | Verify the integration instance is configured correctly for the *Mirrored XSOAR Ticket closure method* or *Mirrored ServiceNow Ticket closure method* fields.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Required fields are not getting sent. | This may be a mapping issue, specifically if close reason and close notes are required.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Auto-Extract extracts sys_id as a file. | This is by design. To resolve this:  <br></br> - Turn off Auto-Extract for all fields and only used on specific fields.  <br></br> - Turn off Auto-Extract at the incident level and use the task level for extraction.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Date displayed in the Cortex XSOAR layout is not aligned with ServiceNow. | 1. Navigate to the `incoming-mapper` you are using. <br></br> 2. For every field that uses the ``DateStringToISOFormat`` script, change the ``dayfirst`` argument  to ``true``.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sys_id | sys_id of the ticket containing the file. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
