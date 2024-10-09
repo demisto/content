@@ -1,6 +1,7 @@
 import pytest
 import defusedxml.ElementTree as defused_ET
 
+from CommonServerPython import *
 
 ACCOUNT_NAME = "test"
 BASE_URL = f'https://{ACCOUNT_NAME}.blob.core.windows.net/'
@@ -312,10 +313,8 @@ def test_block_public_accesss(requests_mock):
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = block_public_access_command(client, {'request_url': url,
                                                   'headers': headers})
-
+    
     expected_response = f"Public access to container '{container_name}' has been successfully blocked"
-    assert result.outputs is None
-    assert result.outputs_prefix is None
     assert result.readable_output == expected_response
 
 

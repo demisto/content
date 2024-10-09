@@ -32,10 +32,12 @@ configuration:
   type: 0
   required: false
   hidden: true
-- display: Shared Key
+- additionalinfo: Relevant only if user wants to block public access of a container.
+  display: Shared Key
   name: shared_key
   type: 4
   required: false
+  section: Connect
 description: Create and Manage Azure Storage Container services.
 display: Azure Storage Container
 name: Azure Storage Container
