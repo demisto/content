@@ -535,7 +535,7 @@ tasks:
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set. (Start by counting from 0).
       id: 731a66f9-21d4-472a-8924-abf1fc7bf686
       iscommand: true
-      name: 'Get XDR disconnected endpoints '
+      name: Get XDR disconnected endpoints
       script: '|||xdr-get-endpoints'
       type: regular
       version: -1
