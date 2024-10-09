@@ -17,7 +17,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
-                 read_timeout=20):
+                 read_timeout=20, enrichment_excluded=False):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
@@ -26,6 +26,7 @@ class Client(BaseClient):
         self.feed_data = None
         self.reliability = reliability
         self.read_timeout = read_timeout
+        self.enrichment_excluded = enrichment_excluded
 
     def request_feed_url(self):
         return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout,
@@ -74,6 +75,9 @@ class Client(BaseClient):
                 }
                 if self.tlp_color:
                     indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+
+                if self.enrichment_excluded:
+                    indicator_obj['enrichmentExcluded'] = self.enrichment_excluded
 
             parsed_indicators.append(indicator_obj)
 
@@ -168,7 +172,8 @@ def main():
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')),
-                        read_timeout=int(params.get('read_timeout', '20')))
+                        read_timeout=int(params.get('read_timeout', '20')),
+                        enrichment_excluded=argToBoolean(params.get('enrichmentExcluded', False)))
 
         if command == 'test-module':
             return_results(check_feed(client))
