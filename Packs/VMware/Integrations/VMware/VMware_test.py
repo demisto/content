@@ -590,7 +590,7 @@ def test_create_vm(monkeypatch):
            - Make sure a vm is created and the correct arguments are returned.
    """
     si = Si()
-    monkeypatch.setattr(si, 'RetrieveContent', lambda: {})
+    monkeypatch.setattr(si, 'RetrieveContent', dict)
     monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
     monkeypatch.setattr(VMware, 'create_vm_config_creator', lambda host, args: {})
     monkeypatch.setattr(VMware, 'search_for_obj', lambda content, type_obj, obj: Folder())
@@ -646,7 +646,7 @@ def test_clone_vm(monkeypatch):
            - Make sure the correct results are returned.
    """
     si = Si()
-    monkeypatch.setattr(si, 'RetrieveContent', lambda: {})
+    monkeypatch.setattr(si, 'RetrieveContent', dict)
     monkeypatch.setattr(vim.vm, 'CloneSpec', lambda: CloneSpec())
     monkeypatch.setattr(vim.vm, 'RelocateSpec', lambda: VirtualMachineRelocateSpec())
     monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
@@ -674,7 +674,7 @@ def test_relocate_vm(monkeypatch):
            - Make sure the correct results are returned.
    """
     si = Si()
-    monkeypatch.setattr(si, 'RetrieveContent', lambda: {})
+    monkeypatch.setattr(si, 'RetrieveContent', dict)
     monkeypatch.setattr(vim, 'VirtualMachineRelocateSpec', lambda: VirtualMachineRelocateSpec())
     monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
@@ -718,7 +718,7 @@ def test_register_vm(monkeypatch):
            - Make sure the correct results are returned.
    """
     si = Si()
-    monkeypatch.setattr(si, 'RetrieveContent', lambda: {})
+    monkeypatch.setattr(si, 'RetrieveContent', dict)
     monkeypatch.setattr(vim, 'VirtualMachineRelocateSpec', lambda: VirtualMachineRelocateSpec())
     monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
     monkeypatch.setattr(VMware, 'search_for_obj', lambda content, type_obj, obj: Folder())
