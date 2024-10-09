@@ -656,7 +656,7 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
     else:
         tag_comment_fields = {
             "tags": Client.tag,
-            "comments": list_of_single_to_str(comments)
+            Client.xsoar_comments_field: list_of_single_to_str(comments)
         }
 
     tag_comment_fields = {k: v for k, v in tag_comment_fields.items() if v}  # ommits falsey values
