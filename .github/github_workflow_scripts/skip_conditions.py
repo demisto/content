@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_names_from_files
@@ -261,7 +261,7 @@ class LastModifiedCondition(BaseCondition):
         Returns(ConditionResult): whether the condition check pass,
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
-        if self.pr.updated_at and self.pr.updated_at < datetime.now() - timedelta(
+        if self.pr.updated_at and self.pr.updated_at < datetime.now(timezone.utc) - timedelta(
             days=self.LAST_SUITABLE_UPDATE_TIME_DAYS
         ):
             return ConditionResult(
