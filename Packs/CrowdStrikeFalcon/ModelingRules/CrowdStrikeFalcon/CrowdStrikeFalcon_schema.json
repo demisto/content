@@ -1,0 +1,8 @@
+{
+    "CrowdStrike_falcon_incident_raw": {        
+        "UTCTimestamp": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
