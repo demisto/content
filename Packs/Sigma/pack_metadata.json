@@ -12,6 +12,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "excludedDependencies": [
+        "Splunk"
+    ]
     "marketplaces": [
         "xsoar",
         "marketplacev2"
