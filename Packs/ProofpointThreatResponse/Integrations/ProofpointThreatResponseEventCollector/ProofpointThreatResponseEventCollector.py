@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
@@ -49,6 +51,40 @@ def test_module(client, first_fetch):
 
     client.get_incidents_request(query_params)
     return 'ok'
+
+
+def find_and_remove_large_entry(event):
+    """
+        Finds and removes all large size values.
+    """
+    keys_to_remove = []
+
+    for key, value in list(event.items()):
+        if isinstance(value, dict):
+            find_and_remove_large_entry(value)
+        elif isinstance(value, str) and sys.getsizeof(value) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug(f'Found key {key} with value exceeding chunk size limit, its size is {sys.getsizeof(value)}')
+            keys_to_remove.append(key)
+        else:
+            demisto.debug('Value is not dict nor str, trying to convert')
+            value_str = str(value)
+            if sys.getsizeof(value_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+                keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        demisto.info(f'Replacing {key} with None as its value exceeded chunk size limit')
+        event[key] = ""
+
+
+def remove_large_events(events):
+    """
+        Removing keys with large values from events.
+    """
+    for event in events:
+        event_str = json.dumps(event)
+        if sys.getsizeof(event_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug('found event with value larger than allowed')
+            find_and_remove_large_entry(event)
 
 
 def create_incidents_human_readable(human_readable_message, incidents_list):
@@ -108,11 +144,7 @@ def pass_sources_list_filter(incident, sources_list):
     if len(sources_list) == 0:
         return True
 
-    for source in sources_list:
-        if source in incident.get("event_sources"):
-            return True
-
-    return False
+    return any(source in incident.get('event_sources') for source in sources_list)
 
 
 def pass_abuse_disposition_filter(incident, abuse_disposition_values):
@@ -129,9 +161,8 @@ def pass_abuse_disposition_filter(incident, abuse_disposition_values):
         return True
 
     for incident_field in incident.get('incident_field_values', []):
-        if incident_field['name'] == 'Abuse Disposition':
-            if incident_field['value'] in abuse_disposition_values:
-                return True
+        if incident_field['name'] == 'Abuse Disposition' and incident_field['value'] in abuse_disposition_values:
+            return True
 
     return False
 
@@ -161,33 +192,6 @@ def filter_incidents(incidents_list):
     return filtered_incidents_list
 
 
-def get_time_delta(fetch_delta):
-    """Gets the time delta from a string that is combined with a number and a string of (minute/hour)
-    Args:
-        fetch_delta(str): The fetch delta param.
-    Returns:
-        The time delta.
-    """
-    fetch_delta_split = fetch_delta.strip().split(' ')
-    if len(fetch_delta_split) != 2:
-        raise Exception(
-            'The fetch_delta is invalid. Please make sure to insert both the number and the unit of the fetch delta.')
-
-    unit = fetch_delta_split[1].lower()
-    number = int(fetch_delta_split[0])
-
-    if unit not in ['minute', 'minutes',
-                    'hour', 'hours',
-                    ]:
-        raise Exception('The unit of fetch_delta is invalid. Possible values are "minutes" or "hours".')
-
-    if 'hour' in unit:
-        time_delta = timedelta(hours=number)  # batch by hours
-    else:
-        time_delta = timedelta(minutes=number)  # batch by minutes
-    return time_delta
-
-
 def get_new_incidents(client, request_params, last_fetched_id):
     """Perform an API request to get incidents from ProofPoint , filters then according to params, order them and
     return only the new incidents.
@@ -206,72 +210,42 @@ def get_new_incidents(client, request_params, last_fetched_id):
     return list(filter(lambda incident: int(incident.get('id')) > last_fetched_id, ordered_incidents))
 
 
-def get_incidents_batch_by_time_request(client, params):
-    """Perform an API request to get incidents from ProofPoint in batches to prevent a timeout.
+def get_incidents_per_state(client, params):
+    """Perform an API request to get incidents from ProofPoint by state.
 
     As the api does not return the results in an specific order, we query the api on specific time frames using
-    created_before and created_after using the fetch delta parameter.
+    created_before and created_after.
     Args:
         params(dict): The params of the request
 
     Returns:
         list. The incidents returned from the API call
     """
-    incidents_list = []  # type:list
 
-    fetch_delta = params.get('fetch_delta', '6 hours')
     fetch_limit = arg_to_number(params.get('fetch_limit', '100'))
     last_fetched_id = arg_to_number(params.get('last_fetched_id', '0'))
 
     current_time = datetime.now()
 
-    time_delta = get_time_delta(fetch_delta)
-
     created_after = datetime.strptime(params.get('created_after'), TIME_FORMAT)
-    created_before = created_after + time_delta
 
     request_params = {
         'state': params.get('state'),
         'created_after': created_after.isoformat().split('.')[0] + 'Z',
-        'created_before': created_before.isoformat().split('.')[0] + 'Z'
+        'created_before': current_time.isoformat().split('.')[0] + 'Z'
     }
 
-    # while loop relevant for fetching old incidents
-    while created_before < current_time and len(incidents_list) < fetch_limit:  # type: ignore[operator]
-        demisto.info(
-            f"Entered the batch loop , with fetch_limit {fetch_limit} and events list "
-            f"{[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)} "
-            f"with created_after {request_params['created_after']} and "
-            f"created_before {request_params['created_before']}")
+    demisto.debug(f"Fetching incidents, with fetch_limit {fetch_limit}"
+                  f"with created_after {request_params['created_after']} and"
+                  f"created_before {request_params['created_before']}")
 
-        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
-        incidents_list.extend(new_incidents)
-
-        # advancing fetch time by given fetch delta time
-        created_after = created_before
-        created_before = created_before + time_delta
-
-        # updating params according to the new times
-        request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
-        request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
-        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events")
-
-    # fetching the last batch when created_before is bigger then current time = fetching new events
-    if len(incidents_list) < fetch_limit:  # type: ignore[operator]
-        # fetching the last batch
-        request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
-        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
-        incidents_list.extend(new_incidents)
-
-        demisto.debug(
-            f"Finished the last batch, with fetch_limit {fetch_limit} and events list:"
-            f" {[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)}")
+    incidents_list = get_new_incidents(client, request_params, last_fetched_id)
 
     incidents_list_limit = incidents_list[:fetch_limit]
     return incidents_list_limit
 
 
-def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta, incidents_states):
+def fetch_events_command(client, first_fetch, last_run, fetch_limit, incidents_states):
     """
         Fetches incidents from the ProofPoint API.
     """
@@ -286,23 +260,27 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
 
     incidents = []
     for state in incidents_states:
+        demisto.debug(f"Fetching incidents for state {state}")
         request_params = {
             'created_after': last_fetch[state],
             'last_fetched_id': last_fetched_id[state],
-            'fetch_delta': fetch_delta,
             'state': state,
             'fetch_limit': fetch_limit
         }
         id = last_fetched_id[state]
-        incidents_list = get_incidents_batch_by_time_request(client, request_params)
+        incidents_list = get_incidents_per_state(client, request_params)
         incidents.extend(incidents_list)
 
         if incidents:
+            demisto.debug(f"found {len(incidents)} incidents")
             id = incidents[-1].get('id')
             last_fetch_time = incidents[-1]['created_at']
             last_fetch[state] = \
                 (datetime.strptime(last_fetch_time, TIME_FORMAT) - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
             last_fetched_id[state] = id
+        else:
+            demisto.debug(f"No incidents were fetched, setting next run for state {state} to be now.")
+            last_fetch[state] = (datetime.now() - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
 
     demisto.debug(f"End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
                   f" {str(last_fetched_id)}")
@@ -315,6 +293,10 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
     demisto.debug(f'Fetched {len(incidents)} events')
 
     events = get_events_from_incidents(incidents)
+    demisto.debug("Removing all large size values from events")
+    remove_large_events(events)
+    demisto.debug("Finished removing all large size values from events")
+
     return events, last_run
 
 
@@ -375,10 +357,9 @@ def main():  # pragma: no cover
     first_fetch, _ = parse_date_range(params.get('first_fetch', '3 days') or '3 days',
                                       date_format=TIME_FORMAT)
     fetch_limit = params.get('fetch_limit', '100')
-    fetch_delta = params.get('fetch_delta', '6 hours')
     incidents_states = argToList(params.get('states', ['new', 'open', 'assigned', 'closed', 'ignored']))
 
-    demisto.debug('Command being called is {}'.format(command))
+    demisto.debug(f'Command being called is {command}')
 
     try:
         headers = {
@@ -414,7 +395,6 @@ def main():  # pragma: no cover
                 first_fetch,
                 last_run,
                 fetch_limit,
-                fetch_delta,
                 incidents_states,
             )
 

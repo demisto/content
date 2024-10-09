@@ -38,6 +38,7 @@ configuration:
   type: 0
   section: Collect
   required: false
+  hidden: true
 - display: Fetch incidents with specific event sources. Can be a list of comma-separated values.
   name: event_sources
   type: 0
