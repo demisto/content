@@ -2142,29 +2142,19 @@ def handle_attached_email_with_incorrect_from_header(attached_email: EmailMessag
     Returns:
         Message: attached email object.
     """
-    for i in range(len(attached_email._headers)):
-        if attached_email._headers[i][0].lower() == "from":
-            from_header = attached_email._headers[i][0]
-            value = attached_email._headers[i][1]
-            demisto.debug(f'Handling From header, {value=}.')
+    for i, (header_name, header_value) in enumerate(attached_email._headers):
+        if header_name.lower() == "from":
+            demisto.debug(f'Handling From header, value={header_value}.')
             try:
-                new_value = parser.get_address_list(value)[0].value
+                new_value = parser.get_address_list(header_value)[0].value
                 new_value = new_value.replace("\n", " ").replace("\r", " ").strip()
-                if value != new_value:
-                    # If the From header was fixed in the context of this function
-                    # the header will be replaced in _headers list
-                    attached_email._headers.pop(i)
-                    attached_email._headers.insert(i, (from_header, new_value))
+                if header_value != new_value:
+                    # Update the 'From' header with the corrected value
+                    attached_email._headers[i] = (header_name, new_value)
                     demisto.debug(f'From header fixed, new value: {new_value}')
 
             except Exception as e:
-                # The function is designed to handle a specific format error for the From header
-                # as explained in the docstring.
-                # That being said, we do expect the header to be in a known format.
-                # If this function encounters a header format which is not in the known format and can't be fixed,
-                # the header will be ignored completely to prevent crashing the fetch command.
-                demisto.debug(f"Invalid Error: {e}")
-                break
+                demisto.debug(f"Error processing From header: {e}")
             break
     return attached_email
 
@@ -2209,7 +2199,7 @@ def decode_email_data(email_obj: EmailMessage):
     return data
 
 
-def cast_mime_item_to_message(item):
+def cast_mime_item_to_message(item) -> EmailMessage:
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, str) and not mime_content.isascii():
