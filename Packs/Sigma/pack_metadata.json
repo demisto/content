@@ -1,6 +1,6 @@
 {
     "name": "Sigma",
-    "description": "This pack contains all needed objects to import and manage Sigma rules within Cortex XSOAR",
+    "description": "This pack contains all needed objects to import and manage Sigma rules within Cortex TIM",
     "support": "xsoar",
     "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
