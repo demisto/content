@@ -1,7 +1,19 @@
-id: Code42 Exfiltration Playbook
-version: -1
+id: 7196ca62-e330-4977-89d7-5ebfdf4f6d01
+version: 6
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Code42
+    itemVersion: 6.0.0
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Code42 Exfiltration Playbook
-description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves file event data, and allows security teams to remediate file exfiltration events by revoking access rights to cloud files or containing endpoints.
+description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves
+  file event data, and allows security teams to remediate file exfiltration events
+  by revoking access rights to cloud files or containing endpoints.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,11 +26,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,7 +43,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -49,8 +60,9 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
-      - "35"
+      - "37"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -65,7 +77,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -86,11 +97,12 @@ tasks:
       Malicious:
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 515
+          "x": 530,
+          "y": 520
         }
       }
     note: false
@@ -98,7 +110,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -112,13 +123,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "19"
       - "22"
       - "23"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -131,7 +142,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -145,16 +155,16 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1725
+          "y": 1620
         }
       }
     note: false
@@ -162,33 +172,35 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 40b4a303-c384-4390-8942-f07e76010e80
+    taskid: a8d0ab81-32fb-41b9-8af9-4580f186bd07
     type: regular
     task:
-      id: 40b4a303-c384-4390-8942-f07e76010e80
-      description: ""
+      id: a8d0ab81-32fb-41b9-8af9-4580f186bd07
       version: -1
-      name: Resolve Code42 Alert
-      script: Code42|||code42-alert-resolve
+      name: Close alert - False positive
+      description: Changes the state of an Incydr alert session.
+      script: Code42|||code42-alert-update
       type: regular
       iscommand: true
-      brand: ""
+      brand: Code42
     nexttasks:
       '#none#':
       - "26"
     scriptarguments:
       id:
         simple: ${incident.labels.id}
+      state:
+        simple: CLOSED_FP
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 407.5,
+          "x": 50,
           "y": 2030
         }
       }
@@ -197,7 +209,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -211,16 +222,16 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 407.5,
-          "y": 1885
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -230,7 +241,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -244,8 +254,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -258,7 +268,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -269,7 +278,6 @@ tasks:
       id: 08f325cd-0162-470c-8be5-4a045309b75b
       version: -1
       name: Locate CrowdStrike Host
-      description: ""
       script: CrowdstrikeFalcon|||cs-falcon-search-device
       type: regular
       iscommand: true
@@ -284,12 +292,13 @@ tasks:
           accessor: code42fileevents.oshostname
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 990,
+          "x": 970,
           "y": 1010
         }
       }
@@ -298,7 +307,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
@@ -309,7 +317,6 @@ tasks:
       id: e47f5c76-9a17-4b8a-89b3-16fe10613723
       version: -1
       name: Is Jira Enabled?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -346,6 +353,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -358,7 +366,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -369,7 +376,6 @@ tasks:
       id: 77fc6d22-33b2-484f-80e7-498a1398dc80
       version: -1
       name: Create Jira Incident Ticket
-      description: ""
       script: jira-v2|||jira-create-issue
       type: regular
       iscommand: true
@@ -385,6 +391,7 @@ tasks:
       summary:
         simple: ${inputs.JiraSummary}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -397,7 +404,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "22":
@@ -408,7 +414,6 @@ tasks:
       id: c9d81dd1-f324-4ba5-8942-b81894d03815
       version: -1
       name: Can host be contained?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -449,6 +454,7 @@ tasks:
             value:
               simple: incident.code42fileevents.oshostname
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -461,7 +467,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -472,7 +477,6 @@ tasks:
       id: 7b949216-7fd5-4381-8b3f-ac4c58d3a38e
       version: -1
       name: Does Manager Email Exist?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -490,6 +494,7 @@ tasks:
             value:
               simple: UserManagerEmail
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -502,7 +507,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "25":
@@ -517,7 +521,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -525,6 +528,7 @@ tasks:
       UserEmail:
         simple: ${incident.employeeemail}
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -542,7 +546,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
@@ -553,7 +556,6 @@ tasks:
       id: 5780cd88-c739-4170-807c-55b04126ada4
       version: -1
       name: Close Incident
-      description: ""
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -562,6 +564,7 @@ tasks:
       '#none#':
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -574,7 +577,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "27":
@@ -585,7 +587,6 @@ tasks:
       id: 795c6712-38a7-4ab2-8274-ecaddf72be79
       version: -1
       name: Confirm Network Contain
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -595,6 +596,7 @@ tasks:
       "Yes":
       - "32"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -607,7 +609,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "29":
@@ -618,7 +619,6 @@ tasks:
       id: 24e269c9-29c2-4afc-80cb-ca07203aa29f
       version: -1
       name: Send email to manager
-      description: ""
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -645,8 +645,9 @@ tasks:
         simple: ${incident.name}
       to:
         simple: ${UserManagerEmail}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -659,7 +660,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "30":
@@ -670,14 +670,14 @@ tasks:
       id: ca7c8de0-f5b9-45e6-8455-42fdc6ccb541
       version: -1
       name: Confirm Remediation Is Complete
-      description: ""
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "38"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -690,7 +690,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "31":
@@ -701,7 +700,6 @@ tasks:
       id: 7226625c-88a1-41a0-8777-6d5683692852
       version: -1
       name: Determine if network contain should be bypassed based on host count
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -732,6 +730,7 @@ tasks:
             value:
               simple: CrowdStrike.Device.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -744,7 +743,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "32":
@@ -755,7 +753,6 @@ tasks:
       id: aaccca5a-4ce2-4639-84a7-1b008bb3225e
       version: -1
       name: CrowdStrike Network Contain
-      description: ""
       script: '|||cs-falcon-contain-host'
       type: regular
       iscommand: true
@@ -766,8 +763,9 @@ tasks:
     scriptarguments:
       ids:
         simple: ${CrowdStrike.Device.ID}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -780,7 +778,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
@@ -791,7 +788,6 @@ tasks:
       id: 2fa3d2ff-96b8-466f-8b7c-ce934f09b6ff
       version: -1
       name: Is email integration enabled?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -873,126 +869,12 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1532.5,
           "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 4a3550d2-78a8-4055-8a6b-f54178938a09
-    type: playbook
-    task:
-      id: 4a3550d2-78a8-4055-8a6b-f54178938a09
-      version: -1
-      name: Code42 File Download
-      description: This playbook downloads a file via Code42 by either MD5 or SHA256 hash.
-      playbookName: Code42 File Download
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      Filename:
-        complex:
-          root: incident
-          accessor: code42fileevents
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: filename
-      MD5:
-        complex:
-          root: incident
-          accessor: code42fileevents
-          transformers:
-          - operator: uniq
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: md5checksum
-      SHA256:
-        complex:
-          root: incident
-          accessor: code42fileevents
-          transformers:
-          - operator: uniq
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: sha256checksum
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 406ad007-cca1-44df-879e-92d33dd3d415
-    type: condition
-    task:
-      id: 406ad007-cca1-44df-879e-92d33dd3d415
-      version: -1
-      name: V2 File Events?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "34"
-      "yes":
-      - "36"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.code42fileeventsversion
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 940,
-          "y": 70
         }
       }
     note: false
@@ -1010,7 +892,8 @@ tasks:
       id: 3290b447-84e8-40fe-8729-f0ec83ebbb64
       version: -1
       name: Code42 File Download
-      description: This playbook downloads a file via Code42 by either MD5 or SHA256 hash.
+      description: This playbook downloads a file via Code42 by either MD5 or SHA256
+        hash.
       playbookName: Code42 File Download
       type: playbook
       iscommand: false
@@ -1072,9 +955,120 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 4bc82fbf-a687-4da4-83f7-df2ddc6e0425
+    type: condition
+    task:
+      id: 4bc82fbf-a687-4da4-83f7-df2ddc6e0425
+      version: -1
+      name: File events exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.code42fileevents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 730179c0-ed7a-4a11-8409-fa4d9ca7ef51
+    type: title
+    task:
+      id: 730179c0-ed7a-4a11-8409-fa4d9ca7ef51
+      version: -1
+      name: Stop remediation timer
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 857.5,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 04955f5a-de50-490e-82a3-8ba83b3e81db
+    type: regular
+    task:
+      id: 04955f5a-de50-490e-82a3-8ba83b3e81db
+      version: -1
+      name: Close alert - True positive
+      description: Changes the state of an Incydr alert session.
+      script: Code42|||code42-alert-update
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      id:
+        simple: ${incident.labels.id}
+      state:
+        simple: CLOSED_TP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "5_7_#default#": 0.63
+    },
     "paper": {
       "dimensions": {
         "height": 2665,
@@ -1090,32 +1084,30 @@ inputs:
     simple: Security
   required: false
   description: Jira Project for created incident ticket
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: JiraType
   value:
     simple: Investigation
   required: false
   description: Type of Jira ticket to create
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: JiraSummary
   value:
     simple: Code42 Security Alert for Demisto Incident ${incident.id}
   required: false
   description: Summary to use with Jira ticket creation
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ContainHostsMax
   value:
     simple: "2"
   required: false
   description: Maximum number of network hosts to contain.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: DemistoInstanceURL
   value:
     simple: https://example.com/
   required: false
   description: URL of Demisto instance for emails.
-  playbookInputQuery:
-fromversion: "5.0.0"
-tests:
-- No tests (auto formatted)
+  playbookInputQuery: null
 outputs: []
+sourceplaybookid: Code42 Exfiltration Playbook

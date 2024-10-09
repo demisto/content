@@ -8,6 +8,11 @@ configuration:
   name: console_url
   required: true
   type: 0
+- defaultvalue: api.us.code42.com
+  display: API Gateway URL for your Code42 environment
+  name: api_url
+  required: true
+  type: 0
 - display: API Client ID
   name: credentials
   required: true

@@ -96,7 +96,7 @@ SECURITY_EVENT_HEADERS = [
     "DeviceUsername",
 ]
 
-SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description", "State", "ID"]
+SECURITY_ALERT_HEADERS = ["Occurred", "Username", "Name", "Description", "State", "ID"]
 
 SESSION_SEVERITY_LIST = [
     "NO RISK",
@@ -186,12 +186,13 @@ class Code42Client(BaseClient):
     Should do requests and return data
     """
 
-    def __init__(self, sdk, base_url, auth, verify=True, proxy=False, incydr_sdk=None):
+    def __init__(self, sdk, base_url, auth, api_url, verify=True, proxy=False, incydr_sdk=None):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._base_url = base_url
         self._auth = auth
         self._sdk = sdk
         self._incydr_sdk = incydr_sdk
+        self._api_url = api_url
 
         if not proxy:
             for var in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
@@ -219,12 +220,12 @@ class Code42Client(BaseClient):
     @property
     def incydr_sdk(self):
         if self._incydr_sdk is None:
-            self._sdk = incydr.Client(
-                url=self._base_url,
+            self._incydr_sdk = incydr.Client(
+                url=f"https://{self._api_url}",
                 api_client_id=self._auth[0],
                 api_client_secret=self._auth[1]
             )
-            self._sdk.settings.user_agent_prefix = "Cortex XSOAR"
+            self._incydr_sdk.settings.user_agent_prefix = "Cortex XSOAR"
         return self._incydr_sdk
 
     # Alert methods
@@ -262,7 +263,7 @@ class Code42Client(BaseClient):
         return res[0]
 
     def get_actor(self, username):
-        return self.incydr_sdk.actors.v1.get_actor_by_name(username)
+        return self.incydr_sdk.actors.v1.get_actor_by_name(username, prefer_parent=True)
 
     def create_user(self, org_name, username, email):
         org_uid = self._get_org_id(org_name)
@@ -371,8 +372,16 @@ class Code42Client(BaseClient):
         alert.riskSeverity = SESSION_SEVERITY_LIST[max(alert.scores, key=lambda x: x.severity).severity]
         alert.state = max(alert.states, key=lambda x: x.source_timestamp).state
         alert.actor = self.incydr_sdk.actors.v1.get_actor_by_id(alert.actor_id).name
-        alert.rule_names = ", ".join([self.incydr_sdk.alert_rules.v2.get_rule(x.rule_id).name for x in alert.triggered_alerts])
-        alert.beginTimeIso = datetime.fromtimestamp(alert.begin_time / 1000).isoformat()
+        rule_name_list = []
+        # It is possible for a session to trigger an alert rule that no longer exists.
+        # We need to handle the 404 case.
+        for rule in alert.triggered_alerts:
+            try:
+                rule_name_list.append(self.incydr_sdk.alert_rules.v2.get_rule(rule.rule_id).name)
+            except HTTPError:
+                pass
+        alert.rule_names = ", ".join(rule_name_list)
+        alert.beginTimeIso = datetime.fromtimestamp(alert.begin_time / 1000).replace(tzinfo=UTC).isoformat()
         return alert
 
 
@@ -990,7 +999,7 @@ class Code42SecurityIncidentFetcher:
             )
             start_query_time /= 1000
 
-        return start_query_time
+        return start_query_time * 1000
 
     def _try_get_last_fetch_time(self):
         return self._last_run.get("last_fetch")
@@ -1049,6 +1058,7 @@ def test_module(client):
     try:
         # Will fail if unauthorized
         client.sdk.usercontext.get_current_tenant_id()
+        client.incydr_sdk.actors.v1.get_page(page_size=1)
         return "ok"
     except Exception:
         return (
@@ -1095,11 +1105,13 @@ def create_client():
         raise Exception(f"Got invalid API Client ID: {api_client_id}")
     password = demisto.params().get("credentials").get("password")
     base_url = demisto.params().get("console_url")
+    api_url = demisto.params().get("api_url")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
     return Code42Client(
         base_url=base_url,
         sdk=None,
+        api_url=api_url,
         auth=(api_client_id, password),
         verify=verify_certificate,
         proxy=proxy,

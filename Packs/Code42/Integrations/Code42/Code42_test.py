@@ -42,6 +42,8 @@ import time
 
 MOCK_URL = "https://123-fake-api.com"
 
+MOCK_API_URL = "https://api.us.code42.com"
+
 MOCK_AUTH = ("123", "123")
 
 MOCK_FETCH_TIME = "24 hours"
@@ -1152,15 +1154,15 @@ def create_mock_code42_sdk_response_generator(mocker, response_pages):
     return (create_mock_code42_sdk_response(mocker, page) for page in response_pages)
 
 
-def _create_client(sdk):
+def _create_client(sdk, incydr_sdk=None):
     return Code42Client(
-        sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False
+        sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, api_url=MOCK_API_URL, verify=False, proxy=False, incydr_sdk=incydr_sdk
     )
 
 
 def _create_incydr_client(sdk):
     return Code42Client(
-        sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False, incydr_sdk=sdk
+        sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, api_url=MOCK_API_URL, verify=False, proxy=False, incydr_sdk=sdk
     )
 
 
@@ -1191,7 +1193,7 @@ def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
 
     # test that sdk does not init during ctor
     client = Code42Client(
-        sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False
+        sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, api_url=MOCK_API_URL, verify=False, proxy=False
     )
     assert client._sdk is None
 
@@ -1203,7 +1205,7 @@ def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
 def test_client_gets_jwt_provider_if_no_sdk_provided(mocker):
     mock_sdk = mocker.patch("Code42.py42.sdk.SDKClient")
     client = Code42Client(
-        sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False
+        sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, api_url=MOCK_API_URL, verify=False, proxy=False
     )
     client.sdk()
     assert mock_sdk.from_jwt_provider.call_count == 1
@@ -1461,7 +1463,7 @@ def test_user_get_risk_profile_command(code42_user_risk_profile_mock):
     }
     assert cmd_res.outputs["EndDate"] == "2023-10-10"
     assert cmd_res.outputs_prefix == "Code42.UserRiskProfiles"
-    code42_user_risk_profile_mock.actors.v1.get_actor_by_name.assert_called_once_with("profile@example.com")
+    code42_user_risk_profile_mock.actors.v1.get_actor_by_name.assert_called_once_with("profile@example.com", prefer_parent=True)
 
 
 def test_user_update_risk_profile_command(code42_user_risk_profile_mock):
@@ -2036,10 +2038,11 @@ def test_file_events_table_command_handles_v2_events(mocker):
     assert cmd_res.outputs is None
 
 
-def test_module_authenticated_returns_ok(code42_sdk_mock):
+def test_module_authenticated_returns_ok(code42_sdk_mock, incydr_sdk_mock):
     from Code42 import test_module
     code42_sdk_mock.usercontext.get_current_tenant_id.return_value = "tenant_id"
-    client = _create_client(code42_sdk_mock)
+    incydr_sdk_mock.actors.v1.get_page.return_value = []
+    client = _create_client(sdk=code42_sdk_mock, incydr_sdk=incydr_sdk_mock)
     cmd_res = test_module(client)
     assert cmd_res == "ok"
 
