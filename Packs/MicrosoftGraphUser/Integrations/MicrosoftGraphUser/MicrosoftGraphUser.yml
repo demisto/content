@@ -6,12 +6,28 @@ commonfields:
   id: Microsoft Graph User
   version: -1
 configuration:
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
 - defaultvalue: https://graph.microsoft.com
-  display: Host URL (e.g., https://graph.microsoft.com)
+  display: Server URL (e.g., https://graph.microsoft.com)
   name: host
   required: true
   type: 0
   section: Connect
+  additionalinfo: Use this option when required to customize the URL to the Microsoft Graph User endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - name: creds_auth_id
   type: 9
   displaypassword: ID / client ID
@@ -618,7 +634,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.100307
+  dockerimage: demisto/crypto:1.0.0.111961
   runonce: false
   script: '-'
   subtype: python3
