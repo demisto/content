@@ -1,7 +1,8 @@
 id: 08655808-4525-45cd-8540-48e7d75e6610
 version: 14
-vcShouldKeepItemLegacyProdMachine: false
 name: DSPM Valid User Response
+description: "Playbook to validate user response in DSPM."
+fromversion: "6.0.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -10,6 +11,7 @@ tasks:
     type: start
     task:
       id: bf838bc6-fd32-4cfb-8907-d8ab44600b88
+      description: "Start task for DSPM Valid User Response playbook."
       version: -1
       name: ""
       iscommand: false
@@ -39,6 +41,7 @@ tasks:
     type: condition
     task:
       id: e9b21790-2263-4948-8f44-939925dec2e5
+      description: "Check if the user action is valid."
       version: -1
       name: Check if the Action is value
       type: condition
@@ -180,6 +183,7 @@ tasks:
     type: playbook
     task:
       id: d3792edc-ef0c-4b03-8ed2-9b8b80bfd174
+      description: "DSPM Remediation playbook for Sensitive asset open to world."
       version: -1
       name: DSPM Remediation playbook for Sensitive asset open to world.
       playbookName: DSPM Remediation playbook for Sensitive asset open to world.
@@ -216,6 +220,7 @@ tasks:
     type: playbook
     task:
       id: 50fe4308-911d-4d45-807c-f73fd158856a
+      description: "DSPM Remediation playbook for Empty storage asset."
       version: -1
       name: DSPM Remediation playbook for Empty storage asset
       playbookName: DSPM Remediation playbook for Empty storage asset
@@ -297,6 +302,7 @@ tasks:
     type: playbook
     task:
       id: 5df01203-bf70-447d-80d1-68b3cad379f5
+      description: "DSPM Jira Ticket Creation playbook."
       version: -1
       name: DSPM Jira Ticket Creation
       playbookName: DSPM Jira Ticket Creation
@@ -333,6 +339,7 @@ tasks:
     type: regular
     task:
       id: f0f4f8d9-75af-4676-8e57-32fd8c50b8e1
+      description: "Add incident for re-run in DSPM Incident List."
       version: -1
       name: Add incident for re-run
       scriptName: DSPMIncidentList
@@ -386,4 +393,3 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-dirtyInputs: true

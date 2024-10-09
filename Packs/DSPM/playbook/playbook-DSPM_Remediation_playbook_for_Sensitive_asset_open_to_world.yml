@@ -1,11 +1,11 @@
 id: c7f9a77b-18e3-45ca-8307-b39035938abe
 version: 16
-vcShouldKeepItemLegacyProdMachine: false
 name: DSPM Remediation playbook for Sensitive asset open to world.
 description: 'The DSPM Remediation Playbook for Sensitive Asset Open to World is designed
   to handle incidents where sensitive assets are exposed to the public, with specific
   focus on remediating this vulnerability across different cloud providers (AWS).
   Below is an overview of the key steps and actions included in this playbook:'
+fromversion: "6.0.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -391,6 +391,7 @@ tasks:
     type: regular
     task:
       id: 06111885-d05d-4d1b-8aee-adcd6e97b5e1
+      description: "Adding current incident to the re-run list."
       version: -1
       name: Add incident for re-run
       scriptName: DSPMIncidentList
