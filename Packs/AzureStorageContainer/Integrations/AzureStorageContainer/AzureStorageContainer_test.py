@@ -313,6 +313,8 @@ def test_azure_storage_block_public_access_command(requests_mock):
     result = block_public_access_command(client, {
         'request_url': url,
         'headers': headers,
+        'account_name': ACCOUNT_NAME,
+        'container_name': container_name,
         'shared_key': {'password': SHARED_KEY}
     })
 
