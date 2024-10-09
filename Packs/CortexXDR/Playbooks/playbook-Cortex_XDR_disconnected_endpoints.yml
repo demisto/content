@@ -595,7 +595,7 @@ tests:
 - Test XDR Playbook
 fromversion: 5.5.0
 inputSections:
-- description: Generic group for inputs
+- description: Generic group for inputs.
   inputs:
   - LastSeenStartDate
   - LastSeenEndDate
