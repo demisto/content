@@ -1792,7 +1792,7 @@ Automate a power query and return the query results. (The maximum timeout of 300
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.PowerQuery.ResultIndex | string | Result from the query in array string format | 
+| SentinelOne.PowerQuery.ResultIndex | List | esult from the power query in list of objects format | 
 
 
 ### get-mapping-fields

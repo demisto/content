@@ -2539,7 +2539,8 @@ script:
     name: sentinelone-get-power-query-results
     outputs:
     - contextPath: SentinelOne.PowerQuery.ResultIndex
-      description: Result from the query in array string format.
+      description: Result from the power query in list of objects format.
+      type: List
     polling: true
   - arguments: []
     description: Returns the list of fields for an incident type.
