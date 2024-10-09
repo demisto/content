@@ -318,10 +318,10 @@ script:
     - contextPath: Elasticsearch.IndexStatistics.UUID
       description: The UUID of the index.
       type: String
-    - contextPath: Elasticsearch.IndexStatistics.Documents Count
+    - contextPath: Elasticsearch.IndexStatistics.DocumentsCount
       description: The number of documents that are indexed in the index.
       type: Number
-    - contextPath: Elasticsearch.IndexStatistics.Documents Deleted
+    - contextPath: Elasticsearch.IndexStatistics.DocumentsDeleted
       description: The number of documents that were deleted from the index.
       type: Number
   - description: Search using EQL query.

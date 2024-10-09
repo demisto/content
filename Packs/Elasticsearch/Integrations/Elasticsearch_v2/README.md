@@ -271,5 +271,5 @@ Returns Elasticsearch indices statistics and information. This command is not su
 | Elasticsearch.IndexStatistics.Status | String | The status of the index. |
 | Elasticsearch.IndexStatistics.Health | String | The health status of the index. |
 | Elasticsearch.IndexStatistics.UUID | String | The UUID of the index. |
-| Elasticsearch.IndexStatistics.Documents Count | Number | The number of documents that are indexed in the index. |
-| Elasticsearch.IndexStatistics.Documents Deleted | Number | The number of documents that were deleted from the index. |
+| Elasticsearch.IndexStatistics.DocumentsCount | Number | The number of documents that are indexed in the index. |
+| Elasticsearch.IndexStatistics.DocumentsDeleted | Number | The number of documents that were deleted from the index. |
