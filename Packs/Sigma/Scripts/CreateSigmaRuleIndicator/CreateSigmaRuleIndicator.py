@@ -107,7 +107,7 @@ def parse_detection_field(rule: SigmaRule) -> list:
 
     def build_row(selection, data):
         row['selection'] = selection
-        row['key'] = data.field
+        row['key'] = data.field or ''
         row['modifiers'] = ','.join([reverse_modifier_mapping[modifier.__name__] for modifier in data.modifiers])
         row['values'] = '\n'.join([f'({index}){value.to_plain()}' for index, value in enumerate(data.original_value, 1)])
         return row
@@ -233,7 +233,7 @@ def main() -> None:
         args = demisto.args()
         sigma_rule_str = args.get("sigma_rule_str", "")
         entry_id = args.get("entry_id", "")
-        create_indicators = argToBoolean(args.get("create_indicators", ""))
+        create_indicators = argToBoolean(args.get("create_indicators", "True"))
 
         # Check if both arguments are empty
         if not sigma_rule_str and not entry_id:
