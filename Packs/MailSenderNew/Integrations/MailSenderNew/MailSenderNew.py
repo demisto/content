@@ -283,24 +283,30 @@ def create_msg():
         demisto.debug(f'create_msg, after handle_html, {html_body=}')
         attachments += html_attachments
         if len(attachments) > 0:
+            demisto.debug(f'create_msg, {len(attachments)=}')
             msg = MIMEMultipart()
             msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
             if body:
+                demisto.debug(f'create_msg, has attachments, has {body=}')
                 alt = MIMEMultipart('alternative')
                 alt.attach(MIMEText(body, 'plain', UTF_8))
                 alt.attach(MIMEText(html_body, 'html', UTF_8))
                 msg.attach(alt)
             else:
+                demisto.debug('create_msg, has attachments, no body')
                 msg.attach(MIMEText(html_body, 'html', UTF_8))
             for att in attachments:
                 handle_file(msg, att['name'], att['maintype'], att['subtype'], att['cid'], att['data'])
+            demisto.debug(f'create_msg, has attachments after handling the body {msg=}')
         else:
             if body:
+                demisto.debug(f'create_msg, no attachments, has {body=}')
                 msg = MIMEMultipart('alternative')
                 msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
                 msg.attach(MIMEText(body, 'plain', UTF_8))
                 msg.attach(MIMEText(html_body, 'html', UTF_8))
             else:
+                demisto.debug('create_msg, np attachments, no body')
                 msg = MIMEText(html_body, 'html', UTF_8)
             demisto.debug(f'create_msg, after handling the body {msg=}')
 
