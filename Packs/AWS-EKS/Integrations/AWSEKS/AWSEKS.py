@@ -3,16 +3,23 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 from AWSApiModule import *  # noqa: E402
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
+# print(f"{demisto.params()=}")
+# print(f"{demisto.args()=}")
 
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+PARAMS = demisto.params()
+MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
+ROLE_NAME: str = PARAMS.get('access_role_name', '')
+IS_ARN_PROVIDED = bool(demisto.getArg('roleArn'))
 
 ''' HELPER FUNCTIONS '''
 
@@ -49,13 +56,98 @@ def config_aws_session(args: dict, aws_client: AWSClient):
     Returns:
         AWS session (boto3 client): The configured AWS session.
     """
-    return aws_client.aws_session(service='eks', region=args.get('region'))
+    return aws_client.aws_session(
+        service='eks',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
+    )
+
+
+def build_client(args):
+    aws_default_region = PARAMS.get('defaultRegion')
+    aws_access_key_id = PARAMS.get('credentials', {}).get('identifier')
+    aws_secret_access_key = PARAMS.get('credentials', {}).get('password')
+    aws_role_arn = PARAMS.get('roleArn')
+    aws_role_session_name = PARAMS.get('roleSessionName')
+    aws_role_session_duration = PARAMS.get('sessionDuration')
+    verify_certificate = not PARAMS.get('insecure', False)
+    timeout = PARAMS.get('timeout')
+    retries = PARAMS.get('retries') or 5
+
+    demisto.debug(f'Command being called is {demisto.command()}')
+
+    validate_params(aws_default_region, '', '', aws_access_key_id,
+                    aws_secret_access_key)
+
+    aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                           None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries)
+
+    args = demisto.args()
+
+    aws_client = config_aws_session(args, aws_client)
+
+    return aws_client
+
+
+def run_on_all_accounts(func: Callable[[dict], CommandResults]):
+    """Decorator that runs the given command function on all AWS accounts configured in the params.
+
+    Args:
+        func (callable): The command function to run on each account.
+            Must accept the args dict and an AWSClient as arguments.
+            Must return a CommandResults object.
+
+    Returns:
+        callable: If a role name is configured in the params, returns a function
+        that handles running on all accounts.
+        If no role exists, returns the passed in func unchanged.
+
+    This decorator handles setting up the proper roleArn, roleSessionName,
+    roleSessionDuration for accessing each account before calling the function
+    and adds the account details to the result.
+    """
+
+    def account_runner(args: dict) -> list[CommandResults]:
+        role_name = ROLE_NAME.removeprefix('role/')
+        accounts = argToList(PARAMS.get('accounts_to_access'))
+
+        def run_command(account_id: str) -> CommandResults:
+            new_args = args | {
+                #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
+                'roleArn': f'arn:aws:iam::{account_id}:role/{role_name}',
+                'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
+                'roleSessionDuration': args.get('roleSessionDuration', 900),
+            }
+            try:
+                result = func(new_args)
+                result.readable_output = f'#### Result for account `{account_id}`:\n{result.readable_output}'
+                if isinstance(result.outputs, list):
+                    for obj in result.outputs:
+                        obj['AccountId'] = account_id
+                elif isinstance(result.outputs, dict):
+                    result.outputs['AccountId'] = account_id
+                return result
+            except Exception as e:  # catch any errors raised from "func" to be tagged with the account ID and displayed
+                return CommandResults(
+                    readable_output=f'#### Error in command call for account `{account_id}`\n{e}',
+                    entry_type=EntryType.ERROR,
+                    content_format=EntryFormat.MARKDOWN,
+                )
+
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            results = executor.map(run_command, accounts)
+        return list(results)
+
+    return account_runner if (ROLE_NAME and not IS_ARN_PROVIDED) else func
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def list_clusters_command(aws_client, args: dict) -> CommandResults:
+@run_on_all_accounts
+def list_clusters_command(args: dict) -> CommandResults:
     """
     Lists the Amazon EKS clusters in the Amazon Web Services account in the specified Amazon Web Services Region.
     Args:
@@ -65,6 +157,7 @@ def list_clusters_command(aws_client, args: dict) -> CommandResults:
     Returns:
         A Command Results object
     """
+    aws_client = build_client(args)
     limit = arg_to_number(args.get('limit')) or 50
     next_token = args.get('next_token', '')
     list_clusters = []
@@ -108,7 +201,8 @@ def list_clusters_command(aws_client, args: dict) -> CommandResults:
     )
 
 
-def update_cluster_config_command(aws_client, args: dict) -> CommandResults:
+@run_on_all_accounts
+def update_cluster_config_command(args: dict) -> CommandResults:
     """
     Updates an Amazon EKS cluster configuration.
     Args:
@@ -118,6 +212,7 @@ def update_cluster_config_command(aws_client, args: dict) -> CommandResults:
     Returns:
         A Command Results object
     """
+    aws_client = build_client(args)
     cluster_name = args.get('cluster_name')
     resources_vpc_config = args.get('resources_vpc_config', '').replace('\'', '"')
     logging_arg = args.get('logging', '').replace('\'', '"')
@@ -174,7 +269,8 @@ def update_cluster_config_command(aws_client, args: dict) -> CommandResults:
             raise e
 
 
-def describe_cluster_command(aws_client, args: dict) -> CommandResults:
+@run_on_all_accounts
+def describe_cluster_command(args: dict) -> CommandResults:
     """
     Describes an Amazon EKS cluster.
     Args:
@@ -184,6 +280,7 @@ def describe_cluster_command(aws_client, args: dict) -> CommandResults:
     Returns:
         A Command Results object
     """
+    aws_client = build_client(args)
     cluster_name = args.get('cluster_name')
 
     response = aws_client.describe_cluster(name=cluster_name)
@@ -210,7 +307,8 @@ def describe_cluster_command(aws_client, args: dict) -> CommandResults:
     )
 
 
-def create_access_entry_command(aws_client, args: dict) -> CommandResults:
+@run_on_all_accounts
+def create_access_entry_command(args: dict) -> CommandResults:
     """
     Creates an access entry.
     Args:
@@ -220,6 +318,7 @@ def create_access_entry_command(aws_client, args: dict) -> CommandResults:
     Returns:
         A Command Results object
     """
+    aws_client = build_client(args)
     cluster_name = args.get('cluster_name')
     principal_arn = args.get('principal_arn')
     kubernetes_groups = argToList(args.get('kubernetes_groups'))
@@ -276,7 +375,8 @@ def create_access_entry_command(aws_client, args: dict) -> CommandResults:
             raise e
 
 
-def associate_access_policy_command(aws_client, args: dict) -> CommandResults:
+@run_on_all_accounts
+def associate_access_policy_command(args: dict) -> CommandResults:
     """
     Associates an access policy and its scope to an access entry.
     Args:
@@ -286,6 +386,7 @@ def associate_access_policy_command(aws_client, args: dict) -> CommandResults:
     Returns:
         A Command Results object
     """
+    aws_client = build_client(args)
     cluster_name = args.get('cluster_name')
     principal_arn = args.get('principal_arn')
     policy_arn = args.get('policy_arn')
@@ -330,7 +431,8 @@ def associate_access_policy_command(aws_client, args: dict) -> CommandResults:
     )
 
 
-def update_access_entry_command(aws_client, args: dict) -> CommandResults:
+@run_on_all_accounts
+def update_access_entry_command(args: dict) -> CommandResults:
     """
     Updates an access entry.
     Args:
@@ -340,6 +442,7 @@ def update_access_entry_command(aws_client, args: dict) -> CommandResults:
     Returns:
         A Command Results object
     """
+    aws_client = build_client(args)
     cluster_name = args.get('cluster_name')
     principal_arn = args.get('principal_arn')
     kubernetes_groups = argToList(args.get('kubernetes_groups'))
@@ -383,7 +486,7 @@ def update_access_entry_command(aws_client, args: dict) -> CommandResults:
     )
 
 
-def test_module(aws_client) -> str:
+def test_module(args) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -396,7 +499,7 @@ def test_module(aws_client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
+    aws_client = build_client(args)
     message: str = ''
     try:
         aws_client.list_clusters(maxResults=1)
@@ -413,48 +516,32 @@ def test_module(aws_client) -> str:
 
 
 def main():  # pragma: no cover
-    params = demisto.params()
-    aws_default_region = params.get('defaultRegion')
-    aws_access_key_id = params.get('credentials', {}).get('identifier')
-    aws_secret_access_key = params.get('credentials', {}).get('password')
-    verify_certificate = not demisto.params().get('insecure', False)
-    timeout = params.get('timeout')
-    retries = params.get('retries') or 5
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        validate_params(aws_default_region, '', '', aws_access_key_id,
-                        aws_secret_access_key)
-
-        aws_client = AWSClient(aws_default_region, None, None, None,
-                               None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries)
-
         args = demisto.args()
-
-        aws_client = config_aws_session(args, aws_client)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(aws_client))
+            return_results(test_module(args))
 
         elif demisto.command() == 'aws-eks-list-clusters':
-            return_results(list_clusters_command(aws_client, args))
+            return_results(list_clusters_command(args))
 
         elif demisto.command() == 'aws-eks-update-cluster-config':
-            return_results(update_cluster_config_command(aws_client, args))
+            return_results(update_cluster_config_command(args))
 
         elif demisto.command() == 'aws-eks-describe-cluster':
-            return_results(describe_cluster_command(aws_client, args))
+            return_results(describe_cluster_command(args))
 
         elif demisto.command() == 'aws-eks-create-access-entry':
-            return_results(create_access_entry_command(aws_client, args))
+            return_results(create_access_entry_command(args))
 
         elif demisto.command() == 'aws-eks-associate-access-policy':
-            return_results(associate_access_policy_command(aws_client, args))
+            return_results(associate_access_policy_command(args))
 
         elif demisto.command() == 'aws-eks-update-access-entry':
-            return_results(update_access_entry_command(aws_client, args))
+            return_results(update_access_entry_command(args))
 
         else:
             return_error(f"The command {demisto.command()} isn't implemented")

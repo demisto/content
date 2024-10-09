@@ -63,6 +63,46 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: AWS organization accounts
+  name: accounts_to_access
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature.
+- display: Role name for cross-organization account access
+  name: access_role_name
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided.
+- display: Max concurrent command calls
+  name: max_workers
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: 5
+  additionalinfo: The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts to access".
+- display: Role Arn
+  name: roleArn
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
 description: The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
 display: AWS-EKS
 name: AWS-EKS
@@ -96,6 +136,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.Cluster.ClustersNames
       description: A list of all of the clusters for your account in the specified Amazon Web Services Region.
@@ -147,6 +193,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.UpdateCluster.clusterName
       description: The name of the cluster.
@@ -196,6 +248,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.DescribeCluster.name
       description: The name of your cluster.
@@ -366,6 +424,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.CreateAccessEntry.clusterName
       description: The name of the cluster.
@@ -441,6 +505,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
       description: The name of your cluster.
@@ -506,6 +576,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.UpdateAccessEntry.clusterName
       description: The name of your cluster.
@@ -538,7 +614,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.98661
+  dockerimage: demisto/boto3py3:1.0.0.113237
 fromversion: 6.9.0
 tests:
 - AWSEKS-Test
