@@ -77,6 +77,7 @@ class Client:
     severity: str = ''  # used when override_severity is True
     xsoar_severity_field: str = 'sourceoriginalseverity'  # used when override_severity is False
     xsoar_comments_field: str = 'comments'
+    add_link_as_a_comment: bool = False
     comments_as_tags: bool = False
     tag = 'Cortex XDR'
     tlp_color = None
@@ -294,12 +295,12 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_demisto_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[Any] | None:
+def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[Any] | None:
     """"
     Parsing xsoar fields to xdr from multiple fields value or a single value.
     Args:
         ioc (dict): the IOC dict.
-        comment_field_name (list[str] | str): the name of the comment field(s) to parse.
+        comment_field_name (str): the name of the comment field to parse.
         comments_as_tags (bool): whether to return comments as XDR tags rather than notes.
 
     Returns:
@@ -307,25 +308,26 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: list[str] | str, comm
         otherwise the parsed comment from the single provided field.
         Returns None if no comments were found.
     """
-    # parse comments from multiple fields if specified as list
-    if isinstance(comment_field_name, list):
-        comments = []
-        for field in comment_field_name:
-            parsing = parse_demisto_single_comments(ioc, field, comments_as_tags)
-            if parsing:
-                comments.extend(parsing)
-        return [', '.join(comments)]
 
-    # else return single field
-    return parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
+    comments, link_comment = [], None
+    # a regular comment for the given field name, "comments" as a default
+    single_comment_for_field_name = parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
+    if single_comment_for_field_name:
+        comments.extend(single_comment_for_field_name)
+
+    # if the flag is True, add a link as a comment
+    if Client.add_link_as_a_comment:
+        comments.extend(parse_demisto_single_comments(ioc, 'indicator_link', comments_as_tags))
+
+    return [', '.join(comments)]
 
 
-def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[str] | None:
+def parse_demisto_single_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
     """"
-    Parsing xsoar fields to xdr from a single value.
+    Parsing xsoar field to xdr from a single value.
     Args:
         ioc (dict): the IOC dict.
-        comment_field_name (list[str] | str): the name of the comment field(s) to parse.
+        comment_field_name (str): the name of the comment field to parse.
         comments_as_tags (bool): whether to return comments as XDR tags rather than notes.
 
     Returns:
@@ -835,6 +837,30 @@ def validate_fix_severity_value(severity: str, indicator_value: str | None = Non
     return severity_upper
 
 
+def parse_xsoar_field_name_and_link(xsoar_comment_field: list[str]) -> tuple[str, bool]:
+    """
+    Parsing the given list to two elements,
+    one is the xsoar field name and the second is the flag if we should add an indicator link as a comment (indicator_link).
+    Args:
+        xsoar_comment_field: list of fields.
+    Returns:
+        xsoar field name and bool flag if add a link as a comment.
+    """
+    if len(xsoar_comment_field) == 1:
+        if xsoar_comment_field[0] == "indicator_link":
+            return "comments", True
+        return xsoar_comment_field[0], False
+
+    if len(xsoar_comment_field) == 2:
+        if "indicator_link" not in xsoar_comment_field:
+            raise DemistoException(f"The parameter {xsoar_comment_field=} cannot contain two fields without indicator_link."
+                                   f"If it contains two fields, one of them should be indicator_link.")
+
+        return xsoar_comment_field[0] if xsoar_comment_field[0] != "indicator_link" else xsoar_comment_field[1], True
+
+    raise DemistoException(f"The parameter {xsoar_comment_field=} cannot contain more than two fields")
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     feed_fetch_interval = arg_to_number(params.get('feedFetchInterval'))
@@ -853,8 +879,11 @@ def main():  # pragma: no cover
         Client.tag = tag
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
-    if xsoar_comment_field := params.get('xsoar_comments_field'):
-        Client.xsoar_comments_field = xsoar_comment_field
+
+    # in case of xsoar_comment_field is an empty list -> the Client.xsoar_comments_field is defined to "comments" by default
+    if xsoar_comment_field := argToList(params.get('xsoar_comments_field')):
+        xsoar_comment_field, add_link_as_a_comment = parse_xsoar_field_name_and_link(xsoar_comment_field)
+        Client.xsoar_comments_field, Client.add_link_as_a_comment = xsoar_comment_field, xsoar_comment_field
 
     client = Client(params)
     commands = {
