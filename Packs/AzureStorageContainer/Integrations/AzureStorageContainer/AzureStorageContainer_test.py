@@ -310,8 +310,12 @@ def test_azure_storage_block_public_access_command(requests_mock):
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
-    result = block_public_access_command(client, {'shared_key': {'password': SHARED_KEY}})
-    
+    result = block_public_access_command(client, {
+        'request_url': url,
+        'headers': headers,
+        'shared_key': {'password': SHARED_KEY}
+    })
+
     expected_response = f"Public access to container '{container_name}' has been successfully blocked"
     assert result.readable_output == expected_response
 
