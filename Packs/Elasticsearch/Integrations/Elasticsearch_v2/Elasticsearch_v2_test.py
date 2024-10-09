@@ -592,6 +592,31 @@ MOCK_INDEX_RESPONSE = {
     '_primary_term': 1
 }
 
+MOCK_INDICES_STATISTICS_RESPONSE = {
+    'index_name1': {
+        'uuid': '1111',
+        'health': 'yellow',
+        'status': 'open',
+        'total': {
+            'docs': {
+                'count': 2,
+                'deleted': 0
+            }
+        }
+    },
+    'index_name2': {
+        'uuid': '2222',
+        'health': 'green',
+        'status': 'closed',
+        'total': {
+            'docs': {
+                'count': 40,
+                'deleted': 2
+            }
+        }
+    }
+}
+
 MOCK_PARAMS = [
     {
         'client_type': 'Elasticsearch',
@@ -1103,3 +1128,29 @@ def test_key_not_found():
     result = Elasticsearch_v2.get_value_by_dot_notation(dictionary, key)
 
     assert result is None
+
+
+def test_get_indices_statistics_command(mocker):
+    """
+    Given
+      - index name, document in JSON format, id of document
+
+    When
+    - executing index_document_command function.
+
+    Then
+     - Make sure that the returned function response is as expected with the correct format
+    """
+    import Elasticsearch_v2
+    mocker.patch.object(Elasticsearch_v2, 'get_indices_statistics', return_value=MOCK_INDICES_STATISTICS_RESPONSE
+                        )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    command_result = Elasticsearch_v2.get_indices_statistics_command({'limit': 50, 'all_results': False}, '')
+    expected_index_context = [{'Name': 'index_name1', 'Status': 'open', 'Health': 'yellow', 'UUID': '1111', 'Documents Count': 2, 'Documents Deleted': 0}, {
+        'Name': 'index_name2', 'Status': 'closed', 'Health': 'green', 'UUID': '2222', 'Documents Count': 40, 'Documents Deleted': 2}]
+
+    assert command_result.outputs == expected_index_context
+    assert 'Indices Statistics:' in command_result.readable_output
+    assert command_result.outputs_prefix == 'Elasticsearch.IndexStatistics'
+    assert command_result.raw_response == MOCK_INDICES_STATISTICS_RESPONSE
+    assert command_result.outputs_key_field == 'UUID'

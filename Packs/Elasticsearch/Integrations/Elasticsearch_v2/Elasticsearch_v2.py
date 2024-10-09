@@ -992,6 +992,21 @@ def index_document_command(args, proxies):
     return result
 
 
+def get_indices_statistics(client):
+    """
+    Returns raw statistics and information of all the Elasticsearch indices.
+    Args:
+        client : The Elasticsearch client
+
+    Returns:
+        dict: raw statistics and information of all the Elasticsearch indices.
+    """
+    stats = client.indices.stats()
+    raw_indices_data = stats.get('indices')
+
+    return raw_indices_data
+
+
 def get_indices_statistics_command(args, proxies):
     """
     Returns statistics and information of the Elasticsearch indices.
@@ -1005,8 +1020,7 @@ def get_indices_statistics_command(args, proxies):
     es = elasticsearch_builder(proxies)
 
     # Fetch the statistics for all indices
-    stats = es.indices.stats()
-    raw_indices_data = stats.get('indices')
+    raw_indices_data = get_indices_statistics(es)
     for index, index_data in raw_indices_data.items():
         index_stats = {'Name': index,
                        'Status': index_data.get('status', ''),
