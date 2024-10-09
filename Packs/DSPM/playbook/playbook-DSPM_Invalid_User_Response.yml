@@ -1,7 +1,8 @@
 id: fbf081fc-3306-425e-8296-c3813447f424
 version: 12
-vcShouldKeepItemLegacyProdMachine: false
 name: DSPM Invalid User Response
+description: ""
+fromversion: "6.0.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -10,6 +11,7 @@ tasks:
     type: start
     task:
       id: bae26dee-160f-4990-8119-81ebc034603c
+      description: "Start task for DSPM Invalid User Response playbook."
       version: -1
       name: ""
       iscommand: false
@@ -196,6 +198,8 @@ tasks:
     type: playbook
     task:
       id: 1cc0ff96-e0e4-4630-8532-7a202bc58fc6
+      description: "The DSPM Notify User in Case of Error playbook is designed to handle
+        errors in DSPM incidents by notifying users and managing Slack notifications."
       version: -1
       name: DSPM notify user in case of error
       playbookName: DSPM notify user in case of error
