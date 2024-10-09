@@ -1,14 +1,10 @@
-
-#### Playbooks
-
-##### New: SSO Brute Force
-
-New: This playbook addresses the following alerts:
+This playbook addresses the following alerts:
 
 - SSO Brute Force Threat Detected
 - SSO Brute Force Activity Observed
 
 Playbook Stages:
+
 Triage:
 
 - The playbook checks the IP reputation and fetches the events related to the brute force login attempts.
@@ -36,9 +32,45 @@ For eradication step,  you need the following integration:
 
 - Palo Alto Networks PAN-OS.
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: SSO Brute Force
+### Sub-playbooks
 
-New: This trigger is responsible for handling the 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts
+* Containment Plan - Clear User Sessions
+* PAN-OS - Block IP
+
+### Integrations
+
+* Cortex Core - IR
+
+### Scripts
+
+* MatchRegexV2
+* AnalyzeTimestampIntervals
+
+### Commands
+
+* core-get-cloud-original-alerts
+* okta-expire-password
+* okta-get-user-factors
+* core-list-risky-users
+* ip
+* closeInvestigation
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![SSO Brute Force](../doc_files/SSO_Brute_Force.png)
