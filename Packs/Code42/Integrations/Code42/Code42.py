@@ -382,6 +382,7 @@ class Code42Client(BaseClient):
                 pass
         alert.rule_names = ", ".join(rule_name_list)
         alert.beginTimeIso = datetime.fromtimestamp(alert.begin_time / 1000).replace(tzinfo=UTC).isoformat()
+        alert.alertUrl = f"{self._base_url}/app/#/alerts/review-alerts/{alert.session_id}"
         return alert
 
 

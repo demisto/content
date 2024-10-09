@@ -80,9 +80,8 @@
 				},
 				"Code42 SecurityAlert State": {
 					"complex": {
-						"accessor": "state",
 						"filters": [],
-						"root": "states",
+						"root": "state",
 						"transformers": []
 					}
 				},

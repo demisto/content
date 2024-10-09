@@ -416,7 +416,7 @@ MOCK_CODE42_ALERT_CONTEXT = [
         "ID": "sessionid-abc-123",
         "Name": "document file(s) shared via link from corporate Box",
         "Description": "example rule name",
-        "Occurred": "2024-09-11T14:26:00.680000",
+        "Occurred": "2024-09-11T14:26:00.680000+00:00",
         "Severity": "MODERATE",
         "State": "OPEN",
         "Username": "someactor@domain.com",
