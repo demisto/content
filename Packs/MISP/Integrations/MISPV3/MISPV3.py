@@ -831,6 +831,7 @@ def get_indicator_results(
 
     if search_warninglists:
         values = argToList(value)
+        res: list = []
         misp_warninglists_response = PYMISP.values_in_warninglist(values)
         if 'errors' in misp_warninglists_response:
             raise DemistoException(f'Unable to validate against MISP warninglists!\nError message: {misp_warninglists_response}')
@@ -843,9 +844,16 @@ def get_indicator_results(
                     score=Common.DBotScore.GOOD, reliability=reliability,
                     malicious_description=f"Match found in MISP warninglist{list_names}"
                 )
+                res.append(
+                    {
+                        "Value": value,
+                        "Count": len(lists),
+                        "Lists": ",".join([x["name"] for x in lists]),
+                    }
+                )
                 human_readable = tableToMarkdown(
                     "MISP Warninglist matchings:",
-                    sorted(misp_warninglists_response, key=lambda x: x["Count"], reverse=True),
+                    sorted(res, key=lambda x: x["Count"], reverse=True),
                     headers=["Value", "Lists", "Count"],
                 )
                 warninglist_indicator: Optional[Common.Indicator] = get_dbot_indicator(dbot_type, dbot, value)
