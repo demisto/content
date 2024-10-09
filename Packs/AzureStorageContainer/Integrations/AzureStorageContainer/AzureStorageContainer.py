@@ -1000,7 +1000,7 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
     """
 
     try:
-        account_key = demisto.params().get("shared_key")
+        account_key = demisto.params().get('shared_key', {}).get('password')
         if not account_key:
             message = "Shared access key is not provided."
         else:
