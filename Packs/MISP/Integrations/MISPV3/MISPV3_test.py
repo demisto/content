@@ -344,6 +344,32 @@ def test_convert_arg_to_misp_args(mocker):
     assert convert_arg_to_misp_args(args, args_names) == [{'dst-port': 8001}, {'src-port': 8002}, {'name': 'test'}]
 
 
+@pytest.mark.parametrize('dbot_type, dbot_score, value, expected_type_object', [
+    ("IP", Common.DBotScore.SUSPICIOUS, "123.123.123.123", Common.IP),
+    ("DOMAIN", Common.DBotScore.SUSPICIOUS, "example.org", Common.Domain),
+    ("EMAIL", Common.DBotScore.SUSPICIOUS, "admin@admin.test", Common.EMAIL),
+    ("URL", Common.DBotScore.SUSPICIOUS, "https://example.org", Common.URL)
+])
+def test_get_dbot_indicator(
+    dbot_type: str,
+    dbot_score: Common.DBotScore,
+    value: Any,
+    expected_type_object: Any
+) -> None:
+    """Tests the get dbot indicator function
+
+    Args:
+        dbot_type (str): The type as a string
+        dbot_score (Common.DBotScore): The dbot score
+        value (Any): The value
+        expected_type_object (Any): The expected object output type
+    """
+
+    from MISPV3 import get_dbot_indicator
+    object = get_dbot_indicator(dbot_type, dbot_score, value)
+    assert isinstance(object, expected_type_object)
+
+
 @pytest.mark.parametrize('dbot_type, value, error_expected', REPUTATION_COMMANDS_ERROR_LIST)
 def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
     """
