@@ -52,9 +52,6 @@
 /Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
-# Build related
-.circleci/config.yml @yucohen
-
 # SDK Related
 .pre-commit-config_template.yaml @SamuelFain @YuvHayun
 validation_config.toml @YuvHayun
