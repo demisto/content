@@ -2581,13 +2581,14 @@ def group_members_api_response_to_markdown(api_response):
             'Email address': user.get('emailAddress'),
             'Domain': user.get('domain'),
             'Type': user.get('type'),
-            'Internal user': user.get('internal')
+            'Internal user': user.get('internal'),
+            'Notes': user.get('notes')
         }
 
         users_list.append(user_entry)
 
     md = tableToMarkdown(md, users_list,
-                         ['Name', 'Email address', 'Domain', 'Type', 'Internal user'])
+                         ['Name', 'Email address', 'Domain', 'Type', 'Internal user', 'Notes'])
 
     return md
 
@@ -2623,7 +2624,8 @@ def group_members_api_response_to_context(api_response, group_id=-1):
             'Domain': user.get('domain'),
             'Type': user.get('type'),
             'InternalUser': user.get('internal'),
-            'IsRemoved': False
+            'IsRemoved': False,
+            'Notes': user.get('notes')
         }
 
         users_list.append(user_entry)
@@ -2668,6 +2670,7 @@ def create_add_remove_group_member_request(api_endpoint):
     group_id = demisto.args().get('group_id', '')
     email = demisto.args().get('email_address', '')
     domain = demisto.args().get('domain_address', '')
+    notes = demisto.args().get('notes', '')
 
     data = {
         'id': group_id,
@@ -2678,6 +2681,9 @@ def create_add_remove_group_member_request(api_endpoint):
 
     if domain:
         data['domain'] = domain
+
+    if notes:
+        data['notes'] = notes
 
     payload = {
         'data': [data]
