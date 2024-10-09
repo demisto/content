@@ -1,0 +1,68 @@
+args:
+- name: query
+  description: Additional text by which to query alerts. For pending alerts use "runStatus:\"Pending\""
+- name: playbook_id
+  description: playbook ID to set on the alerts.
+- name: limit
+  description: The maximum number of alerts to fetch.
+  defaultValue: "500"
+- name: incidentTypes
+  description: A comma-separated list of alert types by which to filter.
+- name: timeField
+  auto: PREDEFINED
+  predefined:
+  - created
+  - modified
+  description: The alert field to specify for the date range. Can be "created" or
+    "modified". The default is "created". Due to performance considerations, you should
+    only use "modified" if you have a large number of alerts.
+  defaultValue: created
+- name: fromDate
+  description: 'The start date by which to filter alerts. Date format will be the
+    same as in the alerts query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
+- name: toDate
+  description: 'The end date by which to filter alerts. Date format will be the same
+    as in the alerts query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
+- name: NonEmptyFields
+  description: A comma-separated list of non-empty value alert field names by which
+    to filter alerts.
+- name: populateFields
+  description: A comma-separated list of fields in the object to poplulate.
+- name: pageSize
+  description: Alerts query batch size.
+  defaultValue: "100"
+- name: reopen_closed_inv
+  auto: PREDEFINED
+  predefined:
+  - "No"
+  - "Yes"
+  description: Should the script reopen any closed investigations in order to run
+    the pending playbook?
+  defaultValue: "No"
+comment: |-
+  Gets a list of alerts that match the specified query and filters, and  set them with a given playbook ID.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+commonfields:
+  id: TroubleshootStartPlaybookPendingAlerts
+  version: -1
+name: TroubleshootStartPlaybookPendingAlerts
+tags:
+- Alerts
+- DemistoAPI
+- troubleshoot
+timeout: '0'
+type: python
+subtype: python3
+dependson:
+  must:
+  - core-api-post
+  - closeInvestigation
+dockerimage: demisto/python3:3.10.13.87159
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
