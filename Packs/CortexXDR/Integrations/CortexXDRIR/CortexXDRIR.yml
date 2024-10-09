@@ -64,10 +64,10 @@ configuration:
   - marketplacev2
   section: Collect
   advanced: true
-  required: false  
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR.
   defaultvalue: 'true'
-  display: Close Mirrored Cortex XDR Incident	
+  display: Close Mirrored Cortex XDR Incident
   name: close_xdr_incident
   type: 8
   hidden:
