@@ -543,6 +543,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
+        search_query_per_page.get("response", {}).get("Attribute", []).sort(key=lambda x: x['timestamp'], reverse=False)
         indicators = build_indicators(client, search_query_per_page, attribute_types,
                                       tlp_color, params.get('url'), reputation, feed_tags)
 
@@ -566,7 +567,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.
         if fetch_limit and fetch_limit <= total_fetched_indicators:
-            demisto.debug(f"Reached the limit of indicators to fetch. The number of indicators fetched is: {len(total_fetched_indicators)}")
+            demisto.debug(f"Reached the limit of indicators to fetch. The number of indicators fetched is: {total_fetched_indicators}")
             demisto.setLastRun({'timestamp': last_run_timestamp, 'page': params_dict['page']})
             return
         search_query_per_page = client.search_query(params_dict)
