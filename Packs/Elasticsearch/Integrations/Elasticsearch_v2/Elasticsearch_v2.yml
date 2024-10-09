@@ -319,7 +319,7 @@ script:
       description: The UUID of the index.
       type: String
     - contextPath: Elasticsearch.IndexStatistics.Documents Count
-      description: The amount of documents that are indexed in the index.
+      description: The number of documents that are indexed in the index.
       type: Number
     - contextPath: Elasticsearch.IndexStatistics.Documents Deleted
       description: The amount of documents that were deleted from the index.
