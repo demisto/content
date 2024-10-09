@@ -173,7 +173,7 @@ def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[st
     Args:
         client (Client): The client instance for making API requests.
         next_link (str | None): The link for the next page of results, if any.
-        last_run (dict[str, Any]): The dictionary containing the last run information, such as the end date.
+        last_run (dict[str,§ Any]): The dictionary containing the last run information, such as the end date.
         page_size (int): The desired page size for the search.
     Returns:
         dict[str, Any]: The API response containing the fetched events.
@@ -1414,14 +1414,17 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
         - The function stops fetching when either the fetch_limit is reached or there are no more events.
     """
     demisto.debug(f'Starting fetch_events with {last_run=} and {fetch_limit=}')
-    next_link = last_run.get('next_link', '')
+    current_run = last_run.copy()
+    next_link = current_run.get('next_link', '')
+    # if not current_run:
+    #     current_run['end_date'] = 1727730000000
     finished_last_query = not next_link
     no_events_in_confluence = False
     all_events: List[Dict[str, Any]] = []
 
     while len(all_events) < fetch_limit and not no_events_in_confluence:
         page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - len(all_events))
-        response = run_fetch_mechanism(client, next_link, last_run, page_size)
+        response = run_fetch_mechanism(client, next_link, current_run, page_size)
         if not response:
             break
         events = response['results']
@@ -1434,11 +1437,15 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
 
         finished_last_query = not next_link
         all_events.extend(events)
+        current_run = {
+            'next_link': next_link,
+            'end_date': all_events[0]['creationDate'] if all_events else last_run.get('end_date', 0)
+        }
 
     if not all_events:
         return [], {'next_link': None, 'end_date': last_run.get('end_date', 0)}
 
-    return all_events, {'next_link': next_link, 'end_date': all_events[-1]['creationDate']}
+    return all_events, {'next_link': next_link, 'end_date': all_events[0]['creationDate']}
 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
