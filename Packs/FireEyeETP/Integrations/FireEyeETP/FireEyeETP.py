@@ -660,7 +660,11 @@ def quarantine_release_command(client, args):
 
     response = client.quarantine_release(message_id)
 
-    return CommandResults(readable_output=response.text)
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Quarantine",response.json()['data'], headers=["type", "operation", "successful_message_ids"])
+        )
+
+    return command_results
 
 
 def get_alert_command():
