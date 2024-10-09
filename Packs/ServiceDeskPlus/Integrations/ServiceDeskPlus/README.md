@@ -32,7 +32,7 @@ Follow the next steps to create an instance:
 - In order to avoid repeating this process, the created Refresh Token should be saved for future use.
 - For more details about generating a technician key please refer to the [help documentation](https://help.servicedeskplus.com/api/rest-api.html$key)
 
-![image](https://user-images.githubusercontent.com/61732335/86364400-cc70c600-bc80-11ea-9763-59acd31e08b7.png)
+![image](../../doc_files/86364400-cc70c600-bc80-11ea-9763-59acd31e08b7.png)
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
