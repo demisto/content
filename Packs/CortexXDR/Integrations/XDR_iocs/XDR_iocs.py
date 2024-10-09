@@ -295,6 +295,19 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
+def create_an_indicator_link(ioc: dict) -> list[str]:
+    """
+    Creates an indicator link into comments field.
+    Args:
+        ioc (dict): the IOC dict.
+    Returns:
+        A list which contains a string of indicator's link.
+    """
+    if is_xsoar_saas():
+        return [f'{demisto.demistoUrls().get("server")}/indicator/{ioc.get("id")}']
+    return [f'{demisto.demistoUrls().get("server")}/#/indicator/{ioc.get("id")}']
+
+
 def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[Any] | None:
     """"
     Parsing xsoar fields to xdr from multiple fields value or a single value.
@@ -317,7 +330,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
 
     # if the flag is True, add a link as a comment
     if Client.add_link_as_a_comment:
-        comments.extend(parse_demisto_single_comments(ioc, 'indicator_link', comments_as_tags) or [])
+        comments.extend(create_an_indicator_link(ioc))
 
     return [', '.join(comments)]
 
@@ -346,12 +359,6 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: str, comments_a
         if not last_comment_dict or not (comment := last_comment_dict.get('content')):
             return None
         return [comment]
-
-    elif comment_field_name == 'indicator_link':
-        # parse indicator link into comments field
-        if is_xsoar_saas():
-            return [f'{demisto.demistoUrls().get("server")}/indicator/{ioc.get("id")}']
-        return [f'{demisto.demistoUrls().get("server")}/#/indicator/{ioc.get("id")}']
 
     else:  # custom comments field
         if not (raw_comment := ioc.get('CustomFields', {}).get(comment_field_name)):
