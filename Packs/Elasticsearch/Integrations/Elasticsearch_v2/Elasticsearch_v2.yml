@@ -322,7 +322,7 @@ script:
       description: The number of documents that are indexed in the index.
       type: Number
     - contextPath: Elasticsearch.IndexStatistics.Documents Deleted
-      description: The amount of documents that were deleted from the index.
+      description: The number of documents that were deleted from the index.
       type: Number
   - description: Search using EQL query.
     name: es-eql-search
