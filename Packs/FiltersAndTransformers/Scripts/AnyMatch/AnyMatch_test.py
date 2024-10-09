@@ -12,20 +12,20 @@ from AnyMatch import main
 
 
 @pytest.mark.parametrize('left,right,expected_result', [
-    ("2", "25,10", "No matches found."),
-    ("'2'", "1,2,3", ["'2'"]),    # 2 is part of '2'
-    ("'abc','aha','a'", "A", ["'abc'", "'a'", "'aha'"]),
-    ("5,1,6,9,65,8,b", "1,'6'", ['1']),  # no part of 6 or 65 is in the list: 1,'6'
-    ('a', "kfjua", "No matches found."),
-    ("bca", "A", ["bca"]),  # case insensitive
-    ("ABC", "a", ["ABC"]),  # case insensitive
-    ('{"alert": {"data": "x"}}', "x", ['{"alert": {"data": "x"}}']),
-    ("{'a':1,'c':2}", "{'a': 1}, {'b': 2}", "No matches found."),     # {'a':1} is not a part of {'a':1, or 'c':2}
-    ("{'a': 1}, {'b': 2}", "{a:1}", "No matches found."),  # {a:1} is not a part of {'a': 1} or {'b': 2}
+    ("2", "25,10", False),
+    ("'2'", "1,2,3", True),    # 2 is part of '2'
+    ("'abc','aha','a'", "A", True),
+    ("5,1,6,9,65,8,b", "1,'6'", True),  # no part of 6 or 65 is in the list: 1,'6'
+    ('a', "kfjua", False),
+    ("bca", "A", True),  # case insensitive
+    ("ABC", "a", True),  # case insensitive
+    ('{"alert": {"data": "x"}}', "x", True),
+    ("{'a':1,'c':2}", "{'a': 1}, {'b': 2}", False),     # {'a':1} is not a part of {'a':1, or 'c':2}
+    ("{'a': 1}, {'b': 2}", "{a:1}", False),  # {a:1} is not a part of {'a': 1} or {'b': 2}
     # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in  'c': 2}
-    ("{'a':1,'c':2}", "'', '", ["{'a':1", "'c':2}"]),
+    ("{'a':1,'c':2}", "'', '", True),
     # one of the arguments is missing -> return empty list
-    ("1,2", "", "No matches found.")
+    ("1,2", "", False)
 ])
 def test_main(mocker, left, right, expected_result):
     """
@@ -41,9 +41,9 @@ def test_main(mocker, left, right, expected_result):
     main()
     # assert demisto.results.call_count == call_count
     results = demisto.results.call_args_list[0][0][0]
-    assert len(results) == len(expected_result)
-    for res in results:
-        assert res in expected_result
+    assert results == expected_result
+    # for res in results:
+    #     assert res in expected_result
     # assert results == expected_result
     # assert results == expected_result
     # for i in range(len(expected_result)):
