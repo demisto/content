@@ -2788,5 +2788,3 @@ def test_get_drilldown_searches(drilldown_data, expected):
     """
 
     assert splunk.get_drilldown_searches(drilldown_data) == expected
-
-
