@@ -48,6 +48,9 @@ script:
       - 'true'
       - 'false'
       defaultValue: true
+    - description: JSON object overwriting the default adaptive card JSON.
+      required: false
+      name: overwrite_adaptive_card_json
     description: Send a message to Microsoft Teams via Incoming Webhook.
     name: ms-teams-message
   dockerimage: demisto/python3:3.11.9.105369

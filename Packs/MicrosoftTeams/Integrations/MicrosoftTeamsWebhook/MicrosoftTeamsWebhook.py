@@ -77,21 +77,21 @@ def create_teams_message(
                 "attachments": [
                     {
                         "contentType": "application/vnd.microsoft.card.adaptive",
-                            "content": {
+                        "content": {
                             "type": "AdaptiveCard",
                             "body": [
+                                    {
+                                        "type": "TextBlock",
+                                        "text": "Cortex XSOAR Notification",
+                                        "weight": "bolder",
+                                        "size": "medium",
+                                        "color": "accent"
+                                    },
                                 {
-                                    "type": "TextBlock",
-                                    "text": "Cortex XSOAR Notification",
-                                    "weight": "bolder",
-                                    "size": "medium",
-                                    "color": "accent"
-                                },
-                                {
-                                    "type": "TextBlock",
-                                    "text": message,
-                                    "wrap": True
-                                }
+                                        "type": "TextBlock",
+                                        "text": message,
+                                        "wrap": True
+                                        }
                             ],
                             "actions": [
                                 {
@@ -102,10 +102,10 @@ def create_teams_message(
                             ],
                             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
                             "version": "1.0"
+                        }
                     }
-                }
-            ]
-        }
+                ]
+            }
         else:
             messagecard = overwrite_adaptive_card_json
     else:
@@ -125,10 +125,10 @@ def create_teams_message(
                             ],
                             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
                             "version": "1.0"
-                            }
                         }
-                    ]
-                }
+                    }
+                ]
+            }
         else:
             messagecard = {
                 "@type": "MessageCard",
