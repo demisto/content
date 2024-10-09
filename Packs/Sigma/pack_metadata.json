@@ -13,7 +13,7 @@
     "useCases": [],
     "keywords": [],
     "excludedDependencies": [
-        "Splunk",
+        "SplunkPy",
         "SentinelOne"
     ],
     "marketplaces": [
