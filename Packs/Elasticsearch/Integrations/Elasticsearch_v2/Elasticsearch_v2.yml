@@ -307,13 +307,13 @@ script:
       - 'true'
     outputs:
     - contextPath: Elasticsearch.IndexStatistics.Name
-      description: The Name of the index.
+      description: The name of the index.
       type: String
     - contextPath: Elasticsearch.IndexStatistics.Status
-      description: The Status of the index.
+      description: The status of the index.
       type: String
     - contextPath: Elasticsearch.IndexStatistics.Health
-      description: The Health status of the index.
+      description: The health status of the index.
       type: String
     - contextPath: Elasticsearch.IndexStatistics.UUID
       description: The UUID of the index.
