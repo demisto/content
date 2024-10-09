@@ -159,6 +159,14 @@ def FireEyeETP_client():
 
 @patch('FireEyeETP.fileResult')
 def test_download_alert_artifacts_command(mock_file_result):
+    """
+    Given:
+        - ID of alert to get
+    When:
+        - Running download-alert-artifact command
+    Then:
+        - Ensure 1 zip file fetched as expected
+    """
     from FireEyeETP import download_alert_artifacts_command, Client
     args = {'alert_id': '12345'}
     mock_client = MagicMock(spec=Client)
@@ -175,6 +183,15 @@ def test_download_alert_artifacts_command(mock_file_result):
 
 
 def test_list_yara_rulesets_command():
+    """
+    Given:
+        - Policy UUID to get
+    When:
+        - Running list-yara-rulesets command
+    Then:
+        - Ensure command runs successfully
+        - Ensure results are returned
+    """
     from FireEyeETP import list_yara_rulesets_command, Client
     args = {'policy_uuid': 'abc-123-uuid'}
     mock_client = MagicMock(spec=Client)
@@ -205,6 +222,16 @@ def test_list_yara_rulesets_command():
 
 @patch('FireEyeETP.fileResult')
 def test_download_yara_file_command(mock_file_result):
+    """
+    Given:
+        - Policy UUID to get
+	- Ruleset UUID to get
+    When:
+        - Running download-yara-file command
+    Then:
+        - Ensure command runs successfully
+        - Ensure 1 yara file fetched as expected
+    """
     from FireEyeETP import download_yara_file_command, Client
     args = {'policy_uuid': 'policy-12345', 'ruleset_uuid': 'ruleset-67890'}
     mock_client = MagicMock(spec=Client)
@@ -222,6 +249,17 @@ def test_download_yara_file_command(mock_file_result):
 @patch('FireEyeETP.demisto.getFilePath')
 @patch('FireEyeETP.open', new_callable=mock_open, read_data=b'fake_yara_file_content')
 def test_upload_yara_file_command_success(mock_open_file, mock_getFilePath):
+    """
+    Given:
+        - Policy UUID to get
+        - Ruleset UUID to get
+	- EntryID of context file to put
+    When:
+        - Running upload-yara-file command
+    Then:
+        - Ensure command runs successfully
+        - Ensure 1 yara file uploaded as expected
+    """
     from FireEyeETP import upload_yara_file_command, Client
     args = {'entryID': '1', 'policy_uuid': 'policy-12345', 'ruleset_uuid': 'ruleset-67890'}
     mock_getFilePath.return_value = {'path': '/path/to/file'}
@@ -239,6 +277,16 @@ def test_upload_yara_file_command_success(mock_open_file, mock_getFilePath):
 @patch('FireEyeETP.demisto.getFilePath')
 @patch('FireEyeETP.open', new_callable=mock_open, read_data=b'fake_yara_file_content')
 def test_upload_yara_file_command_failure(mock_open_file, mock_getFilePath):
+    """
+    Given:
+        - Policy UUID to get
+        - Ruleset UUID to get
+        - EntryID of context file to put
+    When:
+        - Running upload-yara-file command
+    Then:
+        - Ensure no yara file uploaded as expected
+    """
     from FireEyeETP import upload_yara_file_command, Client
     args = {'entryID': '1', 'policy_uuid': 'policy-12345', 'ruleset_uuid': 'ruleset-67890'}
     mock_getFilePath.return_value = {'path': '/path/to/file'}
@@ -254,6 +302,15 @@ def test_upload_yara_file_command_failure(mock_open_file, mock_getFilePath):
 
 
 def test_get_events_data_command_delivered():
+    """
+    Given:
+        - Message ID to get
+    When:
+        - Running get-events-data command
+    Then:
+        - Ensure command runs successfully
+        - Ensure results are returned
+    """
     from FireEyeETP import get_events_data_command, Client
     args = {'message_id': '12345'}
     mock_response = {
@@ -287,6 +344,14 @@ def test_get_events_data_command_delivered():
 
 
 def test_get_events_data_command_failed():
+    """
+    Given:
+        - Message ID to get
+    When:
+        - Running get-events-data command
+    Then:
+        - Ensure results are not returned
+    """
     from FireEyeETP import get_events_data_command, Client
     args = {'message_id': '12345'}
     mock_response = {
@@ -319,6 +384,16 @@ def test_get_events_data_command_failed():
 
 
 def test_quarantine_release_command(mocker):
+    """
+    Given:
+        - Message ID to get
+    When:
+        - Running quarantine-release command
+    Then:
+        - Ensure command runs successfully
+        - Ensure results are returned
+	- Ensure message send succesfully to quarantine
+    """
     from FireEyeETP import quarantine_release_command, Client
     args = {'message_id': '12345'}
     mock_response = MagicMock()
