@@ -125,7 +125,6 @@ select = [
     "E712", # true-false-comparison
     "E713", # not-in-test
     "E714", # not-is-test
-    "E721", # type-comparison
     "E722", # bare-except
     "E731", # lambda-assignment
     "E741", # ambiguous-variable-name
