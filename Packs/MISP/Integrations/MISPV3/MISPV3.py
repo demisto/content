@@ -829,52 +829,54 @@ def get_indicator_results(
                               outputs_key_field='ID',
                               readable_output=readable_output)
 
-    if search_warninglists:
-        values = argToList(value)
-        res: list = []
-        misp_warninglists_response = PYMISP.values_in_warninglist(values)
-        if 'errors' in misp_warninglists_response:
-            raise DemistoException(f'Unable to validate against MISP warninglists!\nError message: {misp_warninglists_response}')
-        if misp_warninglists_response and len(misp_warninglists_response.items()) > 0:
-            for _, lists in misp_warninglists_response.items():
-                list_names: str = ",".join([x["name"] for x in lists])
-                dbot = Common.DBotScore(
-                    indicator=value,
-                    indicator_type=indicator_type,
-                    score=Common.DBotScore.GOOD, reliability=reliability,
-                    malicious_description=f"Match found in MISP warninglist{list_names}"
-                )
-                res.append(
-                    {
-                        "Value": value,
-                        "Count": len(lists),
-                        "Lists": ",".join([x["name"] for x in lists]),
-                    }
-                )
-                human_readable = tableToMarkdown(
-                    "MISP Warninglist matchings:",
-                    sorted(res, key=lambda x: x["Count"], reverse=True),
-                    headers=["Value", "Lists", "Count"],
-                )
-                warninglist_indicator: Optional[Common.Indicator] = get_dbot_indicator(dbot_type, dbot, value)
-                if not warninglist_indicator:
-                    raise DemistoException(f'The indicator type {dbot_type} is unknown!')
-                return CommandResults(indicator=warninglist_indicator,
-                                      raw_response=misp_warninglists_response,
-                                      outputs="",
-                                      outputs_prefix='MISP.Attribute',
-                                      outputs_key_field='ID',
-                                      readable_output=human_readable
-                                      )
+    else:
+        if search_warninglists:
+            values = argToList(value)
+            res: list = []
+            misp_warninglists_response = PYMISP.values_in_warninglist(values)
+            if 'errors' in misp_warninglists_response:
+                raise DemistoException(
+                    f'Unable to validate against MISP warninglists!\nError message: {misp_warninglists_response}')
+            if misp_warninglists_response and len(misp_warninglists_response.items()) > 0:
+                for _, lists in misp_warninglists_response.items():
+                    list_names: str = ",".join([x["name"] for x in lists])
+                    dbot = Common.DBotScore(
+                        indicator=value,
+                        indicator_type=indicator_type,
+                        score=Common.DBotScore.GOOD, reliability=reliability,
+                        malicious_description=f"Match found in MISP warninglist{list_names}"
+                    )
+                    res.append(
+                        {
+                            "Value": value,
+                            "Count": len(lists),
+                            "Lists": ",".join([x["name"] for x in lists]),
+                        }
+                    )
+                    human_readable = tableToMarkdown(
+                        "MISP Warninglist matchings:",
+                        sorted(res, key=lambda x: x["Count"], reverse=True),
+                        headers=["Value", "Lists", "Count"],
+                    )
+                    warninglist_indicator: Optional[Common.Indicator] = get_dbot_indicator(dbot_type, dbot, value)
+                    if not warninglist_indicator:
+                        raise DemistoException(f'The indicator type {dbot_type} is unknown!')
+                    return CommandResults(indicator=warninglist_indicator,
+                                          raw_response=misp_warninglists_response,
+                                          outputs="",
+                                          outputs_prefix='MISP.Attribute',
+                                          outputs_key_field='ID',
+                                          readable_output=human_readable
+                                          )
 
-    dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
-                            score=Common.DBotScore.NONE, reliability=reliability,
-                            malicious_description="No results were found in MISP")
-    indicator = get_dbot_indicator(dbot_type, dbot, value)
-    if not indicator:
-        raise DemistoException(f'The indicator type {dbot_type} is unknown!')
-    return CommandResults(indicator=indicator,
-                          readable_output=f"No attributes found in MISP for value: {value}")
+        dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
+                                score=Common.DBotScore.NONE, reliability=reliability,
+                                malicious_description="No results were found in MISP")
+        indicator = get_dbot_indicator(dbot_type, dbot, value)
+        if not indicator:
+            raise DemistoException(f'The indicator type {dbot_type} is unknown!')
+        return CommandResults(indicator=indicator,
+                              readable_output=f"No attributes found in MISP for value: {value}")
 
 
 def get_events_related_to_scored_tag(all_attributes, found_tag):
@@ -1876,7 +1878,7 @@ def main():
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
     benign_tag_ids = argToList(params.get('benign_tag_ids'))
-    search_warninglists: bool = argToBoolean(params.get('search_warninglists'))
+    search_warninglists: bool = argToBoolean(params.get('search_warninglists', False))
     reliability = params.get('integrationReliability', 'B - Usually reliable')
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
