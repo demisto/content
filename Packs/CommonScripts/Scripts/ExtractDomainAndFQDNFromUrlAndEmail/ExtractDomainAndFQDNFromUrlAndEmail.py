@@ -56,13 +56,16 @@ def get_fqdn(input_url: str) -> str | None:
     domain_info = get_tld(input_url, fail_silently=True, as_object=True, fix_protocol=True) or \
         get_tld(input_url, fail_silently=True, as_object=True)
 
-    if domain_info:  # Weve removed the filter for "zip" as it is now a valid gTLD by Google
+    if domain_info and domain_info.tld != 'onion':  # Weve removed the filter for "zip" as it is now a valid gTLD by Google
+
         if not isinstance(domain_info, Result):
             raise TypeError(f"Expected to get a Result object but got {type(domain_info)}")
-        # get the subdomain using tld.subdomain
-        subdomain = domain_info.subdomain
+
+        subdomain = domain_info.subdomain  # get the subdomain using tld.subdomain
+
         if subdomain:
             fqdn = f"{subdomain}.{domain_info.fld}"
+
         else:
             fqdn = domain_info.fld
 

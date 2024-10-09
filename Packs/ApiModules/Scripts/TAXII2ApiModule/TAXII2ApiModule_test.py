@@ -569,7 +569,8 @@ class TestFetchingStixObjects:
         assert len(actual) == 14
         assert actual == expected
 
-    def test_load_stix_objects_from_envelope_v21(self):
+    @pytest.mark.parametrize('enrichment_excluded', [True, False])
+    def test_load_stix_objects_from_envelope_v21(self, enrichment_excluded):
         """
         Scenario: Test loading of STIX objects from envelope for v2.1
 
@@ -583,11 +584,18 @@ class TestFetchingStixObjects:
         extension-definition objects.
 
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[],
+                                       enrichment_excluded=enrichment_excluded)
         objects_envelopes = envelopes_v21
 
         result = mock_client.load_stix_objects_from_envelope(objects_envelopes, -1)
         assert mock_client.id_to_object == id_to_object
+        if enrichment_excluded:
+            for res in result:
+                if 'DummyIndicator' in res['value']:
+                    continue
+                assert res.pop('enrichmentExcluded')
+
         assert result == parsed_objects
         reports = [obj for obj in result if obj.get('type') == 'Report']
         report_with_relationship = [report for report in reports if report.get('relationships')]

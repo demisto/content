@@ -1,0 +1,6 @@
+timestamp,log_level,message
+2024-09-22 10:15:30,INFO,Starting the application
+2024-09-22 10:15:31,DEBUG,Loading configuration from config.yaml
+2024-09-22 10:15:32,WARN,Memory usage is high
+2024-09-22 10:15:33,ERROR,Failed  connect to database
+2024-09-22 10:15:34,INFO,Application stopped
