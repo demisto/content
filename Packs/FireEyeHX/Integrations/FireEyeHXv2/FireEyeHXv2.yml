@@ -1126,7 +1126,7 @@ script:
     - description: The name of the indicator. Use the `uri_name` value.
       name: name
       required: true
-    - description: A list of conditions to add. The list can include a list of IPv4 addresses, MD5 files, and domain names. For example, example.netexample.orgexample.lol
+    - description: A list of conditions to add. The list can include a list of IPv4 addresses, MD5 files, and domain names. For example, example.netexample.orgexample.
       name: condition
       required: true
     description: Add conditions to an indicator. Conditions can be MD5, hash values, domain names, and IP addresses.
