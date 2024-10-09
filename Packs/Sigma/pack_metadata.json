@@ -11,15 +11,17 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Sigma"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
     ],
     "dependencies": {
         "FeedMitreAttackv2": {
-            "mandatory": false,
-            "display_name": "Mitre Att&ck Feed"
+            "mandatory": true,
+            "display_name": "MITRE ATT&CK"
         }
     }
 }
