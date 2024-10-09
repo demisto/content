@@ -21,13 +21,13 @@ DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 class ZoomMailClient(BaseClient):
     def __init__(
         self,
-        base_url,
-        client_id,
-        client_secret,
-        account_id,
-        default_email,
-        verify=True,
-        proxy=False,
+        base_url: str,
+        client_id: str,
+        client_secret: str,
+        account_id: int,
+        default_email: str | None,
+        verify: bool = True,
+        proxy: bool = False,
     ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.client_id = client_id
