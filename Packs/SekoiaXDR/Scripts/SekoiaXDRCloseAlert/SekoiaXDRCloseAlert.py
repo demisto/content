@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+
 def get_status_name(alert_id: str):
     get_alert = execute_command("sekoia-xdr-get-alert", {"id": alert_id})
     return get_alert["status"]["name"]  # type: ignore
@@ -35,28 +36,39 @@ def post_closure_comment(
         return_error(f"Failed to post comment: {str(e)}")
 
 
+def alert_closure_status(mirror_status: str, alert_id: str, status: str):
+    if mirror_status == "Both":
+        execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": status})
+    elif mirror_status == "Outgoing":
+        execute_command("setIncident", {"sekoiaxdralertstatus": status})
+        execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": status})
+    else:
+        execute_command("setIncident", {"sekoiaxdralertstatus": status})
+
+
 def close_alert(
     alert_id: str,
     reject: str,
     close_reason: Optional[str],
     close_notes: Optional[str],
     username: str,
+    mirror_status: str
 ):
     readable_output = ""
     alert_status = get_status_name(alert_id)
     if alert_status not in ["Closed", "Rejected"]:
         if reject == "false":
-            execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
-            readable_output = f"**** The alert {alert_id} has been closed. ****"
+            alert_closure_status(mirror_status, alert_id, "Closed")
+            readable_output = f"**** The alert {alert_id} with {mirror_status} mirror direction has been closed. ****"
         if reject == "true":
-            execute_command("setIncident", {"sekoiaxdralertstatus": "Rejected"})
-            readable_output = f"**** The alert {alert_id} has been rejected. ****"
+            alert_closure_status(mirror_status, alert_id, "Rejected")
+            readable_output = f"**** The alert {alert_id} with {mirror_status} mirror direction has been rejected. ****"
 
         post_closure_comment(alert_id, close_reason, close_notes, username)
 
     else:
         execute_command("setIncident", {"sekoiaxdralertstatus": alert_status})
-        readable_status = "closed" if alert_status == "closed" else "rejected"
+        readable_status = "closed" if alert_status.lower() == "closed" else "rejected"
         readable_output = f"**** The alert {alert_id} has been {readable_status}. ****"
 
     return_results(
@@ -70,6 +82,7 @@ def close_alert(
 
 def main():
     incident = demisto.incidents()[0]  # type: ignore
+    isMirrorEnable = incident.get("dbotMirrorDirection")
     alert_short_id = incident.get("CustomFields", {}).get("alertid")
     reject = demisto.getArg("sekoiaxdralertreject")  # type: ignore
     close_reason = demisto.getArg("closeReason")
@@ -77,7 +90,7 @@ def main():
     username = demisto.getArg("closingUserId")  # type: ignore
 
     close_alert(
-        alert_short_id, reject, close_reason, close_notes, username  # type: ignore
+        alert_short_id, reject, close_reason, close_notes, username, isMirrorEnable   # type: ignore
     )
 
 
