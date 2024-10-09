@@ -6,6 +6,7 @@ description: |-
   The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
 starttaskid: "0"
 fromversion: 5.0.0
+toversion: 6.9.9
 tasks:
   "0":
     id: "0"
