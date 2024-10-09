@@ -1,6 +1,5 @@
-id: 6a3fa6e0-3a7d-49d7-8f9a-ca5843674e13
-version: 15
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM Send Slack Notification to User
+version: -1
 name: DSPM Send Slack Notification to User
 description: '"Send Slack Notification to User" playbook is designed to notify a user
   via Slack and handle their response. It begins by sending a Slack notification to
@@ -22,6 +21,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -95,6 +95,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'This task will wait until the user-specified time set in the Prisma Cloud DSPM instance.'
     nexttasks:
       '#none#':
       - "3"
@@ -200,6 +201,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Add the incident to IncidentList for re-run'
     scriptarguments:
       action:
         simple: add
@@ -233,6 +235,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Extracts the user submitted response from SlackBlockState'
     scriptarguments:
       SlackBlockState:
         simple: ${SlackBlockState}
@@ -269,3 +272,4 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.0.0

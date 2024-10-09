@@ -1,7 +1,10 @@
-id: 44096456-af98-45b0-8e48-531f647f426f
-version: 13
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM Jira Ticket Creation
+version: -1
 name: DSPM Jira Ticket Creation
+description: 'The DSPM Jira Ticket Creation is designed as a sub-playbook for Jira Ticket Creation,
+ streamlining the process of creating a Jira ticket and providing immediate notification 
+ to the user with ticket details upon successful creation. If an error occurs during ticket creation,
+ the user receives a notification containing relevant incident details.'
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -217,6 +221,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: 'This sub-playbook notify the user in case of any error'
     nexttasks:
       '#none#':
       - "56"
@@ -303,4 +308,4 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-dirtyInputs: true
+fromversion: 6.0.0

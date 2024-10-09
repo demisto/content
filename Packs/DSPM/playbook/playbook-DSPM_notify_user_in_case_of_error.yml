@@ -1,6 +1,5 @@
-id: 69a93ff8-cb41-4514-8c2e-53fe46eadf40
-version: 26
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM notify user in case of error
+version: -1
 name: DSPM notify user in case of error
 description: The DSPM Notify User in Case of Error playbook is designed to handle
   errors in DSPM incidents by notifying users and managing Slack notifications.
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -47,6 +47,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Create a slack block message in the XSOAR list.'
     nexttasks:
       '#none#':
       - "2"
@@ -126,6 +127,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Remove the slack block messgae from XSOAR list.'
     scriptarguments:
       list_name:
         simple: ${block_list_name}
@@ -157,6 +159,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Add the incident to IncidentList for re-run.'
     nexttasks:
       '#none#':
       - "3"
@@ -196,3 +199,4 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.0.0
