@@ -297,7 +297,7 @@ def test_azure_storage_block_public_access_command(requests_mock):
     from AzureStorageContainer import Client, block_public_access_command
 
     container_name = "test"
-    url = f"https://test.blob.core.windows.net/test?restype=container&comp=acl"
+    url = f"https://{ACCOUNT_NAME}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
     request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
 
     authorization_header = f"SharedKey {ACCOUNT_NAME}:{SHARED_KEY}"
@@ -306,7 +306,7 @@ def test_azure_storage_block_public_access_command(requests_mock):
         "Authorization": authorization_header,
         'x-ms-version': API_VERSION,
     }
-    requests_mock.put(url, headers=headers)
+    requests_mock.put(url, status_code=200, text="")
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
@@ -319,9 +319,11 @@ def test_azure_storage_block_public_access_command(requests_mock):
     expected_response = f"Public access to container '{container_name}' has been successfully blocked"
     assert result.readable_output == expected_response
 
-    invalid_shared_key = "test-key"
-    with pytest.raises(Exception):
-        block_public_access_command(client, {'shared_key': invalid_shared_key})
+    # Test for invalid shared key
+    invalid_shared_key = "invalid-key"
+    with pytest.raises(ValueError, match="Incorrect shared key provided"):
+        block_public_access_command(client, {'shared_key': {'password': invalid_shared_key}})
+
 
 
 def test_azure_storage_set_blob_tags_command(requests_mock):

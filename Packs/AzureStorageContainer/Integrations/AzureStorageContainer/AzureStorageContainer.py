@@ -1037,8 +1037,8 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
                 decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256
             ).digest()
             encoded_signature = base64.b64encode(signature).decode("utf-8")
-        except Exception:
-            raise Exception("Incorrect shared key provided")
+        except ValueError:
+            raise ValueError("Incorrect shared key provided")
         authorization_header = f"SharedKey {account_name}:{encoded_signature}"
         headers = {
             "x-ms-date": request_date,
