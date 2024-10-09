@@ -1135,7 +1135,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                         # other item attachment
                         label_attachment_type = 'attachmentItems'
                         label_attachment_id_type = 'attachmentItemsId'
-
+                        formatted_message: str | bytes
                         # save the attachment
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
                             # Some items arrive with bytes attachemnt
@@ -1161,11 +1161,15 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                         except ValueError as err:
                                             if "There may be at most" not in str(err):
                                                 raise err
+                            try:
+                                formatted_message = attached_email.as_string()
+                            except UnicodeEncodeError:
+                                formatted_message = attached_email.as_bytes()
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
                                                                          is_inline=attachment.is_inline,
                                                                          attachment_subject=attachment.item.subject) + ".eml",
-                                                     attached_email.as_string())
+                                                     formatted_message)
 
                         if file_result:
                             # check for error
