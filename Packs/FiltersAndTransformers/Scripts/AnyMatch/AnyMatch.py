@@ -25,9 +25,10 @@ def main():
 
     left_list = argToList(leftArg)
     right_list = argToList(rightArg)
-
+    results = []
     for left_val in left_list:
-        return_results(is_substring_in_list(left_val, right_list))
+        results.append(is_substring_in_list(left_val, right_list))
+    return return_results(any(i for i in results))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
