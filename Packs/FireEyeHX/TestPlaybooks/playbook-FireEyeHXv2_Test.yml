@@ -2054,7 +2054,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 11220
+          "y": 11570
         }
       }
     note: false
@@ -2501,7 +2501,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8770
+          "y": 8945
         }
       }
     note: false
@@ -2526,7 +2526,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "66"
+      - "83"
     scriptarguments:
       limit:
         simple: "1"
@@ -2538,7 +2538,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9120
+          "y": 9295
         }
       }
     note: false
@@ -2572,8 +2572,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 9295
+          "x": 50,
+          "y": 9645
         }
       }
     note: false
@@ -2607,7 +2607,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8945
+          "y": 9120
         }
       }
     note: false
@@ -2619,10 +2619,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: fcc90aab-6a5c-4063-8fa4-7f622e513d08
+    taskid: 80afd5ad-18d4-437a-8953-5f8e6e325b2b
     type: regular
     task:
-      id: fcc90aab-6a5c-4063-8fa4-7f622e513d08
+      id: 80afd5ad-18d4-437a-8953-5f8e6e325b2b
       version: -1
       name: fireeye-hx-search
       description: Search endpoints to check all hosts or a subset of hosts for a
@@ -2630,7 +2630,7 @@ tasks:
       script: FireEyeHX v2|||fireeye-hx-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: FireEyeHX v2
     nexttasks:
       '#none#':
       - "70"
@@ -2653,7 +2653,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9470
+          "y": 9820
         }
       }
     note: false
@@ -2688,7 +2688,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9645
+          "y": 9995
         }
       }
     note: false
@@ -2725,7 +2725,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9820
+          "y": 10170
         }
       }
     note: false
@@ -2762,7 +2762,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9995
+          "y": 10345
         }
       }
     note: false
@@ -2801,7 +2801,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10170
+          "y": 10520
         }
       }
     note: false
@@ -2836,7 +2836,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10345
+          "y": 10695
         }
       }
     note: false
@@ -2877,7 +2877,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10695
+          "y": 11045
         }
       }
     note: false
@@ -2912,7 +2912,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 11045
+          "y": 11395
         }
       }
     note: false
@@ -2955,7 +2955,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10870
+          "y": 11220
         }
       }
     note: false
@@ -2989,7 +2989,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 10520
+          "y": 10870
         }
       }
     note: false
@@ -3023,8 +3023,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 8595
+          "x": 50,
+          "y": 8770
         }
       }
     note: false
@@ -3049,7 +3049,7 @@ tasks:
       brand: FireEyeHX v2
     nexttasks:
       '#none#':
-      - "80"
+      - "82"
     scriptarguments:
       limit:
         simple: "1"
@@ -3071,6 +3071,87 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: f360d2c0-65d1-45a2-8e9d-9e86f3b1a171
+    type: condition
+    task:
+      id: f360d2c0-65d1-45a2-8e9d-9e86f3b1a171
+      version: -1
+      name: there's search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "63"
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search._id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 29d903b1-3792-4a4a-8990-c7a8ac5ea60b
+    type: condition
+    task:
+      id: 29d903b1-3792-4a4a-8990-c7a8ac5ea60b
+      version: -1
+      name: is there a search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "68"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search._id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -3087,7 +3168,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 11235,
+        "height": 11585,
         "width": 605,
         "x": 50,
         "y": 50

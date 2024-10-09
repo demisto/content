@@ -1,5 +1,6 @@
 id: FireEyeHXv2_without_polling
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: FireEyeHXv2_without_polling
 description: FireEye HX V2 Test
 starttaskid: "0"
@@ -2269,7 +2270,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9325
+          "y": 9500
         }
       }
     note: false
@@ -2583,9 +2584,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "69"
       "yes":
       - "22"
-      - "69"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2715,7 +2717,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8625
+          "y": 8800
         }
       }
     note: false
@@ -2752,7 +2754,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8975
+          "y": 9150
         }
       }
     note: false
@@ -2787,7 +2789,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 9150
+          "y": 9325
         }
       }
     note: false
@@ -2821,7 +2823,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8800
+          "y": 8975
         }
       }
     note: false
@@ -2855,8 +2857,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 8450
+          "x": 50,
+          "y": 8625
         }
       }
     note: false
@@ -2881,7 +2883,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "68"
+      - "70"
     scriptarguments:
       limit:
         simple: "1"
@@ -2903,6 +2905,47 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 88388d52-e9d9-4312-83a0-7d4b568b49ca
+    type: condition
+    task:
+      id: 88388d52-e9d9-4312-83a0-7d4b568b49ca
+      version: -1
+      name: is there a search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "63"
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search._id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2917,7 +2960,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 9340,
+        "height": 9515,
         "width": 2212.5,
         "x": 50,
         "y": 50

@@ -2894,10 +2894,16 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
     searchInfo = client.get_search_by_id_request(search_id)["data"]
     matched = searchInfo.get('stats', {}).get('search_state', {}).get('MATCHED', 0)
     pending = searchInfo.get('stats', {}).get('search_state', {}).get('PENDING', 0)
-
-    if searchInfo.get("state") != "STOPPED" and ((matched < int(limit) and pending != 0) or (matched == 0 and pending == 0)):
+    running_state = searchInfo.get('stats', {}).get('running_state', {})
+    new_run = True
+    for state, count in running_state.items():
+        if count != 0:
+            new_run = False
+            break
+    if searchInfo.get("state") != "STOPPED" and ((matched < int(limit) and pending != 0) or new_run):
+        demisto.debug(f"search is not ready yet, running state is: {running_state}")
         return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), False, search_id
-
+    demisto.debug("search is ready")
     return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), True, search_id
 
 
@@ -3131,6 +3137,7 @@ def run_polling_command(client, args, cmd, post_func, get_func, t):
     type_id = TABLE_POLLING_COMMANDS[t]['type']
     _, is_ready, item_id = post_func(client, args)
     if not is_ready:
+        demisto.debug("still not ready")
         readable_output = f"{TABLE_POLLING_COMMANDS[t]['message']}{item_id}" if type_id not in args else None
         if not args.get(type_id):
             args[type_id] = item_id
