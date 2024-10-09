@@ -62,6 +62,7 @@ def return_extra_data_result(*args):
         incident_from_extra_data_command = load_test_data('./test_data/incident_example_from_extra_data_command.json')
         return {}, {}, {"incident": incident_from_extra_data_command}
 
+
 def test_retrieve_all_endpoints(mocker):
     """
     Given:
@@ -79,27 +80,27 @@ def test_retrieve_all_endpoints(mocker):
     http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
 
     endpoints = retrieve_all_endpoints(
-        client = test_client,
+        client=test_client,
         endpoints=[{'id': 2, 'hostname': 'endpoint2'}],
-        endpoint_id_list = [],
-        dist_name = None,
-        ip_list = [],
-        public_ip_list = [],
-        group_name = None,
-        platform = None,
-        alias_name = None,
-        isolate = None,
-        hostname = None,
-        page_number = 0,
-        limit = 10,
-        first_seen_gte = None,
-        first_seen_lte = None,
-        last_seen_gte = None,
-        last_seen_lte = None,
-        sort_by_first_seen = None,
-        sort_by_last_seen = None,
-        status = None,
-        username = None,
+        endpoint_id_list=[],
+        dist_name=None,
+        ip_list=[],
+        public_ip_list=[],
+        group_name=None,
+        platform=None,
+        alias_name=None,
+        isolate=None,
+        hostname=None,
+        page_number=0,
+        limit=10,
+        first_seen_gte=None,
+        first_seen_lte=None,
+        last_seen_gte=None,
+        last_seen_lte=None,
+        sort_by_first_seen=None,
+        sort_by_last_seen=None,
+        status=None,
+        username=None,
     )
 
     assert len(endpoints) == 3
@@ -119,10 +120,11 @@ def test_get_endpoints_command(mocker):
     mock_endpoints_page_3 = {'reply': {'endpoints': []}}
     http_request = mocker.patch.object(test_client, '_http_request')
     http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
-    args={'all_results': 'true'}
-    result = get_endpoints_command(test_client,args)
+    args = {'all_results': 'true'}
+    result = get_endpoints_command(test_client, args)
     assert result.readable_output == '### Endpoints\n|hostname|id|\n|---|---|\n| endpoint1 | 1 |\n| endpoint2 | 2 |\n'
     assert result.raw_response == [{'id': 1, 'hostname': 'endpoint1'}, {'id': 2, 'hostname': 'endpoint2'}]
+
 
 def test_convert_to_hr_timestamps():
     """
