@@ -15,7 +15,7 @@
     "excludedDependencies": [
         "Splunk",
         "SentinelOne"
-    ]
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
