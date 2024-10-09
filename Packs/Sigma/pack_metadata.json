@@ -19,5 +19,11 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "dependencies": {
+        "MITRE ATT&CK": {
+            "mandatory": false,
+            "display_name": "Mitre Att&ck Feed"
+        }
+    }
 }
