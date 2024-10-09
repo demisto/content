@@ -2143,7 +2143,7 @@ def retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_li
     return endpoints
 
 
-def convert_to_hr_timestamps(endpoints):
+def convert_timestamps_to_datestring(endpoints):
     for endpoint in endpoints:
         if endpoint.get('content_release_timestamp'):
             endpoint['content_release_timestamp'] = timestamp_to_datestring(endpoint.get('content_release_timestamp'))
@@ -2188,7 +2188,7 @@ def get_endpoints_command(client, args):
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
     status = argToList(args.get('status'))
-    use_hr_timestamps = argToBoolean(args.get('use_hr_timestamps', False))
+    convert_timestamp_to_datestring = argToBoolean(args.get('convert_timestamp_to_datestring', False))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
@@ -2245,9 +2245,8 @@ def get_endpoints_command(client, args):
                                            last_seen_gte, last_seen_lte, sort_by_first_seen,
                                            sort_by_last_seen, status, username)
 
-    # Convert Unix epoch timestamps to human-readable timestamps
-    if use_hr_timestamps:
-        endpoints = convert_to_hr_timestamps(endpoints)
+    if convert_timestamp_to_datestring:
+        endpoints = convert_timestamps_to_datestring(endpoints)
 
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
