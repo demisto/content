@@ -1051,7 +1051,7 @@ def get_indices_statistics_command(args, proxies):
     return result
 
 
-def main():
+def main():  # pragma: no cover
     proxies = handle_proxy()
     proxies = proxies if proxies else None
     args = demisto.args()
