@@ -16,6 +16,9 @@ configuration:
   name: use_ssl
   type: 8
   required: false
+- display:  Use SASL PLAIN for connection (using SSL)
+  name: use_sasl
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -37,9 +40,6 @@ configuration:
   name: additional_password
   type: 9
   required: false
-- display: Use SASL PLAIN for connection
-  name: use_sasl
-  type: 8
 - display: SASL PLAIN Username
   name: plain_username
   type: 14

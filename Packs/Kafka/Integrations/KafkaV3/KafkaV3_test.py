@@ -990,6 +990,11 @@ valid_params_cases = [
         'use_ssl': True, 'use_sasl': True, 'brokers': 'broker1,broker2',
         'ca_cert': 'cert', 'plain_username': 'user', 'plain_password': 'pass'
     },
+    # Valid case with SASL
+    {
+        'use_ssl': False, 'use_sasl': True, 'brokers': 'broker1,broker2',
+        'ca_cert': 'cert', 'plain_username': 'user', 'plain_password': 'pass'
+    },
     # Valid case trust_any_cert
     {
         'use_ssl': False, 'use_sasl': False, 'brokers': 'broker1,broker2', 'insecure': True
@@ -1042,11 +1047,6 @@ invalid_params_cases = [
     (
         {'use_ssl': False, 'use_sasl': False, 'insecure': False},
         'No connection method was chosen.'
-    ),
-    # use_sasl and not use_ssl
-    (
-        {'use_sasl': True, 'use_ssl': False},
-        'SASL protocol can be used only with a SSL encription'
     )
 ]
 @pytest.mark.parametrize('params, expected_message', invalid_params_cases)

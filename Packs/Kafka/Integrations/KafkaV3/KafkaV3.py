@@ -127,7 +127,7 @@ class KafkaCommunicator:
         
         
         # SASL with SSL
-        elif use_sasl and use_ssl:
+        elif use_sasl:
             client_dict.update({'security.protocol': 'SASL_SSL',
                                 'sasl.mechanism': 'PLAIN',
                                 'sasl.username': plain_username,
@@ -394,10 +394,6 @@ def validate_params(params: dict):  # TODO add validation that trust any cert is
     client_cert = params.get('client_cert')
     client_cert_key = params.get('client_cert_key')
     insecure = params.get('insecure')
-    
-    # Check that SASL is used with SSL (can't be used without ssl)
-    if use_sasl and not use_ssl:
-        raise DemistoException('SASL protocol can be used only with a SSL encription')
     
     if not insecure and not use_ssl and not use_sasl:
         raise DemistoException('No connection method was chosen.')
