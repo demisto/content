@@ -297,7 +297,7 @@ def test_azure_storage_block_public_access_command(requests_mock):
     from AzureStorageContainer import Client, block_public_access_command
 
     container_name = "test"
-    url = f"https://{ACCOUNT_NAME}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
+    url = f"https://test.blob.core.windows.net/test?restype=container&comp=acl"
     request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
 
     authorization_header = f"SharedKey {ACCOUNT_NAME}:{SHARED_KEY}"
