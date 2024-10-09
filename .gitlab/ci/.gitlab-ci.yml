@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: add_doc_files_cleaning_to_rel_path_upload
+  CURRENT_BRANCH_NAME: test_rel_upload_test_fix
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: add_doc_files_cleaning_to_rel_path_upload
+    ref: test_rel_upload_test_fix
     project: "${CI_PROJECT_NAMESPACE}/infra"
