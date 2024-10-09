@@ -643,7 +643,7 @@ def check_file_command(client: Client, args: Dict[str, Any], params) -> List[Com
     return:
      CommandResults: results of the file command including outputs, raw response, readable output
     """
-    files = argToList(args.get('file', None))
+    files = argToList(args.get('file'))
     days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
     if not files:
         raise ValueError('File not specified')

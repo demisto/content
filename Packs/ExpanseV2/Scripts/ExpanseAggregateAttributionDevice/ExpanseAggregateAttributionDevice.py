@@ -113,7 +113,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
             continue
 
         device_key = f"{serial}::{vsys}"
-        current_state = current_devices.get(device_key, None)
+        current_state = current_devices.get(device_key)
         if current_state is None:
             current_state = {
                 'serial': serial,

@@ -300,7 +300,7 @@ def get_field_command(client: Client, args: Dict[str, Any], **kwargs) -> Command
     """
 
     demisto.debug('get_field_command - command_name: ' + str(kwargs.get('command_name', '')))
-    notation = args.get('notation', None)
+    notation = args.get('notation')
     if not notation:
         raise ValueError('notation URI not specified')
 
@@ -382,7 +382,7 @@ def find_records_command(client: Client, args: Dict[str, Any], **kwargs) -> Comm
     demisto.debug('find_records_command - command_name: ' + str(kwargs.get('command_name', '')))
 
     title = args.get('title') or ''
-    partial_match = args.get('partial_match', None)
+    partial_match = args.get('partial_match')
     partial_match = True if partial_match else False
     demisto.debug(f'Find records with title={title} and partial_match={partial_match}')
 
@@ -475,7 +475,7 @@ def find_files_command(client: Client, args: Dict[str, Any], **kwargs) -> Comman
     demisto.debug('find_files_command - command_name: ' + str(kwargs.get('command_name', '')))
 
     file_name = args.get('file_name') or ''
-    partial_match = args.get('partial_match', None)
+    partial_match = args.get('partial_match')
     partial_match = True if partial_match else False
     demisto.debug(f'Find records with file_name={file_name} and partial_match={partial_match}')
 
@@ -519,7 +519,7 @@ def get_file_command(client: Client, args: Dict[str, Any], **kwargs) -> Optional
 
     demisto.debug('get_file_command - command_name: ' + str(kwargs.get('command_name', '')))
     record_uid = args.get('record_uid') or ''
-    file_uid = args.get('file_uid', None)
+    file_uid = args.get('file_uid')
     if not file_uid:
         raise ValueError('file_uid not specified')
     demisto.debug(f'Get file UID: "{file_uid}" from record UID:"{record_uid}"')
@@ -559,7 +559,7 @@ def get_infofile_command(client: Client, args: Dict[str, Any], **kwargs) -> Opti
 
     demisto.debug('get_infofile_command - command_name: ' + str(kwargs.get('command_name', '')))
     record_uid = args.get('record_uid') or ''
-    file_uid = args.get('file_uid', None)
+    file_uid = args.get('file_uid')
     if not file_uid:
         raise ValueError('file_uid not specified')
     demisto.debug(f'Get file UID: "{file_uid}" from record UID:"{record_uid}"')

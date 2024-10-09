@@ -809,7 +809,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = dateparser.parse(first_fetch_time)
-    last_fetch = last_run.get('last_fetch', None)  # {last_fetch: timestamp}
+    last_fetch = last_run.get('last_fetch')  # {last_fetch: timestamp}
     demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
 
     # Handle first fetch time
@@ -897,8 +897,8 @@ def test_module(client: Client, params: dict) -> str:
     try:
         client.get_processes(limit='5', allow_empty=True)
         if params['isFetch']:
-            client.get_alerts(status=params.get('alert_status', None), feedname=params.get('alert_feed_name', None),
-                              query=params.get('alert_query', None), allow_empty_params=False, limit='3')
+            client.get_alerts(status=params.get('alert_status'), feedname=params.get('alert_feed_name'),
+                              query=params.get('alert_query'), allow_empty_params=False, limit='3')
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'UNAUTHORIZED' in str(e):

@@ -230,7 +230,7 @@ def init_manager(params: dict) -> SyslogManager:
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
     certificate: Optional[str] = (replace_spaces_in_credential(params.get('certificate', {}).get('password'))
-                                  or params.get('certificate', None))
+                                  or params.get('certificate'))
     certificate_path: Optional[str] = None
     default_port: int = DEFAULT_TLS_SYSLOG_PORT if protocol == 'tls' else DEFAULT_TCP_SYSLOG_PORT
     port = arg_to_number(params.get('port'), required=False) or default_port

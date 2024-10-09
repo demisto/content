@@ -2031,7 +2031,7 @@ def organization_list_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def appliances_list_by_organization_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    organization_args = args.get("organization", None)
+    organization_args = args.get("organization")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size", 0))
     limit = arg_to_number(args.get("limit", 50))
@@ -2059,7 +2059,7 @@ def appliances_list_by_organization_command(client: Client, args: dict[str, Any]
 
 
 def appliances_group_list_by_organization_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    organization_args = args.get("organization", None)
+    organization_args = args.get("organization")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
@@ -3587,7 +3587,7 @@ def main() -> None:
     try:
         # test_module functionality is disabled for Auth Token authentication
         case_auth_token_auth = bool(
-            params.get("access_token", None) and not params.get("client_id", None) and not params.get("client_secret", None)
+            params.get("access_token") and not params.get("client_id") and not params.get("client_secret")
         )
         if command == "test-module" and not use_basic_auth and not case_auth_token_auth:
             return_results(

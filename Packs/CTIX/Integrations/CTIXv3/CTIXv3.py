@@ -1825,9 +1825,9 @@ def get_note_details(client: Client, args: dict[str, Any]) -> CommandResults:
 def create_note(client: Client, args: dict[str, Any]) -> CommandResults:
     text = args['text']
     client_url = client.base_url + "ingestion/notes/"
-    object_id = args.get('object_id', None)
+    object_id = args.get('object_id')
     object_id = check_for_empty_variable(object_id, None)
-    object_type = args.get('object_type', None)
+    object_type = args.get('object_type')
     object_type = check_for_empty_variable(object_type, None)
 
     if object_id and not is_valid_uuid(object_id):
@@ -1869,11 +1869,11 @@ def create_note(client: Client, args: dict[str, Any]) -> CommandResults:
 
 def update_note(client: Client, args: dict[str, Any]) -> CommandResults:
     id = args['id']
-    text = args.get("text", None)
+    text = args.get("text")
     client_url = client.base_url + f"ingestion/notes/{id}/"
-    object_id = args.get('object_id', None)
+    object_id = args.get('object_id')
     object_id = check_for_empty_variable(object_id, None)
-    object_type = args.get('object_type', None)
+    object_type = args.get('object_type')
     object_type = check_for_empty_variable(object_type, None)
 
     if object_id and not is_valid_uuid(object_id):
@@ -2012,7 +2012,7 @@ def _lookup_cve_result(client: Client, cve_detail: dict[str, Any], page: int, pa
     created = str(datetime.fromtimestamp(cve_detail.get("created", 0)))
     modified = str(datetime.fromtimestamp(cve_detail.get("modified", 0)))
     name = cve_detail.get("name")
-    extra_field_values = {k: cve_detail.get(k, None) for k in extra_fields}
+    extra_field_values = {k: cve_detail.get(k) for k in extra_fields}
     cve_sources = [
         source.get("id") for source in cve_detail.get("sources", []) if source.get("id")
     ]

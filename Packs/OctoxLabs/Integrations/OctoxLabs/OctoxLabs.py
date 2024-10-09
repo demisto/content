@@ -44,7 +44,7 @@ def run_command(
         "octoxlabs-get-groups": get_groups,
         "octoxlabs-get-permissions": get_permissions,
     }
-    command_function: Optional[Callable] = commands.get(command_name, None)
+    command_function: Optional[Callable] = commands.get(command_name)
     if command_function:
         return command_function(octox=octox, args=args)
     raise Exception("No command.")
@@ -162,7 +162,7 @@ def get_last_discovery(octox: OctoxLabs, *_, **__) -> CommandResults:
 
 
 def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
-    fields = args.get("fields", None)
+    fields = args.get("fields")
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
 
@@ -171,7 +171,7 @@ def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
         fields=fields,
         page=args.get("page", 1),
         size=args.get("size", 50),
-        discovery_id=args.get("discovery_id", None),
+        discovery_id=args.get("discovery_id"),
     )
 
     return CommandResults(
@@ -185,7 +185,7 @@ def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
 
 def get_device(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     device = octox.get_device_detail(
-        hostname=args.get("hostname"), discovery_id=args.get("discovery_id", None)
+        hostname=args.get("hostname"), discovery_id=args.get("discovery_id")
     )
     return CommandResults(outputs_prefix="OctoxLabs.Device", outputs=device)
 

@@ -244,7 +244,7 @@ def remove_sensitive_from_events(event: dict) -> dict:
     """
     removes file names and subject that could be sensitive data
     """
-    if event.get("subject", None):
+    if event.get("subject"):
         event["subject"] = "hidden data"
 
     if (attachments := event.get("attachments")) and isinstance(attachments, list):

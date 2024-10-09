@@ -1070,7 +1070,7 @@ def test_module(client: Client) -> str:
 
 
 def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
     provider = ','.join(argToList(args.get('provider')))
     business_units = ','.join(argToList(args.get('business_unit')))
@@ -1112,16 +1112,16 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raise ValueError(f'sort must include: {", ".join(ISSUE_SORT_OPTIONS)}')
     sort = ','.join(arg_list)
 
-    d = args.get('created_before', None)
+    d = args.get('created_before')
     created_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('created_after', None)
+    d = args.get('created_after')
     created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('modified_before', None)
+    d = args.get('modified_before')
     modified_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('modified_after', None)
+    d = args.get('modified_after')
     modified_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issues = list(
@@ -1153,7 +1153,7 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
     provider = ','.join(argToList(args.get('provider')))
     business_units = ','.join(argToList(args.get('business_unit')))
@@ -1285,7 +1285,7 @@ def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
     if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
@@ -1319,7 +1319,7 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
     if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')

@@ -49,10 +49,10 @@ class Client(BaseClient):
 
 def webscraper_command(args: Dict[str, Any]) -> CommandResults:
 
-    page_html = args.get('page_html', None)
-    page_url = args.get('page_url', None)
-    headers = args.get('headers', None)
-    params = args.get('params', None)
+    page_html = args.get('page_html')
+    page_url = args.get('page_url')
+    headers = args.get('headers')
+    params = args.get('params')
     navigator_tree = args.get('navigator_tree', 'body')
 
     verify_certificate = not args.get('insecure', False)

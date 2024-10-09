@@ -178,7 +178,7 @@ class Client(BaseClient):
         Return the new incident on success or the API error otherwise.
         """
 
-        if not args.get("caller", None):
+        if not args.get("caller"):
             if not demisto.params().get('defaultCallerId'):
                 raise ValueError('Caller must be specified to create incident.')
             else:
@@ -201,10 +201,10 @@ class Client(BaseClient):
         Return the updated incident on success or the API error otherwise.
         """
 
-        if not args.get("id", None) and not args.get("number", None):
+        if not args.get("id") and not args.get("number"):
             raise ValueError('Either id or number must be specified to update incident.')
 
-        if args.get("id", None):
+        if args.get("id"):
             endpoint = f"/incidents/id/{args['id']}"
         else:
             endpoint = f"/incidents/number/{args['number']}"
@@ -511,7 +511,7 @@ def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
     Return a request body dictionary ready for sending.
     """
     request_params: Dict[str, Any] = {}
-    if args.get("entry_type", None):
+    if args.get("entry_type"):
         request_params["entryType"] = {"name": args["entry_type"]}
 
     optional_params = ["caller", "status", "description", "request", "action",
@@ -522,9 +522,9 @@ def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
                              "processingStatus"]
     if args:
         for optional_param in optional_params:
-            if args.get(optional_param, None):
+            if args.get(optional_param):
                 if optional_param == "description":
-                    request_params["briefDescription"] = args.get(optional_param, None)
+                    request_params["briefDescription"] = args.get(optional_param)
 
                 elif optional_param == "caller":
                     if args.get("registered_caller", False):
@@ -536,9 +536,9 @@ def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
                     request_params[half_camelize(optional_param)] = {"name": args[optional_param]}
 
                 else:
-                    request_params[half_camelize(optional_param)] = args.get(optional_param, None)
+                    request_params[half_camelize(optional_param)] = args.get(optional_param)
 
-    if args.get("additional_params", None):
+    if args.get("additional_params"):
         request_params.update(json.loads(args["additional_params"]))
 
     return request_params
@@ -675,14 +675,14 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
 
     Return list of incidents got from the API.
     """
-    if args.get('incident_id', None):
+    if args.get('incident_id'):
         incidents = [client.get_single_endpoint(f"/incidents/id/{args.get('incident_id')}")]
-    elif args.get('incident_number', None):
+    elif args.get('incident_number'):
         incidents = [client.get_single_endpoint(f"/incidents/number/{args.get('incident_number')}")]
     else:
         allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
-        if args.get('status', None) not in allowed_statuses:
-            raise (ValueError(f"status {args.get('status', None)} id not in "
+        if args.get('status') not in allowed_statuses:
+            raise (ValueError(f"status {args.get('status')} id not in "
                               f"the allowed statuses list: {allowed_statuses}"))
         else:
             filter_arguments: Dict[str, Any] = {"status": "status",
@@ -694,23 +694,23 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
                                                 "entry_type": "entryType"}
             old_query_not_allowed_filters = ["category", "subcategory", "call_type", "entry_type"]
 
-            query = args.get('query', None)
+            query = args.get('query')
             for filter_arg in filter_arguments.keys():
                 if not client.rest_api_new_query:
-                    if args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
+                    if args.get(filter_arg) and filter_arg in old_query_not_allowed_filters:
                         raise KeyError(f"Filtering via {filter_arg} is not supported in older TOPdeskRestApi versions.")
 
                 query = client.add_filter_to_query(query=query,
-                                                   filter_name=filter_arguments.get(filter_arg, None),
-                                                   filter_arg=args.get(filter_arg, None),
+                                                   filter_name=filter_arguments.get(filter_arg),
+                                                   filter_arg=args.get(filter_arg),
                                                    use_new_query=client.rest_api_new_query)
             incidents = client.get_list_with_query(list_type="incidents",
-                                                   start=args.get('start', None),
-                                                   page_size=args.get('page_size', None),
+                                                   start=args.get('start'),
+                                                   page_size=args.get('page_size'),
                                                    query=query,
                                                    modification_date_start=modification_date_start,
                                                    modification_date_end=modification_date_end,
-                                                   fields=args.get('fields', None))
+                                                   fields=args.get('fields'))
 
     return incidents
 
@@ -794,10 +794,10 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
     """
 
     persons = client.get_list_with_query(list_type="persons",
-                                         start=args.get('start', None),
-                                         page_size=args.get('page_size', None),
-                                         query=args.get('query', None),
-                                         fields=args.get('fields', None))
+                                         start=args.get('start'),
+                                         page_size=args.get('page_size'),
+                                         query=args.get('query'),
+                                         fields=args.get('fields'))
     if len(persons) == 0:
         return CommandResults(readable_output='No persons found')
 
@@ -844,9 +844,9 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
     """
 
     operators = client.get_list_with_query(list_type="operators",
-                                           start=args.get('start', None),
-                                           page_size=args.get('page_size', None),
-                                           query=args.get('query', None))
+                                           start=args.get('start'),
+                                           page_size=args.get('page_size'),
+                                           query=args.get('query'))
     if len(operators) == 0:
         return CommandResults(readable_output='No operators found')
 
@@ -1041,15 +1041,15 @@ def list_attachments_command(client: Client, args: Dict[str, Any]) -> CommandRes
         args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of attachments."""
-    attachments = client.list_attachments(incident_id=args.get('incident_id', None),
-                                          incident_number=args.get('incident_number', None))
+    attachments = client.list_attachments(incident_id=args.get('incident_id'),
+                                          incident_number=args.get('incident_number'))
 
     if len(attachments) == 0:
         return CommandResults(readable_output='No attachments found')
 
     attachments = trim_results_by_limit(attachments, args.get('limit', 100))
-    return attachments_to_command_results(client, attachments, args.get('incident_id', None),
-                                          args.get('incident_number', None))
+    return attachments_to_command_results(client, attachments, args.get('incident_id'),
+                                          args.get('incident_number'))
 
 
 def list_actions_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1060,15 +1060,15 @@ def list_actions_command(client: Client, args: Dict[str, Any]) -> CommandResults
         args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of attachments."""
-    actions = client.list_actions(incident_id=args.get('incident_id', None),
-                                  incident_number=args.get('incident_number', None))
+    actions = client.list_actions(incident_id=args.get('incident_id'),
+                                  incident_number=args.get('incident_number'))
 
     if len(actions) == 0:
         return CommandResults(readable_output='No actions found')
 
     actions = trim_results_by_limit(actions, args.get('limit', 100))
-    return actions_to_command_results(client, actions, args.get('incident_id', None),
-                                      args.get('incident_number', None))
+    return actions_to_command_results(client, actions, args.get('incident_id'),
+                                      args.get('incident_number'))
 
 
 def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1082,10 +1082,10 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
 
     branches = client.get_list_with_query(list_type="branches",
-                                          start=args.get('start', None),
-                                          page_size=args.get('page_size', None),
-                                          query=args.get('query', None),
-                                          fields=args.get('fields', None))
+                                          start=args.get('start'),
+                                          page_size=args.get('page_size'),
+                                          query=args.get('query'),
+                                          fields=args.get('fields'))
     if len(branches) == 0:
         return CommandResults(readable_output='No branches found')
 
@@ -1182,8 +1182,8 @@ def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> Co
 
     return incidents_to_command_results(client,
                                         [client.incident_do(action=action,
-                                                            incident_id=args.get("id", None),
-                                                            incident_number=args.get("number", None),
+                                                            incident_id=args.get("id"),
+                                                            incident_number=args.get("number"),
                                                             reason_id=args.get(f"{action}_reason_id", None))])
 
 
@@ -1207,25 +1207,25 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
         raise ValueError(f"Could not fine file in entry with entry_id: {file_entry}")
 
     if isinstance(file_name, list):  # If few files
-        if args.get('file_name', None) and args.get('file_name') in file_name:
+        if args.get('file_name') and args.get('file_name') in file_name:
             file_name = args.get('file_name')
         else:
             file_name = file_name[0]
 
     invisible_for_caller = bool(args.get('invisible_for_caller', False))
 
-    response = client.attachment_upload(incident_id=args.get('id', None),
-                                        incident_number=args.get('number', None),
+    response = client.attachment_upload(incident_id=args.get('id'),
+                                        incident_number=args.get('number'),
                                         file_entry=str(file_entry),
                                         file_name=str(file_name),
                                         invisible_for_caller=invisible_for_caller,
-                                        file_description=args.get('file_description', None))
+                                        file_description=args.get('file_description'))
 
     if not response.get("downloadUrl", None):
         raise Exception(f"Failed uploading file: {response}")
 
-    return attachments_to_command_results(client, [response], args.get('incident_id', None),
-                                          args.get('incident_number', None))
+    return attachments_to_command_results(client, [response], args.get('incident_id'),
+                                          args.get('incident_number'))
 
 
 ''' FETCH & MIRRORING COMMANDS'''
@@ -1245,7 +1245,7 @@ def fetch_incidents(client: Client,
     """
 
     first_fetch_datetime = dateparser.parse(demisto_params.get('first_fetch', '3 days'))
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
 
     if not last_fetch:
         if first_fetch_datetime:
@@ -1263,7 +1263,7 @@ def fetch_incidents(client: Client,
 
     topdesk_incidents = get_incidents_with_pagination(client=client,
                                                       max_fetch=int(demisto_params.get('max_fetch', 10)),
-                                                      query=demisto_params.get('fetch_query', None),
+                                                      query=demisto_params.get('fetch_query'),
                                                       creation_date_start=creation_date_start)
 
     for topdesk_incident in topdesk_incidents:

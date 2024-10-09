@@ -116,7 +116,7 @@ def test_module(client: Client) -> str:
 
 
 def enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    ip = args.get("ip", None)
+    ip = args.get("ip")
     if not ip:
         raise ValueError("IP not specified")
 

@@ -456,7 +456,7 @@ def update_ticket_command(client: Client, args: dict[str, str]):
     title = args.get('title')
     queue = args.get('queue')
     state = args.get('state')
-    owner = args.get("owner", None)
+    owner = args.get("owner")
     lock = args.get("lock", "").lower() if args.get("lock", "").lower() in ["lock", "unlock"] else None
     customer_user = args.get("customer_user")
     priority = args.get('priority')

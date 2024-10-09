@@ -1499,7 +1499,7 @@ def delete_security_group_command(args: dict) -> CommandResults:
 def authorize_security_group_ingress_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
-    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+    if IpPermissionsFull := args.get('IpPermissionsFull'):
         IpPermissions = json.loads(IpPermissionsFull)
     else:
         IpPermissions = []
@@ -1525,7 +1525,7 @@ def authorize_security_group_ingress_command(args: dict) -> CommandResults:
 def authorize_security_group_egress_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
-    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+    if IpPermissionsFull := args.get('IpPermissionsFull'):
         IpPermissions = json.loads(IpPermissionsFull)
     else:
         IpPermissions = []
@@ -1608,7 +1608,7 @@ def create_user_id_group_pairs_dict(args):
 def revoke_security_group_ingress_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
-    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+    if IpPermissionsFull := args.get('IpPermissionsFull'):
         IpPermissions = json.loads(IpPermissionsFull)
         kwargs['IpPermissions'] = IpPermissions
     else:

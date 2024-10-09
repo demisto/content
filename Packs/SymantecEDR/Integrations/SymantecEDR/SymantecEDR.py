@@ -1431,9 +1431,9 @@ def get_incident_filter_query(args: dict[str, Any]) -> str:
         Return string.
     """
     # Incident Parameters
-    ids = arg_to_number(args.get("incident_id", None))
-    priority = REVERSE_INCIDENT_PRIORITY.get(args.get("priority", None))
-    status = REVERSE_INCIDENT_STATE.get(args.get("status", None))
+    ids = arg_to_number(args.get("incident_id"))
+    priority = REVERSE_INCIDENT_PRIORITY.get(args.get("priority"))
+    status = REVERSE_INCIDENT_STATE.get(args.get("status"))
     query = args.get("query", "")
 
     if query and (ids or priority or status):

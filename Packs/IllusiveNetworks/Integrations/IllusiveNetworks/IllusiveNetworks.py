@@ -229,9 +229,9 @@ def get_deceptive_servers_command(client: Client, args: dict) -> Tuple:
 
 
 def add_deceptive_users_command(client: Client, args: dict) -> Tuple:
-    user_name = args.get("username", None)
-    domain_name = args.get("domain_name", None)
-    password = args.get("password", None)
+    user_name = args.get("username")
+    domain_name = args.get("domain_name")
+    password = args.get("password")
     policy_names = argToList(args.get('policy_names'))
 
     request_body = [
@@ -299,7 +299,7 @@ def add_deceptive_servers_command(client: Client, args: dict) -> Tuple:
 
 
 def assign_host_to_policy_command(client: Client, args: dict) -> Tuple:
-    policy_name = args.get("policy_name", None)
+    policy_name = args.get("policy_name")
     host_names = argToList(args.get("hosts"))
     host_names = host_names[:1000]
     request_body = []
@@ -375,8 +375,8 @@ def remove_host_from_policy_command(client: Client, args: dict) -> Tuple:
 
 def get_forensics_timeline_command(client: Client, args: dict) -> Tuple:
     incident_id = args.get("incident_id")
-    start_date = args.get("start_date", None)
-    end_date = args.get("end_date", None)
+    start_date = args.get("start_date")
+    end_date = args.get("end_date")
     if start_date:
         start_date, _ = parse_date_range(start_date, date_format=DATE_FORMAT, utc=True)
     if end_date:
@@ -422,7 +422,7 @@ def get_forensics_timeline_command(client: Client, args: dict) -> Tuple:
 
 
 def get_asm_host_insight_command(client: Client, args: dict) -> Tuple:
-    hostname_or_ip = args.get("hostnameOrIp", None)
+    hostname_or_ip = args.get("hostnameOrIp")
     try:
         result = client.get_asm_host_insight(hostname_or_ip)
     except DemistoException as e:
@@ -469,7 +469,7 @@ def get_asm_cj_insight_command(client: Client, args: dict) -> Tuple:
 
 
 def run_forensics_on_demand_command(client: Client, args: dict) -> Tuple:
-    fqdn_or_ip = args.get("fqdn_or_ip", None)
+    fqdn_or_ip = args.get("fqdn_or_ip")
     try:
         result = client.run_forensics_on_demand(fqdn_or_ip)
     except DemistoException as e:
@@ -491,7 +491,7 @@ def run_forensics_on_demand_command(client: Client, args: dict) -> Tuple:
 
 
 def is_deceptive_user_command(client: Client, args: dict) -> Tuple:
-    username = args.get("username", None)
+    username = args.get("username")
     is_deceptive_user = False
     is_deceptive_user = True if client.is_deceptive_user(username) else is_deceptive_user
     result = {
@@ -510,7 +510,7 @@ def is_deceptive_user_command(client: Client, args: dict) -> Tuple:
 
 
 def is_deceptive_server_command(client: Client, args: dict) -> Tuple:
-    hostname = args.get("hostname", None)
+    hostname = args.get("hostname")
     is_deceptive_server = False
     is_deceptive_server = True if client.is_deceptive_server(hostname) else is_deceptive_server
     result = {
@@ -585,11 +585,11 @@ def delete_deceptive_servers_command(client: Client, args: dict) -> Tuple:
 
 def get_incidents_command(client: Client, args: dict) -> Tuple:
     incident_id = args.get("incident_id")
-    has_forensics = args.get("has_forensics", None)
+    has_forensics = args.get("has_forensics")
     host_names = argToList(args.get('hostnames'))
     limit = args.get("limit", 10)
     offset = args.get("offset", 0)
-    start_date = args.get("start_date", None)
+    start_date = args.get("start_date")
     if start_date:
         start_date, _ = parse_date_range(start_date, date_format=DATE_FORMAT, utc=True)
     try:
@@ -618,7 +618,7 @@ def get_incidents_command(client: Client, args: dict) -> Tuple:
 
 
 def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
-    event_id = int(args.get("event_id", None))
+    event_id = int(args.get("event_id"))
     status = "Done"
     try:
         incident = client.get_event_incident_id(event_id)

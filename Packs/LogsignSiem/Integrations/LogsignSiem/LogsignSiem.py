@@ -173,7 +173,7 @@ def check_arg(key: str, args: Dict[str, Any]) -> Any:
         :return: Depends on the key parameter
         :rtype: ``dict`` or ``str`` or ``list``
     """
-    tmp = args.get(key, None)
+    tmp = args.get(key)
     if not tmp:
         raise ValueError(f"{key} not specified!")
     return tmp
