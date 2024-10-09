@@ -309,7 +309,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
         Returns None if no comments were found.
     """
 
-    comments, link_comment = [], None
+    comments = []
     # a regular comment for the given field name, "comments" as a default
     single_comment_for_field_name = parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
     if single_comment_for_field_name:
@@ -317,7 +317,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
 
     # if the flag is True, add a link as a comment
     if Client.add_link_as_a_comment:
-        comments.extend(parse_demisto_single_comments(ioc, 'indicator_link', comments_as_tags))
+        comments.extend(parse_demisto_single_comments(ioc, 'indicator_link', comments_as_tags) or [])
 
     return [', '.join(comments)]
 
