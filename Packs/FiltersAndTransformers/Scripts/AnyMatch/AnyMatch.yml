@@ -10,7 +10,7 @@ tags:
   - general
 comment: |-
   Returns True if one of the elements from the left side has a substring that is equal to an element from the right side. Note: This filter is case-insensitive.
-  E.g -AnyMatch left=baby right=A will return True, because A is a substring of the word baby. For more examples see the filter's Readme.
+  For example: AnyMatch left=baby right=A will return True, because A is a substring of the word baby. For more examples see the filter's Readme.
 enabled: true
 args:
   - name: left
