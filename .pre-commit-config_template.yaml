@@ -30,19 +30,20 @@ repos:
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.6.3
+  rev: v0.6.9
   hooks:
-  - id: ruff
-    parallel: false
-    min_py_version: '3.7'
-    args:
-    - --fix
-    args:nightly:
-    - --config=nightly_ruff.toml
-    args:ci:
-    - --config=nightly_ruff.toml
-    args:docker_autoupdate:
-    - --config=nightly_ruff.toml
+  - id: ruff-format
+  # - id: ruff
+  #   parallel: false
+  #   min_py_version: '3.7'
+  #   args:
+  #   - --fix
+  #   args:nightly:
+  #   - --config=nightly_ruff.toml
+  #   args:ci:
+  #   - --config=nightly_ruff.toml
+  #   args:docker_autoupdate:
+  #   - --config=nightly_ruff.toml
 - repo: https://github.com/hhatto/autopep8
   rev: v2.3.1
   hooks:
