@@ -1,6 +1,6 @@
 Search for and analyze data in real time. 
 Supports version 6 and later.
-This integration was integrated and tested with versions 7.3, 8.4.1 of Elasticsearch.
+This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
 
 ## Permissions
 
