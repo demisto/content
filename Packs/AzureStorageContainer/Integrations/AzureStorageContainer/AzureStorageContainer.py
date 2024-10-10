@@ -1051,6 +1051,7 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
             readable_output=f"Public access to container '{container_name}' has been successfully blocked",
         )
         return command_results
+    
 
 def test_module(client: Client) -> None:
     """
