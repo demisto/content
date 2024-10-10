@@ -1,6 +1,6 @@
-fromversion: 6.10.0
-id: jamf_modeling_rule
-name: Jamf Modeling Rule
+fromversion: 8.4.0
+id: jamf_ModelingRule
+name: jamf Modeling Rule
 rules: ''
 schema: ''
 tags: jamf
