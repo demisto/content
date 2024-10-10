@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from datetime import timezone
+from datetime import UTC, datetime
 import random
 
 import dateparser
@@ -74,7 +74,7 @@ def parser(
     assert isinstance(
         date_obj, datetime
     ), f"Could not parse date {date_str}"  # MYPY Fix
-    return date_obj.replace(tzinfo=timezone.utc)
+    return date_obj.replace(tzinfo=UTC)
 
 
 def get_token_soap_request(user, password, instance, domain=None):
@@ -1708,14 +1708,14 @@ def fetch_incidents(
     # Build incidents
     incidents = []
     # Encountered that sometimes, somehow, on of next_fetch is not UTC.
-    last_fetch_time = from_time.replace(tzinfo=timezone.utc)
+    last_fetch_time = from_time.replace(tzinfo=UTC)
     next_fetch = last_fetch_time
     for record in records:
         incident, incident_created_time = client.record_to_incident(
             record, app_id, fetch_param_id
         )
         # Encountered that sometimes, somehow, incident_created_time is not UTC.
-        incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
+        incident_created_time = incident_created_time.replace(tzinfo=UTC)
         if last_fetch_time < incident_created_time:
             incidents.append(incident)
             if next_fetch < incident_created_time:
@@ -1743,7 +1743,7 @@ def get_fetch_time(last_fetch: dict, first_fetch_time: str) -> datetime:
         start_fetch = parser(next_run)
     else:
         start_fetch, _ = parse_date_range(first_fetch_time)
-    start_fetch.replace(tzinfo=timezone.utc)
+    start_fetch.replace(tzinfo=UTC)
     return start_fetch
 
 
