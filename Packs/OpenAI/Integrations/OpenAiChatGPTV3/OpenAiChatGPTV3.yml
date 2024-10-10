@@ -1,7 +1,7 @@
 category: Messaging and Conferencing
 name: OpenAi ChatGPT v3
 display: OpenAI GPT
-description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
+description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities
 commonfields:
   id: OpenAi ChatGPT v3
   version: -1
@@ -77,18 +77,18 @@ configuration:
 
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
-  required: false
+  type: 9
+  required: true
 
 - display: Use system proxy settings
   name: proxy
-  type: 8
-  required: false
+  type: 7
+  required: true
 
 script:
   commands:
   - name: gpt-send-message
-    description: Send a plain message to the selected GPT model and receive the generated response.
+    description: Send a plain message to the selected GPT model and receive the generated response
     arguments:
     - name: message
       required: true
@@ -96,7 +96,8 @@ script:
 
     - name: reset_conversation_history
       required: false
-      description: Whether to keep previously sent messages in a conversation context or start a new conversation.
+      description: Whether to keep previously sent messages in a conversation context or start a new
+        conversation
       predefined:
       - "yes"
       - "no"

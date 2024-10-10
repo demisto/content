@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: HelloWorld
+  id: HelloWorld TEST VALIDATE
   version: -1
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -22,6 +22,7 @@ configuration:
   section: Collect
   required: false
 - defaultvalue: https://api.xsoar-example.com
+  deprecated: true
   display: Server URL (e.g., https://api.xsoar-example.com)
   name: url
   required: true
@@ -75,7 +76,7 @@ configuration:
   section: Collect
   required: false
 - display: Trust any certificate (not secure)
-  name: insecure
+  name: ''
   type: 8
   section: Connect
   advanced: true
@@ -86,25 +87,20 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: This is the Hello World integration for getting started.
-display: HelloWorld
-name: HelloWorld
+display: HelloWorld TEST VALIDATE
+name: HelloWorld TEST VALIDATE
 script:
   commands:
   - arguments:
-    - description: The name of whom you want to say hello to.
-      name: name
+    - name: name
     description: Hello command - prints hello to anyone.
     name: helloworld-say-hello
     outputs:
     - contextPath: hello
-      description: Should be Hello **something** here.
       type: String
   - arguments:
-    - description: Filter by alert item ID. If not provided, all IDs will be retrieved.
-      name: alert_id
-    - description: How many alerts to fetch. Default is 10.
-      name: limit
+    - name: alert_id
+    - name: limit
     - description: The severity by which to filter the alerts.
       name: severity
     description: Lists the example alerts as it would be fetched from the API.
@@ -284,13 +280,13 @@ script:
     - contextPath: IP.Relationships.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: IP.Relationships.EntityAType
+    - contextPath: ''
       description: The type of the source of the relationship.
       type: string
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.10.12.96411
   isfetch: true
   runonce: false
   script: '-'
@@ -298,6 +294,6 @@ script:
   type: python
 defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
-fromversion: 6.8.0
+fromversion: 4.5.0
 tests:
 - No tests (auto formatted)
