@@ -3343,6 +3343,30 @@ def test_get_ioc_device_count_command_exists(requests_mock):
     assert result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID'] == 'md5:testmd5'
 
 
+def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
+    """
+    Test cs-falcon-device-count-ioc with rate limit exceeded
+
+    Given
+    - There is a rate limit in CS side
+    When
+    - The user is running cs-falcon-device-count-ioc with md5:testmd5
+    Then
+    - ensure the rate limit message is returned
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+    response = {'resources': [{'id': 'md5:testmd5', 'type': 'md5',
+                               'value': 'testmd5', 'limit_exceeded': 'true', 'device_count': 1}]}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/aggregates/devices-count/v1',
+        json=response,
+        status_code=200,
+    )
+    res = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
+
+    assert 'rate limit exceeded in CrowdStrike API' in res
+
+
 def test_get_process_details_command_not_exists(requests_mock, mocker):
     """
     Test cs-falcon-process-details with an unsuccessful query (doesn't exist)
