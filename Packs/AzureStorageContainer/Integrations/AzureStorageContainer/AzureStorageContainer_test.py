@@ -297,7 +297,7 @@ def test_azure_storage_block_public_access_command(mocker, requests_mock):
     from AzureStorageContainer import Client, block_public_access_command
     params = {
         'shared_key': {'password': SHARED_KEY},
-        'credentials': {'identifier': 'test_storage_account_name'}
+        'credentials': {'identifier': ACCOUNT_NAME}
     }
     mocker.patch.object(demisto, 'params', return_value=params)
     container_name = "test"
