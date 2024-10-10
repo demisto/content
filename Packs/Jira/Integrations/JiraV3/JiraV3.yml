@@ -1624,7 +1624,7 @@ script:
     - contextPath: Jira.IssueType.Scope.project.projectCategory.name
       description: The description of the project category.
       type: String
-  - name: jira-create-metadata-field-get
+  - name: jira-create-metadata-field-list
     arguments:
     - name: project_id_or_key
       required: true

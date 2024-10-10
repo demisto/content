@@ -4495,7 +4495,7 @@ def main():  # pragma: no cover
         'jira-issue-delete-file': delete_attachment_file_command,
         'jira-issue-get-forms': issue_get_forms_command,
         'jira-get-user-info': get_user_info_command,
-        'jira-create-metadata-field-get': get_create_metadata_field_command,
+        'jira-create-metadata-field-list': get_create_metadata_field_command,
         'jira-create-metadata-issue-types-list': get_create_metadata_issue_types_command
     }
     try:

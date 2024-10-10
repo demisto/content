@@ -3108,46 +3108,6 @@ In the *jira-get-issue* command:
 * *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
 
 
-### jira-create-metadata-field-get
-
-***
-Returns a page of field metadata for a specified project and issue type.
-
-#### Base Command
-
-`jira-create-metadata-field-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id_or_key | The ID of Key of the project. | Required | 
-| issue_type_id | The issue type ID. | Required | 
-| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
-| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Jira.IssueField.AllowedValues | Array | The list of values allowed in the field. | 
-| Jira.IssueField.AutoCompleteUrl | String | The URL that can be used to automatically complete the field. | 
-| Jira.IssueField.Configuration | Object | The configuration properties. | 
-| Jira.IssueField.DefaultValue | String | The default value of the field. | 
-| Jira.IssueField.FieldID | String | The field id. | 
-| Jira.IssueField.HasDefaultValue | Boolean | Whether the field has a default value. | 
-| Jira.IssueField.Key | String | The key of the field. | 
-| Jira.IssueField.Name | String | The name of the field. | 
-| Jira.IssueField.Operations | Array | The list of operations that can be performed on the field. | 
-| Jira.IssueField.Required | Boolean | Whether the field is required. | 
-| Jira.IssueField.Schema | Object | The data type for the field. | 
-| Jira.IssueField.Schema.type | String | The data type of the field. | 
-| Jira.IssueField.Schema.items | String | When the data type is an array, the name of the field items within the array. | 
-| Jira.IssueField.Schema.system | String | If the field is a system field, the name of the field. | 
-| Jira.IssueField.Schema.custom | String | If the field is a custom field, the URI of the field. | 
-| Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
-| Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
-
 ### jira-create-metadata-issue-types-list
 
 ***
@@ -3193,4 +3153,44 @@ Returns a page of issue type metadata for a specified project.
 | Jira.IssueType.Scope.project.projectCategory.id | String | The ID of the project category. | 
 | Jira.IssueType.Scope.project.projectCategory.description | String | The name of the project category. | 
 | Jira.IssueType.Scope.project.projectCategory.name | String | The description of the project category. | 
+
+### jira-create-metadata-field-list
+
+***
+Returns a page of field metadata for a specified project and issue type.
+
+#### Base Command
+
+`jira-create-metadata-field-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id_or_key | The ID of Key of the project. | Required | 
+| issue_type_id | The issue type ID. | Required | 
+| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
+| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.IssueField.AllowedValues | Array | The list of values allowed in the field. | 
+| Jira.IssueField.AutoCompleteUrl | String | The URL that can be used to automatically complete the field. | 
+| Jira.IssueField.Configuration | Object | The configuration properties. | 
+| Jira.IssueField.DefaultValue | String | The default value of the field. | 
+| Jira.IssueField.FieldID | String | The field id. | 
+| Jira.IssueField.HasDefaultValue | Boolean | Whether the field has a default value. | 
+| Jira.IssueField.Key | String | The key of the field. | 
+| Jira.IssueField.Name | String | The name of the field. | 
+| Jira.IssueField.Operations | Array | The list of operations that can be performed on the field. | 
+| Jira.IssueField.Required | Boolean | Whether the field is required. | 
+| Jira.IssueField.Schema | Object | The data type for the field. | 
+| Jira.IssueField.Schema.type | String | The data type of the field. | 
+| Jira.IssueField.Schema.items | String | When the data type is an array, the name of the field items within the array. | 
+| Jira.IssueField.Schema.system | String | If the field is a system field, the name of the field. | 
+| Jira.IssueField.Schema.custom | String | If the field is a custom field, the URI of the field. | 
+| Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
+| Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
 
