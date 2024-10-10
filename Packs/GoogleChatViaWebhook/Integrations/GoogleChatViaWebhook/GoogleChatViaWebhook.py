@@ -121,17 +121,10 @@ def send_google_chat_message_command(client: Client, message: str, threadName: O
     """
     res = client.send_google_chat_message(message=message, threadName=threadName)
     result = {
-        'Message': res.get('text'),
-        'SpaceName': res.get('space').get('name'),
-        'SpaceDisplayName': res.get('space').get('displayName'),
-        'SpaceType': res.get('space').get('type'),
-        'CreatedTime': res.get('createTime'),
-        'ThreadReply': res.get('threadReply', False),
-        'ThreadName': res.get('thread').get('name'),
         'Name': res.get('name'),
-        'SenderDisplayName': res.get('sender').get('displayName'),
-        'SenderName': res.get('sender').get('name'),
-        'SenderType': res.get('sender').get('type')
+        'Message': res.get('text'),
+        'ThreadName': res.get('thread').get('name'),
+        'Space': res.get('space').get('name')
     }
     markdown = '### Google Chat\n'
     markdown += tableToMarkdown('Message Webhook', result)
@@ -159,16 +152,9 @@ def send_google_chat_custom_card_command(client: Client, blocks: str, threadName
     """
     res = client.send_google_chat_custom_card(blocks=blocks, threadName=threadName)
     result = {
-        'SpaceName': res.get('space').get('name'),
-        'SpaceDisplayName': res.get('space').get('displayName'),
-        'SpaceType': res.get('space').get('type'),
-        'CreatedTime': res.get('createTime'),
-        'ThreadReply': res.get('threadReply', False),
-        'ThreadName': res.get('thread').get('name'),
         'Name': res.get('name'),
-        'SenderDisplayName': res.get('sender').get('displayName'),
-        'SenderName': res.get('sender').get('name'),
-        'SenderType': res.get('sender').get('type')
+        'ThreadName': res.get('thread').get('name'),
+        'Space': res.get('space').get('name')
     }
     markdown = '### Google Chat\n'
     markdown += tableToMarkdown('Custom Card Webhook', result)
