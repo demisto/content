@@ -79,7 +79,7 @@ script:
     - name: to_accepted_date_time
       description: ' The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''from_accepted_date_time''  as well to set the complete date range for the search.'
     - name: rejection_reason
-      description: 'list of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). '
+      description: 'List of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). '
     - name: sender_ip
       description: List of sender IP addresses, max limit of entries is 10.
     - name: status
