@@ -1,6 +1,5 @@
-id: 92eb37ab-8999-4a46-8a88-17bff8fe9731
-version: 72
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM Multi-Cloud Risk Remediation
+version: -1
 name: DSPM Multi-Cloud Risk Remediation
 description: The playbook ensures efficient incident resolution and compliance with
   security policies by guiding the user through decision points based on incident
@@ -18,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -83,6 +83,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'The DSPMExtractRiskDetails script extracts details from DSPM incident'
     nexttasks:
       '#none#':
       - "35"
@@ -162,6 +163,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Remove slack block list from XSOAR LIST'
     nexttasks:
       '#none#':
       - "60"
@@ -419,6 +421,11 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: "The Send Slack Notification to User sub-playbook is designed as a sub-playbook to notify users via Slack and manage their responses.
+       It utilizes the SlackBlockBuilder script to send a message to a specified email and then waits for 
+       the user's reply within a configured timeout(set in Prisma Cloud DSPM Intance). 
+       Once a response is received, it is added to the incident context for further processing.
+       If an error occurs, the incident is flagged for a re-run."
     nexttasks:
       '#none#':
       - "61"
@@ -455,6 +462,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Add the incident to IncidentList for re-run.'
     nexttasks:
       '#none#':
       - "28"
@@ -491,6 +499,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Delete incident from INCIDENT LIST.'
     nexttasks:
       '#none#':
       - "9"
@@ -526,6 +535,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: This is a conditional task that verifies the user's action.
     nexttasks:
       Invalid response:
       - "62"
@@ -596,6 +606,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: 'This task handles invalid user responses.'
     nexttasks:
       '#none#':
       - "63"
@@ -715,6 +726,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'This task checks the user reponse and perform the action accordingly'
     nexttasks:
       Invalid response:
       - "64"
@@ -785,6 +797,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: "This task handles the user's valid response."
     nexttasks:
       '#none#':
       - "28"
@@ -862,42 +875,15 @@ view: |-
       }
     }
   }
-inputs:
-- key: Incident Name
-  value:
-    simple: ${incident.name}
-  required: true
-  description: ""
-  playbookInputQuery: null
-- key: Project Key
-  value:
-    simple: ${incident.jiraproject}
-  required: false
-  description: ""
-  playbookInputQuery: null
-- key: Summary
-  value:
-    simple: ${incident.jirasummary}
-  required: false
-  description: ""
-  playbookInputQuery: null
-- key: Issue Type
-  value:
-    simple: ${incident.jiraissuetype}
-  required: false
-  description: ""
-  playbookInputQuery: null
-- key: Issue Description
-  value:
-    simple: ${incident.jiradescription}
-  required: false
-  description: ""
-  playbookInputQuery: null
-- key: Action
-  value:
-    simple: ${incident.action}
-  required: true
-  description: ""
-  playbookInputQuery: null
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
+fromversion: 6.0.0

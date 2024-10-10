@@ -1,7 +1,6 @@
-id: e0f37ddb-21de-40f7-89cf-58d51ac7f00f
-version: 15
-vcShouldKeepItemLegacyProdMachine: false
-name: DSPM Remediation playbook for Empty storage asset
+id: DSPM Remediation for Empty storage asset
+version: -1
+name: DSPM Remediation for Empty storage asset
 description: This playbook is designed to remediate risks associated with empty storage
   assets across AWS, Azure, and GCP environments. It identifies the cloud provider
   for the asset and proceeds to delete the storage container or bucket accordingly.
@@ -19,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -466,6 +466,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: 'Add the incident to IncidentList for re-run.'
     scriptarguments:
       incident_data:
         simple: ${incident_object}
@@ -500,3 +501,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: c7f9a77b-18e3-45ca-8307-b39035938abe
+fromversion: 6.0.0
