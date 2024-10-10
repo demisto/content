@@ -90,7 +90,7 @@ tasks:
       - "170"
     scriptarguments:
       brandname:
-        simple: FireEye Endpoint Security (HX) v2
+        simple: FireEyeHX v2
     results:
     - brandInstances
     separatecontext: false
@@ -1415,17 +1415,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Name
+                  simple: FireEyeHX.Search.results.data.File Name
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Full Path
+                  simple: FireEyeHX.Search.results.data.File Full Path
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File MD5 Hash
+                  simple: FireEyeHX.Search.results.data.File MD5 Hash
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -1476,17 +1476,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Name
+                  simple: FireEyeHX.Search.results.data.File Name
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Full Path
+                  simple: FireEyeHX.Search.results.data.File Full Path
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File MD5 Hash
+                  simple: FireEyeHX.Search.results.data.File MD5 Hash
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -1592,17 +1592,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Name
+                  simple: FireEyeHX.Search.results.data.File Name
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Full Path
+                  simple: FireEyeHX.Search.results.data.File Full Path
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File MD5 Hash
+                  simple: FireEyeHX.Search.results.data.File MD5 Hash
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -1653,17 +1653,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Name
+                  simple: FireEyeHX.Search.results.data.File Name
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Full Path
+                  simple: FireEyeHX.Search.results.data.File Full Path
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File MD5 Hash
+                  simple: FireEyeHX.Search.results.data.File MD5 Hash
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -1714,17 +1714,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Name
+                  simple: FireEyeHX.Search.results.data.File Name
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Full Path
+                  simple: FireEyeHX.Search.results.data.File Full Path
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File MD5 Hash
+                  simple: FireEyeHX.Search.results.data.File MD5 Hash
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -1775,17 +1775,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Name
+                  simple: FireEyeHX.Search.results.data.File Name
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Full Path
+                  simple: FireEyeHX.Search.results.data.File Full Path
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File MD5 Hash
+                  simple: FireEyeHX.Search.results.data.File MD5 Hash
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -1836,17 +1836,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Name
+                  simple: FireEyeHX.Search.results.data.File Name
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File Full Path
+                  simple: FireEyeHX.Search.results.data.File Full Path
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.File MD5 Hash
+                  simple: FireEyeHX.Search.results.data.File MD5 Hash
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""

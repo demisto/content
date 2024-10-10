@@ -149,7 +149,7 @@ tasks:
       - "155"
     scriptarguments:
       brandname:
-        simple: FireEye Endpoint Security (HX) v2
+        simple: FireEyeHX v2
     results:
     - brandInstances
     separatecontext: false
@@ -989,7 +989,7 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.IP Address
+                  simple: FireEyeHX.Search.results.data.IP Address
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -1040,17 +1040,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Port
+                  simple: FireEyeHX.Search.results.data.Port
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Remote Port
+                  simple: FireEyeHX.Search.results.data.Remote Port
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Local Port
+                  simple: FireEyeHX.Search.results.data.Local Port
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
@@ -1101,17 +1101,17 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Port
+                  simple: FireEyeHX.Search.results.data.Port
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Remote Port
+                  simple: FireEyeHX.Search.results.data.Remote Port
                 iscontext: true
             - operator: isNotEmpty
               left:
                 value:
-                  simple: FireEyeHX.Search.results.Local Port
+                  simple: FireEyeHX.Search.results.data.Local Port
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""
