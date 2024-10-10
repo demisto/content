@@ -192,7 +192,7 @@ tasks:
       - "26"
     scriptarguments:
       id:
-        simple: ${incident.labels.id}
+        simple: ${incident.code42alertid}
       state:
         simple: CLOSED_FP
     separatecontext: false
@@ -1045,7 +1045,7 @@ tasks:
       - "26"
     scriptarguments:
       id:
-        simple: ${incident.labels.id}
+        simple: ${incident.code42alertid}
       state:
         simple: CLOSED_TP
     separatecontext: false
