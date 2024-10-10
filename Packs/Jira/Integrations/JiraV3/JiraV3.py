@@ -632,6 +632,54 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             resp_type='response',
         )
 
+    def get_create_metadata_issue_types(self, project_id_or_key: str, start_at: int = 0, max_results: int = 50) -> Dict[str, Any]:
+        """This method is in charge of returning the issue types for a project.
+
+        Args:
+            project_id_or_key (str): The id or key of the project to return.
+            start_at (int, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the issue types.
+        """
+
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results
+        )
+
+        return self.http_request(
+            method="GET",
+            url_suffix=f"rest/api/{self.api_version}/issue/createmeta/{project_id_or_key}/issuetypes",
+            params=query_params
+        )
+
+    def get_create_metadata_field(self, project_id_or_key: str, issue_type_id: str, start_at: int = 0,
+                                  max_results: int = 50) -> Dict[str, Any]:
+        """This method is in charge of returning the fields for a project issue type.
+
+        Args:
+            project_id_or_key (str): The id or key of the project to return.
+            issue_type_id (str): The id of the issue type.
+            start_at (int, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the fields.
+        """
+
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results
+        )
+
+        return self.http_request(
+            method="GET",
+            url_suffix=f"rest/api/{self.api_version}/issue/createmeta/{project_id_or_key}/issuetypes/{issue_type_id}",
+            params=query_params
+        )
+
     def update_assignee(self, issue_id_or_key: str, assignee_body: Dict[str, Any]) -> requests.Response:
         """This method is in charge of assigning an assignee to a specific issue.
 
@@ -2014,6 +2062,124 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
                                                 headerTransform=pascalToSpace),
                 raw_response=response
             ))
+    return command_results
+
+
+def get_create_metadata_issue_types_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the metadata of a specific project.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    project_id_or_key = args.get('project_id_or_key', '')
+    start_at = args.get('start_at', 0)
+    max_results = args.get('max_results', 50)
+
+    if not project_id_or_key:
+        raise ValueError("No project_id_or_key specified for jira-create-metadata-issue-types-list")
+
+    res = client.get_create_metadata_issue_types(
+        project_id_or_key=project_id_or_key,
+        start_at=start_at,
+        max_results=max_results
+    )
+
+    outputs = []
+    for result in res.get('values', []):
+        outputs.append(
+            {
+                "AvatarID": result.get('avatarId'),
+                "Description": result.get('description'),
+                "EntityID": result.get('entityId'),
+                "Expand": result.get('expand'),
+                "IconURL": result.get('iconUrl'),
+                "ID": result.get('id'),
+                "Name": result.get('name'),
+                "Self": result.get('self'),
+                "Subtask": result.get('subtask'),
+                "Scope": result.get('scope'),
+            }
+        )
+
+    command_results = CommandResults(
+        outputs_prefix="Jira.IssueType",
+        outputs=outputs,
+        outputs_key_field="ID",
+        raw_response=res,
+        readable_output=tableToMarkdown(
+            name=f"Issue types for project {project_id_or_key}",
+            t=outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+    )
+
+    return command_results
+
+
+def get_create_metadata_field_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the field metadata of a specific project and issue type.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    project_id_or_key = args.get('project_id_or_key', '')
+    issue_type_id = args.get('issue_type_id', '')
+    start_at = args.get('start_at', 0)
+    max_results = args.get('max_results', 50)
+
+    if not project_id_or_key:
+        raise ValueError("No project_id_or_key specified for jira-create-metadata-field-list")
+
+    if not issue_type_id:
+        raise ValueError("No issue_type_id specified for jira-create-metadata-field-list")
+
+    res = client.get_create_metadata_field(
+        project_id_or_key=project_id_or_key,
+        issue_type_id=issue_type_id,
+        start_at=start_at,
+        max_results=max_results
+    )
+
+    outputs = []
+    for result in res.get('values', []):
+        outputs.append(
+            {
+                "AllowedValues": result.get('allowedValues'),
+                "AutoCompleteURL": result.get('autoCompleteUrl'),
+                "Configuration": result.get('configuration'),
+                "DefaultValue": result.get('defaultValue'),
+                "FieldID": result.get('fieldId'),
+                "HasDefaultValue": result.get('hasDefaultValue'),
+                "Key": result.get('key'),
+                "Operations": result.get('operations'),
+                "Required": result.get('required'),
+                "Schema": result.get('schema'),
+                "Name": result.get('name'),
+            }
+        )
+
+    command_results = CommandResults(
+        outputs_prefix="Jira.IssueField",
+        outputs=outputs,
+        outputs_key_field="FieldID",
+        raw_response=res,
+        readable_output=tableToMarkdown(
+            name=f"Issue fields for project {project_id_or_key} and issue type {issue_type_id}",
+            t=outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True
+        )
+    )
+
     return command_results
 
 
@@ -4329,6 +4495,8 @@ def main():  # pragma: no cover
         'jira-issue-delete-file': delete_attachment_file_command,
         'jira-issue-get-forms': issue_get_forms_command,
         'jira-get-user-info': get_user_info_command,
+        'jira-create-metadata-field-list': get_create_metadata_field_command,
+        'jira-create-metadata-issue-types-list': get_create_metadata_issue_types_command
     }
     try:
         client: JiraBaseClient
