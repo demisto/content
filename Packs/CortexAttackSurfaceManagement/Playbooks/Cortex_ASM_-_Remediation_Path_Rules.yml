@@ -1891,7 +1891,7 @@ tasks:
       key:
         simple: remediationattacksurfacerules
       value:
-        simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack,TftpServer,InsecureSFTPGo,InsecureBitviseSSHServer,Libssh
+        simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer,SSHTerrapinAttack,TftpServer,InsecureSFTPGo,InsecureBitviseSSHServer,Libssh,RpcBindServer,SmbServer,KubernetesControlPlaneComponent,NfsRpcBindServer,NetBiosNameServer,LDAPServer
     separatecontext: false
     continueonerrortype: ""
     view: |-
