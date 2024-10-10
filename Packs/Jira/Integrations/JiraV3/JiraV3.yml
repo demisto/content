@@ -1543,7 +1543,7 @@ script:
     arguments:
     - name: project_id_or_key
       required: true
-      description: The ID or the Key of the project.
+      description: The ID or key of the project.
     - name: start_at
       description: The index of the first item to return in a page of results (page offset).
       defaultValue: "0"
