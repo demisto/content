@@ -54,312 +54,19 @@ types-PyYAML = "6.0.12.20240311"
 types-emoji = "2.1.0.3"
 
 [tool.ruff]
+fix = true
+extend-exclude = ["CommonServerPython", "test_data", "conftest.py", "demistomock.py"]
+line-length = 130
+target-version = "py310"
+src = [
+    "Packs/Base/Scripts/CommonServerPython",
+    "Tests/demistomock",
+    "Packs/ApiModules/Scripts/*",
+]
+
+[tool.ruff.lint]
 select = [
-    "B002", # unary-prefix-increment
-    "B003", # assignment-to-os-environ
-    "B004", # unreliable-callable-check
-    "B005", # strip-with-multi-characters
-    "B007", # unused-loop-control-variable
-    "B009", # get-attr-with-constant
-    "B010", # set-attr-with-constant
-    "B011", # assert-false
-    "B013", # redundant-tuple-in-exception-handler
-    "B014", # duplicate-handler-exception
-    "B015", # useless-comparison
-    "B016", # cannot-raise-literal
-    "B018", # useless-expression
-    "B020", # loop-variable-overrides-iterator
-    "B021", # f-string-docstring
-    "B022", # useless-contextlib-suppress
-    "B023", # function-uses-loop-variable
-    "B025", # duplicate-try-block-exception
-    "B027", # empty-method-without-abstract-decorator
-    "B028", # no-explicit-stacklevel
-    "B029", # except-with-empty-tuple
-    "B030", # except-with-non-exception-classes
-    "B031", # reuse-of-groupby-generator
-    "B032", # unintentional-type-annotation
-
-    "C400", # unnecessary-generator-list
-    "C401", # unnecessary-generator-set
-    "C402", # unnecessary-generator-dict
-    "C403", # unnecessary-list-comprehension-set
-    "C404", # unnecessary-list-comprehension-dict
-    "C405", # unnecessary-literal-set
-    "C406", # unnecessary-literal-dict
-    "C408", # unnecessary-collection-call
-    "C409", # unnecessary-literal-within-tuple-call
-    "C410", # unnecessary-literal-within-list-call
-    "C411", # unnecessary-list-call
-    "C413", # unnecessary-call-around-sorted
-    "C414", # unnecessary-double-cast-or-process
-    "C415", # unnecessary-subscript-reversal
-    "C416", # unnecessary-comprehension
-    "C417", # unnecessary-map
-    "C418", # unnecessary-literal-within-dict-call
-    "C419", # unnecessary-comprehension-any-all
-
-    "E101", # mixed-spaces-and-tabs
-    "E401", # multiple-imports-on-one-line
-    "E501", # line-too-long
-    "E701", # multiple-statements-on-one-line-colon
-    "E702", # multiple-statements-on-one-line-semicolon
-    "E703", # useless-semicolon
-    "E711", # none-comparison
-    "E712", # true-false-comparison
-    "E713", # not-in-test
-    "E714", # not-is-test
-    "E721", # type-comparison
-    "E722", # bare-except
-    "E731", # lambda-assignment
-    "E741", # ambiguous-variable-name
-    "E742", # ambiguous-class-name
-    "E743", # ambiguous-function-name
-    "E902", # io-error
-    "E999", # syntax-error
-
-    "F401", # unused-import
-    "F402", # import-shadowed-by-loop-var
-    "F404", # late-future-import
-    "F406", # undefined-local-with-nested-import-star-usage
-    "F407", # future-feature-not-defined
-    "F501", # percent-format-invalid-format
-    "F502", # percent-format-expected-mapping
-    "F503", # percent-format-expected-sequence
-    "F504", # percent-format-extra-named-arguments
-    "F505", # percent-format-missing-argument
-    "F506", # percent-format-mixed-positional-and-named
-    "F507", # percent-format-positional-count-mismatch
-    "F508", # percent-format-star-requires-sequence
-    "F509", # percent-format-unsupported-format-character
-    "F521", # string-dot-format-invalid-format
-    "F522", # string-dot-format-extra-named-arguments
-    "F523", # string-dot-format-extra-positional-arguments
-    "F524", # string-dot-format-missing-arguments
-    "F525", # string-dot-format-mixing-automatic
-    "F541", # f-string-missing-placeholders
-    "F601", # multi-value-repeated-key-literal
-    "F602", # multi-value-repeated-key-variable
-    "F621", # expressions-in-star-assignment
-    "F622", # multiple-starred-expressions
-    "F631", # assert-tuple
-    "F632", # is-literal
-    "F633", # invalid-print-syntax
-    "F634", # if-tuple
-    "F701", # break-outside-loop
-    "F702", # continue-outside-loop
-    "F704", # yield-outside-function
-    "F706", # return-outside-function
-    "F707", # default-except-not-last
-    "F722", # forward-annotation-syntax-error
-    "F811", # redefined-while-unused
-    "F821", # undefined-name
-    "F822", # undefined-export
-    "F823", # undefined-local
-    "F841", # unused-variable
-    "F842", # unused-annotation
-    "F901", # raise-not-implemented
-
-    "G010", # logging-warn
-    "G101", # logging-extra-attr-clash
-    "G201", # logging-exc-info
-    "G202", # logging-redundant-exc-info
-
-    "ISC001", # single-line-implicit-string-concatenation
-
-    "N804", # invalid-first-argument-name-for-class-method
-    "N805", # invalid-first-argument-name-for-method
-    "N807", # dunder-function-name
-    "N999", # invalid-module-name
-
-    "NPY001", # numpy-deprecated-type-alias
-
-    "PD002", # pandas-use-of-inplace-argument
-    "PD007", # pandas-use-of-dot-ix
-    "PD008", # pandas-use-of-dot-at
-    "PD009", # pandas-use-of-dot-iat
-    "PD010", # pandas-use-of-dot-pivot-or-unstack
-    "PD012", # pandas-use-of-dot-read-table
-    "PD013", # pandas-use-of-dot-stack
-    "PD015", # pandas-use-of-pd-merge
-
-    "PGH001", # eval
-    "PGH002", # deprecated-log-warn
-
-    "PIE790", # unnecessary-pass
-    "PIE794", # duplicate-class-field-definition
-    "PIE796", # non-unique-enums
-    "PIE807", # reimplemented-list-builtin
-    "PIE810", # multiple-starts-ends-with
-
-    "PLC0414", # useless-import-alias
-    "PLC3002", # unnecessary-direct-lambda-call
-
-    "PLE0100", # yield-in-init
-    "PLE0101", # return-in-init
-    "PLE0116", # continue-in-finally
-    "PLE0117", # nonlocal-without-binding
-    "PLE0118", # load-before-global-declaration
-    "PLE0302", # unexpected-special-method-signature
-    "PLE0604", # invalid-all-object
-    "PLE0605", # invalid-all-format
-    "PLE1142", # await-outside-async
-    "PLE1205", # logging-too-many-args
-    "PLE1206", # logging-too-few-args
-    "PLE1307", # bad-string-format-type
-    "PLE1310", # bad-str-strip-call
-    "PLE1507", # invalid-envvar-value
-    "PLE2502", # bidirectional-unicode
-    "PLE2510", # invalid-character-backspace
-    "PLE2512", # invalid-character-sub
-    "PLE2513", # invalid-character-esc
-    "PLE2514", # invalid-character-nul
-    "PLE2515", # invalid-character-zero-width-space
-
-    "PLR0133", # comparison-of-constant
-    "PLR0206", # property-with-parameters
-    "PLR0402", # manual-from-import
-    "PLR1701", # repeated-isinstance-calls
-    "PLR1711", # useless-return
-    "PLR1722", # sys-exit-alias
-
-    "PLW0120", # useless-else-on-loop
-    "PLW0129", # assert-on-string-literal
-    "PLW0711", # binary-op-exception
-    "PLW1508", # invalid-envvar-default
-
-    "PT009", # pytest-unittest-assertion
-    "PT010", # pytest-raises-without-exception
-    "PT013", # pytest-incorrect-pytest-import
-    "PT015", # pytest-assert-always-false
-    "PT018", # pytest-composite-assertion
-    "PT022", # pytest-useless-yield-fixture
-    "PT024", # pytest-unnecessary-asyncio-mark-on-fixture
-    "PT025", # pytest-erroneous-use-fixtures-on-fixture
-    "PT026", # pytest-use-fixtures-without-parameters
-
-    "PTH102", # os-mkdir
-    "PTH105", # pathlib-replace
-    "PTH106", # os-rmdir
-    "PTH114", # os-path-islink
-    "PTH115", # os-readlink
-    "PTH116", # os-stat
-    "PTH117", # os-path-isabs
-    "PTH121", # os-path-samefile
-    "PTH124", # py-path
-
-    "RET501", # unnecessary-return-none
-    "RET502", # implicit-return-value
-    "RET503", # implicit-return
-    "RET508", # superfluous-else-break
-
-    "RSE102", # unnecessary-paren-on-raise-exception
-
-    "RUF001", # ambiguous-unicode-character-string
-    "RUF006", # asyncio-dangling-task
-    "RUF007", # pairwise-over-zipped
-    "RUF008", # mutable-dataclass-default
-    "RUF009", # function-call-in-dataclass-default-argument
-
-    "S102", # exec-builtin
-    "S103", # bad-file-permissions
-    "S302", # suspicious-marshal-usage
-    "S306", # suspicious-mktemp-usage
-    "S307", # suspicious-eval-usage
-    "S312", # suspicious-telnet-usage
-    "S313", # suspicious-xmlc-element-tree-usage
-    "S315", # suspicious-xml-expat-reader-usage
-    "S316", # suspicious-xml-expat-builder-usage
-    "S317", # suspicious-xml-sax-usage
-    "S319", # suspicious-xml-pull-dom-usage
-    "S321", # suspicious-ftp-lib-usage
-    "S323", # suspicious-unverified-context-usage
-    "S506", # unsafe-yaml-load
-    "S508", # snmp-insecure-version
-    "S509", # snmp-weak-cryptography
-    "S602", # subprocess-popen-with-shell-equals-true
-    "S604", # call-with-shell-equals-true
-    "S605", # start-process-with-a-shell
-    "S606", # start-process-with-no-shell
-    "S612", # logging-config-insecure-listen
-    "S701", # jinja2-autoescape-false
-
-    "SIM101", # duplicate-isinstance-call
-    "SIM102", # collapsible-if
-    "SIM103", # needless-bool
-    "SIM107", # return-in-try-except-finally
-    "SIM109", # compare-with-tuple
-    "SIM110", # reimplemented-builtin
-    "SIM117", # multiple-with-statements
-    "SIM118", # in-dict-keys
-    "SIM201", # negate-equal-op
-    "SIM202", # negate-not-equal-op
-    "SIM208", # double-negation
-    "SIM210", # if-expr-with-true-false
-    "SIM211", # if-expr-with-false-true
-    "SIM212", # if-expr-with-twisted-arms
-    "SIM220", # expr-and-not-expr
-    "SIM221", # expr-or-not-expr
-    "SIM222", # expr-or-true
-    "SIM223", # expr-and-false
-    "SIM300", # yoda-conditions
-    "SIM401", # if-else-block-instead-of-dict-get
-    "SIM910", # dict-get-with-none-default
-
-    "T201", # print
-    "T203", # p-print
-
-    "TID252", # relative-imports
-
-    "UP001", # useless-metaclass-type
-    "UP003", # type-of-primitive
-    "UP004", # useless-object-inheritance
-    "UP005", # deprecated-unittest-alias
-    "UP006", # non-pep585-annotation
-    "UP007", # non-pep604-annotation
-    "UP008", # super-call-with-parameters
-    "UP009", # utf8-encoding-declaration
-    "UP010", # unnecessary-future-import
-    "UP011", # lru-cache-without-parameters
-    "UP012", # unnecessary-encode-utf8
-    "UP013", # convert-typed-dict-functional-to-class
-    "UP014", # convert-named-tuple-functional-to-class
-    "UP015", # redundant-open-modes
-    "UP017", # datetime-timezone-utc
-    "UP018", # native-literals
-    "UP019", # typing-text-str-alias
-    "UP020", # open-alias
-    "UP021", # replace-universal-newlines
-    "UP022", # replace-stdout-stderr
-    "UP023", # deprecated-c-element-tree
-    "UP024", # os-error-alias
-    "UP025", # unicode-kind-prefix
-    "UP026", # deprecated-mock-import
-    "UP027", # unpacked-list-comprehension
-    "UP028", # yield-in-for-loop
-    "UP029", # unnecessary-builtin-import
-    "UP030", # format-literals
-    "UP031", # printf-string-formatting
-    "UP032", # f-string
-    "UP033", # lru-cache-with-maxsize-none
-    "UP034", # extraneous-parentheses
-    "UP035", # deprecated-import
-    "UP036", # outdated-version-block
-    "UP037", # quoted-annotation
-    "UP038", # non-pep604-isinstance
-
-    "W291", # trailing-whitespace
-
-    "YTT101", # sys-version-slice3
-    "YTT102", # sys-version2
-    "YTT103", # sys-version-cmp-str3
-    "YTT201", # sys-version-info0-eq3
-    "YTT202", # six-py3
-    "YTT203", # sys-version-info1-cmp-int
-    "YTT204", # sys-version-info-minor-cmp-int
-    "YTT301", # sys-version0
-    "YTT302", # sys-version-cmp-str10
-    "YTT303", # sys-version-slice
+    "UP015"
 ]
 ignore = [
     "E402", # module-import-not-at-top-of-file
@@ -369,23 +76,15 @@ ignore = [
 
     "W605", # invalid-escape-sequence
 ]
-extend-exclude = ["CommonServerPython", "test_data", "conftest.py", "demistomock.py"]
 
 unfixable = [
     "RUF001"  # ambiguous-unicode-character-string
 ]
 
-line-length = 130
-target-version = "py310"
-src = [
-    "Packs/Base/Scripts/CommonServerPython",
-    "Tests/demistomock",
-    "Packs/ApiModules/Scripts/*",
-]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "**/*_test.py" = []
-# Ignore any Python update in ApiModules, until we can proprtly determine their desired version.
+# Ignore any Python update in ApiModules, until we can properly determine their desired version.
 "**/*ApiModule.py"  = [ "UP" ]
 [tool.mypy]
 python_version = "3.10"
