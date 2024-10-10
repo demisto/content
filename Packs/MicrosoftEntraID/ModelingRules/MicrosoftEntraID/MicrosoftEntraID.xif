@@ -132,5 +132,7 @@ filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
         xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
         xdm.source.application.name = json_extract_scalar(properties, "$.servicePrincipalDisplayName");
 
+[MODEL: dataset = msft_azure_ad_raw]
 
 
+[MODEL: dataset = msft_azure_ad_audit_raw]
