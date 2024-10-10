@@ -1703,7 +1703,8 @@ class Client(BaseClient):
         """
         Make a http request to Qualys API to get vulnerabilities
         Args:
-        TODO: add qid_list
+            since_datetime: The start fetch date (optional).
+            qid_list: list of qids (optional).
         Returns:
             response from Qualys API
         Raises:
@@ -1713,11 +1714,11 @@ class Client(BaseClient):
         
         params = {}
 
+        # If qid_list supplied, convert it to a csv.
         if qid_list:
             data = [str(item) for item in qid_list]
             csv_string = ','.join(data)
             params= {'ids': csv_string}
-            #demisto.info('JW_LOG9 ', str(qid_list))
         else:    
             params = {"last_modified_after": since_datetime}
 
@@ -2930,7 +2931,7 @@ def get_vulnerabilities(client, since_datetime, qid_list) -> list:
     Args:
         client: Qualys client
         since_datetime: The start fetch date.
-        TODO: add qid_list
+        qid_list: list of qids (optional).
     Returns:
         list vulnerabilities
     """
@@ -2995,7 +2996,7 @@ def fetch_vulnerabilities(client, last_run, qid_list = None):
     Args:
         client: command clietnt
         last_run: The last run.
-        TODO: add qid_list
+        qid_list: list of qids (optional).
     Return:
         vulnerabilities: vulnerabilities to push to xsiam
         last_run: The  new last run to save.
@@ -3494,47 +3495,39 @@ def main():  # pragma: no cover
             demisto.debug(f'saved lastrun assets: {last_run}')
             
             fetch_stage = last_run.get('stage', 'assets')
-            #demisto.info('JW_LOG12 ', str(fetch_stage))
 
             if fetch_stage == 'assets':
                 start_time = time.time()
                 demisto.debug(f'Starting fetch for assets, {start_time=}')
                 assets, new_last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
                 check_fetch_duration_time(start_time, last_run.get('limit', HOST_LIMIT))
+                # If assets, create list of QIDs and deduplicate later.
                 if assets:
                     qid_list = []
                     for asset in assets:
                         if asset.get('DETECTION', {}).get('QID'):
                             qid_list.append(asset.get('DETECTION', {}).get('QID'))
-                # Need to send list or it break
-                # TODO setup logic to check for every sub run and add non duplicates
+                # Look for QIDs already in last_run and deduplicate.
                 if qid_list:
-                    #demisto.info('JW_LOG14 ', str(len(qid_set)))
-                    # Get QIDs from last run
                     if qids_last_run:= last_run.get('qids'):
                         qid_list.extend(qids_last_run)
                     qid_set = set(qid_list)
-                    new_last_run['qids'] = list(qid_set)
-                    demisto.info('JW_LOG10.1 ', str(len(new_last_run['qids'])))  
+                    new_last_run['qids'] = list(qid_set) 
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                                    snapshot_id=snapshot_id, items_count=total_assets, should_update_health_module=False)
-                demisto.info('JW_LOG10 ', str(new_last_run))
                 demisto.setAssetsLastRun(new_last_run)
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
                 test = demisto.getAssetsLastRun()
-                demisto.info('JW_LOG13 ', str(test))
 
             elif fetch_stage == 'vulnerabilities':
                 vulnerabilities, new_last_run = fetch_vulnerabilities(client=client, last_run=last_run)
+                # If QIDs in last_run check against list of vulnerabilities modified in last 90 days.
                 if vulnerabilies_on_assets:=last_run.get('qids'):
                     large_qid_list = [entry['QID'] for entry in vulnerabilities]
-                    demisto.info('JW_LOG11 ', str(len(large_qid_list)), ' ', str(large_qid_list))
                     new_qid_list = [vuln for vuln in vulnerabilies_on_assets if vuln not in large_qid_list]
-                    demisto.info('JW_LOG11.1 ', str(len(new_qid_list)), ' ', str(new_qid_list))
                     new_vulnerabilities, _ = fetch_vulnerabilities(client=client, last_run=last_run, qid_list=new_qid_list)
                     vulnerabilities.extend(new_vulnerabilities)
-                    demisto.info('JW_LOG14 ', str(new_last_run))
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
                 demisto.setAssetsLastRun(new_last_run)
