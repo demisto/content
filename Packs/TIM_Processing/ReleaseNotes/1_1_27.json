@@ -1,0 +1,5 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>Renamed incident type 'Review Indicators Manually For Whitelisting' to 'Review Indicators Manually For Allowlisting'. This will break references to this incident type where it is used in other packs.</li><li>Renamed layout 'Review Indicators Manually For Whitelisting Incident' to 'Review Indicators Manually For Allowlisting Incident'. This will break references to this layout where it is used</li><li>Renamed playbook 'TIM - Review Indicators Manually For Whitelisting' to 'TIM - Review Indicators Manually For Allowlisting'. This will break references to this playbook where it is used.</li><li>Changed indicator tag value 'approved_white' to 'approved_allow' and 'approved_black' to 'approved_block'.</li></ul>",
+    "marketplaces": ["xsoar"]
+}

@@ -6299,7 +6299,10 @@ class TestCommonTypes:
             stix_id='test_stix_id',
             tags=['tag1', 'tag2'],
             traffic_light_protocol='traffic_light_protocol',
-            user_id='test_user_id'
+            user_id='test_user_id',
+            manager_email='test_manager_email@test.com',
+            manager_display_name='test_manager_display_name',
+            risk_level='test_risk_level'
         )
 
         results = CommandResults(
@@ -6316,7 +6319,7 @@ class TestCommonTypes:
             'HumanReadable': None,
             'EntryContext': {
                 'Account(val.id && val.id == obj.id)': [
-                    {'Id': 'test_account_id',
+                    {'ID': 'test_account_id',
                      'Type': 'test_account_type',
                      'Blocked': True,
                      'CreationDate': 'test_creation_date',
@@ -6337,7 +6340,12 @@ class TestCommonTypes:
                      'Tags': ['tag1', 'tag2'],
                      'TrafficLightProtocol': 'traffic_light_protocol',
                      'UserId': 'test_user_id',
-                     'Username': 'test_username'
+                     'Username': 'test_username',
+                     'Manager': {
+                         'Email': 'test_manager_email@test.com',
+                         'DisplayName': 'test_manager_display_name'
+                     },
+                     'RiskLevel': 'test_risk_level'
                      }
                 ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
