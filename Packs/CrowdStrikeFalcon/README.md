@@ -20,3 +20,6 @@ Make sure you have the following content packs:
 
 ## Pack Configurations  
 To get up and running with this pack, you must get an API client ID and secret from CrowdStrike support: support@crowdstrike.com.
+
+#### Note
+The parsing rules are targeting the data set crowdstrike_falcon_incident_raw that is created when ingesting logs from CrowdStrike Platform data source using CrowdStrike APIs and will be deprecated from XSIAM V2.5.

@@ -1,0 +1,13 @@
+[INGEST:vendor="CrowdStrike", product="falcon_incident", target_dataset="crowdstrike_falcon_incident_raw", no_hit=keep]
+alter tmp_time_to_integer = to_integer(UTCTimestamp)
+
+| alter tmp_len = len(UTCTimestamp)
+// convert epoch representation to a datetime type timestamp
+// in_case of nanoseconds, we convert them to microseconds since to_timestamp does not support nanoseconds
+| alter _time = if( 
+    tmp_len = 10, to_timestamp(tmp_time_to_integer, "SECONDS"), 
+    tmp_len = 13, to_timestamp(tmp_time_to_integer, "MILLIS"),  
+    tmp_len = 16, to_timestamp(tmp_time_to_integer, "MICROS"),  
+    tmp_len = 19, to_timestamp(to_integer(divide(tmp_time_to_integer, 1000)), "MICROS")) 
+
+| fields - tmp*;

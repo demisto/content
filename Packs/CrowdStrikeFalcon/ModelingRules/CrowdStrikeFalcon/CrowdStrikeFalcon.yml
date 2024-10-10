@@ -1,0 +1,6 @@
+fromversion: 8.8.0
+id: CrowdStrike_Falcon_Modeling_Rule
+name: CrowdStrike Falcon Modeling Rule
+rules: ''
+schema: ''
+tags: CrowdStrikeFalconModelingRules
