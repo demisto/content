@@ -1,5 +1,5 @@
 {
-  "msft_azure_raw": {
+  "dragos_platform_raw": {
       "src_asset_ip": {
           "type": "string",
           "is_array": false
