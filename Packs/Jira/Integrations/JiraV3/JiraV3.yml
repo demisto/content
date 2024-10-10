@@ -1653,7 +1653,7 @@ script:
       description: The default value of the field.
       type: String
     - contextPath: Jira.IssueField.FieldID
-      description: The field id.
+      description: The field ID.
       type: String
     - contextPath: Jira.IssueField.HasDefaultValue
       description: Whether the field has a default value.
