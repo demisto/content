@@ -662,6 +662,113 @@ def test_access_key_delete(mocker, prisma_cloud_v2_client):
     assert command_results.readable_output == 'Access key test_key was successfully deleted successfully'
 
 
+@pytest.mark.parametrize('limit, all_results', [(1, False), (10, False), (50, False), (1, True)])
+def test_list_public_networks_command(mocker, prisma_cloud_v2_client, limit, all_results):
+    """
+    Given:
+        - limit and all_results arguments
+    When:
+        - prisma-cloud-list-public-networks command is executed
+    Then:
+        - The http request is called with the right arguments
+        - The amount of returned entries corresponds to the limit
+    """
+    from PrismaCloudV2 import list_public_networks_command
+    mock_networks_list = input_data.networks_list
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value=mock_networks_list)
+    args = {'limit': limit, 'all_results': all_results}
+
+    res = list_public_networks_command(prisma_cloud_v2_client, args)
+
+    http_request.assert_called_with(method='GET', url_suffix='/allow_list/network')
+    if all_results:
+        assert res.outputs == mock_networks_list
+    else:
+        assert res.outputs == mock_networks_list[:limit]
+
+
+@pytest.mark.parametrize('ip, cidr', [('192.168.1.100', ''), ('', '10.0.0.0/8'), ('1.2.3.4', '1.2.3.4/24'), ('', '')])
+def test_block_ip_command(mocker, prisma_cloud_v2_client, ip, cidr):
+    """
+    Given:
+        - Configured Prisma Cloud client
+        - Target ip/cidr to block
+    When:
+        - prisma-cloud-block-ip command is executed
+    Then:
+        - The http request is called with the right arguments
+        - The command passes only if exactly one of IP/CIDR are provided
+    """
+    from PrismaCloudV2 import block_ip_command
+    mock_network_uuid = 'some_network'
+    mock_description = 'test_description'
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'ip': ip, 'cidr': cidr, 'description': mock_description, 'network_uuid': mock_network_uuid}
+
+    if (ip and cidr) or (not ip and not cidr):
+        with pytest.raises(DemistoException):
+            block_ip_command(prisma_cloud_v2_client, args)
+    else:
+        block_ip_command(prisma_cloud_v2_client, args)
+        expected_cidr = cidr or f'{ip}/32'
+        http_request.assert_called_with(method='POST', url_suffix=f'/allow_list/network/{mock_network_uuid}/cidr',
+                                        json_data={'cidr': expected_cidr, 'description': mock_description})
+
+
+def test_unblock_ip_command(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - Configured Prisma Cloud client
+        - Network and CDR UUIDs
+    When:
+        - prisma-cloud-unblock-ip command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import unblock_ip_command
+    mock_network_uuid = 'some_network'
+    mock_cdr_uuid = 'some_cdr_id'
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'cdr_uuid': mock_cdr_uuid, 'network_uuid': mock_network_uuid}
+
+    unblock_ip_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(method='DELETE',
+                                    url_suffix=f'/allow_list/network/{mock_network_uuid}/cidr/{mock_cdr_uuid}',
+                                    resp_type='content')
+
+
+@pytest.mark.parametrize('ip, cidr', [('192.168.1.100', ''), ('', '10.0.0.0/8'), ('1.2.3.4', '1.2.3.4/24'), ('', '')])
+def test_update_blocked_ip_command(mocker, prisma_cloud_v2_client, ip, cidr):
+    """
+    Given:
+        - Configured Prisma Cloud client
+        - Target ip/cidr to update
+    When:
+        - prisma-cloud-update-blocked-ip command is executed
+    Then:
+        - The http request is called with the right arguments
+        - The command passes only if exactly one of IP/CIDR are provided
+    """
+    from PrismaCloudV2 import update_blocked_ip_command
+    mock_network_uuid = 'some_network'
+    mock_cdr_uuid = 'some_cdr_id'
+    mock_description = 'test_description'
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'ip': ip, 'cidr': cidr, 'description': mock_description, 'network_uuid': mock_network_uuid,
+            'cdr_uuid': mock_cdr_uuid}
+
+    if (ip and cidr) or (not ip and not cidr):
+        with pytest.raises(DemistoException):
+            update_blocked_ip_command(prisma_cloud_v2_client, args)
+    else:
+        update_blocked_ip_command(prisma_cloud_v2_client, args)
+        expected_cidr = cidr or f'{ip}/32'
+        http_request.assert_called_with(method='PUT',
+                                        url_suffix=f'/allow_list/network/{mock_network_uuid}/cidr/{mock_cdr_uuid}',
+                                        json_data={'cidr': expected_cidr, 'description': mock_description},
+                                        resp_type='content')
+
+
 ''' HELPER FUNCTIONS TESTS '''
 
 
