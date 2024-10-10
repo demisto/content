@@ -1539,7 +1539,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  - name: jira-get-create-metadata-issue-types
+  - name: jira-create-metadata-issue-types-list
     arguments:
     - name: project_id_or_key
       required: true
@@ -1624,7 +1624,7 @@ script:
     - contextPath: Jira.IssueType.Scope.project.projectCategory.name
       description: The description of the project category.
       type: String
-  - name: jira-get-create-metadata-field
+  - name: jira-create-metadata-field-get
     arguments:
     - name: project_id_or_key
       required: true

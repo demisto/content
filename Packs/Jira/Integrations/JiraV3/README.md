@@ -3108,14 +3108,14 @@ In the *jira-get-issue* command:
 * *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
 
 
-### jira-get-create-metadata-field
+### jira-create-metadata-field-get
 
 ***
 Returns a page of field metadata for a specified project and issue type.
 
 #### Base Command
 
-`jira-get-create-metadata-field`
+`jira-create-metadata-field-get`
 
 #### Input
 
@@ -3148,14 +3148,14 @@ Returns a page of field metadata for a specified project and issue type.
 | Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
 | Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
 
-### jira-get-create-metadata-issue-types
+### jira-create-metadata-issue-types-list
 
 ***
 Returns a page of issue type metadata for a specified project.
 
 #### Base Command
 
-`jira-get-create-metadata-issue-types`
+`jira-create-metadata-issue-types-list`
 
 #### Input
 
