@@ -302,14 +302,6 @@ def test_azure_storage_block_public_access_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value=params)
     container_name = "test"
     url = f"https://{ACCOUNT_NAME}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
-    request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
-
-    authorization_header = f"SharedKey {ACCOUNT_NAME}:{SHARED_KEY}"
-    headers = {
-        "x-ms-date": request_date,
-        "Authorization": authorization_header,
-        'x-ms-version': API_VERSION,
-    }
     requests_mock.put(url, status_code=200, text="")
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
                     account_sas_token=SAS_TOKEN,
@@ -322,12 +314,22 @@ def test_azure_storage_block_public_access_command(mocker, requests_mock):
     assert result.readable_output == expected_response
 
     # Test for invalid shared key
-    invalid_shared_key = "invalid-key"
     with pytest.raises(ValueError, match="Incorrect shared key provided"):
+        # Here we need to set params to have an invalid key
+        invalid_shared_key_params = {
+            'shared_key': {'password': "invalid-key"},
+            'credentials': {'identifier': ACCOUNT_NAME}
+        }
+        mocker.patch.object(demisto, 'params', return_value=invalid_shared_key_params)
         block_public_access_command(client, {'container_name': container_name})
 
     # Test for missing shared key
     with pytest.raises(KeyError, match="The 'shared_key' parameter must be provided."):
+        missing_shared_key_params = {
+            'shared_key': {'password': ""},
+            'credentials': {'identifier': ACCOUNT_NAME}
+        }
+        mocker.patch.object(demisto, 'params', return_value=missing_shared_key_params)
         block_public_access_command(client, {'container_name': container_name})
 
 
