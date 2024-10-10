@@ -3167,7 +3167,7 @@ Returns a page of field metadata for a specified project and issue type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id_or_key | The ID of Key of the project. | Required | 
+| project_id_or_key | The ID or key of the project. | Required | 
 | issue_type_id | The issue type ID. | Required | 
 | start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
 | max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
