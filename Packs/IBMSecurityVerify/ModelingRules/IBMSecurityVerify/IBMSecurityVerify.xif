@@ -11,7 +11,7 @@ alter
     xdm.source.location.longitude = to_float(geoip -> location.lon),
     xdm.source.location.latitude = to_float(geoip -> location.lat),
     xdm.source.asn.as_number = to_integer(geoip -> asn),
-    xdm.event.type = if(event_type = "sso", "authentication", event_type),
+    xdm.event.type = if(event_type in ("sso", "authentication"), "authentication", event_type),
     xdm.event.id = id,
     xdm.source.ipv4 = if(incidr(data -> origin, "0.0.0.0/0"), data -> origin),
     xdm.source.ipv6 = src_ipv6,
