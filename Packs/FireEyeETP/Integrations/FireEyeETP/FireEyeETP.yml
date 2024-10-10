@@ -304,7 +304,7 @@ script:
     arguments:
     - name: alert_id
       required: true
-      description: The alert id.
+      description: The alert ID.
     description: 'Downloads all case files of the alert specified by the alert ID, in
       a zip file. You can obtain the ID from the Alert Summary response, for example
       "id": "AV7zzRy7kvIwrKcfu0I".'
