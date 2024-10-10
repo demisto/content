@@ -1,3 +1,5 @@
+from time import sleep
+
 from demisto_sdk.commands.validate.validators.base_validator import InvalidContentItemResult, ValidationResult, ValidationCaughtExceptionResult, \
     BaseValidator
 from pydantic.errors import ConfigError
@@ -52,50 +54,6 @@ from pydantic import BaseModel, validate_model
 from typing import Type, Any
 
 object_setattr = object.__setattr__
-
-
-def new_from_orm(cls, obj):
-    demisto.debug("Entering new_from_orm method")
-
-    if not cls.__config__.orm_mode:
-        demisto.error("ConfigError: orm_mode must be set to True to use from_orm")
-        raise ConfigError('You must have the config attribute orm_mode=True to use from_orm')
-
-    demisto.debug(f"orm_mode is enabled for class {cls.__name__=}")
-
-    obj = {ROOT_KEY: obj} if cls.__custom_root_type__ else cls._decompose_class(obj)
-    # demisto.debug(f"Object decomposed: {obj=}")
-
-    m = cls.__new__(cls)
-    demisto.debug(f"New instance of class {cls.__name__=} created")
-    demisto.debug(f"Attributes of the instance: {dir(m)=}")
-    demisto.debug(f'#########################')
-    demisto.debug(f'{m.__validators__=}')
-    demisto.debug(f'{m.__get_validators__=}')
-    demisto.debug(f'{m.__pre_root__validators__=}')
-    demisto.debug(f'{m.__post_root_validators__=}')
-    demisto.debug(f'#########################')
-
-    demisto.debug(f"Passing model {cls.__name__} and object {obj=} to validate_model")
-    values, fields_set, validation_error = validate_model(cls, obj)
-    demisto.debug(f"Model validated. Values: {values=}, Fields set:{fields_set}")
-
-    if validation_error:
-        demisto.error(f"Validation error: {validation_error=}")
-        raise validation_error
-
-    object_setattr(m, '__dict__', values)
-    object_setattr(m, '__fields_set__', fields_set)
-    demisto.debug(f"Attributes set on the instance of class {cls.__name__=}")
-
-    m._init_private_attributes()
-    demisto.debug(f"Private attributes initialized for instance of class {cls.__name__=}")
-
-    demisto.debug("Exiting new_from_orm method")
-    return m
-
-
-BaseModel.from_orm = classmethod(new_from_orm)
 
 
 
@@ -322,74 +280,76 @@ from demisto_sdk.commands.common.constants import (
 from demisto_sdk.commands.content_graph.parsers.pack import PackParser
 
 
-class CustomBaseContent(BaseContent):
-    @staticmethod
-    @lru_cache
-    def from_path(
-        path: Path,
-        git_sha: Optional[str] = None,
-        raise_on_exception: bool = False,
-        metadata_only: bool = False,
-    ) -> Optional["BaseContent"]:
-        demisto.debug(f"Loading content item from {path}")
-
-        if (
-            path.is_dir()
-            and path.parent.name == PACKS_FOLDER
-            or path.name == PACKS_PACK_META_FILE_NAME
-        ):  # if the path given is a pack
-            try:
-
-                return CONTENT_TYPE_TO_MODEL[ContentType.PACK].from_orm(
-                    PackParser(path, git_sha=git_sha, metadata_only=metadata_only)
-                )
-            except InvalidContentItemException:
-                demisto.error(f"Could not parse content from {path}")
-                return None
-
-        try:
-            content_item.MARKETPLACE_MIN_VERSION = "0.0.0"
-            demisto.debug(f'################################# CustomContentItemParser.from_path({path}, {git_sha=})')
-            content_item_parser = CustomContentItemParser.from_path(path, git_sha=git_sha)
-            content_item.MARKETPLACE_MIN_VERSION = MARKETPLACE_MIN_VERSION
-
-        except (NotAContentItemException, InvalidContentItemException) as e:
-            if raise_on_exception:
-                raise
-            demisto.error(
-                f"Invalid content path provided: {path}. Please provide a valid content item or pack path. ({type(e).__name__})"
-            )
-            return None
-
-        demisto.debug(f'from_path {content_item_parser.content_type=} | {CONTENT_TYPE_TO_MODEL=}')
-        model = CONTENT_TYPE_TO_MODEL.get(content_item_parser.content_type)
-        if model:
-            demisto.debug(f"Detected model {model} for {path.name}")
-        else:
-            demisto.error(f"Could not parse content item from {path.name}")
-            return None
-
-        try:
-            import inspect
-            source_code = inspect.getsource(model.from_orm)
-            demisto.debug(f"Source code of {model.from_orm.__name__=}:\n{source_code=}")
-        except Exception as e:
-            demisto.error(f"Could not retrieve source code for {model.from_orm.__name__=}: {e=}")
-
-            return model.from_orm(content_item_parser)  # type: ignore
-        except Exception as e:
-            demisto.error(
-                f"Could not parse content item from path {path} using {content_item_parser} | {str(e)} | {str(traceback.format_exc())}"
-            )
-
-            # Log the error message
-            demisto.error(f"Error: {str(e)}")
-
-            # Log the detailed stack trace
-            demisto.error("Stack Trace: " + traceback.format_exc())
-            traceback.print_exc()
-
-        return None
+# class CustomBaseContent(BaseContent):
+#     @staticmethod
+#     @lru_cache
+#     def from_path(
+#         path: Path,
+#         git_sha: Optional[str] = None,
+#         raise_on_exception: bool = False,
+#         metadata_only: bool = False,
+#     ) -> Optional["BaseContent"]:
+#         demisto.debug(f"Loading content item from {path}")
+#
+#         if (
+#             path.is_dir()
+#             and path.parent.name == PACKS_FOLDER
+#             or path.name == PACKS_PACK_META_FILE_NAME
+#         ):  # if the path given is a pack
+#             try:
+#
+#                 return CONTENT_TYPE_TO_MODEL[ContentType.PACK].from_orm(
+#                     PackParser(path, git_sha=git_sha, metadata_only=metadata_only)
+#                 )
+#             except InvalidContentItemException:
+#                 demisto.error(f"Could not parse content from {path}")
+#                 return None
+#
+#         try:
+#             content_item.MARKETPLACE_MIN_VERSION = "0.0.0"
+#             demisto.debug(f'################################# CustomContentItemParser.from_path({path}, {git_sha=}')
+#             content_item_parser = CustomContentItemParser.from_path(path, git_sha=git_sha)
+#             content_item.MARKETPLACE_MIN_VERSION = MARKETPLACE_MIN_VERSION
+#
+#         except (NotAContentItemException, InvalidContentItemException) as e:
+#             if raise_on_exception:
+#                 raise
+#             demisto.error(
+#                 f"Invalid content path provided: {path}. Please provide a valid content item or pack path. ({type(e).__name__})"
+#             )
+#             return None
+#
+#         demisto.debug(f'from_path {content_item_parser.content_type=}')
+#         model = CONTENT_TYPE_TO_MODEL.get(content_item_parser.content_type)
+#         if model:
+#             demisto.debug(f"Detected model {model} for {path.name}")
+#         else:
+#             demisto.error(f"Could not parse content item from {path.name}")
+#             return None
+#
+#         try:
+#             # demisto.debug(f'trying to debug "from_orm" |\n\n{model.__dict__=} |\n\n{content_item_parser.__dict__=} ')
+#             demisto.debug(f'trying to debug "from_orm" |')
+#             parser_dict = json.dumps(content_item_parser.__dict__, default=str)
+#             demisto.debug(f"Content Item Parser as JSON: {parser_dict}")
+#
+#             demisto.debug(f'from_path {getattr(model.Config, "orm_mode", False)=}')
+#             demisto.debug(f'modelllll: {model}')
+#             return model.from_orm(content_item_parser)  # type: ignore
+#         except Exception as e:
+#             demisto.error("dam")
+#             demisto.error(
+#                 f"Could not parse content item from path {path} using {content_item_parser} | {str(e)} | {str(traceback.format_exc())}"
+#             )
+#
+#             # Log the error message
+#             demisto.error(f"Error: {str(e)}")
+#
+#             # Log the detailed stack trace
+#             demisto.error("Stack Trace: " + traceback.format_exc())
+#             traceback.print_exc()
+#
+#         return None
 
 
 ##############################################################################################################################
@@ -418,6 +378,7 @@ class CustomInitializer(Initializer):
         basecontent_with_path_set: Set[BaseContent] = set()
         invalid_content_items: Set[Path] = set()
         non_content_items: Set[Path] = set()
+        demisto.debug(f'paths_to_basecontent_set {files_set=}')
         related_files_main_items: Set[Path] = self.collect_related_files_main_items(
             files_set
         )
@@ -426,7 +387,7 @@ class CustomInitializer(Initializer):
             path: Path = Path(file_path)
             demisto.debug(f'paths_to_basecontent_set {path=}')
             try:
-                temp_obj = CustomBaseContent.from_path(
+                temp_obj = BaseContent.from_path(
                     path, git_sha=None, raise_on_exception=True
                 )
                 demisto.debug(f'paths_to_basecontent_set {temp_obj=}')
@@ -434,9 +395,11 @@ class CustomInitializer(Initializer):
                     invalid_content_items.add(path)
                 else:
                     basecontent_with_path_set.add(temp_obj)
-            except NotAContentItemException:
+            except NotAContentItemException as e:
+                demisto.debug(f'paths_to_basecontent_set NotAContentItemException: {str(e)} | {file_path=}')
                 non_content_items.add(file_path)  # type: ignore[arg-type]
-            except InvalidContentItemException:
+            except InvalidContentItemException as e:
+                demisto.debug(f'paths_to_basecontent_set InvalidContentItemException: {str(e)} | {file_path=}')
                 invalid_content_items.add(file_path)  # type: ignore[arg-type]
             except Exception as e:
                 demisto.debug(f'paths_to_basecontent_set {str(e)=}')
@@ -535,6 +498,7 @@ class CustomValidateManger(ValidateManager):
             mode=self.initializer.execution_mode,
             codes_to_ignore=ignore,
         )
+        demisto.debug(f'CustomValidateManger __init__ {self.configured_validations.select=}\n{self.configured_validations.warning=}\n{self.configured_validations.ignorable_errors=}\n{self.configured_validations.support_level_dict=}')
         self.validators = self.filter_validators()
         demisto.debug(f'CustomValidateManger __init__ {self.validators=}')
 
@@ -601,7 +565,7 @@ class CustomValidateManger(ValidateManager):
                         validation_caught_exception_result
                     )
         if BaseValidator.graph_interface:
-            logger.info("Closing graph.")
+            demisto.debug("Closing graph.")
             BaseValidator.graph_interface.close()
         self.add_invalid_content_items()
         return self.validation_results.post_results(
@@ -803,16 +767,17 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
     return contrib_converter.pack_dir_path, code_fp_to_row_offset
 
 
-def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_directory: str) -> Tuple[str, Dict]:
+def prepare_single_content_item_for_validation(file_path: str, filename: str, data: bytes, tmp_directory: str) -> Tuple[str, Dict]:
     content = Content(tmp_directory)
     pack_name = 'TmpPack'
     pack_dir = content.path / 'Packs' / pack_name
-    # create pack_metadata.json file in TmpPack
+    # Create pack_metadata.json file in TmpPack.
     contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name,
                                               contribution=pack_name)
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
 
-    demisto.debug(f'prepare_single_content_item_for_validation: {filename=}')
+    demisto.debug(f'prepare_single_content_item_for_validation: created `TmpPack` successfully {pack_dir=}'
+                  f'\n{os.listdir(pack_dir)}.')
     prefix = '-'.join(filename.split('-')[:-1])
     demisto.debug(f'prepare_single_content_item_for_validation: {pack_dir=}, {prefix=}')
     containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
@@ -867,7 +832,7 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     return extractor.get_output_path(), code_fp_to_row_offset
 
 
-def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
+def validate_content(file_path: str, filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
@@ -892,27 +857,27 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
             run_validate(path_to_validate, json_output_path)
             # run_lint(path_to_validate, lint_output_path)
 
-            demisto.debug("log capture:" + tmp.read())
+        demisto.debug("log capture:" + tmp.read())
 
-            all_outputs = []
-            with open(json_output_path, 'r') as json_outputs:
-                outputs_as_json = json.load(json_outputs)
-                demisto.debug(f'2 {outputs_as_json=}')
-                if outputs_as_json:
-                    if type(outputs_as_json) == list:
-                        all_outputs.extend(outputs_as_json)
-                    else:
-                        all_outputs.append(outputs_as_json)
+        all_outputs = []
+        with open(json_output_path, 'r') as json_outputs:
+            outputs_as_json = json.load(json_outputs)
+            demisto.debug(f'2 {outputs_as_json=}')
+            if outputs_as_json:
+                if type(outputs_as_json) == list:
+                    all_outputs.extend(outputs_as_json)
+                else:
+                    all_outputs.append(outputs_as_json)
 
-            # with open(lint_output_path, 'r') as json_outputs:
-            #     outputs_as_json = json.load(json_outputs)
-            #     if outputs_as_json:
-            #         if type(outputs_as_json) == list:
-            #             for validation in outputs_as_json:
-            #                 adjust_linter_row_and_col(validation, code_fp_to_row_offset)
-            #             all_outputs.extend(outputs_as_json)
-            #         else:
-            #             all_outputs.append(outputs_as_json)
+        # with open(lint_output_path, 'r') as json_outputs:
+        #     outputs_as_json = json.load(json_outputs)
+        #     if outputs_as_json:
+        #         if type(outputs_as_json) == list:
+        #             for validation in outputs_as_json:
+        #                 adjust_linter_row_and_col(validation, code_fp_to_row_offset)
+        #             all_outputs.extend(outputs_as_json)
+        #         else:
+        #             all_outputs.append(outputs_as_json)
     return all_outputs
 
 
@@ -995,6 +960,7 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
             demisto.debug(f'Copying from {cached_module_path} to {content_path}')
             copy(cached_module_path, content_path)
         except Exception as e:
+            # fallback_path = "/Users/byosilevich/dev/demisto/content/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py"
             fallback_path = f'/home/demisto/{module["file"]}'
             demisto.debug(f'Failed downloading content module {module["github_url"]} - {e}. '
                           f'Copying from {fallback_path}')
@@ -1010,7 +976,7 @@ def get_file_name_and_contents(
         return filename, b64decode(data)
     elif entry_id:
         file_object = demisto.getFilePath(entry_id)
-
+        demisto.debug(f'get_file_name_and_contents {file_object=}')
         with open(file_object['path'], 'rb') as f:
             file_contents = f.read()
         return file_object['name'], file_contents
@@ -1028,11 +994,15 @@ def main():
             del os.environ['https_proxy']
         verify_ssl = argToBoolean(args.get('trust_any_certificate'))
 
-        content_repo = git.Repo.init(content_tmp_dir.name)
-        content_repo.create_remote('origin', 'https://github.com/demisto/content.git')
-        os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
-
+        # content_repo = git.Repo.init(content_tmp_dir.name)
+        # content_repo.create_remote('origin', 'https://github.com/demisto/content.git')
+        # os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
+        #
         get_content_modules(content_tmp_dir.name, verify_ssl)
+        file_path = ''
+        if entry_id := str(args.get('entry_id', '')):
+            file_path = demisto.getFilePath(entry_id).get('path')
+        demisto.debug(f'main {file_path=}')
 
         filename, file_contents = get_file_name_and_contents(
             args.get('filename'),
@@ -1042,7 +1012,7 @@ def main():
         os.makedirs(content_tmp_dir.name, exist_ok=True)
         os.chdir(content_tmp_dir.name)
 
-        result = validate_content(filename, file_contents, content_tmp_dir.name)
+        result = validate_content(file_path, filename, file_contents, content_tmp_dir.name)
         outputs = []
         for validation in result:
             demisto.debug(f'main validation tested: {json.dumps(validation, indent=4)}')
@@ -1070,4 +1040,6 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    sleep(60)
     main()
+
