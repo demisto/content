@@ -1,11 +1,15 @@
+import importlib
 import json
 
 import pytest
 
-from AWSEKS import validate_args, list_clusters_command
+from AWSEKS import validate_args, list_clusters_command, CommandResults
 from test_data.test_response import (UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE, DESCRIBE_CLUSTER_RESPONSE,
                                      UPDATE_CLUSTER_CONFIG_ACCESS_CONFIG_RESPONSE, CREATE_ACCESS_ENTRY_RESPONSE,
                                      ASSOCIATE_ACCESS_POLICY_RESPONSE, UPDATE_ACCESS_ENTRY_RESPONSE)
+
+AWSEKS = importlib.import_module("AWSEKS")
+AWSEKS.build_client = lambda _: Boto3Client
 
 
 def util_load_json(path):
@@ -131,9 +135,8 @@ def test_list_clusters_command(mocker):
         'nextToken': None
     }
     mocker.patch.object(Boto3Client, "list_clusters", return_value=response)
-
-    client = Boto3Client()
-    result = list_clusters_command(client, {})
+    result = list_clusters_command({})
+    assert isinstance(result, CommandResults)
     assert result.readable_output == '### The list of clusters\n|Clusters Names|\n|---|\n| cluster_name_1 |\n'
     assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': None}
 
@@ -152,9 +155,8 @@ def test_list_clusters_command_no_clusters(mocker):
         'nextToken': None
     }
     mocker.patch.object(Boto3Client, "list_clusters", return_value=response)
-
-    client = Boto3Client()
-    result = list_clusters_command(client, {})
+    result = list_clusters_command({})
+    assert isinstance(result, CommandResults)
     assert result.readable_output == 'No clusters found.'
     assert result.outputs == {'ClustersNames': [], 'NextToken': None}
 
@@ -176,8 +178,8 @@ def test_list_clusters_command_with_next_token(mocker):
     }
     mocker.patch.object(Boto3Client, "list_clusters", return_value=response)
 
-    client = Boto3Client()
-    result = list_clusters_command(client, {'limit': '1'})
+    result = list_clusters_command({'limit': '1'})
+    assert isinstance(result, CommandResults)
     assert result.readable_output == '### The list of clusters\n|Clusters Names|\n|---|\n| cluster_name_1 |\n'
     assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': 'NextToken'}
 
@@ -195,8 +197,8 @@ def test_list_clusters_command_with_pagination(mocker):
     response2 = util_load_json("test_data/list_clusters.json").get('response_without_next_token')
     mocker.patch.object(Boto3Client, "list_clusters", side_effect=[response1, response2])
 
-    client = Boto3Client()
-    result = list_clusters_command(client, {'limit': '200'})
+    result = list_clusters_command({'limit': '200'})
+    assert isinstance(result, CommandResults)
     assert result.readable_output == ('### The list of clusters\n|Clusters Names|\n|---|\n| cluster_name_1 |\n| cluster_name_100 '
                                       '|\n| cluster_name_101 |\n')
     assert result.outputs == {'ClustersNames': ['cluster_name_1', 'cluster_name_100', 'cluster_name_101'],
@@ -216,12 +218,13 @@ def test_update_cluster_config_logging_command(mocker):
     expected_output = util_load_json("test_data/update_cluster_config.json").get('logging_expected_output')
     expected_readable_output = util_load_json("test_data/update_cluster_config.json").get('logging_expected_readable_output')
     mocker.patch.object(Boto3Client, "update_cluster_config", return_value=UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE)
-    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
         "logging": "{'clusterLogging': [{'types': ['api', 'authenticator', 'audit'], 'enabled': true}]}"
     }
-    result = update_cluster_config_command(client, args)
+
+    result = update_cluster_config_command(args)
+    assert isinstance(result, CommandResults)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
 
@@ -238,7 +241,6 @@ def test_update_cluster_config_authentication_mode_command(mocker):
     from AWSEKS import update_cluster_config_command
     http_request = mocker.patch.object(Boto3Client, "update_cluster_config",
                                        return_value=UPDATE_CLUSTER_CONFIG_ACCESS_CONFIG_RESPONSE)
-    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
         "authentication_mode": "true"
@@ -246,7 +248,7 @@ def test_update_cluster_config_authentication_mode_command(mocker):
     access_config = {
         'authenticationMode': 'API_AND_CONFIG_MAP'
     }
-    update_cluster_config_command(client, args)
+    update_cluster_config_command(args)
     http_request.assert_called_with(name='cluster_name',
                                     accessConfig=access_config)
 
@@ -264,11 +266,11 @@ def test_describe_cluster_command(mocker):
     expected_readable_output = util_load_json("test_data/describe_cluster.json").get('expected_readable_output')
     expected_output = util_load_json("test_data/describe_cluster.json").get('expected_outputs')
     mocker.patch.object(Boto3Client, "describe_cluster", return_value=DESCRIBE_CLUSTER_RESPONSE)
-    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
     }
-    result = describe_cluster_command(client, args)
+    result = describe_cluster_command(args)
+    assert isinstance(result, CommandResults)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
 
@@ -286,12 +288,12 @@ def test_create_access_entry_command(mocker):
     expected_readable_output = util_load_json("test_data/create_access_entry.json").get('expected_readable_output')
     expected_output = util_load_json("test_data/create_access_entry.json").get('expected_outputs')
     mocker.patch.object(Boto3Client, "create_access_entry", return_value=CREATE_ACCESS_ENTRY_RESPONSE)
-    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
         "principal_arn": "principal_arn"
     }
-    result = create_access_entry_command(client, args)
+    result = create_access_entry_command(args)
+    assert isinstance(result, CommandResults)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
 
@@ -309,14 +311,14 @@ def test_associate_access_policy_command(mocker):
     expected_readable_output = util_load_json("test_data/associate_access_policy.json").get('expected_readable_output')
     expected_output = util_load_json("test_data/associate_access_policy.json").get('expected_outputs')
     mocker.patch.object(Boto3Client, "associate_access_policy", return_value=ASSOCIATE_ACCESS_POLICY_RESPONSE)
-    client = Boto3Client()
     args = {
         "cluster_name": "clusterName",
         "principal_arn": "principalArn",
         "policy_arn": "policyArn",
         "type": "cluster"
     }
-    result = associate_access_policy_command(client, args)
+    result = associate_access_policy_command(args)
+    assert isinstance(result, CommandResults)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
 
@@ -338,8 +340,7 @@ def test_associate_access_policy_command_namespaces():
         "type": "namespace"
     }
     try:
-        client = Boto3Client()
-        associate_access_policy_command(client, args)
+        associate_access_policy_command(args)
     except Exception as e:
         assert str(e) == "When the type_arg='namespace', you must enter a namespace."
 
@@ -355,7 +356,6 @@ def test_associate_access_policy_command_namespaces_assert_called_with(mocker):
     """
     from AWSEKS import associate_access_policy_command
     http_request = mocker.patch.object(Boto3Client, "associate_access_policy", return_value=ASSOCIATE_ACCESS_POLICY_RESPONSE)
-    client = Boto3Client()
     args = {
         "cluster_name": "clusterName",
         "principal_arn": "principalArn",
@@ -367,7 +367,7 @@ def test_associate_access_policy_command_namespaces_assert_called_with(mocker):
         "type": "namespace",
         "namespaces": ["namespace1"]
     }
-    associate_access_policy_command(client, args)
+    associate_access_policy_command(args)
     http_request.assert_called_with(clusterName=args.get('cluster_name'),
                                     principalArn=args.get("principal_arn"),
                                     policyArn=args.get("policy_arn"),
@@ -415,8 +415,7 @@ def test_associate_access_policy_command_type_cluster(mocker, args, access_scope
     from AWSEKS import associate_access_policy_command
     http_request = mocker.patch.object(Boto3Client, "associate_access_policy",
                                        return_value=UPDATE_CLUSTER_CONFIG_ACCESS_CONFIG_RESPONSE)
-    client = Boto3Client()
-    associate_access_policy_command(client, args)
+    associate_access_policy_command(args)
     http_request.assert_called_with(clusterName=args['cluster_name'],
                                     principalArn=args["principal_arn"],
                                     policyArn=args["policy_arn"],
@@ -436,11 +435,10 @@ def test_update_access_entry_command(mocker):
     expected_readable_output = util_load_json("test_data/update_access_entry.json").get('expected_readable_output')
     expected_output = util_load_json("test_data/update_access_entry.json").get('expected_outputs')
     mocker.patch.object(Boto3Client, "update_access_entry", return_value=UPDATE_ACCESS_ENTRY_RESPONSE)
-    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
         "principal_arn": "principal_arn"
     }
-    result = update_access_entry_command(client, args)
+    result = update_access_entry_command(args)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
