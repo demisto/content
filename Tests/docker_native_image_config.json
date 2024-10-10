@@ -181,6 +181,7 @@
             "id": "ParseEmailFilesV2",
             "reason": "Script uses an updated openssl lib than native, see CIAC-11469",
             "ignored_native_images": [
+                "native:8.8",
                 "native:8.7",
                 "native:8.6",
                 "native:dev",
