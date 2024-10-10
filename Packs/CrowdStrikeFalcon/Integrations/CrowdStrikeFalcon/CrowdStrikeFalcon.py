@@ -365,7 +365,7 @@ def modify_detection_outputs(detection):
     Returns:
         The nested modified detection.
     """
-    behavior = {key: detection.pop(key, None) for key in DETECTIONS_BEHAVIORS_KEY_MAP}
+    behavior = {key: detection.pop(key, []) for key in DETECTIONS_BEHAVIORS_KEY_MAP}
     behavior.update({
         "parent_details": detection.pop("parent_details", None),
         "triggering_process_graph_id": detection.pop("triggering_process_graph_id", None)
