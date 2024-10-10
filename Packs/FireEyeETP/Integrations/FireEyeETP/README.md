@@ -120,7 +120,7 @@ Search for messages using specific message attributes as indicators.
          "attributes": {  
             "acceptedDateTime": "2018-06-09T10:49:32.000Z",
             "countryCode": "US",
-            "domain": "demisto.com",
+            "domain": "test.com",
             "downStreamMsgID": "250 2.0.0 OK 100041373 d14-v6si970000qtb.70 - gsmtp",
             "emailSize": 9.89,
             "lastModifiedDateTime": "2018-06-09T10:49:33.329Z",
@@ -147,7 +147,7 @@ Search for messages using specific message attributes as indicators.
                "type": "domain",
                "id": 29074,
                "attributes": {  
-                  "name": "demisto.com "
+                  "name": "test.com "
                }
             }
          ],
