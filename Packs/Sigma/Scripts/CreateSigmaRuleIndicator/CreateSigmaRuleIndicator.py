@@ -8,18 +8,19 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def get_mitre_technique_name(mitre_id: str) -> str:
+def get_mitre_technique_name(mitre_id: str, indicator_type: str) -> str:
     """
     Searches XSOAR TIM for an 'Attack Pattern' indicator matching the given MITRE ID and returns the indicator value.
 
     Args:
         mitre_id (str): The MITRE ATT&CK ID to search for (e.g., T1562).
+        indicator_type (str): The XSOAR indicator type (e.g. Attack Pattern)
 
     Returns:
         str: The indicator value if found, else an empty string.
     """
     try:
-        query = f'type:"Attack Pattern" and {mitre_id}'
+        query = f'type:"{indicator_type}" and {mitre_id}'
         demisto.debug(f'Querying for {query} in TIM')
 
         success, response = execute_command(command="SearchIndicator", args={"query": query}, fail_on_error=False)
@@ -28,7 +29,7 @@ def get_mitre_technique_name(mitre_id: str) -> str:
             demisto.debug(f"Failed to execute findIndicators command: {get_error(response)}")
             return ""
 
-        indicator = response.get("value", "")
+        indicator = response[0].get("value", "")
         demisto.debug(f'Found the indicator - {indicator}')
 
         return indicator
@@ -38,45 +39,49 @@ def get_mitre_technique_name(mitre_id: str) -> str:
         return ""
 
 
-def create_indicator_relationships(indicator: str, product: str, techniques: list, cves: list) -> None:
+def create_indicator_relationships(indicator: str, product: str, relationships: list[dict[str, str]]) -> None:
     """
     Create relationships between the Sigma rule indicator and its Product, CVEs and MITRE techniques
 
     Args:
         indicator (str): The value of the Sigma rule indicator.
         product (str): The name of the product the rule relates to.
-        techniques (list): The MITRE techniques related to the Sigma rule.
-        cves (list): Any CVEs related to the Sigma rule.
+        relationships (list of dicts): All values that are about to be related to the Sigma rule.
     """
-    relationships = []
+    final_relationships = []
 
     if product:
-        relationships.append(create_relationship(indicator, product.capitalize(), "Software"))
+        demisto.debug(f"Creating a relationship to {product}")
+        final_relationships.append(create_relationship(indicator, product.capitalize(), "Software", relation_type="related-to"))
 
-    for technique in techniques:
-        relationships.append(create_relationship(indicator, technique, "Attack Pattern"))
+    for relationship in relationships:
+        demisto.debug(f"Creating a new relationship to {relationship['value']} ({relationship['type']})")
 
-    for cve in cves:
-        relationships.append(create_relationship(indicator, cve, "CVE"))
+        if relationship["type"] in ("Attack Pattern", "CVE", "Tool"):
+            final_relationships.append(create_relationship(indicator,
+                                                           relationship["value"],
+                                                           relationship["type"],
+                                                           relation_type="detects"))
 
     return_results(CommandResults(readable_output=f'Created A new Sigma Rule indicator:\n{indicator}',
-                                  relationships=relationships))
+                                  relationships=final_relationships))
 
 
-def create_relationship(indicator_value: str, entity_b: str, entity_b_type: str) -> EntityRelationship | None:
+def create_relationship(indicator_value: str, entity_b: str, entity_b_type: str, relation_type: str) -> EntityRelationship | None:
     """
     Creates a relationship in XSOAR between the Sigma rule indicator and the product.
 
     Args:
         indicator_value (str): The value of the Sigma rule indicator.
-        product (str): The product name from the Sigma rule, which will be capitalized.
+        entity_b (str): the value of entity b for the relationship.
+        entity_b_type (str): entity b indicator type.
+        relation_type (str): the type of the relationship (for example - "related-to").
     """
     try:
         relationship = EntityRelationship(
             entity_a=indicator_value,
             entity_a_type="Sigma Rule Indicator",
-            name="detects",
-            reverse_name="detected-by",
+            name=relation_type,
             entity_b=entity_b,
             entity_b_type=entity_b_type
         )
@@ -92,7 +97,7 @@ def parse_detection_field(rule: SigmaRule) -> list:
     Parses the detection field from the Sigma rule and maps it into a grid field.
 
     Args:
-        detection (dict): The detection field from the Sigma rule.
+        rule (SigmaRule): The parsed Sigma rule.
 
     Returns:
         list: A list of dictionaries representing the detection grid.
@@ -102,7 +107,7 @@ def parse_detection_field(rule: SigmaRule) -> list:
 
     def build_row(selection, data):
         row['selection'] = selection
-        row['key'] = data.field
+        row['key'] = data.field or ''
         row['modifiers'] = ','.join([reverse_modifier_mapping[modifier.__name__] for modifier in data.modifiers])
         row['values'] = '\n'.join([f'({index}){value.to_plain()}' for index, value in enumerate(data.original_value, 1)])
         return row
@@ -124,26 +129,32 @@ def parse_detection_field(rule: SigmaRule) -> list:
     return grid
 
 
-def parse_tags(tags: list) -> tuple[list[str], list[str], list[str], str]:
-    techniques = []
-    cves = []
+def parse_tags(tags: list) -> tuple[list[dict[str, str]], list[str], str]:
+    relationships = []
     processed_tags = []
     tlp = 'CLEAR'
 
     for tag in tags.copy():
-        if tag.namespace == "attack" and re.match(r"t\d{4}", tag.name):
-            demisto.debug(f'Searching for the technique {tag.name} in TIM')
-            mitre_name = get_mitre_technique_name(tag.name)
+        if tag.namespace == "attack" and re.match(r"[ts]\d{4}", tag.name):
+
+            if tag.name.lower().startswith("t"):
+                indicator_type = "Attack Pattern"
+                demisto.debug(f'Searching for the technique {tag.name} in TIM')
+                mitre_name = get_mitre_technique_name(tag.name, indicator_type)
+            else:
+                indicator_type = "Tool"
+                demisto.debug(f'Searching for the tool {tag.name} in TIM')
+                mitre_name = get_mitre_technique_name(tag.name, indicator_type)
 
             if mitre_name:
-                techniques.append(mitre_name)
+                relationships.append({"value": mitre_name, "type": indicator_type})
                 processed_tags.append(f'{tag.name.upper()} - {mitre_name}')
 
             else:
                 processed_tags.append(f'{tag.name.upper()}')
 
         elif tag.namespace == 'attack':
-            processed_tags.append(tag.name.replace("-", " ").title())
+            processed_tags.append(tag.name.replace("_", " ").replace("-", " ").title())
 
         elif tag.namespace == 'cve':
             demisto.debug(f'Found a CVE tag - {tag}')
@@ -152,13 +163,13 @@ def parse_tags(tags: list) -> tuple[list[str], list[str], list[str], str]:
             if not cve.startswith('CVE-'):
                 cve = f'CVE-{cve}'
 
-            cves.append(cve)
+            relationships.append({"value": cve, "type": "CVE"})
             processed_tags.append(cve)
 
         elif tag.namespace == 'tlp':
             tlp = tag.name.upper()
 
-    return techniques, cves, processed_tags, tlp
+    return relationships, processed_tags, tlp
 
 
 def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]:
@@ -166,7 +177,8 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
     Parses the Sigma rule dictionary and creates an indicator in XSOAR.
 
     Args:
-        rule_dict (dict): The Sigma rule dictionary.
+        rule (SigmaRule): The Sigma rule parsed.
+        raw_rule (str): The rule in its raw YAML form.
     """
 
     # Create fields mapping
@@ -198,7 +210,7 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
     if rule.custom_attributes:
         indicator["sigmarulelicense"] = rule.custom_attributes.get("license", None)
 
-    techniques, cves, tags, tlp = parse_tags(rule.tags)
+    relationships, tags, tlp = parse_tags(rule.tags)
     indicator["tags"] = tags
     indicator["tlp"] = tlp
 
@@ -207,7 +219,7 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
 
     indicator = {key: value for key, value in indicator.items() if value is not None}
 
-    return {"indicator": indicator, "techniques": techniques, "cves": cves}
+    return {"indicator": indicator, "relationships": relationships}
 
 
 def main() -> None:
@@ -221,7 +233,7 @@ def main() -> None:
         args = demisto.args()
         sigma_rule_str = args.get("sigma_rule_str", "")
         entry_id = args.get("entry_id", "")
-        create_indicators = argToBoolean(args.get("create_indicators", ""))
+        create_indicators = argToBoolean(args.get("create_indicators", "True"))
 
         # Check if both arguments are empty
         if not sigma_rule_str and not entry_id:
@@ -247,8 +259,7 @@ def main() -> None:
                 execute_command("createNewIndicator", xsoar_indicator)
                 create_indicator_relationships(xsoar_indicator["value"],
                                                xsoar_indicator["product"],
-                                               indicator["techniques"],
-                                               indicator["cves"])
+                                               indicator["relationships"])
 
         else:
             for indicator in indicators:
