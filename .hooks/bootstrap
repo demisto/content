@@ -73,7 +73,7 @@ else
         echo "Installing Poetry version:${POETRY_VERSION}"
         curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
         error_code=$?
-        if [ -n "${ARTIFACTS_FOLDER}" ]; then
+        if [ -n "${ARTIFACTS_FOLDER}" ] && [ "${error_code}" -ne 0 ]; then
             cp ${PWD}/poetry-installer-error-*.log "${ARTIFACTS_FOLDER}"
         fi
         if ! command -v poetry >/dev/null 2>&1; then
