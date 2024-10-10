@@ -453,7 +453,7 @@ script:
       name: offset
     - description: Limits the number of results.
       name: limit
-    - description: 'Must be from type of -> String: date-time'.
+    - description: 'Must be from type of -> String: date-time.'
       name: state_update_time
     name: fireeye-hx-list-containment
     description: Fetches all containment states across known hosts.
