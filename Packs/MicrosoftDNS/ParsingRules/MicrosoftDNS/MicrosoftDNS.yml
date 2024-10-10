@@ -1,6 +1,6 @@
-name: MicrosoftDNS
-id: MicrosoftDNS
-fromversion: 8.3.0
+name: Microsoft DNS Parsing Rule
+id: Microsoft_DNS_ParsingRule
+fromversion: 8.4.0
 tags: []
 rules: ''
 samples: ''

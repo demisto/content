@@ -1,6 +1,6 @@
-fromversion: 6.10.0
-id: Squid
-name: Squid
+fromversion: 8.4.0
+id: Squid_ModelingRule
+name: Squid Modeling Rule
 rules: ''
 schema: ''
 tags: ''
