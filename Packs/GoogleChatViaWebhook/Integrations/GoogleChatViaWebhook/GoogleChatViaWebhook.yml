@@ -63,7 +63,7 @@ script:
     name: send-google-chat-custom-card
     outputs:
     - contextPath: GoogleChatWebhook.CustomCard.Name
-      description: Google Chat space full name
+      description: Google Chat space full name.
     - contextPath: GoogleChatWebhook.CustomCard.SpaceName
       description: Google Chat space name.
     - contextPath: GoogleChatWebhook.CustomCard.ThreadName
