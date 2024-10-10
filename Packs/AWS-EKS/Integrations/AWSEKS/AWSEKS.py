@@ -83,8 +83,6 @@ def build_client(args):
     aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                            None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries)
 
-    args = demisto.args()
-
     aws_client = config_aws_session(args, aws_client)
 
     return aws_client

@@ -10,12 +10,28 @@ from test_data.test_response import (UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE, DES
                                      ASSOCIATE_ACCESS_POLICY_RESPONSE, UPDATE_ACCESS_ENTRY_RESPONSE)
 
 AWSEKS = importlib.import_module("AWSEKS")
-AWSEKS.build_client = lambda _: Boto3Client
 
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def test_build_client(mocker):
+    AWSEKS.PARAMS = {'accounts_to_access': '1,2', "defaultRegion": "Region"}
+    mocker.patch.object(AWSEKS, 'config_aws_session', return_value="aws_client")
+
+    aws_client = AWSEKS.build_client({})
+
+    assert aws_client == "aws_client"
+
+
+def mock_build_client(func):
+    def wrapper(mocker):
+        AWSEKS.build_client = lambda _: Boto3Client
+        result = func(mocker)
+        return result
+    return wrapper
 
 
 def test_validate_args_one_arg():
@@ -120,6 +136,7 @@ class Boto3Client:
         pass
 
 
+@mock_build_client
 def test_list_clusters_command(mocker):
     """
         Given:
