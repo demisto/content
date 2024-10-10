@@ -305,7 +305,7 @@ script:
     - name: alert_id
       required: true
       description: The alert id.
-    description: 'Downloads all case files of the alert specified by alert ID, in
+    description: 'Downloads all case files of the alert specified by the alert ID, in
       a zip file. You can obtain the ID from the Alert Summary response, for example
       "id": "AV7zzRy7kvIwrKcfu0I".'
   - name: fireeye-etp-list-yara-rulesets
