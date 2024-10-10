@@ -3180,7 +3180,7 @@ Returns a page of field metadata for a specified project and issue type.
 | Jira.IssueField.AutoCompleteUrl | String | The URL that can be used to automatically complete the field. | 
 | Jira.IssueField.Configuration | Object | The configuration properties. | 
 | Jira.IssueField.DefaultValue | String | The default value of the field. | 
-| Jira.IssueField.FieldID | String | The field id. | 
+| Jira.IssueField.FieldID | String | The field ID. | 
 | Jira.IssueField.HasDefaultValue | Boolean | Whether the field has a default value. | 
 | Jira.IssueField.Key | String | The key of the field. | 
 | Jira.IssueField.Name | String | The name of the field. | 
