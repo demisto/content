@@ -1416,8 +1416,8 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
 
 def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
     end_date = args.get('end_date', int((time.time() - 5) * 1000))
-    start_date = arg_to_number(args.get('start_date', end_date - ONE_MINUTE_IN_MILL_SECONDS))
-    fetch_limit = int(arg_to_number(args.get('limit', DEFAULT_GET_EVENTS_LIMIT)))  # type:ignore
+    start_date = int(args.get('start_date', end_date - ONE_MINUTE_IN_MILL_SECONDS))
+    fetch_limit = int(args.get('limit', DEFAULT_GET_EVENTS_LIMIT))
     events, _, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
 
     return events, CommandResults(outputs=events,
