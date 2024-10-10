@@ -3,6 +3,7 @@ import pytest
 
 def create_client():
     import os
+
     from RecordedFuturePlaybookAlerts import Client, __version__
 
     base_url = "https://api.recordedfuture.com/gw/xsoar/"
@@ -37,6 +38,7 @@ class TestRFClient:
         """
 
         import os
+
         import demistomock as demisto
 
         STATUS_TO_RETRY = [500, 501, 502, 503, 504]
@@ -86,6 +88,7 @@ class TestRFClient:
         """
 
         import os
+
         import demistomock as demisto
 
         # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
@@ -119,6 +122,7 @@ class TestRFClient:
         """
 
         import os
+
         import demistomock as demisto
 
         STATUS_TO_RETRY = [500, 501, 502, 503, 504]
@@ -175,8 +179,9 @@ class TestRFClient:
         """
 
         import os
+
         import demistomock as demisto
-        from CommonServerPython import DemistoException, CommandResults
+        from CommonServerPython import CommandResults, DemistoException
 
         STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
@@ -237,6 +242,7 @@ class TestRFClient:
 
     def test_fetch_incidents(self, mocker):
         import os
+
         import demistomock as demisto
 
         # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
@@ -271,6 +277,7 @@ class TestRFClient:
 
     def test_playbook_alert_search(self, mocker):
         import os
+
         import demistomock as demisto
 
         # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
@@ -302,6 +309,7 @@ class TestRFClient:
 
     def test_playbook_alert_details_multi_input(self, mocker):
         import os
+
         import demistomock as demisto
 
         os.environ["COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS"] = "True"
@@ -338,6 +346,7 @@ class TestRFClient:
 
     def test_playbook_alert_update_multi_input(self, mocker):
         import os
+
         import demistomock as demisto
 
         os.environ["COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS"] = "True"
@@ -371,6 +380,7 @@ class TestRFClient:
 
     def test_playbook_alert_search_multi_input(self, mocker):
         import os
+
         import demistomock as demisto
 
         os.environ["COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS"] = "True"
@@ -407,6 +417,7 @@ class TestRFClient:
 
     def test_playbook_alert_details(self, mocker):
         import os
+
         import demistomock as demisto
 
         # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
@@ -438,6 +449,7 @@ class TestRFClient:
 
     def test_playbook_alert_update(self, mocker):
         import os
+
         import demistomock as demisto
 
         # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
@@ -469,9 +481,10 @@ class TestRFClient:
 
     def test_call_DemistoException_res_json_error(self, mocker):
         """Test _call when err.res.json() raises an exception."""
+        import json
+
         import demistomock as demisto
         from CommonServerPython import DemistoException
-        import json
 
         client = create_client()
 
@@ -538,8 +551,8 @@ class TestActions:
         assert actions.client == mock_client
 
     def test_process_result_actions_404(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
         from CommonServerPython import CommandResults
+        from RecordedFuturePlaybookAlerts import Actions
 
         mock_client = mocker.Mock()
         actions = Actions(mock_client)
@@ -622,10 +635,11 @@ class TestActions:
         assert r_a.outputs_key_field == "mock_outputs_key_field"
 
     def test_fetch_incidents_with_attachment(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
-        import demistomock as demisto
         import json
+
         import CommonServerPython as csp
+        import demistomock as demisto
+        from RecordedFuturePlaybookAlerts import Actions
 
         client = create_client()
         screenshot_dict = {
@@ -682,8 +696,8 @@ class TestActions:
         mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
 
     def test_fetch_incidents_with_incidents_present(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
         import demistomock as demisto
+        from RecordedFuturePlaybookAlerts import Actions
 
         client = create_client()
 
@@ -832,16 +846,17 @@ class TestActions:
         assert result == mock_process_result_actions_return_value
 
     def test_test_module(self, mocker):
-        import RecordedFuturePlaybookAlerts
-        import demistomock as demisto
         import platform
+
+        import demistomock as demisto
+        import RecordedFuturePlaybookAlerts
 
         mocker.patch.object(demisto, "command", return_value="test-module")
         mocker.patch.object(
             demisto, "demistoVersion", return_value={"version": "mock_version"}
         )
         mocker.patch.object(
-            demisto, "params", return_value={"token": {"password": "mocktoken"}}
+            demisto, "params", return_value={"token": {"password": "example"}}
         )
         mocker.patch.object(platform, "platform", return_value="mock_platform")
         mocker.patch.object(RecordedFuturePlaybookAlerts.Client, "whoami")
@@ -852,16 +867,17 @@ class TestActions:
         mocked_return_res.assert_called_with("ok")
 
     def test_test_module_with_boom(self, mocker):
-        import RecordedFuturePlaybookAlerts
-        import demistomock as demisto
         import platform
+
+        import demistomock as demisto
+        import RecordedFuturePlaybookAlerts
 
         mocker.patch.object(demisto, "command", return_value="test-module")
         mocker.patch.object(
             demisto, "demistoVersion", return_value={"version": "mock_version"}
         )
         mocker.patch.object(
-            demisto, "params", return_value={"token": {"password": "mocktoken"}}
+            demisto, "params", return_value={"token": {"password": "example"}}
         )
         mocker.patch.object(platform, "platform", return_value="mock_platform")
         mock_whoami = mocker.patch.object(RecordedFuturePlaybookAlerts.Client, "whoami")
@@ -881,8 +897,9 @@ class TestActions:
 
     def test_transform_incidents_attachments_without_screenshots(self, mocker):
         """Test transforming incidents without screenshots."""
-        from RecordedFuturePlaybookAlerts import Actions
         import json
+
+        from RecordedFuturePlaybookAlerts import Actions
 
         incidents = [{"rawJSON": json.dumps({"panel_evidence_summary": {}})}]
 
@@ -895,8 +912,8 @@ class TestActions:
 
     def test_process_result_actions_with_invalid_actions(self, mocker):
         """Test processing result actions with invalid keys."""
-        from RecordedFuturePlaybookAlerts import Actions
         from CommonServerPython import CommandResults
+        from RecordedFuturePlaybookAlerts import Actions
 
         actions = Actions(rf_client=None)
 
@@ -932,8 +949,8 @@ class TestActions:
 class TestMain:
     def test_main_with_unknown_command(self, mocker):
         """Test main function with an unknown command."""
-        import RecordedFuturePlaybookAlerts
         import demistomock as demisto
+        import RecordedFuturePlaybookAlerts
 
         mocker.patch.object(demisto, "command", return_value="unknown-command")
         mock_return_error = mocker.patch("RecordedFuturePlaybookAlerts.return_error")
@@ -948,8 +965,8 @@ class TestMain:
 
     def test_get_client_no_api_token(self, mocker):
         """Test get_client when no API token is provided."""
-        import RecordedFuturePlaybookAlerts
         import demistomock as demisto
+        import RecordedFuturePlaybookAlerts
 
         mock_params = {
             "server_url": "https://api.recordedfuture.com/gw/xsoar/",
@@ -959,7 +976,8 @@ class TestMain:
         mocker.patch.object(demisto, "params", return_value=mock_params)
         mock_return_error = mocker.patch("RecordedFuturePlaybookAlerts.return_error")
 
-        RecordedFuturePlaybookAlerts.get_client()
+        proxies = {}
+        RecordedFuturePlaybookAlerts.get_client(proxies=proxies)
 
         mock_return_error.assert_called_once_with(
             message="Please provide a valid API token"
@@ -967,8 +985,8 @@ class TestMain:
 
     def test_main_exception_handling(self, mocker):
         """Test main function's exception handling."""
-        import RecordedFuturePlaybookAlerts
         import demistomock as demisto
+        import RecordedFuturePlaybookAlerts
 
         mocker.patch.object(demisto, "command", return_value="test-module")
         mock_get_client = mocker.patch("RecordedFuturePlaybookAlerts.get_client")
@@ -986,3 +1004,101 @@ class TestMain:
             ),
             error=mocker.ANY,
         )
+
+
+def test_get_client_with_proxy(mocker):
+    """Test get_client when proxy is used."""
+    import demistomock as demisto
+    import RecordedFuturePlaybookAlerts
+
+    server_url = "https://api.recordedfuture.com/gw/xsoar/"
+
+    unsecure = False
+    verify_ssl = not unsecure
+
+    mock_params = {
+        "server_url": server_url,
+        "unsecure": unsecure,
+        "token": {"password": "example"},
+        "proxy": True,
+    }
+
+    mocker.patch.object(demisto, "params", return_value=mock_params)
+
+    proxies = {"http": "example.com", "https": "example.com"}
+
+    client_mock = mocker.patch("RecordedFuturePlaybookAlerts.Client")
+
+    RecordedFuturePlaybookAlerts.get_client(proxies=proxies)
+
+    client_mock.assert_called_once_with(
+        base_url=server_url.rstrip("/"),
+        verify=verify_ssl,
+        headers=mocker.ANY,
+        proxy=bool(proxies),
+    )
+
+
+def test_get_client_without_proxy(mocker):
+    """Test get_client when proxy is not used."""
+    import demistomock as demisto
+    import RecordedFuturePlaybookAlerts
+
+    server_url = "https://api.recordedfuture.com/gw/xsoar/"
+
+    unsecure = False
+    verify_ssl = not unsecure
+
+    mock_params = {
+        "server_url": server_url,
+        "unsecure": unsecure,
+        "token": {"password": "example"},
+        "proxy": False,
+    }
+
+    mocker.patch.object(demisto, "params", return_value=mock_params)
+
+    proxies = {}
+
+    client_mock = mocker.patch("RecordedFuturePlaybookAlerts.Client")
+
+    RecordedFuturePlaybookAlerts.get_client(proxies=proxies)
+
+    client_mock.assert_called_once_with(
+        base_url=server_url.rstrip("/"),
+        verify=verify_ssl,
+        headers=mocker.ANY,
+        proxy=bool(proxies),
+    )
+
+
+def test_main_calls_handle_proxy(mocker):
+    """Test main function to ensure it calls handle_proxy() and provides proxies to the get_client."""
+    import demistomock as demisto
+    import RecordedFuturePlaybookAlerts
+
+    proxies = {"http": "example.com", "https": "example.com"}
+
+    mock_handle_proxy = mocker.patch(
+        "RecordedFuturePlaybookAlerts.handle_proxy", return_value=proxies
+    )
+
+    mocker.patch.object(demisto, "command", return_value="test-module")
+
+    mocker.patch.object(
+        demisto, "params", return_value={"token": {"password": "example"}}
+    )
+
+    mock_get_client = mocker.patch("RecordedFuturePlaybookAlerts.get_client")
+
+    mocker.patch("RecordedFuturePlaybookAlerts.Client.whoami")
+
+    mock_return_results = mocker.patch("RecordedFuturePlaybookAlerts.return_results")
+
+    RecordedFuturePlaybookAlerts.main()
+
+    mock_handle_proxy.assert_called_once()
+
+    mock_get_client.assert_called_once_with(proxies=proxies)
+
+    mock_return_results.assert_called_once_with("ok")
