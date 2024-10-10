@@ -1628,7 +1628,7 @@ script:
     arguments:
     - name: project_id_or_key
       required: true
-      description: The ID of Key of the project.
+      description: The ID or key of the project.
     - name: issue_type_id
       required: true
       description: The issue type ID.
