@@ -78,7 +78,7 @@ def apply_filters(incidents: List, args: Dict):
 
 
 def summarize_incidents(args: dict, incidents: List[dict], platform: str):
-    summerized_fields = [
+    summarized_fields = [
         'id',
         'name',
         'type',
@@ -90,17 +90,17 @@ def summarize_incidents(args: dict, incidents: List[dict], platform: str):
         'alertLink' if platform == 'x2' else 'incidentLink',
     ]
     if args.get("add_fields_to_summarize_context"):
-        summerized_fields += args.get("add_fields_to_summarize_context", '').split(",")
-        summerized_fields = [x.strip() for x in summerized_fields]  # clear out whitespace
+        summarized_fields += args.get("add_fields_to_summarize_context", '').split(",")
+        summarized_fields = [x.strip() for x in summarized_fields]  # clear out whitespace
     summarized_incidents = []
     for incident in incidents:
-        summarizied_incident = {
+        summarized_incident = {
             field: incident.get(
                 field, incident["CustomFields"].get(field, "n/a")
             )
-            for field in summerized_fields
+            for field in summarized_fields
         }
-        summarized_incidents.append(summarizied_incident)
+        summarized_incidents.append(summarized_incident)
     return summarized_incidents
 
 
@@ -234,7 +234,7 @@ def main():  # pragma: no cover
             readable_output=readable_output,
             outputs=outputs,
             raw_response=raw_response,
-            # in summerized version, ignore auto extract
+            # in summarized version, ignore auto extract
             ignore_auto_extract=is_summarized_version
         )
         return_results(results)
