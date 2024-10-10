@@ -27,6 +27,9 @@ DEVICE_ALREADY_REGISTERED = (
     "Device is already registered, try running the 'keeper-security-register-complete'"
     " command without supplying a code argument."
 )
+SSO_REDIRECT = (
+    "Login was redirected to a cloud SSO. Please disable SSO redirect to continue."
+)
 LAST_RUN = "Last Run"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
@@ -259,6 +262,8 @@ class Client:
             )
         elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:
             raise DemistoException(DEVICE_ALREADY_REGISTERED)
+        elif resp.loginState == APIRequest_pb2.REDIRECT_CLOUD_SSO:
+            raise DemistoException(SSO_REDIRECT)
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")
 
