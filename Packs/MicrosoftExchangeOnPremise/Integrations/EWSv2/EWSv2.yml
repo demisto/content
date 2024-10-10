@@ -90,7 +90,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: "┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉\n‎                                         Advanced Mode\nOverride Authentication Type (NTLM, Basic, or Digest)."
+- display: "┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉\n‎                                         Advanced Mode\nOverride Authentication Type (NTLM, or Digest)."
   name: authType
   type: 0
   section: Connect
