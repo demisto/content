@@ -29,6 +29,7 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 
     | **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
     |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+    | Azure Cloud                        | See option table below.
     | Host URL (e.g., https://graph.microsoft.com)                           |                                                                                                                                                                                                                                                                                                                                                        | True         |
     | ID / client ID                                                         |                                                                                                                                                                                                                                                                                                                                                        | False        |
     | Token / Tenant ID                                                      |                                                                                                                                                                                                                                                                                                                                                        | False        |
@@ -43,6 +44,19 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
     | Trust any certificate (not secure)                                     |                                                                                                                                                                                                                                                                                                                                                        | False        |
     | Use system proxy settings                                              |                                                                                                                                                                                                                                                                                                                                                        | False        |
     | Suppress Errors for Non Found Users                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    
+    
+    Azure cloud options
+
+    | Azure Cloud | Description                                                         |
+    |-------------|---------------------------------------------------------------------|
+    | Worldwide   | The publicly accessible Azure Cloud                                 |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)            |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)  |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                 |
+    | Germany     | Azure cloud for the German Government                               |
+    | China       | Azure cloud for the Chinese Government                              |
+    | Custom      | Custom endpoint configuration to the Azure cloud. See note below.   |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

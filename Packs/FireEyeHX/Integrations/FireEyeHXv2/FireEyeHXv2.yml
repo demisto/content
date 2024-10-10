@@ -521,12 +521,12 @@ script:
       - update_actor.username
       - create_actor._id
       - create_actor.username
-    - description: Filters searches by host set ID - <Integer>.
+    - description: 'Filters searches by host set ID - <Integer>.'
       name: hostSetId
     - description: Returns a single enterprise search record. If you enter this argument, there is no need for other arguments.
       name: searchId
       isArray: true
-    - description: Filters searches by username that created searches - <String>.
+    - description: 'Filters searches by username that created searches - <String>.'
       name: actorUsername
     description: Fetches all enterprise searches.
     name: fireeye-hx-search-list
@@ -687,6 +687,9 @@ script:
     - description: The Unique search ID.
       name: searchId
       required: true
+    - description: limit of results to return per search.
+      name: limit
+      required: false
     description: Fetches the results for a specific enterprise search.
     name: fireeye-hx-search-result-get
     outputs:
@@ -721,8 +724,9 @@ script:
       name: hostSet
     - description: The name of host set to be searched.
       name: hostSetName
-    - description: Limits the results count (once the limit is reached, the search is stopped).
+    - description: Limits the results count (default is 1000).
       name: limit
+      defaultValue: '1000'
     - auto: PREDEFINED
       defaultValue: 'true'
       description: Whether a search is exhaustive or quick.
@@ -1122,7 +1126,7 @@ script:
     - description: The name of the indicator. Use the `uri_name` value.
       name: name
       required: true
-    - description: A list of conditions to add. The list can include a list of IPv4 addresses, MD5 files, and domain names. For example, example.netexample.orgexample.lol
+    - description: A list of conditions to add. The list can include a list of IPv4 addresses, MD5 files, and domain names. For example, example.netexample.orgexample.
       name: condition
       required: true
     description: Add conditions to an indicator. Conditions can be MD5, hash values, domain names, and IP addresses.
