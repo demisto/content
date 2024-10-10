@@ -65,6 +65,8 @@ configuration:
   defaultvalue: 1 hours
   required: false
   section: Collect
+  hidden:
+  - marketplacev2
 - display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
@@ -72,6 +74,15 @@ configuration:
   required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch.
   section: Collect
+- display: Page size
+  name: page_size
+  type: 0
+  defaultvalue: '50000'
+  required: false
+  additionalinfo: The number of events to fetch per request - the maximum is 600k, raise this parameter in case you're getting aggregated delays.
+  section: Collect
+  hidden:
+  - xsoar
 - display: Fetch incidents
   name: isFetch
   type: 8
