@@ -97,15 +97,12 @@ class Client(BaseClient):
         config_ids: str,
         offset: str | None = '',
         limit: int = 20,
-        from_epoch: str = ''
     ) -> tuple[list[dict], str | None]:
         params: dict[str, int | str] = {
             'limit': limit
         }
         if offset:
             params["offset"] = offset
-        else:
-            params["from"] = int(from_epoch)
         raw_response: str = self._http_request(
             method='GET',
             url_suffix=f'/{config_ids}',
@@ -375,10 +372,18 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
+def reset_offset_command(client: Client):
+    ctx = get_integration_context()
+    if "offset" in ctx:
+        del ctx["offset"]
+    set_integration_context(ctx)
+    return 'Offset was reset successfully.', {}, {}
+
+
 @logger
 def fetch_events_command(
     client: Client,
-    fetch_time: str,
+    page_size: int,
     fetch_limit: int,
     config_ids: str,
     ctx: dict,
@@ -396,11 +401,10 @@ def fetch_events_command(
         (list[dict], str, int, str): events, new offset, total number of events fetched, and new last_run time to set.
     """
     total_events_count = 0
-    from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
     while total_events_count < int(fetch_limit):
-        demisto.info(f"Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
-        events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
+        demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
+        events, offset = client.get_events_with_offset(config_ids, offset, page_size)
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
@@ -461,7 +465,8 @@ def main():  # pragma: no cover
     )
     commands = {
         "test-module": test_module_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command
+        f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command,
+        f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -479,17 +484,25 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
+            page_size = int(params.get("page_size", FETCH_EVENTS_PAGE_SIZE))
+            limit = int(params.get("fetchLimit", 300000))
             for events, offset, total_events_count in fetch_events_command(  # noqa: B007
                 client,
-                params.get("fetchTime"),
-                int(params.get("fetchLimit", 20)),
+                page_size,
+                limit,
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
             ):
                 if events:
+                    demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
                 set_integration_context({"offset": offset})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
+            next_run = {}
+            if total_events_count >= limit:
+                next_run["nextTrigger"] = "0"
+            demisto.setLastRun(next_run)
+
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)

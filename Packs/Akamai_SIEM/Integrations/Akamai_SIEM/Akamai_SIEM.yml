@@ -74,6 +74,15 @@ configuration:
   required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch.
   section: Collect
+- display: Page size
+  name: page_size
+  type: 0
+  defaultvalue: '50000'
+  required: false
+  additionalinfo: The number of events to fetch per request - the maximum is 600k, raise this parameter in case you're getting aggregated delays.
+  section: Collect
+  hidden:
+  - xsoar
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -118,6 +127,8 @@ display: Akamai WAF SIEM
 name: Akamai WAF SIEM
 script:
   commands:
+  - description: Reset the last offset in case the offset is invalid.
+    name: akamai-siem-reset-offset
   - arguments:
     - description: 'Unique identifier for each security configuration. To report on more than one configuration, separate the integer identifiers with semicolons (;), for example: 12892;29182;82912.'
       name: config_ids
