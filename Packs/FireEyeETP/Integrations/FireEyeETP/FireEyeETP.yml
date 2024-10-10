@@ -350,7 +350,7 @@ script:
     - contextPath: FireEyeETP.Events
       description: The events of the alert.
     - contextPath: FireEyeETP.Events.Delivered_msg
-      description: Display message of delivered outbound.
+      description: Display if event is delivered successfully or not.
     - contextPath: FireEyeETP.Events.Delivered_status
       description: The status of the message.
     - contextPath: FireEyeETP.Events.InternetMessageId
