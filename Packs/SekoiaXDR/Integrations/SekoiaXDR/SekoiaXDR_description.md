@@ -12,6 +12,7 @@
 - **First fetch timestamp**: -7d
 - **Maximum incidents to fetch per interval**: 10
 - **Alerts status**: Pending, Acknowledge, Ongoing
+- **Close notes**: Closed by Sekoia
 
 ### API Key Creation
 
