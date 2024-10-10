@@ -164,24 +164,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def run_fetch_mechanism(client: Client, next_link: str | None, last_run: dict[str, Any], page_size: int) -> dict[str, Any] | None:
-    """
-    Retrieve events from the Atlassian Confluence Cloud API according to the following logic:
-        - If next_link is not provided, it searches for events within the specified date range.
-        - If next_link is provided, it fetches the next page of results.
-    The mechanism ensures that while we have a next_link, we continue fetching pages until there are no more pages to fetch.
-    Args:
-        client (Client): The client instance for making API requests.
-        next_link (str | None): The link for the next page of results, if any.
-        last_run (dict[str,§ Any]): The dictionary containing the last run information, such as the end date.
-        page_size (int): The desired page size for the search.
-    Returns:
-        dict[str, Any]: The API response containing the fetched events.
-    """
+def run_fetch_mechanism(client: Client, next_link, start_date, end_date, page_size: int) -> dict[str, Any] | None:
     if not next_link:
-        end_date = int((time.time() - 5) * 1000)
-        last_end_date = last_run.get('end_date', 0)
-        start_date = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
         if end_date < start_date or end_date - start_date < 30000:
             demisto.debug(f'Ignoring the fetch as the time range is less invalid. Start date: {start_date}, End date: {end_date}')
             return None
@@ -1396,37 +1380,22 @@ def confluence_cloud_group_list_command(client: Client, args: dict[str, str]) ->
 
 
 def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """
-    Fetches events from Confluence Cloud in batches.
-
-    This function fetches events from the Confluence Cloud API, respecting the given fetch limit.
-    It uses pagination to retrieve events in batches, updates the last run data after each batch,
-    and yields the events as they are fetched.
-
-    Args:
-        client (Client): The client object used to make API requests.
-        fetch_limit (int): The maximum number of events to fetch.
-        last_run (Dict[str, Any]): The state of the previous fetch, including the next page link and last end date.
-    Returns:
-        list: A list of event dictionaries from the Confluence Cloud API.
-
-    Notes:
-        - The function stops fetching when either the fetch_limit is reached or there are no more events.
-    """
     demisto.debug(f'Starting fetch_events with {last_run=} and {fetch_limit=}')
-    current_run = last_run.copy()
-    next_link = current_run.get('next_link', '')
-    # if not current_run:
-    #     current_run['end_date'] = 1727730000000
+    next_link = last_run.get('next_link', '')
     finished_last_query = not next_link
     no_events_in_confluence = False
     all_events: List[Dict[str, Any]] = []
 
     while len(all_events) < fetch_limit and not no_events_in_confluence:
         page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - len(all_events))
-        response = run_fetch_mechanism(client, next_link, current_run, page_size)
+        end_date = int((time.time() - 5) * 1000)
+        last_end_date = last_run.get('end_date', None)
+        start_date = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
+        response = run_fetch_mechanism(client, next_link, start_date, end_date, page_size)
+
         if not response:
             break
+
         events = response['results']
         next_link = response['_links'].get('next', None)
         demisto.debug(f'Fetched {len(events)} events, total_length: {len(all_events)}, next_link: {next_link}')
@@ -1437,9 +1406,10 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
 
         finished_last_query = not next_link
         all_events.extend(events)
-        current_run = {
+
+        last_run = {
             'next_link': next_link,
-            'end_date': all_events[0]['creationDate'] if all_events else last_run.get('end_date', 0)
+            'end_date': end_date if all_events and not next_link else last_end_date
         }
 
     if not all_events:
