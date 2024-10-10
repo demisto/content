@@ -1092,6 +1092,9 @@ def get_width_height(args: dict):
 
 
 def main():  # pragma: no cover
+    demisto.debug("40686RASTERIZE before memory dump")
+    register_signal_handler_profiling_dump()
+    demisto.debug("40686RASTERIZE after memory dump")
     demisto.debug(f"main, {demisto.command()=}")
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
 
