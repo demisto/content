@@ -98,14 +98,30 @@ class Client(BaseClient):
         )
 
 
-def update_integration_context(
+def normalize_date_format(date_str: str) -> str:
+    
+    try:
+        # Parse the original date string with milliseconds
+        original_date = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+    except Exception:
+        if "." in date_str:
+            date_str = f"{date_str.split('.')[0]}Z"
+        return date_str
+
+    # Convert back to the desired format without milliseconds
+    new_date_str = original_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+    
+    return new_date_str
+
+
+def update_new_integration_context(
     filtered_events: list[dict[str, str]],
     next_hash: str,
     include_last_fetch_events: bool,
     last_integration_context: dict[str, str],
 ):
     events_suspected_duplicates = extract_events_suspected_duplicates(filtered_events)
-    latest_event_time = max(filtered_events, key=parse_event_time)["event_time"]
+    latest_event_time = normalize_date_format(max(filtered_events, key=parse_event_time)["time"])
 
     if latest_event_time == last_integration_context.get("latest_event_time", ""):
         events_suspected_duplicates.extend(
@@ -129,19 +145,19 @@ def push_events(events: list[dict]):
 
 
 def parse_event_time(event):
-    return datetime.strptime(event["event_time"], "%Y-%m-%dT%H:%M:%S.%fZ")
+    return datetime.strptime(normalize_date_format(event["time"]), "%Y-%m-%dT%H:%M:%SZ")
 
 
 def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
 
-    # Find the maximum event_time
-    latest_event_time = max(events, key=parse_event_time)["event_time"]
+    # Find the maximum event time
+    latest_event_time = normalize_date_format(max(events, key=parse_event_time)["time"])
 
-    # Filter all JSONs with the maximum event_time
-    filtered_events = filter(lambda x: x["event_time"] == latest_event_time, events)
+    # Filter all JSONs with the maximum event time
+    filtered_events = filter(lambda x: normalize_date_format(x["time"]) == latest_event_time, events)
 
     # Extract the event_ids from the filtered events
-    events_suspected_duplicates = [x["event_id"] for x in filtered_events]
+    events_suspected_duplicates = [x["uuid"] for x in filtered_events]
     return events_suspected_duplicates
 
 
@@ -166,14 +182,14 @@ def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]
     latest_event_time = integration_context.get(
         "latest_event_time", ""
     )  # TODO default value
-    latest_event_time = datetime.strptime(latest_event_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+    latest_event_time = datetime.strptime(normalize_date_format(latest_event_time), "%Y-%m-%dT%H:%M:%SZ")
 
     return [
         event
         for event in events
         if is_duplicate(
-            event["event_id"],
-            datetime.strptime(event["event_time"], "%Y-%m-%dT%H:%M:%S.%fZ"),
+            event["uuid"],
+            datetime.strptime(normalize_date_format(event["time"]), "%Y-%m-%dT%H:%M:%SZ"),
             latest_event_time,
             events_suspected_duplicates,
         )
@@ -182,7 +198,7 @@ def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]
 
 def get_events_command(
     client: Client, integration_context: dict
-) -> list[dict[str, str]]:
+):
 
     events: list[dict] = []
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
@@ -202,13 +218,16 @@ def get_events_command(
             raise NextPointingNotAvailable
         raise e
 
+    if not events:
+        return
+
     filtered_events = filter_duplicate_events(events)
     filtered_events.extend(integration_context.get("last_fetch_events", []))
 
     try:
         push_events(filtered_events)
     except Exception as e:
-        update_integration_context(
+        update_new_integration_context(
             filtered_events=filtered_events,
             next_hash=next_hash,
             include_last_fetch_events=True,
@@ -217,14 +236,12 @@ def get_events_command(
         demisto.debug(f"Failed to push events to XSIAM, The integration_context updated. Error: {e}")
         raise e
 
-    update_integration_context(
+    update_new_integration_context(
             filtered_events=filtered_events,
             next_hash=next_hash,
             include_last_fetch_events=False,
             last_integration_context=integration_context,
         )
-
-    return filtered_events
 
 
 def perform_long_running_loop(client: Client):
