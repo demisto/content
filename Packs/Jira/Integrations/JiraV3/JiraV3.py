@@ -2080,7 +2080,7 @@ def get_create_metadata_issue_types_command(client: JiraBaseClient, args: Dict[s
     max_results = args.get('max_results', 50)
 
     if not project_id_or_key:
-        raise ValueError("No project_id_or_key specified for jira-get-create-metadata-issue-types")
+        raise ValueError("No project_id_or_key specified for jira-create-metadata-issue-types-list")
 
     res = client.get_create_metadata_issue_types(
         project_id_or_key=project_id_or_key,
