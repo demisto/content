@@ -256,12 +256,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -352,12 +352,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -600,12 +600,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -770,12 +770,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -1095,12 +1095,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -1250,12 +1250,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -1359,12 +1359,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"

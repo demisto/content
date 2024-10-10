@@ -260,12 +260,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -384,12 +384,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -462,12 +462,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -673,12 +673,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -776,12 +776,12 @@ tasks:
                 iscontext: true
       limit:
         complex:
-          root: inputs.limits
+          root: inputs.limit
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.limits
+                  simple: inputs.limit
                 iscontext: true
       polling:
         simple: "true"
@@ -1239,14 +1239,6 @@ inputs:
   value: {}
   required: false
   description: Limits the results count (once the limit is reached, the search is stopped).
-  playbookInputQuery:
-- key: exhaustive
-  value:
-    simple: "no"
-  required: false
-  description: |-
-    Whether a search is exhaustive or quick.
-    Possible values are: yes, no. Default is yes.
   playbookInputQuery:
 outputs:
 - contextPath: FireEyeHX.HuntingResults
