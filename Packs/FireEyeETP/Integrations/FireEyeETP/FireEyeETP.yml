@@ -348,7 +348,7 @@ script:
       description: Message ID of alert.
     outputs:
     - contextPath: FireEyeETP.Events
-      description: The Events of alert.
+      description: The events of the alert.
     - contextPath: FireEyeETP.Events.Delivered_msg
       description: Display message of delivered outbound.
     - contextPath: FireEyeETP.Events.Delivered_status
