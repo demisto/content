@@ -17,7 +17,7 @@
           "is_array": false
       },
       "src_asset_id": {
-          "type": "",
+          "type": "string",
           "is_array": false
       },
       "asset_id": {
@@ -33,11 +33,11 @@
           "is_array": false
       },
       "cefSeverity": {
-          "type": "",
+          "type": "string",
           "is_array": false
       },
       "matchedRuleId": {
-          "type": "",
+          "type": "string",
           "is_array": false
       },
       "type": {
@@ -45,7 +45,7 @@
           "is_array": false
       },
       "id": {
-          "type": "",
+          "type": "string",
           "is_array": false
       },
       "src_asset_hostname": {
@@ -69,7 +69,7 @@
           "is_array": false
       },
       "dst_asset_id": {
-          "type": "",
+          "type": "string",
           "is_array": false
       }
   }
