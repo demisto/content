@@ -93,3 +93,6 @@ ignore=GR103
 
 [file:classifier-Veeam_Backup_&_Replication_RESTAPI.json]
 ignore=GR103
+
+[file:1_0_1.md]
+ignore=RN113,RN114
