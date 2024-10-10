@@ -494,6 +494,7 @@ def main():  # pragma: no cover
                 ctx=get_integration_context() or {},
             ):
                 if events:
+                    demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
                 set_integration_context({"offset": offset})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
