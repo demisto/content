@@ -12,6 +12,13 @@ disable_warnings()
 VENDOR = "symantec"
 PRODUCT = "endpoint_security"
 DEFAULT_CONNECTION_TIMEOUT = 30
+MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
+
+
+class UnauthorizedToken(Exception): ...
+
+
+class NextPointingNotAvailable(Exception): ...
 
 
 class Client(BaseClient):
@@ -33,8 +40,6 @@ class Client(BaseClient):
         self.stream_id = stream_id
         self.channel_id = channel_id
         self.fetch_interval = fetch_interval
-        self.latest_event_time: datetime = self.get_latest_event_time
-        self.events_suspected_duplicates: set = self.get_events_suspected_duplicates
 
         super().__init__(
             base_url=base_url,
@@ -42,6 +47,8 @@ class Client(BaseClient):
             proxy=proxy,
             timeout=180,
         )
+
+        self.get_token()
 
     def get_token(self):
         """
@@ -78,26 +85,48 @@ class Client(BaseClient):
             stream=True,
         )
 
-    def is_duplicate(self, event_id: str, event_time: datetime) -> bool:
-        if event_time < self.latest_event_time:
-            return True
-        elif event_time == self.latest_event_time and event_id in self.events_suspected_duplicates:
-            return True
-        return False
+    def get_events(self, payload: dict[str, str]):
+        """
+        API call in streaming to fetch events
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/v1/event-export/stream/{self.stream_id}/{self.channel_id}",
+            json_data=payload,
+            params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
+            stream=True,
+        )
 
-    @property
-    def get_latest_event_time(self) -> datetime:
-        integration_context = get_integration_context()
-        latest_event_time = integration_context.get("latest_event_time", self.fetch_interval)
-        return datetime.strptime(latest_event_time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-    @property
-    def get_events_suspected_duplicates(self) -> set:
-        integration_context = get_integration_context()
-        return set(integration_context.get("events_suspected_duplicates", []))
+def update_integration_context(
+    filtered_events: list[dict[str, str]],
+    next_hash: str,
+    include_last_fetch_events: bool,
+    last_integration_context: dict[str, str],
+):
+    events_suspected_duplicates = extract_events_suspected_duplicates(filtered_events)
+    latest_event_time = max(filtered_events, key=parse_event_time)["event_time"]
 
-    def get_event(self):
-        ...
+    if latest_event_time == last_integration_context.get("latest_event_time", ""):
+        events_suspected_duplicates.extend(
+            last_integration_context.get("events_suspected_duplicates", [])
+        )
+
+    integration_context = {
+        "latest_event_time": latest_event_time,
+        "events_suspected_duplicates": events_suspected_duplicates,
+        "next_fetch": {"next": next_hash} if next_hash else {},
+        "last_fetch_events": filtered_events if include_last_fetch_events else [],
+    }
+
+    # Call the set_integration_context with the final context_data
+    set_integration_context(integration_context)
+
+
+def push_events(events: list[dict]):
+    send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+    demisto.debug(f"{len(events)} events were pushed to XSIAM")
+
 
 def parse_event_time(event):
     return datetime.strptime(event["event_time"], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -116,7 +145,86 @@ def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
     return events_suspected_duplicates
 
 
-def get_events_command(client: Client): ...
+def is_duplicate(
+    event_id: str,
+    event_time: datetime,
+    latest_event_time: datetime,
+    events_suspected_duplicates: set,
+) -> bool:
+    if event_time < latest_event_time:
+        return True
+    elif event_time == latest_event_time and event_id in events_suspected_duplicates:
+        return True
+    return False
+
+
+def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]]:
+    integration_context = get_integration_context()
+    events_suspected_duplicates = set(
+        integration_context.get("events_suspected_duplicates", [])
+    )
+    latest_event_time = integration_context.get(
+        "latest_event_time", ""
+    )  # TODO default value
+    latest_event_time = datetime.strptime(latest_event_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    return [
+        event
+        for event in events
+        if is_duplicate(
+            event["event_id"],
+            datetime.strptime(event["event_time"], "%Y-%m-%dT%H:%M:%S.%fZ"),
+            latest_event_time,
+            events_suspected_duplicates,
+        )
+    ]
+
+
+def get_events_command(
+    client: Client, integration_context: dict
+) -> list[dict[str, str]]:
+
+    events: list[dict] = []
+    next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
+
+    try:
+        with client.get_events(payload=next_fetch) as res:
+            # Write the chunks from the response to the tmp file
+            for chunk in res.iter_content(chunk_size=MAX_CHUNK_SIZE_TO_READ):
+                json_res = json.loads(chunk)
+                events.extend(json_res["events"])
+                next_hash = json_res.get("next", "")
+
+    except DemistoException as e:
+        if e.res is not None and e.res.status_code == 401:
+            raise UnauthorizedToken
+        elif e.res is not None and e.res.status_code == 410:
+            raise NextPointingNotAvailable
+        raise e
+
+    filtered_events = filter_duplicate_events(events)
+    filtered_events.extend(integration_context.get("last_fetch_events", []))
+
+    try:
+        push_events(filtered_events)
+    except Exception as e:
+        update_integration_context(
+            filtered_events=filtered_events,
+            next_hash=next_hash,
+            include_last_fetch_events=True,
+            last_integration_context=integration_context,
+        )
+        demisto.debug(f"Failed to push events to XSIAM, The integration_context updated. Error: {e}")
+        raise e
+
+    update_integration_context(
+            filtered_events=filtered_events,
+            next_hash=next_hash,
+            include_last_fetch_events=False,
+            last_integration_context=integration_context,
+        )
+
+    return filtered_events
 
 
 def perform_long_running_loop(client: Client):
@@ -126,10 +234,15 @@ def perform_long_running_loop(client: Client):
         try:
             integration_context = get_integration_context()
             demisto.debug(f"Starting new fetch with {integration_context=}")
-            integration_context = integration_context.get("last_run")
 
-            get_events_command(client)
+            get_events_command(client, integration_context=integration_context)
 
+        except UnauthorizedToken:
+            client.get_token()
+            continue
+        except NextPointingNotAvailable:
+            integration_context.pop("next_fetch")
+            continue
         except Exception as e:
             demisto.debug(f"Failed to fetch logs from API. Error: {e}")
             raise e
