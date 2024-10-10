@@ -226,6 +226,7 @@ script:
       - CONTROL_DELETED
       - WONT_FIX
       - DETECTION_EXPIRED
+      - BY_DESIGN
     - name: reject_note
       description: rejection note.
       required: true
@@ -262,6 +263,7 @@ script:
       - CONTROL_DELETED
       - WONT_FIX
       - DETECTION_EXPIRED
+      - BY_DESIGN
     - name: resolution_note
       description: resolution note.
       required: true
