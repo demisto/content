@@ -362,7 +362,7 @@ script:
     arguments:
     - name: message_id
       description: The message ID.
-    description: Releases the email file present in the quarantine for the given Email
+    description: Releases the email file present in the quarantine for the given email.
       Cloud message ID.
   isfetch: true
   subtype: python3
