@@ -1,0 +1,72 @@
+commonfields:
+  id: Symantec Endpoint Security
+  version: -1
+name: Symantec Endpoint Security
+display: Symantec Endpoint Security
+category: Analytics & SIEM
+description: ""
+configuration:
+- display: Server URL
+  name: host
+  type: 0
+  defaultvalue: https://api.sep.securitycloud.symantec.com
+  required: true
+  section: Connect
+- display: Client ID
+  name: client_id
+  type: 0
+  required: true
+  additionalinfo: ""
+  section: Connect
+- displaypassword: Client Secret
+  name: client_secret
+  hiddenusername: true
+  type: 9
+  required: true
+  section: Connect
+- display: Stream ID
+  name: stream_id
+  type: 0
+  required: true
+  additionalinfo: ""
+  section: Connect
+- display: Channel ID
+  name: channel_id
+  type: 0
+  required: true
+  additionalinfo: ""
+  section: Connect
+- display: Fetch events
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: Fetch interval in seconds
+  name: fetch_interval
+  type: 0
+  defaultvalue: 60
+  required: true
+  section: Collect
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Collect
+script:
+  script: ""
+  type: python
+  commands: []
+  dockerimage: demisto/netutils:1.0.0.103292
+  longRunning: true
+  subtype: python3
+marketplaces:
+- marketplacev2
+fromversion: 6.9.0
+tests:
+- No tests
