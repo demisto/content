@@ -333,8 +333,6 @@ def test_azure_storage_block_public_access_command(mocker, requests_mock):
         block_public_access_command(client, {'container_name': container_name})
 
 
-
-
 def test_azure_storage_set_blob_tags_command(requests_mock):
     """
     Scenario: Set the tags for the specified Blob.
