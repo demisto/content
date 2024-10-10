@@ -2137,7 +2137,7 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
     """
     max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH), 'Fetch Limit')
 
-    last_run_time = last_run.get('last_fetch', None)
+    last_run_time = last_run.get('last_fetch')
     next_page_token = last_run.get('next_page_token', '')
 
     next_run = last_run.copy()

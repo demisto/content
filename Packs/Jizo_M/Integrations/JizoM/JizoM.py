@@ -430,7 +430,7 @@ def fetch_incidents(
     """
 
     # Get the last fetch time, if exists
-    last_fetch = last_run.get("last_fetch", None)
+    last_fetch = last_run.get("last_fetch")
     last_ids: list[int] = last_run.get("last_ids", []) or []
     first_fetched_ids: list[int] = last_run.get("first_fetched_ids", []) or []
 

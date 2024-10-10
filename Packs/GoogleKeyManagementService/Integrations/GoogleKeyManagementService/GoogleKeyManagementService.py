@@ -836,7 +836,7 @@ def list_keys_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, 
     key_ring_name = client.kms_client.key_ring_path(project_id, location_id, key_ring_id)
 
     # if needed add state filter.
-    filter_state = args.get('key_state', None)
+    filter_state = args.get('key_state')
 
     response = client.kms_client.list_crypto_keys(request={'parent': key_ring_name, 'filter': filter_state})
 

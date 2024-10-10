@@ -596,7 +596,7 @@ def fetch_threats(client: GemClient, max_results: int, last_run: dict, first_fet
     Returns:
         tuple[dict, list[dict]]: A tuple containing the new last run and a list of incidents (threats).
     """
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     if last_fetch is None:
         # if missing, use what provided via first_fetch_time
         last_fetch = first_fetch_time

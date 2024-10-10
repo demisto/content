@@ -549,7 +549,7 @@ def fetch_incidents(
         first_fetch_time: Optional[int],
         incident_types: List[str]) -> Tuple[Dict[str, int], List[dict]]:
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     if not last_fetch:  # if missing, use what provided via first_fetch_time
         last_fetch = first_fetch_time
     else:  # otherwise use the stored last fetch

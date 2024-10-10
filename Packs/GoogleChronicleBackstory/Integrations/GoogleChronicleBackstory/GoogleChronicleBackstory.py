@@ -726,7 +726,7 @@ def get_default_command_args_value(args: dict[str, Any], max_page_size=10000, da
     :return : start_time, end_time, page_size, reference_time
     :rtype : str, str, int, Optional[str]
     """
-    preset_time_range = args.get('preset_time_range', None)
+    preset_time_range = args.get('preset_time_range')
     reference_time = None
     if preset_time_range:
         preset_time_range = validate_preset_time_range(preset_time_range)
@@ -770,7 +770,7 @@ def get_gcb_udm_search_command_args_value(args: dict[str, Any], max_limit=1000, 
     if not query:
         raise ValueError(MESSAGES['QUERY_REQUIRED'])
     query = urllib.parse.quote(args.get('query', ''))
-    preset_time_range = args.get('preset_time_range', None)
+    preset_time_range = args.get('preset_time_range')
     if preset_time_range:
         preset_time_range = validate_preset_time_range(preset_time_range)
         start_time, end_time = get_chronicle_default_date_range(preset_time_range, 'preset_time_range')

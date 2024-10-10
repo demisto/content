@@ -86,8 +86,8 @@ class Client(BaseClient):
 
 
 def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    incident_id = args.get("incident_id", None)
-    company_id = args.get("company_id", None)
+    incident_id = args.get("incident_id")
+    company_id = args.get("company_id")
 
     incident = client.get_incident(incident_id, company_id)
 
@@ -111,11 +111,11 @@ def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 def classify_incident_command(client: Client, args: Dict[str, Any]) -> str:
-    incident_id = args.get("incident_id", None)
-    company_id = args.get("company_id", None)
-    classification = args.get("classification", None)
-    prev_classification = args.get("prev_classification", None)
-    email = args.get("email", None)
+    incident_id = args.get("incident_id")
+    company_id = args.get("company_id")
+    classification = args.get("classification")
+    prev_classification = args.get("prev_classification")
+    email = args.get("email")
 
     if not (incident_id or classification or prev_classification or email):
         raise ValueError("Missing arguments!")
@@ -131,7 +131,7 @@ def classify_incident_command(client: Client, args: Dict[str, Any]) -> str:
 
 
 def get_open_incidents_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
-    company_id = args.get("company_id", None)
+    company_id = args.get("company_id")
 
     open_incidents = client.get_open_incidents(company_id)
     if open_incidents:
@@ -173,7 +173,7 @@ def test_module(client: Client, api_key, scopes) -> str:
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, Any]):
-    last_run = last_run.get("data", None)
+    last_run = last_run.get("data")
     if last_run is None:
         last_run = set()
     else:
