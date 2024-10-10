@@ -1797,6 +1797,7 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
 
 def main():
     params = demisto.params()
+    demisto.debug('test')
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
     benign_tag_ids = argToList(params.get('benign_tag_ids'))
