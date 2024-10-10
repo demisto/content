@@ -260,7 +260,7 @@ script:
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.name
       description: Malware name.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.sid
-      description: Malware sid.
+      description: Malware SID.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.stype
       description: Malware type.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.submitted_at
