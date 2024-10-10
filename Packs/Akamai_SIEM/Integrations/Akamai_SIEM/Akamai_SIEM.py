@@ -378,6 +378,8 @@ def reset_offset_command(client: Client):
         del ctx["offset"]
     set_integration_context(ctx)
     return 'Offset was reset successfully.', {}, {}
+
+
 @logger
 def fetch_events_command(
     client: Client,
@@ -499,7 +501,7 @@ def main():  # pragma: no cover
             if total_events_count >= limit:
                 next_run["nextTrigger"] = "0"
             demisto.setLastRun(next_run)
-                
+
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
