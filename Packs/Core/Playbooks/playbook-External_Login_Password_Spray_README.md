@@ -1,5 +1,12 @@
-Playbook Overview:
-This playbook is designed to investigate and respond to external login password sprays. It enriches the external IP to enable early containment, retrieves event information, and determines how the attack was carried out and whether it was successful.
+This playbook is designed to handle the following alerts:
+- External Login Password Spray
+- Successful External Login Password Spray
+- External Login Password Spray on a Domain Controller
+- External Login Password Spray Involving a Honey User
+- Successful External Login Password Spray on a Domain Controller
+- Successful External Login Password Spray on a sensitive server
+
+The playbook is designed to investigate and respond to external login password sprays. It enriches the external IP to enable early containment, retrieves event information, and determines how the attack was carried out and whether it was successful.
 
 Playbook Stages:
 Early Containment:
@@ -24,8 +31,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* CoreIOCs
 * CortexCoreXQLQueryEngine
+* CoreIOCs
 * CortexCoreIR
 
 ### Scripts
@@ -36,11 +43,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * core-run-script-execute-commands
-* core-list-risky-users
-* ip
 * core-get-cloud-original-alerts
+* ip
 * ad-expire-password
 * closeInvestigation
+* core-list-risky-users
 
 ## Playbook Inputs
 
