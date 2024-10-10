@@ -1003,7 +1003,7 @@ def block_public_access_command(client: Client, args: Dict[str, Any]):
     if not account_key:
         raise KeyError("The 'shared_key' parameter must be provided.")
     else:
-        account_name = storage_account_name
+        account_name = demisto.params().get('credentials', {}).get('identifier')
         container_name = args.get("container_name")
         api_version = client.get_api_version()
         request_url = f"https://{account_name}.blob.core.windows.net/{container_name}?restype=container&comp=acl"

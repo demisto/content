@@ -284,7 +284,7 @@ def test_azure_storage_get_blob_tags_command(requests_mock):
     assert result.outputs.get('Blob').get('Tag')[0].get('Value') == 'Azure'
 
 
-def test_azure_storage_block_public_access_command(requests_mock):
+def test_azure_storage_block_public_access_command(mocker, requests_mock):
     """
     Scenario: Block public access for the specified container.
     Given:
@@ -295,7 +295,11 @@ def test_azure_storage_block_public_access_command(requests_mock):
      - Ensure readable output message content.
     """
     from AzureStorageContainer import Client, block_public_access_command
-
+    params = {
+        'shared_key': {'password': SHARED_KEY},
+        'credentials': {'identifier': 'test_storage_account_name'}
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
     container_name = "test"
     url = f"https://{ACCOUNT_NAME}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
     request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
@@ -311,11 +315,7 @@ def test_azure_storage_block_public_access_command(requests_mock):
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = block_public_access_command(client, {
-        'request_url': url,
-        'headers': headers,
-        'account_name': ACCOUNT_NAME,
-        'container_name': container_name,
-        'shared_key': {'password': SHARED_KEY}
+        'container_name': container_name
     })
 
     expected_response = f"Public access to container '{container_name}' has been successfully blocked"
@@ -325,6 +325,11 @@ def test_azure_storage_block_public_access_command(requests_mock):
     invalid_shared_key = "invalid-key"
     with pytest.raises(ValueError, match="Incorrect shared key provided"):
         block_public_access_command(client, {'shared_key': {'password': invalid_shared_key}})
+
+    # Test for missing shared key
+    with pytest.raises(KeyError, match="The 'shared_key' parameter must be provided."):
+        block_public_access_command(client, {'shared_key': {'password': ""}})
+
 
 
 
