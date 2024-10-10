@@ -10,8 +10,7 @@ import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-# print(f"{demisto.params()=}")
-# print(f"{demisto.args()=}")
+
 
 ''' CONSTANTS '''
 

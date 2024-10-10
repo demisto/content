@@ -1,5 +1,6 @@
 import importlib
 import json
+import demistomock as demisto  # noqa: F401
 
 import pytest
 
@@ -139,6 +140,8 @@ def test_list_clusters_command(mocker):
     assert isinstance(result, CommandResults)
     assert result.readable_output == '### The list of clusters\n|Clusters Names|\n|---|\n| cluster_name_1 |\n'
     assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': None}
+
+    result = list_clusters_command({})
 
 
 def test_list_clusters_command_no_clusters(mocker):
@@ -442,3 +445,83 @@ def test_update_access_entry_command(mocker):
     result = update_access_entry_command(args)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
+
+
+def mock_command_func(_):
+    return CommandResults(
+        outputs=[{}],
+        readable_output='readable_output',
+        outputs_prefix='prefix',
+    )
+
+
+def test_run_on_all_accounts(mocker):
+    """
+    Given:
+        - The accounts_to_access and access_role_name params are provided.
+
+    When:
+        - Calling a command function that is decorated with test_account_runner.
+
+    Then:
+        - Ensure account_runner runs the command function for each of the accounts provided.
+    """
+    AWSEKS.ROLE_NAME = 'name'
+    AWSEKS.PARAMS = {'accounts_to_access': '1,2'}
+    mocker.patch.object(demisto, 'getArg', return_value=None)
+
+    # list as output
+    result_func = AWSEKS.run_on_all_accounts(mock_command_func)
+    results: list[CommandResults] = result_func({})
+
+    assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
+    assert results[0].outputs == [{'AccountId': '1'}]
+    assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
+    assert results[1].outputs == [{'AccountId': '2'}]
+
+    # dict as output
+    result_func = AWSEKS.run_on_all_accounts(lambda _: CommandResults(
+        outputs={},
+        readable_output='readable_output',
+        outputs_prefix='prefix',
+    ))
+    results: list[CommandResults] = result_func({})
+
+    assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
+    assert results[0].outputs == {'AccountId': '1'}
+    assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
+    assert results[1].outputs == {'AccountId': '2'}
+
+
+@pytest.mark.parametrize('role_name, roleArn', [
+    (None, None), ('name', 'role'),
+])
+def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
+    """
+    Given:
+        - 1. The access_role_name param is not provided.
+        - 2. The roleArn arg is provided.
+    When:
+        - Calling a command function that is decorated with test_account_runner.
+    Then:
+        - Ensure account_runner returns the command function unchanged.
+    """
+    # case 1
+    AWSEKS.ROLE_NAME = role_name
+    AWSEKS.IS_ARN_PROVIDED = True
+
+    result_func = AWSEKS.run_on_all_accounts(mock_command_func)
+    result: CommandResults = result_func({})
+
+    assert result.readable_output == 'readable_output'
+    assert result.outputs == [{}]
+
+    # case 2
+    AWSEKS.ROLE_NAME = None
+    AWSEKS.IS_ARN_PROVIDED = False
+
+    result_func = AWSEKS.run_on_all_accounts(mock_command_func)
+    result: CommandResults = result_func({})
+
+    assert result.readable_output == 'readable_output'
+    assert result.outputs == [{}]
