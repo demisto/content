@@ -324,11 +324,11 @@ def test_azure_storage_block_public_access_command(mocker, requests_mock):
     # Test for invalid shared key
     invalid_shared_key = "invalid-key"
     with pytest.raises(ValueError, match="Incorrect shared key provided"):
-        block_public_access_command(client, {'shared_key': {'password': invalid_shared_key}})
+        block_public_access_command(client, {'container_name': container_name})
 
     # Test for missing shared key
     with pytest.raises(KeyError, match="The 'shared_key' parameter must be provided."):
-        block_public_access_command(client, {'shared_key': {'password': ""}})
+        block_public_access_command(client, {'container_name': container_name})
 
 
 
