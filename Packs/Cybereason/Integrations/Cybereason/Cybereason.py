@@ -1787,9 +1787,12 @@ def get_batch_id(client: Client, suspect_files_guids: dict) -> list:
             del suspect_files_guids[file_status['fileName']]
     for suspect_file in list(suspect_files_guids.keys()):
         malop_comment = f'Could not download the file {suspect_file} from source machine, even after waiting for 80 seconds.'
+        demisto.log(malop_comment)
+    
+    if new_malop_comments == []:
         raise DemistoException(malop_comment)
-
-    return new_malop_comments
+    else:
+        return new_malop_comments
 
 
 def fetchfile_progress(client: Client):
