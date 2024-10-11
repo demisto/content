@@ -379,19 +379,10 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "gibnationstatecybercriminalsthreatactorlangs",
-                                "height": 22,
-                                "id": "39df8c00-71ac-11ef-8c49-f9d8b5e80cf6",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
                                 "fieldId": "gibnationstatecybercriminalsthreatactorroles",
                                 "height": 22,
                                 "id": "3ce1cf80-71ac-11ef-8c49-f9d8b5e80cf6",
-                                "index": 9,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -401,7 +392,7 @@
                                 "fieldId": "gibnationstatecybercriminalsthreatactorcve",
                                 "height": 22,
                                 "id": "402b2e20-71ac-11ef-8c49-f9d8b5e80cf6",
-                                "index": 10,
+                                "index": 9,
                                 "listId": "caseinfoid-11ee7ad0-71ac-11ef-8c49-f9d8b5e80cf6",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -411,7 +402,7 @@
                                 "fieldId": "gibnationstatecybercriminalsexpertises",
                                 "height": 22,
                                 "id": "4b3fca00-71ac-11ef-8c49-f9d8b5e80cf6",
-                                "index": 11,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -420,7 +411,7 @@
                                 "fieldId": "gibnationstatecybercriminalsmalware",
                                 "height": 22,
                                 "id": "4df3ed80-71ac-11ef-8c49-f9d8b5e80cf6",
-                                "index": 12,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -430,7 +421,7 @@
                                 "fieldId": "gibnationstatecybercriminalsregions",
                                 "height": 22,
                                 "id": "50a85f20-71ac-11ef-8c49-f9d8b5e80cf6",
-                                "index": 13,
+                                "index": 12,
                                 "listId": "caseinfoid-11ee7ad0-71ac-11ef-8c49-f9d8b5e80cf6",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -440,7 +431,7 @@
                                 "fieldId": "gibnationstatecybercriminalssectors",
                                 "height": 22,
                                 "id": "7ad6dd30-71ac-11ef-8c49-f9d8b5e80cf6",
-                                "index": 14,
+                                "index": 13,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -449,7 +440,7 @@
                                 "fieldId": "gibportallink",
                                 "height": 22,
                                 "id": "1a0970e0-8493-11ef-87c7-cfae65ac92d0",
-                                "index": 15,
+                                "index": 14,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

@@ -13,7 +13,7 @@
 	"itemVersion": "1.4.2",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 64,
+	"logicalVersion": 77,
 	"mapping": {
 		"GIB Attacks DDOS": {
 			"dontMapEventToLabels": false,
@@ -292,9 +292,6 @@
 				"GIB Phishing Sources": {
 					"simple": "source"
 				},
-				"GIB Phishing Status": {
-					"simple": "status"
-				},
 				"GIB Phishing URL": {
 					"simple": "phishing.url"
 				},
@@ -353,6 +350,9 @@
 				},
 				"GIB ID": {
 					"simple": "id"
+				},
+				"GIB Phishing Kit Email": {
+					"simple": "emails"
 				},
 				"GIB Phishing Kit Source": {
 					"simple": "source"
@@ -1185,9 +1185,6 @@
 				"GIB Cybercriminal Forums Table": {
 					"simple": "forumsAccounts"
 				},
-				"GIB Cybercriminal Langs": {
-					"simple": "langs"
-				},
 				"GIB Cybercriminal Regions": {
 					"simple": "regions"
 				},
@@ -1439,9 +1436,6 @@
 				"GIB Malware Description": {
 					"simple": "description"
 				},
-				"GIB Malware Files Table": {
-					"simple": "attachedFile"
-				},
 				"GIB Malware Langs": {
 					"simple": "langs"
 				},
@@ -1501,11 +1495,8 @@
 				"GIB Malware CNC Domain": {
 					"simple": "domain"
 				},
-				"GIB Malware ID": {
-					"simple": "malwareList.id"
-				},
-				"GIB Malware Name": {
-					"simple": "malwareList.name"
+				"GIB Malware Table": {
+					"simple": "malwareList"
 				},
 				"GIB Related Indicators Data": {
 					"simple": "indicators"
@@ -1657,9 +1648,6 @@
 				},
 				"GIB Nation-State Cybercriminals Threat Actor Labels": {
 					"simple": "labels"
-				},
-				"GIB Nation-State Cybercriminals Threat Actor Langs": {
-					"simple": "langs"
 				},
 				"GIB Nation-State Cybercriminals Threat Actor Reports Table": {
 					"simple": "reports"
@@ -1900,9 +1888,6 @@
 				"GIB Extended CVSS Base": {
 					"simple": "extCvss.base"
 				},
-				"GIB Extended CVSS Environmental": {
-					"simple": "extCvss.environmental"
-				},
 				"GIB Extended CVSS Exploitability": {
 					"simple": "extCvss.exploitability"
 				},
@@ -1914,12 +1899,6 @@
 				},
 				"GIB Extended CVSS Temporal": {
 					"simple": "extCvss.temporal"
-				},
-				"GIB Extended CVSS Vector": {
-					"simple": "extCvss.vector"
-				},
-				"GIB Extended CVSS mImpact": {
-					"simple": "extCvss.mImpact"
 				},
 				"GIB Extended Description": {
 					"simple": "extDescription"
@@ -2094,6 +2073,9 @@
 				},
 				"GIB Severity": {
 					"simple": "evaluation.severity"
+				},
+				"GIB Socks Proxy Source": {
+					"simple": "source"
 				},
 				"GIB Source": {
 					"simple": "sourceType"

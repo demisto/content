@@ -431,19 +431,10 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "gibcybercriminallangs",
-                                "height": 22,
-                                "id": "883ba010-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
                                 "fieldId": "gibcybercriminalregions",
                                 "height": 22,
                                 "id": "8bb33aa0-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 9,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -452,7 +443,7 @@
                                 "fieldId": "gibcybercriminalsectors",
                                 "height": 22,
                                 "id": "8f6c4b00-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 10,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -461,7 +452,7 @@
                                 "fieldId": "gibreportnumber",
                                 "height": 22,
                                 "id": "921ff950-71ab-11ef-8c49-f9d8b5e80cf6",
-                                "index": 11,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -470,7 +461,7 @@
                                 "fieldId": "gibportallink",
                                 "height": 22,
                                 "id": "fa2b7b60-8492-11ef-87c7-cfae65ac92d0",
-                                "index": 12,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

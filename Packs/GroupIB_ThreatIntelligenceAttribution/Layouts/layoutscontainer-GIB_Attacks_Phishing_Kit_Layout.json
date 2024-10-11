@@ -364,11 +364,22 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "gibphishingkitemail",
+                                "height": 22,
+                                "id": "b05b4600-861d-11ef-a12e-8b698a04d813",
+                                "index": 6,
+                                "listId": "caseinfoid-dfe3afe0-71a8-11ef-8c49-f9d8b5e80cf6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 6,
                                 "fieldId": "gibportallink",
                                 "height": 22,
                                 "id": "cc423f40-8492-11ef-87c7-cfae65ac92d0",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -377,7 +388,7 @@
                                 "fieldId": "gibdownloadedfromtable",
                                 "height": 106,
                                 "id": "feb92140-815a-11ef-84cc-d3c4e728b454",
-                                "index": 7,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

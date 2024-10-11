@@ -17,6 +17,59 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 COMMON_MAPPING = {
+    "compromised/account_group": {
+        "types": {
+            "event_url": "URL",
+            "event_domain": "Domain",
+            "events_ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "event_url":{"id": "gibid",},
+            "event_domain":{"id": "gibid",},
+            "events_ipv4_ip": {
+                "id": "gibid",
+                "asn": "asn",
+                "country_name": "geocountry",
+                "region": "geolocation",
+            }
+        },
+        "parser_mapping": {
+            "id": "id",
+            "event_url": "events.cnc.url",
+            "event_domain": "events.cnc.domain",
+            "events_ipv4_ip": "events.cnc.ipv4.ip",
+            "asn": "events.client.ipv4.asn",
+            "country_name": "events.client.ipv4.countryName",
+            "region": "events.client.ipv4.region",
+        },
+    },
+    "compromised/bank_card_group": {
+        "types": {
+            "cnc_url": "URL",
+            "cnc_domain": "Domain",
+            "cnc_ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "cnc_url":{
+                "id": "gibid",
+            },
+            "cnc_ipv4_ip": {
+                "id": "gibid",
+                "cnc_ipv4_asn": "asn",
+                "cnc_ipv4_country_name": "geocountry",
+                "cnc_ipv4_region": "geolocation",
+            }
+        },
+        "parser_mapping": {
+            "id": "id",
+            "cnc_url": "events.cnc.url",
+            "cnc_domain": "events.cnc.domain",
+            "cnc_ipv4_ip": "events.cnc.ipv4.ip",
+            "cnc_ipv4_asn": "events.cnc.ipv4.asn",
+            "cnc_ipv4_country_name": "events.cnc.ipv4.countryName",
+            "cnc_ipv4_region": "events.cnc.ipv4.region",
+        },
+    },
     "compromised/mule": {
         "types": {
             "account": "GIB Compromised Mule",
@@ -263,6 +316,40 @@ COMMON_MAPPING = {
             "evaluation_severity": "evaluation.severity",
         },
     },
+    "attacks/phishing_group": {
+        "types": {
+            "url": "URL",
+            "phishing_domain_domain": "Domain",
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "url":{
+                "id": "gibid",
+            },
+            
+            "phishing_domain_domain": {
+                "id": "gibid",
+                "phishing_domain_registrar": "registrarname"
+            },
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_country_name": "geocountry",
+            },
+        },
+        "parser_mapping": {
+            "id": "id",
+            "url": "phishing.url",
+            "phishing_domain_registrar": "domainInfo.registrar",
+            "ipv4_ip": "phishing.ip.ip",
+            "ipv4_country_mame": "phishing.ip.countryName",
+            
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
+    },
+    
     "apt/threat": {
         "types": {
             "indicators_params_ipv4": "IP",
@@ -541,6 +628,59 @@ COMMON_MAPPING = {
             "evaluation_severity": "evaluation.severity",
         },
     },
+    "suspicious_ip/vpn":{
+        "types":{
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types":{
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_asn": "asn",
+                "ipv4_country_mame": "geocountry",
+                "ipv4_region": "geolocation",
+                "date_first_seen": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+            }    
+        },
+        "parser_mapping":{
+            "id": "id",
+            "date_first_seen": "dateFirstSeen",
+            "date_last_seen": "dateLastSeen",
+            "ipv4_ip": "ipv4.ip",
+            "ipv4_asn": "ipv4.asn",
+            "ipv4_country_mame": "ipv4.countryName",
+            "ipv4_region": "ipv4.region",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
+    },
+    "suspicious_ip/scanner": {
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_asn": "asn",
+                "ipv4_countr_mame": "geocountry",
+                "ipv4_region": "geolocation",
+            },
+        },
+        "parser_mapping":{
+            "id": "id",
+            "ipv4_ip": "ipv4.ip",
+            "ipv4_asn": "ipv4.asn",
+            "ipv4_country_name": "ipv4.countryName",
+            "ipv4_region": "ipv4.region",
+        },
+    },
+    
     "malware/cnc": {
         "types": {
             "url": "URL",
@@ -638,6 +778,26 @@ COMMON_MAPPING = {
             "evaluation_severity": "evaluation.severity",
         },
     },
+    "osi/git_repository": {
+        "types": {
+            "contributors_emails": "Email",
+            "hash": "GIB Hash",
+        },
+        "add_fields_types": {
+            "contributors_emails":{
+                "id": "gibid",
+            },
+            "hash":{
+                "id": "gibid",
+            },
+        },
+        "parser_mapping":{
+            "id": "id",
+            "hash": "files.revisions.hash",
+            "contributors_emails": "contributors.authorEmail",
+        },
+    },
+    
     "ioc/common": {
         "types": {
             "url": "URL",
@@ -668,70 +828,6 @@ COMMON_MAPPING = {
             "ip": "ip",
             "date_first_seen": "dateFirstSeen",
             "date_last_seen": "dateLastSeen",
-        },
-    },
-    "attacks/phishing": {  # TODO replace to attacks/phishing_group
-        "types": {
-            "url": "URL",
-            "phishing_domain": "Domain",
-            "ipv4_ip": "IP",
-        },
-        "add_fields_types": {
-            "url": {
-                "id": "gibid",
-                "type": "gibphishingtype",
-                "evaluation_reliability": "gibreliability",
-                "evaluation_credibility": "gibcredibility",
-                "evaluation_admiralty_code": "gibadmiraltycode",
-                "evaluation_severity": "gibseverity",
-            },
-            "phishing_domain": {
-                "id": "gibid",
-                "phishing_domain_date_registered": "creationdate",
-                "date_detected": "firstseenbysource",
-                "phishing_domain_registrar": "registrarname",
-                "phishing_domain_title": "gibphishingtitle",
-                "target_brand": "gibtargetbrand",
-                "target_category": "gibtargetcategory",
-                "target_domain": "gibtargetdomain",
-                "type": "gibphishingtype",
-                "evaluation_reliability": "gibreliability",
-                "evaluation_credibility": "gibcredibility",
-                "evaluation_admiralty_code": "gibadmiraltycode",
-                "evaluation_severity": "gibseverity",
-            },
-            "ipv4_ip": {
-                "id": "gibid",
-                "ipv4_asn": "asn",
-                "ipv4_country_mame": "geocountry",
-                "ipv4_region": "geolocation",
-                "type": "gibphishingtype",
-                "evaluation_reliability": "gibreliability",
-                "evaluation_credibility": "gibcredibility",
-                "evaluation_admiralty_code": "gibadmiraltycode",
-                "evaluation_severity": "gibseverity",
-            },
-        },
-        "parser_mapping": {
-            "id": "id",
-            "url": "url",
-            "phishing_domain": "phishingDomain.domain",
-            "phishing_domain_date_registered": "phishingDomain.dateRegistered",
-            "phishing_domain_registrar": "phishingDomain.registrar",
-            "phishing_domain_title": "phishingDomain.title",
-            "ipv4_ip": "ipv4.ip",
-            "ipv4_asn": "ipv4.asn",
-            "ipv4_country_mame": "ipv4.countryName",
-            "ipv4_region": "ipv4.region",
-            "type": "type",
-            "date_detected": "dateDetected",
-            "target_brand": "targetBrand",
-            "target_category": "targetCategory",
-            "target_domain": "targetDomain",
-            "evaluation_reliability": "evaluation.reliability",
-            "evaluation_credibility": "evaluation.credibility",
-            "evaluation_admiralty_code": "evaluation.admiraltyCode",
-            "evaluation_severity": "evaluation.severity",
         },
     },
 }
@@ -856,6 +952,19 @@ class IndicatorBuilding:
         )
 
     @staticmethod
+    def transform_list_to_str(data: list[dict]) -> list[dict]:
+        def process_item(item):
+            if isinstance(item, dict):
+                for key, value in item.items():
+                    if isinstance(value, list):
+                        item[key] = ", ".join(str(process_item(v)) for v in value)
+                    else:
+                        item[key] = process_item(value)
+            return item
+
+        return [process_item(item) for item in data]
+
+    @staticmethod
     def sorting_indicators(
         indicators: list[dict[str, Any]]
     ) -> dict[str, list[dict[str, Any]]]:
@@ -962,6 +1071,7 @@ class IndicatorBuilding:
                 }
             )
 
+        indicators = IndicatorBuilding.transform_list_to_str(indicators)
         return indicators
 
     def get_indicators(self) -> list:

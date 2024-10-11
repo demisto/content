@@ -395,10 +395,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "gibsocksproxysource",
+                                "height": 22,
+                                "id": "54e38600-861f-11ef-a9d2-eb62a95c9def",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "gibportallink",
                                 "height": 22,
                                 "id": "ce52cf80-71a9-11ef-8c49-f9d8b5e80cf6",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

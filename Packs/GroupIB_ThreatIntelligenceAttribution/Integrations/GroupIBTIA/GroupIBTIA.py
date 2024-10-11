@@ -24,6 +24,7 @@ urllib3_disable_warnings(InsecureRequestWarning)
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
 INDICATORS_TYPES = {
     "compromised/account_group": {
         "types": {
@@ -39,128 +40,12 @@ INDICATORS_TYPES = {
             }
         },
     },
-    "osi/vulnerability": {
+    "compromised/bank_card_group": {
         "types": {
-            "id": "CVE",
+            "cnc_url": "URL",
+            "cnc_domain": "Domain",
+            "cnc_ipv4_ip": "IP",
         },
-        "add_fields_types": {
-            "id": {
-                "cvss_score": "cvss",
-                "description": "description",
-                "dateLastSeen": "cvemodified",
-                "datePublished": "published",
-                "severity": "severity",
-            }
-        },
-    },
-    "malware/cnc": {
-        "types": {
-            "url": "URL",
-            "domain": "Domain",
-        },
-        "add_fields_types": {
-            "domain": {
-                "ipv4_ip": "IP",
-                "ipv4_asn": "asn",
-                "countryName": "geocountry",
-                "ipv4_region": "geolocation",
-            }
-        },
-    },
-    "suspicious_ip/socks_proxy": {
-        "types": {"ipv4_ip": "IP"},
-        "add_fields_types": {
-            "ipv4_ip": {
-                "ipv4_asn": "asn",
-                "ipv4_countryName": "geocountry",
-                "ipv4_region": "geolocation",
-            }
-        },
-    },
-    "suspicious_ip/open_proxy": {
-        "types": {
-            "ipv4_ip": "IP",
-        },
-        "add_fields_types": {
-            "ipv4_ip": {
-                "ipv4_asn": "asn",
-                "ipv4_country_name": "geocountry",
-                "ipv4_region": "geolocation",
-            }
-        },
-    },
-    "suspicious_ip/tor_node": {
-        "types": {"ipv4_ip": "IP"},
-        "add_fields_types": {
-            "ipv4_ip": {
-                "ipv4_asn": "asn",
-                "ipv4_country_name": "geocountry",
-                "ipv4_region": "geolocation",
-            }
-        },
-    },
-    "hi/threat": {
-        "types": {
-            "ipv4": "IP",
-            "domain": "Domain",
-            "url": "URL",
-            "hashes_md5": "File",
-        },
-        "add_fields_types": {
-            "indicators_params_hashes_md5": {
-                "name": "gibfilename",
-                "hashes_md5": "md5",
-                "hashes_sha1": "sha1",
-                "hashes_sha256": "sha256",
-                "size": "size",
-            }
-        },
-    },
-    "apt/threat": {
-        "types": {
-            "ipv4": "IP",
-            "domain": "Domain",
-            "url": "URL",
-            "hashes_md5": "File",
-        },
-        "add_fields_types": {
-            "hashes_md5": {
-                "name": "gibfilename",
-                "hashes_md5": "md5",
-                "hashes_sha1": "sha1",
-                "hashes_sha256": "sha256",
-                "size": "size",
-            }
-        },
-    },
-    "attacks/phishing_kit": {"types": {"emails": "Email"}, "add_fields_types": {}},
-    "attacks/phishing_group": {
-        "types": {
-            "url": "URL",
-            "phishing_domain_domain": "Domain",
-            "ipv4_ip": "IP",
-        },
-        "add_fields_types": {
-            "phishing_domain_domain": {"phishing_domain_registrar": "registrarname"},
-            "ipv4_ip": {
-                "ipv4_asn": "asn",
-                "ipv4_countr_mame": "geocountry",
-                "ipv4_region": "geolocation",
-            },
-        },
-    },
-    "attacks/deface": {
-        "types": {"url": "URL", "target_domain": "Domain", "target_ip_ip": "IP"},
-        "add_fields_types": {
-            "target_ip_ip": {
-                "target_ip_asn": "asn",
-                "target_ip_country_name": "geocountry",
-                "target_ip_region": "geolocation",
-            }
-        },
-    },
-    "attacks/ddos": {
-        "types": {"cnc_url": "URL", "cnc_domain": "Domain", "cnc_ipv4_ip": "IP"},
         "add_fields_types": {
             "cnc_ipv4_ip": {
                 "cnc_ipv4_asn": "asn",
@@ -197,7 +82,167 @@ INDICATORS_TYPES = {
             }
         },
     },
+    "osi/vulnerability": {
+        "types": {
+            "id": "CVE",
+        },
+        "add_fields_types": {
+            "id": {
+                "cvss_score": "cvss",
+                "description": "description",
+                "dateLastSeen": "cvemodified",
+                "datePublished": "published",
+                "severity": "severity",
+            }
+        },
+    },
+    "osi/git_repository": {
+        "types": {
+            "contributors_emails": "Email",
+            "hash": "GIB Hash",
+        },
+        "add_fields_types": {},
+    },
+    "attacks/phishing_kit": {"types": {"emails": "Email"}, "add_fields_types": {}},
+    "attacks/phishing_group": {
+        "types": {
+            "url": "URL",
+            "phishing_domain_domain": "Domain",
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "phishing_domain_domain": {"phishing_domain_registrar": "registrarname"},
+            "ipv4_ip": {
+                "ipv4_country_name": "geocountry",
+            },
+        },
+    },
+    "attacks/deface": {
+        "types": {"url": "URL", "target_domain": "Domain", "target_ip_ip": "IP"},
+        "add_fields_types": {
+            "target_ip_ip": {
+                "target_ip_asn": "asn",
+                "target_ip_country_name": "geocountry",
+                "target_ip_region": "geolocation",
+            }
+        },
+    },
+    "attacks/ddos": {
+        "types": {"cnc_url": "URL", "cnc_domain": "Domain", "cnc_ipv4_ip": "IP"},
+        "add_fields_types": {
+            "cnc_ipv4_ip": {
+                "cnc_ipv4_asn": "asn",
+                "cnc_ipv4_country_name": "geocountry",
+                "cnc_ipv4_region": "geolocation",
+            }
+        },
+    },
+    "malware/cnc": {
+        "types": {
+            "url": "URL",
+            "domain": "Domain",
+        },
+        "add_fields_types": {
+            "domain": {
+                "ipv4_ip": "IP",
+                "ipv4_asn": "asn",
+                "country_name": "geocountry",
+                "ipv4_region": "geolocation",
+            }
+        },
+    },
+    "suspicious_ip/socks_proxy": {
+        "types": {"ipv4_ip": "IP"},
+        "add_fields_types": {
+            "ipv4_ip": {
+                "ipv4_asn": "asn",
+                "ipv4_country_name": "geocountry",
+                "ipv4_region": "geolocation",
+            }
+        },
+    },
+    "suspicious_ip/open_proxy": {
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "ipv4_asn": "asn",
+                "ipv4_country_name": "geocountry",
+                "ipv4_region": "geolocation",
+            }
+        },
+    },
+    "suspicious_ip/tor_node": {
+        "types": {"ipv4_ip": "IP"},
+        "add_fields_types": {
+            "ipv4_ip": {
+                "ipv4_asn": "asn",
+                "ipv4_country_name": "geocountry",
+                "ipv4_region": "geolocation",
+            }
+        },
+    },
+    "suspicious_ip/vpn": {
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "ipv4_asn": "asn",
+                "ipv4_country_name": "geocountry",
+                "ipv4_region": "geolocation",
+            },
+        },
+    },
+    "suspicious_ip/scanner": {
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "ipv4_asn": "asn",
+                "ipv4_country_name": "geocountry",
+                "ipv4_region": "geolocation",
+            },
+        },
+    },
+    "hi/threat": {
+        "types": {
+            "ipv4": "IP",
+            "domain": "Domain",
+            "url": "URL",
+            "hashes_md5": "File",
+        },
+        "add_fields_types": {
+            "indicators_params_hashes_md5": {
+                "name": "gibfilename",
+                "hashes_md5": "md5",
+                "hashes_sha1": "sha1",
+                "hashes_sha256": "sha256",
+                "size": "size",
+            }
+        },
+    },
+    "apt/threat": {
+        "types": {
+            "ipv4": "IP",
+            "domain": "Domain",
+            "url": "URL",
+            "hashes_md5": "File",
+        },
+        "add_fields_types": {
+            "hashes_md5": {
+                "name": "gibfilename",
+                "hashes_md5": "md5",
+                "hashes_sha1": "sha1",
+                "hashes_sha256": "sha256",
+                "size": "size",
+            }
+        },
+    },
 }
+
 
 PREFIXES = {
     "compromised/account_group": "Compromised Account Group",
@@ -211,10 +256,10 @@ PREFIXES = {
     "attacks/deface": "Attacks Deface",
     "attacks/phishing_group": "Phishing Group",
     "attacks/phishing_kit": "Phishing Kit",
-    "apt/threat": "Nation-State Cybercriminals Threat Threat",
-    "apt/threat_actor": "Nation-State Cybercriminals Threat Actor",
-    "hi/threat": "GIB Cybercriminal Threat",
-    "hi/threat_actor": "GIB Cybercriminal Threat Actor",
+    "apt/threat": "Nation-State Cybercriminals Threat Report",
+    "apt/threat_actor": "Nation-State Cybercriminals Threat Actor Profile",
+    "hi/threat": "GIB Cybercriminal Threat Report",
+    "hi/threat_actor": "GIB Cybercriminal Threat Actor Profile",
     "suspicious_ip/tor_node": "Suspicious IP Tor Node",
     "suspicious_ip/open_proxy": "Suspicious IP Open Proxy",
     "suspicious_ip/socks_proxy": "Suspicious IP Socks Proxy",
@@ -289,8 +334,8 @@ TABLES_MAPPING = {
     "osi/public_leak": ["linkList", "matches"],
     "osi/vulnerability": ["cpeTable", "affectedSoftware"],
     "attacks/phishing_kit": ["downloadedFrom"],
-    "malware/cnc": ["threatActor"],
-    "malware/malware": ["attachedFile", "taList"],
+    "malware/cnc": ["threatActor", "malwareList"],
+    "malware/malware": ["taList"],
     "hi/threat": ["forumsAccounts"],
     "hi/threat_actor": ["reports"],
     "apt/threat_actor": ["reports"],
@@ -303,31 +348,34 @@ HTML_FIELDS = {
     "malware/malware": ["description", "shortDescription"],
     "hi/threat": ["description"],
     "hi/threat_actor": ["description"],
+    "osi/public_leak": ["data"],
 }
 
 PORTAL_LINKS = {
     "compromised/account_group": "https://tap.group-ib.com/cd/accounts?id=",
-    "compromised/breached": "https://tap.group-ib.com/ta/darkweb?id=",
+    "compromised/breached": "https://tap.group-ib.com/cd/breached?id=",
     "compromised/bank_card_group": "https://tap.group-ib.com/cd/cards?id=",
     "compromised/mule": "https://tap.group-ib.com/cd/mules?id=",
-    "hi/threat": "https://tap.group-ib.com/ta/last-threats?id=",
-    "hi/threat_actor": "https://tap.group-ib.com/ta/actors?type=hi&id=",
-    "apt/threat": "https://tap.group-ib.com/ta/last-threats?id=",
-    "apt/threat_actor": "https://tap.group-ib.com/ta/actors?type=apt&id=",
+    "hi/threat": "https://tap.group-ib.com/ta/last-threats?threat=",
+    "hi/threat_actor": "https://tap.group-ib.com/ta/actors?ta=",
+    "apt/threat": "https://tap.group-ib.com/ta/last-threats?threat=",
+    "apt/threat_actor": "https://tap.group-ib.com/ta/actors?ta=",
     "attacks/ddos": "https://tap.group-ib.com/attacks/ddos?id=",
-    "attacks/deface": "https://tap.group-ib.com/attacks/deface?id=",
-    "attacks/phishing_group": "https://tap.group-ib.com/attacks/phishing?scope=all&id=",
+    "attacks/deface": "https://tap.group-ib.com/attacks/deface?q=id:",
+    "attacks/phishing_group": "https://tap.group-ib.com/attacks/phishing?scope=all&q=id:",
     "attacks/phishing_kit": "https://tap.group-ib.com/malware/phishing-kit?p=1&q=",
     "malware/malware": "https://tap.group-ib.com/malware/reports/",
     "osi/git_repository": "https://tap.group-ib.com/cd/git-leaks?id=",
     "osi/public_leak": "https://tap.group-ib.com/cd/leaks?id=",
-    "osi/vulnerability": "https://tap.group-ib.com/malware/vulnerabilities?q=",
+    "osi/vulnerability": "https://tap.group-ib.com/malware/vulnerabilities?p=1&scope=all&q=",
     "suspicious_ip/tor_node": "https://tap.group-ib.com/suspicious/tor?q=",
     "suspicious_ip/open_proxy": "https://tap.group-ib.com/suspicious/proxies?q=",
     "suspicious_ip/socks_proxy": "https://tap.group-ib.com/suspicious/socks?q=",
     "suspicious_ip/scanner": "https://tap.group-ib.com/suspicious/scanning?ip=",
     "suspicious_ip/vpn": "https://tap.group-ib.com/suspicious/vpn?q=",
 }
+
+COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public_leak"]
 
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
@@ -466,7 +514,7 @@ MAPPING = {
         "portalLink": {  # GIB Portal Link
             "__concatenate": {
                 "static": PORTAL_LINKS.get("compromised/breached"),
-                "dynamic": "id",
+                "dynamic": "#email[0]",
             }
         },
         # END Information from Group-IB
@@ -558,6 +606,10 @@ MAPPING = {
             "severity": "evaluation.severity",  # GIB Severity
         },
         # END Group-IB Evaluation
+        "indicators": {  # GIB Related Indicators Data
+            "hash": "files.revisions.hash",
+            "contributors_emails": "contributors.authorEmail",
+        },
     },
     "osi/public_leak": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "hash",
@@ -608,7 +660,6 @@ MAPPING = {
         "hasExploit": "hasExploit",  # GIB Has Exploit
         "href": "href",  # GIB Href
         "mergedCvss": "mergedCvss",  # GIB Merged Cvss
-        "provider": "provider",  # GIB Provider
         "type": "type",  # GIB Vulnerability Type
         "portalLink": {  # GIB Portal Link
             "__concatenate": {
@@ -639,13 +690,10 @@ MAPPING = {
         },
         "extCvss": {
             "base": "extCvss.base",  # GIB Extended CVSS Base
-            "environmental": "extCvss.environmental",  # GIB Extended CVSS Environmental
             "exploitability": "extCvss.exploitability",  # GIB Extended CVSS Exploitability
             "impact": "extCvss.impact",  # GIB Extended CVSS Impact
-            "mImpact": "extCvss.mImpact",  # GIB Extended CVSS mImpact
             "overall": "extCvss.overall",  # GIB Extended CVSS Overall
             "temporal": "extCvss.temporal",  # GIB Extended CVSS Temporal
-            "vector": "extCvss.vector",  # GIB Extended CVSS Vector
         },
         # END Group-IB CVSS Information
         # Group-IB Evaluation
@@ -799,7 +847,6 @@ MAPPING = {
         "id": "id",  # GIB ID
         "brand": "brand",  # GIB Phishing Brand
         "phishing_urls": "phishing.url",  # GIB Phishing URLs
-        "status": "status",  # GIB Phishing Status
         "objective": "objective",  #  GIB Phishing Objectives
         "source": "source",  # GIB Phishing Sources
         "portalLink": {  # GIB Portal Link
@@ -852,11 +899,11 @@ MAPPING = {
         },
         # END Group-IB Phishing Kit Table
         "indicators": {  # GIB Related Indicators Data
-            "url": "url",
-            "phishing_domain_domain": "phishing.domain.domain",
+            "url": "phishing.url",
+            "phishing_domain_domain": "domain",
             "phishing_domain_registrar": "domainInfo.registrar",
             "ipv4_ip": "phishing.ip.ip",
-            "ipv4_countr_mame": "phishing.ip.countryName",
+            "ipv4_country_name": "phishing.ip.countryName",
         },
     },
     "attacks/phishing_kit": {  # GIB Source:sourceType, severity:systemSeverity
@@ -868,6 +915,7 @@ MAPPING = {
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "source": "source",  # GIB Phishing Kit Source
+        "emails": "emails",  # GIB Phishing Kit Email
         "portalLink": {  # GIB Portal Link
             "__concatenate": {
                 "static": PORTAL_LINKS.get("attacks/phishing_kit"),
@@ -960,6 +1008,7 @@ MAPPING = {
         "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "dateDetected": "dateDetected",  # GIB Date of Detection
+        "source": "source",  # GIB Socks Proxy Source
         "portalLink": {  # GIB Portal Link
             "__concatenate": {
                 "static": PORTAL_LINKS.get("suspicious_ip/socks_proxy"),
@@ -978,7 +1027,7 @@ MAPPING = {
         "indicators": {  # GIB Related Indicators Data
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
-            "ipv4_countryName": "ipv4.countryName",
+            "ipv4_country_name": "ipv4.countryName",
             "ipv4_region": "ipv4.region",
         },
     },
@@ -1008,7 +1057,7 @@ MAPPING = {
         "indicators": {  # GIB Related Indicators Data
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
-            "ipv4_countryName": "ipv4.countryName",
+            "ipv4_country_name": "ipv4.countryName",
             "ipv4_region": "ipv4.region",
         },
     },
@@ -1038,7 +1087,7 @@ MAPPING = {
         "indicators": {  # GIB Related Indicators Data
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
-            "ipv4_countryName": "ipv4.countryName",
+            "ipv4_country_name": "ipv4.countryName",
             "ipv4_region": "ipv4.region",
         },
     },
@@ -1051,9 +1100,9 @@ MAPPING = {
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "dateDetected": "dateDetected",  # GIB Date of Detection
         "domain": "domain",  # GIB Malware CNC Domain
-        "malwareList": {
-            "id": "malwareList.id",  # GIB Malware ID
-            "name": "malwareList.name",  # GIB Malware Name
+        "malwareList": {  # GIB Malware Table
+            "id": "malwareList.id",
+            "name": "malwareList.name",
         },
         # End Information from Group-IB
         # Group-IB Threat Actor
@@ -1067,7 +1116,7 @@ MAPPING = {
             "domain": "domain",
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
-            "countryName": "ipv4.countryName",
+            "country_name": "ipv4.countryName",
             "ipv4_region": "ipv4.region",
         },
     },
@@ -1092,10 +1141,6 @@ MAPPING = {
         "sourceCountry": "sourceCountry",  # GIB Malware Source Countries
         "platform": "platform",  # GIB Malware Platforms
         "threatLevel": "threatLevel",  # GIB Threat Level
-        "attachedFile": {  # GIB Malware Files Table
-            "hash": "attachedFile.hash",
-            "mime": "attachedFile.mime",
-        },
         # End Information from Group-IB
         # Group-IB Threat Actor
         "taList": {  # GIB Threat Actors Table
@@ -1137,7 +1182,6 @@ MAPPING = {
         "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "isTailored": "isTailored",  # GIB Is Tailored
         "expertise": "expertise",  # GIB Cybercriminal Expertises
-        "langs": "langs",  # GIB Cybercriminal Langs
         "regions": "regions",  # GIB Cybercriminal Regions
         "sectors": "sectors",  # GIB Cybercriminal Sectors
         "reportNumber": "reportNumber",  # GIB Report Number
@@ -1203,7 +1247,6 @@ MAPPING = {
         "isAPT": "isAPT",  # GIB Threat Actor is APT
         "labels": "labels",  # GIB Nation-State Cybercriminals Threat Actor Labels
         "threat_actor_name": "name",  # GIB Threat Actor Name
-        "langs": "langs",  # GIB Nation-State Cybercriminals Threat Actor Langs
         "roles": "roles",  # GIB Nation-State Cybercriminals Threat Actor Roles
         "cve": "stat.cve",  # GIB Nation-State Cybercriminals Threat Actor CVE
         "expertise": "stat.expertise",  # GIB Nation-State Cybercriminals Expertises
@@ -1390,7 +1433,8 @@ class Client(BaseClient):
             }
 
         else:
-            # type: ignore
+            if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
+                hunting_rules = 1
             return (
                 self.poller.create_update_generator(
                     collection_name=collection_name,
@@ -1409,7 +1453,7 @@ class Client(BaseClient):
 class CommonHelpers:
     @staticmethod
     def transform_dict(
-        input_dict: dict[str, list[Union[str, list[Any]]] | str | None]
+        input_dict: dict[str, list[str | list[Any]] | str | None]
     ) -> list[dict[str, Any]]:
         if not input_dict:
             return [{}]
@@ -1516,6 +1560,15 @@ class CommonHelpers:
                     entry[field] = entry_field_value
 
         return entry
+
+    @staticmethod
+    def transform_list_to_str(data: list[dict]) -> list[dict]:
+        for item in data:
+            if isinstance(item, dict):
+                for key, value in item.items():
+                    if isinstance(value, list):
+                        item[key] = ", ".join(str(v) for v in value)
+        return data
 
 
 class IndicatorsHelper:
@@ -1742,7 +1795,7 @@ class IncidentBuilder:
     def date_conversion(date: str):
         try:
             date_obj = datetime.strptime(date, "%Y-%m-%d")
-            return date_obj.isoformat() + "T00:00:00+00:00"
+            return date_obj.isoformat()
         except ValueError:
             try:
                 datetime.fromisoformat(date)
@@ -1803,6 +1856,19 @@ class IncidentBuilder:
                         transformed_data = CommonHelpers.transform_dict(
                             input_dict=field_data
                         )
+                        if (
+                            self.collection_name == "osi/git_repository"
+                            and field == "files"
+                        ):
+                            demisto.debug(
+                                f"start git_repository transformed_data, {str(field)}, {str(transformed_data)}"
+                            )
+                            transformed_data = CommonHelpers.transform_list_to_str(
+                                transformed_data
+                            )
+                            demisto.debug(
+                                f"end git_repository transformed_data, {str(field)}, {str(transformed_data)}"
+                            )
                         transformed_and_replaced_empty_values_data = (
                             CommonHelpers.replace_empty_values(transformed_data)
                         )
@@ -1810,7 +1876,7 @@ class IncidentBuilder:
                             transformed_and_replaced_empty_values_data
                         )
                         demisto.debug(
-                            f"transform_fields_to_grid_table_transformed_data, {self.collection_name}, {clean_data}"
+                            f"transform_fields_to_grid_table_transformed_data, {self.collection_name}, {str(clean_data)}"
                         )
                         self.incident[field] = clean_data
                     else:
@@ -2183,7 +2249,7 @@ def main():
         password = credentials.get("password")
         base_url = str(params.get("url"))
         proxy = params.get("proxy", False)
-        hunting_rules = params.get("hunting_rules", False)
+        hunting_rules = params.get("hunting_rules", 0)
         verify_certificate = not params.get("insecure", False)
         endpoint = None
 
@@ -2214,7 +2280,7 @@ def main():
             raise Exception(f"{command} deprecated")
 
         if hunting_rules is True:
-
+            hunting_rules = 1
             list_hunting_rules_collections = (
                 client.poller.get_hunting_rules_collections()
             )
