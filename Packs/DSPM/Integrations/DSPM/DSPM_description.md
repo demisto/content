@@ -16,12 +16,12 @@ Configure the instance by providing following mandatory details:
  - To retrieve DSPM API Token, login to [Prisma Cloud DSPM Portal](https://login.dig.security/).
  - In the Prisma Cloud DSPM side menu, click **Settings**, and go to the **API** tab.
  - Enter a meaningful name and a description for the API, and click **Create Key**.
- - In the pop-up, click Copy API Key to copy the key, and click **Done**. ([more info](https://docs.dig.security/docs/create-an-api-key))
+ - In the pop-up, click **Copy API Key** to copy the key, and click **Done**. (Click [here](https://docs.dig.security/docs/create-an-api-key) for more information.)
 
 
 ## Test Configuration
 
-After providing the mandatory details, please test the configuration using the Test button.
+After providing the mandatory details, click **Test*** to test the configuration.
 
 ---
 

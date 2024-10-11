@@ -9,17 +9,17 @@ configuration:
   required: true
   type: 0
 - displaypassword: DSPM API Key
-  additionalinfo: API key to use for the connection
+  additionalinfo: API key to use for the connection.
   name: dspmApiKey
   required: true
   hiddenusername: true
   type: 9
 - display: Default Slack user for notifications
-  additionalinfo: the default user to receive Slack notifications in case of any errors.
+  additionalinfo: The default user who will receive Slack notifications in case of any errors.
   name: defaultSlackUser
   required: true
   type: 0
-- display: Lifetime for slack notification ( in hours)
+- display: Lifetime for slack notification (in hours)
   name: slackMsgLifetime
   required: true
   defaultvalue: 2
@@ -43,7 +43,7 @@ name: DSPM
 script:
   commands:
   - arguments:
-    - description: 'List of rule names.'
+    - description: 'A comma-separated list of rule names.'
       isArray: true
       name: rule_name_in
       required: false
@@ -53,7 +53,7 @@ script:
       name: rule_name_equal
       required: false
       secret: false
-    - description: 'List of DSPM tag keys.'
+    - description: 'A comma-separated list of DSPM tag keys.'
       isArray: true
       name: dspm_tag_key_in
       required: false
@@ -63,7 +63,7 @@ script:
       name: dspm_tag_key_equal
       required: false
       secret: false
-    - description: 'List of DSPM tag values.'
+    - description: 'A comma-separated list of DSPM tag values.'
       isArray: true
       name: dspm_tag_value_in
       required: false
@@ -73,7 +73,7 @@ script:
       name: dspm_tag_value_equal
       required: false
       secret: false
-    - description: 'List of project IDs.'
+    - description: 'A comma-separated list of project IDs.'
       isArray: true
       name: projectId_in
       required: false
@@ -83,8 +83,8 @@ script:
       name: projectId_equal
       required: false
       secret: false
-    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
-      isArray: false
+    - description: 'A comma-separated list of cloud providers.'
+      isArray: true
       name: cloud_provider_in
       required: false
       secret: false
@@ -97,7 +97,7 @@ script:
       - 'FILE_SHARE'
       - 'O365'
       defaultValue: 'AWS'
-    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
+    - description: 'Exact cloud provider.'
       isArray: false
       name: cloud_provider_equal
       required: false
@@ -110,7 +110,7 @@ script:
       - 'SNOWFLAKE'
       - 'FILE_SHARE'
       - 'O365'
-    - description: 'List of affects ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"].'
+    - description: 'A comma-separated list of affects.'
       isArray: true
       name: affects_in
       required: false
@@ -124,7 +124,7 @@ script:
       - 'SECURITY_AND_GOVERNANCE'
       - 'COMPLIANCE_AND_GOVERNANCE'
       - 'SECURITY_AND_COMPLIANCE_AND_GOVERNANCE'
-    - description: 'Exact affect ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"].'
+    - description: 'Exact affect.'
       isArray: false
       name: affects_equal
       required: false
@@ -138,7 +138,7 @@ script:
       - 'COMPLIANCE_AND_GOVERNANCE'
       - 'SECURITY_AND_GOVERNANCE'
       - 'SECURITY_AND_COMPLIANCE_AND_GOVERNANCE'
-    - description: 'List of statuses ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"].'
+    - description: 'A comma-separated list of statuses.'
       isArray: true
       name: status_in
       required: false
@@ -151,7 +151,7 @@ script:
       - 'WRONG'
       - 'HANDLED'
       - 'INVESTIGATING'
-    - description: 'Exact status ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"].'
+    - description: 'Exact status.'
       isArray: false
       name: status_equal
       required: false
@@ -169,7 +169,7 @@ script:
       name: sort
       required: false
       secret: false
-    - description: 'The maximum number of risk findings to retrieve. If not specified, the default value is 50.'
+    - description: 'The maximum number of risk findings to retrieve.'
       isArray: false
       name: limit
       required: false
@@ -246,7 +246,7 @@ script:
       description: 'The current status of the risk finding (e.g., Open, Closed).'
       type: String
   - arguments:
-    - description: List of regions (comma separated values).
+    - description: Comma-separated list of regions.
       isArray: false
       name: region_in
       required: false
@@ -256,9 +256,8 @@ script:
       name: region_equal
       required: false
       secret: false
-    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE",
-      "FILE_SHARE", "O365"] (comma separated values).'
-      isArray: false
+    - description: 'Comma-separated list of cloud providers.'
+      isArray: true
       name: cloud_provider_in
       required: false
       secret: false
@@ -270,8 +269,7 @@ script:
       - 'SNOWFLAKE'
       - 'FILE_SHARE'
       - 'O365'
-    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE",
-      "FILE_SHARE", "O365"].'
+    - description: 'Exact cloud provider.'
       isArray: false
       name: cloud_provider_equal
       required: false
@@ -284,8 +282,8 @@ script:
       - 'SNOWFLAKE'
       - 'FILE_SHARE'
       - 'O365'
-    - description: List of Service Types (comma separated values).
-      isArray: false
+    - description: Comma-separated list of service types.
+      isArray: true
       name: service_type_in
       required: false
       secret: false
@@ -294,8 +292,8 @@ script:
       name: service_type_equal
       required: false
       secret: false
-    - description: List of Life Cycles egs.['RUNNING', 'STOPPED', 'DELETED'](comma separated values).
-      isArray: false
+    - description: Comma-separated list of life cycles.
+      isArray: true
       name: lifecycle_in
       required: false
       secret: false
@@ -304,7 +302,7 @@ script:
       - 'RUNNING'
       - 'STOPPED'
       - 'DELETED'
-    - description: Exact Life Cycle ['RUNNING', 'STOPPED', 'DELETED'].
+    - description: Exact life cycle.
       isArray: false
       name: lifecycle_equal
       required: false
@@ -320,7 +318,7 @@ script:
       name: sort
       required: false
       secret: false
-    - description: 'The maximum number of assets to retrieve. If not specified, the default value is 50.'
+    - description: 'The maximum number of assets to retrieve.'
       isArray: false
       name: limit
       required: false
@@ -330,10 +328,10 @@ script:
     name: dspm-list-assets
     outputs:
     - contextPath: DSPM.Asset.dataTypes
-      description: 'dataTypes associated with the asset.'
+      description: 'Data types associated with the asset.'
       type: Unknown
     - contextPath: DSPM.Asset.dataTypeGroups
-      description: 'dataTypeGroups associated with the asset.'
+      description: 'Data type groups associated with the asset.'
       type: Unknown
     - contextPath: DSPM.Asset.assetDigTags
       description: 'Dig tags associated with the asset.'
@@ -455,10 +453,10 @@ script:
       description: 'Asset open to world.'
       type: Boolean
     - contextPath: DSPM.AssetFiles.isDeleted
-      description: 'Asset is deleted.'
+      description: 'Whether asset is deleted.'
       type: Boolean
     - contextPath: DSPM.AssetFiles.isMalicious
-      description: 'Asset is malicious.'
+      description: 'Whether asset is malicious.'
       type: Boolean
     - contextPath: DSPM.AssetFiles.dataTypes.name
       description: 'Asset file data types name.'
@@ -479,7 +477,7 @@ script:
       description: 'Asset file labels.'
       type: String
     - contextPath: DSPM.AssetFiles.isDbDump
-      description: 'Asset file isDbDump.'
+      description: 'Asset file is a database dump.'
       type: Boolean
   - arguments:
     - description: ID of the asset for which to retrieve field details.
@@ -495,37 +493,37 @@ script:
       description: 'Asset field path.'
       type: String
     - contextPath: DSPM.AssetFields.tableName
-      description: 'Asset field tableName.'
+      description: 'Asset field table name.'
       type: String
     - contextPath: DSPM.AssetFields.tableSize
-      description: 'Asset field tableSize.'
+      description: 'Asset field table size.'
       type: String
     - contextPath: DSPM.AssetFields.databaseName
-      description: 'Asset field databaseName.'
+      description: 'Asset field database name.'
       type: String
     - contextPath: DSPM.AssetFields.collectionName
-      description: 'Asset field collectionName.'
+      description: 'Asset field collection name.'
       type: String
     - contextPath: DSPM.AssetFields.type
       description: 'Asset field type.'
       type: String
     - contextPath: DSPM.AssetFields.dataTypes.name
-      description: 'Asset field datatype name.'
+      description: 'Asset field data type name.'
       type: String
     - contextPath: DSPM.AssetFields.dataTypes.label
-      description: 'Asset field datatype label.'
+      description: 'Asset field data type label.'
       type: String
     - contextPath: DSPM.AssetFields.dataTypes.hitPercentage
-      description: 'Asset field datatype hitPercentage.'
+      description: 'Asset field data type hit percentage.'
       type: Number
     - contextPath: DSPM.AssetFields.dataTypes.maskedValues.masked_value
-      description: 'Asset field datatype masked value.'
+      description: 'Asset field datat ype masked value.'
       type: String
     - contextPath: DSPM.AssetFields.dataTypes.maskedValues.line
-      description: 'Asset field datatype masked value line.'
+      description: 'Asset field data type masked value line.'
       type: Number
     - contextPath: DSPM.AssetFields.schemaName
-      description: 'Asset field schemaName.'
+      description: 'Asset field schema name.'
       type: String
   - arguments: []
     name: dspm-get-data-types
@@ -538,7 +536,7 @@ script:
       description: 'Data types number.'
       type: Number
   - arguments: []
-    description: Returns list of label names based on company
+    description: Returns a list of label names based on the company.
     name: dspm-list-labels
     outputs:
     - contextPath: DSPM.Label.Key
@@ -547,8 +545,8 @@ script:
     - contextPath: DSPM.Label.No
       description: 'Label number.'
   - arguments:
-    - description: List of regions (comma-separated values).
-      isArray: false
+    - description: Comma-separated list of regions.
+      isArray: true
       name: region_in
       required: false
       secret: false
@@ -557,8 +555,8 @@ script:
       name: region_equal
       required: false
       secret: false
-    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
-      isArray: false
+    - description: 'A comma-separated list of cloud providers.'
+      isArray: true
       name: cloud_provider_in
       required: false
       secret: false
@@ -570,8 +568,7 @@ script:
       - 'SNOWFLAKE'
       - 'FILE_SHARE'
       - 'O365'
-    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE",
-      "FILE_SHARE", "O365"].'
+    - description: 'Exact cloud provider.'
       isArray: false
       name: cloud_provider_equal
       required: false
@@ -584,22 +581,22 @@ script:
       - 'SNOWFLAKE'
       - 'FILE_SHARE'
       - 'O365'
-    - description: List of Service Types (comma separated values).
-      isArray: false
+    - description: Comma-separated list of service types.
+      isArray: true
       name: service_type_in
       required: false
       secret: false
-    - description: Exact Service Type.
+    - description: Exact service type.
       isArray: false
       name: service_type_equal
       required: false
       secret: false
-    - description: List of Life Cycles (comma separated values).
-      isArray: false
+    - description: Comma-separated list of life cycles.
+      isArray: true
       name: lifecycle_in
       required: false
       secret: false
-    - description: 'List of project IDs.'
+    - description: 'A comma-separated list of project IDs.'
       isArray: true
       name: projectId_in
       required: false
@@ -609,7 +606,7 @@ script:
       name: projectId_equal
       required: false
       secret: false
-    - description: Exact Life Cycle.
+    - description: Exact life cycle.
       isArray: false
       name: lifecycle_equal
       required: false
@@ -620,7 +617,7 @@ script:
       name: sort
       required: false
       secret: false
-    - description: 'The maximum number of data types findings to retrieve. If not specified, the default value is 50.'
+    - description: 'The maximum number of data types findings to retrieve.'
       isArray: false
       name: limit
       required: false
@@ -666,7 +663,7 @@ script:
     description: Retrieves integration configuration.
     name: dspm-get-integration-config
     outputs:
-    - contextPath: DSPM.configs
+    - contextPath: DSPM.IntegrationConfig
       description: Integration configuration values.
       type: String
   - arguments:
@@ -674,8 +671,8 @@ script:
       isArray: false
       name: risk_finding_id
       required: true
-    - description: 'List of supported status [ "OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING" ].'
-      isArray: false
+    - description: 'Comma-separated list of supported statuses.'
+      isArray: true
       name: status
       required: true
       secret: false
@@ -697,15 +694,15 @@ script:
         description: 'Old risk finding status.'
         type: String
       - contextPath: DSPM.RiskFindingStatusUpdate.riskFindingId
-        description: 'Risk finding id.'
+        description: 'Risk finding ID.'
         type: String
   - arguments:
     - description: 'Alert ID.'
       isArray: false
       name: alert_id
       required: true
-    - description: 'List of supported status [ "OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING" ].'
-      isArray: false
+    - description: 'Comma-separated list of supported statuses.'
+      isArray: true
       name: status
       required: true
       secret: false
@@ -716,7 +713,7 @@ script:
       - 'WRONG'
       - 'HANDLED'
       - 'INVESTIGATING'
-    description: Updates the status of a alert.
+    description: Updates the status of an alert.
     name: dspm-update-alert-status
     outputs:
       - contextPath: DSPM.AlertStatusUpdate.newStatus
@@ -726,35 +723,35 @@ script:
         description: 'Old alert status.'
         type: String
       - contextPath: DSPM.AlertStatusUpdate.alertId
-        description: 'Alert id.'
+        description: 'Alert ID.'
         type: String
   - arguments:
-    - description: 'Exact detection time (equals).'
+    - description: 'Exact detection time (equals). detection time format - YYYY-MM-DDTHH:MM:SSZ'
       isArray: false
       name: detection_time_equals
       required: false
       secret: false
-    - description: 'Detection time (greater than or equal).'
+    - description: 'Detection time (greater than or equal). detection time format - YYYY-MM-DDTHH:MM:SSZ'
       isArray: false
       name: detection_time_greater_than_or_equal
       required: false
       secret: false
-    - description: 'Detection time (greater than).'
+    - description: 'Detection time (greater than). detection time format - YYYY-MM-DDTHH:MM:SSZ'
       isArray: false
       name: detection_time_greater_than
       required: false
       secret: false
-    - description: 'Detection time (less than or equal).'
+    - description: 'Detection time (less than or equal). detection time format - YYYY-MM-DDTHH:MM:SSZ'
       isArray: false
       name: detection_time_less_than_or_equal
       required: false
       secret: false
-    - description: 'Detection time (less than).'
+    - description: 'Detection time (less than). detection time format - YYYY-MM-DDTHH:MM:SSZ'
       isArray: false
       name: detection_time_less_than
       required: false
       secret: false
-    - description: 'List of policy names.'
+    - description: 'A comma-separated list of policy names.'
       isArray: true
       name: policy_name_in
       required: false
@@ -764,7 +761,7 @@ script:
       name: policy_name_equals
       required: false
       secret: false
-    - description: 'List of asset names.'
+    - description: 'A comma-separated list of asset names.'
       isArray: true
       name: asset_name_in
       required: false
@@ -774,7 +771,7 @@ script:
       name: asset_name_equals
       required: false
       secret: false
-    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
+    - description: 'A comma-separated list of cloud providers.'
       isArray: true
       name: cloud_provider_in
       required: false
@@ -787,7 +784,7 @@ script:
       - 'SNOWFLAKE'
       - 'FILE_SHARE'
       - 'O365'
-    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"].'
+    - description: 'Exact cloud provider.'
       isArray: false
       name: cloud_provider_equals
       required: false
@@ -800,7 +797,7 @@ script:
       - 'SNOWFLAKE'
       - 'FILE_SHARE'
       - 'O365'
-    - description: 'List of destination project vendor names.'
+    - description: 'A comma-separated list of project vendor names.'
       isArray: true
       name: destination_project_vendor_name_in
       required: false
@@ -810,7 +807,7 @@ script:
       name: destination_project_vendor_name_equals
       required: false
       secret: false
-    - description: 'List of cloud environments ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"].'
+    - description: 'A comma-separated list of cloud environments.'
       isArray: true
       name: cloud_environment_in
       required: false
@@ -822,7 +819,7 @@ script:
       - 'STAGING'
       - 'TESTING'
       - 'PRODUCTION'
-    - description: 'Exact cloud environment ["UNKNOWN", "DEVELOPMENT", "STAGING", "TESTING", "PRODUCTION"].'
+    - description: 'Exact cloud environment.'
       isArray: false
       name: cloud_environment_equals
       required: false
@@ -834,7 +831,7 @@ script:
       - 'STAGING'
       - 'TESTING'
       - 'PRODUCTION'
-    - description: 'List of policy severities ["HIGH", "MEDIUM", "LOW"].'
+    - description: 'A comma-separated list of policy severities.'
       isArray: true
       name: policy_severity_in
       required: false
@@ -844,7 +841,7 @@ script:
       - 'HIGH'
       - 'MEDIUM'
       - 'LOW'
-    - description: 'Exact policy severity ["HIGH", "MEDIUM", "LOW"].'
+    - description: 'Exact policy severity.'
       isArray: false
       name: policy_severity_equals
       required: false
@@ -854,7 +851,7 @@ script:
       - 'HIGH'
       - 'MEDIUM'
       - 'LOW'
-    - description: 'List of category types ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"].'
+    - description: 'A comma-separated list of category types.'
       isArray: true
       name: category_type_in
       required: false
@@ -866,7 +863,7 @@ script:
       - 'COMPLIANCE'
       - 'ASSET_AT_RISK'
       - 'RECONNAISSANCE'
-    - description: 'Exact category type ["FIRST_MOVE", "ATTACK", "COMPLIANCE", "ASSET_AT_RISK", "RECONNAISSANCE"].'
+    - description: 'Exact category type.'
       isArray: false
       name: category_type_equals
       required: false
@@ -878,7 +875,7 @@ script:
       - 'COMPLIANCE'
       - 'ASSET_AT_RISK'
       - 'RECONNAISSANCE'
-    - description: 'List of statuses ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"].'
+    - description: 'A comma-separated list of statuses.'
       isArray: true
       name: status_in
       required: false
@@ -891,7 +888,7 @@ script:
       - 'WRONG'
       - 'HANDLED'
       - 'INVESTIGATING'
-    - description: 'Exact status ["OPEN", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"].'
+    - description: 'Exact status.'
       isArray: false
       name: status_equals
       required: false
@@ -909,7 +906,7 @@ script:
       name: sort
       required: false
       secret: false
-    - description: 'The maximum number of alerts to retrieve. If not specified, the default value is 50.'
+    - description: 'The maximum number of alerts to retrieve.'
       isArray: false
       name: limit
       required: false

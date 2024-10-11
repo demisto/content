@@ -938,8 +938,49 @@ Updates the status of a alert.
 #### Human Readable Output
 
 >### Alert Status Update
->|Alert ID|Old Status|New Status|
+>| Alert ID | Old Status | New Status |
 >|---|---|---|
 >| 000000608 | INVESTIGATING | INVESTIGATING |
+
+
+### dspm-get-integration-config
+
+***
+Retrieves integration configuration.
+
+#### Base Command
+
+`dspm-get-integration-config`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DSPM.IntegrationConfig | String | Integration configuration values. |
+
+#### Command example
+```!dspm-get-integration-config```
+#### Context Example
+```json
+{
+    "DSPM": {
+        "IntegrationConfig": {
+        "slackMsgLifetime": "4",
+        "defaultSlackUser": "dummy@user.com",
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Integration configuration values
+>|Slack Msg Lifetime|Default Slack User|
+>|---|---|
+>| 4 | useremail|
 
 ----------------
