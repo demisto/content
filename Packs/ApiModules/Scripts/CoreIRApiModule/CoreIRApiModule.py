@@ -2116,7 +2116,6 @@ def retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_li
     endpoints_page = endpoints
     # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
     while endpoints_page:
-        # Increment page
         page_number += 1
         endpoints_page = client.get_endpoints(
             endpoint_id_list=endpoint_id_list,
