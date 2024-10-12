@@ -2,7 +2,7 @@ import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from datetime import datetime, timedelta
+from datetime import datetime
 from time import time as get_current_time_in_seconds
 
 disable_warnings()
@@ -15,10 +15,12 @@ DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 
 
-class UnauthorizedToken(Exception): ...
+class UnauthorizedToken(Exception):
+    ...
 
 
-class NextPointingNotAvailable(Exception): ...
+class NextPointingNotAvailable(Exception):
+    ...
 
 
 class Client(BaseClient):
@@ -118,7 +120,7 @@ def normalize_date_format(date_str: str) -> str:
 
     # Convert back to the desired format without milliseconds
     new_date_str = original_date.strftime('%Y-%m-%dT%H:%M:%SZ')
-    
+
     return new_date_str
 
 
@@ -273,11 +275,11 @@ def get_events_command(
         raise e
 
     update_new_integration_context(
-            filtered_events=filtered_events,
-            next_hash=next_hash,
-            include_last_fetch_events=False,
-            last_integration_context=integration_context,
-        )
+        filtered_events=filtered_events,
+        next_hash=next_hash,
+        include_last_fetch_events=False,
+        last_integration_context=integration_context,
+    )
 
 
 def perform_long_running_loop(client: Client):

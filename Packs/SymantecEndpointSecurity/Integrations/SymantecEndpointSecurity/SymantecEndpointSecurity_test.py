@@ -100,5 +100,5 @@ def test_update_new_integration_context_last_latest_event_time_are_equal(
     update_new_integration_context(
         filtered_events, next_hash, include_last_fetch_events, last_integration_context
     )
-    
+
     assert mock_set_integration_context.call_args[0][0] == expected_integration_context
