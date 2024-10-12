@@ -926,7 +926,7 @@ script:
       - "true"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Whether to return timestamp values in human-readable format as opposed to Unix epoch timestamp format.
+      description: Whether to return timestamp or date string values.
       name: convert_timestamp_to_datestring
       predefined:
       - "false"
