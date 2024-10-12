@@ -99,7 +99,15 @@ class Client(BaseClient):
 
 
 def normalize_date_format(date_str: str) -> str:
-    
+    """
+    Normalize the given date string by removing microseconds.
+
+    Args:
+        date_str (str): The input date string to be normalized.
+
+    Returns:
+        str: The normalized date string without microseconds.
+    """
     try:
         # Parse the original date string with milliseconds
         original_date = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -144,7 +152,10 @@ def push_events(events: list[dict]):
     demisto.debug(f"{len(events)} events were pushed to XSIAM")
 
 
-def parse_event_time(event):
+def parse_event_time(event) -> datetime:
+    """
+    Parse the event time from the given event dict to datetime object.
+    """
     return datetime.strptime(normalize_date_format(event["time"]), "%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -167,6 +178,22 @@ def is_duplicate(
     latest_event_time: datetime,
     events_suspected_duplicates: set,
 ) -> bool:
+    """
+    Determine if an event is a duplicate based on its time and ID.
+
+    This function checks if an event is considered a duplicate by comparing its
+    timestamp with the latest event time and checking if its ID is in the set of
+    suspected duplicates.
+
+    Args:
+        event_id (str): The unique identifier of the event.
+        event_time (datetime): The timestamp of the event.
+        latest_event_time (datetime): The timestamp of the last event from the last fetch.
+        events_suspected_duplicates (set): A set of event IDs suspected to be duplicates.
+
+    Returns:
+        bool: True if the event is a duplicate, False otherwise.
+    """
     if event_time < latest_event_time:
         return True
     elif event_time == latest_event_time and event_id in events_suspected_duplicates:
@@ -175,6 +202,15 @@ def is_duplicate(
 
 
 def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Filter out duplicate events from the given list of events.
+
+    Args:
+        events (list[dict[str, str]]): A list of event dictionaries, each containing 'uuid' and 'time' keys.
+
+    Returns:
+        list[dict[str, str]]: A list of event dictionaries without fear of duplication.
+    """
     integration_context = get_integration_context()
     events_suspected_duplicates = set(
         integration_context.get("events_suspected_duplicates", [])
