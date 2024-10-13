@@ -10,6 +10,7 @@ enabled: true
 engineinfo: {}
 name: getDeprecatedPlaybooks
 outputs:
+- description: The list of deprecated playbooks.
 - contextPath: DeprecatedPlaybooks
 runas: DBotWeakRole
 runonce: false
