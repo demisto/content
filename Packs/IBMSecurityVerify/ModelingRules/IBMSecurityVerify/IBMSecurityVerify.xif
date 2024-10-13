@@ -55,6 +55,7 @@ filter event_type = "sso"
     res = lowercase(data -> result),
     src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0) // The username can sometimes appear as a username and other times as an email.
 | alter
+    xdm.event.description = data -> cause,
     xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
     xdm.auth.service = data -> subtype,
     xdm.source.user.identifier = data -> userid,
