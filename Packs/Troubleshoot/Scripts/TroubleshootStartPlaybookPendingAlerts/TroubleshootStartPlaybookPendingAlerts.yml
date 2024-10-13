@@ -1,6 +1,6 @@
 args:
 - name: query
-  description: Additional text by which to query alerts. For pending alerts use "runStatus:\"Pending\""
+  description: Additional text by which to query alerts. For pending alerts use "runStatus:\"Pending\"".
   defaultValue: "runStatus:\"Pending\""
 - name: playbook_id
   description: playbook ID to set on the alerts.
