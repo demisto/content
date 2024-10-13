@@ -1,0 +1,100 @@
+{
+    "id": "<domain>",
+    "type": "domain",
+    "attributes": {
+        "last_modification_date": 1726690020,
+        "reputation": 0,
+        "tld": "com",
+        "first_seen_itw_date": 1315830193,
+        "mandiant_ic_score": 84,
+        "registrar": "Amazon Registrar, Inc.",
+        "last_dns_records_date": 1726675835,
+        "whois": "Admin City: Clearwater\nAdmin Country: US\nAdmin Email: <admin_email>@google.com\nAdmin Organization: <Admin Org>\nAdmin Postal Code: 33755\nAdmin State/Province: FL\nCreation Date: 2020-12-07T20:18:23Z\nDNSSEC: unsigned\nDomain Name: <Domain Name>\nDomain Status: OK\nName Server: <Name Server>\nRegistrant City: 9f17c16e0cbd11e5\nRegistrant Country: US\nRegistrant Email: <registrant_email>@google.com\nRegistrant Fax Ext: 3432650ec337c945\nRegistrant Fax: 3432650ec337c945\nRegistrant Name: 24277ff58446df8f\nRegistrant Organization: c25274193b9137ef\nRegistrant Phone Ext: 3432650ec337c945\nRegistrant Phone: 6099a769d1923d4a\nRegistrant Postal Code: f28adb1ee249d449\nRegistrant State/Province: 6eb233f5a5adbed8\nRegistrant Street: 7d57c43d3cfd7338\nRegistrar Abuse Contact Email: <abuse>@google.com\nRegistrar Abuse Contact Phone: +34 600 000 000\nRegistrar IANA ID: <IANA ID>\nRegistrar Registration Expiration Date: 2024-12-07T20:18:23Z\nRegistrar URL: <Registrar URL>\nRegistrar URL: <Registrar URL>\nRegistrar WHOIS Server: <Registrar WHOIS Server>\nRegistrar: <Registrar>\nRegistry Admin ID: Not Available From Registry\nRegistry Domain ID: <Registry Domain ID>\nRegistry Expiry Date: 2024-12-07T20:18:23Z\nRegistry Registrant ID: Not Available From Registry\nRegistry Tech ID: Not Available From Registry\nTech City: Clearwater\nTech Country: US\nTech Email: <tech_email>@google.com\nTech Organization: <Tech Org>\nTech Postal Code: 33755\nTech State/Province: FL\nUpdated Date: 2023-11-03T22:57:14Z",
+        "last_https_certificate_date": 1593568953,
+        "threat_verdict": "VERDICT_UNDETECTED",
+        "whois_date": 1724217310,
+        "categories": {},
+        "last_analysis_stats": {
+            "malicious": 11,
+            "suspicious": 1,
+            "undetected": 31,
+            "harmless": 51,
+            "timeout": 0
+        },
+        "last_analysis_date": 1726675631,
+        "last_seen_itw_date": 1658186104,
+        "popularity_ranks": {},
+        "creation_date": 1607372303,
+        "attribution": {
+            "detailed_threat_actors": [
+                {
+                    "name": "<TA_name>",
+                    "source": "Mandiant",
+                    "id": "<TA_id>"
+                }
+            ],
+            "threat_actors": [
+                "<TA_name>"
+            ]
+        },
+        "total_votes": {
+            "harmless": 0,
+            "malicious": 0
+        },
+        "last_update_date": 1699052234,
+        "threat_severity": {
+            "version": "D3",
+            "threat_severity_level": "SEVERITY_NONE",
+            "threat_severity_data": {
+                "num_detections": 11,
+                "belongs_to_bad_collection": true,
+                "belongs_to_threat_actor": true
+            },
+            "last_analysis_date": "1726675845",
+            "level_description": "Severity NONE because it has less than 2 detections."
+        },
+        "tags": [],
+        "gti_assessment": {
+            "verdict": {
+                "value": "VERDICT_MALICIOUS"
+            },
+            "contributing_factors": {
+                "associated_actor": true,
+                "normalised_categories": [
+                    "malware"
+                ],
+                "mandiant_confidence_score": 84,
+                "safebrowsing_verdict": "harmless",
+                "mandiant_association_actor": true,
+                "mandiant_association_report": true
+            },
+            "threat_score": {
+                "value": 90
+            },
+            "severity": {
+                "value": "SEVERITY_HIGH"
+            },
+            "description": "This indicator is malicious (high severity) with high impact. It is associated with a Mandiant Intelligence Report, Mandiant's scoring pipeline identified this indicator as malicious and it is associated with a tracked Mandiant threat actor. Analysts should prioritize investigation."
+        }
+    },
+    "context_attributes": {
+        "notification_id": "19104706970",
+        "origin": "hunting",
+        "notification_date": 1726761663,
+        "sources": [
+            {
+                "id": "19072418300",
+                "type": "hunting_ruleset",
+                "label": "Malware Families YARA ruleset"
+            }
+        ],
+        "tags": [
+            "malware_families_yara_ruleset",
+            "malwarefamilyagenttesla"
+        ],
+        "hunting_info": {
+            "rule_name": "MalwareFamilyAgentTesla",
+            "match_source": "ORIGINAL_FILE"
+        }
+    }
+}
