@@ -3,10 +3,6 @@
 ### This pack includes:
 Log Normalization - XDM mapping for key event types.
 
-### Supported Event Types:
-- Alerts
-- Events
-
 ***
 
 ## Data Collection
