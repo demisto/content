@@ -4,6 +4,7 @@
   "suggestion_reason": "Recommended for 'Suspicious LDAP search query executed (High severity)' and 'Possible LDAP enumeration by unsigned process (Medium severity)' alerts",
   "description": "This trigger is responsible for handling the 'Suspicious LDAP search query executed (High severity)' and 'Possible LDAP enumeration by unsigned process (Medium severity)' alerts via the 'Suspicious LDAP search query' playbook",
   "trigger_name": "Suspicious LDAP search query",
+  "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
         "AND": [
