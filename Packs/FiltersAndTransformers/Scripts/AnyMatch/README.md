@@ -35,16 +35,16 @@ There are no outputs for this script.
 
 ### Table of examples
 
-| Left            | Right                   | Result | Explanation                                               |  
-| --------------- | ----------------------- |--------| --------------------------------------------------------- |
-| 1,2,3           | "1"                     | True   | Integers are treated as strings.        |
-| 1,2,250         | 25,10                   | True   | A part of 250 exists in the right side. |
-| 1               | 21                      | False  | 21 is not part of 1
-| 5,1,6,9,65,8    | 1,6                     | True   | 1,6,65 from left side
-| a               | holla                   | False  |holla is not part of a
-| bca              |    A                   | True   | The filter is case-insensitive. |
-| {'alert' {'data': 'x'}}              | x  | True   |  {'alert' {'data': 'x'}}
-| {'a':1},{'b':2} | {'a':1,'c':2}           | False  |  `{'a':1,'c':2}`     is nat a part of a value from the left.  |
-| {'a':1},{'b':2} | {a:1}                   | False  | `{a:1}` is not a part of any value from the left.  |
-| {key1:value1, key2:value2}  | 1 | True   | {key1:value1, key2:value2}:  A json is treated as a single string, even when there is a comma in it.
-| '','            | {'a':1,'c':2}           | True   | `''` is not a part of `{'a':1,'c':2}`, but `'` is.|
+| Left            | Right                   | Result                                               | Explanation                                               |  
+| --------------- | ----------------------- | ----------------------------------------              | --------------------------------------------------------- |
+| 1,2,3           | "1"                     | 1           | Integers are treated as strings.        |
+| 1,2,250         | 25,10                   | 250         | A part of 250 exists in the right side. |
+| 1               | 21                      |None                                                   |
+| 5,1,6,9,65,8    | 1,6                     | 1,6,65                                                |
+| a               | holla                   | None                                |
+| bca              |    A                   | bca                                 | The filter is case-insensitive. |
+| {'alert' {'data': 'x'}}              | x  |{'alert' {'data': 'x'}}                              |
+| {'a':1},{'b':2} | {'a':1,'c':2}           | None                          |  `{'a':1,'c':2}`     is nat a part of a value from the left.  |
+| {'a':1},{'b':2} | {a:1}                   | None                           | `{a:1}` is not a part of any value from the left.  |
+| {key1:value1, key2:value2}  | 1 |{key1:value1, key2:value2}|  A json is treated as a single string, even when there is a comma in it.
+| '','            | {'a':1,'c':2}           | '                     | `''` is not a part of `{'a':1,'c':2}`, but `'` is.|
