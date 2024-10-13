@@ -892,14 +892,15 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
         try:
             result = service.users().list(**command_args).execute()
         except HttpError as err:
-            # retry mechanism - try 3 times to get the users list, otherwise continue
-            demisto.debug(f'Gmail Integration: Got an error {err.status_code} for getting list of users,'
-                          f' Trying again to get it by executing another API Call (try number: {counter + 1}).')
             if err.status_code == 500 and counter < 3:
+                # retry mechanism - try 3 times to get the users list, otherwise continue
+                demisto.debug(f'Gmail Integration: Got an error {err.status_code} for getting list of users,'
+                              f' Trying again to get it by executing another API Call (try number: {counter + 1}).')
                 counter += 1
                 time.sleep(30)
                 continue
             else:
+                demisto.debug(f'Gmail Integration: {str(err)}, {err.status_code=}, {counter=}')
                 raise err
         accounts_counter += len(result['users'])
         accounts.extend([account['primaryEmail'] for account in result['users']])
