@@ -1723,6 +1723,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Onion address extraction test",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "Domain extraction test",
             "fromversion": "5.5.0"
         },
@@ -5813,7 +5817,12 @@
         {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "integrations": "netskope_api_v2",
+            "playbookID": "Netskope_V2_Test"
         }
+
     ],
     "skipped_tests": {
         "ThreatCrowd - Test": "The pack is deprecated",
@@ -6002,7 +6011,9 @@
         "CloudConvert-test": "CRTX-122593",
         "CiscoMerakiv2": "CIAC-11322",
         "Test_XFE_v2": "CRTX-112127",
-        "test-ProofpointThreatProtectionIntegration-Playbook": "No instance"
+        "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
+        "Generic Webhook - Test": "CIAC-11234",
+        "Netskope_V2_Test": "No instance - developed by Qmasters"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
@@ -6438,6 +6449,7 @@
         "IPv4 extraction test",
         "IPv4 CIDR extraction test",
         "IPv6 CIDR extraction test",
-        "IPv6 extraction test"
+        "IPv6 extraction test",
+        "Onion address extraction test"
     ]
 }
