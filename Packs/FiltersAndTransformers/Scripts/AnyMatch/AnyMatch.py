@@ -20,7 +20,7 @@ def main():
     leftArg = args.get("left")
     rightArg = args.get("right")
 
-    if not (leftArg and rightArg):
+    if not leftArg:
         return_results(False)
         return
 
