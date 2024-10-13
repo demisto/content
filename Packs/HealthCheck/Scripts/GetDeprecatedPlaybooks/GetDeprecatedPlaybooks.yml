@@ -9,9 +9,6 @@ dockerimage: demisto/python3:3.11.10.111526
 enabled: true
 engineinfo: {}
 name: getDeprecatedPlaybooks
-outputs:
-- description: The list of deprecated playbooks.
-- contextPath: DeprecatedPlaybooks
 runas: DBotWeakRole
 runonce: false
 script: ''

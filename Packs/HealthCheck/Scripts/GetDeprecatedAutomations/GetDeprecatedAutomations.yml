@@ -9,9 +9,6 @@ dockerimage: demisto/python3:3.11.10.111526
 enabled: true
 engineinfo: {}
 name: getDeprecatedAutomations
-outputs:
-- description: The list of deprecated automations.
-- contextPath: DeprecatedAutomations
 runas: DBotWeakRole
 runonce: false
 script: ''
