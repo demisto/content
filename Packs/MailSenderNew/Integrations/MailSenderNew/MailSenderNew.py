@@ -289,7 +289,11 @@ def create_msg():
             if body:
                 demisto.debug(f'create_msg, has attachments, has {body=}')
                 alt = MIMEMultipart('alternative')
-                alt.attach(MIMEText(body, 'plain', UTF_8))
+                if '<html>' not in body:
+                    demisto.debug('create_msg, has attachments <html> not in body')
+                    alt.attach(MIMEText(body, 'plain', UTF_8))
+                else:
+                    demisto.debug('create_msg, has attachments <html> in body')
                 alt.attach(MIMEText(html_body, 'html', UTF_8))
                 msg.attach(alt)
             else:
@@ -303,6 +307,11 @@ def create_msg():
                 demisto.debug(f'create_msg, no attachments, has {body=}')
                 msg = MIMEMultipart('alternative')
                 msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
+                if '<html>' not in body:
+                    demisto.debug('create_msg, no attachments <html> not in body')
+                    msg.attach(MIMEText(body, 'plain', UTF_8))
+                else:
+                    demisto.debug('create_msg, no attachments <html> in body')
                 msg.attach(MIMEText(body, 'plain', UTF_8))
                 msg.attach(MIMEText(html_body, 'html', UTF_8))
             else:
