@@ -794,8 +794,6 @@ def main():
     args = demisto.args()
     proxy = params.get('proxy')
 
-    # If your Client class inherits from BaseClient, SSL verification is handled out-of-the-box by it.
-    # Just pass ``verify_certificate`` to the Client constructor
     verify_certificate = not params.get('unsecure', False)
 
     if not API_KEY:
