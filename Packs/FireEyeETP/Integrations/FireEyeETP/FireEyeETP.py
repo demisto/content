@@ -625,7 +625,7 @@ def list_yara_rulesets_command(client, args):
                                                                          "description",
                                                                          "uuid",
                                                                          "yara_file_name"
-                                                                         ]
+                                                                     ]
                                                                      ),
                                      outputs_prefix=f'FireEyeETP.Policy.{policy_uuid}')
 
@@ -661,8 +661,9 @@ def quarantine_release_command(client, args):
     response = client.quarantine_release(message_id)
 
     command_results = CommandResults(
-        readable_output=tableToMarkdown("Quarantine",response.json()['data'], headers=["type", "operation", "successful_message_ids"])
-        )
+        readable_output=tableToMarkdown("Quarantine", response.json()['data'], headers=[
+                                        "type", "operation", "successful_message_ids"])
+    )
 
     return command_results
 
