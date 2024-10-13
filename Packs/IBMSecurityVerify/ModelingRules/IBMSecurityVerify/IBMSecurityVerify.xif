@@ -57,6 +57,7 @@ filter event_type = "sso"
 | alter
     xdm.event.description = data -> cause,
     xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
     xdm.auth.service = data -> subtype,
     xdm.source.user.identifier = data -> userid,
     xdm.source.user.username = coalesce(src_user, data -> username),
@@ -81,6 +82,7 @@ filter event_type = "authentication"
     src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0) // The username can sometimes appear as a username and other times as an email.
 | alter
     xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
+    xdm.event.operation = if(lowercase(data.subtype) = "MFA",  XDM_CONST.OPERATION_TYPE_AUTH_MFA, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
     xdm.event.operation_sub_type = coalesce(data -> dict_op, data -> action),
     xdm.event.description = data -> cause,
     xdm.auth.service = data -> sourcetype,
