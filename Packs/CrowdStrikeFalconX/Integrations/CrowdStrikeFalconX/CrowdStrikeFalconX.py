@@ -7,7 +7,7 @@ import urllib3
 
 from CommonServerPython import *
 
-# Disable insecure warnings
+# Disable insecure warnings = test
 urllib3.disable_warnings()
 
 
