@@ -168,20 +168,18 @@ def test_nextTrigger(
     if not with_computer_next_page:
         assert not next_run.get("computer").get("next_page")
 
+
 def test_next_trigger(mocker):
     """
     Test a situation that audit and alert have a next page
     but computer events are empty. Validate that after the code fix no variables are
     referenced before undefined error raises.
     """
-    mocker.patch.object(demisto, 'getLastRun', return_value={'alert' : {'next_page' : 'value1'},
-                                                             'audit' : {'next_page' : 'value2'}})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'alert': {'next_page': 'value1'},
+                                                             'audit': {'next_page': 'value2'}})
     from JamfProtectEventCollector import fetch_events, Client
     client = Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
                     client_password=MOCK_CLIENT_PASSWORD)
-    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value = ([], {}))
-    mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value= ([], {}))
+    mocker.patch('JamfProtectEventCollector.get_events_alert_type', return_value=([], {}))
+    mocker.patch('JamfProtectEventCollector.get_events_audit_type', return_value=([], {}))
     fetch_events(client, 1, 1, 1)
-    
-    
-    
