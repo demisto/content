@@ -13,7 +13,7 @@ Log Normalization - XDM mapping for key event types.
 To configure Dragos Platform to send logs to Cortex XSIAM, follow the below steps.
 
 ### Dragos Platform side
-1. Logon to Dragos as an administrator.
+1. Log in to Dragos as an administrator.
 2. Navigate to **Admin** &rarr; **Syslog** or browse to "https://<your-site-store>/syslog/".
 3. Go to the **SERVERS** tab and click on **+ ADD SERVER**.
 4. Fill the below data:
