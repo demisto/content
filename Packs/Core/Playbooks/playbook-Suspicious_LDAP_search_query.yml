@@ -212,16 +212,16 @@ tasks:
       version: -1
       name: Is this a non-legit operation?
       description: |-
-        ## Determines if there the LDAP operation was suspicious by the following conditions:
+        #### Determines if there the LDAP operation was suspicious by the following conditions:
 
-        - *Without Host Risk Score:*
+        - *Without Host Risk Score:*  
         Actor Process name is not Prevalent *AND*
         Actor Process Command Line is not Prevalent *AND*
         No Risk Score for the user
 
-        - *With Host Risk Score:*
+        - *With Host Risk Score:*  
         (Actor Process name is not Prevalent *OR*
-        Actor Process Command Line is not Prevalent )*AND*
+        Actor Process Command Line is not Prevalent) *AND*
         Risk Host Score is Medium or High
       type: condition
       iscommand: false
