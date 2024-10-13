@@ -382,6 +382,12 @@ def test_get_events_data_command_failed():
     )
     assert result.readable_output == expected_md
 
+class MockResponse:
+    def __init__(self, data):
+        self.data = data
+
+    def json(self):
+        return self.data
 
 def test_quarantine_release_command(mocker):
     """
@@ -395,12 +401,21 @@ def test_quarantine_release_command(mocker):
 	- Ensure message send succesfully to quarantine
     """
     from FireEyeETP import quarantine_release_command, Client
+
+    response_data = {
+        'data': {
+            "type": "some_type",
+            "operation": "some_operation",
+            "successful_message_ids": "1,2,3"
+        }
+    }
+
+    mock_response = MockResponse(response_data)
     args = {'message_id': '12345'}
-    mock_response = MagicMock()
-    mock_response.text = 'Quarantine release successful'
     mock_client = MagicMock(spec=Client)
     mock_client.quarantine_release.return_value = mock_response
     result = quarantine_release_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.readable_output == 'Quarantine release successful'
+    assert result.readable_output == ('### Quarantine\n|type|operation|successful_message_ids|\n|---|---|---|\n| some_type '
+                                      '| some_operation | 1,2,3 |\n')
     mock_client.quarantine_release.assert_called_once_with('12345')
