@@ -792,7 +792,7 @@ def main():
 
     params = demisto.params()
     args = demisto.args()
-    proxy = params.get('proxy')
+    proxy = params.get('proxy', False)
 
     verify_certificate = not params.get('unsecure', False)
 
