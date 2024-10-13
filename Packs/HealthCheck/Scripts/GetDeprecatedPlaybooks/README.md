@@ -1,4 +1,4 @@
-Get the count of Marketplace content packs update status.
+Get the list of deprecated playbooks
 
 ## Script Data
 
@@ -7,7 +7,7 @@ Get the count of Marketplace content packs update status.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | statusreview, widget |
+| Tags | statusreview |
 
 ## Inputs
 
@@ -17,4 +17,7 @@ There are no inputs for this script.
 ## Outputs
 
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| DeprecatedPlaybooks |  | Unknown |
