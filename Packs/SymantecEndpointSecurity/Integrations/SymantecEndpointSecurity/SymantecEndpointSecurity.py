@@ -33,8 +33,7 @@ class Client(BaseClient):
     def __init__(
         self,
         base_url: str,
-        client_id: str,
-        client_secret: str,
+        token: str,
         stream_id: str,
         channel_id: str,
         verify: bool,
@@ -43,8 +42,7 @@ class Client(BaseClient):
     ) -> None:
 
         self.headers: dict[str, str] = {}
-        self.client_id = client_id
-        self.client_secret = client_secret
+        self.token = token
         self.stream_id = stream_id
         self.channel_id = channel_id
         self.fetch_interval = fetch_interval
@@ -60,12 +58,12 @@ class Client(BaseClient):
 
     def get_token(self):
         """
-        Retrieves an access token using the `client_secret` provided in the params.
+        Retrieves an access token using the `token` provided in the params.
         """
         get_token_headers: dict[str, str] = {
             "accept": "application/json",
             "content-type": "application/x-www-form-urlencoded",
-            "Authorization": f"Bearer {self.client_secret}",
+            "Authorization": f"Bearer {self.token}",
         }
         res = self._http_request(
             "POST",
@@ -346,7 +344,7 @@ def test_module(client: Client) -> str:
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 403:
             raise DemistoException(
-                f"Authorization Error: make sure Client Secret is correctly set, Error: {e}"
+                f"Authorization Error: make sure the Token is correctly set, Error: {e}"
             )
         else:
             raise e
@@ -357,8 +355,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
 
     host = params["host"]
-    client_id = params["client_id"]
-    client_secret = params["client_secret"]
+    token = params["token"]
     stream_id = params["stream_id"]
     channel_id = params["channel_id"]
     verify = not argToBoolean(params.get("insecure", False))
@@ -369,8 +366,7 @@ def main() -> None:  # pragma: no cover
     try:
         client = Client(
             base_url=host,
-            client_id=client_id,
-            client_secret=client_secret,
+            token=token,
             stream_id=stream_id,
             channel_id=channel_id,
             verify=verify,

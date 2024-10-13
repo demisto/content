@@ -12,14 +12,8 @@ configuration:
   defaultvalue: https://api.sep.securitycloud.symantec.com
   required: true
   section: Connect
-- display: Client ID
-  name: client_id
-  type: 0
-  required: true
-  additionalinfo: ""
-  section: Connect
-- displaypassword: Client Secret
-  name: client_secret
+- displaypassword: Token
+  name: token
   hiddenusername: true
   type: 9
   required: true

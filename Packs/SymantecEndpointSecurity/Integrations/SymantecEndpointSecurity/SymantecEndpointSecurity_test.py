@@ -17,7 +17,7 @@ def mock_client() -> Client:
     return Client(
         base_url="test",
         client_id="test_client_id",
-        client_secret="test_client_secret",
+        token="test_token",
         stream_id="test_stream_id",
         channel_id="test_channel_id",
         verify=True,
