@@ -1012,7 +1012,6 @@ def update_remote_system_command(client, args):
                       f'incident {remote_args.remote_incident_id}')
     try:
         if remote_args.incident_changed:
-
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
 
@@ -1038,7 +1037,6 @@ def update_remote_system_command(client, args):
                 demisto.debug(f"Returning to previous status {remote_args.data.get('status')}")
                 update_args['status'] = remote_args.data.get('status')
 
-            # demisto.debug(f"this is the status before sending it to update_incident_command {update_args['status']=}")
             update_incident_command(client, update_args)
     
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
