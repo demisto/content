@@ -16,7 +16,6 @@ from SymantecEndpointSecurity import (
 def mock_client() -> Client:
     return Client(
         base_url="test",
-        client_id="test_client_id",
         token="test_token",
         stream_id="test_stream_id",
         channel_id="test_channel_id",
