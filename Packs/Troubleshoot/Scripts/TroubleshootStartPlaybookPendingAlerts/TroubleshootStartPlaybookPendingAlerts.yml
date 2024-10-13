@@ -1,8 +1,11 @@
 args:
 - name: query
   description: Additional text by which to query alerts. For pending alerts use "runStatus:\"Pending\""
+  defaultValue: "runStatus:\"Pending\""
 - name: playbook_id
   description: playbook ID to set on the alerts.
+- name: playbook_name
+  description: playbook name to set on the alerts.
 - name: limit
   description: The maximum number of alerts to fetch.
   defaultValue: "500"
@@ -51,18 +54,21 @@ commonfields:
   id: TroubleshootStartPlaybookPendingAlerts
   version: -1
 name: TroubleshootStartPlaybookPendingAlerts
+dependson:
+  must:
+  - core-api-get
+  - core-api-post
+  # - closeInvestigation
+script: '-'
+subtype: python3
 tags:
 - Alerts
 - DemistoAPI
 - troubleshoot
 timeout: '0'
 type: python
-subtype: python3
-dependson:
-  must:
-  - core-api-post
-  - closeInvestigation
-dockerimage: demisto/python3:3.10.13.87159
+dockerimage: demisto/python3:3.10.13.86272
 fromversion: 5.0.0
+enabled: true
 tests:
 - No tests (auto formatted)
