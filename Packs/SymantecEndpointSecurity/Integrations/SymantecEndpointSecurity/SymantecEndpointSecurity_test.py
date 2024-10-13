@@ -6,7 +6,24 @@ from SymantecEndpointSecurity import (
     extract_events_suspected_duplicates,
     update_new_integration_context,
     filter_duplicate_events,
+    perform_long_running_loop,
+    UnauthorizedToken,
+    NextPointingNotAvailable,
+    Client,
 )
+
+
+def mock_client() -> Client:
+    return Client(
+        base_url="test",
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        stream_id="test_stream_id",
+        channel_id="test_channel_id",
+        verify=True,
+        proxy=False,
+        fetch_interval=60,
+    )
 
 
 @pytest.mark.parametrize(
@@ -168,3 +185,45 @@ def test_update_new_integration_context_last_latest_event_time_are_equal(
     )
 
     assert mock_set_integration_context.call_args[0][0] == expected_integration_context
+
+
+def test_perform_long_running_loop_unauthorized_token(mocker: MockerFixture):
+    """
+    Given:
+        - The `perform_long_running_loop` function is called
+    When:
+        - The function is called
+    Then:
+        - Ensure that the function runs indefinitely until the container is stopped
+    """
+    mocker.patch(
+        "SymantecEndpointSecurity.get_events_command",
+        side_effect=[UnauthorizedToken, Exception("Stop")],
+    )
+    mock_get_token = mocker.patch.object(Client, "get_token")
+
+    with pytest.raises(Exception, match="Stop"):
+        perform_long_running_loop(mock_client())
+    assert mock_get_token.call_count == 2
+
+
+def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFixture):
+    """
+    Given:
+        - No args for the function call
+    When:
+        - The function `perform_long_running_loop` is called
+    Then:
+        - 
+    """
+    mock_integration_context = {"next_fetch": {"next": "test"}}
+    mocker.patch(
+        "SymantecEndpointSecurity.get_events_command",
+        side_effect=[NextPointingNotAvailable, Exception("Stop")],
+    )
+    mocker.patch.object(Client, "get_token")
+    mocker.patch("SymantecEndpointSecurity.get_integration_context", return_value=mock_integration_context)
+    with pytest.raises(Exception, match="Stop"):
+        perform_long_running_loop(mock_client())
+    assert mock_integration_context == {}
+    
