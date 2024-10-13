@@ -12,6 +12,12 @@ from test_data.test_response import (UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE, DES
 AWSEKS = importlib.import_module("AWSEKS")
 
 
+@pytest.fixture(autouse=True)
+def mock_build_client(mocker, request):
+    if request.node.name != "test_build_client":
+        mocker.patch.object(AWSEKS, 'build_client', lambda _: Boto3Client)
+
+
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
@@ -24,14 +30,6 @@ def test_build_client(mocker):
     aws_client = AWSEKS.build_client({})
 
     assert aws_client == "aws_client"
-
-
-def mock_build_client(func):
-    def wrapper(mocker):
-        AWSEKS.build_client = lambda _: Boto3Client
-        result = func(mocker)
-        return result
-    return wrapper
 
 
 def test_validate_args_one_arg():
@@ -136,7 +134,6 @@ class Boto3Client:
         pass
 
 
-@mock_build_client
 def test_list_clusters_command(mocker):
     """
         Given:

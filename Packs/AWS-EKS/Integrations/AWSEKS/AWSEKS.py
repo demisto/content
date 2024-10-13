@@ -64,7 +64,7 @@ def config_aws_session(args: dict, aws_client: AWSClient):
     )
 
 
-def build_client(args):
+def build_client(args: dict):
     aws_default_region = PARAMS.get('defaultRegion')
     aws_access_key_id = PARAMS.get('credentials', {}).get('identifier')
     aws_secret_access_key = PARAMS.get('credentials', {}).get('password')
