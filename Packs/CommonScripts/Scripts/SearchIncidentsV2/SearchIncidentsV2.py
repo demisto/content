@@ -158,11 +158,12 @@ def search_incidents(args: Dict):  # pragma: no cover
     if args.get('includeinformational'):
         if not (args.get('fromdate') and args.get('todate')):
             raise ValueError('The includeinformational argument requires fromdate and todate arguments.')
-        if (datetime.utcnow() - args.get('fromdate')).total_seconds() > 5 * 60 * 60:
-            args['fromdate'] = dateparser.parse('5 hours ago', settings={'TIMEZONE': 'UTC'}).isoformat()
-            demisto.info(f'fromdate: {fromdate} is more than 5 hours from now: {datetime.utcnow()}. '
-                        f'Currently, we support querying informational incidents for up to the last 5 hours.'
-                        f' The fromdate has been adjusted to {args.get("fromdate")}')
+        if (datetime.utcnow() - args.get('fromdate')).total_seconds() > 5 * 60 * 60:  # type: ignore
+            five_hours_ago = arg_to_datetime('5 hours ago').isoformat()  # type: ignore
+            demisto.info(f'fromdate: {args.get("fromdate")} is more than 5 hours from now: {datetime.utcnow()}. '
+                         f'Currently, we support querying informational incidents for up to the last 5 hours.'
+                         f' The fromdate has been adjusted to {five_hours_ago}')
+            args['fromdate'] = five_hours_ago
         args['includeinformational'] = argToBoolean(args.get('includeinformational', False))
 
     # handle list of ids
