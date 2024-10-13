@@ -70,6 +70,7 @@ args:
   predefined:
   - "false"
   - "true"
+  defaultValue: "false"
   hidden: true
   hidden:marketplacev2: false
 - description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed).
