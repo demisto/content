@@ -7,9 +7,6 @@ DEFAULT_LIMIT = 100
 DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
 
-INCLUDEINFORMATIONAL_SUPPORT_VERSION = '8.8'
-ENABLE_INCLUDEINFORMATIONAL_ARG = (is_xsiam() and is_demisto_version_ge(version=INCLUDEINFORMATIONAL_SUPPORT_VERSION))
-
 
 class AlertSeverity(Enum):
     UNKNOWN = 0
@@ -146,8 +143,6 @@ def search_incidents(args: Dict):  # pragma: no cover
             args.pop('trimevents')
 
     if args.get('includeinformational'):
-        if not ENABLE_INCLUDEINFORMATIONAL_ARG:
-            raise ValueError('The includeinformational argument supported only in XSIAM from version x.x.x.')
         if not (args.get('fromdate') and args.get('todate')):
             raise ValueError('The includeinformational argument requires fromdate and todate arguments.')
         if (datetime.utcnow() - fromdate).total_seconds() > 5 * 60 * 60:
