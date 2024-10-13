@@ -313,7 +313,7 @@ script:
     - name: policy_uuid
       required: true
       description: Universally unique identifier (UUID) of the policy. (Can be found
-        on the URL of the ETP Policies).
+        in the URL of the ETP Policies).
     outputs:
     - contextPath: FireEyeETP.Policy
       description: The policy id.
@@ -323,7 +323,7 @@ script:
     - name: policy_uuid
       required: true
       description: Universally unique identifier (UUID) of the policy. (Can be found
-        on the URL of the ETP Policies).
+        in the URL of the ETP Policies).
     - name: ruleset_uuid
       required: true
       description: Universally unique identifier (UUID) of the ruleset.
@@ -333,7 +333,7 @@ script:
     - name: policy_uuid
       required: true
       description: Universally unique identifier (UUID) of the policy. (Can be found
-        on the URL of the ETP Policies).
+        in the URL of the ETP Policies).
     - name: ruleset_uuid
       required: true
       description: Universally unique identifier (UUID) of the ruleset.
