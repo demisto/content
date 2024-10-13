@@ -3374,10 +3374,10 @@ def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
         json=indicators_queries_res,
         status_code=200,
     )
-    
+
     res = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
 
-    assert 'device count: **6**' in  res['HumanReadable']
+    assert 'device count: **6**' in res['HumanReadable']
 
 
 def test_get_process_details_command_not_exists(requests_mock, mocker):
