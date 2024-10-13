@@ -129,10 +129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 87b97186-f876-4fbe-8129-47e7f4736c2c
+    taskid: d982ab0c-07a9-4ecd-85a9-cc775b5c9367
     type: regular
     task:
-      id: 87b97186-f876-4fbe-8129-47e7f4736c2c
+      id: d982ab0c-07a9-4ecd-85a9-cc775b5c9367
       version: -1
       name: Send Query to XQL
       description: |-
@@ -167,6 +167,7 @@ tasks:
               right:
                 value:
                   simple: xql
+          accessor: query
       query_name:
         complex:
           root: Sigma
@@ -198,10 +199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 537d271b-051a-4dac-8862-2dace961c759
+    taskid: 7bf4cc89-1a9e-41d5-8fb9-35d3bda95d3f
     type: condition
     task:
-      id: 537d271b-051a-4dac-8862-2dace961c759
+      id: 7bf4cc89-1a9e-41d5-8fb9-35d3bda95d3f
       version: -1
       name: Is XDR installed
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -216,7 +217,7 @@ tasks:
       - "2"
     scriptarguments:
       brandname:
-        simple: SplunkPy
+        simple: Cortex XDR - XQL Query Engine
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -235,10 +236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f597b6d8-faee-4778-8313-7e8cd1248a8d
+    taskid: 97402617-43d5-406f-8c80-7ede155b3a53
     type: condition
     task:
-      id: f597b6d8-faee-4778-8313-7e8cd1248a8d
+      id: 97402617-43d5-406f-8c80-7ede155b3a53
       version: -1
       name: Is Splunk installed
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -253,7 +254,7 @@ tasks:
       - "11"
     scriptarguments:
       brandname:
-        simple: Cortex XDR - XQL Query Engine
+        simple: SplunkPy
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -362,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ca988b6b-b251-4306-83c3-dcd6f6fc9fda
+    taskid: 6dcbedb8-3bd5-4f02-850a-4f3f7a6363e8
     type: title
     task:
-      id: ca988b6b-b251-4306-83c3-dcd6f6fc9fda
+      id: 6dcbedb8-3bd5-4f02-850a-4f3f7a6363e8
       version: -1
       name: Splunk
       type: title
@@ -393,10 +394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 447397ad-efce-48a9-8824-1cc59a3ae197
+    taskid: 5463457b-b79f-4e0b-80d3-d3b2fd2c5c58
     type: title
     task:
-      id: 447397ad-efce-48a9-8824-1cc59a3ae197
+      id: 5463457b-b79f-4e0b-80d3-d3b2fd2c5c58
       version: -1
       name: XDR
       type: title
@@ -424,10 +425,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 8db15a39-794e-49db-884b-cfae38318761
+    taskid: 18c3946f-fa28-4478-8a74-3bf627d7f137
     type: regular
     task:
-      id: 8db15a39-794e-49db-884b-cfae38318761
+      id: 18c3946f-fa28-4478-8a74-3bf627d7f137
       version: -1
       name: Convert Sigma to Splunk query
       description: Allows converting a Sigma Rule indicator into a SIEM query.
@@ -1338,7 +1339,8 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs.
 outputs: []
-quiet: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}
