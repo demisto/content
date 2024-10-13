@@ -21,7 +21,7 @@ To configure Dragos Platform to send logs to Cortex XSIAM, follow the below step
     | Parameter                             | Value                                                                                 |
     |:--------------------------------------|:--------------------------------------------------------------------------------------|
     | Name                                  | Cortex XSIAM Broker VM.                                                               |
-    | Hostname/IP                           | Enter the Broker VM IP Address.                                                       |
+    | Hostname/IP                           | Enter the Broker VM IP address.                                                       |
     | Port                                  | Enter the syslog service port that you want to use for sending logs to the Broker VM. |
     | Protocol                              | TCP/TLS.                                                                              |
     | Source Hostname                       | Leave the default value / set a value of your choice.                                 |
