@@ -1,0 +1,55 @@
+This playbook is designed to handle the following alerts:  
+- Possible LDAP enumeration by unsigned process (medium severity)
+- Suspicious LDAP search query executed (High severity)
+
+The playbook executes the following stages:
+
+Investigation:
+Check the following parameters to determine if remediation actions are needed:
+- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.
+- Whether the Actor Process Command line contains suspicious arguments.
+-  Host risk score is "Medium" or "High".
+
+Remediation:
+- Handles malicious alerts by terminating the relevant processes.
+- Handles non-malicious alerts identified during the investigation.
+
+## Dependencies
+
+This playbook uses the following sub-playbooks, integrations, and scripts.
+
+### Sub-playbooks
+
+* Command-Line Analysis
+
+### Integrations
+
+* CortexCoreIR
+
+### Scripts
+
+* SearchAlertsV2
+
+### Commands
+
+* core-terminate-causality
+* core-get-cmd-analytics-prevalence
+* core-list-risky-hosts
+* closeInvestigation
+* core-get-process-analytics-prevalence
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Suspicious LDAP search query](../doc_files/Suspicious_LDAP_search_query.png)
