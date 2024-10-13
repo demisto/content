@@ -1,0 +1,779 @@
+id: Suspicious LDAP search query
+version: -1
+name: Suspicious LDAP search query
+description: "This playbook is designed to handle the following alerts:  \n- Possible LDAP enumeration by unsigned process (medium severity)\n- Suspicious LDAP search query executed (High severity)\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the Actor Process Command line contains suspicious arguments.\n-  Host risk score is \"Medium\" or \"High\".\n\nRemediation:\n- Handles malicious alerts by terminating the relevant processes.\n- Handles non-malicious alerts identified during the investigation."
+tags:
+- T1087 - Account Discovery
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d906ae4-3dc3-471a-8c5f-23910a85b763
+    type: start
+    task:
+      id: 9d906ae4-3dc3-471a-8c5f-23910a85b763
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1ac45627-3d10-47b4-8c96-2a4010f239c6
+    type: title
+    task:
+      id: 1ac45627-3d10-47b4-8c96-2a4010f239c6
+      version: -1
+      name: Suspicious Activity Detected
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 744e8ceb-9803-49e8-8383-ec003eaa4c89
+    type: regular
+    task:
+      id: 744e8ceb-9803-49e8-8383-ec003eaa4c89
+      version: -1
+      name: Close Alert
+      description: Close the current alert as True Positive.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      closeNotes:
+        simple: Suspicious activity detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious LDAP search query"
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4ea136f8-1a80-43db-83ee-4dcced2e0f7c
+    type: regular
+    task:
+      id: 4ea136f8-1a80-43db-83ee-4dcced2e0f7c
+      version: -1
+      name: Run Prevalence Check On the Actor Process
+      description: Get the prevalence of a process, identified by process_name.
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      process_name:
+        simple: ${alert.osparentname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ccabe633-55a1-49bd-808d-f8a8db8e3b39
+    type: regular
+    task:
+      id: ccabe633-55a1-49bd-808d-f8a8db8e3b39
+      version: -1
+      name: Search for suspicious-related alerts by MITRE Technique
+      description: |-
+        This task searches for Cortex XSIAM suspicious alerts related to the current incident by Mitre Technique, indicating that the alert is part of an attack pattern.
+
+        Focus on identifying alerts associated with the following MITRE techniques:
+        - Any Agent Alerts within this incident.
+        - T1059 - Command and Scripting Interpreter.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '((mitreattcktechnique:*T1509* or sourceBrand:TRAPS) and caseid:'
+              suffix:
+                value:
+                  simple: )
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c165b375-ac80-4468-8ca8-5e6a863aefdf
+    type: condition
+    task:
+      id: c165b375-ac80-4468-8ca8-5e6a863aefdf
+      version: -1
+      name: Is this a non-legit operation?
+      description: |-
+        ## Determines if there the LDAP operation was suspicious by the following conditions:
+
+        - *Without Host Risk Score:*
+        Actor Process name is not Prevalent *AND*
+        Actor Process Command Line is not Prevalent *AND*
+        No Risk Score for the user
+
+        - *With Host Risk Score:*
+        (Actor Process name is not Prevalent *OR*
+        Actor Process Command Line is not Prevalent )*AND*
+        Risk Host Score is Medium or High
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Yes - With Risky Host:
+      - "19"
+      yes- without Risky Host:
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: yes- without Risky Host
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Cmd.value
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          ignorecase: true
+    - label: Yes - With Risky Host
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: High
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: Medium
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1b894c70-4c9c-4850-877d-386ee765f658
+    type: title
+    task:
+      id: 1b894c70-4c9c-4850-877d-386ee765f658
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: efd39e96-986d-4fe0-8558-3082523698fa
+    type: playbook
+    task:
+      id: efd39e96-986d-4fe0-8558-3082523698fa
+      version: -1
+      name: Command-Line Analysis
+      playbookName: Command-Line Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      Commandline:
+        complex:
+          root: alert
+          accessor: cgocmd
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: alert.osparentcmd
+                iscontext: true
+      StringSimilarityThreshold:
+        simple: "0.5"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: aa7af770-9222-41dc-8407-e31f657e90c6
+    type: condition
+    task:
+      id: aa7af770-9222-41dc-8407-e31f657e90c6
+      version: -1
+      name: Are there any findings
+      description: Check if any suspicious arguments were found in the Actor Process Command Line.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      - "17"
+      - "16"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CommandlineVerdict
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4613d710-21d0-4064-8075-83de01c1dc29
+    type: condition
+    task:
+      id: 4613d710-21d0-4064-8075-83de01c1dc29
+      version: -1
+      name: Are any related alerts found?
+      description: "Check if any alerts are found that match the condition:\n- Any Agent alert within the incident\n- T1509 - Command And Scripting "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 005d48de-4a97-4e0f-84f5-34f059a343be
+    type: regular
+    task:
+      id: 005d48de-4a97-4e0f-84f5-34f059a343be
+      version: -1
+      name: Run Prevalence Check On the Actor Process Command line
+      description: Get the prevalence of a process_command_line, identified by process_command_line.
+      script: '|||core-get-cmd-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      process_command_line:
+        simple: ${alert.osparentcmd}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: fc92daf1-7293-4c97-841c-ee2dd269ce2a
+    type: regular
+    task:
+      id: fc92daf1-7293-4c97-841c-ee2dd269ce2a
+      version: -1
+      name: Get Host Score from Risky Assets
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      host_id:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 7d77d223-491a-4df0-8da6-03dd1a68408a
+    type: title
+    task:
+      id: 7d77d223-491a-4df0-8da6-03dd1a68408a
+      version: -1
+      name: Without the Risky Score
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 18445382-e12f-4e92-81f9-d615f319048d
+    type: title
+    task:
+      id: 18445382-e12f-4e92-81f9-d615f319048d
+      version: -1
+      name: With Risky Score
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c1f72153-94cd-4322-8f42-2c33e6c320e6
+    type: regular
+    task:
+      id: c1f72153-94cd-4322-8f42-2c33e6c320e6
+      version: -1
+      name: Terminate the Causality Process Manually
+      description: |
+        Dear Analyst,
+
+        During the remediation process, the playbook failed to terminate the causality process: ${alert.cgoname}
+        Please investigate this before closing this alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: ba2362bc-345e-417c-8658-9eed09038d85
+    type: regular
+    task:
+      id: ba2362bc-345e-417c-8658-9eed09038d85
+      version: -1
+      name: Close Alert - No results returned
+      description: Close the current alert as False Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      closeNotes:
+        simple: No Results Found
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious LDAP search query"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 35be7061-a4df-4ada-8f60-bba6e556c3b7
+    type: title
+    task:
+      id: 35be7061-a4df-4ada-8f60-bba6e556c3b7
+      version: -1
+      name: No suspicious activity detected
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1c0ea250-fc66-43b5-82e4-1d90bf166d0b
+    type: regular
+    task:
+      id: 1c0ea250-fc66-43b5-82e4-1d90bf166d0b
+      version: -1
+      name: Terminate CGO Process
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "21"
+      '#none#':
+      - "2"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_18_yes- without Risky Host": 0.66
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2005,
+        "width": 1720,
+        "x": 240,
+        "y": -220
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
