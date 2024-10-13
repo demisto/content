@@ -1,3 +1,4 @@
+import time
 import uuid
 import demistomock as demisto
 from CommonServerPython import *
@@ -881,15 +882,25 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
     accounts_counter = 0
     users_next_page_token = users_next_page_token
     service = get_service('admin', 'directory_v1')
-
+    counter = 0
     while True:
         command_args = {
             'maxResults': min(max_results, 100),
             'domain': ADMIN_EMAIL.split('@')[1],
             'pageToken': users_next_page_token
         }
-
-        result = service.users().list(**command_args).execute()
+        try:
+            result = service.users().list(**command_args).execute()
+        except HttpError as err:
+            # retry mechanism - try 3 times to get the users list, otherwise continue
+            demisto.debug(f'Gmail Integration: Got an error {err.status_code} for getting list of users,'
+                          f' Trying again to get it by executing another API Call (try number: {counter + 1}).')
+            if err.status_code == 500 and counter < 3:
+                counter += 1
+                time.sleep(30)
+                continue
+            else:
+                raise err
         accounts_counter += len(result['users'])
         accounts.extend([account['primaryEmail'] for account in result['users']])
         users_next_page_token = result.get('nextPageToken')
