@@ -60,8 +60,6 @@ configuration:
   display: Close Mirrored XSOAR Incident
   name: close_xsoar_incident
   type: 8
-  hidden:
-  - marketplacev2
   section: Collect
   advanced: true
   required: false
@@ -70,8 +68,6 @@ configuration:
   display: Close Mirrored Cortex XDR Incident
   name: close_xdr_incident
   type: 8
-  hidden:
-  - marketplacev2
   section: Collect
   advanced: true
   required: false
