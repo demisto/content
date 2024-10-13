@@ -9,9 +9,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": ["Security", "IT"],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["dragos", "OT"],
     "marketplaces": [
         "marketplacev2"
     ]
