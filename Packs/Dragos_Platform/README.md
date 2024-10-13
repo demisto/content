@@ -10,7 +10,7 @@ To configure Dragos Platform to send logs to Cortex XSIAM, follow the below step
 
 ### Dragos Platform side
 1. Log in to Dragos as an administrator.
-2. Navigate to **Admin** &rarr; **Syslog** or browse to "https://<your-site-store>/syslog/".
+2. Navigate to **Admin** &rarr; **Syslog** or browse to "https://\<your-site-store\>/syslog/".
 3. Go to the **SERVERS** tab and click **+ ADD SERVER**.
 4. Fill the below data:
 
