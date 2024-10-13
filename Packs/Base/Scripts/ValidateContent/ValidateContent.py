@@ -21,7 +21,7 @@ from shutil import copy
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 from typing import Any, Dict, List, Optional, Tuple, Set
 
-import git
+# import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType, ExecutionMode
 from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.logger import logging_setup
@@ -859,9 +859,12 @@ def validate_content(args: dict, file_path: str, filename: str, data: bytes, tmp
             pass
 
         def __call__(self, message):
+            demisto.debug(f'__call__ {str(message)=}')
             # Extract the log level and message from the Loguru message
             level = message.record["level"].no
+            demisto.debug(f'__call__ {message.record["level"]=}| {level=}')
             msg = message.record["message"]
+            demisto.debug(f'__call__ {msg=}')
             # Map Loguru levels to logging methods
             if level >= logging.ERROR:
                 log_method = demisto.error
@@ -880,15 +883,20 @@ def validate_content(args: dict, file_path: str, filename: str, data: bytes, tmp
     with NamedTemporaryFile(mode='w+', delete=False) as demisto_sdk_log_file:
         demisto_sdk_log_path = demisto_sdk_log_file.name
         logging_setup(
-            console_threshold="DEBUG",
-            # TODO - Check if this works: console_threshold="DEBUG" if args.get('debug-mode') else logger.DEFAULT_CONSOLE_THRESHOLD,
-            calling_function='validate_content',
-            path=demisto_sdk_log_path,
-            initial=True
+            console_log_threshold=logging.DEBUG,
+            file_log_threshold=logging.DEBUG,
+            log_file_path=demisto_sdk_log_path,
+            skip_log_file_creation=True
         )
-        sdk_logger.add(DemistoSdkLogsHandler())
+        #     console_threshold="DEBUG",
+        #     # TODO - Check if this works: console_threshold="DEBUG" if args.get('debug-mode') else logger.DEFAULT_CONSOLE_THRESHOLD,
+        #     calling_function='validate_content',
+        #     path=demisto_sdk_log_path,
+        #     initial=False
+        # )
+        # sdk_logger.add(DemistoSdkLogsHandler())
         # sdk_logger.propagate = True
-        sdk_logger.enable(None)
+        # sdk_logger.enable(None)
 
         run_validate(path_to_validate, json_output_path)
         # run_lint(path_to_validate, lint_output_path)
@@ -1076,5 +1084,5 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    sleep(120)
+    # sleep(120)
     main()
