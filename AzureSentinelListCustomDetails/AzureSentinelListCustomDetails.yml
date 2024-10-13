@@ -1,0 +1,35 @@
+commonfields:
+  id: 87df9206-963a-4959-8041-0f8446364444
+  version: 26
+vcShouldKeepItemLegacyProdMachine: false
+name: AzureSentinelListCustomDetails
+type: python
+tags: []
+comment: Create a List of Azure Custom Details for mapping
+enabled: true
+outputs:
+- contextPath: AzureSentinelListCustomDetails
+  description: Object containing rule_id, name, sentinel_field, xsoar_type, and xsoar_field
+- contextPath: AzureSentinelListCustomDetails.RuleID
+  description: Rule ID
+  type: string
+- contextPath: AzureSentinelListCustomDetails.RuleName
+  description: Rule Name
+  type: string
+- contextPath: AzureSentinelListCustomDetails.SentinelField
+  description: Name of field in Sentinel
+  type: string
+- contextPath: AzureSentinelListCustomDetails.XSOARType
+  description: XSOAR Incident Type
+  type: string
+- contextPath: AzureSentinelListCustomDetails.XSOARField
+  description: Name of field in XSOAR (machine name)
+  type: string
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/office-utils:2.0.0.113071
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

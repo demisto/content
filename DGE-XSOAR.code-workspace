@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cSpell.ignoreWords": [
+			"basescript",
+			"cust",
+			"openpyxl",
+			"rtype"
+		],
+		"cSpell.words": [
+			"openpyxl",
+			"rtype"
+		]
+	}
+}
