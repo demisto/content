@@ -30,7 +30,7 @@ To configure Dragos Platform to send logs to Cortex XSIAM, follow the below step
 
 5. Check the "RFC 5424 Modern Syslog" checkbox under **Message Format**.
 6. Check the "Use newline delimiter for TCP and TLS streams" checkbox under **Message Delimiter**.
-7. Click on **Next: SET TEMPLATE**.
+7. Click **Next: SET TEMPLATE**.
 8. From the **Output Message Format** dropdown, select CEF.
 9. Use the recommended CEF template suggested by Dragos documentation, under **Message**.
 10. Leave all other fields set to their default state.
