@@ -1409,6 +1409,7 @@ def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> 
     all_events, started_new_query, next_link = run_fetch_mechanism(client, fetch_limit, next_link, start_date, end_date)
 
     if not all_events:
+        demisto.debug('No events found')
         return [], {'next_link': None, 'end_date': last_end_date}
 
     return all_events, {'next_link': next_link, 'end_date': end_date if started_new_query else last_end_date}
