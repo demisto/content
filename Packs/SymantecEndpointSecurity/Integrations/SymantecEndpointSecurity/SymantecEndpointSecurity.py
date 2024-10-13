@@ -16,10 +16,16 @@ MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 
 
 class UnauthorizedToken(Exception):
+    """
+    Exception raised when the authentication token is unauthorized.
+    """
     ...
 
 
 class NextPointingNotAvailable(Exception):
+    """
+    Exception raised when the next pointing is not available.
+    """
     ...
 
 
@@ -130,9 +136,21 @@ def update_new_integration_context(
     include_last_fetch_events: bool,
     last_integration_context: dict[str, str],
 ):
+    """
+    Update the integration context.
+
+    Args:
+        filtered_events (list[dict[str, str]]): A list of filtered events.
+        next_hash (str): The hash for the next fetch operation.
+        include_last_fetch_events (bool): Flag to include last fetched events in the integration context.
+        last_integration_context (dict[str, str]): The previous integration context.
+    """
     events_suspected_duplicates = extract_events_suspected_duplicates(filtered_events)
     latest_event_time = normalize_date_format(max(filtered_events, key=parse_event_time)["time"])
 
+    # If the latest event time matches the previous one,
+    # extend the suspected duplicates list with events from the previous context,
+    # to control deduplication across multiple fetches.
     if latest_event_time == last_integration_context.get("latest_event_time", ""):
         events_suspected_duplicates.extend(
             last_integration_context.get("events_suspected_duplicates", [])
@@ -145,11 +163,13 @@ def update_new_integration_context(
         "last_fetch_events": filtered_events if include_last_fetch_events else [],
     }
 
-    # Call the set_integration_context with the final context_data
     set_integration_context(integration_context)
 
 
 def push_events(events: list[dict]):
+    """
+    Push events to XSIAM.
+    """
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
     demisto.debug(f"{len(events)} events were pushed to XSIAM")
 
@@ -162,6 +182,12 @@ def parse_event_time(event) -> datetime:
 
 
 def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
+    """
+    Extract event IDs of potentially duplicate events.
+
+    This function identifies events with the latest timestamp and considers them as
+    potential duplicates. It returns a list of their unique identifiers (UUIDs).
+    """
 
     # Find the maximum event time
     latest_event_time = normalize_date_format(max(events, key=parse_event_time)["time"])
