@@ -1,3 +1,6 @@
+from demisto_sdk.commands.validate.config_reader import ConfigReader
+from demisto_sdk.commands.validate.initializer import Initializer
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
@@ -10,12 +13,12 @@ from contextlib import redirect_stderr
 from datetime import datetime
 from pathlib import Path
 from shutil import copy
-from tempfile import TemporaryDirectory, TemporaryFile
+from tempfile import TemporaryDirectory, TemporaryFile, NamedTemporaryFile
 from typing import Any, Dict, List, Optional, Tuple
 import logging
 
 import git
-from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
+from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType, ExecutionMode
 from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
@@ -24,7 +27,11 @@ from demisto_sdk.commands.init.contribution_converter import (
     ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager as ValidateManager
+from demisto_sdk.commands.validate.validation_results import (
+    ResultWriter,
+)
+from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
 
 
@@ -171,21 +178,34 @@ def adjust_linter_row_and_col(
                       f'\n{e}')
 
 
-def run_validate(file_path: str, json_output_file: str) -> None:
+def run_validate(path_to_validate: str, json_output_file: str) -> None:
     os.environ['DEMISTO_SDK_SKIP_VERSION_CHECK'] = '1'
     tests_dir = 'Tests'
     if not os.path.exists(tests_dir):
         os.makedirs(tests_dir)
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
-    v_manager = ValidateManager(
-        is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
-        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
-        validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
-        silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
-    v_manager.run_validation()
+    # old_validate_manager = OldValidateManager(
+    #     is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
+    #     print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
+    #     validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
+    #     silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
+    #     staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
+    # old_validate_manager.run_validation()
 
+    result_writer = ResultWriter(json_file_path=json_output_file)
+    # TODO - Perhaps individual validations (excluded from category) has to be assigned to `ConfigReader.explicitly_selected`.
+    config_reader = ConfigReader(category="xsoar_best_practices_path_based_validations")
+    initializer = Initializer(
+        staged=False,
+        committed_only=False,
+        file_path=str(path_to_validate),
+        execution_mode=ExecutionMode.SPECIFIC_FILES
+    )
+    # TODO - Toggle `allow_autofix` (should be True).
+    validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False)
+    exit_code = validate_manager.run_validations()
+    demisto.info(f'run_validate {exit_code=}')
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
@@ -259,7 +279,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     output_capture = io.StringIO()
 
     with redirect_stderr(output_capture):
-        with TemporaryFile(mode='w+') as tmp:
+        with NamedTemporaryFile(mode='w+') as tmp:
             logging_setup(
                 console_log_threshold=logging.INFO,
                 file_log_threshold=logging.DEBUG,
@@ -276,13 +296,14 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
                     filename, data, tmp_directory
                 )
             run_validate(path_to_validate, json_output_path)
-            run_lint(path_to_validate, lint_output_path)
+            # run_lint(path_to_validate, lint_output_path)
 
             demisto.debug("log capture:" + tmp.read())
 
             all_outputs = []
             with open(json_output_path, 'r') as json_outputs:
                 outputs_as_json = json.load(json_outputs)
+                demisto.debug(f'validate_content {outputs_as_json=}')
                 if outputs_as_json:
                     if type(outputs_as_json) == list:
                         all_outputs.extend(outputs_as_json)
