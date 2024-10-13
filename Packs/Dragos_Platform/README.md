@@ -51,7 +51,7 @@ Follow the below steps to configure the Broker VM to receive Dragos Platform log
 
     | Parameter    | Value                                                                                                                                           |
     |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|                  
-    | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Dragos Platform configuration). | 
+    | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in the Dragos Platform configuration). | 
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from the Dragos Platform.                 |
     | `Vendor`     | Enter **dragos**.                                                                                                                                   |
     | `Product`    | Enter **platform**.                                                                                                                                 |
