@@ -1,7 +1,7 @@
 <~XSIAM>
 
 ### This pack includes:
-- Log Normalization - XDM mapping for key event types.
+Log Normalization - XDM mapping for key event types.
 
 ### Supported Event Types:
 - Alerts
