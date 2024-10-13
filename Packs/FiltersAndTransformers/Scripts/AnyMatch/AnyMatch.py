@@ -22,6 +22,7 @@ def main():
 
     if not (leftArg and rightArg):
         return_results(False)
+        return
 
     left_list = argToList(str(leftArg))
     right_list = argToList(str(rightArg))
