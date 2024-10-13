@@ -251,7 +251,7 @@ def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]
     return [
         event
         for event in events
-        if is_duplicate(
+        if not is_duplicate(
             event["uuid"],
             datetime.strptime(normalize_date_format(event["time"]), "%Y-%m-%dT%H:%M:%SZ"),
             latest_event_time,

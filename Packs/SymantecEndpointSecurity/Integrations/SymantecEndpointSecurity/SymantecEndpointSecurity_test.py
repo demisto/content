@@ -5,6 +5,7 @@ from SymantecEndpointSecurity import (
     normalize_date_format,
     extract_events_suspected_duplicates,
     update_new_integration_context,
+    filter_duplicate_events,
 )
 
 
@@ -55,6 +56,69 @@ def test_extract_events_suspected_duplicates(
 
 
 @pytest.mark.parametrize(
+    "integration_context, events, expected_filtered_events",
+    [
+        pytest.param(
+            {
+                "events_suspected_duplicates": ["123", "456"],
+                "latest_event_time": "2024-10-09T12:34:56Z",
+            },
+            [
+                {"uuid": "123", "time": "2024-10-09T12:34:56Z"},
+                {"uuid": "456", "time": "2024-10-09T12:34:56.789Z"},
+                {"uuid": "789", "time": "2024-10-09T12:34:55.789Z"},
+            ],
+            [],
+            id="Event time is equal to or less than last_event_time",
+        ),
+        pytest.param(
+            {
+                "events_suspected_duplicates": ["123"],
+                "latest_event_time": "2024-10-09T12:34:56Z",
+            },
+            [
+                {"uuid": "123", "time": "2024-10-09T12:34:56Z"},
+                {"uuid": "456", "time": "2024-10-09T12:34:56.789Z"},
+            ],
+            [{"uuid": "456", "time": "2024-10-09T12:34:56.789Z"}],
+            id="Events time is equal to last_event_time but one of them not include in suspected duplicates",
+        ),
+        pytest.param(
+            {
+                "events_suspected_duplicates": ["123"],
+                "latest_event_time": "2024-10-09T12:34:56Z",
+            },
+            [
+                {"uuid": "456", "time": "2024-10-09T12:35:56.789Z"},
+            ],
+            [{"uuid": "456", "time": "2024-10-09T12:35:56.789Z"}],
+            id="Events time is greater than last_event_time",
+        ),
+    ],
+)
+def test_filter_duplicate_events(
+    mocker: MockerFixture,
+    integration_context: dict[str, str],
+    events: list[dict[str, str]],
+    expected_filtered_events: list[dict[str, str]],
+):
+    """
+    Given:
+        - A list of events with timestamps
+    When:
+        - The `filter_duplicate_events` function is called
+    Then:
+        - Ensure that a list of the events that are not duplicates is returned
+    """
+    mocker.patch(
+        "SymantecEndpointSecurity.get_integration_context",
+        return_value=integration_context,
+    )
+    filtered_events = filter_duplicate_events(events)
+    assert filtered_events == expected_filtered_events
+
+
+@pytest.mark.parametrize(
     "filtered_events, next_hash, include_last_fetch_events, last_integration_context, expected_integration_context",
     [
         (
@@ -96,7 +160,9 @@ def test_update_new_integration_context_last_latest_event_time_are_equal(
     Then:
         - Ensure that updated the 'integration_context' with new events in addition to the old ones, and the next hash
     """
-    mock_set_integration_context = mocker.patch("SymantecEndpointSecurity.set_integration_context")
+    mock_set_integration_context = mocker.patch(
+        "SymantecEndpointSecurity.set_integration_context"
+    )
     update_new_integration_context(
         filtered_events, next_hash, include_last_fetch_events, last_integration_context
     )
