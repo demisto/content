@@ -21,7 +21,7 @@ def test_malware_readable_data():
     try:
         malware_readable_data({'name': 'some-name'})
     except KeyError:
-        assert False, 'malware_readable_data method should not fail on dict with name key only'
+        raise AssertionError('malware_readable_data method should not fail on dict with name key only')
 
 
 def test_get_alert_command(mocker, requests_mock):
@@ -59,7 +59,7 @@ def test_get_alert_command(mocker, requests_mock):
                     },
                     'email': {
                         'headers': {
-                            'to': u'\u200b'
+                            'to': '\u200b'
                         },
                         'timestamp': {}
                     }
@@ -146,15 +146,14 @@ def test_fetch_incident_by_status_messages_with_two_status(mocker):
     FireEyeETP.fetch_incidents()
     for incident, expected_incident in zip(res.call_args.args[0], expected_incidents):
         assert incident.get('rawJSON') == json.dumps(expected_incident)
-        
-from FireEyeETP import Client
+
 
 @pytest.fixture
 def FireEyeETP_client():
     return Client(base_url='https://fireeyeetp',
-            verify=False,
-            headers={},
-            proxy=False)
+                  verify=False,
+                  headers={},
+                  proxy=False)
 
 
 @patch('FireEyeETP.fileResult')
@@ -225,7 +224,7 @@ def test_download_yara_file_command(mock_file_result):
     """
     Given:
         - Policy UUID to get
-	- Ruleset UUID to get
+        - Ruleset UUID to get
     When:
         - Running download-yara-file command
     Then:
@@ -253,7 +252,7 @@ def test_upload_yara_file_command_success(mock_open_file, mock_getFilePath):
     Given:
         - Policy UUID to get
         - Ruleset UUID to get
-	- EntryID of context file to put
+        - EntryID of context file to put
     When:
         - Running upload-yara-file command
     Then:
@@ -382,12 +381,14 @@ def test_get_events_data_command_failed():
     )
     assert result.readable_output == expected_md
 
+
 class MockResponse:
     def __init__(self, data):
         self.data = data
 
     def json(self):
         return self.data
+
 
 def test_quarantine_release_command(mocker):
     """
@@ -398,7 +399,7 @@ def test_quarantine_release_command(mocker):
     Then:
         - Ensure command runs successfully
         - Ensure results are returned
-	- Ensure message send succesfully to quarantine
+        - Ensure message send succesfully to quarantine
     """
     from FireEyeETP import quarantine_release_command, Client
 
