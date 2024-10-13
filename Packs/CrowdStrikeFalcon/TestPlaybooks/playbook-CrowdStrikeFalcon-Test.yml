@@ -3455,7 +3455,7 @@ tasks:
                 value:
                   simple: "0"
       pause_duration:
-        simple: "3"
+        simple: "2"
       quarantine:
         simple: "true"
       scan_inclusions:
