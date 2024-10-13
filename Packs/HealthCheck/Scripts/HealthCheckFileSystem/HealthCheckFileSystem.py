@@ -91,8 +91,7 @@ RESOLUTION = [
 
 def main(args):
     if is_demisto_version_ge("8.0.0"):
-        return_results("Not Available for XSOAR v8")
-        sys.exit()
+        return_error("Not Available for XSOAR v8")
     entry_id = args.get("entryID")
     path = demisto.getFilePath(entry_id)["path"]
     with open(path, "rb") as file_:

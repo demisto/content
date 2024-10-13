@@ -83,12 +83,13 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
 def get_extra_data_from_investigations(investigations: dict) -> list:
     largest_inputs_and_outputs: List = []
     for inv in investigations:
+        incident_id = inv.split("investigations-")[1]
         raw_output = execute_command(
             "getInvPlaybookMetaData",
-            args={"incidentId": inv.split("investigations-")[1]},
+            args={"incidentId": incident_id},
         )
         inputs_and_outputs = raw_output.get("tasks")
-        get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, inv.split("investigations-")[1])
+        get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, incident_id)
     return largest_inputs_and_outputs
 
 
@@ -96,13 +97,8 @@ def main():
     try:
         args = demisto.args()
         incident_thresholds = args.get("Thresholds", THRESHOLDS)
-        # thresholds = args.get("Thresholds", THRESHOLDS)
 
         investigations: Dict = {}
-        # prev_month = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
-        # current_month = datetime.today()
-        # fromMonth = prev_month.strftime("%m%Y")
-        # toMonth = current_month.strftime("%m%Y")
         now = datetime.now()
         current_year = now.year
         current_month = now.month

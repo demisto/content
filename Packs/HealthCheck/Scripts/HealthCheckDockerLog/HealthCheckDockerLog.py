@@ -49,8 +49,7 @@ def image_analytics(images):
 def main(args):
     # Check XSOAR v8
     if is_demisto_version_ge("8.0.0"):
-        return_results("Not Available for XSOAR v8")
-        sys.exit()
+        return_error("Not Available for XSOAR v8")
     # get the file path from the given entry ID
     path = demisto.getFilePath(args["entryID"])["path"]
 
@@ -76,7 +75,7 @@ def main(args):
             all_lines = f.read()
             # fetch all data items and create a dataset
     except UnicodeDecodeError:
-        return "Could not read file"
+        return_error("Could not read file")
 
     all_images = [m.groups() for m in getimages.finditer(all_lines)]
     for item in all_images:

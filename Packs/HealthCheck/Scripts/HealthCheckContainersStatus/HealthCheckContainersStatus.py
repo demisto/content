@@ -4,8 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     if is_demisto_version_ge("8.0.0"):
-        return_results("Not Available for XSOAR v8")
-        sys.exit()
+        return_error("Not Available for XSOAR v8")
     incident = demisto.incidents()[0]
     account_name = incident.get("account")
     account_name = f"acc_{account_name}/" if account_name != "" else ""

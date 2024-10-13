@@ -73,8 +73,7 @@ def analyzeData(res):
 
 # Main
 if is_demisto_version_ge("8.0.0"):
-    return_results("Not Available for XSOAR v8")
-    sys.exit()
+    return_error("Not Available for XSOAR v8")
 incident = demisto.incidents()[0]
 accountName = incident.get("account")
 accountName = f"acc_{accountName}/" if accountName != "" else ""

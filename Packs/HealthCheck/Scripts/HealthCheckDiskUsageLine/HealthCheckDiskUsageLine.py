@@ -3,8 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     if is_demisto_version_ge("8.0.0"):
-        return_results("Not Available for XSOAR v8")
-        sys.exit()
+        return_error("Not Available for XSOAR v8")
     ctx = demisto.context()
     dataFromCtx = ctx.get("widgets")
     if not dataFromCtx:

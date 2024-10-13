@@ -42,10 +42,6 @@ def createActionItem(totalDropped):
     return actionItems
 
 
-def str_to_bool(s):
-    return {"True": True, "False": False}[s]
-
-
 incident = demisto.incidents()[0]
 accountName = incident.get("account")
 accountName = f"acc_{accountName}/" if accountName != "" else ""
@@ -53,13 +49,12 @@ accountName = f"acc_{accountName}/" if accountName != "" else ""
 args = demisto.args()
 Thresholds = {"NumberOfDroppedIncidents": 2000}
 thresholds = args.get("Thresholds", Thresholds)
-isWidget = args.get("isWidget", True)
-isWidget = str_to_bool(isWidget)
+isWidget = argToBoolean(args.get("isWidget", True))
 daysAgo = datetime.today() - timedelta(days=30)
 
 demisto_version: str = get_demisto_version().get("version")
 if not demisto_version:
-    raise ValueError("Could not get the version of XSOAR")
+    return_error("Could not get the version of XSOAR")
 
 if demisto_version.startswith("6"):  # xsoar 6
     stats = demisto.executeCommand(
@@ -71,7 +66,7 @@ if demisto_version.startswith("6"):  # xsoar 6
     )
 
     if is_error(stats):
-        raise DemistoException(f"error occurred when trying to retrieve the audit logs using {args=}, error: {stats}")
+        return_error(f"error occurred when trying to retrieve the audit logs using {args=}, error: {stats}")
 
     totalDropped = stats[0]["Contents"]["response"]["total"]
     if isWidget is True:
@@ -108,7 +103,7 @@ else:  # XSOAR V8
     stats = demisto.executeCommand("core-api-post", args)
     totalDropped = stats[0]["Contents"]["response"]["reply"]["total_count"]
     if is_error(stats):
-        raise DemistoException(f"error occurred when trying to retrieve the audit logs using {args=}, error: {stats}")
+        return_error(f"error occurred when trying to retrieve the audit logs using {args=}, error: {stats}")
 
     if isWidget is True:
         data = buildWidget(totalDropped)
