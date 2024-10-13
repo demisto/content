@@ -487,8 +487,8 @@ def test_search_url_custom_separator(mocker, autofocusv2_client, separator, expe
 
     def side_effect_function(*args, **kwargs):
         result = argToList(*args, **kwargs)  # Call the original function
-        return_value.append(result)  # Store the return value
-        return result
+        return_value.append(result)
+        
     mocker.patch('AutofocusV2.argToList', side_effect=side_effect_function)
 
     # Mock args
