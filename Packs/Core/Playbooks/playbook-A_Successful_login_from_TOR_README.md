@@ -1,4 +1,4 @@
-This playbook is designed to handle the following alerts:
+This playbook is designed to handle the following alert:
 
 - A successful login from TOR
 
@@ -23,11 +23,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS - Block IPs From EDL - Custom Block Rule
+PAN-OS - Block IPs From EDL - Custom Block Rule
 
 ### Integrations
 
-* CortexCoreIR
+CortexCoreIR
 
 ### Scripts
 
