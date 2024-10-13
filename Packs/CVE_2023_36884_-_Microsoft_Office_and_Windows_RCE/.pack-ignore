@@ -1,0 +1,3 @@
+[file:playbook-CVE-2023-36884_-_Microsoft_Office_and_Windows_HTML_RCE.yml]
+ignore=GR107
+
