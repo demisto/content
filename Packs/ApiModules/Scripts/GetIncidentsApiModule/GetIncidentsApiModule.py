@@ -95,33 +95,35 @@ def get_incidents_with_pagination(
         list[dict]: The requested incidents.
     """
     incidents: list = []
-    page = -1
     populate_fields = ",".join(f.split(".")[0] for f in fields_to_populate)
     demisto.debug(f"Running getIncidents with {query=}")
+    original_query = query
     while len(incidents) < limit:
-        page += 1
+        demisto.debug(f"Running getIncidents with {query=}")
         page_results = execute_command(
             "getIncidents",
             args={
                 "query": query,
                 "fromdate": from_date,
                 "todate": to_date,
-                "page": page,
                 "populateFields": populate_fields,
-                "size": page_size,
                 "sort": sort,
             },
             extract_contents=True,
             fail_on_error=True,
         ).get('data') or []
         incidents += page_results
-        if len(page_results) < page_size:
+        if len(page_results) < 100:
             break
+        last_id = page_results[-1].get('id')
+        demisto.debug(f'{last_id=}')
+
+        query = original_query[:-1] + f' and id:<{last_id})'
+
     return [
         format_incident(inc, fields_to_populate, include_context)
         for inc in incidents[:limit]
     ]
-
 
 def prepare_fields_list(fields_list: list[str] | None) -> list[str]:
     """Removes `incident.` prefix from the fields list and returns a list of unique values.
