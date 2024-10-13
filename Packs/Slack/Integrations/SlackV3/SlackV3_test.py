@@ -3309,8 +3309,8 @@ def test_send_file_to_destinations(mocker):
     # Assert
     assert SlackV3.send_slack_request_sync.call_count == 1
     assert 'http_verb' not in args
-    assert args['file_'] == 'yo'
-    assert args['body']['filename'] == 'name'
+    assert args['file_upload_params'].file == 'yo'
+    assert args['file_upload_params'].filename == 'name'
 
 
 def test_send_message_retry(mocker):

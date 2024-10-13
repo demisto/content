@@ -9,6 +9,7 @@ from distutils.util import strtobool
 import aiohttp
 import slack_sdk
 from urllib.parse import urlparse
+from collections import namedtuple
 
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
@@ -54,6 +55,17 @@ OBJECTS_TO_KEYS = {
 SYNC_CONTEXT = True
 PROFILING_DUMP_ROWS_LIMIT = 20
 MAX_SAMPLES = 10
+
+FileUploadParams = namedtuple(
+    'FileUploadParams',
+    (
+        'filename',
+        'file',
+        'initial_comment',
+        'channel',
+        'thread_ts',
+    ),
+)
 
 ''' GLOBALS '''
 
@@ -458,8 +470,13 @@ def set_name_and_icon(body: dict, method: str):
             body['icon_url'] = BOT_ICON_URL
 
 
-def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
-                            body: dict = None) -> SlackResponse:
+def send_slack_request_sync(
+    client: slack_sdk.WebClient,
+    method: str = '',
+    http_verb: str = 'POST',
+    body: Optional[dict] = None,
+    file_upload_params: Optional[FileUploadParams] = None,
+) -> SlackResponse:
     """
     Sends a request to slack API while handling rate limit errors.
 
@@ -467,8 +484,8 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
         client: The slack client.
         method: The method to use.
         http_verb: The HTTP method to use.
-        file_: A file path to send.
         body: The request body.
+        file_upload_params: An instance of FileUploadParams.
 
     Returns:
         The slack API response.
@@ -482,8 +499,8 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
         try:
             demisto.debug(f'Sending slack {method} (sync). Body is: {str(body)}')
             if http_verb == 'POST':
-                if file_:
-                    response = client.api_call(method, files={"file": file_}, data=body)
+                if file_upload_params:
+                    response = client.files_upload_v2(**file_upload_params._asdict())
                 else:
                     response = client.api_call(method, json=body)
             else:
@@ -2167,19 +2184,16 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
         The Slack send response.
     """
     response: Optional[SlackResponse] = None
-    body = {
-        'filename': file_dict['name']
-    }
-
-    if 'comment' in file_dict:
-        body['initial_comment'] = file_dict['comment']
 
     for destination in destinations:
-        body['channels'] = destination
-        if thread_id:
-            body['thread_ts'] = thread_id
-
-        response = send_slack_request_sync(CLIENT, 'files.upload', file_=file_dict['path'], body=body)
+        file_upload_params = FileUploadParams(
+            filename=file_dict.get('name'),
+            file=file_dict.get('path'),
+            initial_comment=file_dict.get('comment'),
+            channel=destination,
+            thread_ts=thread_id,
+        )
+        response = send_slack_request_sync(CLIENT, file_upload_params=file_upload_params)
 
     return response
 
