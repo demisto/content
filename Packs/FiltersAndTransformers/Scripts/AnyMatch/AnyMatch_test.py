@@ -39,13 +39,6 @@ def test_main(mocker, left, right, expected_result):
     mocker.patch.object(demisto, 'args', return_value={'left': left, 'right': right})
     mocker.patch.object(demisto, 'results')
     main()
-    # assert demisto.results.call_count == call_count
     results = demisto.results.call_args_list[0][0][0]
     assert results == expected_result
-    # for res in results:
-    #     assert res in expected_result
-    # assert results == expected_result
-    # assert results == expected_result
-    # for i in range(len(expected_result)):
-    #     results = demisto.results.call_args_list[i][0][0]
-    #     assert results[i] == expected_result[i]
+
