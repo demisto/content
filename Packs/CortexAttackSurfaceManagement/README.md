@@ -33,7 +33,13 @@ Automated remediation is only possible when the right conditions are met.  These
 
 - One of the following attack surface rule IDs:
   - Insecure OpenSSH**
+  - Kubernetes Control Plane Component
+  - LDAP Server
+  - NetBIOS Name Server
+  - NFS Rpcbind Server
   - OpenSSH
+  - Rpcbind Server
+  - SMB Server
   - SSH Server
   - SSH Terrapin Attack
   - SNMP Server
