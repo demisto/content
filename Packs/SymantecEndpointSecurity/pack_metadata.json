@@ -1,5 +1,5 @@
 {
-    "name": "",
+    "name": "Symantec Endpoint Security",
     "description": "",
     "support": "xsoar",
     "currentVersion": "1.0.0",
@@ -8,7 +8,7 @@
     "email": "",
     "created": "2024-10-7T00:00:00Z",
     "categories": [
-        ""
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],

@@ -10,6 +10,7 @@ from SymantecEndpointSecurity import (
     UnauthorizedToken,
     NextPointingNotAvailable,
     Client,
+    test_module,
 )
 
 
@@ -213,7 +214,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
     When:
         - The function `perform_long_running_loop` is called
     Then:
-        - 
+        -
     """
     mock_integration_context = {"next_fetch": {"next": "test"}}
     mocker.patch(
@@ -221,8 +222,56 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
         side_effect=[NextPointingNotAvailable, Exception("Stop")],
     )
     mocker.patch.object(Client, "get_token")
-    mocker.patch("SymantecEndpointSecurity.get_integration_context", return_value=mock_integration_context)
+    mocker.patch(
+        "SymantecEndpointSecurity.get_integration_context",
+        return_value=mock_integration_context,
+    )
     with pytest.raises(Exception, match="Stop"):
         perform_long_running_loop(mock_client())
     assert mock_integration_context == {}
-    
+
+
+def test_test_module(mocker: MockerFixture):
+    """
+    Given:
+        - Client
+    When:
+        - The function `test_module` is called
+    Then:
+        - Ensure that the function returns 'ok' when the API call is successful
+    """
+    mocker.patch.object(Client, "get_token")
+    client = mock_client()
+    mocker.patch.object(Client, "test_module")
+    assert test_module(client) == "ok"
+
+
+@pytest.mark.parametrize(
+    "mock_status_code, expected_msg",
+    [
+        (403, "Authorization Error: make sure the Token is correctly set, Error: Test"),
+        (500, "Test"),
+    ],
+)
+def test_test_module_with_raises(
+    mocker: MockerFixture, mock_status_code: int, expected_msg: str
+):
+    """
+    Given:
+        - Client
+    When:
+        - The function `test_module` is called
+    Then:
+        - Ensure that the function raises an error when the API call is unsuccessful
+    """
+
+    class MockException:
+        status_code = mock_status_code
+
+    mocker.patch.object(Client, "get_token")
+    client = mock_client()
+    mocker.patch.object(
+        Client, "test_module", side_effect=DemistoException("Test", res=MockException())
+    )
+    with pytest.raises(DemistoException, match=expected_msg):
+        test_module(client)
