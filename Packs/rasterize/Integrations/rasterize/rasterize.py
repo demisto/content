@@ -1092,9 +1092,9 @@ def get_width_height(args: dict):
 
 
 def main():  # pragma: no cover
-    demisto.debug("40686RASTERIZE before memory dump")
+    demisto.debug("40686RASTERIZE before FIRST memory dump")
     register_signal_handler_profiling_dump()
-    demisto.debug("40686RASTERIZE after memory dump")
+    demisto.debug("40686RASTERIZE after FIRST memory dump")
     demisto.debug(f"main, {demisto.command()=}")
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
 
@@ -1120,6 +1120,10 @@ def main():  # pragma: no cover
 
         else:
             return_error('Unrecognized command')
+
+        demisto.debug("40686RASTERIZE before SECOND memory dump")
+        register_signal_handler_profiling_dump()
+        demisto.debug("40686RASTERIZE after SECOND memory dump")
 
     except Exception as ex:
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
