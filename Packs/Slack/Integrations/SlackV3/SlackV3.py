@@ -9,7 +9,7 @@ from distutils.util import strtobool
 import aiohttp
 import slack_sdk
 from urllib.parse import urlparse
-from collections import namedtuple
+from typing import NamedTuple
 
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
@@ -56,16 +56,14 @@ SYNC_CONTEXT = True
 PROFILING_DUMP_ROWS_LIMIT = 20
 MAX_SAMPLES = 10
 
-FileUploadParams = namedtuple(
-    'FileUploadParams',
-    (
-        'filename',
-        'file',
-        'initial_comment',
-        'channel',
-        'thread_ts',
-    ),
-)
+
+class FileUploadParams(NamedTuple):
+    filename: str
+    file: str
+    initial_comment: Optional[str]
+    channel: str
+    thread_ts: Optional[str]
+
 
 ''' GLOBALS '''
 
@@ -2183,9 +2181,9 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
 
     for destination in destinations:
         file_upload_params = FileUploadParams(
-            filename=file_dict.get('name'),
-            file=file_dict.get('path'),
-            initial_comment=file_dict.get('comment'),
+            filename=file_dict['name'],  # Mandatory
+            file=file_dict['path'],
+            initial_comment=file_dict.get('comment'),  # Optional
             channel=destination,
             thread_ts=thread_id,
         )
