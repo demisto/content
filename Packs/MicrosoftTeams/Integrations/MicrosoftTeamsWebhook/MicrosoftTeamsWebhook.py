@@ -47,11 +47,14 @@ class Client(BaseClient):
         demisto.info(f'completed post of message. response text: {res}')
 
 
-def create_teams_message(message: str,
-                         title: str,
-                         serverurls: str,
-                         adaptive_cards_format: bool = False,
-                         is_workflow: bool = True) -> dict:
+def create_teams_message(
+    message: str,
+    title: str,
+    serverurls: str,
+    adaptive_cards_format: bool = False,
+    is_workflow: bool = True,
+    overwrite_adaptive_card_json: dict | None = None
+) -> dict:
     """
     Creates the Teams message using the messageCard format, and returns the card
 
@@ -59,48 +62,52 @@ def create_teams_message(message: str,
         message (str): The message to send in the message card to Teams.
         title (str): The title of the message card.
         serverurls (str): The URL to send in the message card.
-        adaptive_cards_format (bool): Should the adaptive cards format be used?.
+        adaptive_cards_format (bool): Should the adaptive cards format be used?
         is_workflow (bool): Is the Microsoft Webhook URL is a workflow.
+        overwrite_adaptive_card_json (dict | None): Value to overwrite the default adaptive card format.
 
         Returns:
         messagecard (dict): dict the adaptive card to send to Teams.
     """
     messagecard: dict = {}
     if adaptive_cards_format:
-        messagecard = {
-            "type": "message",
-            "attachments": [
-                {
-                    "contentType": "application/vnd.microsoft.card.adaptive",
-                    "content": {
-                        "type": "AdaptiveCard",
-                        "body": [
-                            {
-                                "type": "TextBlock",
-                                "text": "Cortex XSOAR Notification",
-                                "weight": "bolder",
-                                "size": "medium",
-                                "color": "accent"
-                            },
-                            {
-                                "type": "TextBlock",
-                                "text": message,
-                                "wrap": True
-                            }
-                        ],
-                        "actions": [
-                            {
-                                "type": "Action.OpenUrl",
-                                "title": title,
-                                "url": serverurls
-                            }
-                        ],
-                        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                        "version": "1.0"
+        if overwrite_adaptive_card_json is None:
+            messagecard = {
+                "type": "message",
+                "attachments": [
+                    {
+                        "contentType": "application/vnd.microsoft.card.adaptive",
+                        "content": {
+                            "type": "AdaptiveCard",
+                            "body": [
+                                    {
+                                        "type": "TextBlock",
+                                        "text": "Cortex XSOAR Notification",
+                                        "weight": "bolder",
+                                        "size": "medium",
+                                        "color": "accent"
+                                    },
+                                {
+                                        "type": "TextBlock",
+                                        "text": message,
+                                        "wrap": True
+                                        }
+                            ],
+                            "actions": [
+                                {
+                                    "type": "Action.OpenUrl",
+                                    "title": title,
+                                    "url": serverurls
+                                }
+                            ],
+                            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                            "version": "1.0"
+                        }
                     }
-                }
-            ]
-        }
+                ]
+            }
+        else:
+            messagecard = overwrite_adaptive_card_json
     else:
         if is_workflow:
             messagecard = {
@@ -169,7 +176,8 @@ def send_teams_message_command(
     message: str,
     title: str,
     serverurls: str,
-    adaptive_cards_format: bool = False
+    adaptive_cards_format: bool = False,
+    overwrite_adaptive_card_json: dict | None = None
 ) -> CommandResults:
     """
     send_teams_message command: Sends the Teams Message to the provided webhook.
@@ -180,13 +188,16 @@ def send_teams_message_command(
         title (str): The title of the message card.
         serverurls (str): The URL to send in the message card.
         adaptive_cards_format (bool): Should the adaptive cards format be used?
+        overwrite_adaptive_card_json (dict | None): Value to overwrite the default adaptive card format.
 
     Returns:
         CommandResults/dict: A ``CommandResults`` compatible to return ``return_results()``,
         which contains the readable_output indicating the message was sent.
     """
 
-    messagecard = create_teams_message(message, title, serverurls, adaptive_cards_format, is_workflow=client.is_workflow)
+    messagecard = create_teams_message(message, title, serverurls, adaptive_cards_format,
+                                       is_workflow=client.is_workflow,
+                                       overwrite_adaptive_card_json=overwrite_adaptive_card_json)
     client.send_teams_message(messagecard, adaptive_cards_format)
     return CommandResults(readable_output='message sent successfully')
 
@@ -204,6 +215,9 @@ def main() -> None:    # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     adaptive_cards_format: bool = argToBoolean(args.get("adaptive_cards_format", False))
+    overwrite_adaptive_card_json_param: str = args.get('overwrite_adaptive_card_json', None)
+    overwrite_adaptive_card_json: dict | None = json.loads(
+        overwrite_adaptive_card_json_param) if overwrite_adaptive_card_json_param else None
 
     serverurls = demisto.demistoUrls()
 
@@ -225,7 +239,8 @@ def main() -> None:    # pragma: no cover
             return_results(test_module(client, serverurls))
         elif command == 'ms-teams-message':
             message = args.get("message", "")
-            return_results(send_teams_message_command(client, message, title, serverurls, adaptive_cards_format))
+            return_results(send_teams_message_command(client, message, title, serverurls,
+                           adaptive_cards_format, overwrite_adaptive_card_json))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
