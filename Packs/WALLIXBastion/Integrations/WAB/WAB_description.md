@@ -8,7 +8,7 @@ To use this integration, you can provide a user/password or create an API key on
 
 Go to `Configuration` > `API Keys` to create one.
 
-> Note: using an API key rather than a password allows unrestricted aministrative access to the Bastion.
+> Note: using an API key rather than a password allows unrestricted administrative access to the Bastion.
 
 ## Configure the API version
 
@@ -28,4 +28,4 @@ Please note that some features of the API 3.12 are only available to the most re
 
 If you encounter an unexpected error while using this integration, first make sure that the feature you want to use is documented in the REST API documentation of your Bastion appliance.
 
-Otherwise, or if you would like to submit a feature request, please contact the WALLIX Customer Success team. This integration was recently released and we would be glad to receive your feedback about it.
+Otherwise, or if you would like to submit a feature request, please contact the WALLIX Customer Success team.

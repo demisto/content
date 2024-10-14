@@ -295,10 +295,10 @@ script:
       - ssh_key
     - name: changePasswordOrSshKeyOfAccount_password
       description: The new password.
-      required: true
     - name: changePasswordOrSshKeyOfAccount_private_key
       description: 'The new SSH private key.'
-      required: true
+    - name: changePasswordOrSshKeyOfAccount_passphrase
+      description: 'The passphrase for the SSH private key (only for an encrypted private key). If provided, it must be between 4 and 1024 characters long.'
   - name: wab-get-all-accounts
     description: 'Get all accounts
 
@@ -312,6 +312,10 @@ script:
       description: The name of the device whose accounts must be returned. Cannot be used if an account_name and/or an application is specified.
     - name: passwords
       description: 'Return credentials (passwords and SSH keys) as-is without replacing content by stars. Note: this requires the Password Manager license, the flag "Credential recovery" in the profile of the user logged on the API and the "Credential recovery" option must be enabled in REST API configuration.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: key_format
       description: 'Format of the returned SSH public key of the account. Accepted values are ''openssh'' (default value) and ''ssh.com''.'
     - name: q
@@ -458,6 +462,10 @@ script:
       description: The name of the device whose accounts must be returned. Cannot be used if an account_name and/or an application is specified.
     - name: passwords
       description: 'Return credentials (passwords and SSH keys) as-is without replacing content by stars. Note: this requires the Password Manager license, the flag "Credential recovery" in the profile of the user logged on the API and the "Credential recovery" option must be enabled in REST API configuration.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: key_format
       description: Format of the returned SSH public key of the account. Accepted values are 'openssh' (default value) and 'ssh.com'.
     - name: fields
@@ -709,6 +717,10 @@ script:
       description: The account description.
     - name: app_account_post_auto_change_password
       description: Automatically change the password. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: app_account_post_checkout_policy
       description: The account checkout policy.
       required: true
@@ -716,6 +728,10 @@ script:
       description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain.
     - name: app_account_post_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: String
       contextPath: WAB.add_account_to_local_domain_of_application.id
@@ -831,6 +847,10 @@ script:
       required: true
     - name: force
       description: The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: app_account_put_account_name
       description: The account name. /:*?"<>|@ and space are forbidden.
     - name: app_account_put_account_login
@@ -839,12 +859,20 @@ script:
       description: The account description.
     - name: app_account_put_auto_change_password
       description: Automatically change the password. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: app_account_put_checkout_policy
       description: The account checkout policy.
     - name: app_account_put_certificate_validity
       description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain.
     - name: app_account_put_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: app_account_put_onboard_status
       description: Onboarding status of the account.
       auto: PREDEFINED
@@ -1117,12 +1145,19 @@ script:
       required: true
     - name: force
       description: 'The default value is false. When it is set to true the values of the global_domains and tags are replaced, otherwise the values are added to the existing ones.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: application_put_application_name
       description: The application name. \/:*?"<>| and space are forbidden.
     - name: application_put_description
       description: 'The application description.'
     - name: application_put_parameters
       description: The application parameters.
+    - name: application_put_global_domains
+      description: The global domains names.
+      isArray: true
     - name: application_put_connection_policy
       description: The connection policy name.
   - name: wab-delete-application
@@ -1341,8 +1376,16 @@ script:
     - name: approval_assignment_post_approved
       description: Approve/reject the request.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: approval_assignment_post_is_active
       description: The approval is active.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: approval_assignment_post_status
       description: The approval status.
       auto: PREDEFINED
@@ -2109,22 +2152,58 @@ script:
       isArray: true
     - name: authorization_post_is_critical
       description: Define if it's critical.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_is_recorded
       description: Define if it's recorded.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_authorize_password_retrieval
       description: Authorize password retrieval. Enabled by default.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_authorize_sessions
       description: Authorize sessions via proxies. Enabled by default.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_approval_required
       description: Approval is required to connect to targets.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_has_comment
       description: Comment is allowed in approval.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_mandatory_comment
       description: Comment is mandatory in approval.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_has_ticket
       description: Ticket is allowed in approval.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_mandatory_ticket
       description: Ticket is mandatory in approval.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_approvers
       description: The approvers user groups.
       isArray: true
@@ -2134,10 +2213,18 @@ script:
       description: 'The quorum for inactive periods (-1: approval workflow with automatic approval, 0: no connection allowed, > 0: quorum to reach).'
     - name: authorization_post_single_connection
       description: Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_approval_timeout
       description: 'Set a timeout in minutes after which the approval will be automatically closed if no connection has been initiated (i.e. the user won''t be able to connect). 0: no timeout.'
     - name: authorization_post_authorize_session_sharing
       description: Enable Session Sharing.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_post_session_sharing_mode
       description: The Session Sharing Mode.
       auto: PREDEFINED
@@ -2238,6 +2325,10 @@ script:
       required: true
     - name: force
       description: The default value is false. When it is set to true the values of subprotocols and approvers are replaced otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_authorization_name
       description: 'The authorization name. \ /:*?"<>|@& and space are forbidden.'
     - name: authorization_put_description
@@ -2247,22 +2338,58 @@ script:
       isArray: true
     - name: authorization_put_is_critical
       description: Define if it's critical.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_is_recorded
       description: 'Define if it''s recorded.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_authorize_password_retrieval
       description: Authorize password retrieval. Enabled by default.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_authorize_sessions
       description: Authorize sessions via proxies. Enabled by default.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_approval_required
       description: Approval is required to connect to targets.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_has_comment
       description: Comment is allowed in approval.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_mandatory_comment
       description: Comment is mandatory in approval.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_has_ticket
       description: Ticket is allowed in approval.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_mandatory_ticket
       description: Ticket is mandatory in approval.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_approvers
       description: The approvers user groups.
       isArray: true
@@ -2272,10 +2399,18 @@ script:
       description: 'The quorum for inactive periods (-1: approval workflow with automatic approval, 0: no connection allowed, > 0: quorum to reach).'
     - name: authorization_put_single_connection
       description: Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_approval_timeout
       description: 'Set a timeout in minutes after which the approval will be automatically closed if no connection has been initiated (i.e. the user won''t be able to connect). 0: no timeout.'
     - name: authorization_put_authorize_session_sharing
       description: Enable Session Sharing.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: authorization_put_session_sharing_mode
       description: The Session Sharing Mode.
       auto: PREDEFINED
@@ -2473,6 +2608,10 @@ script:
       description: 'Server private key (*.key file in PEM format).'
     - name: config_x509_post_enable
       description: Enable X509 or not (true = enabled, false = disabled).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: String
       contextPath: WAB.uploadx509_configuration.id
@@ -2490,6 +2629,10 @@ script:
       description: 'Server private key (*.key file in PEM format).'
     - name: config_x509_put_enable
       description: "Enable X509 or not (true = enabled, false = disabled)."
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
   - name: wab-resetx509-configuration
     description: 'Reset X509 configuration
 
@@ -2576,12 +2719,12 @@ script:
       isArray: true
       auto: PREDEFINED
       predefined:
-      - PASSWORD_VAULT
-      - PASSWORD_MAPPING
-      - PASSWORD_INTERACTIVE
       - KERBEROS_FORWARDING
-      - PUBKEY_VAULT
+      - PASSWORD_INTERACTIVE
+      - PASSWORD_MAPPING
+      - PASSWORD_VAULT
       - PUBKEY_AGENT_FORWARDING
+      - PUBKEY_VAULT
     - name: options
       description: Options for the connection policy, formatted in json.
     outputs:
@@ -2630,6 +2773,10 @@ script:
       required: true
     - name: force
       description: 'The default value is false. When it is set to true the values of the authentication_methods are replaced, otherwise the values are added to the existing ones.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: connectionpolicy_put_connection_policy_name
       description: The connection policy name.
     - name: connectionpolicy_put_description
@@ -2639,12 +2786,12 @@ script:
       isArray: true
       auto: PREDEFINED
       predefined:
-      - PASSWORD_VAULT
-      - PASSWORD_MAPPING
-      - PASSWORD_INTERACTIVE
       - KERBEROS_FORWARDING
-      - PUBKEY_VAULT
+      - PASSWORD_INTERACTIVE
+      - PASSWORD_MAPPING
+      - PASSWORD_VAULT
       - PUBKEY_AGENT_FORWARDING
+      - PUBKEY_VAULT
     - name: options
       description: Options for the connection policy, formatted in json.
   - name: wab-delete-connection-policy
@@ -2805,8 +2952,16 @@ script:
       description: The account description.
     - name: device_account_post_auto_change_password
       description: Automatically change the password. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: device_account_post_auto_change_ssh_key
       description: Automatically change the ssh key. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: device_account_post_checkout_policy
       description: The account checkout policy.
       required: true
@@ -2814,6 +2969,10 @@ script:
       description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain.
     - name: device_account_post_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: device_account_post_services
       description: The account services.
       isArray: true
@@ -2961,6 +3120,10 @@ script:
       required: true
     - name: force
       description: The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: device_account_put_account_name
       description: The account name. /:*?"<>|@ and space are forbidden.
     - name: device_account_put_account_login
@@ -2969,14 +3132,26 @@ script:
       description: The account description.
     - name: device_account_put_auto_change_password
       description: Automatically change the password. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: device_account_put_auto_change_ssh_key
       description: Automatically change the ssh key. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: device_account_put_checkout_policy
       description: The account checkout policy.
     - name: device_account_put_certificate_validity
       description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain.
     - name: device_account_put_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: device_account_put_onboard_status
       description: Onboarding status of the account.
       auto: PREDEFINED
@@ -3274,7 +3449,6 @@ script:
       required: true
     - name: service_post_subprotocols
       description: The sub protocols.
-      required: true
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -3304,6 +3478,12 @@ script:
     - name: service_post_global_domains
       description: The global domains names.
       isArray: true
+    - name: service_post_seamless_connection
+      description: The seamless connection.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
   - name: wab-get-service-of-device
     description: 'Get the service of a device
 
@@ -3352,13 +3532,48 @@ script:
       required: true
     - name: force
       description: The default value is false. When it is set to true the values of the subprotocols, global_domains and additional_interfaces are replaced, otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: service_put_port
       description: The port number.
+    - name: service_put_subprotocols
+      description: The sub protocols.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - RDP_AUDIO_INPUT
+      - RDP_AUDIO_OUTPUT
+      - RDP_CLIPBOARD_DOWN
+      - RDP_CLIPBOARD_FILE
+      - RDP_CLIPBOARD_UP
+      - RDP_COM_PORT
+      - RDP_DRIVE
+      - RDP_PRINTER
+      - RDP_SMARTCARD
+      - SFTP_SESSION
+      - SSH_AUTH_AGENT
+      - SSH_DIRECT_TCPIP
+      - SSH_DIRECT_UNIXSOCK
+      - SSH_REMOTE_COMMAND
+      - SSH_REVERSE_TCPIP
+      - SSH_REVERSE_UNIXSOCK
+      - SSH_SCP_DOWN
+      - SSH_SCP_UP
+      - SSH_SHELL_SESSION
+      - SSH_X11
     - name: service_put_connection_policy
       description: The connection policy name.
     - name: service_put_global_domains
       description: The global domains names.
       isArray: true
+    - name: service_put_seamless_connection
+      description: The seamless connection.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
   - name: wab-delete-service-from-device
     description: 'Delete a service from a device
 
@@ -3660,6 +3875,10 @@ script:
       required: true
     - name: force
       description: The default value is false. When it is set to true the values of the tags are replaced, otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: device_put_device_name
       description: The device name. \ /:*?"<>|@ and space are forbidden.
     - name: device_put_description
@@ -3824,8 +4043,16 @@ script:
       description: The account description.
     - name: domain_account_post_auto_change_password
       description: Automatically change the password. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: domain_account_post_auto_change_ssh_key
       description: Automatically change the ssh key. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: domain_account_post_checkout_policy
       description: The account checkout policy.
       required: true
@@ -3833,6 +4060,10 @@ script:
       description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain.
     - name: domain_account_post_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: domain_account_post_resources
       description: The account resources.
       isArray: true
@@ -3972,6 +4203,10 @@ script:
       required: true
     - name: force
       description: The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: domain_account_put_account_name
       description: The account name. /:*?"<>|@ and space are forbidden.
     - name: domain_account_put_account_login
@@ -3980,14 +4215,26 @@ script:
       description: The account description.
     - name: domain_account_put_auto_change_password
       description: Automatically change the password. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: domain_account_put_auto_change_ssh_key
       description: Automatically change the ssh key. It is enabled by default on a new account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: domain_account_put_checkout_policy
       description: The account checkout policy.
     - name: domain_account_put_certificate_validity
       description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain.
     - name: domain_account_put_can_edit_certificate_validity
       description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: domain_account_put_onboard_status
       description: Onboarding status of the account.
       auto: PREDEFINED
@@ -4154,6 +4401,10 @@ script:
     arguments:
     - name: group_by
       description: Group the result-set by one property. Can take one of the values 'user_group' or 'domain'.
+      auto: PREDEFINED
+      predefined:
+      - 'user_group'
+      - 'domain'
     - name: q
       description: Searches for a resource matching parameters. Used only if "group_by" is not set.
     - name: sort
@@ -4184,6 +4435,10 @@ script:
       required: true
     - name: last_connection
       description: 'If set to true, the date of last connection is returned for each user returned. Be careful: this can slow down the request if a lot of users are returned.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: q
       description: 'Searches for a resource matching parameters.'
     - name: offset
@@ -4239,6 +4494,10 @@ script:
       required: true
     - name: last_connection
       description: 'If set to true, the date of last connection is returned for each user returned. Be careful: this can slow down the request if a lot of users are returned.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: fields
       description: 'The list of fields to return (separated by commas). By default all fields are returned.'
     outputs:
@@ -4451,6 +4710,10 @@ script:
     - name: notification_post_enabled
       description: Notification is enabled.
       required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: notification_post_type
       description: Notification type.
       required: true
@@ -4543,12 +4806,20 @@ script:
       required: true
     - name: force
       description: The default value is false. When it is set to true the values of the events are replaced, otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: notification_put_notification_name
       description: The notification name.
     - name: notification_put_description
       description: The notification description.
     - name: notification_put_enabled
       description: Notification is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: notification_put_type
       description: Notification type.
       auto: PREDEFINED
@@ -4844,6 +5115,10 @@ script:
     arguments:
     - name: count
       description: The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: q
       description: 'Only a simple string to search is allowed in this resource (for example: ''q=windows''). The search is performed on the following fields only: account, account_description, device, device_alias, device_description, application, application_description, domain, domain_description, authorization, authorization_description.'
     - name: sort
@@ -4898,6 +5173,10 @@ script:
       required: true
     - name: count
       description: 'The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: fields
       description: The list of fields to return (separated by commas). By default all fields are returned.
     outputs:
@@ -5356,12 +5635,39 @@ script:
       description: Scan name.
     - name: scan_put_active
       description: State of the job schedule.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: scan_put_periodicity
       description: Periodicity of the scan, in cron notation.
     - name: scan_put_description
       description: 'Description of the scan.'
     - name: scan_put_emails
       description: Emails to notify when a job is finished.
+      isArray: true
+    - name: scan_put_subnets
+      description: 'List of subnets to scan.'
+      isArray: true
+    - name: scan_put_banner_regex
+      description: Regexes to mach on SSH banner.
+      isArray: true
+    - name: scan_put_scan_for_accounts
+      description: Scan for accounts on discovered devices.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: scan_put_master_accounts
+      description: The master accounts used to log and the devices empty if scan_for_accounts is false.
+      isArray: true
+    - name: scan_put_search_filter
+      description: Active Directory search filter.
+    - name: scan_put_dn_list
+      description: List of Distinguished Names to search.
+      isArray: true
+    - name: scan_put_devices
+      description: The devices to scan.
       isArray: true
   - name: wab-delete-scan
     description: 'Delete a scan
@@ -5378,8 +5684,16 @@ script:
     arguments:
     - name: count
       description: The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: last_connection
       description: The default value is false. When set to true, the last connection date is returned for each authorizations.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: q
       description: 'Only a simple string to search is allowed in this resource (for exemple: ''q=windows''). The search is performed on the following fields only: account, account_description, device, device_alias, device_description, application, application_description, service_protocol, domain, domain_description, authorization, authorization_description.'
     - name: sort
@@ -5449,8 +5763,16 @@ script:
       required: true
     - name: count
       description: The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: last_connection
       description: The default value is false. When set to true, the last connection date is returned for each authorizations.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: fields
       description: The list of fields to return (separated by commas). By default all fields are returned.
     outputs:
@@ -5739,6 +6061,10 @@ script:
       required: true
     - name: download
       description: The default value is false. When it is set to true, the session metadata is sent as a file instead of JSON (recommended for large metadata). The download is possible only with a single session id.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: String
       contextPath: WAB.session_metadata_get.session_id
@@ -5828,6 +6154,10 @@ script:
       description: Duration of the trace to generate (in seconds).
     - name: download
       description: The default value is false. When it is set to true, the session trace is sent as a file instead of JSON output with the generation status.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: String
       contextPath: WAB.session_trace_get.session_id
@@ -6191,6 +6521,10 @@ script:
       required: true
     - name: force
       description: The default value is false. When it is set to true the values of the targets are replaced, otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: targetgroups_put_group_name
       description: The target group name.
     - name: targetgroups_put_description
@@ -6275,6 +6609,10 @@ script:
       description: The timeframe description.
     - name: timeframe_post_is_overtimable
       description: Do not close sessions at the end of the time period.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: String
       contextPath: WAB.add_timeframe.id
@@ -6334,6 +6672,10 @@ script:
       description: The timeframe description.
     - name: timeframe_put_is_overtimable
       description: Do not close sessions at the end of the time period.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
   - name: wab-delete-timeframe
     description: 'Delete a timeframe
 
@@ -6454,6 +6796,10 @@ script:
     arguments:
     - name: password_hash
       description: Export password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: q
       description: Searches for a resource matching parameters.
     - name: sort
@@ -6526,6 +6872,10 @@ script:
     arguments:
     - name: password_hash
       description: Set password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: user_post_user_name
       description: The user name. /:*?"<>| are forbidden.
       required: true
@@ -6559,6 +6909,10 @@ script:
       description: The password.
     - name: user_post_force_change_pwd
       description: Force password change.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: user_post_ssh_public_key
       description: The SSH public key.
     - name: user_post_certificate_dn
@@ -6569,6 +6923,10 @@ script:
       description: 'Account expiration date/time (format: "yyyy-mm-dd hh:mm").'
     - name: user_post_is_disabled
       description: Account is disabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: user_post_gpg_public_key
       description: 'The GPG public key (ascii output from the command: ''gpg --armor --export [USER_ID]'').'
     outputs:
@@ -6585,6 +6943,10 @@ script:
       required: true
     - name: password_hash
       description: Export password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: fields
       description: The list of fields to return (separated by commas). By default all fields are returned.
     outputs:
@@ -6652,8 +7014,16 @@ script:
       required: true
     - name: force
       description: The default value is false. When set to true, the values of the groups and user_auths are replaced, otherwise the values are added to the existing ones.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: password_hash
       description: Update password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: user_put_user_name
       description: The user name. /:*?"<>| are forbidden.
     - name: user_put_display_name
@@ -6683,6 +7053,10 @@ script:
       description: The password.
     - name: user_put_force_change_pwd
       description: Force password change.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: user_put_ssh_public_key
       description: The SSH public key.
     - name: user_put_certificate_dn
@@ -6693,6 +7067,10 @@ script:
       description: 'Account expiration date/time (format: "yyyy-mm-dd hh:mm").'
     - name: user_put_is_disabled
       description: Account is disabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: user_put_gpg_public_key
       description: 'The GPG public key (ascii output from the command: ''gpg --armor --export [USER_ID]'').'
   - name: wab-get-target-group-restrictions
@@ -6875,6 +7253,10 @@ script:
       description: The name of the authorization (in case of multiple authorizations to access the target).
     - name: force
       description: The default value is false. When it is set to true, the checkin is forced. The user connected on the REST API must have an auditor profile and the configured limitations don't prohibit access to the account.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: comment
       description: A comment that is input by the auditor when an account checkin is forced. This argument is mandatory if the checkin is forced, and is ignored for a standard checkin.
   - name: wab-get-target-by-type

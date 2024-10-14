@@ -210,8 +210,9 @@ category: Account Change Password.
 | --- | --- | --- |
 | account_id | The account id. | Required | 
 | credential_type | 'password' to change the password or 'ssh_key' to change the SSH key. Possible values are: password, ssh_key. | Required | 
-| changePasswordOrSshKeyOfAccount_password | The new password. | Required | 
-| changePasswordOrSshKeyOfAccount_private_key | The new SSH private key. | Required | 
+| changePasswordOrSshKeyOfAccount_password | The new password. | Optional | 
+| changePasswordOrSshKeyOfAccount_private_key | The new SSH private key. | Optional | 
+| changePasswordOrSshKeyOfAccount_passphrase | The passphrase for the SSH private key (only for an encrypted private key). If provided, it must be between 4 and 1024 characters long. | Optional | 
 
 #### Context Output
 
@@ -234,7 +235,7 @@ category: Accounts.
 | account_type | The account type: "global" for only global domain accounts, "device" for only device accounts, "application" for only application accounts. By default accounts of any type are returned. Cannot be used if an account_name and/or device/application is specified. | Optional | 
 | application | The name of the application whose accounts must be returned. Cannot be used if an account_name and/or an account_type/device is specified. | Optional | 
 | device | The name of the device whose accounts must be returned. Cannot be used if an account_name and/or an application is specified. | Optional | 
-| passwords | Return credentials (passwords and SSH keys) as-is without replacing content by stars. Note: this requires the Password Manager license, the flag "Credential recovery" in the profile of the user logged on the API and the "Credential recovery" option must be enabled in REST API configuration. | Optional | 
+| passwords | Return credentials (passwords and SSH keys) as-is without replacing content by stars. Note: this requires the Password Manager license, the flag "Credential recovery" in the profile of the user logged on the API and the "Credential recovery" option must be enabled in REST API configuration. Possible values are: true, false. | Optional | 
 | key_format | Format of the returned SSH public key of the account. Accepted values are 'openssh' (default value) and 'ssh.com'. | Optional | 
 | q | Searches for a resource matching parameters. | Optional | 
 | sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'account_name'. | Optional | 
@@ -304,7 +305,7 @@ category: Accounts.
 | account_type | The account type: "global" for only global domain accounts, "device" for only device accounts, "application" for only application accounts. By default accounts of any type are returned. Cannot be used if an account_name and/or device/application is specified. | Optional | 
 | application | The name of the application whose accounts must be returned. Cannot be used if an account_name and/or an account_type/device is specified. | Optional | 
 | device | The name of the device whose accounts must be returned. Cannot be used if an account_name and/or an application is specified. | Optional | 
-| passwords | Return credentials (passwords and SSH keys) as-is without replacing content by stars. Note: this requires the Password Manager license, the flag "Credential recovery" in the profile of the user logged on the API and the "Credential recovery" option must be enabled in REST API configuration. | Optional | 
+| passwords | Return credentials (passwords and SSH keys) as-is without replacing content by stars. Note: this requires the Password Manager license, the flag "Credential recovery" in the profile of the user logged on the API and the "Credential recovery" option must be enabled in REST API configuration. Possible values are: true, false. | Optional | 
 | key_format | Format of the returned SSH public key of the account. Accepted values are 'openssh' (default value) and 'ssh.com'. | Optional | 
 | fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
 
@@ -444,10 +445,10 @@ category: Application Accounts.
 | app_account_post_account_name | The account name. /:*?"&lt;&gt;\|@ and space are forbidden. | Required | 
 | app_account_post_account_login | The account login. | Required | 
 | app_account_post_description | The account description. | Optional | 
-| app_account_post_auto_change_password | Automatically change the password. It is enabled by default on a new account. | Optional | 
+| app_account_post_auto_change_password | Automatically change the password. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
 | app_account_post_checkout_policy | The account checkout policy. | Required | 
 | app_account_post_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
-| app_account_post_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
+| app_account_post_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -522,14 +523,14 @@ category: Application Accounts.
 | application_id | The application id or name. | Required | 
 | domain_id | The local domain id or name. | Required | 
 | account_id | The account id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | app_account_put_account_name | The account name. /:*?"&lt;&gt;\|@ and space are forbidden. | Optional | 
 | app_account_put_account_login | The account login. | Optional | 
 | app_account_put_description | The account description. | Optional | 
-| app_account_put_auto_change_password | Automatically change the password. It is enabled by default on a new account. | Optional | 
+| app_account_put_auto_change_password | Automatically change the password. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
 | app_account_put_checkout_policy | The account checkout policy. | Optional | 
 | app_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
-| app_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
+| app_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
 | app_account_put_onboard_status | Onboarding status of the account. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
 
 #### Context Output
@@ -729,10 +730,11 @@ category: Applications.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | application_id | The application id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the global_domains and tags are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the global_domains and tags are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | application_put_application_name | The application name. \/:*?"&lt;&gt;\| and space are forbidden. | Optional | 
 | application_put_description | The application description. | Optional | 
 | application_put_parameters | The application parameters. | Optional | 
+| application_put_global_domains | The global domains names. | Optional | 
 | application_put_connection_policy | The connection policy name. | Optional | 
 
 #### Context Output
@@ -880,8 +882,8 @@ category: Approvals Assignments.
 | approval_assignment_post_comment | The approval comment. | Required | 
 | approval_assignment_post_duration | The allowed time range to connect (in minutes). | Optional | 
 | approval_assignment_post_timeout | Timeout to initiate the first connection (in minutes). After that, the approval will be automatically closed. 0: no timeout. | Optional | 
-| approval_assignment_post_approved | Approve/reject the request. | Required | 
-| approval_assignment_post_is_active | The approval is active. | Optional | 
+| approval_assignment_post_approved | Approve/reject the request. Possible values are: true, false. | Required | 
+| approval_assignment_post_is_active | The approval is active. Possible values are: true, false. | Optional | 
 | approval_assignment_post_status | The approval status. Possible values are: accepted, cancelled, closed, none, pending, rejected. | Optional | 
 
 #### Context Output
@@ -1511,21 +1513,21 @@ category: Authorizations.
 | authorization_post_authorization_name | The authorization name. \ /:*?"&lt;&gt;\|@&amp; and space are forbidden. | Required | 
 | authorization_post_description | The authorization description. | Optional | 
 | authorization_post_subprotocols | The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default). | Optional | 
-| authorization_post_is_critical | Define if it's critical. | Optional | 
-| authorization_post_is_recorded | Define if it's recorded. | Optional | 
-| authorization_post_authorize_password_retrieval | Authorize password retrieval. Enabled by default. | Optional | 
-| authorization_post_authorize_sessions | Authorize sessions via proxies. Enabled by default. | Optional | 
-| authorization_post_approval_required | Approval is required to connect to targets. | Optional | 
-| authorization_post_has_comment | Comment is allowed in approval. | Optional | 
-| authorization_post_mandatory_comment | Comment is mandatory in approval. | Optional | 
-| authorization_post_has_ticket | Ticket is allowed in approval. | Optional | 
-| authorization_post_mandatory_ticket | Ticket is mandatory in approval. | Optional | 
+| authorization_post_is_critical | Define if it's critical. Possible values are: true, false. | Optional | 
+| authorization_post_is_recorded | Define if it's recorded. Possible values are: true, false. | Optional | 
+| authorization_post_authorize_password_retrieval | Authorize password retrieval. Enabled by default. Possible values are: true, false. | Optional | 
+| authorization_post_authorize_sessions | Authorize sessions via proxies. Enabled by default. Possible values are: true, false. | Optional | 
+| authorization_post_approval_required | Approval is required to connect to targets. Possible values are: true, false. | Optional | 
+| authorization_post_has_comment | Comment is allowed in approval. Possible values are: true, false. | Optional | 
+| authorization_post_mandatory_comment | Comment is mandatory in approval. Possible values are: true, false. | Optional | 
+| authorization_post_has_ticket | Ticket is allowed in approval. Possible values are: true, false. | Optional | 
+| authorization_post_mandatory_ticket | Ticket is mandatory in approval. Possible values are: true, false. | Optional | 
 | authorization_post_approvers | The approvers user groups. | Optional | 
 | authorization_post_active_quorum | The quorum for active periods (-1: approval workflow with automatic approval, 0: no approval workflow (direct connection), &gt; 0: quorum to reach). | Optional | 
 | authorization_post_inactive_quorum | The quorum for inactive periods (-1: approval workflow with automatic approval, 0: no connection allowed, &gt; 0: quorum to reach). | Optional | 
-| authorization_post_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). | Optional | 
+| authorization_post_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). Possible values are: true, false. | Optional | 
 | authorization_post_approval_timeout | Set a timeout in minutes after which the approval will be automatically closed if no connection has been initiated (i.e. the user won't be able to connect). 0: no timeout. | Optional | 
-| authorization_post_authorize_session_sharing | Enable Session Sharing. | Optional | 
+| authorization_post_authorize_session_sharing | Enable Session Sharing. Possible values are: true, false. | Optional | 
 | authorization_post_session_sharing_mode | The Session Sharing Mode. Possible values are: view_only, view_control. | Optional | 
 
 #### Context Output
@@ -1594,25 +1596,25 @@ category: Authorizations.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | authorization_id | The authorization id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of subprotocols and approvers are replaced otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of subprotocols and approvers are replaced otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | authorization_put_authorization_name | The authorization name. \ /:*?"&lt;&gt;\|@&amp; and space are forbidden. | Optional | 
 | authorization_put_description | The authorization description. | Optional | 
 | authorization_put_subprotocols | The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default). | Optional | 
-| authorization_put_is_critical | Define if it's critical. | Optional | 
-| authorization_put_is_recorded | Define if it's recorded. | Optional | 
-| authorization_put_authorize_password_retrieval | Authorize password retrieval. Enabled by default. | Optional | 
-| authorization_put_authorize_sessions | Authorize sessions via proxies. Enabled by default. | Optional | 
-| authorization_put_approval_required | Approval is required to connect to targets. | Optional | 
-| authorization_put_has_comment | Comment is allowed in approval. | Optional | 
-| authorization_put_mandatory_comment | Comment is mandatory in approval. | Optional | 
-| authorization_put_has_ticket | Ticket is allowed in approval. | Optional | 
-| authorization_put_mandatory_ticket | Ticket is mandatory in approval. | Optional | 
+| authorization_put_is_critical | Define if it's critical. Possible values are: true, false. | Optional | 
+| authorization_put_is_recorded | Define if it's recorded. Possible values are: true, false. | Optional | 
+| authorization_put_authorize_password_retrieval | Authorize password retrieval. Enabled by default. Possible values are: true, false. | Optional | 
+| authorization_put_authorize_sessions | Authorize sessions via proxies. Enabled by default. Possible values are: true, false. | Optional | 
+| authorization_put_approval_required | Approval is required to connect to targets. Possible values are: true, false. | Optional | 
+| authorization_put_has_comment | Comment is allowed in approval. Possible values are: true, false. | Optional | 
+| authorization_put_mandatory_comment | Comment is mandatory in approval. Possible values are: true, false. | Optional | 
+| authorization_put_has_ticket | Ticket is allowed in approval. Possible values are: true, false. | Optional | 
+| authorization_put_mandatory_ticket | Ticket is mandatory in approval. Possible values are: true, false. | Optional | 
 | authorization_put_approvers | The approvers user groups. | Optional | 
 | authorization_put_active_quorum | The quorum for active periods (-1: approval workflow with automatic approval, 0: no approval workflow (direct connection), &gt; 0: quorum to reach). | Optional | 
 | authorization_put_inactive_quorum | The quorum for inactive periods (-1: approval workflow with automatic approval, 0: no connection allowed, &gt; 0: quorum to reach). | Optional | 
-| authorization_put_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). | Optional | 
+| authorization_put_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). Possible values are: true, false. | Optional | 
 | authorization_put_approval_timeout | Set a timeout in minutes after which the approval will be automatically closed if no connection has been initiated (i.e. the user won't be able to connect). 0: no timeout. | Optional | 
-| authorization_put_authorize_session_sharing | Enable Session Sharing. | Optional | 
+| authorization_put_authorize_session_sharing | Enable Session Sharing. Possible values are: true, false. | Optional | 
 | authorization_put_session_sharing_mode | The Session Sharing Mode. Possible values are: view_only, view_control. | Optional | 
 
 #### Context Output
@@ -1806,7 +1808,7 @@ category: Config X509.
 | config_x509_post_ca_certificate | Certificate Authority's certificate (*.cert file in PEM format).If there's several certificate to be added, they've to be concatenated and supplied to this field, as one string. | Optional | 
 | config_x509_post_server_public_key | Server public key (*.cert file in PEM format). | Optional | 
 | config_x509_post_server_private_key | Server private key (*.key file in PEM format). | Optional | 
-| config_x509_post_enable | Enable X509 or not (true = enabled, false = disabled). | Optional | 
+| config_x509_post_enable | Enable X509 or not (true = enabled, false = disabled). Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -1831,7 +1833,7 @@ category: Config X509.
 | config_x509_put_ca_certificate | Certificate Authority's certificate (*.cert file in PEM format).If there's several certificate to be added, they've to be concatenated and supplied to this field, as one string. | Optional | 
 | config_x509_put_server_public_key | Server public key (*.cert file in PEM format). | Optional | 
 | config_x509_put_server_private_key | Server private key (*.key file in PEM format). | Optional | 
-| config_x509_put_enable | Enable X509 or not (true = enabled, false = disabled). | Optional | 
+| config_x509_put_enable | Enable X509 or not (true = enabled, false = disabled). Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -1925,7 +1927,7 @@ category: Connection Policies.
 | connectionpolicy_post_type | The connection policy type. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 | connectionpolicy_post_description | The connection policy description. | Optional | 
 | connectionpolicy_post_protocol | The connection policy protocol. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
-| connectionpolicy_post_authentication_methods | The allowed authentication methods. Possible values are: PASSWORD_VAULT, PASSWORD_MAPPING, PASSWORD_INTERACTIVE, KERBEROS_FORWARDING, PUBKEY_VAULT, PUBKEY_AGENT_FORWARDING. | Optional | 
+| connectionpolicy_post_authentication_methods | The allowed authentication methods. Possible values are: KERBEROS_FORWARDING, PASSWORD_INTERACTIVE, PASSWORD_MAPPING, PASSWORD_VAULT, PUBKEY_AGENT_FORWARDING, PUBKEY_VAULT. | Optional | 
 | options | Options for the connection policy, formatted in json. | Optional | 
 
 #### Context Output
@@ -1978,10 +1980,10 @@ category: Connection Policies.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | connection_policy_id | A connection policy id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the authentication_methods are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the authentication_methods are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | connectionpolicy_put_connection_policy_name | The connection policy name. | Optional | 
 | connectionpolicy_put_description | The connection policy description. | Optional | 
-| connectionpolicy_post_authentication_methods | The allowed authentication methods. Possible values are: PASSWORD_VAULT, PASSWORD_MAPPING, PASSWORD_INTERACTIVE, KERBEROS_FORWARDING, PUBKEY_VAULT, PUBKEY_AGENT_FORWARDING. | Optional | 
+| connectionpolicy_put_authentication_methods | The allowed authentication methods. Possible values are: KERBEROS_FORWARDING, PASSWORD_INTERACTIVE, PASSWORD_MAPPING, PASSWORD_VAULT, PUBKEY_AGENT_FORWARDING, PUBKEY_VAULT. | Optional | 
 | options | Options for the connection policy, formatted in json. | Optional | 
 
 #### Context Output
@@ -2090,11 +2092,11 @@ category: Device Accounts.
 | device_account_post_account_name | The account name. /:*?"&lt;&gt;\|@ and space are forbidden. | Required | 
 | device_account_post_account_login | The account login. | Required | 
 | device_account_post_description | The account description. | Optional | 
-| device_account_post_auto_change_password | Automatically change the password. It is enabled by default on a new account. | Optional | 
-| device_account_post_auto_change_ssh_key | Automatically change the ssh key. It is enabled by default on a new account. | Optional | 
+| device_account_post_auto_change_password | Automatically change the password. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
+| device_account_post_auto_change_ssh_key | Automatically change the ssh key. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
 | device_account_post_checkout_policy | The account checkout policy. | Required | 
 | device_account_post_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
-| device_account_post_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
+| device_account_post_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
 | device_account_post_services | The account services. | Optional | 
 
 #### Context Output
@@ -2180,15 +2182,15 @@ category: Device Accounts.
 | device_id | The device id or name. | Required | 
 | domain_id | The local domain id or name. | Required | 
 | account_id | The account id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | device_account_put_account_name | The account name. /:*?"&lt;&gt;\|@ and space are forbidden. | Optional | 
 | device_account_put_account_login | The account login. | Optional | 
 | device_account_put_description | The account description. | Optional | 
-| device_account_put_auto_change_password | Automatically change the password. It is enabled by default on a new account. | Optional | 
-| device_account_put_auto_change_ssh_key | Automatically change the ssh key. It is enabled by default on a new account. | Optional | 
+| device_account_put_auto_change_password | Automatically change the password. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
+| device_account_put_auto_change_ssh_key | Automatically change the ssh key. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
 | device_account_put_checkout_policy | The account checkout policy. | Optional | 
 | device_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
-| device_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
+| device_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
 | device_account_put_onboard_status | Onboarding status of the account. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
 | device_account_put_services | The account services. | Optional | 
 
@@ -2431,9 +2433,10 @@ category: Device Services.
 | service_post_service_name | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
 | service_post_protocol | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 | service_post_port | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
-| service_post_subprotocols | The sub protocols. Possible values are: RDP_AUDIO_INPUT, RDP_AUDIO_OUTPUT, RDP_CLIPBOARD_DOWN, RDP_CLIPBOARD_FILE, RDP_CLIPBOARD_UP, RDP_COM_PORT, RDP_DRIVE, RDP_PRINTER, RDP_SMARTCARD, SFTP_SESSION, SSH_AUTH_AGENT, SSH_DIRECT_TCPIP, SSH_DIRECT_UNIXSOCK, SSH_REMOTE_COMMAND, SSH_REVERSE_TCPIP, SSH_REVERSE_UNIXSOCK, SSH_SCP_DOWN, SSH_SCP_UP, SSH_SHELL_SESSION, SSH_X11. | Required | 
+| service_post_subprotocols | The sub protocols. Possible values are: RDP_AUDIO_INPUT, RDP_AUDIO_OUTPUT, RDP_CLIPBOARD_DOWN, RDP_CLIPBOARD_FILE, RDP_CLIPBOARD_UP, RDP_COM_PORT, RDP_DRIVE, RDP_PRINTER, RDP_SMARTCARD, SFTP_SESSION, SSH_AUTH_AGENT, SSH_DIRECT_TCPIP, SSH_DIRECT_UNIXSOCK, SSH_REMOTE_COMMAND, SSH_REVERSE_TCPIP, SSH_REVERSE_UNIXSOCK, SSH_SCP_DOWN, SSH_SCP_UP, SSH_SHELL_SESSION, SSH_X11. | Optional | 
 | service_post_connection_policy | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
 | service_post_global_domains | The global domains names. | Optional | 
+| service_post_seamless_connection | The seamless connection. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -2487,10 +2490,12 @@ category: Device Services.
 | --- | --- | --- |
 | device_id | The device id or name. | Required | 
 | service_id | The service id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the subprotocols, global_domains and additional_interfaces are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the subprotocols, global_domains and additional_interfaces are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | service_put_port | The port number. | Optional | 
+| service_put_subprotocols | The sub protocols. Possible values are: RDP_AUDIO_INPUT, RDP_AUDIO_OUTPUT, RDP_CLIPBOARD_DOWN, RDP_CLIPBOARD_FILE, RDP_CLIPBOARD_UP, RDP_COM_PORT, RDP_DRIVE, RDP_PRINTER, RDP_SMARTCARD, SFTP_SESSION, SSH_AUTH_AGENT, SSH_DIRECT_TCPIP, SSH_DIRECT_UNIXSOCK, SSH_REMOTE_COMMAND, SSH_REVERSE_TCPIP, SSH_REVERSE_UNIXSOCK, SSH_SCP_DOWN, SSH_SCP_UP, SSH_SHELL_SESSION, SSH_X11. | Optional | 
 | service_put_connection_policy | The connection policy name. | Optional | 
 | service_put_global_domains | The global domains names. | Optional | 
+| service_put_seamless_connection | The seamless connection. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -2682,7 +2687,7 @@ category: Devices.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | The device id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the tags are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the tags are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | device_put_device_name | The device name. \ /:*?"&lt;&gt;\|@ and space are forbidden. | Optional | 
 | device_put_description | The device description. | Optional | 
 | device_put_alias | The device alias. \ /:*?"&lt;&gt;\|@ and space are forbidden. | Optional | 
@@ -2791,11 +2796,11 @@ category: Domain Accounts.
 | domain_account_post_account_name | The account name. /:*?"&lt;&gt;\|@ and space are forbidden. | Required | 
 | domain_account_post_account_login | The account login. | Required | 
 | domain_account_post_description | The account description. | Optional | 
-| domain_account_post_auto_change_password | Automatically change the password. It is enabled by default on a new account. | Optional | 
-| domain_account_post_auto_change_ssh_key | Automatically change the ssh key. It is enabled by default on a new account. | Optional | 
+| domain_account_post_auto_change_password | Automatically change the password. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
+| domain_account_post_auto_change_ssh_key | Automatically change the ssh key. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
 | domain_account_post_checkout_policy | The account checkout policy. | Required | 
 | domain_account_post_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
-| domain_account_post_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
+| domain_account_post_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
 | domain_account_post_resources | The account resources. | Optional | 
 
 #### Context Output
@@ -2878,15 +2883,15 @@ category: Domain Accounts.
 | --- | --- | --- |
 | domain_id | The global domain id or name. | Required | 
 | account_id | The account id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | domain_account_put_account_name | The account name. /:*?"&lt;&gt;\|@ and space are forbidden. | Optional | 
 | domain_account_put_account_login | The account login. | Optional | 
 | domain_account_put_description | The account description. | Optional | 
-| domain_account_put_auto_change_password | Automatically change the password. It is enabled by default on a new account. | Optional | 
-| domain_account_put_auto_change_ssh_key | Automatically change the ssh key. It is enabled by default on a new account. | Optional | 
+| domain_account_put_auto_change_password | Automatically change the password. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
+| domain_account_put_auto_change_ssh_key | Automatically change the ssh key. It is enabled by default on a new account. Possible values are: true, false. | Optional | 
 | domain_account_put_checkout_policy | The account checkout policy. | Optional | 
 | domain_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
-| domain_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. | Optional | 
+| domain_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
 | domain_account_put_onboard_status | Onboarding status of the account. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
 | domain_account_put_resources | The account resources. | Optional | 
 
@@ -3030,7 +3035,7 @@ category: Ldap Mappings.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_by | Group the result-set by one property. Can take one of the values 'user_group' or 'domain'. | Optional | 
+| group_by | Group the result-set by one property. Can take one of the values 'user_group' or 'domain'. Possible values are: user_group, domain. | Optional | 
 | q | Searches for a resource matching parameters. Used only if "group_by" is not set. | Optional | 
 | sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'domain,user_group'. Used only if "group_by" is not set. | Optional | 
 | offset | The index of first item to retrieve (starts and defaults to 0). Used only if "group_by" is not set. | Optional | 
@@ -3060,7 +3065,7 @@ category: Ldap Users.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | A LDAP domain name. All users in this domain are returned. | Required | 
-| last_connection | If set to true, the date of last connection is returned for each user returned. Be careful: this can slow down the request if a lot of users are returned. | Optional | 
+| last_connection | If set to true, the date of last connection is returned for each user returned. Be careful: this can slow down the request if a lot of users are returned. Possible values are: true, false. | Optional | 
 | q | Searches for a resource matching parameters. | Optional | 
 | offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
 | limit | The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option. | Optional | 
@@ -3098,7 +3103,7 @@ category: Ldap Users.
 | --- | --- | --- |
 | domain | A LDAP domain name. All users in this domain are returned. | Required | 
 | user_name | A user name. If specified, only this user is returned. | Required | 
-| last_connection | If set to true, the date of last connection is returned for each user returned. Be careful: this can slow down the request if a lot of users are returned. | Optional | 
+| last_connection | If set to true, the date of last connection is returned for each user returned. Be careful: this can slow down the request if a lot of users are returned. Possible values are: true, false. | Optional | 
 | fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
 
 #### Context Output
@@ -3242,7 +3247,7 @@ category: Notifications.
 | --- | --- | --- |
 | notification_post_notification_name | The notification name. | Required | 
 | notification_post_description | The notification description. | Optional | 
-| notification_post_enabled | Notification is enabled. | Required | 
+| notification_post_enabled | Notification is enabled. Possible values are: true, false. | Required | 
 | notification_post_type | Notification type. Possible values are: email. | Required | 
 | notification_post_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Required | 
 | notification_post_language | The notification language (in email). Possible values are: de, en, es, fr, ru. | Required | 
@@ -3299,10 +3304,10 @@ category: Notifications.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | notification_id | The notification id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the events are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the events are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | notification_put_notification_name | The notification name. | Optional | 
 | notification_put_description | The notification description. | Optional | 
-| notification_put_enabled | Notification is enabled. | Optional | 
+| notification_put_enabled | Notification is enabled. Possible values are: true, false. | Optional | 
 | notification_put_type | Notification type. Possible values are: email. | Optional | 
 | notification_put_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Optional | 
 | notification_put_language | The notification language (in email). Possible values are: de, en, es, fr, ru. | Optional | 
@@ -3573,7 +3578,7 @@ category: Password Rights.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| count | The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
+| count | The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned. Possible values are: true, false. | Optional | 
 | q | Only a simple string to search is allowed in this resource (for example: 'q=windows'). The search is performed on the following fields only: account, account_description, device, device_alias, device_description, application, application_description, domain, domain_description, authorization, authorization_description. | Optional | 
 | sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'account,domain,device,application'. | Optional | 
 | offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
@@ -3611,7 +3616,7 @@ category: Password Rights.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_name | If specified, the user_name password rights is returned. | Required | 
-| count | The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
+| count | The default value is false. When it is set to true, the headers x-total-count and x-filtered-count are returned. Possible values are: true, false. | Optional | 
 | fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
 
 #### Context Output
@@ -3932,10 +3937,17 @@ category: Scans.
 | --- | --- | --- |
 | scan_id | The scan id or name to edit. | Required | 
 | scan_put_name | Scan name. | Optional | 
-| scan_put_active | State of the job schedule. | Optional | 
+| scan_put_active | State of the job schedule. Possible values are: true, false. | Optional | 
 | scan_put_periodicity | Periodicity of the scan, in cron notation. | Optional | 
 | scan_put_description | Description of the scan. | Optional | 
 | scan_put_emails | Emails to notify when a job is finished. | Optional | 
+| scan_put_subnets | List of subnets to scan. | Optional | 
+| scan_put_banner_regex | Regexes to mach on SSH banner. | Optional | 
+| scan_put_scan_for_accounts | Scan for accounts on discovered devices. Possible values are: true, false. | Optional | 
+| scan_put_master_accounts | The master accounts used to log and the devices empty if scan_for_accounts is false. | Optional | 
+| scan_put_search_filter | Active Directory search filter. | Optional | 
+| scan_put_dn_list | List of Distinguished Names to search. | Optional | 
+| scan_put_devices | The devices to scan. | Optional | 
 
 #### Context Output
 
@@ -3975,8 +3987,8 @@ category: Session Rights.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| count | The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
-| last_connection | The default value is false. When set to true, the last connection date is returned for each authorizations. | Optional | 
+| count | The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned. Possible values are: true, false. | Optional | 
+| last_connection | The default value is false. When set to true, the last connection date is returned for each authorizations. Possible values are: true, false. | Optional | 
 | q | Only a simple string to search is allowed in this resource (for exemple: 'q=windows'). The search is performed on the following fields only: account, account_description, device, device_alias, device_description, application, application_description, service_protocol, domain, domain_description, authorization, authorization_description. | Optional | 
 | sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'account,domain,device, ' 'application'. | Optional | 
 | offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
@@ -4019,8 +4031,8 @@ category: Session Rights.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_name | If specified, the user_name session rights is returned. | Required | 
-| count | The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned. | Optional | 
-| last_connection | The default value is false. When set to true, the last connection date is returned for each authorizations. | Optional | 
+| count | The default value is false. When set to true, the headers x-total-count and x-filtered-count are returned. Possible values are: true, false. | Optional | 
+| last_connection | The default value is false. When set to true, the last connection date is returned for each authorizations. Possible values are: true, false. | Optional | 
 | fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
 
 #### Context Output
@@ -4174,7 +4186,7 @@ category: Sessions Metadata.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | session_ids | The session id, multiple IDs can be separated by commas. | Required | 
-| download | The default value is false. When it is set to true, the session metadata is sent as a file instead of JSON (recommended for large metadata). The download is possible only with a single session id. | Optional | 
+| download | The default value is false. When it is set to true, the session metadata is sent as a file instead of JSON (recommended for large metadata). The download is possible only with a single session id. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -4292,7 +4304,7 @@ category: Sessions Traces.
 | session_id | The session id. | Required | 
 | date | Generate the trace from this date/time (format: "yyyy-mm-dd hh:mm:ss"). | Optional | 
 | duration | Duration of the trace to generate (in seconds). | Optional | 
-| download | The default value is false. When it is set to true, the session trace is sent as a file instead of JSON output with the generation status. | Optional | 
+| download | The default value is false. When it is set to true, the session trace is sent as a file instead of JSON output with the generation status. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -4527,7 +4539,7 @@ category: Target Groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | The group id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the targets are replaced, otherwise the values are added to the existing ones. | Optional | 
+| force | The default value is false. When it is set to true the values of the targets are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | targetgroups_put_group_name | The target group name. | Optional | 
 | targetgroups_put_description | The target group description. | Optional | 
 
@@ -4628,7 +4640,7 @@ category: Timeframes.
 | --- | --- | --- |
 | timeframe_post_timeframe_name | The timeframe name. No space is permitted at first or end. | Required | 
 | timeframe_post_description | The timeframe description. | Optional | 
-| timeframe_post_is_overtimable | Do not close sessions at the end of the time period. | Optional | 
+| timeframe_post_is_overtimable | Do not close sessions at the end of the time period. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -4685,7 +4697,7 @@ category: Timeframes.
 | timeframe_id | The timeframe id or name to edit. | Required | 
 | timeframe_put_timeframe_name | The timeframe name. No space is permitted at first or end. | Optional | 
 | timeframe_put_description | The timeframe description. | Optional | 
-| timeframe_put_is_overtimable | Do not close sessions at the end of the time period. | Optional | 
+| timeframe_put_is_overtimable | Do not close sessions at the end of the time period. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -4798,7 +4810,7 @@ category: Users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| password_hash | Export password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. | Optional | 
+| password_hash | Export password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. Possible values are: true, false. | Optional | 
 | q | Searches for a resource matching parameters. | Optional | 
 | sort | Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: 'user_name'. | Optional | 
 | offset | The index of first item to retrieve (starts and defaults to 0). | Optional | 
@@ -4842,7 +4854,7 @@ category: Users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| password_hash | Set password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. | Optional | 
+| password_hash | Set password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. Possible values are: true, false. | Optional | 
 | user_post_user_name | The user name. /:*?"&lt;&gt;\| are forbidden. | Required | 
 | user_post_display_name | The displayed name. | Optional | 
 | user_post_email | The email address. | Required | 
@@ -4852,12 +4864,12 @@ category: Users.
 | user_post_groups | The groups containing this user. | Optional | 
 | user_post_user_auths | The authentication procedures(s). | Required | 
 | user_post_password | The password. | Optional | 
-| user_post_force_change_pwd | Force password change. | Optional | 
+| user_post_force_change_pwd | Force password change. Possible values are: true, false. | Optional | 
 | user_post_ssh_public_key | The SSH public key. | Optional | 
 | user_post_certificate_dn | The certificate DN (for X509 authentication). | Optional | 
 | user_post_last_connection | The last connection of this user. (enter null for null value). | Optional | 
 | user_post_expiration_date | Account expiration date/time (format: "yyyy-mm-dd hh:mm"). | Optional | 
-| user_post_is_disabled | Account is disabled. | Optional | 
+| user_post_is_disabled | Account is disabled. Possible values are: true, false. | Optional | 
 | user_post_gpg_public_key | The GPG public key (ascii output from the command: 'gpg --armor --export [USER_ID]'). | Optional | 
 
 #### Context Output
@@ -4881,7 +4893,7 @@ category: Users.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | A user name. If specified, only this user is returned. | Required | 
-| password_hash | Export password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. | Optional | 
+| password_hash | Export password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. Possible values are: true, false. | Optional | 
 | fields | The list of fields to return (separated by commas). By default all fields are returned. | Optional | 
 
 #### Context Output
@@ -4922,8 +4934,8 @@ category: Users.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The user name to edit. | Required | 
-| force | The default value is false. When set to true, the values of the groups and user_auths are replaced, otherwise the values are added to the existing ones. | Optional | 
-| password_hash | Update password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. | Optional | 
+| force | The default value is false. When set to true, the values of the groups and user_auths are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
+| password_hash | Update password hash if true. In Configuration Options menu &gt; REST API then Advanced options, you should set User password hash and change the default Data encryption key. Possible values are: true, false. | Optional | 
 | user_put_user_name | The user name. /:*?"&lt;&gt;\| are forbidden. | Optional | 
 | user_put_display_name | The displayed name. | Optional | 
 | user_put_email | The email address. | Optional | 
@@ -4933,12 +4945,12 @@ category: Users.
 | user_put_groups | The groups containing this user. | Optional | 
 | user_put_user_auths | The authentication procedures(s). | Optional | 
 | user_put_password | The password. | Optional | 
-| user_put_force_change_pwd | Force password change. | Optional | 
+| user_put_force_change_pwd | Force password change. Possible values are: true, false. | Optional | 
 | user_put_ssh_public_key | The SSH public key. | Optional | 
 | user_put_certificate_dn | The certificate DN (for X509 authentication). | Optional | 
 | user_put_last_connection | The last connection of this user. (enter null for null value). | Optional | 
 | user_put_expiration_date | Account expiration date/time (format: "yyyy-mm-dd hh:mm"). | Optional | 
-| user_put_is_disabled | Account is disabled. | Optional | 
+| user_put_is_disabled | Account is disabled. Possible values are: true, false. | Optional | 
 | user_put_gpg_public_key | The GPG public key (ascii output from the command: 'gpg --armor --export [USER_ID]'). | Optional | 
 
 #### Context Output
@@ -5123,7 +5135,7 @@ category: Target Passwords.
 | --- | --- | --- |
 | account_name | A target name: 'account@domain@device' for an account on a device, 'account@domain@application' for an account on an application or 'account@domain' for an account on a global domain. | Required | 
 | authorization | The name of the authorization (in case of multiple authorizations to access the target). | Optional | 
-| force | The default value is false. When it is set to true, the checkin is forced. The user connected on the REST API must have an auditor profile and the configured limitations don't prohibit access to the account. | Optional | 
+| force | The default value is false. When it is set to true, the checkin is forced. The user connected on the REST API must have an auditor profile and the configured limitations don't prohibit access to the account. Possible values are: true, false. | Optional | 
 | comment | A comment that is input by the auditor when an account checkin is forced. This argument is mandatory if the checkin is forced, and is ignored for a standard checkin. | Optional | 
 
 #### Context Output
