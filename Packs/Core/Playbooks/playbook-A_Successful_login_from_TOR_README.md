@@ -14,7 +14,7 @@ Remediation & Eradication:
 
 The analyst can select multiple actions, which will then be executed by the playbook based on the analyst's choices.
 
-Requires: 
+Requiremets: 
 For any response action, you will need one of the following integrations: Azure Active Directory Users / Active Directory Users.
 
 ## Dependencies
@@ -23,11 +23,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-PAN-OS - Block IPs From EDL - Custom Block Rule
+* PAN-OS - Block IPs From EDL - Custom Block Rule
 
 ### Integrations
 
-CortexCoreIR
+* Cortex Core - IR
 
 ### Scripts
 
