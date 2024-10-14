@@ -519,8 +519,13 @@ def send_slack_request_sync(
     return response  # type: ignore
 
 
-async def send_slack_request_async(client: AsyncWebClient, method: str, http_verb: str = 'POST', file_: str = '',
-                                   body: dict = None) -> SlackResponse:
+async def send_slack_request_async(
+    client: AsyncWebClient,
+    method: str = '',
+    http_verb: str = 'POST',
+    body: Optional[dict] = None,
+    file_upload_params: Optional[FileUploadParams] = None,
+) -> SlackResponse:
     """
     Sends an async request to slack API while handling rate limit errors.
 
@@ -528,8 +533,8 @@ async def send_slack_request_async(client: AsyncWebClient, method: str, http_ver
         client: The slack client.
         method: The method to use.
         http_verb: The HTTP method to use.
-        file_: A file path to send.
         body: The request body.
+        file_upload_params: An instance of FileUploadParams.
 
     Returns:
         The slack API response.
@@ -543,8 +548,8 @@ async def send_slack_request_async(client: AsyncWebClient, method: str, http_ver
         try:
             demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
             if http_verb == 'POST':
-                if file_:
-                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
+                if file_upload_params:
+                    response = await client.files_upload_v2(**file_upload_params._asdict())  # type: ignore
                 else:
                     response = await client.api_call(method, json=body)  # type: ignore
             else:
