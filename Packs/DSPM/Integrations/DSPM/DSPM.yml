@@ -663,16 +663,19 @@ script:
     description: Retrieves integration configuration.
     name: dspm-get-integration-config
     outputs:
-    - contextPath: DSPM.IntegrationConfig
-      description: Integration configuration values.
+    - contextPath: DSPM.IntegrationConfig.slackMsgLifetime
+      description: Lifetime for slack notification.
+      type: String
+    - contextPath: DSPM.IntegrationConfig.defaultSlackUser
+      description: The default user to receive Slack notifications.
       type: String
   - arguments:
     - description: 'Risk Finding ID.'
       isArray: false
       name: risk_finding_id
       required: true
-    - description: 'Comma-separated list of supported statuses.'
-      isArray: true
+    - description: 'List of supported statuses.'
+      isArray: false
       name: status
       required: true
       secret: false
@@ -701,8 +704,8 @@ script:
       isArray: false
       name: alert_id
       required: true
-    - description: 'Comma-separated list of supported statuses.'
-      isArray: true
+    - description: 'List of supported statuses.'
+      isArray: false
       name: status
       required: true
       secret: false
@@ -726,22 +729,22 @@ script:
         description: 'Alert ID.'
         type: String
   - arguments:
-    - description: 'Exact detection time (equals). detection time format - YYYY-MM-DDTHH:MM:SSZ'
+    - description: 'Exact detection time (equals). detection time format - YYYY-MM-DDTHH:MM:SSZ.'
       isArray: false
       name: detection_time_equals
       required: false
       secret: false
-    - description: 'Detection time (greater than or equal). detection time format - YYYY-MM-DDTHH:MM:SSZ'
+    - description: 'Detection time (greater than or equal). detection time format - YYYY-MM-DDTHH:MM:SSZ.'
       isArray: false
       name: detection_time_greater_than_or_equal
       required: false
       secret: false
-    - description: 'Detection time (greater than). detection time format - YYYY-MM-DDTHH:MM:SSZ'
+    - description: 'Detection time (greater than). detection time format - YYYY-MM-DDTHH:MM:SSZ.'
       isArray: false
       name: detection_time_greater_than
       required: false
       secret: false
-    - description: 'Detection time (less than or equal). detection time format - YYYY-MM-DDTHH:MM:SSZ'
+    - description: 'Detection time (less than or equal). detection time format - YYYY-MM-DDTHH:MM:SSZ.'
       isArray: false
       name: detection_time_less_than_or_equal
       required: false

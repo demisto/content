@@ -724,11 +724,10 @@ def dspm_list_risk_findings_command(client, args):
             if page == 0 and not findings_collected:
                 demisto.info("No risks were fetched")
 
-                return_results(
-                    CommandResults(
-                        readable_output="No Risk Findings found."
-                    )
+                return CommandResults(
+                    readable_output="No Risk Findings found."
                 )
+
             break  # No more findings to fetch
 
         findings_collected.extend(findings)
@@ -765,11 +764,10 @@ def dspm_list_assets_command(client, args):
         assets = get_list_of_assets(client, args, page)
         if not assets:
             if page == 0 and not collected_assets:
-                return_results(
-                    CommandResults(
-                        readable_output="No assets found."
-                    )
+                return CommandResults(
+                    readable_output="No assets found."
                 )
+
             break
 
         collected_assets.extend(assets)
@@ -808,11 +806,10 @@ def dspm_list_data_types_findings_command(client, args):
         )
         if not data_type_findings:
             if page == 0 and not collected_data_types:
-                return_results(
-                    CommandResults(
-                        readable_output="No Data Types findings found.",
-                    )
+                return CommandResults(
+                    readable_output="No Data Types findings found.",
                 )
+
             break
 
         collected_data_types.extend(data_type_findings)
@@ -846,11 +843,10 @@ def dspm_list_alerts_command(client, args):
         alerts = get_list_of_alerts(client, args, page)
         if not alerts:
             if page == 0 and not collected_alerts:
-                return_results(
-                    CommandResults(
-                        readable_output="No alerts found.",
-                    )
+                return CommandResults(
+                    readable_output="No alerts found.",
                 )
+
             break
 
         collected_alerts.extend(alerts)
