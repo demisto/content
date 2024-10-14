@@ -261,6 +261,7 @@ command_names = [
     "wab-add-session-target-to-target-group",
     "wab-add-target-group",
     "wab-add-timeframe",
+    "wab-add-timeframe-period",
     "wab-add-user",
     "wab-cancel-accepted-approval",
     "wab-cancel-approval-request",
