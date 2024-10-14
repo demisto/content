@@ -2236,7 +2236,7 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: Deprecated. Use xdr-script-run instead.
+    description: This command will soon be deprecated; run xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
     name: xdr-run-script
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
