@@ -20,11 +20,13 @@ def main():
     leftArg = args.get("left")
     rightArg = args.get("right")
 
-    left_list = argToList(str(leftArg))
+    left_list = argToList(str(leftArg)) if leftArg else []
     right_list = argToList(str(rightArg))
-
-    for left_val in left_list:
-        return_results(is_substring_in_list(left_val, right_list))
+    if left_list:
+        for left_val in left_list:
+            return_results(is_substring_in_list(left_val, right_list))
+    else:
+        return_results(False)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
