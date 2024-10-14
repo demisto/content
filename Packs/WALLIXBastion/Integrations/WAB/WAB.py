@@ -201,18 +201,19 @@ class Client(BaseClient):
         rules = str_arg(args, "rules")
         subprotocol = str_arg(args, "subprotocol")
 
-        data = assign_params(
+        body = assign_params(
             action=action,
             rules=rules,
             subprotocol=subprotocol,
         )
 
-        data = {"restrictions": [data]}
-
-        response = self._http_request("put", f"/targetgroups/{group_id}", json_data=data)
+        response = self._http_request("put", f"/targetgroups/{group_id}/restrictions", json_data=body)
 
         return CommandResults(
-            readable_output="Success!",
+            outputs_prefix="WAB.add_restriction_to_target_group",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-add-restriction-to-target-group", response),
             raw_response=response,
         )
 
@@ -2809,25 +2810,6 @@ class Client(BaseClient):
             raw_response=response,
         )
 
-    def add_restriction_to_targetgroup(self, args: Dict[str, Any]):
-        group_id = str_arg(args, "group_id")
-        restriction_post_action = str_arg(args, "restriction_post_action")
-        restriction_post_rules = str_arg(args, "restriction_post_rules")
-        restriction_post_subprotocol = str_arg(args, "restriction_post_subprotocol")
-
-        body = assign_params(
-            action=restriction_post_action, rules=restriction_post_rules, subprotocol=restriction_post_subprotocol
-        )
-        response = self._http_request("post", f"/targetgroups/{group_id}/restrictions", json_data=body)
-
-        return CommandResults(
-            outputs_prefix="WAB.add_restriction_in_targetgroup",
-            outputs_key_field="id",
-            outputs=response,
-            readable_output=to_markdown("wab-add-restriction-to-targetgroup", response),
-            raw_response=response,
-        )
-
     def get_target_group_restriction(self, args: Dict[str, Any]):
         group_id = str_arg(args, "group_id")
         restriction_id = str_arg(args, "restriction_id")
@@ -3339,7 +3321,6 @@ def main() -> None:
             "wab-get-user": client.get_user,
             "wab-edit-user": client.edit_user,
             "wab-get-target-group-restrictions": client.get_target_group_restrictions,
-            "wab-add-restriction-to-targetgroup": client.add_restriction_to_targetgroup,
             "wab-get-target-group-restriction": client.get_target_group_restriction,
             "wab-edit-restriction-from-targetgroup": client.edit_restriction_from_targetgroup,
             "wab-delete-restriction-from-targetgroup": client.delete_restriction_from_targetgroup,

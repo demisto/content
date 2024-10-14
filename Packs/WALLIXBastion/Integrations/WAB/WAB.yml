@@ -118,24 +118,40 @@ script:
       required: false
       isArray: false
   - name: wab-add-restriction-to-target-group
-    description: Add a restriction to a target group.
+    description: 'Add a restriction in a targetgroup
+
+      category: Target Group Restrictions.'
     arguments:
     - name: group_id
-      description: The group id or name to edit.
+      description: A target group id or name.
       required: true
-      isArray: false
     - name: action
-      description: 'the restriction type: ''kill'' or ''notify''.'
+      description: 'The restriction type.'
       required: true
-      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - kill
+      - notify
     - name: rules
       description: the restriction rules.
       required: true
-      isArray: false
     - name: subprotocol
-      description: 'the restriction subprotocol: SSH_SHELL_SESSION, SSH_REMOTE_COMMAND, SSH_SCP_UP, SSH_SCP_DOWN, SFTP_SESSION, RLOGIN, TELNET, RDP.'
+      description: 'The restriction subprotocol.'
       required: true
-      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - SSH_SHELL_SESSION
+      - SSH_REMOTE_COMMAND
+      - SSH_SCP_UP
+      - SSH_SCP_DOWN
+      - SFTP_SESSION
+      - RLOGIN
+      - TELNET
+      - RDP
+    outputs:
+    - type: String
+      contextPath: WAB.add_restriction_in_targetgroup.id
+      description: id of the created object.
   - name: wab-get-account-references
     description: 'Get account references
 
@@ -6658,41 +6674,6 @@ script:
     - type: String
       contextPath: WAB.restriction_get.url
       description: The API URL to the resource.
-  - name: wab-add-restriction-to-targetgroup
-    description: 'Add a restriction in a targetgroup
-
-      category: Target Group Restrictions.'
-    arguments:
-    - name: group_id
-      description: A target group id or name.
-      required: true
-    - name: restriction_post_action
-      description: The restriction type.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - kill
-      - notify
-    - name: restriction_post_rules
-      description: The restriction rules.
-      required: true
-    - name: restriction_post_subprotocol
-      description: The restriction subprotocol.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - SSH_SHELL_SESSION
-      - SSH_REMOTE_COMMAND
-      - SSH_SCP_UP
-      - SSH_SCP_DOWN
-      - SFTP_SESSION
-      - RLOGIN
-      - TELNET
-      - RDP
-    outputs:
-    - type: String
-      contextPath: WAB.add_restriction_in_targetgroup.id
-      description: id of the created object.
   - name: wab-get-target-group-restriction
     description: 'Get one target group restriction
 
