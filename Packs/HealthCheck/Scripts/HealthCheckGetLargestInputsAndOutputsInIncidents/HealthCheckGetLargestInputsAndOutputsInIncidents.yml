@@ -2,8 +2,8 @@ args:
 - description: Define the thresholds.
   name: Thresholds
 - auto: PREDEFINED
-  defaultValue: Flase
-  description: Append to existing data in grid field
+  defaultValue: False
+  description: Append to existing data in grid field.
   name: Append
   predefined:
   - 'True'
