@@ -8,11 +8,6 @@
         "filter": {
             "AND": [
                 {
-                    "SEARCH_FIELD": "tags",
-                    "SEARCH_TYPE": "EQ",
-                    "SEARCH_VALUE": "DT:Identity Analytics"
-                },
-                {
                     "AND": [
                         {
                             "SEARCH_FIELD": "alert_name",
@@ -95,8 +90,13 @@
                               "SEARCH_VALUE": "Successful External Login Password Spray on a sensitive server"
                         }
                     ]
+                },
+                {
+                    "SEARCH_FIELD": "tags",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DT:Identity Analytics"
                 }
             ]
         }
-    }
+     }
 }
