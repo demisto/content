@@ -12,7 +12,21 @@
             "SEARCH_FIELD": "tags",
             "SEARCH_TYPE": "EQ",
             "SEARCH_VALUE": "DT:Identity Analytics"
-        }
+        },
+        {
+            "AND": [
+            {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "WILDCARD_NOT",
+                "SEARCH_VALUE": "SSO Password Spray Threat Detected"
+            },
+            {
+                "SEARCH_FIELD": "tags",
+                "SEARCH_TYPE": "WILDCARD_NOT",
+                "SEARCH_VALUE": "SSO Brute Force Threat Detected"
+            }
+        ]
+        }           
       ]
     }
   }
