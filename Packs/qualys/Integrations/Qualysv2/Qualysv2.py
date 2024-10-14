@@ -11,6 +11,9 @@ from urllib3 import disable_warnings
 
 
 disable_warnings()  # pylint: disable=no-member
+
+# FIX VERSION 1
+
 """ CONSTANTS """
 
 VENDOR = 'qualys'
