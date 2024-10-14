@@ -3,7 +3,8 @@
     Reference: https://techdocs.akamai.com/siem-integration/reference/get-configid
     Swagger: https://github.com/akamai/akamai-apis/blob/main/apis/siem/v1/openapi.json 
 */ 
-alter // pre-modeling extractions 
+alter // pre-modeling extractions
+    BAD MODELING RULE
     client_ip = attackData -> clientIP,
     client_platform = httpMessage -> requestHeaders.sec_ch_ua_platform,
     host = httpMessage -> host,
