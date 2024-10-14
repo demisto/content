@@ -2959,9 +2959,6 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
         demisto.debug(f'Parsed detections from hosts, got {len(assets)=} assets.')
         add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
 
-    demisto.debug(f'size={get_size(assets)}')
-
-
     return assets, next_page, set_new_limit
 
 
@@ -2990,12 +2987,13 @@ def fetch_assets(client, assets_last_run):
         assets: assets to push to xsiam
         vulnerabilities: vulnerabilities to push to xsiam
     """
-    demisto.debug('Starting fetch process for assets')
     since_datetime = assets_last_run.get('since_datetime', '')
     next_page = assets_last_run.get('next_page', '')
     total_assets = assets_last_run.get('total_assets', 0)
-    snapshot_id = assets_last_run.get('snapshot_id', str(round(time.time() * 1000)))
+    snapshot_id = str(assets_last_run.get('snapshot_id', str(round(time.time() * 1000))))
     limit = assets_last_run.get('limit', HOST_LIMIT)
+
+    demisto.debug(f'Starting fetch process for assets {snapshot_id=}')
 
     if not since_datetime:
         since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
@@ -3088,7 +3086,7 @@ def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_even
     if last_fetch_time := new_next_run.get(HOST_LAST_FETCH):
         updated_next_run[HOST_LAST_FETCH] = last_fetch_time
 
-    demisto.info(f"Sending len{len(events)} to XSIAM. updated_next_run={updated_next_run}.")
+    demisto.info(f"Sending {len(events)} to XSIAM. updated_next_run={updated_next_run}.")
     return updated_next_run, events
 
 
@@ -3537,9 +3535,9 @@ def main():  # pragma: no cover
                 assets, new_last_run, total_assets, snapshot_id, set_new_limit = fetch_assets(client=client,
                                                                                               assets_last_run=last_run)
                 if set_new_limit or check_fetch_duration_time(start_time):
-                    new_last_run = set_last_run_with_new_limit(new_last_run, last_run.get('limit', HOST_LIMIT))
+                    new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
                 else:
-                    demisto.debug(f'sending {len(assets)} assets to XSIAM.')
+                    demisto.debug(f'sending {len(assets)} assets to XSIAM. Total assets collected so far: {total_assets}')
                     send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                                        snapshot_id=snapshot_id, items_count=str(total_assets), should_update_health_module=False)
                 demisto.setAssetsLastRun(new_last_run)
@@ -3551,7 +3549,7 @@ def main():  # pragma: no cover
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
                 demisto.setAssetsLastRun(new_last_run)
 
-            demisto.debug(f'finished fetch assets run. lastrun object is: {last_run}')
+            demisto.debug(f'finished fetch assets run. lastrun object is: {new_last_run}')
         else:
             return_results(
                 qualys_command_flow_manager(client, demisto.args(), command, commands_methods[command])
