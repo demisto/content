@@ -9,7 +9,6 @@ import httplib2
 import urllib.parse
 from googleapiclient.discovery import build, Resource
 from oauth2client import service_account
-from typing import Optional
 
 SERVICE_ACCOUNT_FILE = 'token.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -204,7 +203,7 @@ def make_markdown_matrix(sheets: list) -> str:
         markdown += f'### ***Name: {sheet.get("title", {})}     Sheet Id: {sheet.get("sheetId", {})}***'
 
         # find the max number of columns in the table
-        max_row_len = max(list(map(lambda elem: len(elem.get('values')), sheet.get('rowData'))))
+        max_row_len = max([len(elem.get('values')) for elem in sheet.get('rowData')])
         if max_row_len == 0:
             markdown += "\n**Empty Sheet**\n"
         else:
@@ -291,7 +290,7 @@ def parse_sheets_for_get_response(sheets: list, include_grid_data: bool) -> list
 
 
 def default_ranges_if_not_specified(spreadsheet: str, ranges: str, include_grid_data: bool, service: Resource) -> \
-        Optional[str]:
+        str | None:
     """
         Args:
             ranges: (str) A Google A1 notation ranges
@@ -329,7 +328,7 @@ def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
         Action : creates a new spreadsheet
     '''
     rgb_format = argToList(args.get('cell_format_backgroundColor'))
-    rgb_format = [1, 1, 1, 1] if not rgb_format else rgb_format
+    rgb_format = rgb_format if rgb_format else [1, 1, 1, 1]
     spreadsheet = {
         "properties": {
             "title": args.get('title'),
@@ -451,7 +450,7 @@ def create_sheet(service: Resource, args: dict) -> CommandResults:
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     rgb_format = argToList(args.get('tab_color'))
-    rgb_format = [1, 1, 1, 1] if not rgb_format else rgb_format
+    rgb_format = rgb_format if rgb_format else [1, 1, 1, 1]
     request_to_update = {
         "requests": [
             {
@@ -914,7 +913,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'google-sheets-value-append':
             return_results(value_append_sheets(service, demisto.args()))
         else:
-            raise NotImplementedError('Command "{}" is not implemented.'.format(demisto.command()))
+            raise NotImplementedError(f'Command "{demisto.command()}" is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:

@@ -166,8 +166,9 @@ def poll_operation(operation):
         exc = operation.get('error')
         err_code = exc.get('code')
         err_msg = exc.get('message')
-        full_err_msg = "error code: {}\nerror message: {}".format(err_code, err_msg)
+        full_err_msg = f"error code: {err_code}\nerror message: {err_msg}"
         return_error(full_err_msg)
+        return None
 
 
 ''' MAIN FUNCTIONS '''
@@ -289,7 +290,7 @@ def delete_project_command(service):
             }
         })
     else:
-        return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+        return_error(f'Unexpected return object from {demisto.command()} execution. Results uncertain.')
 
 
 def undelete_project(service, project_id):
@@ -339,7 +340,7 @@ def undelete_project_command(service):
             }
         })
     else:
-        return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+        return_error(f'Unexpected return object from {demisto.command()} execution. Results uncertain.')
 
 
 def get_project(service, project_id):
@@ -421,7 +422,7 @@ def list_projects_command(service):
             'Label': project.get('labels')
         }
         contexts.append(context)
-    title = "Projects Filtered by '{}'".format(filter_list) if filter_list else "All Projects"
+    title = f"Projects Filtered by '{filter_list}'" if filter_list else "All Projects"
     md = tableToMarkdown(title, contexts)
     entry = {
         'Type': entryTypes['note'],

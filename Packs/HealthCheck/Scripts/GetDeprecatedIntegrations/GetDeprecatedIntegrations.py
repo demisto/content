@@ -7,11 +7,10 @@ wList = []
 for item in res:
     if item['deprecated'] is True:
         wList.append({'Name': item['name']})
-    if item['integrations']:
-        if len(item['integrations']) > 0:
-            for val in item['integrations']:
-                if 'Deprecated' in val['name']:
-                    wList.append({'Name': val['name']})
+    if item['integrations'] and len(item['integrations']) > 0:
+        for val in item['integrations']:
+            if 'Deprecated' in val['name']:
+                wList.append({'Name': val['name']})
 
 md = tableToMarkdown('List of Deprecated Integrations', wList)
 return_results({

@@ -95,9 +95,9 @@ def error_message_from_snowflake_error(e):
     returns:
         Formatted error message
     """
-    err_msg = 'Snowflake DB error code: {}\n'.format(e.errno)
-    err_msg += 'ANSI-compliant SQL State code: {}\n'.format(e.sqlstate)
-    err_msg += 'Snowflake query ID: {}\n'.format(e.sfqid)
+    err_msg = f'Snowflake DB error code: {e.errno}\n'
+    err_msg += f'ANSI-compliant SQL State code: {e.sqlstate}\n'
+    err_msg += f'Snowflake query ID: {e.sfqid}\n'
     err_msg += 'Error message: {}'
     if e.errno == 606:
         first_sentence = e.raw_msg[:e.raw_msg.find('.') + 1]
@@ -245,7 +245,7 @@ def row_to_incident(column_descriptions, row):
     occurred = row.get(DATETIME_COLUMN)
     timestamp = None
     if occurred:
-        if isinstance(occurred, (dttime, timedelta)):
+        if isinstance(occurred, dttime | timedelta):
             err_msg = 'The datetime field specified in the integration parameters must '
             err_msg += 'contain values of type "datetime" or "date".'
             raise Exception(err_msg)
@@ -338,14 +338,13 @@ def snowflake_query(args):
         raise ValueError('The value for limit must be an integer.')
     if limit > MAX_ROWS:
         limit = MAX_ROWS
-    with snowflake.connector.connect(**params) as connection:
-        with connection.cursor(snowflake.connector.DictCursor) as cur:
-            cur.execute(query)
-            results = cur.fetchmany(limit)
-            if results:
-                return cur.description, results
-            else:
-                return [], []
+    with snowflake.connector.connect(**params) as connection, connection.cursor(snowflake.connector.DictCursor) as cur:
+        cur.execute(query)
+        results = cur.fetchmany(limit)
+        if results:
+            return cur.description, results
+        else:
+            return [], []
 
 
 def snowflake_query_command():
@@ -383,10 +382,9 @@ def snowflake_update_command():
     args = demisto.args()
     db_operation = args.get('db_operation')
     params = get_connection_params(args)
-    with snowflake.connector.connect(**params) as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(db_operation)
-            demisto.results('Operation executed successfully.')
+    with snowflake.connector.connect(**params) as connection, connection.cursor() as cursor:
+        cursor.execute(db_operation)
+        demisto.results('Operation executed successfully.')
 
 
 '''COMMAND SWITCHBOARD'''
@@ -403,7 +401,7 @@ commands = {
 
 try:
     handle_proxy()
-    if demisto.command() in commands.keys():
+    if demisto.command() in commands:
         commands[demisto.command()]()
 except snowflake.connector.errors.Error as e:
     return_error(error_message_from_snowflake_error(e))

@@ -4,34 +4,35 @@ from CommonServerPython import *
 
 import urllib.parse
 import urllib3
-from typing import List, Dict, Any, Tuple, Union, Callable
+from typing import Any
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
     'BOOLEAN_ERROR': 'The argument {} must be either true or false.',
 }
 
-HR_MESSAGES: Dict[str, str] = {
+HR_MESSAGES: dict[str, str] = {
     'ACL_ADD_SUCCESS': 'Giving an access control rule for calendar id "{}".',
     'LIST_COMMAND_SUCCESS': 'Total Retrieved {}: {}',
 }
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'TEST_MODULE': 'calendar/v3/users/me/calendarList',
     'CALENDAR_ACL': 'calendar/v3/calendars/{}/acl'
 }
 
-SCOPES: Dict[str, List[str]] = {
+SCOPES: dict[str, list[str]] = {
     'TEST_MODULE': ['https://www.googleapis.com/auth/userinfo.email'],
     'CALENDAR': ['https://www.googleapis.com/auth/calendar'],
 }
 
-OUTPUT_PREFIX: Dict[str, str] = {
+OUTPUT_PREFIX: dict[str, str] = {
     'ADD_ACL': 'GoogleCalendar.Acl',
     'LIST_ACL': 'GoogleCalendar.Acl(val.id == obj.id && val.calendarId == obj.calendarId && val.userId == obj.userId)',
     'LIST_ACL_PAGE_TOKEN': 'GoogleCalendar.PageToken.Acl(val.calendarId == obj.calendarId && val.userId == obj.userId)',
@@ -40,8 +41,8 @@ OUTPUT_PREFIX: Dict[str, str] = {
 NEXT_PAGE_TOKEN: str = '### Next Page Token: {}\n'
 
 
-def prepare_acl_list_output(acl_records: Dict[str, Any], calendar_id: str, user_id: str) -> \
-        Tuple[Dict[str, Union[List[Dict[str, Union[str, Any]]], Dict[str, Union[str, Any]]]], List[dict]]:
+def prepare_acl_list_output(acl_records: dict[str, Any], calendar_id: str, user_id: str) -> \
+        tuple[dict[str, list[dict[str, str | Any]] | dict[str, str | Any]], list[dict]]:
     """
     Prepares context output and human readable for gsuite-acl-list command.
 
@@ -80,8 +81,8 @@ def prepare_acl_list_output(acl_records: Dict[str, Any], calendar_id: str, user_
     return outputs, acl_hr_list
 
 
-def prepare_output_acl_add(acl_records: Dict[str, Any], calendar_id: str, user_id: str) -> Tuple[Dict[str, Any],
-                                                                                                 List[Dict[str, Any]]]:
+def prepare_output_acl_add(acl_records: dict[str, Any], calendar_id: str, user_id: str) -> tuple[dict[str, Any],
+                                                                                                 list[dict[str, Any]]]:
     """
     Prepares context output and human readable for gsuite-user-to-acl-add command.
 
@@ -114,7 +115,7 @@ def prepare_output_acl_add(acl_records: Dict[str, Any], calendar_id: str, user_i
     return acl_add_hr, acl_add_output
 
 
-def prepare_body_gsuite_acl_add(args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_body_gsuite_acl_add(args: dict[str, str]) -> dict[str, Any]:
     """
     To prepare params for acl_add_command.
 
@@ -130,7 +131,7 @@ def prepare_body_gsuite_acl_add(args: Dict[str, str]) -> Dict[str, Any]:
     })
 
 
-def prepare_params_for_acl_list(args: Dict[str, str]) -> Dict[str, Union[str, int]]:
+def prepare_params_for_acl_list(args: dict[str, str]) -> dict[str, str | int]:
     """
     To prepare params for gsuite_acl_list.
 
@@ -169,7 +170,7 @@ def test_module(gsuite_client) -> str:
 
 
 @logger
-def acl_add_command(client, args: Dict[str, Any]) -> CommandResults:
+def acl_add_command(client, args: dict[str, Any]) -> CommandResults:
     """
     Creates an access control rule.
 
@@ -206,7 +207,7 @@ def acl_add_command(client, args: Dict[str, Any]) -> CommandResults:
 
 
 @logger
-def acl_list_command(client, args: Dict[str, Any]) -> CommandResults:
+def acl_list_command(client, args: dict[str, Any]) -> CommandResults:
     """
     Shows the access control lists for the given calendar id. The ACL list will show who has access to the calendar
     and what level of access they have.
@@ -248,7 +249,7 @@ def main() -> None:
     """
 
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'google-calendar-acl-add': acl_add_command,
         'google-calendar-acl-list': acl_list_command,
     }

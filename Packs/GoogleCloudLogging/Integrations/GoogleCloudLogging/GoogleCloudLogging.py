@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import urllib3
-from typing import Dict, Any
+from typing import Any
 from GSuiteApiModule import *  # noqa: E402
 
 # Disable insecure warnings
@@ -155,7 +155,7 @@ def create_readable_output(response: list[dict]) -> str:
                            removeNull=True)
 
 
-def log_entries_list_command(client: GSuiteClient, args: Dict[str, Any]) -> CommandResults:
+def log_entries_list_command(client: GSuiteClient, args: dict[str, Any]) -> CommandResults:
     """
     Gets lists log entries. Use this method to retrieve log entries that originated from a
        project/folder/organization/billing account.

@@ -16,7 +16,7 @@ def create_rank_strings_args(args: dict) -> list:
         (list): A list of args for the rand_string commamd
     """
     limit = args.get('limit', '')
-    args_rank_strings = list()
+    args_rank_strings = []
     args_rank_strings.append('rank_strings')
     args_rank_strings.append('--scores')
     if limit:
