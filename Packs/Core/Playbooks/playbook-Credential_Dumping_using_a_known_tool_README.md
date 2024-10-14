@@ -14,10 +14,10 @@ This playbook is designed to handle the following alerts:
 The playbook executes the following stages:
 
 Early Containment:
-- Handles malicious alerts by terminating the relevant processes.
+- Handles malicious alerts by terminating the causality process.
 
 Remediation:
-- Handles malicious alerts by isolating the endpoint.
+- Handles malicious alerts by suggesting the analyst to isolate the endpoint.
 
 ## Dependencies
 
