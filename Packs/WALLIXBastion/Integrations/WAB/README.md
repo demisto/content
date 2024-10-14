@@ -1925,6 +1925,8 @@ category: Connection Policies.
 | connectionpolicy_post_type | The connection policy type. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 | connectionpolicy_post_description | The connection policy description. | Optional | 
 | connectionpolicy_post_protocol | The connection policy protocol. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
+| connectionpolicy_post_authentication_methods | The allowed authentication methods. Possible values are: PASSWORD_VAULT, PASSWORD_MAPPING, PASSWORD_INTERACTIVE, KERBEROS_FORWARDING, PUBKEY_VAULT, PUBKEY_AGENT_FORWARDING. | Optional | 
+| options | Options for the connection policy, formatted in json. | Optional | 
 
 #### Context Output
 
@@ -1979,6 +1981,8 @@ category: Connection Policies.
 | force | The default value is false. When it is set to true the values of the authentication_methods are replaced, otherwise the values are added to the existing ones. | Optional | 
 | connectionpolicy_put_connection_policy_name | The connection policy name. | Optional | 
 | connectionpolicy_put_description | The connection policy description. | Optional | 
+| connectionpolicy_post_authentication_methods | The allowed authentication methods. Possible values are: PASSWORD_VAULT, PASSWORD_MAPPING, PASSWORD_INTERACTIVE, KERBEROS_FORWARDING, PUBKEY_VAULT, PUBKEY_AGENT_FORWARDING. | Optional | 
+| options | Options for the connection policy, formatted in json. | Optional | 
 
 #### Context Output
 

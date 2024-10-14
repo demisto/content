@@ -50,6 +50,15 @@ def list_arg(args: Dict[str, Any], name: str, nullable=False):
     return argToList(arg)
 
 
+def json_arg(args: Dict[str, Any], name: str, nullable=False):
+    arg = args.get(name, "")
+    if arg == "":
+        return None
+    if nullable and arg == "null":
+        return Null
+    return json.loads(arg)
+
+
 def add_key_to_outputs(outputs: dict, key_name: str, key_val):
     if type(outputs) is dict and key_name not in outputs:
         outputs[key_name] = str(key_val)
@@ -226,13 +235,15 @@ class Client(BaseClient):
         week_days = list_arg(args, "week_days")
 
         body = {
-            "periods": [assign_params(
-                start_date=start_date,
-                end_date=end_date,
-                start_time=start_time,
-                end_time=end_time,
-                week_days=week_days,
-            )]
+            "periods": [
+                assign_params(
+                    start_date=start_date,
+                    end_date=end_date,
+                    start_time=start_time,
+                    end_time=end_time,
+                    week_days=week_days,
+                )
+            ]
         }
 
         response = self._http_request("put", f"/timeframes/{timeframe_id}", json_data=body)
@@ -1244,12 +1255,16 @@ class Client(BaseClient):
         connectionpolicy_post_type = str_arg(args, "connectionpolicy_post_type")
         connectionpolicy_post_description = str_arg(args, "connectionpolicy_post_description")
         connectionpolicy_post_protocol = str_arg(args, "connectionpolicy_post_protocol")
+        connectionpolicy_post_authentication_methods = list_arg(args, "connectionpolicy_post_authentication_methods")
+        options = json_arg(args, "options")
 
         body = assign_params(
             connection_policy_name=connectionpolicy_post_connection_policy_name,
             type=connectionpolicy_post_type,
             description=connectionpolicy_post_description,
             protocol=connectionpolicy_post_protocol,
+            authentication_methods=connectionpolicy_post_authentication_methods,
+            options=options,
         )
         response = self._http_request("post", "/connectionpolicies", json_data=body)
 
@@ -1281,10 +1296,15 @@ class Client(BaseClient):
         force = bool_arg(args, "force")
         connectionpolicy_put_connection_policy_name = str_arg(args, "connectionpolicy_put_connection_policy_name")
         connectionpolicy_put_description = str_arg(args, "connectionpolicy_put_description")
+        connectionpolicy_post_authentication_methods = list_arg(args, "connectionpolicy_post_authentication_methods")
+        options = json_arg(args, "options")
 
         params = assign_params(force=force)
         body = assign_params(
-            connection_policy_name=connectionpolicy_put_connection_policy_name, description=connectionpolicy_put_description
+            connection_policy_name=connectionpolicy_put_connection_policy_name,
+            description=connectionpolicy_put_description,
+            authentication_methods=connectionpolicy_post_authentication_methods,
+            options=options,
         )
         response = self._http_request("put", f"/connectionpolicies/{connection_policy_id}", params=params, json_data=body)
 
