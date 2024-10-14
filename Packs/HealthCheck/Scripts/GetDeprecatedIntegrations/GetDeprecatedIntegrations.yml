@@ -1,6 +1,6 @@
-comment: Get the count of Marketplace content packs update status.
+comment: Get the list of deprecated integrations.
 commonfields:
-  id: getContentPackStatus
+  id: getDeprecatedIntegrations
   version: -1
 contentitemexportablefields:
   contentitemfields:
@@ -8,7 +8,7 @@ contentitemexportablefields:
 dockerimage: demisto/python3:3.11.10.111526
 enabled: true
 engineinfo: {}
-name: getContentPackStatus
+name: getDeprecatedIntegrations
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -16,7 +16,6 @@ scripttarget: 0
 subtype: python3
 tags:
 - statusreview
-- widget
 type: python
 fromversion: 6.10.0
 tests:
