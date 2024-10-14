@@ -2865,7 +2865,7 @@ def test_slack_send_with_mirrored_file(mocker):
             "entryObject": {}
         }
     )
-    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value='file-sent')
+    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value={'ok': True})
     demisto_results = mocker.patch.object(demisto, 'results')
 
     SlackV3.slack_send()
@@ -3496,7 +3496,7 @@ def test_send_file_no_args_investigation(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'path', 'name': 'name'})
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(SlackV3, 'slack_send_request', return_value='cool')
+    mocker.patch.object(SlackV3, 'slack_send_request', return_value={'ok': True})
 
     # Arrange
     SlackV3.slack_send_file()

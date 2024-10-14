@@ -2026,7 +2026,7 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
         'comment': comment
     }
     response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
-    if response:
+    if response and response.get('ok'):
         demisto.results('File sent to Slack successfully.')
     else:
         demisto.results('Could not send the file to Slack.')
