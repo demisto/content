@@ -591,7 +591,7 @@ def main():
         pr.create_issue_comment(contributors_body)
     pr.create_issue_comment('Hello,\nThank you for your contribution.\nUnfortunately, your PR review will be slightly delayed '
                             'because of an Israeli holiday in the upcoming two weeks (16-26.10.24). Thank you in advance '
-                            'for the patience')
+                            'for the patience.')
 
 
 if __name__ == "__main__":
