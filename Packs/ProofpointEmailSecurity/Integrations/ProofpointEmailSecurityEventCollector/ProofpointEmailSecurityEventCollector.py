@@ -1,5 +1,6 @@
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from enum import Enum
+from functools import partial
 from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
@@ -19,8 +20,15 @@ FETCH_SLEEP = 5
 
 
 class EventType(str, Enum):
-    MESSAGE = "message"
-    MAILLOG = "maillog"
+    MESSAGE = 'message'
+    MAILLOG = 'maillog'
+    AUDIT = 'audit'
+
+
+class EventConnection:
+    def __init__(self, event_type: EventType, connection: Connection):
+        self.event_type = event_type
+        self.connection = connection
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -47,15 +55,16 @@ def websocket_connections(
         since_time = datetime.utcnow().isoformat()
     if to_time:
         url += f"&toTime={to_time}"
+    url = partial(url.format, host=host, cluster_id=cluster_id, time=since_time)
     extra_headers = {"Authorization": f"Bearer {api_key}"}
-    with connect(
-        url.format(host=host, cluster_id=cluster_id, type=EventType.MESSAGE.value, time=since_time),
-        additional_headers=extra_headers,
-    ) as message_connection, connect(
-        url.format(host=host, cluster_id=cluster_id, type=EventType.MAILLOG.value, time=since_time),
-        additional_headers=extra_headers,
-    ) as maillog_connection:
-        yield message_connection, maillog_connection
+
+    with ExitStack() as stack:  # Keep connection contexts for clean up
+        connections = [EventConnection(
+            event_type=event_type,
+            connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers))
+        ) for event_type in EventType]
+
+        yield connections
 
 
 def fetch_events(event_type: EventType, connection: Connection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
@@ -71,11 +80,13 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
     Returns:
         list[dict]: A list of events
     """
+    demisto.debug(f'Starting to fetch events of type {event_type.value}')
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
+            demisto.debug(f'Calling connection recv() for event type {event_type.value}')
             event = json.loads(connection.recv(timeout=recv_timeout))
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
@@ -106,43 +117,42 @@ def test_module(host: str, cluster_id: str, api_key: str):
     fetch_interval = 2
     recv_timeout = 2
     try:
-        with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
-            fetch_events(EventType.MESSAGE, message_connection, fetch_interval, recv_timeout)
-            fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval, recv_timeout)
+        with websocket_connections(host, cluster_id, api_key) as connections:
+            for connection in connections:
+                fetch_events(connection.event_type, connection.connection, fetch_interval, recv_timeout)
             return "ok"
     except InvalidStatus as e:
         if e.response.status_code == 401:
             return_error("Authentication failed. Please check the Cluster ID and API key.")
 
 
-def perform_long_running_loop(message_connection: Connection, maillog_connection: Connection, fetch_interval: int):
-    message_events = fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
-    maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
-    # Send the events to the XSIAM, with events from the context
+def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int):
     integration_context = demisto.getIntegrationContext()
-    message_events_from_context = integration_context.get("message_events", [])
-    message_maillog_from_context = integration_context.get("maillog_events", [])
+    events_to_send = []
+    for connection in connections:
+        events = fetch_events(connection.event_type, connection.connection, fetch_interval)
+        events.extend(integration_context.get(connection.event_type.value, []))
+        integration_context[connection.event_type.value] = events  # update events in context in case of fail
+        demisto.debug(f'Adding {len(events)} {connection.event_type.value} Events to XSIAM')
+        events_to_send.extend(events)
 
-    message_events.extend(message_events_from_context)
-    maillog_events.extend(message_maillog_from_context)
-    demisto.info(f"Adding {len(message_events)} Message Events, and {len(maillog_events)} MailLog Events to XSIAM")
-
+    # Send the events to the XSIAM, with events from the context
     try:
-        send_events_to_xsiam(message_events + maillog_events, vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam(events_to_send, vendor=VENDOR, product=PRODUCT)
         # clear the context after sending the events
         demisto.setIntegrationContext({})
     except DemistoException:
         demisto.error(f"Failed to send events to XSOAR. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
-        demisto.setIntegrationContext({"message_events": message_events, "maillog_events": maillog_events})
+        demisto.setIntegrationContext(integration_context)
 
 
 def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
     fetch_interval = max(1, fetch_interval // len(EventType))
-    with websocket_connections(host, cluster_id, api_key) as (message_connection, maillog_connection):
+    with websocket_connections(host, cluster_id, api_key) as connections:
         demisto.info("Connected to websocket")
         while True:
-            perform_long_running_loop(message_connection, maillog_connection, fetch_interval)
+            perform_long_running_loop(connections, fetch_interval)
             # sleep for a bit to not throttle the CPU
             time.sleep(FETCH_SLEEP)
 

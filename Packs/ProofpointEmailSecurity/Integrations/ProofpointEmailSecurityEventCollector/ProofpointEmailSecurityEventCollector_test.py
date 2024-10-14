@@ -10,7 +10,8 @@ from ProofpointEmailSecurityEventCollector import (
     websocket_connections,
     perform_long_running_loop,
     DemistoException,
-    Connection
+    Connection,
+    EventConnection
 )
 import ProofpointEmailSecurityEventCollector
 from freezegun import freeze_time
@@ -37,7 +38,7 @@ def connection():
     return MockConnection()
 
 
-class MockConnection:
+class MockConnection(Connection):
     def __init__(
         self,
     ):
@@ -87,8 +88,8 @@ def test_fetch_events(mocker, connection):
     assert events[1]["_time"] == "2023-08-14T11:24:12.147573+00:00"
     assert events[1]["event_type"] == "message"
 
-    assert debug_logs.call_args_list[0][0][0] == "Fetched 2 events of type message"
-    assert debug_logs.call_args_list[1][0][0] == "The fetched events ids are: 1, 2"
+    debug_logs.assert_any_call("Fetched 2 events of type message")
+    debug_logs.assert_any_call("The fetched events ids are: 1, 2")
     # Now we want to freeze the time, so we will get the next interval
     with freeze_time(CURRENT_TIME):
         debug_logs = mocker.patch.object(demisto, "debug")
@@ -98,8 +99,8 @@ def test_fetch_events(mocker, connection):
     assert events[0]["_time"] == "2023-08-12T13:24:11.147573+00:00"
     assert events[0]["event_type"] == "message"
 
-    assert debug_logs.call_args_list[0][0][0] == "Fetched 1 events of type message"
-    assert debug_logs.call_args_list[1][0][0] == "The fetched events ids are: 3"
+    debug_logs.assert_any_call("Fetched 1 events of type message")
+    debug_logs.assert_any_call("The fetched events ids are: 3")
 
 
 @freeze_time("2023-08-16T13:24:12.147573+0100")
@@ -118,38 +119,29 @@ def test_connects_to_websocket(mocker):
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
 
     # Call the websocket_connections function without since_time and to_time
-    with websocket_connections("wss://host", "cluster_id", "api_key") as (message_connection, maillog_connection):
+    with websocket_connections("wss://host", "cluster_id", "api_key"):
         pass
 
-    assert connect_mock.call_count == 2
-    assert (
-        connect_mock.call_args_list[0][0][0]
-        == "wss://host/v1/stream?cid=cluster_id&type=message&sinceTime=2023-08-16T12:24:12.147573"
-    )
-    assert (
-        connect_mock.call_args_list[1][0][0]
-        == "wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-16T12:24:12.147573"
-    )
-    assert connect_mock.call_args_list[0][1]["additional_headers"]["Authorization"] == "Bearer api_key"
-    assert connect_mock.call_args_list[1][1]["additional_headers"]["Authorization"] == "Bearer api_key"
+    assert connect_mock.call_count == len(EventType)
+    for event_type in EventType:
+        connect_mock.assert_any_call(
+            f'wss://host/v1/stream?cid=cluster_id&type={event_type.value}&sinceTime=2023-08-16T12:24:12.147573',
+            additional_headers={'Authorization': 'Bearer api_key'}
+        )
 
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
 
     # Call the websocket_connections function with since_time and to_time
-    with websocket_connections(
-        "wss://host", "cluster_id", "api_key", since_time="2023-08-14T12:24:12.147573", to_time="2023-08-16T12:24:12.147573"
-    ) as (message_connection, maillog_connection):
+    with websocket_connections("wss://host", "cluster_id", "api_key", since_time="2023-08-14T12:24:12.147573",
+                               to_time="2023-08-16T12:24:12.147573"):
         pass
 
-    assert connect_mock.call_count == 2
-    assert (
-        connect_mock.call_args_list[0][0][0]
-        == "wss://host/v1/stream?cid=cluster_id&type=message&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"  # noqa: E501
-    )
-    assert (
-        connect_mock.call_args_list[1][0][0]
-        == "wss://host/v1/stream?cid=cluster_id&type=maillog&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573"  # noqa: E501
-    )
+    assert connect_mock.call_count == len(EventType)
+    for event_type in EventType:
+        connect_mock.assert_any_call(
+            f'wss://host/v1/stream?cid=cluster_id&type={event_type.value}&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573',
+            additional_headers={'Authorization': 'Bearer api_key'}
+        )
 
 
 def test_handle_failures_of_send_events(mocker, capfd):
@@ -174,14 +166,16 @@ def test_handle_failures_of_send_events(mocker, capfd):
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "fetch_events", side_effect=fetch_events_mock)
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "send_events_to_xsiam", side_effect=sends_events_to_xsiam_mock)
     with capfd.disabled():
-        perform_long_running_loop(MockConnection(), MockConnection(), 60)
+        perform_long_running_loop([EventConnection(EventType.MESSAGE, MockConnection()),
+                                   EventConnection(EventType.MAILLOG, MockConnection())], 60)
     context = demisto.getIntegrationContext()
-    assert context["message_events"] == EVENTS[:2]
-    assert context["maillog_events"] == EVENTS[2:]
+    assert context[EventType.MESSAGE] == EVENTS[:2]
+    assert context[EventType.MAILLOG] == EVENTS[2:]
 
     second_try_send_events_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "send_events_to_xsiam")
     with capfd.disabled():
-        perform_long_running_loop(MockConnection(), MockConnection(), 60)
+        perform_long_running_loop([EventConnection(EventType.MESSAGE, MockConnection()),
+                                   EventConnection(EventType.MAILLOG, MockConnection())], 60)
     context = demisto.getIntegrationContext()
     # check the the context is cleared
     assert not context
