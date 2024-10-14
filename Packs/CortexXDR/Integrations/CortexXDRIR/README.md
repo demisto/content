@@ -1891,6 +1891,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Investigat
 ***
 This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
 
+
 #### Base Command
 
 `xdr-run-script`
