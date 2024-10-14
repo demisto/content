@@ -861,7 +861,7 @@ UPSERT_COMMAND_DATA_CASES_START_SEARCH = [
     (
         {"searchId": 12, "stopSearch": "stop"},
         {"data": {"state": "RUNNING", "stats": {"search_state": {"MATCHED": 0, "PENDING": 0}}}},
-        [True, '12']
+        [False, '12']
     ),
     (
         {"searchId": 12, "limit": 2},
