@@ -9,7 +9,7 @@
 filter _raw_log !~= "^#.*" 
 
 // extract log fields which are separated by double quotes e.g., "user agent"
-| alter quoted_fields = regextract(_raw_log, "\"(\S[^\"]+)") 
+| alter quoted_fields = regextract(_raw_log, "\"(\S[^\"]+)")  // test 
 
 // inits a character that would be used as a temporary field separator to build a field list 
 | alter field_separator = "#" 
