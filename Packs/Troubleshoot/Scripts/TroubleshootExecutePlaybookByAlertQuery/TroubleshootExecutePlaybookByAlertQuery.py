@@ -170,7 +170,9 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
     message_response = []
     reopened_alerts = []
     if reopen_closed_inv and alert_closed_bulks:
-        reopened_alerts = alert_inv_status['close_ids']
+        if reopened_alerts := alert_inv_status['close_ids']:
+            message_response.append(f"Alerts {reopened_alerts} have been reopened.")
+            
         for bulk in alert_closed_bulks:
             open_investigation(alert_ids=bulk)
 
@@ -183,9 +185,6 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
             set_playbook_on_alerts(playbook_id=playbook_id, alert_ids=bulk, playbooks_dict=playbooks_dict)
             for bulk in alert_open_bulks
         ]
-
-    if reopened_alerts:
-        message_response.append(f"Alerts {reopened_alerts} have been reopened.")
 
     return '\n'.join(message_response)
 
