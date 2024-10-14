@@ -75,7 +75,7 @@ tasks:
     task:
       id: 331cade7-b3e9-4a82-8cf8-1ee613a71d7c
       version: -1
-      name: Select containment & Eradication steps
+      name: Select containment & Eradication plans
       type: collection
       iscommand: false
       brand: ""
@@ -116,7 +116,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Select containment steps on the user ${alert.username.[0]}
+          simple: Select containment plan for the user ${alert.username.[0]}
         required: false
         gridcolumns: []
         defaultrows: []
@@ -147,7 +147,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Select containment & Eradication steps
+      title: Select containment & Eradication plans
       description: ""
       sender: ""
       expired: false
@@ -163,7 +163,7 @@ tasks:
     task:
       id: 9e1167c7-f6f3-4230-8db0-ef2f65c915b7
       version: -1
-      name: User Exists And Disable User Account Selected?
+      name: Disable User Account?
       type: condition
       iscommand: false
       brand: ""
@@ -180,7 +180,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: Select containment & Eradication steps.Answers.0
+              simple: Select containment & Eradication plans.Answers.0
             iscontext: true
           right:
             value:
@@ -212,7 +212,7 @@ tasks:
     task:
       id: 08e40ba9-ff3b-4bdf-809c-914a919a54fa
       version: -1
-      name: User Exists And Expire User Password Selected?
+      name: Expire User Password?
       type: condition
       iscommand: false
       brand: ""
@@ -229,7 +229,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: Select containment & Eradication steps.Answers.0
+              simple: Select containment & Eradication plans.Answers.0
             iscontext: true
           right:
             value:
@@ -262,7 +262,7 @@ tasks:
     task:
       id: b31d6055-ca01-444c-8587-c9b76b4fed78
       version: -1
-      name: Block Traffic From TOR Exit Nodes Selected?
+      name: Block Traffic From TOR Exit Nodes?
       type: condition
       iscommand: false
       brand: ""
@@ -279,7 +279,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: Select containment & Eradication steps.Answers.1
+              simple: Select containment & Eradication plans.Answers.1
             iscontext: true
           right:
             value:
@@ -288,7 +288,7 @@ tasks:
         - operator: containsGeneral
           left:
             value:
-              simple: Select containment & Eradication steps.Answers.1
+              simple: Select containment & Eradication plans.Answers.1
             iscontext: true
           right:
             value:
@@ -344,7 +344,7 @@ tasks:
               equals: {}
               lhs:
                 value:
-                  simple: Select containment & Eradication steps.Answers.1
+                  simple: Select containment & Eradication plans.Answers.1
                 iscontext: true
               lhsB: {}
               options: {}
@@ -420,7 +420,7 @@ tasks:
     task:
       id: b5b43e75-8fc6-4216-8302-8bfffe18b6b7
       version: -1
-      name: Active Directory - Check If The User Exists
+      name: Active Directory - Search User
       description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
@@ -457,7 +457,7 @@ tasks:
     task:
       id: 8729df19-7078-4516-826d-0566d3be66d8
       version: -1
-      name: Disable The User Account Using Active Directory
+      name: Active Directory - Disable User Account
       description: Disables an Active Directory user account.
       script: '|||ad-disable-account'
       type: regular
@@ -557,7 +557,7 @@ tasks:
     task:
       id: a6e46587-a13a-4ca9-8276-199a1743d113
       version: -1
-      name: Expire User Password With Active Directory
+      name: Active Directory - Expire User Password
       description: Expires the password of an Active Directory user.
       script: '|||ad-expire-password'
       type: regular
@@ -629,7 +629,7 @@ tasks:
     task:
       id: f0c501d7-19d6-4ef6-8864-980df56d8132
       version: -1
-      name: MS-Graph Azure AD - Check If the User Exists
+      name: Azure AD - Search User
       description: |-
         Retrieves a list of user objects.
         Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
@@ -667,7 +667,7 @@ tasks:
     task:
       id: f5edf591-d22f-4306-8852-4f8d17ffee3f
       version: -1
-      name: User Exists And Disable User Account Selected?
+      name: Disable User Account?
       type: condition
       iscommand: false
       brand: ""
@@ -684,7 +684,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: Select containment & Eradication steps.Answers.0
+              simple: Select containment & Eradication plans.Answers.0
             iscontext: true
           right:
             value:
@@ -716,7 +716,7 @@ tasks:
     task:
       id: 1adf22f2-87e0-415b-8aad-495172d41031
       version: -1
-      name: Disable The User Account Using MS-Graph Azure AD
+      name: Azure AD - Disable User Account
       description: |-
         Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
         but does not terminate an existing session. Supported only in a self-deployed app flow with the
@@ -784,7 +784,8 @@ view: |-
       "20_8_#default#": 0.23,
       "3_12_yes": 0.7,
       "3_8_#default#": 0.43,
-      "4_8_#default#": 0.23
+      "4_8_#default#": 0.23,
+      "5_7_yes": 0.51
     },
     "paper": {
       "dimensions": {
