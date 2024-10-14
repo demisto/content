@@ -217,6 +217,28 @@ class Client(BaseClient):
             raw_response=response,
         )
 
+    def add_timeframe_period(self, args: Dict[str, Any]):
+        timeframe_id = str_arg(args, "timeframe_id")
+        start_date = str_arg(args, "start_date")
+        end_date = str_arg(args, "end_date")
+        start_time = str_arg(args, "start_time")
+        end_time = str_arg(args, "end_time")
+        week_days = list_arg(args, "week_days")
+
+        body = {
+            "periods": [assign_params(
+                start_date=start_date,
+                end_date=end_date,
+                start_time=start_time,
+                end_time=end_time,
+                week_days=week_days,
+            )]
+        }
+
+        response = self._http_request("put", f"/timeframes/{timeframe_id}", json_data=body)
+
+        return CommandResults(readable_output="Success!", raw_response=response)
+
     def get_account_references(self, args: Dict[str, Any]):
         account_id = str_arg(args, "account_id")
         q = str_arg(args, "q")
@@ -3178,6 +3200,7 @@ def main() -> None:
             "wab-add-session-target-to-target-group": client.add_session_target_to_target_group,
             "wab-add-password-target-to-target-group": client.add_password_target_to_target_group,
             "wab-add-restriction-to-target-group": client.add_restriction_to_target_group,
+            "wab-add-timeframe-period": client.add_timeframe_period,
             "wab-get-account-references": client.get_account_references,
             "wab-get-account-reference": client.get_account_reference,
             "wab-change-password-or-ssh-key-of-account": client.change_password_or_ssh_key_of_account,

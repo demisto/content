@@ -100,6 +100,31 @@ category: Target Group Restrictions.
 | --- | --- | --- |
 | WAB.add_restriction_in_targetgroup.id | String | id of the created object. | 
 
+### wab-add-timeframe-period
+
+***
+Add a period to a timeframe
+category: Timeframes.
+
+#### Base Command
+
+`wab-add-timeframe-period`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| timeframe_id | The timeframe id or name to edit. | Required | 
+| start_date | The period start date. Must respect the format "yyyy-mm-dd". | Required | 
+| end_date | The period end date. Must respect the format "yyyy-mm-dd". | Required | 
+| start_time | The period start time. Must respect the format "hh:mm". | Required | 
+| end_time | The period end time. Must respect the format "hh:mm". | Required | 
+| week_days | The period week days. Possible values are: monday, tuesday, wednesday, thursday, friday, saturday, sunday. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-account-references
 
 ***
