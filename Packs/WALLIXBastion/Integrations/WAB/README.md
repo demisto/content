@@ -3927,7 +3927,6 @@ category: Scans.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scan_id | The scan id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the subnets, banner_regex or protocols are replaced, otherwise the values are added to the existing ones. | Optional | 
 | scan_put_name | Scan name. | Optional | 
 | scan_put_active | State of the job schedule. | Optional | 
 | scan_put_periodicity | Periodicity of the scan, in cron notation. | Optional | 
@@ -4680,7 +4679,6 @@ category: Timeframes.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | timeframe_id | The timeframe id or name to edit. | Required | 
-| force | The default value is false. When it is set to true the values of the periods are replaced, otherwise the values are added to the existing ones. | Optional | 
 | timeframe_put_timeframe_name | The timeframe name. No space is permitted at first or end. | Optional | 
 | timeframe_put_description | The timeframe description. | Optional | 
 | timeframe_put_is_overtimable | Do not close sessions at the end of the time period. | Optional | 

@@ -2278,14 +2278,12 @@ class Client(BaseClient):
 
     def edit_scan(self, args: Dict[str, Any]):
         scan_id = str_arg(args, "scan_id")
-        force = bool_arg(args, "force")
         scan_put_name = str_arg(args, "scan_put_name")
         scan_put_active = bool_arg(args, "scan_put_active")
         scan_put_periodicity = str_arg(args, "scan_put_periodicity")
         scan_put_description = str_arg(args, "scan_put_description")
         scan_put_emails = list_arg(args, "scan_put_emails")
 
-        params = assign_params(force=force)
         body = assign_params(
             name=scan_put_name,
             active=scan_put_active,
@@ -2293,7 +2291,7 @@ class Client(BaseClient):
             description=scan_put_description,
             emails=scan_put_emails,
         )
-        response = self._http_request("put", f"/scans/{scan_id}", params=params, json_data=body)
+        response = self._http_request("put", f"/scans/{scan_id}", json_data=body)
 
         return CommandResults(readable_output="Success!", raw_response=response)
 
@@ -2631,18 +2629,16 @@ class Client(BaseClient):
 
     def edit_timeframe(self, args: Dict[str, Any]):
         timeframe_id = str_arg(args, "timeframe_id")
-        force = bool_arg(args, "force")
         timeframe_put_timeframe_name = str_arg(args, "timeframe_put_timeframe_name")
         timeframe_put_description = str_arg(args, "timeframe_put_description")
         timeframe_put_is_overtimable = bool_arg(args, "timeframe_put_is_overtimable")
 
-        params = assign_params(force=force)
         body = assign_params(
             timeframe_name=timeframe_put_timeframe_name,
             description=timeframe_put_description,
             is_overtimable=timeframe_put_is_overtimable,
         )
-        response = self._http_request("put", f"/timeframes/{timeframe_id}", params=params, json_data=body)
+        response = self._http_request("put", f"/timeframes/{timeframe_id}", json_data=body)
 
         return CommandResults(readable_output="Success!", raw_response=response)
 
