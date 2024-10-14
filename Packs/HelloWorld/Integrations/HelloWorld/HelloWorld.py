@@ -907,7 +907,7 @@ def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
-    demisto.debug('test')
+    demisto.debug('test1')
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
