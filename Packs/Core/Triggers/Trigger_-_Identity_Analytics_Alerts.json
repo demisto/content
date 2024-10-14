@@ -1,69 +1,73 @@
 {
-  "trigger_id": "8b94c2511f1b6dbcb25e1f2c1681b8cd",
-  "playbook_id": "Identity Analytics - Alert Handling",
-  "suggestion_reason": "Recommended for Identity Analytics alerts",
-  "description": "This trigger is responsible for handling Identity Analytics alerts",
-  "trigger_name": "Identity Analytics Alerts",
-  "fromVersion": "6.10.0",
-  "alerts_filter": {
-    "filter": {
-      "AND": [
-        {
-            "SEARCH_FIELD": "tags",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "DT:Identity Analytics"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "A Successful login from TOR"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "SSO Password Spray Threat Detected"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "SSO Password Spray Activity Observed"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "SSO Password Spray Involving a Honey User"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "SSO Brute Force Threat Detected"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "SSO Brute Force Activity Observed"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "Suspicious SaaS API call from a Tor exit node"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "Suspicious SaaS API call from a Tor exit node via Mobile Device"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "Suspicious API call from a Tor exit node"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "WILDCARD_NOT",
-            "SEARCH_VALUE": "Suspicious Kubernetes API call from a Tor exit node"
+    "trigger_id": "8b94c2511f1b6dbcb25e1f2c1681b8cd",
+    "playbook_id": "Identity Analytics - Alert Handling",
+    "suggestion_reason": "Recommended for Identity Analytics alerts",
+    "description": "This trigger is responsible for handling Identity Analytics alerts",
+    "trigger_name": "Identity Analytics Alerts",
+    "fromVersion": "6.10.0",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "tags",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DT:Identity Analytics"
+                },
+                {
+                    "AND": [
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "A Successful login from TOR"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "SSO Password Spray Threat Detected"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "SSO Password Spray Activity Observed"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "SSO Password Spray Involving a Honey User"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "SSO Brute Force Threat Detected"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "SSO Brute Force Activity Observed"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "Suspicious SaaS API call from a Tor exit node"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "Suspicious SaaS API call from a Tor exit node via Mobile Device"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "Suspicious API call from a Tor exit node"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "WILDCARD_NOT",
+                            "SEARCH_VALUE": "Suspicious Kubernetes API call from a Tor exit node"
+                        }
+                    ]
+                }
+            ]
         }
-      ]
     }
-  }
 }
