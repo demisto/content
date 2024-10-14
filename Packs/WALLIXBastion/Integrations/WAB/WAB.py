@@ -154,6 +154,7 @@ class Client(BaseClient):
         session_account_type = str_arg(args, "session_account_type")
 
         data = assign_params(
+            values_to_ignore=(None,),
             account=account,
             domain=domain,
             domain_type=domain_type,
@@ -188,6 +189,7 @@ class Client(BaseClient):
         application = str_arg(args, "application")
 
         data = assign_params(
+            values_to_ignore=(None,),
             account=account,
             domain=domain,
             domain_type=domain_type,
@@ -211,12 +213,13 @@ class Client(BaseClient):
         subprotocol = str_arg(args, "subprotocol")
 
         body = assign_params(
+            values_to_ignore=(None,),
             action=action,
             rules=rules,
             subprotocol=subprotocol,
         )
 
-        response = self._http_request("put", f"/targetgroups/{group_id}/restrictions", json_data=body)
+        response = self._http_request("post", f"/targetgroups/{group_id}/restrictions", json_data=body)
 
         return CommandResults(
             outputs_prefix="WAB.add_restriction_to_target_group",
@@ -237,6 +240,7 @@ class Client(BaseClient):
         body = {
             "periods": [
                 assign_params(
+                    values_to_ignore=(None,),
                     start_date=start_date,
                     end_date=end_date,
                     start_time=start_time,
@@ -258,7 +262,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/accounts/{account_id}/references", params=params)
 
         return CommandResults(
@@ -274,7 +278,7 @@ class Client(BaseClient):
         reference_id = str_arg(args, "reference_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/accounts/{account_id}/references/{reference_id}", params=params)
 
         return CommandResults(
@@ -290,9 +294,13 @@ class Client(BaseClient):
         credential_type = str_arg(args, "credential_type")
         changePasswordOrSshKeyOfAccount_password = str_arg(args, "changePasswordOrSshKeyOfAccount_password")
         changePasswordOrSshKeyOfAccount_private_key = str_arg(args, "changePasswordOrSshKeyOfAccount_private_key")
+        changePasswordOrSshKeyOfAccount_passphrase = str_arg(args, "changePasswordOrSshKeyOfAccount_passphrase")
 
         body = assign_params(
-            password=changePasswordOrSshKeyOfAccount_password, private_key=changePasswordOrSshKeyOfAccount_private_key
+            values_to_ignore=(None,),
+            password=changePasswordOrSshKeyOfAccount_password,
+            private_key=changePasswordOrSshKeyOfAccount_private_key,
+            passphrase=changePasswordOrSshKeyOfAccount_passphrase,
         )
         response = self._http_request("put", f"/accountchangepassword/{account_id}/{credential_type}", json_data=body)
 
@@ -311,6 +319,7 @@ class Client(BaseClient):
         fields = str_arg(args, "fields")
 
         params = assign_params(
+            values_to_ignore=(None,),
             account_type=account_type,
             application=application,
             device=device,
@@ -342,6 +351,7 @@ class Client(BaseClient):
         fields = str_arg(args, "fields")
 
         params = assign_params(
+            values_to_ignore=(None,),
             account_type=account_type,
             application=application,
             device=device,
@@ -375,7 +385,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/applications/{application_id}/localdomains/{domain_id}/accounts", params=params)
 
         return CommandResults(
@@ -398,6 +408,7 @@ class Client(BaseClient):
         app_account_post_can_edit_certificate_validity = bool_arg(args, "app_account_post_can_edit_certificate_validity")
 
         body = assign_params(
+            values_to_ignore=(None,),
             account_name=app_account_post_account_name,
             account_login=app_account_post_account_login,
             description=app_account_post_description,
@@ -422,7 +433,7 @@ class Client(BaseClient):
         account_id = str_arg(args, "account_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request(
             "get", f"/applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}", params=params
         )
@@ -449,8 +460,9 @@ class Client(BaseClient):
         app_account_put_can_edit_certificate_validity = bool_arg(args, "app_account_put_can_edit_certificate_validity")
         app_account_put_onboard_status = str_arg(args, "app_account_put_onboard_status")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
+            values_to_ignore=(None,),
             account_name=app_account_put_account_name,
             account_login=app_account_put_account_login,
             description=app_account_put_description,
@@ -483,7 +495,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/applications/{application_id}/localdomains", params=params)
 
         return CommandResults(
@@ -499,7 +511,7 @@ class Client(BaseClient):
         domain_id = str_arg(args, "domain_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/applications/{application_id}/localdomains/{domain_id}", params=params)
 
         return CommandResults(
@@ -517,7 +529,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/applications", params=params)
 
         return CommandResults(
@@ -532,7 +544,7 @@ class Client(BaseClient):
         application_id = str_arg(args, "application_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/applications/{application_id}", params=params)
 
         return CommandResults(
@@ -549,13 +561,16 @@ class Client(BaseClient):
         application_put_application_name = str_arg(args, "application_put_application_name")
         application_put_description = str_arg(args, "application_put_description")
         application_put_parameters = str_arg(args, "application_put_parameters")
+        application_put_global_domains = list_arg(args, "application_put_global_domains")
         application_put_connection_policy = str_arg(args, "application_put_connection_policy")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
+            values_to_ignore=(None,),
             application_name=application_put_application_name,
             description=application_put_description,
             parameters=application_put_parameters,
+            global_domains=application_put_global_domains,
             connection_policy=application_put_connection_policy,
         )
         response = self._http_request("put", f"/applications/{application_id}", params=params, json_data=body)
@@ -577,7 +592,9 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(approval_id=approval_id, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(
+            values_to_ignore=(None,), approval_id=approval_id, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+        )
         response = self._http_request("get", "/approvals", params=params)
 
         return CommandResults(
@@ -595,7 +612,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/approvals/assignments", params=params)
 
         return CommandResults(
@@ -616,6 +633,7 @@ class Client(BaseClient):
         approval_assignment_post_status = str_arg(args, "approval_assignment_post_status")
 
         body = assign_params(
+            values_to_ignore=(None,),
             id=approval_assignment_post_id,
             comment=approval_assignment_post_comment,
             duration=approval_assignment_post_duration,
@@ -642,7 +660,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/approvals/assignments/{user_name}", params=params)
 
         return CommandResults(
@@ -657,7 +675,9 @@ class Client(BaseClient):
         approval_assignment_cancel_post_id = str_arg(args, "approval_assignment_cancel_post_id")
         approval_assignment_cancel_post_comment = str_arg(args, "approval_assignment_cancel_post_comment")
 
-        body = assign_params(id=approval_assignment_cancel_post_id, comment=approval_assignment_cancel_post_comment)
+        body = assign_params(
+            values_to_ignore=(None,), id=approval_assignment_cancel_post_id, comment=approval_assignment_cancel_post_comment
+        )
         response = self._http_request("post", "/approvals/assignments/cancel", json_data=body)
 
         return CommandResults(
@@ -671,7 +691,7 @@ class Client(BaseClient):
     def notify_approvers_linked_to_approval_assignment(self, args: Dict[str, Any]):
         approval_assignment_notify_post_id = str_arg(args, "approval_assignment_notify_post_id")
 
-        body = assign_params(id=approval_assignment_notify_post_id)
+        body = assign_params(values_to_ignore=(None,), id=approval_assignment_notify_post_id)
         response = self._http_request("post", "/approvals/assignments/notify", json_data=body)
 
         add_key_to_outputs(response, "approval_assignment_notify_post_id", approval_assignment_notify_post_id)
@@ -693,7 +713,16 @@ class Client(BaseClient):
         fields = str_arg(args, "fields")
         approval_id = str_arg(args, "approval_id")
 
-        params = assign_params(user=user, q=q, sort=sort, offset=offset, limit=limit, fields=fields, approval_id=approval_id)
+        params = assign_params(
+            values_to_ignore=(None,),
+            user=user,
+            q=q,
+            sort=sort,
+            offset=offset,
+            limit=limit,
+            fields=fields,
+            approval_id=approval_id,
+        )
         response = self._http_request("get", "/approvals/requests", params=params)
 
         return CommandResults(
@@ -718,6 +747,7 @@ class Client(BaseClient):
         approval_request_post_duration = int_arg(args, "approval_request_post_duration")
 
         body = assign_params(
+            values_to_ignore=(None,),
             target_name=approval_request_post_target_name,
             authorization=approval_request_post_authorization,
             account=approval_request_post_account,
@@ -743,7 +773,7 @@ class Client(BaseClient):
     def cancel_approval_request(self, args: Dict[str, Any]):
         approval_request_cancel_post_id = str_arg(args, "approval_request_cancel_post_id")
 
-        body = assign_params(id=approval_request_cancel_post_id)
+        body = assign_params(values_to_ignore=(None,), id=approval_request_cancel_post_id)
         response = self._http_request("post", "/approvals/requests/cancel", json_data=body)
 
         return CommandResults(
@@ -757,7 +787,7 @@ class Client(BaseClient):
     def notify_approvers_linked_to_approval_request(self, args: Dict[str, Any]):
         approval_request_notify_post_id = str_arg(args, "approval_request_notify_post_id")
 
-        body = assign_params(id=approval_request_notify_post_id)
+        body = assign_params(values_to_ignore=(None,), id=approval_request_notify_post_id)
         response = self._http_request("post", "/approvals/requests/notify", json_data=body)
 
         add_key_to_outputs(response, "approval_request_notify_post_id", approval_request_notify_post_id)
@@ -775,7 +805,7 @@ class Client(BaseClient):
         authorization = str_arg(args, "authorization")
         begin = str_arg(args, "begin")
 
-        params = assign_params(authorization=authorization, begin=begin)
+        params = assign_params(values_to_ignore=(None,), authorization=authorization, begin=begin)
         response = self._http_request("get", f"/approvals/requests/target/{target_name}", params=params)
 
         return CommandResults(
@@ -794,7 +824,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/authdomains/{domain_id}/mappings", params=params)
 
         return CommandResults(
@@ -812,6 +842,7 @@ class Client(BaseClient):
         authdomain_mapping_post_external_group = str_arg(args, "authdomain_mapping_post_external_group")
 
         body = assign_params(
+            values_to_ignore=(None,),
             domain=authdomain_mapping_post_domain,
             user_group=authdomain_mapping_post_user_group,
             external_group=authdomain_mapping_post_external_group,
@@ -833,6 +864,7 @@ class Client(BaseClient):
         authdomain_mapping_put_external_group = str_arg(args, "authdomain_mapping_put_external_group")
 
         body = assign_params(
+            values_to_ignore=(None,),
             domain=authdomain_mapping_put_domain,
             user_group=authdomain_mapping_put_user_group,
             external_group=authdomain_mapping_put_external_group,
@@ -846,7 +878,7 @@ class Client(BaseClient):
         mapping_id = str_arg(args, "mapping_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/authdomains/{domain_id}/mappings/{mapping_id}", params=params)
 
         return CommandResults(
@@ -865,6 +897,7 @@ class Client(BaseClient):
         authdomain_mapping_put_external_group = str_arg(args, "authdomain_mapping_put_external_group")
 
         body = assign_params(
+            values_to_ignore=(None,),
             domain=authdomain_mapping_put_domain,
             user_group=authdomain_mapping_put_user_group,
             external_group=authdomain_mapping_put_external_group,
@@ -888,7 +921,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/authdomains", params=params)
 
         return CommandResults(
@@ -903,7 +936,7 @@ class Client(BaseClient):
         domain_id = str_arg(args, "domain_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/authdomains/{domain_id}", params=params)
 
         return CommandResults(
@@ -925,7 +958,15 @@ class Client(BaseClient):
         fields = str_arg(args, "fields")
 
         params = assign_params(
-            from_date=from_date, to_date=to_date, date_field=date_field, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+            values_to_ignore=(None,),
+            from_date=from_date,
+            to_date=to_date,
+            date_field=date_field,
+            q=q,
+            sort=sort,
+            offset=offset,
+            limit=limit,
+            fields=fields,
         )
         response = self._http_request("get", "/authentications", params=params)
 
@@ -944,7 +985,9 @@ class Client(BaseClient):
         date_field = str_arg(args, "date_field")
         fields = str_arg(args, "fields")
 
-        params = assign_params(from_date=from_date, to_date=to_date, date_field=date_field, fields=fields)
+        params = assign_params(
+            values_to_ignore=(None,), from_date=from_date, to_date=to_date, date_field=date_field, fields=fields
+        )
         response = self._http_request("get", f"/authentications/{auth_id}", params=params)
 
         return CommandResults(
@@ -962,7 +1005,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/authorizations", params=params)
 
         return CommandResults(
@@ -997,6 +1040,7 @@ class Client(BaseClient):
         authorization_post_session_sharing_mode = str_arg(args, "authorization_post_session_sharing_mode")
 
         body = assign_params(
+            values_to_ignore=(None,),
             user_group=authorization_post_user_group,
             target_group=authorization_post_target_group,
             authorization_name=authorization_post_authorization_name,
@@ -1033,7 +1077,7 @@ class Client(BaseClient):
         authorization_id = str_arg(args, "authorization_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/authorizations/{authorization_id}", params=params)
 
         return CommandResults(
@@ -1067,8 +1111,9 @@ class Client(BaseClient):
         authorization_put_authorize_session_sharing = bool_arg(args, "authorization_put_authorize_session_sharing")
         authorization_put_session_sharing_mode = str_arg(args, "authorization_put_session_sharing_mode")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
+            values_to_ignore=(None,),
             authorization_name=authorization_put_authorization_name,
             description=authorization_put_description,
             subprotocols=authorization_put_subprotocols,
@@ -1107,7 +1152,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/checkoutpolicies", params=params)
 
         return CommandResults(
@@ -1122,7 +1167,7 @@ class Client(BaseClient):
         checkout_policy_id = str_arg(args, "checkout_policy_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/checkoutpolicies/{checkout_policy_id}", params=params)
 
         return CommandResults(
@@ -1140,7 +1185,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/clusters", params=params)
 
         return CommandResults(
@@ -1155,7 +1200,7 @@ class Client(BaseClient):
         cluster_id = str_arg(args, "cluster_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/clusters/{cluster_id}", params=params)
 
         return CommandResults(
@@ -1184,6 +1229,7 @@ class Client(BaseClient):
         config_x509_post_enable = bool_arg(args, "config_x509_post_enable")
 
         body = assign_params(
+            values_to_ignore=(None,),
             ca_certificate=config_x509_post_ca_certificate,
             server_public_key=config_x509_post_server_public_key,
             server_private_key=config_x509_post_server_private_key,
@@ -1206,6 +1252,7 @@ class Client(BaseClient):
         config_x509_put_enable = bool_arg(args, "config_x509_put_enable")
 
         body = assign_params(
+            values_to_ignore=(None,),
             ca_certificate=config_x509_put_ca_certificate,
             server_public_key=config_x509_put_server_public_key,
             server_private_key=config_x509_put_server_private_key,
@@ -1239,7 +1286,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/connectionpolicies", params=params)
 
         return CommandResults(
@@ -1259,6 +1306,7 @@ class Client(BaseClient):
         options = json_arg(args, "options")
 
         body = assign_params(
+            values_to_ignore=(None,),
             connection_policy_name=connectionpolicy_post_connection_policy_name,
             type=connectionpolicy_post_type,
             description=connectionpolicy_post_description,
@@ -1280,7 +1328,7 @@ class Client(BaseClient):
         connection_policy_id = str_arg(args, "connection_policy_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/connectionpolicies/{connection_policy_id}", params=params)
 
         return CommandResults(
@@ -1296,14 +1344,15 @@ class Client(BaseClient):
         force = bool_arg(args, "force")
         connectionpolicy_put_connection_policy_name = str_arg(args, "connectionpolicy_put_connection_policy_name")
         connectionpolicy_put_description = str_arg(args, "connectionpolicy_put_description")
-        connectionpolicy_post_authentication_methods = list_arg(args, "connectionpolicy_post_authentication_methods")
+        connectionpolicy_put_authentication_methods = list_arg(args, "connectionpolicy_put_authentication_methods")
         options = json_arg(args, "options")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
+            values_to_ignore=(None,),
             connection_policy_name=connectionpolicy_put_connection_policy_name,
             description=connectionpolicy_put_description,
-            authentication_methods=connectionpolicy_post_authentication_methods,
+            authentication_methods=connectionpolicy_put_authentication_methods,
             options=options,
         )
         response = self._http_request("put", f"/connectionpolicies/{connection_policy_id}", params=params, json_data=body)
@@ -1327,7 +1376,9 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(key_format=key_format, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(
+            values_to_ignore=(None,), key_format=key_format, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+        )
         response = self._http_request("get", f"/devices/{device_id}/localdomains/{domain_id}/accounts", params=params)
 
         return CommandResults(
@@ -1352,6 +1403,7 @@ class Client(BaseClient):
         device_account_post_services = list_arg(args, "device_account_post_services")
 
         body = assign_params(
+            values_to_ignore=(None,),
             account_name=device_account_post_account_name,
             account_login=device_account_post_account_login,
             description=device_account_post_description,
@@ -1379,7 +1431,7 @@ class Client(BaseClient):
         key_format = str_arg(args, "key_format")
         fields = str_arg(args, "fields")
 
-        params = assign_params(key_format=key_format, fields=fields)
+        params = assign_params(values_to_ignore=(None,), key_format=key_format, fields=fields)
         response = self._http_request(
             "get", f"/devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}", params=params
         )
@@ -1408,8 +1460,9 @@ class Client(BaseClient):
         device_account_put_onboard_status = str_arg(args, "device_account_put_onboard_status")
         device_account_put_services = list_arg(args, "device_account_put_services")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
+            values_to_ignore=(None,),
             account_name=device_account_put_account_name,
             account_login=device_account_put_account_login,
             description=device_account_put_description,
@@ -1444,7 +1497,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/certificates", params=params)
 
         return CommandResults(
@@ -1465,7 +1518,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/certificates/{cert_type}/{address}/{port}", params=params)
 
         return CommandResults(
@@ -1493,7 +1546,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/localdomains", params=params)
 
         return CommandResults(
@@ -1509,7 +1562,7 @@ class Client(BaseClient):
         domain_id = str_arg(args, "domain_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/localdomains/{domain_id}", params=params)
 
         return CommandResults(
@@ -1528,7 +1581,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/services", params=params)
 
         return CommandResults(
@@ -1548,8 +1601,10 @@ class Client(BaseClient):
         service_post_subprotocols = list_arg(args, "service_post_subprotocols")
         service_post_connection_policy = str_arg(args, "service_post_connection_policy")
         service_post_global_domains = list_arg(args, "service_post_global_domains")
+        service_post_seamless_connection = bool_arg(args, "service_post_seamless_connection")
 
         body = assign_params(
+            values_to_ignore=(None,),
             id=service_post_id,
             service_name=service_post_service_name,
             protocol=service_post_protocol,
@@ -1557,6 +1612,7 @@ class Client(BaseClient):
             subprotocols=service_post_subprotocols,
             connection_policy=service_post_connection_policy,
             global_domains=service_post_global_domains,
+            seamless_connection=service_post_seamless_connection,
         )
         response = self._http_request("post", f"/devices/{device_id}/services", json_data=body)
 
@@ -1573,7 +1629,7 @@ class Client(BaseClient):
         service_id = str_arg(args, "service_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/services/{service_id}", params=params)
 
         return CommandResults(
@@ -1589,12 +1645,19 @@ class Client(BaseClient):
         service_id = str_arg(args, "service_id")
         force = bool_arg(args, "force")
         service_put_port = int_arg(args, "service_put_port")
+        service_put_subprotocols = list_arg(args, "service_put_subprotocols")
         service_put_connection_policy = str_arg(args, "service_put_connection_policy")
         service_put_global_domains = list_arg(args, "service_put_global_domains")
+        service_put_seamless_connection = bool_arg(args, "service_put_seamless_connection")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
-            port=service_put_port, connection_policy=service_put_connection_policy, global_domains=service_put_global_domains
+            values_to_ignore=(None,),
+            port=service_put_port,
+            subprotocols=service_put_subprotocols,
+            connection_policy=service_put_connection_policy,
+            global_domains=service_put_global_domains,
+            seamless_connection=service_put_seamless_connection,
         )
         response = self._http_request("put", f"/devices/{device_id}/services/{service_id}", params=params, json_data=body)
 
@@ -1615,7 +1678,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/devices", params=params)
 
         return CommandResults(
@@ -1633,6 +1696,7 @@ class Client(BaseClient):
         device_post_host = str_arg(args, "device_post_host")
 
         body = assign_params(
+            values_to_ignore=(None,),
             device_name=device_post_device_name,
             description=device_post_description,
             alias=device_post_alias,
@@ -1652,7 +1716,7 @@ class Client(BaseClient):
         device_id = str_arg(args, "device_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/devices/{device_id}", params=params)
 
         return CommandResults(
@@ -1672,8 +1736,9 @@ class Client(BaseClient):
         device_put_host = str_arg(args, "device_put_host")
         device_put_onboard_status = str_arg(args, "device_put_onboard_status")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
+            values_to_ignore=(None,),
             device_name=device_put_device_name,
             description=device_put_description,
             alias=device_put_alias,
@@ -1698,7 +1763,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/domains/{domain_id}/accounts", params=params)
 
         return CommandResults(
@@ -1722,6 +1787,7 @@ class Client(BaseClient):
         domain_account_post_resources = list_arg(args, "domain_account_post_resources")
 
         body = assign_params(
+            values_to_ignore=(None,),
             account_name=domain_account_post_account_name,
             account_login=domain_account_post_account_login,
             description=domain_account_post_description,
@@ -1747,7 +1813,7 @@ class Client(BaseClient):
         account_id = str_arg(args, "account_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/domains/{domain_id}/accounts/{account_id}", params=params)
 
         return CommandResults(
@@ -1773,8 +1839,9 @@ class Client(BaseClient):
         domain_account_put_onboard_status = str_arg(args, "domain_account_put_onboard_status")
         domain_account_put_resources = list_arg(args, "domain_account_put_resources")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
+            values_to_ignore=(None,),
             account_name=domain_account_put_account_name,
             account_login=domain_account_put_account_login,
             description=domain_account_put_description,
@@ -1814,7 +1881,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/domains", params=params)
 
         return CommandResults(
@@ -1829,7 +1896,7 @@ class Client(BaseClient):
         domain_id = str_arg(args, "domain_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/domains/{domain_id}", params=params)
 
         return CommandResults(
@@ -1848,7 +1915,9 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(group_by=group_by, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(
+            values_to_ignore=(None,), group_by=group_by, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+        )
         response = self._http_request("get", "/authmappings", params=params)
 
         return CommandResults(
@@ -1866,7 +1935,9 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(last_connection=last_connection, q=q, offset=offset, limit=limit, fields=fields)
+        params = assign_params(
+            values_to_ignore=(None,), last_connection=last_connection, q=q, offset=offset, limit=limit, fields=fields
+        )
         response = self._http_request("get", f"/ldapusers/{domain}", params=params)
 
         return CommandResults(
@@ -1883,7 +1954,7 @@ class Client(BaseClient):
         last_connection = bool_arg(args, "last_connection")
         fields = str_arg(args, "fields")
 
-        params = assign_params(last_connection=last_connection, fields=fields)
+        params = assign_params(values_to_ignore=(None,), last_connection=last_connection, fields=fields)
         response = self._http_request("get", f"/ldapusers/{domain}/{user_name}", params=params)
 
         return CommandResults(
@@ -1909,7 +1980,7 @@ class Client(BaseClient):
         logsiem_post_application = str_arg(args, "logsiem_post_application")
         logsiem_post_message = str_arg(args, "logsiem_post_message")
 
-        body = assign_params(application=logsiem_post_application, message=logsiem_post_message)
+        body = assign_params(values_to_ignore=(None,), application=logsiem_post_application, message=logsiem_post_message)
         response = self._http_request("post", "/logsiem", json_data=body)
 
         return CommandResults(
@@ -1926,7 +1997,7 @@ class Client(BaseClient):
         offset = int_arg(args, "offset")
         limit = int_arg(args, "limit")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit)
         response = self._http_request("get", "/notifications", params=params)
 
         return CommandResults(
@@ -1947,6 +2018,7 @@ class Client(BaseClient):
         notification_post_events = list_arg(args, "notification_post_events")
 
         body = assign_params(
+            values_to_ignore=(None,),
             notification_name=notification_post_notification_name,
             description=notification_post_description,
             enabled=notification_post_enabled,
@@ -1989,8 +2061,9 @@ class Client(BaseClient):
         notification_put_language = str_arg(args, "notification_put_language")
         notification_put_events = list_arg(args, "notification_put_events")
 
-        params = assign_params(force=force)
+        params = assign_params(values_to_ignore=(None,), force=force)
         body = assign_params(
+            values_to_ignore=(None,),
             notification_name=notification_put_notification_name,
             description=notification_put_description,
             enabled=notification_put_enabled,
@@ -2020,7 +2093,14 @@ class Client(BaseClient):
         fields = str_arg(args, "fields")
 
         params = assign_params(
-            object_type=object_type, object_status=object_status, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+            values_to_ignore=(None,),
+            object_type=object_type,
+            object_status=object_status,
+            q=q,
+            sort=sort,
+            offset=offset,
+            limit=limit,
+            fields=fields,
         )
         response = self._http_request("get", "/onboarding_objects", params=params)
 
@@ -2038,7 +2118,7 @@ class Client(BaseClient):
         offset = int_arg(args, "offset")
         limit = int_arg(args, "limit")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit)
         response = self._http_request("get", "/passwordchangepolicies", params=params)
 
         return CommandResults(
@@ -2065,6 +2145,7 @@ class Client(BaseClient):
         passwordchangepolicy_post_change_period = str_arg(args, "passwordchangepolicy_post_change_period", nullable=True)
 
         body = assign_params(
+            values_to_ignore=(None,),
             password_change_policy_name=passwordchangepolicy_post_password_change_policy_name,
             description=passwordchangepolicy_post_description,
             password_length=passwordchangepolicy_post_password_length,
@@ -2117,6 +2198,7 @@ class Client(BaseClient):
         passwordchangepolicy_put_change_period = str_arg(args, "passwordchangepolicy_put_change_period", nullable=True)
 
         body = assign_params(
+            values_to_ignore=(None,),
             password_change_policy_name=passwordchangepolicy_put_password_change_policy_name,
             description=passwordchangepolicy_put_description,
             password_length=passwordchangepolicy_put_password_length,
@@ -2148,7 +2230,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(count=count, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), count=count, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/passwordrights", params=params)
 
         return CommandResults(
@@ -2163,7 +2245,7 @@ class Client(BaseClient):
         count = bool_arg(args, "count")
         fields = str_arg(args, "fields")
 
-        params = assign_params(count=count, fields=fields)
+        params = assign_params(values_to_ignore=(None,), count=count, fields=fields)
         response = self._http_request("get", f"/passwordrights/{user_name}", params=params)
 
         add_key_to_outputs(response, "user_name", user_name)
@@ -2183,7 +2265,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/profiles", params=params)
 
         return CommandResults(
@@ -2198,7 +2280,7 @@ class Client(BaseClient):
         profile_id = str_arg(args, "profile_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/profiles/{profile_id}", params=params)
 
         return CommandResults(
@@ -2216,7 +2298,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/scanjobs", params=params)
 
         return CommandResults(
@@ -2230,7 +2312,7 @@ class Client(BaseClient):
     def start_scan_job_manually(self, args: Dict[str, Any]):
         scanjob_post_scan_id = str_arg(args, "scanjob_post_scan_id")
 
-        body = assign_params(scan_id=scanjob_post_scan_id)
+        body = assign_params(values_to_ignore=(None,), scan_id=scanjob_post_scan_id)
         response = self._http_request("post", "/scanjobs", json_data=body)
 
         return CommandResults(
@@ -2245,7 +2327,7 @@ class Client(BaseClient):
         scanjob_id = str_arg(args, "scanjob_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/scanjobs/{scanjob_id}", params=params)
 
         return CommandResults(
@@ -2270,7 +2352,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/scans", params=params)
 
         return CommandResults(
@@ -2285,7 +2367,7 @@ class Client(BaseClient):
         scan_id = str_arg(args, "scan_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/scans/{scan_id}", params=params)
 
         return CommandResults(
@@ -2303,13 +2385,28 @@ class Client(BaseClient):
         scan_put_periodicity = str_arg(args, "scan_put_periodicity")
         scan_put_description = str_arg(args, "scan_put_description")
         scan_put_emails = list_arg(args, "scan_put_emails")
+        scan_put_subnets = list_arg(args, "scan_put_subnets")
+        scan_put_banner_regex = list_arg(args, "scan_put_banner_regex")
+        scan_put_scan_for_accounts = bool_arg(args, "scan_put_scan_for_accounts")
+        scan_put_master_accounts = list_arg(args, "scan_put_master_accounts")
+        scan_put_search_filter = str_arg(args, "scan_put_search_filter")
+        scan_put_dn_list = list_arg(args, "scan_put_dn_list")
+        scan_put_devices = list_arg(args, "scan_put_devices")
 
         body = assign_params(
+            values_to_ignore=(None,),
             name=scan_put_name,
             active=scan_put_active,
             periodicity=scan_put_periodicity,
             description=scan_put_description,
             emails=scan_put_emails,
+            subnets=scan_put_subnets,
+            banner_regex=scan_put_banner_regex,
+            scan_for_accounts=scan_put_scan_for_accounts,
+            master_accounts=scan_put_master_accounts,
+            search_filter=scan_put_search_filter,
+            dn_list=scan_put_dn_list,
+            devices=scan_put_devices,
         )
         response = self._http_request("put", f"/scans/{scan_id}", json_data=body)
 
@@ -2332,7 +2429,14 @@ class Client(BaseClient):
         fields = str_arg(args, "fields")
 
         params = assign_params(
-            count=count, last_connection=last_connection, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+            values_to_ignore=(None,),
+            count=count,
+            last_connection=last_connection,
+            q=q,
+            sort=sort,
+            offset=offset,
+            limit=limit,
+            fields=fields,
         )
         response = self._http_request("get", "/sessionrights", params=params)
 
@@ -2349,7 +2453,7 @@ class Client(BaseClient):
         last_connection = bool_arg(args, "last_connection")
         fields = str_arg(args, "fields")
 
-        params = assign_params(count=count, last_connection=last_connection, fields=fields)
+        params = assign_params(values_to_ignore=(None,), count=count, last_connection=last_connection, fields=fields)
         response = self._http_request("get", f"/sessionrights/{user_name}", params=params)
 
         add_key_to_outputs(response, "user_name", user_name)
@@ -2376,6 +2480,7 @@ class Client(BaseClient):
         fields = str_arg(args, "fields")
 
         params = assign_params(
+            values_to_ignore=(None,),
             session_id=session_id,
             otp=otp,
             status=status,
@@ -2403,8 +2508,8 @@ class Client(BaseClient):
         action = str_arg(args, "action")
         session_put_edit_description = str_arg(args, "session_put_edit_description")
 
-        params = assign_params(session_id=session_id, action=action)
-        body = assign_params(description=session_put_edit_description)
+        params = assign_params(values_to_ignore=(None,), session_id=session_id, action=action)
+        body = assign_params(values_to_ignore=(None,), description=session_put_edit_description)
         response = self._http_request("put", "/sessions", params=params, json_data=body)
 
         return CommandResults(readable_output="Success!", raw_response=response)
@@ -2413,7 +2518,7 @@ class Client(BaseClient):
         session_ids = str_arg(args, "session_ids")
         download = bool_arg(args, "download")
 
-        params = assign_params(session_ids=session_ids, download=download)
+        params = assign_params(values_to_ignore=(None,), session_ids=session_ids, download=download)
         response = self._http_request("get", "/sessions/metadata", params=params)
 
         return CommandResults(
@@ -2427,7 +2532,7 @@ class Client(BaseClient):
         request_id = str_arg(args, "request_id")
         session_id = str_arg(args, "session_id")
 
-        params = assign_params(request_id=request_id, session_id=session_id)
+        params = assign_params(values_to_ignore=(None,), request_id=request_id, session_id=session_id)
         response = self._http_request("get", "/sessions/requests", params=params)
 
         return CommandResults(
@@ -2442,7 +2547,7 @@ class Client(BaseClient):
         session_request_post_session_id = str_arg(args, "session_request_post_session_id")
         session_request_post_mode = str_arg(args, "session_request_post_mode")
 
-        body = assign_params(session_id=session_request_post_session_id, mode=session_request_post_mode)
+        body = assign_params(values_to_ignore=(None,), session_id=session_request_post_session_id, mode=session_request_post_mode)
         response = self._http_request("post", "/sessions/requests", json_data=body)
 
         return CommandResults(readable_output="Success!", raw_response=response)
@@ -2467,7 +2572,7 @@ class Client(BaseClient):
         duration = int_arg(args, "duration")
         download = bool_arg(args, "download")
 
-        params = assign_params(date=date, duration=duration, download=download)
+        params = assign_params(values_to_ignore=(None,), date=date, duration=duration, download=download)
         response = self._http_request("get", f"/sessions/traces/{session_id}", params=params)
 
         return CommandResults(
@@ -2484,7 +2589,10 @@ class Client(BaseClient):
         session_trace_post_duration = int_arg(args, "session_trace_post_duration")
 
         body = assign_params(
-            session_id=session_trace_post_session_id, date=session_trace_post_date, duration=session_trace_post_duration
+            values_to_ignore=(None,),
+            session_id=session_trace_post_session_id,
+            date=session_trace_post_date,
+            duration=session_trace_post_duration,
         )
         response = self._http_request("post", "/sessions/traces", json_data=body)
 
@@ -2500,7 +2608,7 @@ class Client(BaseClient):
         from_date = str_arg(args, "from_date")
         to_date = str_arg(args, "to_date")
 
-        params = assign_params(from_date=from_date, to_date=to_date)
+        params = assign_params(values_to_ignore=(None,), from_date=from_date, to_date=to_date)
         response = self._http_request("get", "/statistics", params=params)
 
         return CommandResults(
@@ -2521,7 +2629,15 @@ class Client(BaseClient):
         fields = str_arg(args, "fields")
 
         params = assign_params(
-            device=device, application=application, domain=domain, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+            values_to_ignore=(None,),
+            device=device,
+            application=application,
+            domain=domain,
+            q=q,
+            sort=sort,
+            offset=offset,
+            limit=limit,
+            fields=fields,
         )
         response = self._http_request("get", "/targetgroups", params=params)
 
@@ -2537,7 +2653,9 @@ class Client(BaseClient):
         targetgroups_post_group_name = str_arg(args, "targetgroups_post_group_name")
         targetgroups_post_description = str_arg(args, "targetgroups_post_description")
 
-        body = assign_params(group_name=targetgroups_post_group_name, description=targetgroups_post_description)
+        body = assign_params(
+            values_to_ignore=(None,), group_name=targetgroups_post_group_name, description=targetgroups_post_description
+        )
         response = self._http_request("post", "/targetgroups", json_data=body)
 
         return CommandResults(
@@ -2555,7 +2673,7 @@ class Client(BaseClient):
         domain = str_arg(args, "domain")
         fields = str_arg(args, "fields")
 
-        params = assign_params(device=device, application=application, domain=domain, fields=fields)
+        params = assign_params(values_to_ignore=(None,), device=device, application=application, domain=domain, fields=fields)
         response = self._http_request("get", f"/targetgroups/{group_id}", params=params)
 
         return CommandResults(
@@ -2572,8 +2690,10 @@ class Client(BaseClient):
         targetgroups_put_group_name = str_arg(args, "targetgroups_put_group_name")
         targetgroups_put_description = str_arg(args, "targetgroups_put_description")
 
-        params = assign_params(force=force)
-        body = assign_params(group_name=targetgroups_put_group_name, description=targetgroups_put_description)
+        params = assign_params(values_to_ignore=(None,), force=force)
+        body = assign_params(
+            values_to_ignore=(None,), group_name=targetgroups_put_group_name, description=targetgroups_put_description
+        )
         response = self._http_request("put", f"/targetgroups/{group_id}", params=params, json_data=body)
 
         return CommandResults(readable_output="Success!", raw_response=response)
@@ -2601,7 +2721,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/timeframes", params=params)
 
         return CommandResults(
@@ -2618,6 +2738,7 @@ class Client(BaseClient):
         timeframe_post_is_overtimable = bool_arg(args, "timeframe_post_is_overtimable")
 
         body = assign_params(
+            values_to_ignore=(None,),
             timeframe_name=timeframe_post_timeframe_name,
             description=timeframe_post_description,
             is_overtimable=timeframe_post_is_overtimable,
@@ -2636,7 +2757,7 @@ class Client(BaseClient):
         timeframe_id = str_arg(args, "timeframe_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/timeframes/{timeframe_id}", params=params)
 
         return CommandResults(
@@ -2654,6 +2775,7 @@ class Client(BaseClient):
         timeframe_put_is_overtimable = bool_arg(args, "timeframe_put_is_overtimable")
 
         body = assign_params(
+            values_to_ignore=(None,),
             timeframe_name=timeframe_put_timeframe_name,
             description=timeframe_put_description,
             is_overtimable=timeframe_put_is_overtimable,
@@ -2676,7 +2798,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/usergroups", params=params)
 
         return CommandResults(
@@ -2691,7 +2813,7 @@ class Client(BaseClient):
         group_id = str_arg(args, "group_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/usergroups/{group_id}", params=params)
 
         return CommandResults(
@@ -2710,7 +2832,9 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(password_hash=password_hash, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(
+            values_to_ignore=(None,), password_hash=password_hash, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+        )
         response = self._http_request("get", "/users", params=params)
 
         return CommandResults(
@@ -2740,8 +2864,9 @@ class Client(BaseClient):
         user_post_is_disabled = bool_arg(args, "user_post_is_disabled")
         user_post_gpg_public_key = str_arg(args, "user_post_gpg_public_key")
 
-        params = assign_params(password_hash=password_hash)
+        params = assign_params(values_to_ignore=(None,), password_hash=password_hash)
         body = assign_params(
+            values_to_ignore=(None,),
             user_name=user_post_user_name,
             display_name=user_post_display_name,
             email=user_post_email,
@@ -2774,7 +2899,7 @@ class Client(BaseClient):
         password_hash = bool_arg(args, "password_hash")
         fields = str_arg(args, "fields")
 
-        params = assign_params(password_hash=password_hash, fields=fields)
+        params = assign_params(values_to_ignore=(None,), password_hash=password_hash, fields=fields)
         response = self._http_request("get", f"/users/{name}", params=params)
 
         return CommandResults(
@@ -2806,8 +2931,9 @@ class Client(BaseClient):
         user_put_is_disabled = bool_arg(args, "user_put_is_disabled")
         user_put_gpg_public_key = str_arg(args, "user_put_gpg_public_key")
 
-        params = assign_params(force=force, password_hash=password_hash)
+        params = assign_params(values_to_ignore=(None,), force=force, password_hash=password_hash)
         body = assign_params(
+            values_to_ignore=(None,),
             user_name=user_put_user_name,
             display_name=user_put_display_name,
             email=user_put_email,
@@ -2837,7 +2963,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/targetgroups/{group_id}/restrictions", params=params)
 
         return CommandResults(
@@ -2853,7 +2979,7 @@ class Client(BaseClient):
         restriction_id = str_arg(args, "restriction_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/targetgroups/{group_id}/restrictions/{restriction_id}", params=params)
 
         return CommandResults(
@@ -2871,7 +2997,12 @@ class Client(BaseClient):
         restriction_put_rules = str_arg(args, "restriction_put_rules")
         restriction_put_subprotocol = str_arg(args, "restriction_put_subprotocol")
 
-        body = assign_params(action=restriction_put_action, rules=restriction_put_rules, subprotocol=restriction_put_subprotocol)
+        body = assign_params(
+            values_to_ignore=(None,),
+            action=restriction_put_action,
+            rules=restriction_put_rules,
+            subprotocol=restriction_put_subprotocol,
+        )
         response = self._http_request("put", f"/targetgroups/{group_id}/restrictions/{restriction_id}", json_data=body)
 
         return CommandResults(readable_output="Success!", raw_response=response)
@@ -2891,7 +3022,13 @@ class Client(BaseClient):
         authorization = str_arg(args, "authorization")
         duration = int_arg(args, "duration")
 
-        params = assign_params(key_format=key_format, cert_format=cert_format, authorization=authorization, duration=duration)
+        params = assign_params(
+            values_to_ignore=(None,),
+            key_format=key_format,
+            cert_format=cert_format,
+            authorization=authorization,
+            duration=duration,
+        )
         response = self._http_request("get", f"/targetpasswords/checkout/{account_name}", params=params)
 
         add_key_to_outputs(response, "account_name", account_name)
@@ -2908,7 +3045,7 @@ class Client(BaseClient):
         account_name = str_arg(args, "account_name")
         authorization = str_arg(args, "authorization")
 
-        params = assign_params(authorization=authorization)
+        params = assign_params(values_to_ignore=(None,), authorization=authorization)
         response = self._http_request("get", f"/targetpasswords/extendcheckout/{account_name}", params=params)
 
         return CommandResults(readable_output="Success!", raw_response=response)
@@ -2919,7 +3056,7 @@ class Client(BaseClient):
         force = bool_arg(args, "force")
         comment = str_arg(args, "comment")
 
-        params = assign_params(authorization=authorization, force=force, comment=comment)
+        params = assign_params(values_to_ignore=(None,), authorization=authorization, force=force, comment=comment)
         response = self._http_request("get", f"/targetpasswords/checkin/{account_name}", params=params)
 
         return CommandResults(readable_output="Success!", raw_response=response)
@@ -2934,7 +3071,9 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(group=group, group_id=group_id, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(
+            values_to_ignore=(None,), group=group, group_id=group_id, q=q, sort=sort, offset=offset, limit=limit, fields=fields
+        )
         response = self._http_request("get", f"/targets/{target_type}", params=params)
 
         return CommandResults(
@@ -2953,7 +3092,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/usergroups/{group_id}/mappings", params=params)
 
         return CommandResults(
@@ -2971,6 +3110,7 @@ class Client(BaseClient):
         usergroup_mapping_post_profile = str_arg(args, "usergroup_mapping_post_profile")
 
         body = assign_params(
+            values_to_ignore=(None,),
             domain=usergroup_mapping_post_domain,
             external_group=usergroup_mapping_post_external_group,
             profile=usergroup_mapping_post_profile,
@@ -2990,7 +3130,7 @@ class Client(BaseClient):
         mapping_id = str_arg(args, "mapping_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/usergroups/{group_id}/mappings/{mapping_id}", params=params)
 
         return CommandResults(
@@ -3009,6 +3149,7 @@ class Client(BaseClient):
         usergroup_mapping_post_profile = str_arg(args, "usergroup_mapping_post_profile")
 
         body = assign_params(
+            values_to_ignore=(None,),
             domain=usergroup_mapping_post_domain,
             external_group=usergroup_mapping_post_external_group,
             profile=usergroup_mapping_post_profile,
@@ -3033,7 +3174,7 @@ class Client(BaseClient):
         limit = int_arg(args, "limit")
         fields = str_arg(args, "fields")
 
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+        params = assign_params(values_to_ignore=(None,), q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/usergroups/{group_id}/restrictions", params=params)
 
         return CommandResults(
@@ -3051,7 +3192,10 @@ class Client(BaseClient):
         restriction_post_subprotocol = str_arg(args, "restriction_post_subprotocol")
 
         body = assign_params(
-            action=restriction_post_action, rules=restriction_post_rules, subprotocol=restriction_post_subprotocol
+            values_to_ignore=(None,),
+            action=restriction_post_action,
+            rules=restriction_post_rules,
+            subprotocol=restriction_post_subprotocol,
         )
         response = self._http_request("post", f"/usergroups/{group_id}/restrictions", json_data=body)
 
@@ -3068,7 +3212,7 @@ class Client(BaseClient):
         restriction_id = str_arg(args, "restriction_id")
         fields = str_arg(args, "fields")
 
-        params = assign_params(fields=fields)
+        params = assign_params(values_to_ignore=(None,), fields=fields)
         response = self._http_request("get", f"/usergroups/{group_id}/restrictions/{restriction_id}", params=params)
 
         return CommandResults(
@@ -3086,7 +3230,12 @@ class Client(BaseClient):
         restriction_put_rules = str_arg(args, "restriction_put_rules")
         restriction_put_subprotocol = str_arg(args, "restriction_put_subprotocol")
 
-        body = assign_params(action=restriction_put_action, rules=restriction_put_rules, subprotocol=restriction_put_subprotocol)
+        body = assign_params(
+            values_to_ignore=(None,),
+            action=restriction_put_action,
+            rules=restriction_put_rules,
+            subprotocol=restriction_put_subprotocol,
+        )
         response = self._http_request("put", f"/usergroups/{group_id}/restrictions/{restriction_id}", json_data=body)
 
         return CommandResults(readable_output="Success!", raw_response=response)
@@ -3380,15 +3529,10 @@ def main() -> None:
             "wab-get-version": client.get_version,
         }
 
-        deprecated: Dict[str, Any] = {}
-
         if command == "test-module":
             test_module(client)
         elif command in commands:
             return_results(commands[command](args))
-        elif command in deprecated:
-            LOG(f"WARNING: use of deprecated command {command}")
-            return_results(deprecated[command](args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
