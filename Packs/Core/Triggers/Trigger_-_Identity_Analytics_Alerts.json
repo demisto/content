@@ -4,7 +4,6 @@
     "suggestion_reason": "Recommended for Identity Analytics alerts",
     "description": "This trigger is responsible for handling Identity Analytics alerts",
     "trigger_name": "Identity Analytics Alerts",
-    "fromVersion": "6.10.0",
     "alerts_filter": {
         "filter": {
             "AND": [
