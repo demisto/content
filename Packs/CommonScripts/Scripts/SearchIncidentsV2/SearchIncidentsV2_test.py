@@ -210,50 +210,41 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
 
 
 def get_incidents_mock_include_informational(_, args, extract_contents=True, fail_on_error=True):
-    NON_INFORMATIONAL_INCIDENTS = [
-        {
-            'id': '1',
-            'informational': False,
-        },
-        {
-            'id': '2',
-            'informational': False,
-        }
-    ]
-
-    INFORMATIONAL_INCIDENTS = [
-        {
-            'id': '3',
-            'informational': True,
-        },
-        {
-            'id': '4',
-            'informational': True,
-        }
+    incidents = [
+        {'id': '1', 'informational': False},
+        {'id': '2', 'informational': False},
     ]
 
     includeinformational = args.get('includeinformational', None)
-    incidents_list = NON_INFORMATIONAL_INCIDENTS.copy()
 
     if includeinformational:
-        incidents_list.extend(INFORMATIONAL_INCIDENTS)
+        incidents.extend([
+            {'id': '3', 'informational': True},
+            {'id': '4', 'informational': True},
+        ])
 
     if not extract_contents:
-        return [{'Contents': {'data': incidents_list, 'total': len(incidents_list)}}]
+        return [{'Contents': {'data': incidents, 'total': len(incidents)}}]
 
-    return {'Contents': {'data': incidents_list}}
+    return {'Contents': {'data': incidents}}
+
+
+INCLUDE_INFORMATIONAL_FIXED_TIME = dt.datetime(2024, 10, 1, 15, 0, 0)
+INCLUDE_INFORMATIONAL_NOW = INCLUDE_INFORMATIONAL_FIXED_TIME.isoformat()
+INCLUDE_INFORMATIONAL_5_HOURS_AGO = dt.datetime(2024, 10, 1, 10, 0, 0).isoformat()
+INCLUDE_INFORMATIONAL_3_HOURS_AGO = dt.datetime(2024, 10, 1, 12, 0, 0).isoformat()
 
 
 @pytest.mark.parametrize('args,expected_filtered_args,expected_result', [
     ({'includeinformational': 'true', 'fromdate': '3 hours ago', 'todate': 'now'},
      {'includeinformational': True,
-      'fromdate': (dt.datetime(2024, 10, 1, 12, 0, 0)).isoformat(),
-      'todate': dt.datetime(2024, 10, 1, 15, 0, 0).isoformat()},
+      'fromdate': INCLUDE_INFORMATIONAL_3_HOURS_AGO,
+      'todate': INCLUDE_INFORMATIONAL_NOW},
      ['1', '2', '3', '4']),
     ({'includeinformational': 'true', 'fromdate': '6 hours ago', 'todate': 'now'},
      {'includeinformational': True,
-      'fromdate': (dt.datetime(2024, 10, 1, 10, 0, 0)).isoformat(),
-      'todate': dt.datetime(2024, 10, 1, 15, 0, 0).isoformat()},
+      'fromdate': INCLUDE_INFORMATIONAL_5_HOURS_AGO,
+      'todate': INCLUDE_INFORMATIONAL_NOW},
      ['1', '2', '3', '4']),
     ({'includeinformational': 'true'}, {}, ValueError),
     ({'includeinformational': 'false'}, {}, ['1', '2']),
@@ -284,20 +275,19 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
        - Case G: Ensure that a ValueError is raised when todate is missing but includeinformational=True.
     """
     import SearchIncidentsV2
-    fixed_datetime = dt.datetime(2024, 10, 1, 15, 0, 0)
     mocker.patch.object(dt, 'datetime', autospec=True)
-    dt.datetime.utcnow.return_value = fixed_datetime
+    dt.datetime.utcnow.return_value = INCLUDE_INFORMATIONAL_FIXED_TIME
 
     class MockDateTime:
         def utcnow(self):
-            return fixed_datetime
+            return INCLUDE_INFORMATIONAL_FIXED_TIME
 
     mocker.patch('SearchIncidentsV2.datetime', MockDateTime())
 
     #mock arg to datetime since internally uses utc which is not the same as the fixed datetime
     mocker.patch.object(SearchIncidentsV2, 'arg_to_datetime', side_effect=lambda x: None if x is None
-    else fixed_datetime - dt.timedelta(
-        hours=int(x.split()[0])) if 'hours ago' in x else fixed_datetime)
+    else INCLUDE_INFORMATIONAL_FIXED_TIME - dt.timedelta(
+        hours=int(x.split()[0])) if 'hours ago' in x else INCLUDE_INFORMATIONAL_FIXED_TIME)
 
     execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock_include_informational)
 
