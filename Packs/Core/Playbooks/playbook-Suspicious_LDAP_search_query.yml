@@ -146,10 +146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ccabe633-55a1-49bd-808d-f8a8db8e3b39
+    taskid: 81ca3384-2d21-427b-800b-cf5afc21d27f
     type: regular
     task:
-      id: ccabe633-55a1-49bd-808d-f8a8db8e3b39
+      id: 81ca3384-2d21-427b-800b-cf5afc21d27f
       version: -1
       name: Search for suspicious-related alerts by MITRE Technique
       description: |-
@@ -183,7 +183,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: '((mitreattcktechnique:*T1509* or sourceBrand:TRAPS) and caseid:'
+                  simple: '((mitreattcktechnique:*T1509* or (sourceBrand:TRAPS and categoryname:Malware)) and caseid:'
               suffix:
                 value:
                   simple: )
@@ -205,24 +205,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: c165b375-ac80-4468-8ca8-5e6a863aefdf
+    taskid: eddf5d8e-f5e0-4bfa-86f6-1dadfa3c6537
     type: condition
     task:
-      id: c165b375-ac80-4468-8ca8-5e6a863aefdf
+      id: eddf5d8e-f5e0-4bfa-86f6-1dadfa3c6537
       version: -1
       name: Is this a non-legit operation?
-      description: |-
-        #### Determines if there the LDAP operation was suspicious by the following conditions:
-
-        - *Without Host Risk Score:*  
-        Actor Process name is not Prevalent *AND*
-        Actor Process Command Line is not Prevalent *AND*
-        No Risk Score for the user
-
-        - *With Host Risk Score:*  
-        (Actor Process name is not Prevalent *OR*
-        Actor Process Command Line is not Prevalent) *AND*
-        Risk Host Score is Medium or High
+      description: "## Determines if there the LDAP operation was suspicious by the following conditions:\n\n- *Without Host Risk Score:*  \nActor Process name is not Prevalent *AND*\nActor Process Command Line is not Prevalent *AND*\nNo Risk Score for the user\n\n- *With Host Risk Score:*  \n(Actor Process name is not Prevalent *OR*\nActor Process Command Line is not Prevalent) *AND*\nThe Host Risk Score is Medium or High"
       type: condition
       iscommand: false
       brand: ""
@@ -297,6 +286,22 @@ tasks:
             value:
               simple: Medium
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: High
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: Medium
     continueonerrortype: ""
     view: |-
       {
@@ -409,6 +414,7 @@ tasks:
       - "3"
       - "17"
       - "16"
+      - "25"
       "yes":
       - "1"
     separatecontext: false
@@ -517,10 +523,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: fc92daf1-7293-4c97-841c-ee2dd269ce2a
+    taskid: 9fcad966-4a26-431d-8436-8b454fe7d3f1
     type: regular
     task:
-      id: fc92daf1-7293-4c97-841c-ee2dd269ce2a
+      id: 9fcad966-4a26-431d-8436-8b454fe7d3f1
       version: -1
       name: Get Host Score from Risky Assets
       description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
@@ -720,12 +726,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 1c0ea250-fc66-43b5-82e4-1d90bf166d0b
+    taskid: 38298117-7339-4604-84c7-214c3b92d254
     type: regular
     task:
-      id: 1c0ea250-fc66-43b5-82e4-1d90bf166d0b
+      id: 38298117-7339-4604-84c7-214c3b92d254
       version: -1
-      name: Terminate CGO Process
+      name: Terminate Causality (CGO)
       description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
@@ -758,6 +764,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: d9bbd834-6027-4bf8-8a9f-5cce15c76d31
+    type: regular
+    task:
+      id: d9bbd834-6027-4bf8-8a9f-5cce15c76d31
+      version: -1
+      name: Get User Score from Risky Assets
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      user_id:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -766,7 +812,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2005,
-        "width": 1720,
+        "width": 2120,
         "x": 240,
         "y": -220
       }
@@ -776,4 +822,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.8.0
+fromversion: 6.10.0
