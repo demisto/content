@@ -1,5 +1,5 @@
 {
-    "name": "Dragos_Platform",
+    "name": "Dragos Platform",
     "description": "The Dragos Platform offers customers visibility into their ICS/OT assets, vulnerabilities, threats, and response actions.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
