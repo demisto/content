@@ -1919,6 +1919,23 @@ Searches chat messages or shared files between a user and an individual contact 
 >| 2023-05-22T08:24:14Z | None | a62636c8-b6c1-4135-9352-88ac61eafc31 | <example@example.com> | message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 >| 2023-05-22T08:20:22Z | None | 4a59df4a-9668-46bd-bff2-3e1f3462ecc3 | <example@example.com> | my message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 
+### zoom-delete-user-token
+
+***
+Revoke a user's Zoom SSO session.
+To list all available users use `zoom-list-users` command.
+
+
+#### Base Command
+
+`zoom-delete-user-token`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                         | **Required** |
+|-------------------|-----------------------------------------------------------------------------------------| --- |
+| user_id           | The user ID or email to be revoked.                                                     | Required | 
+
 ### send-notification
 
 ***
