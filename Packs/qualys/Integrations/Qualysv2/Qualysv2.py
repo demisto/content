@@ -3181,6 +3181,9 @@ def main():  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
+    # We start a counter mainly for fetch assets as it is might be long. It can be used in other commands as well
+    start_time = time.time()
+
     base_url = params.get('url')
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -3485,12 +3488,13 @@ def main():  # pragma: no cover
             fetch_stage = last_run.get('stage', 'assets')
 
             if fetch_stage == 'assets':
-                start_time = time.time()
+
                 demisto.debug(f'Starting fetch for assets, {start_time=}')
                 assets, new_last_run, total_assets, snapshot_id, set_new_limit = fetch_assets(client=client,
                                                                                               assets_last_run=last_run)
                 if set_new_limit or check_fetch_duration_time(start_time):
-                    new_last_run = set_last_run_with_new_limit(new_last_run, last_run.get('limit', HOST_LIMIT))
+                    new_last_run = set_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
+                    last_run['nextTrigger'] = '0'
                 else:
                     demisto.debug('sending assets to XSIAM.')
                     send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
