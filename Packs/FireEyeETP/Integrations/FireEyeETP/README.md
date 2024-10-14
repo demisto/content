@@ -120,7 +120,7 @@ Search for messages using specific message attributes as indicators.
          "attributes": {  
             "acceptedDateTime": "2018-06-09T10:49:32.000Z",
             "countryCode": "US",
-            "domain": "demisto.com",
+            "domain": "test.com",
             "downStreamMsgID": "250 2.0.0 OK 100041373 d14-v6si970000qtb.70 - gsmtp",
             "emailSize": 9.89,
             "lastModifiedDateTime": "2018-06-09T10:49:33.329Z",
@@ -147,7 +147,7 @@ Search for messages using specific message attributes as indicators.
                "type": "domain",
                "id": 29074,
                "attributes": {  
-                  "name": "demisto.com "
+                  "name": "test.com "
                }
             }
          ],
@@ -430,3 +430,125 @@ Returns detailed information for any specified alert. Alerts that are more than 
    "type": "alerts"
 }
 ```
+
+### fireeye-etp-download-yara-file
+
+***
+Downloads a YARA file.
+
+#### Base Command
+
+`fireeye-etp-download-yara-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required | 
+| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### fireeye-etp-get-events-data
+
+***
+Returns all events of the alert by the alert ID.
+
+#### Base Command
+
+`fireeye-etp-get-events-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_id | Message ID of alert. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeETP.Events | unknown | The events of the alert. | 
+| FireEyeETP.Events.Delivered_msg | unknown | Display if event is delivered successfully or not. | 
+| FireEyeETP.Events.Delivered_status | unknown | The status of the message. | 
+| FireEyeETP.Events.InternetMessageId | unknown | The internet message ID of the alert. | 
+| FireEyeETP.Events.Logs | unknown | The logs of the alert. | 
+
+### fireeye-etp-list-yara-rulesets
+
+***
+Fetch the list of YARA rulesets and return a list with all the rules.
+
+#### Base Command
+
+`fireeye-etp-list-yara-rulesets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeETP.Policy | unknown | The policy id. | 
+
+### fireeye-etp-upload-yara-file
+
+***
+Update or replace the YARA rule file in the existing ruleset.
+
+#### Base Command
+
+`fireeye-etp-upload-yara-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required | 
+| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required | 
+| entryID | Entry ID of yara file to upload. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### fireeye-etp-download-alert-artifact
+
+***
+Downloads all case files of the alert specified by the alert ID, in a zip file. You can obtain the ID from the Alert Summary response, for example "id": "AV7zzRy7kvIwrKcfu0I".
+
+#### Base Command
+
+`fireeye-etp-download-alert-artifact`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The alert ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### fireeye-etp-quarantine-release
+
+***
+Releases the email file present in the quarantine for the given email. Cloud message ID.
+
+#### Base Command
+
+`fireeye-etp-quarantine-release`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_id | The message ID. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
