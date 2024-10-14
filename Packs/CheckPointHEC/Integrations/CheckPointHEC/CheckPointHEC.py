@@ -176,6 +176,20 @@ class Client(BaseClient):
             url_suffix='scopes'
         )
 
+    def restore_requests(self, start_date: str, saas_apps: List[str] = None) -> dict[str, Any]:
+        request_data = self._strip_none({
+            'startDate': start_date,
+            'saas': saas_apps or SAAS_NAMES
+        })
+        payload = {
+            'requestData': request_data
+        }
+        return self._call_api(
+            'GET',
+            url_suffix='restore_request/query',
+            json_data=payload
+        )
+
     def query_events(self, start_date: str, end_date: str = None, saas_apps: List[str] = None, states: List[str] = None,
                      severities: List[int] = None, threat_types: List[str] = None) -> dict[str, Any]:
         request_data: dict[str, Any] = {
@@ -627,7 +641,7 @@ def test_module(client: Client):
 
 
 def fetch_incidents(client: Client, first_fetch: str, saas_apps: List[str], states: List[str], severities: List[int],
-                    threat_types: List[str], max_fetch: int, fetch_interval: int):
+                    threat_types: List[str], max_fetch: int, fetch_interval: int, collect_restore_requests: bool = False):
     now = datetime.utcnow()  # We get current time before processing
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_fetch')):
@@ -642,6 +656,22 @@ def fetch_incidents(client: Client, first_fetch: str, saas_apps: List[str], stat
 
     counter = 0
     incidents: list[dict[str, Any]] = []
+
+    if collect_restore_requests:
+        result = client.restore_requests(last_fetch, saas_apps)
+        restore_requests = result['responseData']
+        for restore_request in restore_requests:
+            if (occurred := restore_request.get('restoreRequestDate')) <= last_fetch:
+                continue
+
+            incidents.append({
+                'dbotMirrorId': restore_request.get('id'),
+                'details': restore_request.get('restoreRequestComment'),
+                'name': f'Restore Request: {restore_request.get("subject")}',
+                'occurred': occurred,
+                'rawJSON': json.dumps(restore_request),
+            })
+
     for event in events:
         if (occurred := event.get('eventCreated')) <= last_fetch:
             continue
@@ -1378,6 +1408,7 @@ def main() -> None:  # pragma: no cover
                 'threat_types': [x.lower().replace(' ', '_') for x in argToList(params.get('threat_type'))],
                 'max_fetch': int(params.get('max_fetch', MAX_FETCH_DEFAULT)),
                 'fetch_interval': int(params.get('incidentFetchInterval', FETCH_INTERVAL_DEFAULT)),
+                'collect_restore_requests': arg_to_bool(params.get('collect_restore_requests')),
             }
             fetch_incidents(client, **kwargs)
         elif command == 'checkpointhec-get-entity':
