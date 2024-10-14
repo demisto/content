@@ -1,8 +1,7 @@
 id: DSPM notify user in case of error
 version: -1
 name: DSPM notify user in case of error
-description: The DSPM Notify User in Case of Error playbook is designed to handle
-  errors in DSPM incidents by notifying users and managing Slack notifications.
+description: The DSPM Notify User in Case of Error playbook is designed to handle errors in DSPM incidents by notifying users and managing Slack notifications.
 starttaskid: "0"
 tasks:
   "0":
@@ -82,11 +81,7 @@ tasks:
       id: 37ee3189-d41a-4044-8405-b518eba23fdc
       version: -1
       name: Send Slack Notification
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -199,4 +194,6 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
-fromversion: 6.0.0
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

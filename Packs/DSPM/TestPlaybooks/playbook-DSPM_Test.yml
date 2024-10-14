@@ -1,0 +1,1272 @@
+id: DSPM
+name: DSPM
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: dspm-list-risk-findings
+      description: ''
+      script: DSPM|||dspm-list-risk-findings
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.cloudEnvironment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.cloudProvider
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.complianceStandards
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.firstDiscovered
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.projectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.status
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: dspm-get-risk-finding-by-id
+      description: ''
+      script: DSPM|||dspm-get-risk-finding-by-id
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.cloudEnvironment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.cloudProvider
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.complianceStandards
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.firstDiscovered
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.projectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFinding.status
+            iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: dspm-list-assets
+      description: ''
+      script: DSPM|||dspm-list-assets
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.dataTypes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.dataTypeGroups
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.assetDigTags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.cloudEnvironment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.cloudProvider
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DSPM.Asset.encrypted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.lifecycle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.openAlertsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.openRisksCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DSPM.Asset.openToWorld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.projectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.projectName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.serviceType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Asset.tags
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: dspm-get-asset-details
+      description: ''
+      script: DSPM|||dspm-get-asset-details
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.assetDigTags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.cloudEnvironment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.cloudProvider
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.dataTypeGroups
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.dataTypes
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DSPM.AssetDetails.encrypted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.lifecycle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.openAlertsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.openRisksCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DSPM.AssetDetails.openToWorld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.projectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.projectName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.serviceType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetDetails.tags
+            iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: dspm-get-asset-files-by-id
+      description: ''
+      script: DSPM|||dspm-get-asset-files-by-id
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.size
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DSPM.AssetFiles.openToWorld
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DSPM.AssetFiles.isDeleted
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DSPM.AssetFiles.isMalicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.dataTypes.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.dataTypes.label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.dataTypes.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.dataTypes.valueDetails.masked_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.dataTypes.valueDetails.line
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFiles.labels
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DSPM.AssetFiles.isDbDump
+            iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: dspm-get-list-of-asset-fields-by-id
+      description: ''
+      script: DSPM|||dspm-get-list-of-asset-fields-by-id
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.tableName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.tableSize
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.databaseName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.collectionName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.dataTypes.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.dataTypes.label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.dataTypes.hitPercentage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.dataTypes.maskedValues.masked_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.dataTypes.maskedValues.line
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AssetFields.schemaName
+            iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: dspm-get-data-types
+      description: ''
+      script: DSPM|||dspm-get-data-types
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypes.Key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypes.No
+            iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: dspm-list-labels
+      description: ''
+      script: DSPM|||dspm-list-labels
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Label.Key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Label.No
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: dspm-list-data-types-findings
+      description: ''
+      script: DSPM|||dspm-list-data-types-findings
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.dataTypeName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.records
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.publicRecords
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.assets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.clouds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.regions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.lastFound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.recordsAtRisk.high
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.recordsAtRisk.medium
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.DataTypesFinding.recordsAtRisk.low
+            iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: dspm-get-integration-config
+      description: ''
+      script: DSPM|||dspm-get-integration-config
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.IntegrationConfig
+            iscontext: true
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: dspm-update-risk-finding-status
+      description: ''
+      script: DSPM|||dspm-update-risk-finding-status
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFindingStatusUpdate.newStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFindingStatusUpdate.oldStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.RiskFindingStatusUpdate.riskFindingId
+            iscontext: true
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: dspm-update-alert-status
+      description: ''
+      script: DSPM|||dspm-update-alert-status
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AlertStatusUpdate.newStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AlertStatusUpdate.oldStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.AlertStatusUpdate.alertId
+            iscontext: true
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: dspm-list-alerts
+      description: ''
+      script: DSPM|||dspm-list-alerts
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '27'
+    type: condition
+    task:
+      id: '27'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.detectionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.policyName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.assetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.assetLabels
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.cloudProvider
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.destinationProjects
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.cloudEnvironment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.policySeverity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.policyCategoryType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.eventActor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.eventUserAgent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.eventActionMedium
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.eventSource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.policyFrameWorks
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DSPM.Alert.eventRawData
+            iscontext: true
+    view: '{"position":{"x":50,"y":5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: '28'
+    taskid: '28'
+    type: title
+    task:
+      id: '28'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

@@ -1,14 +1,7 @@
 id: DSPM Send Slack Notification to User
 version: -1
 name: DSPM Send Slack Notification to User
-description: '"Send Slack Notification to User" playbook is designed to notify a user
-  via Slack and handle their response. It begins by sending a Slack notification to
-  a specified email using the SlackBlockBuilder script. Afterward, it waits for the
-  user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once
-  the response is received, it is inserted into the incident''s context. If there
-  is an error in generating the Slack block, the incident is added for a re-run. Finally,
-  the playbook extracts the user''s response from the Slack block state for further
-  processing.'
+description: '"Send Slack Notification to User" playbook is designed to notify a user via Slack and handle their response. It begins by sending a Slack notification to a specified email using the SlackBlockBuilder script. Afterward, it waits for the user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once the response is received, it is inserted into the incident''s context. If there is an error in generating the Slack block, the incident is added for a re-run. Finally, the playbook extracts the user''s response from the Slack block state for further processing.'
 starttaskid: "0"
 tasks:
   "0":
@@ -49,11 +42,7 @@ tasks:
       id: 0d63cdcf-6f72-4d7b-8365-11c2c4e54880
       version: -1
       name: Send slack notification to ${userSlackEmail}
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -89,8 +78,7 @@ tasks:
     task:
       id: 78f06a05-027f-4d9b-8e73-4981d4b53e56
       version: -1
-      name: Waiting for user replay till the set time in Prisma Cloud DSPM instance
-        configuration.
+      name: Waiting for user replay till the set time in Prisma Cloud DSPM instance configuration.
       scriptName: DSPMWaitUntilUserSpecifiedTime
       type: regular
       iscommand: false
@@ -123,8 +111,7 @@ tasks:
       id: 539591aa-46fd-4790-84f3-a7f9afea2480
       version: -1
       name: ' Get SlackBlockBuilder response and insert it into an incident''s context.'
-      description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response
-        and insert it into an incident's context.
+      description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response and insert it into an incident's context.
       scriptName: GetSlackBlockBuilderResponse
       type: regular
       iscommand: false
@@ -156,11 +143,8 @@ tasks:
     task:
       id: a6d0526e-0da1-4296-8879-2531e894d744
       version: -1
-      name: 'Are errors occurred when generating the Slack block list for the incident
-        ID : ${incident_object.id}'
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      name: 'Are errors occurred when generating the Slack block list for the incident ID : ${incident_object.id}'
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -272,4 +256,6 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
-fromversion: 6.0.0
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

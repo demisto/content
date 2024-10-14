@@ -1,11 +1,8 @@
-id: c7f9a77b-18e3-45ca-8307-b39035938abe
-version: 16
-name: DSPM Remediation playbook for Sensitive asset open to world.
-description: 'The DSPM Remediation Playbook for Sensitive Asset Open to World is designed
-  to handle incidents where sensitive assets are exposed to the public, with specific
-  focus on remediating this vulnerability across different cloud providers (AWS).
-  Below is an overview of the key steps and actions included in this playbook:'
-fromversion: "6.0.0"
+id: DSPM Remediation for Sensitive asset open to world.
+version: -1
+name: DSPM Remediation for Sensitive asset open to world.
+description: 'The DSPM Remediation Playbook for Sensitive Asset Open to World is designed to handle incidents where sensitive assets are exposed to the public, with specific focus on remediating this vulnerability across different cloud providers (AWS). Below is an overview of the key steps and actions included in this playbook:.'
+fromversion: "6.10.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -18,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -45,8 +43,7 @@ tasks:
       id: 062aa348-995d-4c9b-8ba9-8b83ccd86d9e
       version: -1
       name: aws-s3-put-public-access-block
-      description: Creates or modifies the PublicAccessBlock configuration for an
-        Amazon S3 bucket.
+      description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
       script: AWS - S3|||aws-s3-put-public-access-block
       type: regular
       iscommand: true
@@ -90,11 +87,7 @@ tasks:
       id: 19e7a8bf-75a4-46fa-856e-d43a6125dd7a
       version: -1
       name: Slack block list overwritten with a success message
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMOverwriteListAndNotify
       type: regular
       iscommand: false
@@ -103,9 +96,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: "For XSOAR incident ID : ${incident.id} successfully applied public
-          access block to the ${incident_object.assetName} bucket. Also updated risk:
-          ${incident.riskfindingid} status to 'INVESTIGATION'.\nThanks. "
+        simple: "For XSOAR incident ID : ${incident.id} successfully applied public access block to the ${incident_object.assetName} bucket. Also updated risk: ${incident.riskfindingid} status to 'INVESTIGATION'.\nThanks. "
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -130,8 +121,7 @@ tasks:
       id: f4bcb2f8-4688-4c65-8495-f809e6838bc1
       version: -1
       name: Check the Cloud Provider of asset
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -193,9 +183,7 @@ tasks:
       id: 0340a84f-f267-4199-8252-0fbf8656bc58
       version: -1
       name: Have you encountered any errors with mitigating asset risk?
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -232,11 +220,7 @@ tasks:
       id: 1f93e962-3a59-4105-85ba-bad3ce9297bf
       version: -1
       name: Slack block list overwritten with a error message
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMOverwriteListAndNotify
       type: regular
       iscommand: false
@@ -248,8 +232,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: 'For XSOAR incident ID : ${incident.id} got error while applying public
-          access block to the ${incident_object.assetName} bucket.'
+        simple: 'For XSOAR incident ID : ${incident.id} got error while applying public access block to the ${incident_object.assetName} bucket.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -314,9 +297,7 @@ tasks:
       id: 266bf836-a3af-40ea-85dd-77d7c970cc2e
       version: -1
       name: Have encountered any errors while updating risk status on DSPM portal?
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -353,11 +334,7 @@ tasks:
       id: d06d3932-5974-4337-89bb-464d256683b4
       version: -1
       name: Slack block list overwritten with a error message
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMOverwriteListAndNotify
       type: regular
       iscommand: false
@@ -366,9 +343,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: "For XSOAR incident ID : ${incident.id} successfully applied public
-          access block to the ${incident_object.assetName} bucket. \nBut while updating
-          risk: ${incident.riskfindingid} status to 'INVESTIGATION' got error.\nThanks. "
+        simple: "For XSOAR incident ID : ${incident.id} successfully applied public access block to the ${incident_object.assetName} bucket. \nBut while updating risk: ${incident.riskfindingid} status to 'INVESTIGATION' got error.\nThanks. "
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -431,3 +406,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)

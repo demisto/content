@@ -1,8 +1,8 @@
-id: 08655808-4525-45cd-8540-48e7d75e6610
-version: 14
+id: DSPM Valid User Response
+version: -1
 name: DSPM Valid User Response
 description: "Playbook to validate user response in DSPM."
-fromversion: "6.0.0"
+fromversion: "6.10.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -147,11 +147,7 @@ tasks:
       id: 01e7668f-2a5e-4277-8e18-e82655ff284c
       version: -1
       name: Send slack notification to ${userSlackEmail}
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -183,10 +179,10 @@ tasks:
     type: playbook
     task:
       id: d3792edc-ef0c-4b03-8ed2-9b8b80bfd174
-      description: "DSPM Remediation playbook for Sensitive asset open to world."
+      description: "DSPM Remediation for Sensitive asset open to world."
       version: -1
-      name: DSPM Remediation playbook for Sensitive asset open to world.
-      playbookName: DSPM Remediation playbook for Sensitive asset open to world.
+      name: DSPM Remediation for Sensitive asset open to world.
+      playbookName: DSPM Remediation for Sensitive asset open to world.
       type: playbook
       iscommand: false
       brand: ""
@@ -220,10 +216,10 @@ tasks:
     type: playbook
     task:
       id: 50fe4308-911d-4d45-807c-f73fd158856a
-      description: "DSPM Remediation playbook for Empty storage asset."
+      description: "DSPM Remediation for Empty storage asset."
       version: -1
-      name: DSPM Remediation playbook for Empty storage asset
-      playbookName: DSPM Remediation playbook for Empty storage asset
+      name: DSPM Remediation for Empty storage asset
+      playbookName: DSPM Remediation for Empty storage asset
       type: playbook
       iscommand: false
       brand: ""
@@ -259,11 +255,7 @@ tasks:
       id: a16ad3e1-f369-4428-8af3-f1122e12ac74
       version: -1
       name: OverwriteListAndNotify
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMOverwriteListAndNotify
       type: regular
       iscommand: false
@@ -392,4 +384,5 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
+tests:
+- No tests (auto formatted)
