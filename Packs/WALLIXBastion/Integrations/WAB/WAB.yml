@@ -5326,8 +5326,6 @@ script:
     - name: scan_id
       description: 'The scan id or name to edit.'
       required: true
-    - name: force
-      description: The default value is false. When it is set to true the values of the subnets, banner_regex or protocols are replaced, otherwise the values are added to the existing ones.
     - name: scan_put_name
       description: Scan name.
     - name: scan_put_active
@@ -5335,7 +5333,7 @@ script:
     - name: scan_put_periodicity
       description: 'Periodicity of the scan, in cron notation.'
     - name: scan_put_description
-      description: Description of the scan.
+      description: 'Description of the scan.'
     - name: scan_put_emails
       description: 'Emails to notify when a job is finished.'
       isArray: true
@@ -6304,8 +6302,6 @@ script:
     - name: timeframe_id
       description: The timeframe id or name to edit.
       required: true
-    - name: force
-      description: The default value is false. When it is set to true the values of the periods are replaced, otherwise the values are added to the existing ones.
     - name: timeframe_put_timeframe_name
       description: The timeframe name. No space is permitted at first or end.
     - name: timeframe_put_description
