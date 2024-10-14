@@ -3,9 +3,9 @@ from CommonServerPython import *  # noqa: F401
 
 """Recorded Future Playbook alerts Integration for Demisto."""
 
-import platform
-import json
 import base64
+import json
+import platform
 from typing import Any, Dict, List, Optional
 
 # flake8: noqa: F402,F405 lgtm
@@ -15,7 +15,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 TIMEOUT_60 = 60
 TIMEOUT_90 = 90
@@ -215,13 +215,12 @@ class Actions:
 # === === === === === === === === === === === === === === ===
 
 
-def get_client() -> Client:
+def get_client(proxies: dict) -> Client:
     demisto_params = demisto.params()
     base_url = demisto_params.get("server_url", "").rstrip("/")
     verify_ssl = not demisto_params.get("unsecure", False)
-    handle_proxy()
 
-    api_token = demisto_params["token"].get("password")
+    api_token = demisto_params.get("token", {}).get("password")
 
     if not api_token:
         return_error(message="Please provide a valid API token")
@@ -238,6 +237,7 @@ def get_client() -> Client:
         base_url=base_url,
         verify=verify_ssl,
         headers=headers,
+        proxy=bool(proxies),
     )
 
     return client
@@ -246,7 +246,8 @@ def get_client() -> Client:
 def main() -> None:
     """Main method used to run actions."""
     try:
-        client = get_client()
+        proxies = handle_proxy()
+        client = get_client(proxies=proxies)
         command = demisto.command()
         actions = Actions(client)
 
