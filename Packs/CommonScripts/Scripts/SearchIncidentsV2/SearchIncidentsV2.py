@@ -135,6 +135,7 @@ def transform_to_alert_data(incidents: List):
 
 
 def search_incidents(args: Dict):  # pragma: no cover
+    hr_prefix = ''
     is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     platform = get_demisto_version().get('platform', 'xsoar')
     if not is_valid_args(args):
@@ -160,9 +161,9 @@ def search_incidents(args: Dict):  # pragma: no cover
             raise ValueError('The includeinformational argument requires fromdate and todate arguments.')
         if (datetime.utcnow() - fromdate).total_seconds() > 5 * 60 * 60:  # type: ignore
             args['fromdate'] = arg_to_datetime('5 hours ago').isoformat()  # type: ignore
-            demisto.log(f'fromdate: {fromdate} is more than 5 hours from now: {datetime.utcnow()}. '
-                        f'Currently, we support querying informational incidents for up to the last 5 hours.'
-                        f' The fromdate has been adjusted to {args.get("fromdate")}')
+            hr_prefix = (f'fromdate: {fromdate} is more than 5 hours from now: {datetime.utcnow()}. Currently, we support '
+                         f'querying informational incidents for up to the last 5 hours. The fromdate has been'
+                         f' adjusted to {args.get("fromdate")}')
         args['includeinformational'] = includeinformational
     else:
         args.pop('includeinformational', None)
@@ -174,9 +175,11 @@ def search_incidents(args: Dict):  # pragma: no cover
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
     if not incident_found:
+        if hr_prefix:
+            hr_prefix = f'{hr_prefix}\n'
         if platform == 'x2':
-            return 'Alerts not found.', {}, {}
-        return 'Incidents not found.', {}, {}
+            return f'{hr_prefix}Alerts not found.', {}, {}
+        return f'{hr_prefix}Incidents not found.', {}, {}
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     all_found_incidents = res[0]["Contents"]["data"]
     demisto.debug(
@@ -227,6 +230,8 @@ def search_incidents(args: Dict):  # pragma: no cover
         md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers + additional_headers,
                              url_keys=['incidentLink'])
 
+    if hr_prefix:
+        md = f'{hr_prefix}\n{md}'
     demisto.debug(f'amount of all the incidents that were found {len(all_found_incidents)}')
 
     return md, all_found_incidents, res
