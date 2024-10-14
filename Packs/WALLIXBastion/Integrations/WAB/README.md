@@ -28,7 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### wab-add-session-target-to-target-group
 
 ***
-Add a target account to a target group
+Add a target account to a target group.
 
 #### Base Command
 
@@ -54,7 +54,7 @@ There is no context output for this command.
 ### wab-add-password-target-to-target-group
 
 ***
-Add a password checkout account to a target group
+Add a password checkout account to a target group.
 
 #### Base Command
 
@@ -78,7 +78,8 @@ There is no context output for this command.
 ### wab-add-restriction-to-target-group
 
 ***
-Add a restriction to a target group
+Add a restriction in a targetgroup
+category: Target Group Restrictions.
 
 #### Base Command
 
@@ -88,20 +89,22 @@ Add a restriction to a target group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | The group id or name to edit. | Required | 
-| action | the restriction type: 'kill' or 'notify'. | Required | 
+| group_id | A target group id or name. | Required | 
+| action | The restriction type. Possible values are: kill, notify. | Required | 
 | rules | the restriction rules. | Required | 
-| subprotocol | the restriction subprotocol: SSH_SHELL_SESSION, SSH_REMOTE_COMMAND, SSH_SCP_UP, SSH_SCP_DOWN, SFTP_SESSION, RLOGIN, TELNET, RDP. | Required | 
+| subprotocol | The restriction subprotocol. Possible values are: SSH_SHELL_SESSION, SSH_REMOTE_COMMAND, SSH_SCP_UP, SSH_SCP_DOWN, SFTP_SESSION, RLOGIN, TELNET, RDP. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WAB.add_restriction_in_targetgroup.id | String | id of the created object. | 
 
 ### wab-get-account-references
 
 ***
 Get account references
-category: Account References
+category: Account References.
 
 #### Base Command
 
@@ -137,7 +140,7 @@ category: Account References
 
 ***
 Get account reference
-category: Account References
+category: Account References.
 
 #### Base Command
 
@@ -170,7 +173,7 @@ category: Account References
 
 ***
 Change password or SSH key of an account and propagate changes on the target host. If the body is empty, an automatic password change is performed: the password or the SSH key are changed to a newly generated value, according to the password change policy on the domain. Note: the password change must be enabled on the domain, with a plugin that will be used to change the password on the target host
-category: Account Change Password
+category: Account Change Password.
 
 #### Base Command
 
@@ -193,7 +196,7 @@ There is no context output for this command.
 
 ***
 Get all accounts
-category: Accounts
+category: Accounts.
 
 #### Base Command
 
@@ -262,7 +265,7 @@ category: Accounts
 
 ***
 Get one account
-category: Accounts
+category: Accounts.
 
 #### Base Command
 
@@ -328,7 +331,7 @@ category: Accounts
 
 ***
 Delete an account
-category: Accounts
+category: Accounts.
 
 #### Base Command
 
@@ -348,7 +351,7 @@ There is no context output for this command.
 
 ***
 Get the application accounts
-category: Application Accounts
+category: Application Accounts.
 
 #### Base Command
 
@@ -401,7 +404,7 @@ category: Application Accounts
 
 ***
 Add an account to a local domain of an application
-category: Application Accounts
+category: Application Accounts.
 
 #### Base Command
 
@@ -431,7 +434,7 @@ category: Application Accounts
 
 ***
 Get the application account
-category: Application Accounts
+category: Application Accounts.
 
 #### Base Command
 
@@ -481,7 +484,7 @@ category: Application Accounts
 
 ***
 Edit an account on a local domain of an application
-category: Application Accounts
+category: Application Accounts.
 
 #### Base Command
 
@@ -512,7 +515,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a local domain of an application
-category: Application Accounts
+category: Application Accounts.
 
 #### Base Command
 
@@ -534,7 +537,7 @@ There is no context output for this command.
 
 ***
 Get local domains data for a given application
-category: Application Local Domains
+category: Application Local Domains.
 
 #### Base Command
 
@@ -570,7 +573,7 @@ category: Application Local Domains
 
 ***
 Get local domain data for a given application
-category: Application Local Domains
+category: Application Local Domains.
 
 #### Base Command
 
@@ -603,7 +606,7 @@ category: Application Local Domains
 
 ***
 Get the applications
-category: Applications
+category: Applications.
 
 #### Base Command
 
@@ -648,7 +651,7 @@ category: Applications
 
 ***
 Get the application
-category: Applications
+category: Applications.
 
 #### Base Command
 
@@ -690,7 +693,7 @@ category: Applications
 
 ***
 Edit an application
-category: Applications
+category: Applications.
 
 #### Base Command
 
@@ -715,7 +718,7 @@ There is no context output for this command.
 
 ***
 Delete an application
-category: Applications
+category: Applications.
 
 #### Base Command
 
@@ -735,7 +738,7 @@ There is no context output for this command.
 
 ***
 Get the approvals
-category: Approvals
+category: Approvals.
 
 #### Base Command
 
@@ -787,7 +790,7 @@ category: Approvals
 
 ***
 Get the approvals for a given approver
-category: Approvals Assignments
+category: Approvals Assignments.
 
 #### Base Command
 
@@ -838,7 +841,7 @@ category: Approvals Assignments
 
 ***
 Reply to an approval request (approve/reject it). Note: you can answer to an approval request only if you are in approvers groups of authorization
-category: Approvals Assignments
+category: Approvals Assignments.
 
 #### Base Command
 
@@ -866,7 +869,7 @@ category: Approvals Assignments
 
 ***
 Get the approvals for a given approver
-category: Approvals Assignments
+category: Approvals Assignments.
 
 #### Base Command
 
@@ -918,7 +921,7 @@ category: Approvals Assignments
 
 ***
 Cancel an accepted approval. Note: you can cancel an approval only if you are in approvers groups of authorization and the end date is still not reached
-category: Approvals Assignments
+category: Approvals Assignments.
 
 #### Base Command
 
@@ -941,7 +944,7 @@ category: Approvals Assignments
 
 ***
 Notify approvers linked to an approval request by sending them an email
-category: Approvals Assignments
+category: Approvals Assignments.
 
 #### Base Command
 
@@ -964,7 +967,7 @@ category: Approvals Assignments
 
 ***
 Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id
-category: Approvals Requests
+category: Approvals Requests.
 
 #### Base Command
 
@@ -1017,7 +1020,7 @@ category: Approvals Requests
 
 ***
 Make a new approval request to access a target. Note: depending on the authorization settings, the fields "ticket" and "comment" may be required
-category: Approvals Requests
+category: Approvals Requests.
 
 #### Base Command
 
@@ -1049,7 +1052,7 @@ category: Approvals Requests
 
 ***
 Cancel an approval request
-category: Approvals Requests
+category: Approvals Requests.
 
 #### Base Command
 
@@ -1071,7 +1074,7 @@ category: Approvals Requests
 
 ***
 Notify approvers linked to an approval request by sending them an email
-category: Approvals Requests
+category: Approvals Requests.
 
 #### Base Command
 
@@ -1094,7 +1097,7 @@ category: Approvals Requests
 
 ***
 Check if an approval is required for this target (optionally for a given date in future)
-category: Approvals Requests Target
+category: Approvals Requests Target.
 
 #### Base Command
 
@@ -1120,7 +1123,7 @@ category: Approvals Requests Target
 
 ***
 Get the mappings of a domain
-category: Auth Domain Mappings
+category: Auth Domain Mappings.
 
 #### Base Command
 
@@ -1151,7 +1154,7 @@ category: Auth Domain Mappings
 
 ***
 Add a mapping in a domain and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user_group by default
-category: Auth Domain Mappings
+category: Auth Domain Mappings.
 
 #### Base Command
 
@@ -1176,7 +1179,7 @@ category: Auth Domain Mappings
 
 ***
 Edit mappings of a domain
-category: Auth Domain Mappings
+category: Auth Domain Mappings.
 
 #### Base Command
 
@@ -1199,7 +1202,7 @@ There is no context output for this command.
 
 ***
 Get the mapping of a domain
-category: Auth Domain Mappings
+category: Auth Domain Mappings.
 
 #### Base Command
 
@@ -1227,7 +1230,7 @@ category: Auth Domain Mappings
 
 ***
 Edit a mapping of a domain
-category: Auth Domain Mappings
+category: Auth Domain Mappings.
 
 #### Base Command
 
@@ -1251,7 +1254,7 @@ There is no context output for this command.
 
 ***
 Delete the mapping of the given domain
-category: Auth Domain Mappings
+category: Auth Domain Mappings.
 
 #### Base Command
 
@@ -1272,7 +1275,7 @@ There is no context output for this command.
 
 ***
 Get the auth domains
-category: Auth Domains
+category: Auth Domains.
 
 #### Base Command
 
@@ -1312,7 +1315,7 @@ category: Auth Domains
 
 ***
 Get the auth domain
-category: Auth Domains
+category: Auth Domains.
 
 #### Base Command
 
@@ -1349,7 +1352,7 @@ category: Auth Domains
 
 ***
 Get the authentications
-category: Authentications
+category: Authentications.
 
 #### Base Command
 
@@ -1386,7 +1389,7 @@ category: Authentications
 
 ***
 Get the authentication
-category: Authentications
+category: Authentications.
 
 #### Base Command
 
@@ -1420,7 +1423,7 @@ category: Authentications
 
 ***
 Get the authorizations
-category: Authorizations
+category: Authorizations.
 
 #### Base Command
 
@@ -1468,7 +1471,7 @@ category: Authorizations
 
 ***
 Add an authorization
-category: Authorizations
+category: Authorizations.
 
 #### Base Command
 
@@ -1510,7 +1513,7 @@ category: Authorizations
 
 ***
 Get the authorization
-category: Authorizations
+category: Authorizations.
 
 #### Base Command
 
@@ -1555,7 +1558,7 @@ category: Authorizations
 
 ***
 Edit an authorization
-category: Authorizations
+category: Authorizations.
 
 #### Base Command
 
@@ -1595,7 +1598,7 @@ There is no context output for this command.
 
 ***
 Delete an authorization
-category: Authorizations
+category: Authorizations.
 
 #### Base Command
 
@@ -1615,7 +1618,7 @@ There is no context output for this command.
 
 ***
 Get the checkout policies
-category: Checkout Policies
+category: Checkout Policies.
 
 #### Base Command
 
@@ -1649,7 +1652,7 @@ category: Checkout Policies
 
 ***
 Get the checkout policy
-category: Checkout Policies
+category: Checkout Policies.
 
 #### Base Command
 
@@ -1680,7 +1683,7 @@ category: Checkout Policies
 
 ***
 Get the clusters
-category: Clusters
+category: Clusters.
 
 #### Base Command
 
@@ -1712,7 +1715,7 @@ category: Clusters
 
 ***
 Get the cluster
-category: Clusters
+category: Clusters.
 
 #### Base Command
 
@@ -1741,7 +1744,7 @@ category: Clusters
 
 ***
 Get the X509 configuration infos
-category: Config X509
+category: Config X509.
 
 #### Base Command
 
@@ -1765,7 +1768,7 @@ There are no input arguments for this command.
 
 ***
 Upload X509 configuration
-category: Config X509
+category: Config X509.
 
 #### Base Command
 
@@ -1790,7 +1793,7 @@ category: Config X509
 
 ***
 Update X509 Configuration
-category: Config X509
+category: Config X509.
 
 #### Base Command
 
@@ -1813,7 +1816,7 @@ There is no context output for this command.
 
 ***
 Reset X509 configuration
-category: Config X509
+category: Config X509.
 
 #### Base Command
 
@@ -1831,7 +1834,7 @@ There is no context output for this command.
 
 ***
 Get current serial configuration number of the Bastion. This number can be used to know if the Bastion configuration was changed
-category: Configuration Number
+category: Configuration Number.
 
 #### Base Command
 
@@ -1851,7 +1854,7 @@ There are no input arguments for this command.
 
 ***
 Get the connection policies
-category: Connection Policies
+category: Connection Policies.
 
 #### Base Command
 
@@ -1883,7 +1886,7 @@ category: Connection Policies
 
 ***
 Add a connection policy
-category: Connection Policies
+category: Connection Policies.
 
 #### Base Command
 
@@ -1908,7 +1911,7 @@ category: Connection Policies
 
 ***
 Get the connection policy
-category: Connection Policies
+category: Connection Policies.
 
 #### Base Command
 
@@ -1937,7 +1940,7 @@ category: Connection Policies
 
 ***
 Edit a connection policy
-category: Connection Policies
+category: Connection Policies.
 
 #### Base Command
 
@@ -1960,7 +1963,7 @@ There is no context output for this command.
 
 ***
 Delete a connection policy. Note: it is not possible to delete the default Bastion connection policies
-category: Connection Policies
+category: Connection Policies.
 
 #### Base Command
 
@@ -1980,7 +1983,7 @@ There is no context output for this command.
 
 ***
 Get all accounts on a device local domain
-category: Device Accounts
+category: Device Accounts.
 
 #### Base Command
 
@@ -2043,7 +2046,7 @@ category: Device Accounts
 
 ***
 Add an account to a local domain on a device
-category: Device Accounts
+category: Device Accounts.
 
 #### Base Command
 
@@ -2075,7 +2078,7 @@ category: Device Accounts
 
 ***
 Get one account on a device local domain
-category: Device Accounts
+category: Device Accounts.
 
 #### Base Command
 
@@ -2135,7 +2138,7 @@ category: Device Accounts
 
 ***
 Edit an account on a local domain of a device
-category: Device Accounts
+category: Device Accounts.
 
 #### Base Command
 
@@ -2168,7 +2171,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a local domain of a device
-category: Device Accounts
+category: Device Accounts.
 
 #### Base Command
 
@@ -2190,7 +2193,7 @@ There is no context output for this command.
 
 ***
 Get the certificates on a device
-category: Device Certificates
+category: Device Certificates.
 
 #### Base Command
 
@@ -2223,7 +2226,7 @@ category: Device Certificates
 
 ***
 Get the certificate on a device
-category: Device Certificates
+category: Device Certificates.
 
 #### Base Command
 
@@ -2259,7 +2262,7 @@ category: Device Certificates
 
 ***
 Revoke a certificate of a device
-category: Device Certificates
+category: Device Certificates.
 
 #### Base Command
 
@@ -2282,7 +2285,7 @@ There is no context output for this command.
 
 ***
 Get the local domains of a device
-category: Device Local Domains
+category: Device Local Domains.
 
 #### Base Command
 
@@ -2318,7 +2321,7 @@ category: Device Local Domains
 
 ***
 Get the local domain of a device
-category: Device Local Domains
+category: Device Local Domains.
 
 #### Base Command
 
@@ -2351,7 +2354,7 @@ category: Device Local Domains
 
 ***
 Get the services of a device
-category: Device Services
+category: Device Services.
 
 #### Base Command
 
@@ -2384,7 +2387,7 @@ category: Device Services
 
 ***
 Add a service in a device
-category: Device Services
+category: Device Services.
 
 #### Base Command
 
@@ -2413,7 +2416,7 @@ category: Device Services
 
 ***
 Get the service of a device
-category: Device Services
+category: Device Services.
 
 #### Base Command
 
@@ -2443,7 +2446,7 @@ category: Device Services
 
 ***
 Edit a service of a device
-category: Device Services
+category: Device Services.
 
 #### Base Command
 
@@ -2468,7 +2471,7 @@ There is no context output for this command.
 
 ***
 Delete a service from a device
-category: Device Services
+category: Device Services.
 
 #### Base Command
 
@@ -2489,7 +2492,7 @@ There is no context output for this command.
 
 ***
 Get the devices
-category: Devices
+category: Devices.
 
 #### Base Command
 
@@ -2553,7 +2556,7 @@ category: Devices
 
 ***
 Add a device
-category: Devices
+category: Devices.
 
 #### Base Command
 
@@ -2578,7 +2581,7 @@ category: Devices
 
 ***
 Get the device
-category: Devices
+category: Devices.
 
 #### Base Command
 
@@ -2639,7 +2642,7 @@ category: Devices
 
 ***
 Edit a device
-category: Devices
+category: Devices.
 
 #### Base Command
 
@@ -2665,7 +2668,7 @@ There is no context output for this command.
 
 ***
 Delete a device
-category: Devices
+category: Devices.
 
 #### Base Command
 
@@ -2685,7 +2688,7 @@ There is no context output for this command.
 
 ***
 Get the accounts of a global domain
-category: Domain Accounts
+category: Domain Accounts.
 
 #### Base Command
 
@@ -2745,7 +2748,7 @@ category: Domain Accounts
 
 ***
 Add an account in a global domain
-category: Domain Accounts
+category: Domain Accounts.
 
 #### Base Command
 
@@ -2776,7 +2779,7 @@ category: Domain Accounts
 
 ***
 Get the account of a global domain
-category: Domain Accounts
+category: Domain Accounts.
 
 #### Base Command
 
@@ -2834,7 +2837,7 @@ category: Domain Accounts
 
 ***
 Edit an account in a global domain
-category: Domain Accounts
+category: Domain Accounts.
 
 #### Base Command
 
@@ -2866,7 +2869,7 @@ There is no context output for this command.
 
 ***
 Delete an account from a global domain
-category: Domain Accounts
+category: Domain Accounts.
 
 #### Base Command
 
@@ -2887,7 +2890,7 @@ There is no context output for this command.
 
 ***
 delete a resource from the global domain account
-category: Domain Accounts
+category: Domain Accounts.
 
 #### Base Command
 
@@ -2909,7 +2912,7 @@ There is no context output for this command.
 
 ***
 Get the global domains
-category: Domains
+category: Domains.
 
 #### Base Command
 
@@ -2950,7 +2953,7 @@ category: Domains
 
 ***
 Get the global domain
-category: Domains
+category: Domains.
 
 #### Base Command
 
@@ -2988,7 +2991,7 @@ category: Domains
 
 ***
 Get the external authentication group mappings
-category: Ldap Mappings
+category: Ldap Mappings.
 
 #### Base Command
 
@@ -3017,7 +3020,7 @@ category: Ldap Mappings
 
 ***
 Get the LDAP users of a given domain
-category: Ldap Users
+category: Ldap Users.
 
 #### Base Command
 
@@ -3054,7 +3057,7 @@ category: Ldap Users
 
 ***
 Get the LDAP user of a given domain
-category: Ldap Users
+category: Ldap Users.
 
 #### Base Command
 
@@ -3089,7 +3092,7 @@ category: Ldap Users
 
 ***
 Get information about the WALLIX Bastion license
-category: License Info
+category: License Info.
 
 #### Base Command
 
@@ -3142,7 +3145,7 @@ There are no input arguments for this command.
 
 ***
 Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured)
-category: Log Siem
+category: Log Siem.
 
 #### Base Command
 
@@ -3165,7 +3168,7 @@ category: Log Siem
 
 ***
 Get the notifications
-category: Notifications
+category: Notifications.
 
 #### Base Command
 
@@ -3198,7 +3201,7 @@ category: Notifications
 
 ***
 Add a notification
-category: Notifications
+category: Notifications.
 
 #### Base Command
 
@@ -3226,7 +3229,7 @@ category: Notifications
 
 ***
 Get the notification
-category: Notifications
+category: Notifications.
 
 #### Base Command
 
@@ -3256,7 +3259,7 @@ category: Notifications
 
 ***
 Edit a notification
-category: Notifications
+category: Notifications.
 
 #### Base Command
 
@@ -3284,7 +3287,7 @@ There is no context output for this command.
 
 ***
 Delete a notification
-category: Notifications
+category: Notifications.
 
 #### Base Command
 
@@ -3304,7 +3307,7 @@ There is no context output for this command.
 
 ***
 Get object to onboard, by type (either devices with their linked accounts or global accounts alone)
-category: Onboarding Objects
+category: Onboarding Objects.
 
 #### Base Command
 
@@ -3347,7 +3350,7 @@ category: Onboarding Objects
 
 ***
 Get the password change policies
-category: Password Change Policies
+category: Password Change Policies.
 
 #### Base Command
 
@@ -3399,7 +3402,7 @@ Moreover, @reboot is not allowed.
 
 ***
 Add a password change policy. Note: at least password or SSH options must be given in the policy (and both can be used at same time)
-category: Password Change Policies
+category: Password Change Policies.
 
 #### Base Command
 
@@ -3431,7 +3434,7 @@ category: Password Change Policies
 
 ***
 Get the password change policy
-category: Password Change Policies
+category: Password Change Policies.
 
 #### Base Command
 
@@ -3480,7 +3483,7 @@ Moreover, @reboot is not allowed.
 
 ***
 Edit a password change policy
-category: Password Change Policies
+category: Password Change Policies.
 
 #### Base Command
 
@@ -3511,7 +3514,7 @@ There is no context output for this command.
 
 ***
 Delete a password change policy
-category: Password Change Policies
+category: Password Change Policies.
 
 #### Base Command
 
@@ -3531,7 +3534,7 @@ There is no context output for this command.
 
 ***
 Get current user's or the user 'user_name' password rights on accounts (for checkout/checkin)
-category: Password Rights
+category: Password Rights.
 
 #### Base Command
 
@@ -3568,7 +3571,7 @@ category: Password Rights
 
 ***
 Get current user's or the user 'user_name' password rights on accounts (for checkout/checkin)
-category: Password Rights
+category: Password Rights.
 
 #### Base Command
 
@@ -3603,7 +3606,7 @@ category: Password Rights
 
 ***
 Get the profiles
-category: Profiles
+category: Profiles.
 
 #### Base Command
 
@@ -3661,7 +3664,7 @@ category: Profiles
 
 ***
 Get the profile
-category: Profiles
+category: Profiles.
 
 #### Base Command
 
@@ -3716,7 +3719,7 @@ category: Profiles
 
 ***
 Get the scanjobs
-category: Scan Jobs
+category: Scan Jobs.
 
 #### Base Command
 
@@ -3747,7 +3750,7 @@ category: Scan Jobs
 
 ***
 Start a scan job manually
-category: Scan Jobs
+category: Scan Jobs.
 
 #### Base Command
 
@@ -3769,7 +3772,7 @@ category: Scan Jobs
 
 ***
 Get the scanjob
-category: Scan Jobs
+category: Scan Jobs.
 
 #### Base Command
 
@@ -3797,7 +3800,7 @@ category: Scan Jobs
 
 ***
 Cancel a scan job
-category: Scan Jobs
+category: Scan Jobs.
 
 #### Base Command
 
@@ -3817,7 +3820,7 @@ There is no context output for this command.
 
 ***
 Get the scans
-category: Scans
+category: Scans.
 
 #### Base Command
 
@@ -3854,7 +3857,7 @@ category: Scans
 
 ***
 Get the scan
-category: Scans
+category: Scans.
 
 #### Base Command
 
@@ -3888,7 +3891,7 @@ category: Scans
 
 ***
 Edit a scan
-category: Scans
+category: Scans.
 
 #### Base Command
 
@@ -3914,7 +3917,7 @@ There is no context output for this command.
 
 ***
 Delete a scan
-category: Scans
+category: Scans.
 
 #### Base Command
 
@@ -3934,7 +3937,7 @@ There is no context output for this command.
 
 ***
 Get current user's or the user 'user_name' session rights (connections via proxies)
-category: Session Rights
+category: Session Rights.
 
 #### Base Command
 
@@ -3977,7 +3980,7 @@ category: Session Rights
 
 ***
 Get current user's or the user 'user_name' session rights (connections via proxies)
-category: Session Rights
+category: Session Rights.
 
 #### Base Command
 
@@ -4018,7 +4021,7 @@ category: Session Rights
 
 ***
 Get the sessions
-category: Sessions
+category: Sessions.
 
 #### Base Command
 
@@ -4110,7 +4113,7 @@ category: Sessions
 
 ***
 Edit a session
-category: Sessions
+category: Sessions.
 
 #### Base Command
 
@@ -4132,7 +4135,7 @@ There is no context output for this command.
 
 ***
 Get the metadata of one or multiple sessions
-category: Sessions Metadata
+category: Sessions Metadata.
 
 #### Base Command
 
@@ -4156,7 +4159,7 @@ category: Sessions Metadata
 
 ***
 Get session sharing requests
-category: Sessions Requests
+category: Sessions Requests.
 
 #### Base Command
 
@@ -4187,7 +4190,7 @@ category: Sessions Requests
 
 ***
 Create a session request
-category: Sessions Requests
+category: Sessions Requests.
 
 #### Base Command
 
@@ -4208,7 +4211,7 @@ There is no context output for this command.
 
 ***
 Delete a pending or a live session request
-category: Sessions Requests
+category: Sessions Requests.
 
 #### Base Command
 
@@ -4228,7 +4231,7 @@ There is no context output for this command.
 
 ***
 Get the latest snapshot of a running session
-category: Sessions Snapshots
+category: Sessions Snapshots.
 
 #### Base Command
 
@@ -4248,7 +4251,7 @@ There is no context output for this command.
 
 ***
 Get the status of a trace generation
-category: Sessions Traces
+category: Sessions Traces.
 
 #### Base Command
 
@@ -4279,7 +4282,7 @@ category: Sessions Traces
 
 ***
 Generate a trace for a session
-category: Sessions Traces
+category: Sessions Traces.
 
 #### Base Command
 
@@ -4303,7 +4306,7 @@ category: Sessions Traces
 
 ***
 Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied it will return the statistics for the last full calendar month
-category: Statistics
+category: Statistics.
 
 #### Base Command
 
@@ -4339,7 +4342,7 @@ category: Statistics
 
 ***
 Get the target groups
-category: Target Groups
+category: Target Groups.
 
 #### Base Command
 
@@ -4402,7 +4405,7 @@ category: Target Groups
 
 ***
 Add a target group
-category: Target Groups
+category: Target Groups.
 
 #### Base Command
 
@@ -4425,7 +4428,7 @@ category: Target Groups
 
 ***
 Get the target group
-category: Target Groups
+category: Target Groups.
 
 #### Base Command
 
@@ -4485,7 +4488,7 @@ category: Target Groups
 
 ***
 Edit a target group
-category: Target Groups
+category: Target Groups.
 
 #### Base Command
 
@@ -4508,7 +4511,7 @@ There is no context output for this command.
 
 ***
 Delete a target group
-category: Target Groups
+category: Target Groups.
 
 #### Base Command
 
@@ -4528,7 +4531,7 @@ There is no context output for this command.
 
 ***
 Delete a target from a group
-category: Target Groups
+category: Target Groups.
 
 #### Base Command
 
@@ -4550,7 +4553,7 @@ There is no context output for this command.
 
 ***
 Get the timeframes
-category: Timeframes
+category: Timeframes.
 
 #### Base Command
 
@@ -4585,7 +4588,7 @@ category: Timeframes
 
 ***
 Add a timeframe
-category: Timeframes
+category: Timeframes.
 
 #### Base Command
 
@@ -4609,7 +4612,7 @@ category: Timeframes
 
 ***
 Get the timeframe
-category: Timeframes
+category: Timeframes.
 
 #### Base Command
 
@@ -4641,7 +4644,7 @@ category: Timeframes
 
 ***
 Edit a timeframe
-category: Timeframes
+category: Timeframes.
 
 #### Base Command
 
@@ -4665,7 +4668,7 @@ There is no context output for this command.
 
 ***
 Delete a timeframe
-category: Timeframes
+category: Timeframes.
 
 #### Base Command
 
@@ -4685,7 +4688,7 @@ There is no context output for this command.
 
 ***
 Get the user groups
-category: User Groups
+category: User Groups.
 
 #### Base Command
 
@@ -4723,7 +4726,7 @@ category: User Groups
 
 ***
 Get the user group
-category: User Groups
+category: User Groups.
 
 #### Base Command
 
@@ -4758,7 +4761,7 @@ category: User Groups
 
 ***
 Get the users
-category: Users
+category: Users.
 
 #### Base Command
 
@@ -4802,7 +4805,7 @@ category: Users
 
 ***
 Add a user
-category: Users
+category: Users.
 
 #### Base Command
 
@@ -4840,7 +4843,7 @@ category: Users
 
 ***
 Get the user
-category: Users
+category: Users.
 
 #### Base Command
 
@@ -4881,7 +4884,7 @@ category: Users
 
 ***
 Edit a user
-category: Users
+category: Users.
 
 #### Base Command
 
@@ -4919,7 +4922,7 @@ There is no context output for this command.
 
 ***
 Get target group restrictions
-category: Target Group Restrictions
+category: Target Group Restrictions.
 
 #### Base Command
 
@@ -4946,36 +4949,11 @@ category: Target Group Restrictions
 | WAB.restriction_get.subprotocol | String | The restriction subprotocol. Usable in the "q" parameter. Usable in the "sort" parameter. | 
 | WAB.restriction_get.url | String | The API URL to the resource. | 
 
-### wab-add-restriction-to-targetgroup
-
-***
-Add a restriction in a targetgroup
-category: Target Group Restrictions
-
-#### Base Command
-
-`wab-add-restriction-to-targetgroup`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| group_id | A target group id or name. | Required | 
-| restriction_post_action | The restriction type. Possible values are: kill, notify. | Required | 
-| restriction_post_rules | The restriction rules. | Required | 
-| restriction_post_subprotocol | The restriction subprotocol. Possible values are: SSH_SHELL_SESSION, SSH_REMOTE_COMMAND, SSH_SCP_UP, SSH_SCP_DOWN, SFTP_SESSION, RLOGIN, TELNET, RDP. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| WAB.add_restriction_in_targetgroup.id | String | id of the created object. | 
-
 ### wab-get-target-group-restriction
 
 ***
 Get one target group restriction
-category: Target Group Restrictions
+category: Target Group Restrictions.
 
 #### Base Command
 
@@ -5003,7 +4981,7 @@ category: Target Group Restrictions
 
 ***
 Edit a restriction from a targetgroup
-category: Target Group Restrictions
+category: Target Group Restrictions.
 
 #### Base Command
 
@@ -5027,7 +5005,7 @@ There is no context output for this command.
 
 ***
 Delete a restriction from a targetgroup
-category: Target Group Restrictions
+category: Target Group Restrictions.
 
 #### Base Command
 
@@ -5048,7 +5026,7 @@ There is no context output for this command.
 
 ***
 Get the password for a given target
-category: Target Passwords
+category: Target Passwords.
 
 #### Base Command
 
@@ -5085,7 +5063,7 @@ category: Target Passwords
 
 ***
 Extend the duration time to get the passwords for a given target
-category: Target Passwords
+category: Target Passwords.
 
 #### Base Command
 
@@ -5106,7 +5084,7 @@ There is no context output for this command.
 
 ***
 Release the passwords for a given target
-category: Target Passwords
+category: Target Passwords.
 
 #### Base Command
 
@@ -5129,7 +5107,7 @@ There is no context output for this command.
 
 ***
 Get the target by type
-category: Targets
+category: Targets.
 
 #### Base Command
 
@@ -5164,7 +5142,7 @@ category: Targets
 
 ***
 Get the mappings of a user group
-category: User Group Mappings
+category: User Group Mappings.
 
 #### Base Command
 
@@ -5195,7 +5173,7 @@ category: User Group Mappings
 
 ***
 Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default
-category: User Group Mappings
+category: User Group Mappings.
 
 #### Base Command
 
@@ -5220,7 +5198,7 @@ category: User Group Mappings
 
 ***
 Get the mapping of a user group
-category: User Group Mappings
+category: User Group Mappings.
 
 #### Base Command
 
@@ -5248,7 +5226,7 @@ category: User Group Mappings
 
 ***
 Edit a mapping of a user group
-category: User Group Mappings
+category: User Group Mappings.
 
 #### Base Command
 
@@ -5272,7 +5250,7 @@ There is no context output for this command.
 
 ***
 Delete the mapping of the given user group
-category: User Group Mappings
+category: User Group Mappings.
 
 #### Base Command
 
@@ -5293,7 +5271,7 @@ There is no context output for this command.
 
 ***
 Get user group restrictions
-category: User Group Restrictions
+category: User Group Restrictions.
 
 #### Base Command
 
@@ -5324,7 +5302,7 @@ category: User Group Restrictions
 
 ***
 Add a restriction to a usergroup
-category: User Group Restrictions
+category: User Group Restrictions.
 
 #### Base Command
 
@@ -5349,7 +5327,7 @@ category: User Group Restrictions
 
 ***
 Get one user group restriction
-category: User Group Restrictions
+category: User Group Restrictions.
 
 #### Base Command
 
@@ -5377,7 +5355,7 @@ category: User Group Restrictions
 
 ***
 Edit a restriction from a usergroup
-category: User Group Restrictions
+category: User Group Restrictions.
 
 #### Base Command
 
@@ -5401,7 +5379,7 @@ There is no context output for this command.
 
 ***
 Delete a restriction from a usergroup
-category: User Group Restrictions
+category: User Group Restrictions.
 
 #### Base Command
 
@@ -5422,7 +5400,7 @@ There is no context output for this command.
 
 ***
 Get the REST API and WALLIX Bastion version numbers
-category: Version
+category: Version.
 
 #### Base Command
 

@@ -256,7 +256,6 @@ command_names = [
     "wab-add-password-change-policy",
     "wab-add-password-target-to-target-group",
     "wab-add-restriction-to-target-group",
-    "wab-add-restriction-to-targetgroup",
     "wab-add-restriction-to-usergroup",
     "wab-add-service-in-device",
     "wab-add-session-target-to-target-group",
