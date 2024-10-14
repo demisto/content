@@ -1231,6 +1231,7 @@ script:
       - name: user_id
         description: Email or unique identifier of the user.
         required: true
+        execution: true
         type: string
     outputs: [ ]
   - name: send-notification

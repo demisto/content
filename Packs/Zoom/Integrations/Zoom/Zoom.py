@@ -399,6 +399,7 @@ class Client(Zoom_Client):
         return self.error_handled_http_request(
             method='DELETE',
             url_suffix=url_suffix,
+            resp_type='response',
             headers={'authorization': f'Bearer {self.access_token}'}
         )
 
@@ -2020,7 +2021,7 @@ def zoom_delete_user_token_command(client, **args) -> CommandResults:
     """
     client = client
     user_id = args.get('user_id')
-    url_suffix = f'/v2/users/{user_id}/token'
+    url_suffix = f'/users/{user_id}/token'
     client.zoom_delete_user_token(url_suffix)
     return CommandResults(
         readable_output=f'User SSO token for user {user_id} is deleted',
