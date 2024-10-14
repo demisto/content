@@ -320,6 +320,20 @@ script:
     - name: username
       description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
       isArray: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments.
+      name: all_results
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return timestamp or date string values.
+      name: convert_timestamp_to_datestring
+      predefined:
+      - "false"
+      - "true"
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
     name: core-get-endpoints
     outputs:
