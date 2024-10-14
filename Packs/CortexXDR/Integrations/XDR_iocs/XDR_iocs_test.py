@@ -432,11 +432,13 @@ class TestDemistoIOCToXDR:
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 100, 'score': 2},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': '100', "comment": [""]}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS',
+                'severity': 'INFO', 'type': '100', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP'},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', "comment": [""]}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN',
+                'severity': 'INFO', 'type': 'IP', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'expiration': '2020-06-03T00:00:00Z'},
@@ -444,7 +446,8 @@ class TestDemistoIOCToXDR:
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentTimeLine', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', "comment": [""]}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN',
+                'severity': 'INFO', 'type': 'IP', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},    # noqa: E501
