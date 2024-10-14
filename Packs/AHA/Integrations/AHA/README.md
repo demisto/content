@@ -1,23 +1,19 @@
 Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
 This integration was integrated and tested with API version December 02, 2022 release of Aha.
 
-## Configure Aha on Cortex XSOAR
+## Configure Aha in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Aha.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Project Name | Check the Aha\! project name in the URL. Replace the &amp;lt;PROJECT_NAME&amp;gt; placeholder in the following : example.com.aha.io/products/&amp;lt;PROJECT_NAME&amp;gt;/features. | True |
-    | Api Key | API Key to access the service REST API. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Project Name | Check the Aha\! project name in the URL. Replace the &amp;lt;PROJECT_NAME&amp;gt; placeholder in the following : example.com.aha.io/products/&amp;lt;PROJECT_NAME&amp;gt;/features. | True |
+| Api Key | API Key to access the service REST API. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aha-get-features
 ***
