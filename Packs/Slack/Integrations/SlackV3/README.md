@@ -287,10 +287,24 @@ the channel exists).
 
 `slack-send-file`
 
+#### Permissions
+
+Scopes required:
+
+| **Token Type**    | **Scope**                     |
+| --- | --- | 
+| Granular bot      | files:write                   |
+| User              | files:write files:write:user  |
+| Legacy bot        | bot                           |
+
+#### Limitations
+
+There are no known limitations for this command.
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                     | **Required** |
-|-------------------|-----------------------------------------------------------------------------------------------------|--------------|
+| --- | --- | --- |
 | file              | The ID of the file entry to send.                                                                   | Required     | 
 | to                | The user to whom to send the file. Can be the username or the email address.                        | Optional     | 
 | group             | The name of the Slack group (private channel) to which to send the file.                            | Optional     | 
