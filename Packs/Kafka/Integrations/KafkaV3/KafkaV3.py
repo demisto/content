@@ -144,7 +144,7 @@ class KafkaCommunicator:
             if ssl_password:
                 client_dict.update({'ssl.key.password': ssl_password})
                 
-        elif trust_any_cert:
+        if trust_any_cert:
             client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
                                        'enable.ssl.certificate.verification': False})
           
@@ -393,10 +393,6 @@ def validate_params(params: dict):  # TODO add validation that trust any cert is
     ca_cert = params.get('ca_cert')
     client_cert = params.get('client_cert')
     client_cert_key = params.get('client_cert_key')
-    insecure = params.get('insecure')
-    
-    if not insecure and not use_ssl and not use_sasl:
-        raise DemistoException('No connection method was chosen.')
 
     # Check if brokers are provided
     if not brokers:
@@ -418,7 +414,7 @@ def validate_params(params: dict):  # TODO add validation that trust any cert is
     
      
     # Check SASL_SSL requirements
-    elif use_sasl and use_ssl:
+    elif use_sasl:
         missing = []
         if not plain_username:
             missing.append('SASL PLAIN Username')
@@ -593,13 +589,16 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
         partition: Optional[int] = int(partition_str)
     else:
         partition = None
-
-    kafka.produce(
-        value=str(value),
-        topic=str(topic),
-        partition=partition
-    )
-
+    try:
+        kafka.produce(
+            value=str(value),
+            topic=str(topic),
+            partition=partition
+        )
+    except Exception as e:
+        if 'Topic authorization failed' in str(e):
+            raise DemistoException(f"Error: {str(e)}\n"
+                "Check if you have permission to produce messages. Your access might be restricted to consumer-only.")
 
 def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandResults, str]:
     """Consume one message from topic
