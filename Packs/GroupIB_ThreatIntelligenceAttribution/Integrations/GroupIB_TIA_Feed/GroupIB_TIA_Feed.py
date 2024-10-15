@@ -24,14 +24,18 @@ COMMON_MAPPING = {
             "events_ipv4_ip": "IP",
         },
         "add_fields_types": {
-            "event_url":{"id": "gibid",},
-            "event_domain":{"id": "gibid",},
+            "event_url": {
+                "id": "gibid",
+            },
+            "event_domain": {
+                "id": "gibid",
+            },
             "events_ipv4_ip": {
                 "id": "gibid",
                 "asn": "asn",
                 "country_name": "geocountry",
                 "region": "geolocation",
-            }
+            },
         },
         "parser_mapping": {
             "id": "id",
@@ -50,7 +54,7 @@ COMMON_MAPPING = {
             "cnc_ipv4_ip": "IP",
         },
         "add_fields_types": {
-            "cnc_url":{
+            "cnc_url": {
                 "id": "gibid",
             },
             "cnc_ipv4_ip": {
@@ -58,7 +62,7 @@ COMMON_MAPPING = {
                 "cnc_ipv4_asn": "asn",
                 "cnc_ipv4_country_name": "geocountry",
                 "cnc_ipv4_region": "geolocation",
-            }
+            },
         },
         "parser_mapping": {
             "id": "id",
@@ -323,13 +327,12 @@ COMMON_MAPPING = {
             "ipv4_ip": "IP",
         },
         "add_fields_types": {
-            "url":{
+            "url": {
                 "id": "gibid",
             },
-            
             "phishing_domain_domain": {
                 "id": "gibid",
-                "phishing_domain_registrar": "registrarname"
+                "phishing_domain_registrar": "registrarname",
             },
             "ipv4_ip": {
                 "id": "gibid",
@@ -342,14 +345,12 @@ COMMON_MAPPING = {
             "phishing_domain_registrar": "domainInfo.registrar",
             "ipv4_ip": "phishing.ip.ip",
             "ipv4_country_mame": "phishing.ip.countryName",
-            
             "evaluation_reliability": "evaluation.reliability",
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
         },
     },
-    
     "apt/threat": {
         "types": {
             "indicators_params_ipv4": "IP",
@@ -628,11 +629,11 @@ COMMON_MAPPING = {
             "evaluation_severity": "evaluation.severity",
         },
     },
-    "suspicious_ip/vpn":{
-        "types":{
+    "suspicious_ip/vpn": {
+        "types": {
             "ipv4_ip": "IP",
         },
-        "add_fields_types":{
+        "add_fields_types": {
             "ipv4_ip": {
                 "id": "gibid",
                 "ipv4_asn": "asn",
@@ -644,9 +645,9 @@ COMMON_MAPPING = {
                 "evaluation_credibility": "gibcredibility",
                 "evaluation_admiralty_code": "gibadmiraltycode",
                 "evaluation_severity": "gibseverity",
-            }    
+            }
         },
-        "parser_mapping":{
+        "parser_mapping": {
             "id": "id",
             "date_first_seen": "dateFirstSeen",
             "date_last_seen": "dateLastSeen",
@@ -672,7 +673,7 @@ COMMON_MAPPING = {
                 "ipv4_region": "geolocation",
             },
         },
-        "parser_mapping":{
+        "parser_mapping": {
             "id": "id",
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
@@ -680,7 +681,6 @@ COMMON_MAPPING = {
             "ipv4_region": "ipv4.region",
         },
     },
-    
     "malware/cnc": {
         "types": {
             "url": "URL",
@@ -784,20 +784,19 @@ COMMON_MAPPING = {
             "hash": "GIB Hash",
         },
         "add_fields_types": {
-            "contributors_emails":{
+            "contributors_emails": {
                 "id": "gibid",
             },
-            "hash":{
+            "hash": {
                 "id": "gibid",
             },
         },
-        "parser_mapping":{
+        "parser_mapping": {
             "id": "id",
             "hash": "files.revisions.hash",
             "contributors_emails": "contributors.authorEmail",
         },
     },
-    
     "ioc/common": {
         "types": {
             "url": "URL",

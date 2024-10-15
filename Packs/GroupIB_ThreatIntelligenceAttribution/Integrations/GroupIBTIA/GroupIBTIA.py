@@ -377,6 +377,8 @@ PORTAL_LINKS = {
 
 COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public_leak"]
 
+COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
+
 MAPPING = {
     "compromised/account_group": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "login",
@@ -511,12 +513,7 @@ MAPPING = {
         "description": "description",  # Description
         "emails": "email",  # GIB Emails
         "emailDomains": "addInfo.emailDomain",  # GIB Email Domains
-        "portalLink": {  # GIB Portal Link
-            "__concatenate": {
-                "static": PORTAL_LINKS.get("compromised/breached"),
-                "dynamic": "#email[0]",
-            }
-        },
+        "portalLink": "set_generated_portal_link",  # GIB Portal Link
         # END Information from Group-IB
         # Group-IB Evaluation
         "evaluation": {
@@ -1717,12 +1714,15 @@ class IncidentBuilder:
 
     def get_related_indicators_data(self) -> list:
         related_indicators_data = []
-        for _indcator_name, indicator_value in self.incident.get(
-            "indicators", {}
-        ).items():
+        indicators: dict = self.incident.get("indicators", {})
+        demisto.debug(f"get_related_indicators_data {self.incident['id']} {indicators}")
+        for _indcator_name, indicator_value in indicators.items():
+
             if indicator_value is not None:
                 related_indicators_data.append(indicator_value)
-
+        demisto.debug(
+            f"success_get_related_indicators_data {self.incident['id']} {related_indicators_data}"
+        )
         return related_indicators_data
 
     def get_system_severity(self) -> int:
@@ -1882,10 +1882,22 @@ class IncidentBuilder:
                     else:
                         self.incident[field] = None
 
+    def custom_generate_portal_link(self):
+        if (
+            self.collection_name
+            in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED
+        ):
+            # generating just for compromised/breached
+            self.incident["portalLink"] = PORTAL_LINKS.get(
+                "compromised/breached"
+            ) + str(self.incident["emails"][0])
+
     def build_incident(self) -> dict:
+        self.custom_generate_portal_link()
         incident_name = self.get_incident_name()
         system_severity = self.get_system_severity()
         related_indicators_data = self.get_related_indicators_data()
+        demisto.debug(f"{related_indicators_data}")
         self.incident.update(
             {
                 "name": incident_name,
@@ -1901,13 +1913,15 @@ class IncidentBuilder:
         self.incident = CommonHelpers.remove_html_tags(
             self.incident, self.collection_name
         )
-
-        return {
+        data = {
             "name": self.incident["name"],
             "occurred": self.get_incident_created_time(),
             "rawJSON": json_dumps(self.incident),
             "dbotMirrorId": self.incident.get("id"),
+            "relatedIndicatorsData": related_indicators_data,
         }
+        demisto.debug(f"{data}")
+        return data
 
 
 class BuilderCommandResponses:
