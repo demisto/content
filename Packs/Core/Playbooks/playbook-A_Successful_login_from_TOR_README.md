@@ -14,7 +14,7 @@ Remediation & Eradication:
 
 The analyst can select multiple actions, which will then be executed by the playbook based on the analyst's choices.
 
-Requiremets: 
+Requirements: 
 For any response action, you will need one of the following integrations: Azure Active Directory Users / Active Directory Users.
 
 ## Dependencies
