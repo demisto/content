@@ -17,6 +17,7 @@ TERADATA = "Teradata"
 ORACLE = "Oracle"
 POSTGRES_SQL = "PostgreSQL"
 MY_SQL = "MySQL"
+TRINO = "Trino"
 MS_ODBC_DRIVER = "Microsoft SQL Server - MS ODBC Driver"
 MICROSOFT_SQL_SERVER = "Microsoft SQL Server"
 FETCH_DEFAULT_LIMIT = '50'
@@ -101,6 +102,8 @@ class Client:
             module = "postgresql"
         elif dialect == ORACLE:
             module = "oracle"
+        elif dialect == TRINO:
+            module = "trino"
         elif dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
             module = "mssql+pyodbc"
         else:

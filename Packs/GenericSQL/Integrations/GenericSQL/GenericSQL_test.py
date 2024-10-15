@@ -294,6 +294,24 @@ def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
     Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
            database='', ssl_connect=False, use_ldap=use_ldap)
     assert mock_create_engine.mock_calls[0][1][0] == expected_url
+    
+
+@pytest.mark.parametrize('expected_url', [
+    pytest.param("trino://username:password@host:8081/schema")])
+def test_trino_connection(mocker, expected_url: str):
+    """
+    Given
+    - All required arguments for the client
+    When
+    - Executing _create_engine_url_for_teino client's method
+    Then
+    - Ensure the engine url is generated correctly
+    """
+
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
+    Client(dialect='Trino', host='host', username='username', password='password', port='8081', connect_parameters='',
+           database='schema', ssl_connect=False, use_ldap=False)
+    assert mock_create_engine.mock_calls[0][1][0] == expected_url
 
 
 @pytest.mark.parametrize('dialect, expected_port', [
