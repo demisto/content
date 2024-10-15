@@ -41,7 +41,7 @@ This playbook does not use any sub-playbooks.
 * core-get-IP-analytics-prevalence
 * core-get-cloud-original-alerts
 * core-get-cmd-analytics-prevalence
-* core-run-script-kill-process
+* core-terminate-causality
 * domain
 * ip
 

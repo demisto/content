@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 56f9144a-b2f1-4825-8077-46efc05a9a03
+    taskid: 2a5e2861-855c-46f5-8ad9-8f590911a599
     type: start
     task:
-      id: 56f9144a-b2f1-4825-8077-46efc05a9a03
+      id: 2a5e2861-855c-46f5-8ad9-8f590911a599
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: b515bf86-e8bc-4322-824e-4ffabb463a17
+    taskid: 35970fa0-12e2-4aaf-8097-0f5d8f394779
     type: title
     task:
-      id: b515bf86-e8bc-4322-824e-4ffabb463a17
+      id: 35970fa0-12e2-4aaf-8097-0f5d8f394779
       version: -1
       name: Analysis
       type: title
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: d920260b-e27a-4ea8-823f-ff2589a0608e
+    taskid: eab8d7c1-7fc0-45ac-8035-023d7d24de8c
     type: regular
     task:
-      id: d920260b-e27a-4ea8-823f-ff2589a0608e
+      id: eab8d7c1-7fc0-45ac-8035-023d7d24de8c
       version: -1
       name: Get IP prevalence
       description: Get the prevalence of an ip, identified by ip_address.
@@ -110,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: fd6fd40b-1133-4726-8498-2d4ba4b09eb0
+    taskid: 87d8ba03-c9f1-4c12-88f8-17c1a72acbbf
     type: regular
     task:
-      id: fd6fd40b-1133-4726-8498-2d4ba4b09eb0
+      id: 87d8ba03-c9f1-4c12-88f8-17c1a72acbbf
       version: -1
       name: Get Domain Name reputation
       description: Checks the reputation of a domain.
@@ -145,10 +145,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 57407eaf-aa67-49c7-81e8-67396abfb867
+    taskid: 85dafa8d-8c75-465f-8699-27d29a01682d
     type: regular
     task:
-      id: 57407eaf-aa67-49c7-81e8-67396abfb867
+      id: 85dafa8d-8c75-465f-8699-27d29a01682d
       version: -1
       name: Get destination IP reputation
       description: Checks the specified IP address against the AbuseIP database.
@@ -184,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 98b6dc2b-ec50-40ac-8f58-ba9eee44caf8
+    taskid: 61055de3-bb9f-4984-8da3-45fdc40479ba
     type: title
     task:
-      id: 98b6dc2b-ec50-40ac-8f58-ba9eee44caf8
+      id: 61055de3-bb9f-4984-8da3-45fdc40479ba
       version: -1
       name: Execute Remediation
       type: title
@@ -196,7 +196,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -215,10 +215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 42f34e01-3c6b-409d-89a9-07fd8eb5ee97
+    taskid: ccf44f37-71f0-4852-8606-640213d46253
     type: condition
     task:
-      id: 42f34e01-3c6b-409d-89a9-07fd8eb5ee97
+      id: ccf44f37-71f0-4852-8606-640213d46253
       version: -1
       name: Check if Domain Name Exist?
       description: Checks if the domain name in the alert exists.
@@ -258,10 +258,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: fc922029-0433-409f-8129-e52cf177d9fc
+    taskid: 55b7d40a-0f6c-4ed8-8689-c7ec3c842dbd
     type: regular
     task:
-      id: fc922029-0433-409f-8129-e52cf177d9fc
+      id: 55b7d40a-0f6c-4ed8-8689-c7ec3c842dbd
       version: -1
       name: Get Commandline prevalence
       description: Get the prevalence of a process_command_line, identified by process_command_line.
@@ -291,50 +291,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: d374091b-d270-4a3c-84c0-6bafe9bb0e1f
-    type: regular
-    task:
-      id: d374091b-d270-4a3c-84c0-6bafe9bb0e1f
-      version: -1
-      name: Kill Initiator Process
-      description: Initiates a new endpoint script execution kill process.
-      script: '|||core-run-script-kill-process'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      endpoint_ids:
-        simple: ${alert.hostname}
-      process_name:
-        simple: ${alert.osparentname}
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2080
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 32389ef1-63db-4405-840a-851fa921ad71
+    taskid: c6c19d37-04a8-4d09-8bca-3ef43b270e5f
     type: title
     task:
-      id: 32389ef1-63db-4405-840a-851fa921ad71
+      id: c6c19d37-04a8-4d09-8bca-3ef43b270e5f
       version: -1
       name: Done
       description: commands.local.cmd.close.inv
@@ -359,10 +321,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2cdbeea8-d160-405a-814a-745397b25df9
+    taskid: bfbce647-7068-4dbc-8450-d3b7436aeca4
     type: title
     task:
-      id: 2cdbeea8-d160-405a-814a-745397b25df9
+      id: bfbce647-7068-4dbc-8450-d3b7436aeca4
       version: -1
       name: Investigation
       type: title
@@ -390,10 +352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 905e0873-255d-431d-82d3-bdd3397f5f7c
+    taskid: 939d4df1-3b9d-4a02-8634-59f622bffba6
     type: regular
     task:
-      id: 905e0873-255d-431d-82d3-bdd3397f5f7c
+      id: 939d4df1-3b9d-4a02-8634-59f622bffba6
       version: -1
       name: Check Previous similar Alerts
       description: |-
@@ -429,10 +391,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 3bcf5223-8abd-408d-8497-d5bd507e65f7
+    taskid: 904dd046-4637-4204-87b8-2f5e4a4eb7dd
     type: regular
     task:
-      id: 3bcf5223-8abd-408d-8497-d5bd507e65f7
+      id: 904dd046-4637-4204-87b8-2f5e4a4eb7dd
       version: -1
       name: Get Extra Data for DNS query name
       description: Returns information about each alert ID.
@@ -470,10 +432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 5ef7efb7-6e17-48ea-85f6-669e3e40be6c
+    taskid: 05b1c3b4-24f9-4033-89dc-fa548b12a39d
     type: condition
     task:
-      id: 5ef7efb7-6e17-48ea-85f6-669e3e40be6c
+      id: 05b1c3b4-24f9-4033-89dc-fa548b12a39d
       version: -1
       name: Destination IP is External?
       description: Checks if the destination IP of the alert is external.
@@ -515,10 +477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: d5afa439-f41e-4ad0-84f5-0b6928dd2d2e
+    taskid: cea0114f-3b50-4d37-86ba-5c31855cdc15
     type: condition
     task:
-      id: d5afa439-f41e-4ad0-84f5-0b6928dd2d2e
+      id: cea0114f-3b50-4d37-86ba-5c31855cdc15
       version: -1
       name: Malicious reputation found?
       description: ""
@@ -586,10 +548,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: c26399c6-6922-44ef-8c75-a52d3825eb50
+    taskid: c699e8c2-a6d9-42ac-872a-e52b0cce4e09
     type: condition
     task:
-      id: c26399c6-6922-44ef-8c75-a52d3825eb50
+      id: c699e8c2-a6d9-42ac-872a-e52b0cce4e09
       version: -1
       name: Found Relevenat Previous Alert?
       description: Checks if there are any relevant previous alerts.
@@ -629,10 +591,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 567f5b77-c5fb-4b7a-8033-9c99a840ee65
+    taskid: 2bb1dd37-71d9-470a-83ad-0e150d64b61a
     type: title
     task:
-      id: 567f5b77-c5fb-4b7a-8033-9c99a840ee65
+      id: 2bb1dd37-71d9-470a-83ad-0e150d64b61a
       version: -1
       name: False Positive
       description: Set a value in context under the key you entered.
@@ -660,10 +622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 47533310-11eb-4ee8-8247-c1ac744915b9
+    taskid: a207b768-8579-4094-817f-a4e11c6dcded
     type: condition
     task:
-      id: 47533310-11eb-4ee8-8247-c1ac744915b9
+      id: a207b768-8579-4094-817f-a4e11c6dcded
       version: -1
       name: Similar False Positive Alerts Found?
       description: Checks if similar false positive alerts have been found. 
@@ -703,10 +665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: f40bc061-8ed5-49c0-8982-ff053e6ea98a
+    taskid: 8f045a85-4327-4ec2-8803-b92526a20bec
     type: regular
     task:
-      id: f40bc061-8ed5-49c0-8982-ff053e6ea98a
+      id: 8f045a85-4327-4ec2-8803-b92526a20bec
       version: -1
       name: Close the Alert as True Positive
       description: commands.local.cmd.close.inv
@@ -738,10 +700,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 51ea1734-f9e5-4a53-8e50-f890e7824b4c
+    taskid: fbbb35a7-69be-46c5-8831-abec5285a2b1
     type: title
     task:
-      id: 51ea1734-f9e5-4a53-8e50-f890e7824b4c
+      id: fbbb35a7-69be-46c5-8831-abec5285a2b1
       version: -1
       name: IP
       type: title
@@ -769,10 +731,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 8054e225-a415-49d4-86ff-3cf5a3178fee
+    taskid: e9ada220-b859-4f78-8d5b-40684b8e5fa3
     type: title
     task:
-      id: 8054e225-a415-49d4-86ff-3cf5a3178fee
+      id: e9ada220-b859-4f78-8d5b-40684b8e5fa3
       version: -1
       name: Domain
       type: title
@@ -800,10 +762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: dbae8b74-48e0-4b45-8866-78de24611fc7
+    taskid: a5799de6-6673-4ffb-8f04-4fc35ee16fa8
     type: regular
     task:
-      id: dbae8b74-48e0-4b45-8866-78de24611fc7
+      id: a5799de6-6673-4ffb-8f04-4fc35ee16fa8
       version: -1
       name: Search related alerts by  MITRE technique
       description: |+
@@ -864,10 +826,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: aea4b987-f1ea-4c05-87ed-da92369f39c9
+    taskid: f010b721-9bbf-4bd2-836d-ab0e79d3793d
     type: regular
     task:
-      id: aea4b987-f1ea-4c05-87ed-da92369f39c9
+      id: f010b721-9bbf-4bd2-836d-ab0e79d3793d
       version: -1
       name: Close the Alert as False Positive
       description: commands.local.cmd.close.inv
@@ -888,6 +850,44 @@ tasks:
         "position": {
           "x": 950,
           "y": 2275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 796f08e4-11e5-49c2-86bc-5fcc8f734672
+    type: regular
+    task:
+      id: 796f08e4-11e5-49c2-86bc-5fcc8f734672
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2100
         }
       }
     note: false
