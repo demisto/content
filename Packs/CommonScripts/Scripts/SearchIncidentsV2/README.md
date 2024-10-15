@@ -239,3 +239,4 @@ Spring Core and Cloud Function SpEL RCEs
 |id|name|severity|status|owner|created|closed|
 |---|---|---|---|---|---|---|
 | 978 | Incident to search | 0 | 0 | admin | 2020-09-29T17:29:44.162034+03:00 | 0001-01-01T00:00:00Z |
+-
