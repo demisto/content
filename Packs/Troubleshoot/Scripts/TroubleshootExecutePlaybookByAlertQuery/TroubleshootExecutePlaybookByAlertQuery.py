@@ -52,19 +52,21 @@ class RESULTS_SUMMARY:
 
         if self.results_summary["success"]:
             for playbook_success, alerts_success in self.results_summary["success"].items():
-                final_message.append(f"Playbook ID '{playbook_success}' was set successfully for alerts: {set(alerts_success)}.")
+                final_message.append(
+                    f"Playbook ID '{playbook_success}' was set successfully for alerts: "
+                    f"{sorted(alerts_success)}.")
 
         if self.results_summary["failure_create"]:
             for playbook_failure_create, alerts_fail in self.results_summary["failure_create"].items():
                 final_message.append(f"Playbook ID '{playbook_failure_create}' could not be executed for alerts: "
-                                     f"{set(alerts_fail)} due to failure in creating an investigation playbook.")
+                                     f"{sorted(alerts_fail)} due to failure in creating an investigation playbook.")
 
         if self.results_summary["failure_set"]:
             for playbook_failure_set, alerts_fail_set in self.results_summary["failure_set"].items():
-                final_message.append(f"Playbook ID '{playbook_failure_set}' was not found for alerts {set(alerts_fail_set)}.")
+                final_message.append(f"Playbook ID '{playbook_failure_set}' was not found for alerts {sorted(alerts_fail_set)}.")
 
         if reopened_alerts := self.results_summary["reopened"]:
-            final_message.append(f"Alerts {set(reopened_alerts)} have been reopened.")
+            final_message.append(f"Alerts {sorted(reopened_alerts)} have been reopened.")
 
         final_message.extend(self.results_summary["others"])
         return '\n'.join(final_message)

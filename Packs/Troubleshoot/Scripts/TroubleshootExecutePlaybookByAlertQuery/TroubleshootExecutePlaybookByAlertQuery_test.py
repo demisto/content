@@ -701,3 +701,142 @@ def test_get_playbooks_dict_no_playbooks_found(mocker):
         get_playbooks_dict()
 
     assert "No playbooks found. Please ensure that playbooks are available and try again." in str(e)
+
+
+def test_generate_summary():
+    """
+    GIVEN:
+        A RESULTS_SUMMARY instance with predefined success, failure, reopened, and other messages.
+    WHEN:
+        The generate_summary method is called.
+    THEN:
+        It should return a summary message that includes:
+            - Alerts that had a successful playbook set.
+            - Alerts where playbook creation failed.
+            - Alerts where playbook setting failed.
+            - Alerts that were reopened.
+            - Any additional messages in the 'others' field.
+    """
+    results_summary_instance = RESULTS_SUMMARY()
+    results_summary_instance.results_summary = {
+        "success": {
+            "playbook_123": ["alert1", "alert2"],
+            "playbook_456": ["alert3"]
+        },
+        "failure_create": {
+            "playbook_789": ["alert4"]
+        },
+        "failure_set": {
+            "playbook_999": ["alert5", "alert6"]
+        },
+        "reopened": ["alert7", "alert8"],
+        "others": ["Some other information here."]
+    }
+
+    summary = results_summary_instance.generate_summary()
+
+    expected_summary = (
+        "Playbook ID 'playbook_123' was set successfully for alerts: ['alert1', 'alert2'].\n"
+        "Playbook ID 'playbook_456' was set successfully for alerts: ['alert3'].\n"
+        "Playbook ID 'playbook_789' could not be executed for alerts: ['alert4'] due "
+        "to failure in creating an investigation playbook.\n"
+        "Playbook ID 'playbook_999' was not found for alerts ['alert5', 'alert6'].\n"
+        "Alerts ['alert7', 'alert8'] have been reopened.\n"
+        "Some other information here."
+    )
+
+    assert summary == expected_summary
+
+
+def test_update_success():
+    """
+    GIVEN:
+        A RESULTS_SUMMARY instance with an empty 'success' dictionary.
+    WHEN:
+        update_success is called with a playbook ID and a list of alert IDs.
+    THEN:
+        The 'success' dictionary should be updated with the alert IDs for the given playbook ID.
+    """
+    results_summary_instance = RESULTS_SUMMARY()
+    results_summary_instance.results_summary = {"success": {}}
+
+    results_summary_instance.update_success("playbook_123", ["alert1", "alert2"])
+
+    assert results_summary_instance.results_summary["success"] == {"playbook_123": ["alert1", "alert2"]}
+
+    results_summary_instance.update_success("playbook_123", ["alert3"])
+    assert results_summary_instance.results_summary["success"]["playbook_123"] == ["alert1", "alert2", "alert3"]
+
+
+def test_update_failure_create():
+    """
+    GIVEN:
+        A RESULTS_SUMMARY instance with an empty 'failure_create' dictionary.
+    WHEN:
+        update_failure_create is called with a playbook ID and a list of failed alert IDs.
+    THEN:
+        The 'failure_create' dictionary should be updated with the failed alert IDs for the given playbook ID.
+    """
+    results_summary_instance = RESULTS_SUMMARY()
+    results_summary_instance.results_summary = {"failure_create": {}}
+
+    results_summary_instance.update_failure_create("playbook_789", ["alert4"])
+
+    assert results_summary_instance.results_summary["failure_create"] == {"playbook_789": ["alert4"]}
+
+    results_summary_instance.update_failure_create("playbook_789", ["alert5", "alert6"])
+    assert results_summary_instance.results_summary["failure_create"]["playbook_789"] == ["alert4", "alert5", "alert6"]
+
+
+def test_update_failure_set():
+    """
+    GIVEN:
+        A RESULTS_SUMMARY instance with an empty 'failure_set' dictionary.
+    WHEN:
+        update_failure_set is called with a playbook ID and a list of alert IDs.
+    THEN:
+        The 'failure_set' dictionary should be updated with the alert IDs for the given playbook ID.
+    """
+    results_summary_instance = RESULTS_SUMMARY()
+    results_summary_instance.results_summary = {"failure_set": {}}
+
+    results_summary_instance.update_failure_set("playbook_456", ["alert7", "alert8"])
+
+    assert results_summary_instance.results_summary["failure_set"] == {"playbook_456": ["alert7", "alert8"]}
+
+    results_summary_instance.update_failure_set("playbook_456", ["alert9"])
+    assert results_summary_instance.results_summary["failure_set"]["playbook_456"] == ["alert7", "alert8", "alert9"]
+
+
+def test_update_reopened():
+    """
+    GIVEN:
+        A RESULTS_SUMMARY instance with an empty 'reopened' list.
+    WHEN:
+        update_reopened is called with a list of reopened alerts.
+    THEN:
+        The 'reopened' list should be updated with the provided alerts.
+    """
+    results_summary_instance = RESULTS_SUMMARY()
+    results_summary_instance.results_summary = {"reopened": []}
+
+    results_summary_instance.update_reopened(["alert10", "alert11"])
+
+    assert results_summary_instance.results_summary["reopened"] == ["alert10", "alert11"]
+
+
+def test_append_to_others():
+    """
+    GIVEN:
+        A RESULTS_SUMMARY instance with an empty 'others' list.
+    WHEN:
+        append_to_others is called with a message.
+    THEN:
+        The 'others' list should be updated with the provided message.
+    """
+    results_summary_instance = RESULTS_SUMMARY()
+    results_summary_instance.results_summary = {"others": []}
+
+    results_summary_instance.append_to_others("Test message")
+
+    assert results_summary_instance.results_summary["others"] == ["Test message"]
