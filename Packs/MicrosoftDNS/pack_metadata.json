@@ -2,7 +2,7 @@
     "name": "Microsoft DNS",
     "description": "The Microsoft Domain Name Server (DNS) produces audit logs that identify resources from your company that are connected to the internet or your private network, and translate domain names to IP addresses.",
     "support": "xsoar",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
