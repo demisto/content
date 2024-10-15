@@ -162,7 +162,7 @@ tasks:
         Focus on identifying alerts associated with the following MITRE techniques:
         - Any Agent Alerts within this incident.
         - T1059 - Command and Scripting Interpreter.
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
