@@ -56,7 +56,7 @@ class RESULTS_SUMMARY:
 
         if self.results_summary["failure_create"]:
             for playbook_failure_create, alerts_fail in self.results_summary["failure_create"].items():
-                final_message.append(f"Playbook ID '{playbook_failure_create}' could not be executed for alerts "
+                final_message.append(f"Playbook ID '{playbook_failure_create}' could not be executed for alerts: "
                                      f"{set(alerts_fail)} due to failure in creating an investigation playbook.")
 
         if self.results_summary["failure_set"]:
@@ -297,7 +297,6 @@ def main():
             playbook_id = get_playbook_id(playbook_id, playbook_name, playbooks_dict)
 
         if not playbook_id:
-            # we will try to rerun each alert's assigned playbook
             split_by_playbooks(incidents, limit, reopen_closed_inv, playbooks_dict, results_summary)
         else:
             loop_on_alerts(incidents, playbook_id, limit, reopen_closed_inv, playbooks_dict, results_summary)

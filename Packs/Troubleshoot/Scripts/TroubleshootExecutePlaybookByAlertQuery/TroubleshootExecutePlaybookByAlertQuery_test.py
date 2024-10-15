@@ -259,7 +259,7 @@ def test_set_playbook_on_alerts_success(mocker):
         It should execute the command to set the playbook on alerts and update the results
         summary to reflect the successful execution.
     """
-    results_summary_instance = RESULTS_SUMMARY()  # Initialize a new instance
+    results_summary_instance = RESULTS_SUMMARY()
     playbook_id = "playbook_123"
     alert_ids = ["alert1", "alert2"]
     playbooks_dict = {playbook_id: "name of playbook"}
@@ -294,7 +294,7 @@ def test_set_playbook_on_alerts_invalid_playbook():
     THEN:
         It should update the results summary to reflect the failure in setting the playbook on alerts.
     """
-    results_summary_instance = RESULTS_SUMMARY()  # Initialize a new instance
+    results_summary_instance = RESULTS_SUMMARY()
     playbook_id = "invalid_playbook"
     alert_ids = ["alert1", "alert2"]
     playbooks_dict = {"playbook_123": "name of playbook"}
@@ -409,7 +409,7 @@ def test_loop_on_alerts_with_limit(mocker):
     """
     results_summary_instance = RESULTS_SUMMARY()
     playbook_id = "playbook_123"
-    incidents = [{"id": f"alert{i}", "closeReason": ""} for i in range(20)]  # More than the limit
+    incidents = [{"id": f"alert{i}", "closeReason": ""} for i in range(20)]
     playbooks_dict = {playbook_id: "name of playbook"}
 
     mocker.patch("TroubleshootExecutePlaybookByAlertQuery.open_investigation")
