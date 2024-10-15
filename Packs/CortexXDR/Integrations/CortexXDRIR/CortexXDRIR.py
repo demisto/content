@@ -446,6 +446,7 @@ class Client(CoreClient):
         if len(filters) > 0:
             request_data['filters'] = filters
 
+        demisto.debug(f'before fetch: {request_data=}')
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -1116,6 +1117,10 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             exclude_artifacts=exclude_artifacts, offset=offset,
             incident_wait=incident_wait
         )
+    if raw_incidents:
+        demisto.debug(f'after fetch: from; {raw_incidents[0].get("incident_id")}, to; {raw_incidents[-1].get("incident_id")}, amount; {len(raw_incidents)}')
+    else:
+        demisto.debug('no incidents pulled')
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
