@@ -25,7 +25,7 @@ class CoreClient(BaseClient):
         self.timeout = timeout
         self.is_core = is_core
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,  # type: ignore[override]
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
                       error_handler=None, with_metrics=False, resp_type='json', response_data_type=None):
         '''
