@@ -22,7 +22,6 @@ Make sure the toggle at the bottom is switched on.
     | DLP Regions |  | False |
     | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
     | Bot Message | The message to send to the user to ask for feedback. | False |
-    | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
