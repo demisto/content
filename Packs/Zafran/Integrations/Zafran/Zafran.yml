@@ -103,7 +103,7 @@ script:
       description: 'Internal status code.'
     - type: String
       contextPath: Zafran.UpstreamMitigation.message
-      description: 'Error message'
+      description: 'Error message.'
   - name: zafran-mitigations-performed
     description: Update on mitigations performed
     arguments:
