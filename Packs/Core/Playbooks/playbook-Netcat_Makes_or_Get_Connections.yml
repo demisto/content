@@ -77,7 +77,7 @@ tasks:
       id: eab8d7c1-7fc0-45ac-8035-023d7d24de8c
       version: -1
       name: Get IP prevalence
-      description: Get the prevalence of an ip, identified by ip_address.
+      description: Get the prevalence of an IP, identified by ip_address.
       script: '|||core-get-IP-analytics-prevalence'
       type: regular
       iscommand: true
