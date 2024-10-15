@@ -6,6 +6,14 @@ class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
+    def findings_request(self, count):
+        params = assign_params(count=count)
+        headers = self._headers
+
+        response = self._http_request('post', 'findings', params=params, headers=headers, return_empty_response=True)
+
+        return response
+    
     def mitigation_performed_request(self,
                                      mitigationstatus_external_ticket_id,
                                      mitigationstatus_external_ticket_url,
@@ -53,6 +61,7 @@ def mitigation_performed_command(client: Client, args: Dict[str, Any]) -> Comman
         outputs_key_field='',
         outputs=response,
         readable_output='Mitigation status updated successfully',
+
         raw_response=response
     )
 
@@ -95,8 +104,11 @@ def mitigations_performed_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def test_module(client: Client) -> None:
+    response = client.findings_request(0)
     # Test functions here
-    return_results('ok')
+    if response.status_code == 204:
+        return_results('ok')
+    return_error('API test failed')
 
 
 def main() -> None:
