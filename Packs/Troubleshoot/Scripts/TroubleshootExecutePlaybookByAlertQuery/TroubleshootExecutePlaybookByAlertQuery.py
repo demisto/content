@@ -6,7 +6,68 @@ DEFAULT_PAGE_SIZE = 100
 DEFAULT_TIME_FIELD = "created"
 MAX_BULK_SIZE_ALLOWED = 10
 
-# HELPER FUNCTIONS
+
+class RESULTS_SUMMARY:
+    def __init__(self):
+        self.results_summary: dict = {
+            "success": {},
+            "failure_create": {},
+            "failure_set": {},
+            "reopened": [],
+            "others": []
+        }
+
+    def update_success(self, playbook_id: str, alert_ids: list):
+        """Update the 'success' dictionary with alert IDs for the given playbook ID."""
+        if playbook_id in self.results_summary["success"]:
+            self.results_summary["success"][playbook_id].extend(alert_ids)
+        else:
+            self.results_summary["success"].update({playbook_id: alert_ids})
+
+    def update_failure_create(self, playbook_id: str, failed_ids: list):
+        """Update the 'failure_create' dictionary with failed IDs for the given playbook ID."""
+        if playbook_id in self.results_summary["failure_create"]:
+            self.results_summary["failure_create"][playbook_id].extend(failed_ids)
+        else:
+            self.results_summary["failure_create"].update({playbook_id: failed_ids})
+
+    def update_failure_set(self, playbook_id: str, alert_ids: list):
+        """Update the 'failure_set' dictionary with alert IDs for the given playbook ID."""
+        if playbook_id in self.results_summary["failure_set"]:
+            self.results_summary["failure_set"][playbook_id].extend(alert_ids)
+        else:
+            self.results_summary["failure_set"].update({playbook_id: alert_ids})
+
+    def update_reopened(self, reopened_alerts: list):
+        """Update the 'reopened' list with alerts from the provided alert_inv_status."""
+        self.results_summary["reopened"].extend(reopened_alerts)
+
+    def append_to_others(self, message: str):
+        """Append a message to the 'others' list for missing playbook alerts."""
+        self.results_summary["others"].append(message)
+
+    def generate_summary(self):
+        """Generate a summary message based on the results_summary."""
+        final_message = []
+
+        if self.results_summary["success"]:
+            for playbook_success, alerts_success in self.results_summary["success"].items():
+                final_message.append(f"Playbook ID '{playbook_success}' was set successfully for alerts: {alerts_success}.")
+
+        if self.results_summary["failure_create"]:
+            for playbook_failure_create, alerts_fail in self.results_summary["failure_create"].items():
+                final_message.append(f"Playbook ID '{playbook_failure_create}' could not be executed for alerts {alerts_fail} "
+                                     "due to failure in creating an investigation playbook.")
+
+        if self.results_summary["failure_set"]:
+            for playbook_failure_set, alerts_fail_set in self.results_summary["failure_set"].items():
+                final_message.append(f"Playbook ID '{playbook_failure_set}' was not found for alerts {alerts_fail_set}.")
+
+        if reopened_alerts := self.results_summary["reopened"]:
+            final_message.append(f"Alerts {reopened_alerts} have been reopened.")
+
+        final_message.extend(self.results_summary["others"])
+        return '\n'.join(final_message)
 
 
 def get_playbooks_dict():
@@ -56,7 +117,7 @@ def get_playbook_id(playbook_id: str, playbook_name: str, playbooks_dict: dict):
     raise DemistoException(f"Playbook '{playbook_name or playbook_id}' wasn't found. Please check the name and try again.")
 
 
-def handle_results(command_results: dict, playbook_id: str, alert_ids: list) -> str:
+def handle_results(command_results: dict, playbook_id: str, alert_ids: list, results_summary: RESULTS_SUMMARY):
     """Extract and format the relevant info from the result dict.
 
     Args:
@@ -68,28 +129,22 @@ def handle_results(command_results: dict, playbook_id: str, alert_ids: list) -> 
         str: A summary of the operation status, indicating either success or the error log.
     """
     if not command_results:
-        return "No results found for this query."
+        return None
 
     try:
         result_dict = command_results[0].get('Contents', {}).get('response', {})
 
         if not result_dict:
-            return f"Playbook ID '{playbook_id}' was set successfully for alerts: {alert_ids}."
+            results_summary.update_success(playbook_id, alert_ids)
+            return None
 
         failed_ids = list(result_dict.keys())
         succeeded_ids = list(set(alert_ids) - set(failed_ids))
 
-        message = (
-            f"Playbook ID '{playbook_id}' could not be executed for alerts {failed_ids} "
-            "due to failure in creating an investigation playbook."
-        )
+        results_summary.update_failure_create(playbook_id, failed_ids)
 
         if succeeded_ids:
-            message += (
-                f"\nPlaybook ID '{playbook_id}' was set successfully for alerts: {succeeded_ids}."
-            )
-
-        return message.strip()
+            results_summary.update_success(playbook_id, succeeded_ids)
 
     except Exception as e:
         return f"Unexpected error occurred: {str(e)}. Response: {command_results[0]}"
@@ -106,7 +161,7 @@ def open_investigation(alert_ids: list) -> None:
         demisto.executeCommand("core-api-post", {"uri": "/investigation/:id/reopen", "body": {"id": alert, "version": -1}})
 
 
-def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: dict) -> str:
+def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: dict, results_summary: RESULTS_SUMMARY):
     """Using an API call, create a new investigation Playbook with a given playbook ID and alerts ID
 
     Args:
@@ -117,15 +172,17 @@ def set_playbook_on_alerts(playbook_id: str, alert_ids: list, playbooks_dict: di
         dict: The command results.
     """
     if playbook_id not in playbooks_dict:
-        return f"Playbook ID '{playbook_id}' was not found for alerts {alert_ids}."
+        results_summary.update_failure_set(playbook_id, alert_ids)
+        return
 
     command_results = demisto.executeCommand(
         "core-api-post", {"uri": "/xsoar/inv-playbook/new", "body":
                           {"playbookId": playbook_id, "alertIds": alert_ids, "version": -1}})
-    return handle_results(command_results, playbook_id, alert_ids)
+    handle_results(command_results, playbook_id, alert_ids, results_summary)
 
 
-def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_closed_inv: bool, playbooks_dict: dict):
+def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_closed_inv: bool, playbooks_dict: dict,
+                   results_summary: RESULTS_SUMMARY):
     """
     Loops through alerts and applies the specified playbook in batches.
 
@@ -138,9 +195,6 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
     Returns:
         tuple: A string indicating operation status and a list of reopened alerts.
     """
-    if not incidents:
-        return "Couldn't find any alerts"
-
     alert_inv_status: dict[str, list] = {
         "close_ids": [],
         "open_ids": [],
@@ -167,29 +221,33 @@ def loop_on_alerts(incidents: list[dict], playbook_id: str, limit: int, reopen_c
         for i in range(0, len(alert_inv_status["all_ids"]), MAX_BULK_SIZE_ALLOWED)
     ]
 
-    message_response = []
     reopened_alerts = []
     if reopen_closed_inv and alert_closed_bulks:
         if reopened_alerts := alert_inv_status['close_ids']:
-            message_response.append(f"Alerts {reopened_alerts} have been reopened.")
-            
+            results_summary.update_reopened(reopened_alerts)
+
         for bulk in alert_closed_bulks:
             open_investigation(alert_ids=bulk)
 
-        message_response += [
-            set_playbook_on_alerts(playbook_id=playbook_id, alert_ids=bulk, playbooks_dict=playbooks_dict)
-            for bulk in alert_all_ids_bulks
-        ]
+        for bulk in alert_all_ids_bulks:
+            set_playbook_on_alerts(
+                playbook_id=playbook_id,
+                alert_ids=bulk,
+                playbooks_dict=playbooks_dict,
+                results_summary=results_summary
+            )
     else:
-        message_response += [
-            set_playbook_on_alerts(playbook_id=playbook_id, alert_ids=bulk, playbooks_dict=playbooks_dict)
-            for bulk in alert_open_bulks
-        ]
+        for bulk in alert_open_bulks:
+            set_playbook_on_alerts(
+                playbook_id=playbook_id,
+                alert_ids=bulk,
+                playbooks_dict=playbooks_dict,
+                results_summary=results_summary
+            )
 
-    return '\n'.join(message_response)
 
-
-def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: bool, playbooks_dict: dict) -> str:
+def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: bool, playbooks_dict: dict,
+                       results_summary: RESULTS_SUMMARY) -> None:
     """
     Splits incidents by their playbook ID and processes them accordingly.
 
@@ -215,21 +273,21 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
         else:
             missing_playbook_alerts.append(inc["id"])
 
-    message_response = []
-
     if missing_playbook_alerts:
-        message_response.append(f"Could not find an attached playbook for alerts {missing_playbook_alerts}.")
+        results_summary.append_to_others(f"Could not find an attached playbook for alerts {missing_playbook_alerts}.")
 
     for playbook_id, playbook_incidents in playbook_map.items():
-        message_response.append(loop_on_alerts(playbook_incidents, playbook_id, limit, reopen_closed_inv, playbooks_dict))
-
-    return "\n".join(message_response)
+        loop_on_alerts(playbook_incidents, playbook_id, limit, reopen_closed_inv, playbooks_dict, results_summary)
 
 
 def main():
     try:
+        results_summary = RESULTS_SUMMARY()
         args = demisto.args()
         incidents = get_incidents_by_query(args)
+        if not incidents:
+            return return_results("No alerts were found for the provided query and filter arguments.")
+
         limit = int(args.get("limit", "500"))
         reopen_closed_inv = argToBoolean(args.get("reopen_closed_inv"))
         playbook_id = args.get("playbook_id", "")
@@ -240,11 +298,12 @@ def main():
 
         if not playbook_id:
             # we will try to rerun each alert's assigned playbook
-            results = split_by_playbooks(incidents, limit, reopen_closed_inv, playbooks_dict)
+            split_by_playbooks(incidents, limit, reopen_closed_inv, playbooks_dict, results_summary)
         else:
-            results = loop_on_alerts(incidents, playbook_id, limit, reopen_closed_inv, playbooks_dict)
+            loop_on_alerts(incidents, playbook_id, limit, reopen_closed_inv, playbooks_dict, results_summary)
 
-        return_results(results)
+        results_message = results_summary.generate_summary()
+        return_results(results_message)
 
     except Exception as e:
         return_error(str(e))
