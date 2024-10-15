@@ -14,7 +14,7 @@
                     "AND": [
                       {
                         "SEARCH_FIELD": "alert_name",
-                        "SEARCH_TYPE": "WILDCARD",
+                        "SEARCH_TYPE": "EQ",
                         "SEARCH_VALUE": "Possible LDAP enumeration by unsigned process"
                       },
                       {
@@ -28,7 +28,7 @@
                     "AND": [
                       {
                         "SEARCH_FIELD": "alert_name",
-                        "SEARCH_TYPE": "WILDCARD",
+                        "SEARCH_TYPE": "EQ",
                         "SEARCH_VALUE": "Suspicious LDAP search query executed"
                       },
                       {
