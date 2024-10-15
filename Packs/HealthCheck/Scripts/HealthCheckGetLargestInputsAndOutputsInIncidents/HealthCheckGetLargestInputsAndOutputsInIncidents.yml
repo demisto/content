@@ -8,6 +8,7 @@ args:
   predefined:
   - 'True'
   - 'False'
+  deprecated: true
 comment: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations in the last 1 / 2 months.
 commonfields:
   id: HealthCheckGetLargestInputsAndOutputsInIncidents

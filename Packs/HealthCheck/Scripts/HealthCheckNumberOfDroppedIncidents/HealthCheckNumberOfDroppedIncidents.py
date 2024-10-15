@@ -36,11 +36,9 @@ def createActionItem(totalDropped):
                 "resolution": "Consider tuning the defined query to avoid fetching unneeded incidents",
             }
         )
-        CommandResults(
-            readable_output="HealthCheckFileSysLog Done", outputs_prefix="HealthCheck.ActionableItems", outputs=actionItems
-        )
-    return actionItems
-
+    return CommandResults(
+        readable_output="HealthCheckFileSysLog Done", outputs_prefix="HealthCheck.ActionableItems", outputs=actionItems
+    )
 
 incident = demisto.incidents()[0]
 accountName = incident.get("account")
@@ -75,16 +73,16 @@ if demisto_version.startswith("6"):  # xsoar 6
     else:
         results = createActionItem(totalDropped)
         return_results(results)
-        demisto.results(
-            {
-                "Type": entryTypes["note"],
-                "Contents": stats[0]["Contents"]["response"]["total"],
-                "ContentsFormat": formats["text"],
-                "HumanReadable": stats[0]["Contents"]["response"]["total"],
-                "ReadableContentsFormat": formats["text"],
-                "EntryContext": {"NumberOfDroppedIncidents": stats[0]["Contents"]["response"]["total"]},
-            }
-        )
+        # demisto.results(
+        #     {
+        #         "Type": entryTypes["note"],
+        #         "Contents": stats[0]["Contents"]["response"]["total"],
+        #         "ContentsFormat": formats["text"],
+        #         "HumanReadable": stats[0]["Contents"]["response"]["total"],
+        #         "ReadableContentsFormat": formats["text"],
+        #         "EntryContext": {"NumberOfDroppedIncidents": stats[0]["Contents"]["response"]["total"]},
+        #     }
+        # )
 else:  # XSOAR V8
     uri = "/public_api/v1/audits/management_logs"
     page_num = 1
