@@ -214,7 +214,7 @@ tasks:
     task:
       id: b9bbfbad-b31e-4141-820d-447ae8cbb61a
       version: -1
-      name: Any risky asset involved with a non-prevalent action?
+      name: Any risky asset involved with at least one non-prevalent action?
       description: "#### Determines if the LDAP operation was suspicious by the following conditions:\n\nActor Process name is not Prevalent *OR*\nActor Process Command Line is not Prevalent \n\n*AND*\n\nThe Host Risk Score is Medium or High or the User Risk Score is High."
       type: condition
       iscommand: false
@@ -761,7 +761,7 @@ tasks:
     task:
       id: 0de49009-967f-4bc9-898e-f3f6f7c914de
       version: -1
-      name: Is this a non-prevalent action?
+      name: Is this a non-prevalent Process Name and Process CMD?
       description: Check if the Actor Process Name and the Actor Process CMD are non-prevalent.
       type: condition
       iscommand: false
