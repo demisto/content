@@ -6,6 +6,7 @@ RESOLUTION = (
     "Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
     "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"
 )
+XSOARV8_HTML_STYLE = "color:#FFBE98;text-align:center;font-size:150%;>"
 
 
 def analyze_data(res):
@@ -44,7 +45,10 @@ def analyze_data(res):
 
 def main(args):
     if is_demisto_version_ge("8.0.0"):
-        return_error("Not Available for XSOAR v8")
+        msg = "Not Available for XSOAR v8"
+        html = f"<h3 style={XSOARV8_HTML_STYLE}{str(msg)}</h3>"
+        demisto.results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": html})
+        sys.exit()
     incident = demisto.incident()
     account_name = incident.get("account")
     account_name = f"acc_{account_name}" if account_name != "" else ""
