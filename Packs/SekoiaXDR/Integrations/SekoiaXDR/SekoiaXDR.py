@@ -19,11 +19,24 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTERVAL_SECONDS_EVENTS = 1
 TIMEOUT_EVENTS = 30
+INCIDENT_TYPE_NAME = "Sekoia XDR"
+SEKOIA_INCIDENT_FIELDS = {
+    "short_id": "The ID of the alert to edit",
+    "status": "The name of the status.",
+}
+
 STATUS_TRANSITIONS = {
     "Ongoing": "Validate",
     "Acknowledged": "Acknowledge",
     "Rejected": "Reject",
     "Closed": "Close",
+}
+
+MIRROR_DIRECTION = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming and Outgoing": "Both",
 }
 
 
@@ -467,6 +480,7 @@ def fetch_incidents(
     alert_urgency: Optional[str],
     alert_type: Optional[str],
     fetch_mode: Optional[str],
+    mirror_direction: Optional[str],
     fetch_with_assets: Optional[bool],
     fetch_with_kill_chain: Optional[bool],
 ) -> Tuple[Dict[str, int], List[dict]]:
@@ -487,6 +501,7 @@ def fetch_incidents(
         alert_urgency (str): alert urgency range to search for. Format: "MIN_urgency,MAX_urgency". i.e: 80,100.
         alert_type (str): type of alerts to search for.
         fetch_mode (str): If the alert will be fetched with or without the events.
+        mirror_direction (str): The direction of the mirroring can be set to None or to Incoming.
         fetch_with_assets (bool): If the alert will include the assets information on the fetching.
         fetch_with_kill_chain (bool): If the alert will include the kill chain information on the fetching.
     Returns:
@@ -598,6 +613,7 @@ def fetch_incidents(
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
         alert["mirror_instance"] = demisto.integrationInstance()
+        alert["mirror_direction"] = MIRROR_DIRECTION.get(str(mirror_direction))
         incident["rawJSON"] = json.dumps(alert)
         incidents.append(incident)
 
@@ -610,7 +626,188 @@ def fetch_incidents(
     return next_run, incidents
 
 
+# =========== Mirroring Mechanism ===========
+
+
+def get_remote_data_command(
+    client: Client,
+    args: dict,
+    close_incident: bool,
+    close_note: str,
+    mirror_events: bool,
+    mirror_kill_chain: bool,
+    reopen_incident: bool,
+):
+    """get-remote-data command: Returns an updated alert and error entry (if needed)
+
+    Args:
+        client (Client): Sekoia XDR client to use.
+        args (dict): The command arguments
+        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the alert
+            has been closed on Sekoia's end.
+        close_note (str): Indicates the notes to be including when the incident gets closed by mirroring.
+        mirror_events (bool): If the events will be included in the mirroring of the alerts or not.
+        mirror_kill_chain: If the kill chain information from the alerts will be mirrored.
+        reopen_incident: Indicates whether to reopen the corresponding XSOAR incident if the alert
+            has been reopened on Sekoia's end.
+    Returns:
+        GetRemoteDataResponse: The Response containing the update alert to mirror and the entries
+    """
+
+    demisto.debug("#### Entering MIRRORING IN - get_remote_data_command ####")
+
+    parsed_args = GetRemoteDataArgs(args)
+    alert = client.get_alert(alert_uuid=parsed_args.remote_incident_id)
+
+    alert_short_id, alert_status = alert["short_id"], alert["status"]["name"]
+    last_update = arg_to_timestamp(
+        arg=parsed_args.last_update, arg_name="lastUpdate", required=True
+    )
+    alert_last_update = arg_to_timestamp(
+        arg=alert.get("updated_at"), arg_name="updated_at", required=False
+    )
+
+    demisto.debug(
+        f"Alert {alert_short_id} with status {alert_status} : last_update is {last_update} , alert_last_update is {alert_last_update}"  # noqa: E501
+    )
+
+    entries = []
+
+    # Add the events to the alert
+    if mirror_events and alert["status"]["name"] not in ["Closed", "Rejected"]:
+        earliest_time = alert["first_seen_at"]
+        lastest_time = "now"
+        term = f"alert_short_ids:{alert['short_id']}"
+        interval_in_seconds = INTERVAL_SECONDS_EVENTS
+        timeout_in_seconds = TIMEOUT_EVENTS
+
+        args = {
+            "earliest_time": earliest_time,
+            "lastest_time": lastest_time,
+            "query": term,
+            "interval_in_seconds": interval_in_seconds,
+            "timeout_in_seconds": timeout_in_seconds,
+        }
+        events = search_events_command(args=args, client=client)
+        alert["events"] = events.outputs  # pylint: disable=E1101
+
+    # Add the kill chain information to the alert
+    if mirror_kill_chain and alert["kill_chain_short_id"]:
+        try:
+            kill_chain = client.get_kill_chain(
+                kill_chain_uuid=alert["kill_chain_short_id"]
+            )
+            alert["kill_chain"] = kill_chain
+        except Exception as e:
+            # Handle the exception if there is any problem with the API call
+            demisto.debug(f"Error fetching kill_chain : {e}")
+
+    # This adds all the information from the XSOAR incident.
+    demisto.debug(
+        f"Alert {alert_short_id} with status {alert_status} have this info updated: {alert}"
+    )
+
+    investigation = demisto.investigation()
+    demisto.debug(f"The investigation information is {investigation}")
+
+    incident_id = investigation["id"]
+    incident_status = investigation["status"]
+
+    demisto.debug(
+        f"The XSOAR incident is {incident_id} with status {incident_status} is being mirrored with the alert {alert_short_id} that have the status {alert_status}."  # noqa: E501
+    )
+
+    # Close the XSOAR incident using mirroring
+    if (
+        (close_incident)
+        and (alert_status in ["Closed", "Rejected"])
+        and (investigation["status"] != 1)
+    ):
+        demisto.debug(
+            f"Alert {alert_short_id} with status {alert_status} was closed or rejected in Sekoia, closing incident {incident_id} in XSOAR"  # noqa: E501
+        )
+        entries = [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": f"{alert_status} - Mirror",
+                    "closeNotes": close_note,
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+
+    # Reopen the XSOAR incident using mirroring
+    if (
+        (reopen_incident)
+        and (alert_status not in ["Closed", "Rejected"])
+        and (investigation["status"] == 1)
+    ):
+        demisto.debug(
+            f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, reopening incident {incident_id} in XSOAR"
+        )
+        entries = [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+
+    demisto.debug("#### Leaving MIRRORING IN - get_remote_data_command ####")
+
+    return GetRemoteDataResponse(mirrored_object=alert, entries=entries)
+
+
+def get_modified_remote_data_command(client: Client, args):
+    """Gets the list of all alert ids that have change since a given time
+
+    Args:
+        client (Client): Sekoia XDR client to use.
+        args (dict): The command argument
+
+    Returns:
+        GetModifiedRemoteDataResponse: The response containing the list of ids of notables changed
+    """
+    modified_alert_ids = []
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    last_update_utc = dateparser.parse(
+        last_update, settings={"TIMEZONE": "UTC"}
+    )  # converts to a UTC timestamp
+    formatted_last_update = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")  # type: ignore
+    converted_time = time_converter(formatted_last_update)
+    last_update_time = f"{converted_time},now"
+
+    raw_alerts = client.list_alerts(
+        alerts_updated_at=last_update_time,
+        alerts_limit=100,
+        alerts_status=None,
+        alerts_created_at=None,
+        alerts_urgency=None,
+        alerts_type=None,
+        sort_by="updated_at",
+    )
+
+    modified_alert_ids = [item["short_id"] for item in raw_alerts["items"]]
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
+
+
+def update_remote_system_command(client: Client, args):
+    pass
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    pass
+
+
+# =========== Mirroring Mechanism ===========
+
+
 def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
     alerts = client.list_alerts(
         alerts_limit=args.get("limit"),
         alerts_status=args.get("status"),
@@ -1169,12 +1366,13 @@ def main() -> None:
             fetch_mode = params.get("fetch_mode")
             fetch_with_assets = params.get("fetch_with_assets")
             fetch_with_kill_chain = params.get("fetch_with_kill_chain")
+            mirror_direction = params.get("mirror_direction")
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(params["max_fetch"])
-            last_run: Dict[
-                str, Any
-            ] = demisto.getLastRun()  # getLastRun() gets the last run dict
+            last_run: Dict[str, Any] = (
+                demisto.getLastRun()
+            )  # getLastRun() gets the last run dict
 
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -1185,6 +1383,7 @@ def main() -> None:
                 alert_urgency=alerts_urgency,
                 alert_type=alerts_type,
                 fetch_mode=fetch_mode,
+                mirror_direction=mirror_direction,
                 fetch_with_assets=fetch_with_assets,
                 fetch_with_kill_chain=fetch_with_kill_chain,
             )
@@ -1234,6 +1433,20 @@ def main() -> None:
             return_results(get_kill_chain_command(client, args))
         elif command == "sekoia-xdr-http-request":
             return_results(http_request_command(client, args))
+        elif command == "get-remote-data":
+            return_results(
+                get_remote_data_command(
+                    client,
+                    args,
+                    close_incident=demisto.params().get("close_incident"),  # type: ignore
+                    close_note=demisto.params().get("close_note"),  # type: ignore
+                    mirror_events=demisto.params().get("mirror_events"),  # type: ignore
+                    mirror_kill_chain=demisto.params().get("mirror_kill_chain"),  # type: ignore
+                    reopen_incident=demisto.params().get("reopen_incident"),  # type: ignore
+                )
+            )
+        elif command == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
