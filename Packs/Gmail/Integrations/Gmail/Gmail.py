@@ -1,3 +1,4 @@
+import time
 import uuid
 import demistomock as demisto
 from CommonServerPython import *
@@ -825,7 +826,6 @@ def get_millis_from_date(date, arg_name):
 
 
 def cutting_for_batches(list_accounts: list) -> List[list]:
-
     accounts: list = []
     rest_accounts: list = []
 
@@ -845,13 +845,11 @@ def cutting_for_batches(list_accounts: list) -> List[list]:
 
 
 def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> List[CommandResults]:
-
     accounts_batches = cutting_for_batches(accounts)
 
     command_results: list[CommandResults] = []
     args = copy.deepcopy(demisto.args())
     for batch in accounts_batches:
-
         args.update({'list_accounts': batch})
         command_results.append(
             CommandResults(
@@ -884,15 +882,26 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
     accounts_counter = 0
     users_next_page_token = users_next_page_token
     service = get_service('admin', 'directory_v1')
-
+    counter = 0
     while True:
         command_args = {
             'maxResults': min(max_results, 100),
             'domain': ADMIN_EMAIL.split('@')[1],
             'pageToken': users_next_page_token
         }
-
-        result = service.users().list(**command_args).execute()
+        try:
+            result = service.users().list(**command_args).execute()
+        except HttpError as err:
+            if err.status_code == 500 and counter < 3:
+                # retry mechanism - try 3 times to get the users list, otherwise continue
+                demisto.debug(f'Gmail Integration: Got an error {err.status_code} for getting list of users,'
+                              f' Trying again to get it by executing another API Call (try number: {counter + 1}).')
+                counter += 1
+                time.sleep(30)
+                continue
+            else:
+                demisto.debug(f'Gmail Integration: {str(err)}, {err.status_code=}, {counter=}')
+                raise err
         accounts_counter += len(result['users'])
         accounts.extend([account['primaryEmail'] for account in result['users']])
         users_next_page_token = result.get('nextPageToken')
@@ -907,7 +916,6 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
 
 
 def information_search_process(length_accounts: int, search_from: int | None, search_to: int | None) -> CommandResults:
-
     if search_from is None or search_to is None:
         readable_output = f'Searching the first {length_accounts} accounts'
         search_from = 0
@@ -1337,8 +1345,9 @@ def search_in_mailboxes(accounts: list[str], only_return_account_names: bool) ->
     entries: list = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for user in accounts:
-            futures.append(executor.submit(search_command, mailbox=user,
-                                           only_return_account_names=only_return_account_names))
+            futures.append(executor.submit(search_command, first_time=True, mailbox=user,
+                                           only_return_account_names=only_return_account_names,
+                                           ))
         for account in concurrent.futures.as_completed(futures):
             if found := account.result():
                 entries.append(found)
@@ -1350,7 +1359,6 @@ def search_in_mailboxes(accounts: list[str], only_return_account_names: bool) ->
 
 
 def search_all_mailboxes():
-
     args = demisto.args()
     only_return_account_names = argToBoolean(args.get('show-only-mailboxes', 'true'))
     list_accounts = argToList(args.get('list_accounts', ''))
@@ -1392,7 +1400,8 @@ def search_all_mailboxes():
             search_all_mailboxes()
 
 
-def search_command(mailbox: str = None, only_return_account_names: bool = False) -> dict[str, Any] | None:
+def search_command(first_time: bool, mailbox: str = None, only_return_account_names: bool = False) -> dict[
+        str, Any] | None:
     """
     Searches for Gmail records of a specified Google user.
     """
@@ -1428,8 +1437,19 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
                           include_spam_trash, has_attachments, only_return_account_names,
                           )
     except HttpError as err:
-        if only_return_account_names and err.status_code == 429:
+        if err.status_code == 500 and first_time:
+            # retry mechanism - try just one time more
+            demisto.debug(f'Gmail Integration: Got an error {err.status_code} for {user_id=}, trying again to search fot it')
+            search_command(first_time=False, mailbox=mailbox, only_return_account_names=only_return_account_names)
+        elif (
+            err.status_code == 500
+            or (err.status_code == 429
+                and only_return_account_names)
+        ):
+            demisto.debug(f'Gmail Integration: Got another time the {err.status_code} error for {user_id=}, '
+                          f'continuing to the next user')
             return {'Mailbox': mailbox, 'Error': {'message': str(err.error_details), 'status_code': err.status_code}}
+
         raise
 
     # In case the user wants only account list without content.
