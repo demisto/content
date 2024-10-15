@@ -1227,11 +1227,11 @@ script:
     name: close-channel
   - name: zoom-delete-user-token
     description: Revoke a user's Zoom SSO session if their account becomes compromised. Use the zoom-list-users command to get the user ID or user email.
+    execution: true
     arguments:
       - name: user_id
         description: Email or unique identifier of the user.
         required: true
-        execution: true
         type: string
     outputs: [ ]
   - name: send-notification
