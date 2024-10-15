@@ -2837,13 +2837,15 @@ def test_send_request_with_entitlement(mocker):
 
 
 FILE_SEND_RESPONSE_CASES = [
-    (
+    pytest.param(
         {'ok': True, 'files': ['foo.png']},
         'File sent to Slack successfully.',
+        id='API OK response'
     ),
-    (
+    pytest.param(
         {'ok': False, 'error': 'service_unavailable'},
         'Could not send the file to Slack. The Slack service is temporarily unavailable.',
+        id='API error response'
     )
 ]
 
