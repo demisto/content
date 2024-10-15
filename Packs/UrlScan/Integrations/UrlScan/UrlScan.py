@@ -254,7 +254,7 @@ def urlscan_submit_url(client, url):
         submission_dict['customagent'] = demisto.params().get('useragent')
         
     if client.country:
-        submission_dict['country'] = (client.country).split(' ')[0]
+        submission_dict['country'] = client.country.split(' ')[0]
 
     sub_json = json.dumps(submission_dict)
     retries = int(demisto.args().get('retries', 0))
