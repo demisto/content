@@ -76,9 +76,10 @@ def test_fetch_events(mocker, connection):
 
     # We set fetch_interval to 7 to get this first two events (as we "wait" 4 seconds between each event)
     fetch_interval = 7
+    event_connection = EventConnection(event_type=EventType.MESSAGE, connection=connection)
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "is_interval_passed", side_effect=is_interval_passed)
     debug_logs = mocker.patch.object(demisto, "debug")
-    events = fetch_events(event_type=EventType.MESSAGE, connection=connection, fetch_interval=fetch_interval)
+    events = fetch_events(connection=event_connection, fetch_interval=fetch_interval)
 
     assert len(events) == 2
     assert events[0]["message"] == "Test message 1"
@@ -93,7 +94,7 @@ def test_fetch_events(mocker, connection):
     # Now we want to freeze the time, so we will get the next interval
     with freeze_time(CURRENT_TIME):
         debug_logs = mocker.patch.object(demisto, "debug")
-        events = fetch_events(event_type=EventType.MESSAGE, connection=connection, fetch_interval=fetch_interval)
+        events = fetch_events(connection=event_connection, fetch_interval=fetch_interval)
     assert len(events) == 1
     assert events[0]["message"] == "Test message 3"
     assert events[0]["_time"] == "2023-08-12T13:24:11.147573+00:00"
@@ -155,8 +156,8 @@ def test_handle_failures_of_send_events(mocker, capfd):
     Then:
         - Add the failing events to the context, and try again in the next run.
     """
-    def fetch_events_mock(event_type: EventType, connection: Connection, fetch_interval: int):
-        if event_type == EventType.MESSAGE:
+    def fetch_events_mock(connection: EventConnection, fetch_interval: int):
+        if connection.event_type == EventType.MESSAGE:
             return EVENTS[:2]
         return EVENTS[2:]
 

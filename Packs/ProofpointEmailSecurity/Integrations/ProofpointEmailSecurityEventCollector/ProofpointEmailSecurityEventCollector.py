@@ -1,6 +1,7 @@
 from contextlib import ExitStack, contextmanager
 from enum import Enum
 from functools import partial
+import threading
 from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
@@ -26,9 +27,28 @@ class EventType(str, Enum):
 
 
 class EventConnection:
-    def __init__(self, event_type: EventType, connection: Connection):
+    def __init__(self, event_type: EventType, connection: Connection, idle_timeout: int = 280):
         self.event_type = event_type
         self.connection = connection
+        self.lock = threading.Lock()
+        self.last_msg_time = time.time()
+        self.idle_timeout = idle_timeout
+
+    def recv(self, timeout=None):
+        with self.lock:
+            if res := self.connection.recv(timeout=timeout):
+                self.last_msg_time = int(time.time())
+            return res
+
+    def heartbeat(self):
+        while True:
+            with self.lock:
+                idle_time_elapsed = int(time.time()) - self.last_msg_time
+                if idle_time_elapsed >= self.idle_timeout:
+                    self.connection.pong()
+                    self.last_msg_time = int(time.time())
+                    idle_time_elapsed = 0
+            time.sleep(self.idle_timeout - idle_time_elapsed)
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -67,7 +87,7 @@ def websocket_connections(
         yield connections
 
 
-def fetch_events(event_type: EventType, connection: Connection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
+def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
     """
     This function fetches events from the websocket connection for the given event type, for the given fetch interval
 
@@ -80,13 +100,13 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
     Returns:
         list[dict]: A list of events
     """
+    event_type = connection.event_type
     demisto.debug(f'Starting to fetch events of type {event_type.value}')
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            demisto.debug(f'Calling connection recv() for event type {event_type.value}')
             event = json.loads(connection.recv(timeout=recv_timeout))
         except TimeoutError:
             # if we didn't receive an event for `fetch_interval` seconds, finish fetching
@@ -119,7 +139,7 @@ def test_module(host: str, cluster_id: str, api_key: str):
     try:
         with websocket_connections(host, cluster_id, api_key) as connections:
             for connection in connections:
-                fetch_events(connection.event_type, connection.connection, fetch_interval, recv_timeout)
+                fetch_events(connection, fetch_interval, recv_timeout)
             return "ok"
     except InvalidStatus as e:
         if e.response.status_code == 401:
@@ -130,7 +150,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
     integration_context = demisto.getIntegrationContext()
     events_to_send = []
     for connection in connections:
-        events = fetch_events(connection.event_type, connection.connection, fetch_interval)
+        events = fetch_events(connection, fetch_interval)
         events.extend(integration_context.get(connection.event_type.value, []))
         integration_context[connection.event_type.value] = events  # update events in context in case of fail
         demisto.debug(f'Adding {len(events)} {connection.event_type.value} Events to XSIAM')
@@ -151,6 +171,12 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
     fetch_interval = max(1, fetch_interval // len(EventType))
     with websocket_connections(host, cluster_id, api_key) as connections:
         demisto.info("Connected to websocket")
+
+        # The Proofpoint server will close connections if they are idle for 5 minutes
+        # Setting up heartbeat daemon threads to avoid this
+        for connection in connections:
+            threading.Thread(target=connection.heartbeat, daemon=True).start()
+
         while True:
             perform_long_running_loop(connections, fetch_interval)
             # sleep for a bit to not throttle the CPU
