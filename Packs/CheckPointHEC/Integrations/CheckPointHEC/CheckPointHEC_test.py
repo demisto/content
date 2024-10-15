@@ -267,6 +267,30 @@ def test_fetch_incidents(mocker):
     demisto_incidents.assert_called_once()
 
 
+def test_fetch_incidents_restore_requests(mocker):
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api',
+        return_value=mock_response,
+    )
+
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_fetch': '2023-06-30T00:00:00'})
+    demisto_incidents = mocker.patch.object(demisto, 'incidents')
+
+    fetch_incidents(client, '1 day', ['office365_emails'], [], [], [], 10, 1, collect_restore_requests=True)
+    call_api.assert_called_twice()
+    demisto_incidents.assert_called_once()
+
+
 def test_checkpointhec_get_entity_success(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',

@@ -683,7 +683,7 @@ script:
       description: Affected count.
       type: String
     - contextPath: CheckPointHEC.AntiPhishingException.allowed_links
-      description: Allowed links
+      description: Allowed links.
       type: String
     - contextPath: CheckPointHEC.AntiPhishingException.attachment_md5
       description: Email attachment MD5.
