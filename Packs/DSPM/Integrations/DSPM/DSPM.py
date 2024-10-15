@@ -662,34 +662,6 @@ def update_dspm_alert_status(client, args):
         )
 
 
-def get_integration_config():
-
-    integration_config = {
-        "slackMsgLifetime": demisto.params().get("slackMsgLifetime"),
-        "defaultSlackUser": demisto.params().get("defaultSlackUser"),
-    }
-    demisto.debug(f" integration config : ${integration_config}")
-
-    # Prepare data for table format
-    table_data = [
-        {"Key": key, "Value": value} for key, value in integration_config.items()
-    ]
-
-    # Convert dictionary to table format
-    markdown = tableToMarkdown(
-        "Integration Configuration", table_data, headers=["Key", "Value"]
-    )
-
-    # Return CommandResults with the integration config
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix="DSPM.IntegrationConfig",
-        outputs_key_field="config",
-        outputs={"integration_config": integration_config},
-        raw_response=integration_config
-    )
-
-
 def get_list_of_labels(client: Client):
     """Command to fetch list of label names based on company"""
     labels = client.get_labels()
@@ -946,8 +918,6 @@ def main() -> None:
         if demisto.command() == "test-module":
             result = test_module(client)
             return_results(result)
-        elif demisto.command() == "dspm-get-integration-config":
-            return_results(get_integration_config())
 
         #
         # labels-resource

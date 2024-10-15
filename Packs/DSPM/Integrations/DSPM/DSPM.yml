@@ -659,16 +659,6 @@ script:
     - contextPath: DSPM.DataTypesFinding.recordsAtRisk.low
       description: 'The number of low-risk records found for this data type.'
       type: Integer
-  - arguments: []
-    description: Retrieves integration configuration.
-    name: dspm-get-integration-config
-    outputs:
-    - contextPath: DSPM.IntegrationConfig.slackMsgLifetime
-      description: Lifetime for slack notification.
-      type: String
-    - contextPath: DSPM.IntegrationConfig.defaultSlackUser
-      description: The default user to receive Slack notifications.
-      type: String
   - arguments:
     - description: 'Risk Finding ID.'
       isArray: false

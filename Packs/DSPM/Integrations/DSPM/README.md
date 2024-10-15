@@ -25,8 +25,6 @@ The Prisma Cloud DSPM(Data Security Posture Management) Integration enhances the
     | --- | --- | --- |
     | DSPM server URL | The tenant URL of the Prisma Cloud DSPM | True |
     | DSPM API Key | API key to use for the connection. | True |
-    | Default Slack user for notifications | The default user who will receive Slack notifications in case of any errors. | True |
-    | Lifetime for slack notification (in hours) |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
@@ -742,47 +740,6 @@ Retrieves a list of data type findings for the company.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | AADHAAR_INDIVIDUAL_IDENTIFICATION | PII | 4 | 0 | 1 | AWS | us-east-1 | 2024-05-09T03:24:29Z | 0 | 4 | 0 |
 
-### dspm-get-integration-config
-
-***
-Retrieves integration configuration.
-
-#### Base Command
-
-`dspm-get-integration-config`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| DSPM.IntegrationConfig.slackMsgLifetime | String | Lifetime for slack notification. | 
-| DSPM.IntegrationConfig.defaultSlackUser | String | The default user to receive Slack notifications. | 
-
-#### Command example
-```!dspm-get-integration-config```
-#### Context Example
-```json
-{
-    "DSPM": {
-        "IntegrationConfig": {
-        "slackMsgLifetime": "4",
-        "defaultSlackUser": "useremail",
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Integration configuration values
->|Slack Msg Lifetime|Default Slack User|
->|---|---|
->| 4 | useremail|
 
 ### dspm-update-risk-finding-status
 

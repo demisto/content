@@ -1,6 +1,6 @@
 import json
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from CommonServerPython import *  # noqa: F401
 from DSPM import (
     get_list_of_labels,
@@ -13,7 +13,6 @@ from DSPM import (
     get_data_types,
     get_data_type_findings,
     get_list_of_alerts,
-    get_integration_config,
     update_dspm_alert_status,
     get_risk_finding_by_id,
     validate_parameter,
@@ -629,27 +628,6 @@ def test_get_asset_files_by_id_with_invalid_key_name(client):
     # Call the function
     with pytest.raises(ValueError, match=expected_error):
         get_asset_files_by_id(client, args)
-
-
-@patch('DSPM.demisto')
-def test_get_integration_config(mock_demisto):
-    mock_params = {
-        "slackMsgLifetime": 4,
-        "defaultSlackUser": "mock_user"
-    }
-    expected_result = {
-        "integration_config": {
-            "defaultSlackUser": "mock_user",
-            "slackMsgLifetime": 4
-        }
-    }
-    mock_demisto.params.return_value = mock_params
-
-    result = get_integration_config()
-    assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == 'DSPM.IntegrationConfig'
-    assert result.outputs_key_field == 'config'
-    assert result.outputs == expected_result
 
 
 def test_get_list_of_assets_empty_response(client, mocker):
