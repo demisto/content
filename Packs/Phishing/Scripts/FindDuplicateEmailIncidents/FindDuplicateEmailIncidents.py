@@ -1,5 +1,23 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+class LogDemisto:
+
+    def __init__(self) -> None:
+        self.debug_message: str = '\n\nDEBUG new_demisto: Start\n\n'
+        self.old_debug = demisto.debug
+        demisto.debug = self.debug
+
+    def debug(self, msg: str):
+        self.debug_message += f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")} debug: {msg}\n'
+
+    def log_debugs(self):
+        self.old_debug(self.debug_message + '\n\nDEBUG new_demisto: Done\n\n')
+        demisto.debug = self.old_debug
+
+DEBUG = LogDemisto()
+
+# demisto.debug('about to import')
 import dateutil  # type: ignore
 
 from CommonServerUserPython import *
@@ -12,7 +30,7 @@ from email.utils import parseaddr
 import tldextract
 from urllib.parse import urlparse
 import re
-
+# demisto.debug('imports complete')
 from FormatURLApiModule import *  # noqa: E402
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=[], cache_dir=None)
@@ -46,6 +64,21 @@ URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\
 IGNORE_INCIDENT_TYPE_VALUE = 'None'
 
 
+def func_logger(func):
+    def func_wrapper(*args, **kwargs):
+        demisto.debug(f'calling {func.__name__}({args=}, {kwargs}')
+        before = datetime.now()
+        ret_val = func(*args, **kwargs)
+        after = datetime.now()
+        demisto.debug(f'Return value [{func.__name__}]: {ret_val!r}')
+        demisto.debug(f'Command {func.__name__!r} ran for {abs(before - after)}')
+        return ret_val
+    return func_wrapper
+
+log_dot = func_logger(dot)
+log_norm = func_logger(norm)
+
+# @func_logger
 def get_existing_incidents(input_args, current_incident_type):
     global DEFAULT_ARGS
     get_incidents_args = {}
@@ -72,6 +105,7 @@ def get_existing_incidents(input_args, current_incident_type):
         type_query = generate_incident_type_query_component(type_field, type_values)
         query_components.append(type_query)
     if len(query_components) > 0:
+        demisto.debug(f'{len(query_components)=}')
         get_incidents_args['query'] = ' and '.join(f'({c})' for c in query_components)
 
     fields = [EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD, 'created', 'id',
@@ -83,11 +117,11 @@ def get_existing_incidents(input_args, current_incident_type):
         get_incidents_args['populateFields'] = ','.join(fields)
 
     demisto.debug(f'Calling GetIncidentsByQuery with {get_incidents_args=}')
-    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
+    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery_copy', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents_query_contents = '{}'
-
+    demisto.debug(f'{incidents_query_res=}')
     for res in incidents_query_res:
         if res['Contents']:
             incidents_query_contents = res['Contents']
@@ -95,6 +129,7 @@ def get_existing_incidents(input_args, current_incident_type):
     return incidents
 
 
+# @func_logger
 def generate_incident_type_query_component(type_field_arg, type_values_arg):
     type_field = type_field_arg.strip()
     type_values = [x.strip() for x in type_values_arg.split(',')]
@@ -102,6 +137,7 @@ def generate_incident_type_query_component(type_field_arg, type_values_arg):
     return f'{type_field}:({types_unions})'
 
 
+# @func_logger
 def extract_domain(address):
     global no_fetch_extract
     if address == '':
@@ -112,6 +148,7 @@ def extract_domain(address):
     return f'{ext.domain}.{ext.suffix}'
 
 
+# @func_logger
 def get_text_from_html(html):
     soup = BeautifulSoup(html, features="html.parser")
     # kill all script and style elements
@@ -121,6 +158,7 @@ def get_text_from_html(html):
     text = soup.get_text()
     # break into lines and remove leading and trailing space on each
     lines = (line.strip() for line in text.splitlines())
+    demisto.debug(f'{lines=}')
     # break multi-headlines into a line each
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     # drop blank lines
@@ -128,11 +166,13 @@ def get_text_from_html(html):
     return text
 
 
+# @func_logger
 def eliminate_urls_extensions(text):
     urls_list = re.findall(URL_REGEX, text)
     if len(urls_list) == 0:
         return text
     formatted_urls_list = format_urls(urls_list)
+    demisto.debug(f'{len(urls_list)=}')
     for url, formatted_url in zip(urls_list, formatted_urls_list):
         parsed_uri = urlparse(formatted_url)
         url_with_no_path = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
@@ -140,6 +180,7 @@ def eliminate_urls_extensions(text):
     return text
 
 
+# @func_logger
 def preprocess_email_body(incident):
     email_body = email_html = ''
     if EMAIL_BODY_FIELD in incident:
@@ -153,6 +194,7 @@ def preprocess_email_body(incident):
     return eliminate_urls_extensions(email_body)
 
 
+# @func_logger
 def preprocess_email_subject(incident):
     email_subject = ''
     if EMAIL_SUBJECT_FIELD in incident:
@@ -162,10 +204,12 @@ def preprocess_email_subject(incident):
     return eliminate_urls_extensions(email_subject)
 
 
+# @func_logger
 def concatenate_subject_body(row):
     return f'{row[PREPROCESSED_EMAIL_SUBJECT]}\n{row[PREPROCESSED_EMAIL_BODY]}'
 
 
+# @func_logger
 def preprocess_incidents_df(existing_incidents):
     global MERGED_TEXT_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD
     incidents_df = pd.DataFrame(existing_incidents)
@@ -191,6 +235,7 @@ def preprocess_incidents_df(existing_incidents):
     return incidents_df
 
 
+# @func_logger
 def incident_has_text_fields(incident):
     text_fields = [EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_BODY_FIELD]
     custom_fields = incident.get('CustomFields', []) or []
@@ -201,26 +246,31 @@ def incident_has_text_fields(incident):
     return False
 
 
+# @func_logger
 def filter_out_same_incident(existing_incidents_df, new_incident):
     same_id_mask = existing_incidents_df['id'] == new_incident['id']
     existing_incidents_df = existing_incidents_df[~same_id_mask]
     return existing_incidents_df
 
 
+# @func_logger
 def filter_newer_incidents(existing_incidents_df, new_incident):
     new_incident_datetime = dateutil.parser.parse(new_incident['created'])  # type: ignore
     earlier_incidents_mask = existing_incidents_df['created'] < new_incident_datetime
     return existing_incidents_df[earlier_incidents_mask]
 
 
+# @func_logger
 def vectorize(text, vectorizer):
     return vectorizer.transform([text]).toarray()[0]
 
 
+# @func_logger
 def cosine_sim(a, b):
-    return dot(a, b) / (norm(a) * norm(b))
+    return log_dot(a, b) / (log_norm(a) * log_norm(b))
 
 
+# @func_logger
 def find_duplicate_incidents(new_incident, existing_incidents_df, max_incidents_to_return):
     global MERGED_TEXT_FIELD, FROM_POLICY
     new_incident_text = new_incident[MERGED_TEXT_FIELD]
@@ -249,6 +299,7 @@ def find_duplicate_incidents(new_incident, existing_incidents_df, max_incidents_
     return existing_incidents_df.head(max_incidents_to_return)
 
 
+# @func_logger
 def return_entry(message, duplicate_incidents_df=None, new_incident=None):
     if duplicate_incidents_df is None:
         duplicate_incident = {}
@@ -270,6 +321,7 @@ def return_entry(message, duplicate_incidents_df=None, new_incident=None):
     return_outputs(message, outputs, raw_response=json.dumps(full_incidents))
 
 
+# @func_logger
 def format_incident_context(df_row):
     duplicate_incident = {
         'rawId': df_row['id'],
@@ -280,6 +332,7 @@ def format_incident_context(df_row):
     return duplicate_incident
 
 
+# @func_logger
 def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df):
     mask = duplicate_incidents_df['similarity'] >= SIMILARITY_THRESHOLD
     duplicate_incidents_df = duplicate_incidents_df[mask]
@@ -306,14 +359,17 @@ def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df
     return_entry(message, duplicate_incidents_df, new_incident)
 
 
+# @func_logger
 def create_new_incident():
     return_entry('This incident is not a duplicate of an existing incident.')
 
 
+# @func_logger
 def format_incident_hr(duplicate_incidents_df):
     incidents_list = duplicate_incidents_df.to_dict('records')
     json_lists = []
     status_map = {'0': 'Pending', '1': 'Active', '2': 'Closed', '3': 'Archive'}
+    demisto.debug(f'{len(incidents_list)=}')
     for incident in incidents_list:
         json_lists.append({'Id': "[{}](#/Details/{})".format(incident['id'], incident['id']),
                            'Name': incident['name'],
@@ -326,6 +382,7 @@ def format_incident_hr(duplicate_incidents_df):
     return json_lists, headers
 
 
+# @func_logger
 def create_new_incident_low_similarity(duplicate_incidents_df):
     message = '## This incident is not a duplicate of an existing incident.\n'
     similarity = duplicate_incidents_df.iloc[0]['similarity']
@@ -341,6 +398,7 @@ def create_new_incident_low_similarity(duplicate_incidents_df):
     return_entry(message)
 
 
+# @func_logger
 def create_new_incident_no_text_fields():
     text_fields = [EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, EMAIL_SUBJECT_FIELD]
     message = 'No text fields were found within this incident: {}.\n'.format(','.join(text_fields))
@@ -348,10 +406,12 @@ def create_new_incident_no_text_fields():
     return_entry(message)
 
 
+# @func_logger
 def create_new_incident_too_short():
     return_entry('Incident text after preprocessing is too short for deduplication. Incident will remain active.')
 
 
+# @func_logger
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, MIN_TEXT_LENGTH, FROM_POLICY
     input_args = demisto.args()
@@ -367,6 +427,7 @@ def main():
         return_error('Illegal value of arguement "maxIncidentsToReturn": {}. '
                      'Value should be an integer'.format(max_incidents_to_return))
     new_incident = demisto.incidents()[0]
+    demisto.debug(f'{new_incident=}')
     type_field = input_args.get('incidentTypeFieldName', 'type')
     existing_incidents = get_existing_incidents(input_args, new_incident.get(type_field, IGNORE_INCIDENT_TYPE_VALUE))
     demisto.debug(f'found {len(existing_incidents)} incidents by query')
@@ -383,6 +444,7 @@ def main():
     existing_incidents_df = preprocess_incidents_df(existing_incidents)
     existing_incidents_df = filter_out_same_incident(existing_incidents_df, new_incident)
     existing_incidents_df = filter_newer_incidents(existing_incidents_df, new_incident)
+    demisto.debug(f'remaining incidents after filter {len(existing_incidents)}')
     if len(existing_incidents_df) == 0:
         create_new_incident()
         return None
@@ -402,3 +464,4 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+    DEBUG.log_debugs()
