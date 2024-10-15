@@ -496,6 +496,9 @@ def test_module(args) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    if ROLE_NAME and not PARAMS.get('accounts_to_access'):
+        raise DemistoException("'AWS organization accounts' must not be empty when an access role is provided.")
+
     aws_client = build_client(args)
     message: str = ''
     try:
