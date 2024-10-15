@@ -13,7 +13,7 @@ Check the following parameters to determine if remediation actions are needed:
 - User risk score is "High".
 
 Remediation:
-- Handles malicious alerts by terminating the relevant processes.
+- Handles malicious alerts terminating the causality process.
 - Handles non-malicious alerts identified during the investigation.
 
 ## Dependencies
