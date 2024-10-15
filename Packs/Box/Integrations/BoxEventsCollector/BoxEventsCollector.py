@@ -16,7 +16,7 @@ class Claims(BaseModel):
     iss: str = Field(alias='client_id')
     sub: str = Field(alias='id', description='user id or enterprise id')
     box_sub_type: str = 'enterprise'
-    aud: AnyUrl
+    aud: str
     jti: str = secrets.token_hex(64)
     exp: int = round(time.time()) + 45
 
