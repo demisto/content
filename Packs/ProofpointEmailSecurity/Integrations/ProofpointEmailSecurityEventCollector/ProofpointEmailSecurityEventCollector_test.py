@@ -1,3 +1,4 @@
+from contextlib import ExitStack, contextmanager
 import uuid
 import pytest
 from ProofpointEmailSecurityEventCollector import (
@@ -11,7 +12,8 @@ from ProofpointEmailSecurityEventCollector import (
     perform_long_running_loop,
     DemistoException,
     Connection,
-    EventConnection
+    EventConnection,
+    long_running_execution_command,
 )
 import ProofpointEmailSecurityEventCollector
 from freezegun import freeze_time
@@ -46,6 +48,8 @@ class MockConnection(Connection):
         self.id = uuid.uuid4()
         self.events = EVENTS
         self.index = 0
+        self.pongs = 0
+        self.create_time = datetime.now()
 
     def recv(self, timeout):
         global CURRENT_TIME
@@ -58,6 +62,9 @@ class MockConnection(Connection):
         event = self.events[self.index]
         self.index += 1
         return json.dumps(event)
+
+    def pong(self):
+        self.pongs += 1
 
 
 def test_fetch_events(mocker, connection):
@@ -183,3 +190,32 @@ def test_handle_failures_of_send_events(mocker, capfd):
     # check that the events failed events were sent to xsiam
     for event in EVENTS:
         assert event in second_try_send_events_mock.call_args_list[0][0][0]
+
+
+def test_heartbeat(mocker, connection):
+    idle_timeout = 3
+
+    @contextmanager
+    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None):
+        with ExitStack():
+            yield [EventConnection(EventType.AUDIT, connection, idle_timeout)]
+
+    def mock_perform_long_running_loop(connections, interval):
+        # This mock will raise exceptions to stop the long running loop
+        # StopIteration exception marks success
+        connection = connections[0].connection
+        if connection.pongs:
+            raise StopIteration(f'Sent {connections[0].connection.pongs} pongs')
+        if datetime.now() > connection.create_time + timedelta(seconds=idle_timeout + 2):
+            # Heartbeat should've been sent already
+            raise TimeoutError(f'No heartbeat sent within {idle_timeout} seconds')
+
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, 'websocket_connections',
+                        side_effect=mock_websocket_connections)
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, 'perform_long_running_loop',
+                        side_effect=mock_perform_long_running_loop)
+
+    with pytest.raises(StopIteration):
+        long_running_execution_command('host', 'cid', 'key', 60)
+
+    assert connection.pongs > 0
