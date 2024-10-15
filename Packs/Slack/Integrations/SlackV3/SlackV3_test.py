@@ -2836,7 +2836,15 @@ def test_send_request_with_entitlement(mocker):
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
 
-def test_slack_send_with_mirrored_file(mocker):
+FILE_SEND_RESPONSE_CASES = [
+    # is_successfull_upload    human_readable_message
+    (True, 'File sent to Slack successfully.'),
+    (False, 'Could not send the file to Slack.')
+]
+
+
+@pytest.mark.parametrize('is_successfull_upload, human_readable_message', FILE_SEND_RESPONSE_CASES)
+def test_slack_send_with_mirrored_file(is_successfull_upload: bool, human_readable_message: str, mocker):
     """
     Given:
       - mirror entry which is basically a file
@@ -2845,7 +2853,7 @@ def test_slack_send_with_mirrored_file(mocker):
       - running send-notification triggered from mirroring
 
     Then:
-      - Validate that the file is sent successfully
+      - Validate that the Slack API response is handled correctly
     """
     import SlackV3
 
@@ -2865,13 +2873,13 @@ def test_slack_send_with_mirrored_file(mocker):
             "entryObject": {}
         }
     )
-    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value={'ok': True})
+    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value={'ok': is_successfull_upload})
     demisto_results = mocker.patch.object(demisto, 'results')
 
     SlackV3.slack_send()
     assert slack_send_request.call_args_list[0].kwargs["file_dict"]
     assert slack_send_request.call_args_list[0].kwargs["channel_id"] == "1234"
-    assert demisto_results.call_args_list[0][0][0] == 'File sent to Slack successfully.'
+    assert demisto_results.call_args_list[0][0][0] == human_readable_message
 
 
 def test_send_request_with_entitlement_blocks(mocker):
@@ -3309,8 +3317,8 @@ def test_send_file_to_destinations(mocker):
     # Assert
     assert SlackV3.send_slack_request_sync.call_count == 1
     assert 'http_verb' not in args
-    assert args['file_upload_params'].file == 'yo'
-    assert args['file_upload_params'].filename == 'name'
+    assert args['file_upload_params']['file'] == 'yo'
+    assert args['file_upload_params']['filename'] == 'name'
 
 
 def test_send_message_retry(mocker):
