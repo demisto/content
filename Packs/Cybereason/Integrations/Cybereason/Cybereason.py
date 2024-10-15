@@ -670,7 +670,8 @@ def malop_processes_command(client: Client, args: dict):
     if date_time != 'None':
         date_time_parser = dateparser.parse(date_time)
         if not date_time_parser:
-            raise DemistoException("dateTime could not be parsed. Please enter a valid time parameter.")
+            date_time_parser = dateparser.parse('Fri, 12 Dec 2010')
+            demisto.log("Returning all the processes since the entered date is not valid.")
         date_time_parser = date_time_parser.timestamp()
         milliseconds = int(date_time_parser * 1000)
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult": True}]
