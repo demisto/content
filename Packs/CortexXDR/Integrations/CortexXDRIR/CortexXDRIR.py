@@ -386,7 +386,7 @@ class Client(CoreClient):
 
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
                                           statuses=[], starred=None, starred_incidents_fetch_window=None,
-                                          page_number=0, limit=100, offset=0):
+                                          page_number=0, limit=100, offset=0, incident_wait=0):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -402,7 +402,13 @@ class Client(CoreClient):
                 'keyword': 'asc',
             }
         }
-        filters: List[Any] = []
+        filters: list[dict] = []
+        if incident_wait:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'lte',
+                'value': int((datetime.now() - timedelta(seconds=incident_wait)).timestamp() * 1000)
+            })
         if incident_id_list:
             incident_id_list = argToList(incident_id_list, transform=str)
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
@@ -439,7 +445,7 @@ class Client(CoreClient):
             })
         if len(filters) > 0:
             request_data['filters'] = filters
-        demisto.debug(f'Before sending get_multiple_incidents_extra_data request: {request_data=}')
+
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -1084,7 +1090,7 @@ def update_related_alerts(client: Client, args: dict):
 
 def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict,
                     max_fetch: int = 10, statuses: list = [], starred: Optional[bool] = None,
-                    starred_incidents_fetch_window: str = None):
+                    starred_incidents_fetch_window: str = None, incident_wait: int = 5):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time')
@@ -1107,7 +1113,8 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             gte_creation_time_milliseconds=last_fetch,
             statuses=statuses, limit=max_fetch, starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
-            exclude_artifacts=exclude_artifacts, offset=offset
+            exclude_artifacts=exclude_artifacts, offset=offset,
+            incident_wait=incident_wait
         )
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
@@ -1313,6 +1320,7 @@ def main():  # pragma: no cover
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
     xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
+    incident_wait = arg_to_number(params.get('incident_wait') or 5)
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
@@ -1342,7 +1350,6 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
-            last_run_obj = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client=client,
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
@@ -1352,7 +1359,9 @@ def main():  # pragma: no cover
                                                   statuses=statuses,
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
+                                                  incident_wait=incident_wait
                                                   )
+            last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
