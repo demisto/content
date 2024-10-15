@@ -769,7 +769,7 @@ tasks:
       version: -1
       name: Search related alerts by  MITRE technique
       description: |+
-        This task searches for suspicious alerts related to incident by mitre techniques that may indicate a compromised user.
+        This task searches for suspicious alerts related to an incident by mitre techniques that may indicate a compromised user.
         Focus on identifying alerts associated with the following MITRE techniques & tactics:
         - T1059- Command and Scripting Interpreter
         - T1072 - Software Deployment Tools
