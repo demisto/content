@@ -1,6 +1,6 @@
 This playbook is designed to handle the following alerts:  
-- Possible LDAP enumeration by unsigned process (medium severity)
-- Suspicious LDAP search query executed (High severity)
+- Possible LDAP enumeration by unsigned process.
+- Suspicious LDAP search query executed.
 
 The playbook executes the following stages:
 
