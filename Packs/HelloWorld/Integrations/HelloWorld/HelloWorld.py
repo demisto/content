@@ -915,7 +915,7 @@ def main() -> None:  # pragma: no cover
     api_key = params.get('credentials', {}).get('password')
 
     validate_api_key(api_key)
-
+    demisto.debug('test2')
     # get the service API url
     base_url = params.get('url')
 
