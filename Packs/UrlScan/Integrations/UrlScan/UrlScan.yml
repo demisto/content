@@ -39,7 +39,6 @@ configuration:
   type: 15
   section: Collect
 - additionalinfo: Specify which country the scan should be performed 
-  defaultvalue: 
   display: Scan Country
   name: country
   options:
