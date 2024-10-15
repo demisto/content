@@ -237,7 +237,8 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- Elasticsearch_Fetch_Custom_Indicators_Test
+- Elasticsearch_Fetch_Demisto_Indicators_Test
 sectionOrder:
 - Connect
 - Collect
