@@ -1813,6 +1813,31 @@ def test_zoom_send_notification_command(mocker):
     assert mock_send_chat_message.call_args[0][1] == expected_request_payload
 
 
+def test_zoom_delete_user_token_command(mocker):
+    """
+    Given -
+        Zoom client
+    When -
+       zoom-delete-user-token has called
+    Then -
+        Validate that the zoom_delete_user_token function is called with the correct arguments
+        Validate the command results return the correct readable output
+    """
+
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, "generate_oauth_token")
+
+    user_id = 'mock_user_id'
+    zoom_delete_user_token_mock = mocker.patch.object(client, "zoom_delete_user_token")
+
+    from Zoom import zoom_delete_user_token_command
+
+    result = zoom_delete_user_token_command(client, user_id=user_id)
+    zoom_delete_user_token_mock.assert_called_with(f"/users/{user_id}/token")
+    assert result.readable_output == 'User SSO token for user mock_user_id is deleted'
+
+
 @pytest.mark.parametrize("channel_name, investigation_id, expected_result", [
     ('Channel1', None, 'JID1'),                # Scenario 1: Find by channel_name
     (None, 'Incident123', 'JID1'),            # Scenario 2: Find by investigation_id
