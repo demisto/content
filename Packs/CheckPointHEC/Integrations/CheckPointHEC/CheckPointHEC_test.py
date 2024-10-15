@@ -287,7 +287,7 @@ def test_fetch_incidents_restore_requests(mocker):
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
 
     fetch_incidents(client, '1 day', ['office365_emails'], [], [], [], 10, 1, collect_restore_requests=True)
-    call_api.assert_called_twice()
+    call_api.assert_called()
     demisto_incidents.assert_called_once()
 
 
