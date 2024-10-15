@@ -454,7 +454,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Core.OriginalAlert.event.is_internal_ip
+              simple: Core.OriginalAlert.event.dst_is_internal_ip
             iscontext: true
           right:
             value:
