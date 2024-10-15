@@ -1923,7 +1923,7 @@ Searches chat messages or shared files between a user and an individual contact 
 
 ***
 Revoke a user's Zoom SSO session.
-To list all available users use `zoom-list-users` command.
+To list all available users use the `zoom-list-users` command.
 
 
 #### Base Command
