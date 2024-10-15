@@ -45,7 +45,7 @@ Send a message to Google Chat Space via Incoming Webhook.
 | GoogleChatWebhook.Message.Name | unknown | Google Chat space name | 
 | GoogleChatWebhook.Message.Message | unknown | Google Chat message that was sent | 
 | GoogleChatWebhook.Message.ThreadName | unknown | Google Chat message thread name | 
-| GoogleChatWebhook.Message.Space | unknown | Google Chat space name | 
+| GoogleChatWebhook.Message.SpaceName | unknown | Google Chat space name | 
 
 ### send-google-chat-custom-card
 

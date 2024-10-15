@@ -51,8 +51,8 @@ script:
       description: Google Chat message that was sent.
     - contextPath: GoogleChatWebhook.Message.ThreadName
       description: Google Chat message Thread name.
-    - contextPath: GoogleChatWebhook.Message.Space
-      description: Google Chat space.
+    - contextPath: GoogleChatWebhook.Message.SpaceName
+      description: Google Chat space name.
   - arguments:
     - description: JSON blocks copied from https://addons.gsuite.google.com/uikit/builder
       name: blocks
