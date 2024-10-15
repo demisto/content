@@ -1,2 +1,2 @@
-The Zafran API provides a programmatic way to interact with the Zafran Risk & Mitigation Platform for various use cases.
+The Zafran API provides a programmatic way to interact with the Zafran Exposure Management Platform for various use cases.
 Using the API requires an API token, which can be obtained by contacting the Zafran support team at support@zafran.io.
