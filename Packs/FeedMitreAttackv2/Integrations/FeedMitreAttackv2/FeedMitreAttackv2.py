@@ -16,7 +16,8 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {  # pragma: no cover
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
-    "relationship": "Relationship"
+    "relationship": "Relationship",
+    "x-mitre-tactic": "ThreatIntel.ObjectsNames.TACTIC"
 }
 INDICATOR_TYPE_TO_SCORE = {  # pragma: no cover
     "Intrusion Set": ThreatIntel.ObjectsScore.INTRUSION_SET,
@@ -24,7 +25,8 @@ INDICATOR_TYPE_TO_SCORE = {  # pragma: no cover
     "Course of Action": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
     "Malware": ThreatIntel.ObjectsScore.MALWARE,
     "Tool": ThreatIntel.ObjectsScore.TOOL,
-    "Campaign": ThreatIntel.ObjectsScore.CAMPAIGN
+    "Campaign": ThreatIntel.ObjectsScore.CAMPAIGN,
+    "Tactic": ThreatIntel.ObjectsScore.TACTIC,
 }
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {  # pragma: no cover
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
@@ -54,6 +56,7 @@ FILTER_OBJS = {  # pragma: no cover
     "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
     "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
+    "Tactic": {"name": "tactic", "filter": Filter("type", "=", "x-mitre-tactic")},
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()   # pragma: no cover
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'                  # pragma: no cover
@@ -70,7 +73,7 @@ urllib3.disable_warnings()
 
 class Client:
 
-    def __init__(self, url, proxies, verify, tags: list = None,
+    def __init__(self, url, proxies, verify, tags: list | None = None,
                  tlp_color: str | None = None):
         self.base_url = url
         self.proxies = proxies
@@ -90,7 +93,7 @@ class Client:
 
     def get_collections(self):
         self.collections = list(self.api_root.collections)  # type: ignore[attr-defined]
-        demisto.debug(f'MA: got collections: {self.collections}')
+        demisto.debug(f'MA: found collections: {", ".join([collection.title for collection in self.collections])}')
 
     def initialise(self):
         self.get_server()
@@ -115,19 +118,45 @@ class Client:
         elif self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
+        if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json["x_mitre_is_subtechnique"]:
+            tactics = []
+            for tactic in mitre_item_json["kill_chain_phases"]:
+                if tactic.get("kill_chain_name", "") != "mitre-attack":
+                    continue
+
+                else:
+                    tactics.append(
+                        EntityRelationship(
+                            name=EntityRelationship.Relationships.PART_OF,
+                            entity_a=indicator_obj["value"],
+                            entity_a_type=indicator_obj["type"],
+                            entity_b=tactic["phase_name"].title(),
+                            entity_b_type="Tactic",
+                        ).to_indicator()
+                    )
+
+            indicator_obj["relationships"] = tactics
+
         return indicator_obj
 
-    def build_iterator(self, create_relationships=False, is_up_to_6_2=True, limit: int = -1):
-        """Retrieves all entries from the feed.
+    def build_iterator(self,
+                       create_relationships=False,
+                       is_up_to_6_2=True,
+                       limit: int = -1) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any], dict[str, Any]]:
+        """Retrieves indicators from the MITRE ATT&CK feed based on the filters defined in FILTER_OBJS.
 
         Returns:
-            A list of objects, containing the indicators.
+            A tuple containing:
+            - A list of objects, containing the indicators.
+            - A list of relationship objects.
+            - A dictionary mapping IDs to names.
+            - A dictionary mapping MITRE IDs to MITRE names.
         """
-        indicators: list[dict] = []
+        indicators: list[dict[str, Any]] = []
         mitre_id_list: set[str] = set()
-        mitre_relationships_list = []
-        id_to_name: dict = {}
-        mitre_id_to_mitre_name: dict = {}
+        mitre_relationships_list: list[dict[str, Any]] = []
+        id_to_name: dict[str, Any] = {}
+        mitre_id_to_mitre_name: dict[str, Any] = {}
         counter = 0
 
         # For each collection
@@ -149,25 +178,37 @@ class Client:
             tc_source = TAXIICollectionSource(collection_data)
 
             for concept in FILTER_OBJS:
+                if concept == "relationships" and not create_relationships:
+                    demisto.debug('MA: Skipping relationships as create_relationships is False')
+                    continue
+                
                 if 0 < limit <= counter:
                     break
 
                 input_filter = FILTER_OBJS[concept]['filter']
                 try:
+                    demisto.debug(f'MA: Fetching data for {concept}')
                     mitre_data = tc_source.query(input_filter)
-                except Exception:
+                
+                except Exception as e:
+                    demisto.debug(f'MA: Failed to fetch data for {concept} - {e}')
                     continue
 
                 for mitre_item in mitre_data:
                     if 0 < limit <= counter:
                         break
-
-                    mitre_item_json = json.loads(str(mitre_item))
+                    if isinstance(mitre_item, dict):
+                        # Extended STIX objects such as tactic are already in dict format
+                        mitre_item_json = mitre_item
+                    
+                    else:
+                        mitre_item_json = json.loads(str(mitre_item))
+                        
                     if mitre_item_json.get('id') not in mitre_id_list:
                         value = mitre_item_json.get('name')
                         item_type = get_item_type(mitre_item_json.get('type'), is_up_to_6_2)
 
-                        if item_type == 'Relationship' and create_relationships:
+                        if item_type == 'relationship':
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
                             mitre_relationships_list.append(mitre_item_json)
@@ -175,25 +216,24 @@ class Client:
                         else:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
                                 continue
-                            id_to_name[mitre_item_json.get('id')] = value
+                            id_to_name[mitre_item_json['id']] = value
                             indicator_obj = self.create_indicator(item_type, value, mitre_item_json)
                             add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json)
                             indicators.append(indicator_obj)
                             counter += 1
-                        mitre_id_list.add(mitre_item_json.get('id'))
+                        mitre_id_list.add(mitre_item_json['id'])
 
         return indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name
 
-
-def add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json):
-    if mitre_item_json['type'] == 'attack-pattern':
+def add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json) -> None:
+    if mitre_item_json['type'] in ('attack-pattern', 'x-mitre-tactic'):
         mitre_id = [external.get('external_id') for external in mitre_item_json.get('external_references', [])
                     if external.get('source_name', '') == 'mitre-attack']
         if mitre_id:
             mitre_id_to_mitre_name[mitre_id[0]] = mitre_item_json.get('name')
 
 
-def add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name):
+def add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name) -> None:
     for indicator in indicators:
         if indicator['type'] in ['Attack Pattern', 'STIX Attack Pattern'] and \
                 len(indicator['fields']['mitreid']) > 5:  # Txxxx.xxx is sub technique
@@ -237,7 +277,16 @@ def is_indicator_deprecated_or_revoked(indicator_json):
     return bool(indicator_json.get("x_mitre_deprecated") or indicator_json.get("revoked"))
 
 
-def map_fields_by_type(indicator_type: str, indicator_json: dict):
+def map_fields_by_type(indicator_type: str, indicator_json: dict) -> dict[str, Any]:
+    """Maps indicator fields based on the indicator type.
+
+    Args:
+        indicator_type (str): The type of the indicator.
+        indicator_json (dict): The JSON representation of the indicator.
+
+    Returns:
+        dict: A dictionary containing mapped fields for the indicator.
+    """
     created = handle_multiple_dates_in_one_field('created', indicator_json.get('created'))  # type: ignore
     modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))  # type: ignore
 
@@ -342,7 +391,21 @@ def extract_date_time_from_description(description: str) -> str:
     return date_time_result
 
 
-def create_relationship_list(mitre_relationships_list, id_to_name):
+def create_relationship_list(mitre_relationships_list, id_to_name) -> list[str]:
+    """
+    Create a list of relationship indicators from MITRE relationships.
+
+    Args:
+        mitre_relationships_list (list): A list of MITRE relationship objects.
+        id_to_name (dict): A dictionary mapping MITRE IDs to their corresponding names.
+
+    Returns:
+        list: A list of relationship entities (in json format) created from the MITRE relationships.
+
+    Note:
+        This function filters out any relationships that couldn't be created
+        (i.e., when create_relationship returns None).
+    """
     relationships_list = []
     for mitre_relationship in mitre_relationships_list:
         relation_obj = create_relationship(mitre_relationship, id_to_name)
@@ -668,7 +731,7 @@ def main():
     create_relationships = argToBoolean(params.get('create_relationships'))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-    if params.get('switch_intrusion_set_to_threat_actor', ''):
+    if params.get('switch_intrusion_set_to_threat_actor', False):
         MITRE_TYPE_TO_DEMISTO_TYPE['intrusion-set'] = ThreatIntel.ObjectsNames.THREAT_ACTOR
 
     try:
@@ -692,9 +755,13 @@ def main():
 
         elif demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators(client, create_relationships)
-            for iter_ in batch(indicators, batch_size=2000):
+            for index, iter_ in enumerate(batch(indicators, batch_size=2000)):
+                if len(indicators) < 2000:
+                    demisto.debug(f'Uploading indicators {len(indicators)} / {len(indicators)}')
+                else:
+                    demisto.debug(f'Uploading indicators {index*2000} / {len(indicators)}')
                 demisto.createIndicators(iter_)
-
+                
     # Log exceptions
     except requests.exceptions.ConnectTimeout as exception:
         err_msg = 'Connection Timeout Error - potential reason might be that the server is not accessible from your host.'
@@ -715,8 +782,8 @@ def main():
         error_class = str(exception.__class__)
         err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
         err_msg = 'Verify that you have access to the server from your host.' \
-                  '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-            .format(err_type, exception.errno, exception.strerror)
+                  f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n' \
+            
         return_error(err_msg, exception)
     except Exception as exception:
         return_error(str(exception), exception)

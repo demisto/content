@@ -653,6 +653,7 @@ class ThreatIntel:
         TOOL = 'Tool'
         THREAT_ACTOR = 'Threat Actor'
         INFRASTRUCTURE = 'Infrastructure'
+        TACTIC = 'Tactic'
 
     class ObjectsScore(object):
         """
@@ -669,6 +670,7 @@ class ThreatIntel:
         TOOL = 2
         THREAT_ACTOR = 3
         INFRASTRUCTURE = 2
+        TACTIC = 0
 
     class KillChainPhases(object):
         """
