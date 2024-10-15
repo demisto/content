@@ -1,7 +1,7 @@
 id: Suspicious LDAP search query
 version: -1
 name: Suspicious LDAP search query
-description: "This playbook is designed to handle the following alerts:  \n- Possible LDAP enumeration by unsigned process (medium severity)\n- Suspicious LDAP search query executed (High severity)\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the Actor Process Command line contains suspicious arguments.\n-  Host risk score is \"Medium\" or \"High\".\n\nRemediation:\n- Handles malicious alerts by terminating the relevant processes.\n- Handles non-malicious alerts identified during the investigation."
+description: "This playbook is designed to handle the following alerts:  \n- Possible LDAP enumeration by unsigned process (medium severity)\n- Suspicious LDAP search query executed (High severity)\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the Actor Process Command line contains suspicious arguments.\n- Checks for prevalence of the Actor Process Name and Actor Process CMD.\n- Host risk score is \"Medium\" or \"High\".\n- User risk score is \"High\".\n\nRemediation:\n- Handles malicious alerts by terminating the relevant processes.\n- Handles non-malicious alerts identified during the investigation."
 tags:
 - T1087 - Account Discovery
 starttaskid: "0"
@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": -220
+          "y": -370
         }
       }
     note: false
@@ -38,12 +38,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1ac45627-3d10-47b4-8c96-2a4010f239c6
+    taskid: 009f925e-5dd8-41cf-8880-f8fd6ca82fc5
     type: title
     task:
-      id: 1ac45627-3d10-47b4-8c96-2a4010f239c6
+      id: 009f925e-5dd8-41cf-8880-f8fd6ca82fc5
       version: -1
-      name: Suspicious Activity Detected
+      name: Remediation
       description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
       type: title
       iscommand: false
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 1060
+          "y": 1000
         }
       }
     note: false
@@ -99,7 +99,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 1540
+          "y": 1470
         }
       }
     note: false
@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4ea136f8-1a80-43db-83ee-4dcced2e0f7c
+    taskid: 9cd3a2cd-8887-45d7-85b9-3b1f59b4cf40
     type: regular
     task:
-      id: 4ea136f8-1a80-43db-83ee-4dcced2e0f7c
+      id: 9cd3a2cd-8887-45d7-85b9-3b1f59b4cf40
       version: -1
       name: Run Prevalence Check On the Actor Process
       description: Get the prevalence of a process, identified by process_name.
@@ -127,14 +127,18 @@ tasks:
       - "5"
     scriptarguments:
       process_name:
-        simple: ${alert.osparentname}
+        complex:
+          root: alert
+          accessor: osparentname
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 270
+          "x": 750,
+          "y": 260
         }
       }
     note: false
@@ -158,7 +162,7 @@ tasks:
         Focus on identifying alerts associated with the following MITRE techniques:
         - Any Agent Alerts within this incident.
         - T1059 - Command and Scripting Interpreter.
-      scriptName: SearchIncidentsV2
+      scriptName: SearchAlertsV2
       type: regular
       iscommand: false
       brand: ""
@@ -192,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 620
+          "x": 1570,
+          "y": 600
         }
       }
     note: false
@@ -205,26 +209,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: eddf5d8e-f5e0-4bfa-86f6-1dadfa3c6537
+    taskid: 337f923f-d491-41ec-8d15-4034943b5796
     type: condition
     task:
-      id: eddf5d8e-f5e0-4bfa-86f6-1dadfa3c6537
+      id: 337f923f-d491-41ec-8d15-4034943b5796
       version: -1
       name: Is this a non-legit operation?
-      description: "## Determines if there the LDAP operation was suspicious by the following conditions:\n\n- *Without Host Risk Score:*  \nActor Process name is not Prevalent *AND*\nActor Process Command Line is not Prevalent *AND*\nNo Risk Score for the user\n\n- *With Host Risk Score:*  \n(Actor Process name is not Prevalent *OR*\nActor Process Command Line is not Prevalent) *AND*\nThe Host Risk Score is Medium or High"
+      description: "## Determines if the LDAP operation was suspicious by the following conditions:\n\n- *Without Host Risk Score:*  \nActor Process name is not Prevalent *AND*\nActor Process Command Line is not Prevalent *AND*\nNo Risk Asset Score.\n\n- *With Host Risk Score:*  \n[Actor Process name is not Prevalent *OR*\nActor Process Command Line is not Prevalent] *AND*\nThe Host Risk Score is Medium or High or the User Risk Score is High."
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "4"
-      Yes - With Risky Host:
+      Yes - With Risky Asset Score:
       - "19"
-      yes- without Risky Host:
+      yes - without Risky Asset Score:
       - "18"
     separatecontext: false
     conditions:
-    - label: yes- without Risky Host
+    - label: yes - without Risky Asset Score
       condition:
       - - operator: isEqualString
           left:
@@ -234,6 +238,7 @@ tasks:
           right:
             value:
               simple: "False"
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -242,13 +247,19 @@ tasks:
           right:
             value:
               simple: "False"
+          ignorecase: true
       - - operator: isEmpty
           left:
             value:
               simple: Core.RiskyHost.risk_level
             iscontext: true
           ignorecase: true
-    - label: Yes - With Risky Host
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+    - label: Yes - With Risky Asset Score
       condition:
       - - operator: isEqualString
           left:
@@ -294,20 +305,13 @@ tasks:
           right:
             value:
               simple: High
-        - operator: isEqualString
-          left:
-            value:
-              simple: Core.RiskyUser.risk_level
-            iscontext: true
-          right:
-            value:
-              simple: Medium
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 440
+          "x": 1370,
+          "y": 430
         }
       }
     note: false
@@ -334,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 1720
+          "x": 530,
+          "y": 1640
         }
       }
     note: false
@@ -347,17 +351,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: efd39e96-986d-4fe0-8558-3082523698fa
+    taskid: 1b85eb9d-cfe6-4c8c-89bf-dfb10f63657e
     type: playbook
     task:
-      id: efd39e96-986d-4fe0-8558-3082523698fa
+      id: 1b85eb9d-cfe6-4c8c-89bf-dfb10f63657e
       version: -1
       name: Command-Line Analysis
+      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
       playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -373,6 +377,7 @@ tasks:
                 value:
                   simple: alert.osparentcmd
                 iscontext: true
+          - operator: uniq
       StringSimilarityThreshold:
         simple: "0.5"
     separatecontext: true
@@ -387,7 +392,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": -90
+          "y": -240
         }
       }
     note: false
@@ -399,22 +404,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: aa7af770-9222-41dc-8407-e31f657e90c6
+    taskid: 44803b1b-175d-4859-8386-b28771927669
     type: condition
     task:
-      id: aa7af770-9222-41dc-8407-e31f657e90c6
+      id: 44803b1b-175d-4859-8386-b28771927669
       version: -1
-      name: Are there any findings
+      name: Are There Any Suspicious Findings?
       description: Check if any suspicious arguments were found in the Actor Process Command Line.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
-      - "17"
-      - "16"
-      - "25"
+      - "26"
       "yes":
       - "1"
     separatecontext: false
@@ -433,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 80
+          "y": -70
         }
       }
     note: false
@@ -475,7 +477,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1570,
           "y": 785
         }
       }
@@ -488,10 +490,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 005d48de-4a97-4e0f-84f5-34f059a343be
+    taskid: b1ec4bb7-674f-4a8e-843a-25fb5d485d2c
     type: regular
     task:
-      id: 005d48de-4a97-4e0f-84f5-34f059a343be
+      id: b1ec4bb7-674f-4a8e-843a-25fb5d485d2c
       version: -1
       name: Run Prevalence Check On the Actor Process Command line
       description: Get the prevalence of a process_command_line, identified by process_command_line.
@@ -504,14 +506,18 @@ tasks:
       - "5"
     scriptarguments:
       process_command_line:
-        simple: ${alert.osparentcmd}
+        complex:
+          root: alert
+          accessor: osparentcmd
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1150,
-          "y": 270
+          "y": 260
         }
       }
     note: false
@@ -523,12 +529,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 9fcad966-4a26-431d-8436-8b454fe7d3f1
+    taskid: 793ca822-0c1c-45b6-8a09-436a10eb645c
     type: regular
     task:
-      id: 9fcad966-4a26-431d-8436-8b454fe7d3f1
+      id: 793ca822-0c1c-45b6-8a09-436a10eb645c
       version: -1
-      name: Get Host Score from Risky Assets
+      name: Get Host Risk level
       description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-hosts'
       type: regular
@@ -539,15 +545,19 @@ tasks:
       - "5"
     scriptarguments:
       host_id:
-        simple: ${alert.hostname}
+        complex:
+          root: alert
+          accessor: hostname
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1580,
-          "y": 270
+          "x": 1550,
+          "y": 260
         }
       }
     note: false
@@ -559,43 +569,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7d77d223-491a-4df0-8da6-03dd1a68408a
+    taskid: 4102fe2a-d84e-496e-8d33-41c47532501f
     type: title
     task:
-      id: 7d77d223-491a-4df0-8da6-03dd1a68408a
+      id: 4102fe2a-d84e-496e-8d33-41c47532501f
       version: -1
-      name: Without the Risky Score
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 635
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 18445382-e12f-4e92-81f9-d615f319048d
-    type: title
-    task:
-      id: 18445382-e12f-4e92-81f9-d615f319048d
-      version: -1
-      name: With Risky Score
+      name: Without the Risky Asset Score
       type: title
       iscommand: false
       brand: ""
@@ -609,7 +588,38 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 715
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9ae41752-a97c-4709-8d1e-80cae1547a18
+    type: title
+    task:
+      id: 9ae41752-a97c-4709-8d1e-80cae1547a18
+      version: -1
+      name: With the Risky Asset Score
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 780
         }
       }
     note: false
@@ -621,17 +631,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: c1f72153-94cd-4322-8f42-2c33e6c320e6
+    taskid: 5a63451a-6fd1-4420-82e9-fc7fdfdc9478
     type: regular
     task:
-      id: c1f72153-94cd-4322-8f42-2c33e6c320e6
+      id: 5a63451a-6fd1-4420-82e9-fc7fdfdc9478
       version: -1
-      name: Terminate the Causality Process Manually
-      description: |
+      name: Terminate Process Manually
+      description: |-
         Dear Analyst,
 
-        During the remediation process, the playbook failed to terminate the causality process: ${alert.cgoname}
-        Please investigate this before closing this alert.
+        During the remediation process, the playbook couldn’t terminate the process: ${alert.cgoname}
+
+        Please terminate the process manually if possible.
       type: regular
       iscommand: false
       brand: ""
@@ -643,8 +654,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 1360
+          "x": 780,
+          "y": 1300
         }
       }
     note: false
@@ -662,7 +673,7 @@ tasks:
       id: ba2362bc-345e-417c-8658-9eed09038d85
       version: -1
       name: Close Alert - No results returned
-      description: Close the current alert as False Positive
+      description: Close the current alert as False Positive.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -682,8 +693,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 1540
+          "x": 1570,
+          "y": 1470
         }
       }
     note: false
@@ -695,12 +706,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 35be7061-a4df-4ada-8f60-bba6e556c3b7
+    taskid: e8adea73-1369-4e84-8968-baef42ca9b0c
     type: title
     task:
-      id: 35be7061-a4df-4ada-8f60-bba6e556c3b7
+      id: e8adea73-1369-4e84-8968-baef42ca9b0c
       version: -1
-      name: No suspicious activity detected
+      name: No Results Found
       type: title
       iscommand: false
       brand: ""
@@ -713,8 +724,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 1060
+          "x": 1570,
+          "y": 1000
         }
       }
     note: false
@@ -754,7 +765,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 1190
+          "y": 1130
         }
       }
     note: false
@@ -766,12 +777,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: d9bbd834-6027-4bf8-8a9f-5cce15c76d31
+    taskid: 20c0facd-6b56-4301-8c5b-0d3e465ef742
     type: regular
     task:
-      id: d9bbd834-6027-4bf8-8a9f-5cce15c76d31
+      id: 20c0facd-6b56-4301-8c5b-0d3e465ef742
       version: -1
-      name: Get User Score from Risky Assets
+      name: Get User Risk level
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-users'
       type: regular
@@ -793,8 +804,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1980,
-          "y": 270
+          "x": 1950,
+          "y": 260
         }
       }
     note: false
@@ -804,17 +815,58 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 9c09f54e-0bf2-4440-8354-eb0c545192ac
+    type: title
+    task:
+      id: 9c09f54e-0bf2-4440-8354-eb0c545192ac
+      version: -1
+      name: Continue Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+      - "17"
+      - "16"
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "5_18_yes- without Risky Host": 0.66
+      "14_1_yes": 0.15,
+      "14_26_#default#": 0.39,
+      "15_1_yes": 0.22,
+      "15_23_#default#": 0.61,
+      "24_21_#error#": 0.5,
+      "5_18_yes - without Risky Asset Score": 0.66,
+      "5_19_Yes - With Risky Asset Score": 0.72,
+      "5_4_#default#": 0.51
     },
     "paper": {
       "dimensions": {
-        "height": 2005,
-        "width": 2120,
-        "x": 240,
-        "y": -220
+        "height": 2075,
+        "width": 1800,
+        "x": 530,
+        "y": -370
       }
     }
   }
@@ -822,4 +874,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 8.8.0

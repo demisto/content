@@ -8,7 +8,9 @@ Investigation:
 Check the following parameters to determine if remediation actions are needed:
 - Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.
 - Whether the Actor Process Command line contains suspicious arguments.
--  Host risk score is "Medium" or "High".
+- Checks for prevalence of the Actor Process Name and Actor Process CMD.
+- Host risk score is "Medium" or "High".
+- User risk score is "High".
 
 Remediation:
 - Handles malicious alerts by terminating the relevant processes.
@@ -20,23 +22,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Command-Line Analysis
+Command-Line Analysis
 
 ### Integrations
 
-* CortexCoreIR
+CortexCoreIR
 
 ### Scripts
 
-* SearchAlertsV2
+SearchAlertsV2
 
 ### Commands
 
 * core-terminate-causality
-* core-get-cmd-analytics-prevalence
 * core-list-risky-hosts
 * closeInvestigation
 * core-get-process-analytics-prevalence
+* core-get-cmd-analytics-prevalence
+* core-list-risky-users
 
 ## Playbook Inputs
 
