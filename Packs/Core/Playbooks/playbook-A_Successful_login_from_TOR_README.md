@@ -1,8 +1,3 @@
-
-#### Playbooks
-
-##### New: A Successful login from TOR
-
 This playbook is designed to handle the following alert:
 
 - A successful login from TOR
@@ -22,9 +17,44 @@ The analyst can select multiple actions, which will then be executed by the play
 Requirements: 
 For any response action, you will need one of the following integrations: Azure Active Directory Users / Active Directory Users.
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: A Successful login from TOR
+### Sub-playbooks
 
-New: This trigger is responsible for handling the 'A Successful login from TOR' alert.
+* PAN-OS - Block IPs From EDL - Custom Block Rule
+
+### Integrations
+
+* Cortex Core - IR
+
+### Scripts
+
+This playbook does not use any scripts.
+
+### Commands
+
+* ad-disable-account
+* ad-expire-password
+* ad-get-user
+* closeInvestigation
+* core-get-cloud-original-alerts
+* msgraph-user-account-disable
+* msgraph-user-list
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![A Successful login from TOR](../doc_files/A_Successful_login_from_TOR.png)
