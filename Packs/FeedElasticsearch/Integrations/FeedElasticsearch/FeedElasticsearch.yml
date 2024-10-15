@@ -63,6 +63,7 @@ configuration:
   required: false
   section: Collect
 - defaultvalue: '10000'
+  additionalinfo: The maximal number of indicators that could be fetched in a fetch cycle.
   display: Fetch Limit
   name: fetch_limit
   type: 0
@@ -223,7 +224,7 @@ script:
   commands:
   - arguments:
     - defaultValue: '50'
-      description: The maximum number of indicators to fetch. The default is 50.
+      description: The maximum number of indicators to fetch.
       name: limit
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
