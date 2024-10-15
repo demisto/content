@@ -2837,23 +2837,30 @@ def test_send_request_with_entitlement(mocker):
 
 
 FILE_SEND_RESPONSE_CASES = [
-    # is_successfull_upload    human_readable_message
-    (True, 'File sent to Slack successfully.'),
-    (False, 'Could not send the file to Slack.')
+    (
+        {'ok': True, 'files': ['foo.png']},
+        'File sent to Slack successfully.',
+    ),
+    (
+        {'ok': False, 'error': 'service_unavailable'},
+        'Could not send the file to Slack. The Slack service is temporarily unavailable.',
+    )
 ]
 
 
-@pytest.mark.parametrize('is_successfull_upload, human_readable_message', FILE_SEND_RESPONSE_CASES)
-def test_slack_send_with_mirrored_file(is_successfull_upload: bool, human_readable_message: str, mocker):
+@pytest.mark.parametrize('slack_api_response, expected_human_readable', FILE_SEND_RESPONSE_CASES)
+def test_slack_send_with_mirrored_file(slack_api_response: dict, expected_human_readable: str, mocker):
     """
     Given:
       - mirror entry which is basically a file
 
     When:
-      - running send-notification triggered from mirroring
+      - Test Case 1 - Slack API response indicates success.
+      - Test Case 2 - Slack API response indicates failure.
 
     Then:
-      - Validate that the Slack API response is handled correctly
+      - Test Case 1 - Validate that successfull file send is shown.
+      - Test Case 2 - Validate that error explanation is shown.
     """
     import SlackV3
 
@@ -2873,13 +2880,13 @@ def test_slack_send_with_mirrored_file(is_successfull_upload: bool, human_readab
             "entryObject": {}
         }
     )
-    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value={'ok': is_successfull_upload})
+    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value=slack_api_response)
     demisto_results = mocker.patch.object(demisto, 'results')
 
     SlackV3.slack_send()
     assert slack_send_request.call_args_list[0].kwargs["file_dict"]
     assert slack_send_request.call_args_list[0].kwargs["channel_id"] == "1234"
-    assert demisto_results.call_args_list[0][0][0] == human_readable_message
+    assert demisto_results.call_args[0][0]['HumanReadable'] == expected_human_readable
 
 
 def test_send_request_with_entitlement_blocks(mocker):
@@ -3514,7 +3521,7 @@ def test_send_file_no_args_investigation(mocker):
 
     # Assert
     assert SlackV3.slack_send_request.call_count == 1
-    assert success_results[0] == 'File sent to Slack successfully.'
+    assert success_results[0]['HumanReadable'] == 'File sent to Slack successfully.'
 
     assert send_args[0][1] == 'incident-681'
     assert send_args[1]['file_dict'] == {

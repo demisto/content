@@ -29,7 +29,7 @@ SEVERITY_DICT = {
     'Critical': 4
 }
 
-RESPONSE_ERROR_CODES = {
+RESPONSE_ERROR_EXPLANATIONS = {
     "access_denied": "Access to a resource specified in the request is denied.",
     "channel_not_found": "Value passed for channel_id was invalid.",
     "file_not_found": "Could not find the file from the upload ticket.",
@@ -2066,16 +2066,16 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
     response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
 
     if response and response.get('ok'):
-        demisto.results('File sent to Slack successfully.')
+        return_results(CommandResults(readable_output='File sent to Slack successfully.'))
         return
 
     error_message = 'Could not send the file to Slack.'
     error_explanation = None
     if response:
         error_code = response.get('error', '')
-        error_explanation = RESPONSE_ERROR_CODES.get(error_code, error_code.replace('_', '').capitalize())
+        error_explanation = RESPONSE_ERROR_EXPLANATIONS.get(error_code, error_code.replace('_', '').capitalize())
 
-    demisto.results(f'{error_message} {error_explanation}' if error_explanation else error_message)
+    return_results(CommandResults(readable_output=f'{error_message} {error_explanation}' if error_explanation else error_message))
 
 
 def handle_tags_in_message_sync(message: str) -> str:
