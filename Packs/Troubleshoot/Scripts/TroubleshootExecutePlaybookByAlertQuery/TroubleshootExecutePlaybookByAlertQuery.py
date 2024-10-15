@@ -56,8 +56,8 @@ class RESULTS_SUMMARY:
 
         if self.results_summary["failure_create"]:
             for playbook_failure_create, alerts_fail in self.results_summary["failure_create"].items():
-                final_message.append(f"Playbook ID '{playbook_failure_create}' could not be executed for alerts {set(alerts_fail)} "
-                                     "due to failure in creating an investigation playbook.")
+                final_message.append(f"Playbook ID '{playbook_failure_create}' could not be executed for alerts "
+                                     f"{set(alerts_fail)} due to failure in creating an investigation playbook.")
 
         if self.results_summary["failure_set"]:
             for playbook_failure_set, alerts_fail_set in self.results_summary["failure_set"].items():

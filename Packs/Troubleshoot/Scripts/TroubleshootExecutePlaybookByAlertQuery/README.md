@@ -21,9 +21,9 @@ https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Admini
 ---
 This script uses the following commands and scripts.
 
-* core-api-post
 * Core REST API
 * core-api-get
+* core-api-post
 
 ## Inputs
 
@@ -47,4 +47,7 @@ This script uses the following commands and scripts.
 ## Outputs
 
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| ReopenedAlerts.IDs | Alerts that have been reopened. | list |
