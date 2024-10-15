@@ -562,7 +562,8 @@ def get_remote_incident_data(client: AzureSentinelClient, incident_id: str):
     updated_object: Dict[str, Any] = {}
 
     for field in INCOMING_MIRRORED_FIELDS:
-        if value := incident_mirrored_data.get(field):
+        value = incident_mirrored_data.get(field)
+        if value is not None:
             updated_object[field] = value
 
     return mirrored_data, updated_object
