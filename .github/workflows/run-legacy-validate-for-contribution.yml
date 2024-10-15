@@ -1,8 +1,5 @@
 name: Run Legacy Validate on Contributions
-on:
-  pull_request_target:
-    branches:
-      - contrib/**
+on: pull_request
 
 jobs:
   legacy_validate:
