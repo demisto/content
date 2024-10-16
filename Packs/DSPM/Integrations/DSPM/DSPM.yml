@@ -14,16 +14,6 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: Default Slack user for notifications
-  additionalinfo: The default user who will receive Slack notifications in case of any errors.
-  name: defaultSlackUser
-  required: true
-  type: 0
-- display: Lifetime for slack notification (in hours)
-  name: slackMsgLifetime
-  required: true
-  defaultvalue: 2
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
