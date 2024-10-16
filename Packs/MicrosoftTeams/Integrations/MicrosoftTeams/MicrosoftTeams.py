@@ -2179,8 +2179,56 @@ def send_message():
     if not service_url:
         raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
 
-    send_message_request(service_url, recipient, conversation)
-    demisto.results('Message was sent successfully.')
+def activity_update_command():
+    message: str = demisto.args().get('message', '')
+    activity_id: str = demisto.args().get('activity_id', '')
+    team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
+    channel_name: str = demisto.args().get('channel', '')
+
+    team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
+    if re.match(r'\b[^@]+@[^@]+\.[^@]+\b', team_member):  # team member is an email
+        team_member = team_member.lower()
+
+    if not (team_member or channel_name):
+        raise ValueError('No channel or team member to send message were provided.')
+
+    if team_member and channel_name:
+        raise ValueError('Provide either channel or team member to send message to, not both.')
+
+    # if not (message or adaptive_card):
+    #     raise ValueError('No message or adaptive card to send were provided.')
+
+    # if message and adaptive_card:
+    #     raise ValueError('Provide either message or adaptive to send, not both.')
+
+    integration_context: dict = get_integration_context()
+    channel_id = ''
+    personal_conversation_id = ''
+    if team_name:
+        team_aad_id: str = get_team_aad_id(team_name)
+    else:
+        team_aad_id = ''
+    if channel_name:
+        channel_id = get_channel_id_for_send_notification(team_aad_id, channel_name, '')
+    elif team_member:
+        team_member_id: str = get_team_member_id(team_member, integration_context)
+        personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
+
+    recipient: str = channel_id or personal_conversation_id
+
+    service_url: str = integration_context.get('service_url', '')
+    if not service_url:
+        raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
+
+    res = update_message(service_url, recipient, activity_id, message)
+
+    results = CommandResults(
+        outputs=res,
+        outputs_prefix='MicrosoftTeams.Thread',
+        readable_output='Message was sent successfully.',
+        raw_response=res
+    )
+    return_results(results)
 
 
 def get_channel_id_for_send_notification(channel_name: str, message_type: str):
@@ -3019,7 +3067,8 @@ def main():   # pragma: no cover
         'microsoft-teams-generate-login-url': generate_login_url_command,
         'microsoft-teams-auth-reset': reset_graph_auth_command,
         'microsoft-teams-token-permissions-list': token_permissions_list_command,
-        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command
+        'microsoft-teams-create-messaging-endpoint': create_messaging_endpoint_command,
+        'microsoft-teams-activity-update': activity_update_command,
     }
 
     commands_auth_code: dict = {

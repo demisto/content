@@ -559,6 +559,20 @@ script:
       description: The timestamp denoting how far back a conversation's history is shared with the conversation member.
       type: String
   - arguments:
+    - description: The activity ID to update.
+      name: activity_id
+      required: true
+    - description: The team in which the specified activity exists.
+      name: team
+    - description: The channel in which the specified activity exists.
+      name: channel
+    - description: The new message content.
+      name: message
+    - description: The team member the activity to be edited was sent to.
+      name: team_member
+    description: Updates a message.
+    name: microsoft-teams-activity-update
+  - arguments:
     - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
       name: chat
       required: true
