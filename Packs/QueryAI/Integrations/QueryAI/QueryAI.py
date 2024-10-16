@@ -123,8 +123,8 @@ def queryai_run_query_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     query = args.get('query', '')
     connection_params = args.get('connection_params', client.connection_params)
-    workflow_params = args.get('workflow_params', None)
-    time_text = args.get('time_text', None)
+    workflow_params = args.get('workflow_params')
+    time_text = args.get('time_text')
     alias = args.get('alias', client.alias)
 
     if not query:

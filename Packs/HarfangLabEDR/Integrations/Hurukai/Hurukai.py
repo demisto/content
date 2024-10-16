@@ -133,7 +133,7 @@ def _construct_request_parameters(args: dict, keys: list, params={}):
             parameters[p] = params[p]
 
     for arg_field, filter_field in keys:
-        value = args.get(arg_field, None)
+        value = args.get(arg_field)
         if value is not None:
             parameters[filter_field] = value
 
@@ -172,7 +172,7 @@ class Client(BaseClient):
         super().__init__(*args, **kwargs)
 
     def _http_request(self, *args, **kwargs):
-        if kwargs.get("method", None) == "GET" and len(kwargs.get("params", {})) > 0:
+        if kwargs.get("method") == "GET" and len(kwargs.get("params", {})) > 0:
             params = kwargs.pop("params")
             suffix = kwargs.pop("url_suffix")
             suffix += "?{}".format("&".join([f"{k}={v}" for (k, v) in params.items()]))

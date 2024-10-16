@@ -305,12 +305,12 @@ def aws_recreate_sg(args: dict[str, Any]) -> str:
         str: human readable message of what SGs were replaced on what interface
     """
 
-    instance_id = args.get('instance_id', None)
-    port = int(args.get('port', None))
-    protocol = args.get('protocol', None)
-    public_ip = args.get('public_ip', None)
-    assume_role = args.get('assume_role', None)
-    region = args.get('region', None)
+    instance_id = args.get('instance_id')
+    port = int(args.get('port'))
+    protocol = args.get('protocol')
+    public_ip = args.get('public_ip')
+    assume_role = args.get('assume_role')
+    region = args.get('region')
 
     if not instance_id or not port or not protocol or not public_ip:
         raise ValueError('instance_id, port, protocol and public_ip all need to be specified')

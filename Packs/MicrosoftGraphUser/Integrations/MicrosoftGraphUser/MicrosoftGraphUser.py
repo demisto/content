@@ -413,8 +413,8 @@ def get_user_command(client: MsGraphClient, args: dict):
 
 def list_users_command(client: MsGraphClient, args: dict):
     properties = args.get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
-    next_page = args.get('next_page', None)
-    filters = args.get('filter', None)
+    next_page = args.get('next_page')
+    filters = args.get('filter')
     users_data, result_next_page = client.list_users(properties, next_page, filters)
     users_readable, users_outputs = parse_outputs(users_data)
     accounts = create_account_outputs(users_outputs)

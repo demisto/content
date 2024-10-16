@@ -457,9 +457,9 @@ def create_sheet(service: Resource, args: dict) -> CommandResults:
             {
                 "addSheet": {
                     "properties": {
-                        "sheetId": args.get('sheet_id', None),
-                        "title": args.get('sheet_title', None),
-                        "index": args.get('sheet_index', None),
+                        "sheetId": args.get('sheet_id'),
+                        "title": args.get('sheet_title'),
+                        "index": args.get('sheet_index'),
                         "sheetType": args.get('sheet_type', "GRID"),
                         "rightToLeft": argToBoolean(args.get('right_to_left', False)),
                         "tabColor": {
@@ -684,7 +684,7 @@ def data_paste_sheets(service: Resource, args: dict) -> CommandResults:     # pr
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet', None),
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet'),
     }
     request_to_update = remove_empty_elements(request_to_update)
     kind = args.get('data_kind')

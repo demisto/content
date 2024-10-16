@@ -365,7 +365,7 @@ def format_id_list(id_data_dict: dict) -> list:
     for id_data in id_data_dict:
         # The API might return ID, Id or id as key, so converting dict keys to be lowercase.
         data = {k.lower(): v for k, v in id_data.items()}
-        id_list.append(data.get('id', None))
+        id_list.append(data.get('id'))
 
     # Remove None objects from ID list, if exists.
     id_list = [id for id in id_list if id]
@@ -1600,7 +1600,7 @@ def fetch_incidents(client: Client, last_run: dict[str, int],
                         ``last_run`` on the next fetch.
                 incidents (``List[dict]``): List of incidents that will be created in XSOAR
     """
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     last_fetch = int(last_fetch) if last_fetch else first_fetch_time * 1000
     next_run = last_fetch
     context = get_integration_context()

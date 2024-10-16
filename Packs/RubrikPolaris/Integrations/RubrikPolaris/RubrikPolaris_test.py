@@ -57,7 +57,7 @@ def test_main_incorrect_credentials(requests_mock, monkeypatch, capfd, caplog):
 
         }})
     monkeypatch.setattr(mock_command, lambda: "rubrik-sonar-policy-analyzer-groups-list")
-    monkeypatch.setattr('demistomock.args', lambda: {})
+    monkeypatch.setattr('demistomock.args', dict)
     response_data = {
         "code": 401,
         "uri": "/api/session",
