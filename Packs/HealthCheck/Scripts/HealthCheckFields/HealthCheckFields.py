@@ -16,7 +16,7 @@ def find_indexed_longText_fields(fields):
     return found
 
 
-DESCRIPTION = ["Custom fields which useually contains big data are being indexed, consider not to index it"]
+DESCRIPTION = ["Custom fields which usually contains big data are being indexed, consider not to index it"]
 
 RESOLUTION = [
     "Navigate to incident field page (Settings > Advanced > Fields), select Field > Edit, "
