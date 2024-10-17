@@ -3,7 +3,6 @@ import pytest
 from CommonServerPython import *  # noqa: F401
 from AHA import Client, get_command, edit_command
 from AHA import AHA_TYPE
-import io
 
 
 headers = {
@@ -27,7 +26,7 @@ def mock_client(mocker, http_request_result=None, throw_error=False):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
