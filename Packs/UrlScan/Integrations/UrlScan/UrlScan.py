@@ -252,7 +252,7 @@ def urlscan_submit_url(client, url):
         submission_dict['customagent'] = demisto.args().get('useragent')
     elif demisto.params().get('useragent'):
         submission_dict['customagent'] = demisto.params().get('useragent')
-        
+
     if client.country:
         submission_dict['country'] = client.country.split(' ')[0]
 
@@ -833,7 +833,7 @@ def main():
     use_ssl = not params.get('insecure', False)
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C
-    country = params.get('country','')
+    country = params.get('country', '')
     
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
@@ -849,7 +849,7 @@ def main():
         threshold=threshold,
         use_ssl=use_ssl,
         reliability=reliability,
-        country = country
+        country=country
     )
 
     demisto.debug(f'Command being called is {demisto.command()}')
