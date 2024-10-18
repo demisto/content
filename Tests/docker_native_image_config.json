@@ -1,6 +1,6 @@
 {
     "native_images": {
-        "native:8.7": {
+        "native:8.8": {
             "supported_docker_images": [
                 "python3",
                 "python3-deb",
@@ -31,7 +31,7 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.7.0.107893"
+            "docker_ref": "demisto/py3-native:8.8.0.108569"
         },
         "native:8.6": {
             "supported_docker_images": [
@@ -128,7 +128,7 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.8.0.108569"
+            "docker_ref": "demisto/py3-native:8.9.0.112362"
         }
     },
     "ignored_content_items": [
@@ -181,6 +181,7 @@
             "id": "ParseEmailFilesV2",
             "reason": "Script uses an updated openssl lib than native, see CIAC-11469",
             "ignored_native_images": [
+                "native:8.8",
                 "native:8.7",
                 "native:8.6",
                 "native:dev",
@@ -228,12 +229,48 @@
             "ignored_native_images": [
                 "native:8.6"
             ]
+        },
+        {
+            "id": "IBMSecurityVerify",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id":"Gmail",
+            "reason":"CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images":[
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Gmail Single User",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "RSA Archer v2",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id":"Cortex XDR - IOC",
+            "reason":"CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images":[
+                "native:8.6"
+            ]
         }
+
     ],
     "flags_versions_mapping": {
         "native:dev": "native:dev",
         "native:maintenance": "native:8.6",
-        "native:ga": "native:8.7",
+        "native:ga": "native:8.8",
         "native:candidate": "native:candidate"
     }
 }
