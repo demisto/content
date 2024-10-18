@@ -17,6 +17,7 @@ from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
+import signal
 
 ''' CONSTANTS '''
 
@@ -1830,6 +1831,8 @@ def slack_send():
     Sends a message to slack
     """
 
+    os.kill(os.getpid(), signal.SIGUSR1)
+
     args = demisto.args()
     message = args.get('message', '')
     to = args.get('to')
@@ -1845,6 +1848,8 @@ def slack_send():
     blocks = args.get('blocks')
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
+    demisto.info("    # Log memory status after initial argument extraction")
+    os.kill(os.getpid(), signal.SIGUSR1)
 
     if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES) and message_type != MIRROR_TYPE:
         demisto.info(f"Message type is not in permitted options. Received: {message_type}")
@@ -1899,6 +1904,8 @@ def slack_send():
 
     if not (to or group or channel or channel_id):
         return_error('Either a user, group, channel id, or channel must be provided.')
+    demisto.info("    # Log memory status after channel and severity checks")
+    os.kill(os.getpid(), signal.SIGUSR1)
 
     reply = ''
     expiry = ''
@@ -1928,9 +1935,13 @@ def slack_send():
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement message.')
 
+    demisto.info("# Log memory status before sending the Slack request")
+    os.kill(os.getpid(), signal.SIGUSR1)
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks,
                                   channel_id=channel_id)
 
+    demisto.info("# Log memory status after the Slack request")
+    os.kill(os.getpid(), signal.SIGUSR1)
     if response:
         thread = response.get('ts')
         if entitlement:
@@ -3057,5 +3068,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
+    register_signal_handler_profiling_dump()
     main()
