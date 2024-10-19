@@ -1267,7 +1267,7 @@ class GraphMailUtils:
         return 1
 
     @staticmethod
-    def item_result_creator(raw_attachment, user_id, args, client=None):
+    def item_result_creator(raw_attachment, user_id, args={}, client=None):
         item = raw_attachment.get('item', {})
         item_type = item.get('@odata.type', '')
         if 'message' in item_type:
@@ -1325,12 +1325,12 @@ class GraphMailUtils:
             raise DemistoException('Attachment could not be decoded')
 
     @staticmethod
-    def create_attachment(args, raw_attachment, user_id, client, legacy_name=False) -> CommandResults | dict:
+    def create_attachment(raw_attachment, user_id, args={}, client=None, legacy_name=False) -> CommandResults | dict:
         attachment_type = raw_attachment.get('@odata.type', '')
         # Documentation about the different attachment types
         # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
         if 'itemAttachment' in attachment_type:
-            return GraphMailUtils.item_result_creator(raw_attachment, user_id, args, client=client)
+            return GraphMailUtils.item_result_creator(raw_attachment, user_id, args, client)
         elif 'fileAttachment' in attachment_type:
             return GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
         else:
@@ -1841,9 +1841,8 @@ def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandR
     kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'folder_id', 'attachment_id']}
     kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
     raw_response = client.get_attachment(**kwargs)
-    return [GraphMailUtils.create_attachment(args, raw_attachment=attachment, user_id=kwargs['user_id'], client=client,
-                                             legacy_name=client.legacy_name)
-            for attachment in raw_response]
+    return [GraphMailUtils.create_attachment(raw_attachment=attachment, user_id=kwargs['user_id'], args=args, client=client,
+                                             legacy_name=client.legacy_name) for attachment in raw_response]
 
 
 def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:
