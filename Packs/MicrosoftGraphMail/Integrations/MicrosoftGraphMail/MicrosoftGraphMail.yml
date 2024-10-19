@@ -455,7 +455,7 @@ script:
       name: folder_id
     - description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       name: attachment_id
-    - description: Attachments of type "microsoft.graph.message" will be returned as downloadable files. Default behavior is to return them as a command result.
+    - description: Attachments of type "microsoft.graph.message" will be returned as downloadable files. Default behavior is to return this attachment inside a command result.
       additionalinfo: "Setting this argument to true will override the default behavior of the command, and return message attachment of type 'microsoft.graph.message' (Also known as 'Outlook item' or '.eml') as a downloadable file instead of a default command result."
       name: should_download_message_attachment
       defaultvalue: 'false'
