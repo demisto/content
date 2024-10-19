@@ -1276,7 +1276,9 @@ class GraphMailUtils:
                     args.get('message_id'),
                     args.get('attachment_id'),
                     user_id, False)
-                attachment_name = f'{item.get("name", "untitled_attachment")}.eml'
+                attachment_name: str = (item.get("name") or item.get('subject')
+                                        or "untitled_attachment").replace(' ', '_') + '.eml'
+                demisto.debug(f'Email attachment of type "microsoft.graph.message" acquired successfully, {attachment_name=}')
                 return fileResult(attachment_name, attachment_content)
             else:
                 message_id = raw_attachment.get('id')
