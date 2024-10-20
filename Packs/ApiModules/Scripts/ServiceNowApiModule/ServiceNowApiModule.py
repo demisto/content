@@ -1,5 +1,5 @@
 from CommonServerPython import *
-import demistomock as demisto
+from CommonServerUserPython import *
 
 
 OAUTH_URL = '/oauth_token.do'
