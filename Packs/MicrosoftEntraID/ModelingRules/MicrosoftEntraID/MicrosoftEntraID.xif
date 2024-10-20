@@ -132,7 +132,128 @@ filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
         xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
         xdm.source.application.name = json_extract_scalar(properties, "$.servicePrincipalDisplayName");
 
-[MODEL: dataset = msft_azure_ad_raw]
 
 
-[MODEL: dataset = msft_azure_ad_audit_raw]
+[MODEL:dataset = "msft_azure_ad_raw"]
+alter
+  check_ipAddress_v4 = if(ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddress),
+  check_ipAddress_v6 = if(ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddress),
+  check_ipAddressFromResourceProvider_v4 = if(ipAddressFromResourceProvider ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddressFromResourceProvider),
+  check_ipAddressFromResourceProvider_v6 = if(ipAddressFromResourceProvider ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddressFromResourceProvider),
+  check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem)),
+| alter
+  xdm.source.host.ipv4_addresses = arraycreate(check_ipAddress_v4, check_ipAddressFromResourceProvider_v4),
+  xdm.source.host.ipv6_addresses = arraycreate(check_ipAddress_v6, check_ipAddressFromResourceProvider_v6),
+  xdm.source.host.ipv4_public_addresses = arrayfilter(arraycreate(check_ipAddress_v4, check_ipAddressFromResourceProvider_v4), 
+                                            not incidr("@element", "10.0.0.0/8") 
+                                            and not incidr("@element", "172.16.0.0/12") 
+                                            and not incidr("@element", "192.168.0.0/16") 
+                                            and not incidr("@element", "127.0.0.0/8") 
+                                            and not incidr("@element", "169.254.0.0/16") 
+                                            and not incidr("@element", "100.64.0.0/10")),
+  xdm.event.outcome = if(conditionalAccessStatus = "success", XDM_CONST.OUTCOME_SUCCESS, conditionalAccessStatus = "failure", XDM_CONST.OUTCOME_FAILED, conditionalAccessStatus = "notApplied", XDM_CONST.OUTCOME_UNKNOWN),
+  xdm.event.tags = XDM_CONST.EVENT_TAGAUTHENTICATION,
+  xdm.event.id = id,
+  xdm.source.user.username = userDisplayName,
+  xdm.source.user.upn = userPrincipalName,
+  xdm.source.user.identifier = userId,
+  xdm.source.application.name = coalesce(servicePrincipalName, appDisplayName),
+  xdm.event.operation_sub_type = clientAppUsed,
+  xdm.source.user_agent = userAgent,
+  xdm.observer.unique_identifier = correlationId,
+  xdm.auth.service = if(tokenIssuerType = "UnknownFutureValue", authenticationProtocol, tokenIssuerType),
+  xdm.auth.auth_method = clientCredentialType,
+  xdm.alert.original_threat_id = riskDetail,
+  xdm.alert.severity = riskLevelAggregated,
+  xdm.observer.action = riskState,
+  xdm.alert.original_threat_name = riskEventTypes_v2,
+  xdm.target.resource.name = resourceDisplayName,
+  xdm.target.resource.id = resourceId,
+  xdm.target.host.device_id = resourceTenantId,
+  xdm.source.host.device_id = coalesce(homeTenantId, deviceDetail -> deviceId),
+  xdm.source.host.hostname = coalesce(homeTenantName, deviceDetail -> displayName),
+  xdm.auth.mfa.method = authenticationMethodsUsed,
+  xdm.auth.mfa.client_details = authenticationRequirement,
+  xdm.auth.is_mfa_needed = if(authenticationRequirement = "multiFactorAuthentication", to_boolean("true"), to_boolean("false")),
+  xdm.event.original_event_type = to_string(signInEventTypes),
+  xdm.auth.privilege_level = aif(userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, userType = null, null, to_string(userType)),
+  xdm.source.asn.as_number = to_integer(autonomousSystemNumber),
+  xdm.source.host.os = check_os_field,
+  xdm.source.host.os_family = if(check_os_field ~= "win|ms|microsoft", XDM_CONST.OS_FAMILY_WINDOWS,
+                                  check_os_field ~= "mac", XDM_CONST.OS_FAMILY_MACOS,
+                                  check_os_field ~= "linux", XDM_CONST.OS_FAMILY_LINUX,
+                                  check_os_field ~= "android", XDM_CONST.OS_FAMILY_ANDROID,
+                                  check_os_field ~= "ios", XDM_CONST.OS_FAMILY_IOS,
+                                  check_os_field ~= "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,
+                                  check_os_field ~= "debian", XDM_CONST.OS_FAMILY_DEBIAN,
+                                  check_os_field ~= "fedora", XDM_CONST.OS_FAMILY_FEDORA,
+                                  check_os_field ~= "cent", XDM_CONST.OS_FAMILY_CENTOS,
+                                  check_os_field ~= "chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
+                                  check_os_field ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS,
+                                  check_os_field ~= "scada", XDM_CONST.OS_FAMILY_SCADA, 
+                                  check_os_field = null, null, to_string(operatingSystem)),
+  xdm.event.outcome_reason = status -> failureReason,
+  xdm.alert.description = status -> additionalDetails,
+  xdm.network.http.browser = deviceDetail -> browser,
+  xdm.network.rule = to_string(appliedConditionalAccessPolicies),
+  xdm.event.description = to_string(arrayconcat(authenticationProcessingDetails -> [], networkLocationDetails -> [], authenticationDetails -> []));
+
+
+
+
+
+[MODEL:dataset = "msft_azure_ad_audit_raw"]
+alter
+  get_parsed_fields_ipaddr = parsed_fields -> ipaddr,
+  get_parsed_fields_userType = parsed_fields -> userType,
+  get_parsed_fields_DeviceOSType = lowercase(parsed_fields -> DeviceOSType),
+  get_initiatedBy_ipAddress = initiatedBy -> ipAddress,
+| alter
+  check_parsed_fields_ipaddr_v4 = if(get_parsed_fields_ipaddr ~= "(?:\d{1,3}\.){3}\d{1,3}", get_parsed_fields_ipaddr),
+  check_parsed_fields_ipaddr_v6 = if(get_parsed_fields_ipaddr ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_parsed_fields_ipaddr),
+  check_initiatedBy_ipAddress_v4 = if(get_initiatedBy_ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", get_initiatedBy_ipAddress),
+  check_initiatedBy_ipAddress_v6 = if(get_initiatedBy_ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_initiatedBy_ipAddress)
+| alter
+  xdm.source.host.ipv4_addresses = arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v4),
+  xdm.source.host.ipv6_addresses = arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v6),
+  xdm.source.host.ipv4_public_addresses = arrayfilter(arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v4), 
+                                            not incidr("@element", "10.0.0.0/8") 
+                                            and not incidr("@element", "172.16.0.0/12") 
+                                            and not incidr("@element", "192.168.0.0/16") 
+                                            and not incidr("@element", "127.0.0.0/8") 
+                                            and not incidr("@element", "169.254.0.0/16") 
+                                            and not incidr("@element", "100.64.0.0/10")),
+  xdm.event.id = id,
+  xdm.event.outcome = if(result = "success", XDM_CONST.OUTCOME_SUCCESS, result = "failure", XDM_CONST.OUTCOME_FAILED, result = "unknownFutureValue", XDM_CONST.OUTCOME_UNKNOWN, result = "timeout", XDM_CONST.OUTCOME_PARTIAL),
+  xdm.event.original_event_type = category,
+  xdm.source.user.username = initiatedBy -> user,
+  xdm.source.application.name = initiatedBy -> app.displayName,
+  xdm.source.user.upn = initiatedBy -> userPrincipalName,
+  xdm.event.outcome_reason = resultReason,
+  xdm.observer.unique_identifier = correlationId,
+  xdm.observer.action = operationType,
+  xdm.observer.name = loggedByService,
+  xdm.event.description = to_string(targetResources),
+  xdm.alert.description = parsed_fields -> Details,
+  xdm.alert.subcategory = parsed_fields -> ErrorCode,
+  xdm.event.type = parsed_fields -> EventName,
+  xdm.auth.privilege_level = if(get_parsed_fields_userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, get_parsed_fields_userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, get_parsed_fields_userType = null, null, to_string(userType)),
+  xdm.source.host.device_id = coalesce(initiatedBy -> homeTenantId, parsed_fields -> DeviceId),
+  xdm.source.host.hostname = initiatedBy -> homeTenantName,
+  xdm.source.host.os = get_parsed_fields_DeviceOSType,
+  xdm.source.host.os_family = if(get_parsed_fields_DeviceOSType ~= "win|ms|microsoft", XDM_CONST.OS_FAMILY_WINDOWS,
+                                  get_parsed_fields_DeviceOSType ~= "mac", XDM_CONST.OS_FAMILY_MACOS,
+                                  get_parsed_fields_DeviceOSType ~= "linux", XDM_CONST.OS_FAMILY_LINUX,
+                                  get_parsed_fields_DeviceOSType ~= "android", XDM_CONST.OS_FAMILY_ANDROID,
+                                  get_parsed_fields_DeviceOSType ~= "ios", XDM_CONST.OS_FAMILY_IOS,
+                                  get_parsed_fields_DeviceOSType ~= "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,
+                                  get_parsed_fields_DeviceOSType ~= "debian", XDM_CONST.OS_FAMILY_DEBIAN,
+                                  get_parsed_fields_DeviceOSType ~= "fedora", XDM_CONST.OS_FAMILY_FEDORA,
+                                  get_parsed_fields_DeviceOSType ~= "cent", XDM_CONST.OS_FAMILY_CENTOS,
+                                  get_parsed_fields_DeviceOSType ~= "chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
+                                  get_parsed_fields_DeviceOSType ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS,
+                                  get_parsed_fields_DeviceOSType ~= "scada", XDM_CONST.OS_FAMILY_SCADA, 
+                                  get_parsed_fields_DeviceOSType = null, null, to_string(operatingSystem)),
+  xdm.target.host.hostname = parsed_fields -> targetTenant,
+  xdm.target.host.device_category = parsed_fields -> targetEntityType,
+  xdm.event.operation_sub_type = activityDisplayName;
