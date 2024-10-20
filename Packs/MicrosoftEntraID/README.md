@@ -17,8 +17,9 @@
 - ServicePrincipalRiskEvents
 
 ### Supported Timestamp Formats:
-- YYYY-MM-DDTHH:MM:SS.S* (UTC)
-- YYYY-MM-DDTH:M:S.S* (UTC)
+* For *msft_azure_ad_raw*, timestamp ingestion is according to the **createdDateTime** field in UTC (00:00) time zone.
+* For *msft_azure_ad_audit_raw*, timestamp ingestion is according to the **ActivityDateTime** field in UTC (00:00) time zone.
+* For *msft_azure_raw*, depending on the **category** timestamp, ingestion is according to the **createdDateTime** and **ActivityDateTime** fields in UTC (00:00) time zone.
 
 ***
 
