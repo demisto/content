@@ -44,10 +44,7 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
