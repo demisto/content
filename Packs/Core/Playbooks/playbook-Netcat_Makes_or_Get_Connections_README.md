@@ -1,11 +1,17 @@
 This playbook is designed to handle the following alerts:
-  - Netcat makes or gets connections
+
+- Netcat makes or gets connections
+
 The playbook executes the following stages:
-  Analysis:
-  - Investigate the IP and Domain  reputation
-  - Search previous similar alerts
+
+Analysis:
+
+- Investigate the IP and Domain  reputation
+- Search previous similar alerts
+
 Remediation:
-  - Handles malicious alerts by terminating the causality process.
+
+- Handles malicious alerts by terminating the causality process.
 
 ## Dependencies
 
