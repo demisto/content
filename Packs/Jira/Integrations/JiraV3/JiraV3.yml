@@ -23,7 +23,7 @@ configuration:
   additionalinfo: This field is used to configure the Jira Cloud.
   required: false
 - name: test
-  display: test
+  display: Test
   type: 0
   additionalinfo: This field is used to configure the Jira Cloud.
   required: false
