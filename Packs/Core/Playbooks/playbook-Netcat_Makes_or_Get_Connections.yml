@@ -1,6 +1,5 @@
 id: Netcat makes or gets connections
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Netcat makes or gets connections
 description: "This playbook is designed to handle the following alerts:\n \n- Netcat
   makes or gets connections\n\nThe playbook executes the following stages:\n\nAnalysis:\n\n-
@@ -907,6 +906,7 @@ tasks:
       id: 49d94395-bb3b-463b-80cd-22755a62949c
       version: -1
       name: Destination IP is External?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
