@@ -254,25 +254,27 @@ INCLUDE_INFORMATIONAL_3_HOURS_AGO = dt.datetime(2024, 10, 1, 12, 0, 0).isoformat
 ])
 def test_includeinformational_logic(mocker, args, expected_filtered_args, expected_result):
     """
-    Given: - Case A: includeinformational=True, with relative fromdate and todate provided, both dates within 5 hours from
-    current time. - Case B: includeinformational=True, fromdate is more than 5 hours ago, requiring an adjustment of fromdate.
-    - Case C: includeinformational=True, but fromdate and todate are missing, should raise a ValueError. - Case D:
-    includeinformational=False, meaning no informational incidents should be returned. - Case E: includeinformational not
-    present, should behave like False and no informational incidents should be returned. - Case F: includeinformational=True,
-    but fromdate is missing, should raise a ValueError. - Case G: includeinformational=True, but todate is missing,
-    should raise a ValueError.
+    Given:
+    - Case A: includeinformational=True, with relative fromdate and todate provided, both dates within 5 hours from
+    current time.
+    - Case B: includeinformational=true, fromdate is more than 5 hours ago, requiring an adjustment of fromdate.
+    - Case C: includeinformational=true, but fromdate and todate are missing, should raise a ValueError.
+    - Case D: includeinformational=false, meaning no informational incidents should be returned.
+    - Case E: includeinformational not present, should behave like false and no informational incidents should be returned.
+    - Case F: includeinformational=true,but fromdate is missing, should raise a ValueError.
+    - Case G: includeinformational=true, but todate is missing, should raise a ValueError.
 
     When:
        - Running the search_incidents function to process the input args.
 
     Then:
-       - Case A: Ensure both regular and informational incidents are returned when includeinformational=True.
+       - Case A: Ensure both regular and informational incidents are returned when includeinformational=true.
        - Case B: Ensure fromdate is adjusted to 5 hours ago and incidents (regular + informational) are fetched correctly.
-       - Case C: Verify that a ValueError is raised due to missing fromdate and todate when includeinformational=True.
-       - Case D: Ensure only regular incidents are returned when includeinformational=False.
+       - Case C: Verify that a ValueError is raised due to missing fromdate and todate when includeinformational=true.
+       - Case D: Ensure only regular incidents are returned when includeinformational=false.
        - Case E: Ensure only regular incidents are returned when includeinformational=None (default behavior).
-       - Case F: Ensure that a ValueError is raised when fromdate is missing but includeinformational=True.
-       - Case G: Ensure that a ValueError is raised when todate is missing but includeinformational=True.
+       - Case F: Ensure that a ValueError is raised when fromdate is missing but includeinformational=true.
+       - Case G: Ensure that a ValueError is raised when todate is missing but includeinformational=true.
     """
     import SearchIncidentsV2
     mocker.patch.object(dt, 'datetime', autospec=True)
