@@ -162,7 +162,7 @@ def search_incidents(args: Dict):  # pragma: no cover
 
         if (datetime.utcnow() - fromdate).total_seconds() > 5 * 60 * 60:  # type: ignore
             args['fromdate'] = arg_to_datetime('5 hours ago').isoformat()  # type: ignore
-            hr_prefix = (f'fromdate: {fromdate} is more than 5 hours from now: {datetime.utcnow()}. Currently, we support '
+            hr_prefix = (f'fromdate: {fromdate} is more than 5 hours ago. We support '
                          f'querying informational incidents for up to the last 5 hours. The fromdate has been'
                          f' adjusted to 5 hours ago.')
         args['includeinformational'] = includeinformational
