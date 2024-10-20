@@ -897,7 +897,6 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
                 demisto.debug(f'Gmail Integration: Got an error {err.status_code} for getting list of users,'
                               f' Trying again to get it by executing another API Call (try number: {counter + 1}).')
                 counter += 1
-                time.sleep(30)
                 continue
             else:
                 demisto.debug(f'Gmail Integration: {str(err)}, {err.status_code=}, {counter=}')
