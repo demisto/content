@@ -1,7 +1,10 @@
 <~XSIAM>
 
 ### This pack includes:
-- Log Normalization - XDM mapping for key event types.
+- Log Normalization - XDM mapping for the following datasets:
+  - msft_azure_raw
+  - msft_azure_ad_raw
+  - msft_azure_ad_audit_raw
 
 ### Supported Event Types:
 - AuditLogs
@@ -51,6 +54,19 @@ To connect Cortex XSIAM to the Azure Event Hub, follow the below steps.
 4. Leave the **Use audit logs in analytics** checkbox selected, unless you were told otherwise.
 
 More information can be found [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=yjPDSlvRYtlNncGBLHOzvw).
+
+#### Native O365 Collector
+
+To collect logs for the **msft_azure_ad_raw** and **msft_azure_ad_audit_raw** datasets, you will need to create or configure the Office 365 collector.
+Use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Ingest-Logs-from-Microsoft-Office-365).
+
+To access the Office 365 Native Collector on your Cortex XSIAM tenant:
+1.  On the left panel, click **Settings** &rarr; **Data Sources**
+2.  At the top-right corner, click **Add Data Source**
+3.  Search for **Office 365** and click **Connect**.
+4.  Input the mandatory and required credentials for **Azure AD** and **Azure AD Audit**:
+    * Mark the checkboxes **Azure AD Authentication Logs** &rarr; **Collect all sign-in event types**.
+    * Mark the checkboxes **Azure AD Audit Logs**.
 
 </~XSIAM>
 
