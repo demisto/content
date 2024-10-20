@@ -3,8 +3,7 @@ commonfields:
   id: MongoDBAtlasEventCollector
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Server URL
+- display: Server URL
   name: url
   required: true
   type: 0

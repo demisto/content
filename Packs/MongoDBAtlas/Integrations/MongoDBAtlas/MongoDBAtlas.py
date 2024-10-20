@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import urllib3
+from requests.auth import HTTPDigestAuth
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -17,7 +18,36 @@ class Client(BaseClient):
     """
     Client class to interact with the service API
     """
+    def __init__(self, base_url, verify: bool, group_id: str, private_key: str = "", public_key: str = ""):
+        self.group_id = group_id
+        auth = HTTPDigestAuth(public_key, private_key)
+        headers = {
+            'Accept': "application/vnd.atlas.2023-02-01+json"
+        }
+        super().__init__(base_url=base_url, verify=verify, headers=headers, auth=auth)
     
+    def get_alerts_list(self):
+        try:
+            results = self._http_request(
+                method="GET",
+                url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts",
+            )
+        except Exception as e:
+            pass
+        
+        return results
+
+    def get_events(self, group_id):
+        try:
+            results = self._http_request(
+                method="GET",
+                url_suffix=f"/api/atlas/v2/groups/{client.group_id}/events",
+            )
+        except Exception as e:
+            pass
+        
+        return results
+        
     def search_events():
         pass
 
@@ -46,6 +76,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
+        client.get_alerts_list()
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -66,9 +97,8 @@ def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
-def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-                 ) -> tuple[Dict, List[Dict]]:
+def fetch_events(client: Client, last_run: dict[str, int], first_fetch_time, alert_status: str | None, max_events_per_fetch: int
+) -> tuple[Dict, List[Dict]]:
     pass
 
 ''' MAIN FUNCTION '''
@@ -83,32 +113,34 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers: Dict = {}
+        public_key = params.get('public_key', {}).get('password')
+        private_key = params.get('private_key', {}).get('password')
+        group_id = params.get('group_id')
 
-        client = Client(
+        base_url = params.get('url')
+        verify = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+        
+        client = Client (
             base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            verify=verify,
+            public_key=public_key,
+            private_key=private_key,
+            group_id=group_id
+        )
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
+        if command == 'test-module':
             result = test_module(client)
             return_results(result)
+        elif command == 'mongo-db-atlas-get-events':
+            return_results(get_events(client, demisto.args()))
+        elif command == 'fetch-events':
+            pass
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
 
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
