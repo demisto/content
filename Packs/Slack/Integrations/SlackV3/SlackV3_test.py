@@ -2836,33 +2836,14 @@ def test_send_request_with_entitlement(mocker):
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
 
-FILE_SEND_RESPONSE_CASES = [
-    pytest.param(
-        {'ok': True, 'files': ['foo.png']},
-        'File sent to Slack successfully.',
-        id='API OK response'
-    ),
-    pytest.param(
-        {'ok': False, 'error': 'service_unavailable'},
-        'Could not send the file to Slack. The Slack service is temporarily unavailable.',
-        id='API error response'
-    )
-]
-
-
-@pytest.mark.parametrize('slack_api_response, expected_human_readable', FILE_SEND_RESPONSE_CASES)
-def test_slack_send_with_mirrored_file(slack_api_response: dict, expected_human_readable: str, mocker):
+def test_slack_send_with_mirrored_file(mocker):
     """
     Given:
       - mirror entry which is basically a file
-
     When:
-      - Test Case 1 - Slack API response indicates success.
-      - Test Case 2 - Slack API response indicates failure.
-
+      - running send-notification triggered from mirroring
     Then:
-      - Test Case 1 - Validate that successfull file send is shown.
-      - Test Case 2 - Validate that error explanation is shown.
+      - Validate that the file is sent successfully
     """
     import SlackV3
 
@@ -2882,13 +2863,13 @@ def test_slack_send_with_mirrored_file(slack_api_response: dict, expected_human_
             "entryObject": {}
         }
     )
-    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value=slack_api_response)
+    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value='file-sent')
     demisto_results = mocker.patch.object(demisto, 'results')
 
     SlackV3.slack_send()
     assert slack_send_request.call_args_list[0].kwargs["file_dict"]
     assert slack_send_request.call_args_list[0].kwargs["channel_id"] == "1234"
-    assert demisto_results.call_args[0][0]['HumanReadable'] == expected_human_readable
+    assert demisto_results.call_args[0][0]['HumanReadable'] == 'File sent to Slack successfully.'
 
 
 def test_send_request_with_entitlement_blocks(mocker):
@@ -3513,7 +3494,7 @@ def test_send_file_no_args_investigation(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'path', 'name': 'name'})
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(SlackV3, 'slack_send_request', return_value={'ok': True})
+    mocker.patch.object(SlackV3, 'slack_send_request', return_value='cool')
 
     # Arrange
     SlackV3.slack_send_file()
@@ -5247,3 +5228,27 @@ class TestGetWarRoomURL:
         expected_war_room_url = \
             "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
         assert get_war_room_url(url) == expected_war_room_url
+
+
+def test_send_file_api_exception(mocker):
+    """
+    Given:
+        - Slack API non-okay response.
+    When:
+        - calling the slack_send_file
+    Then:
+        - assert readable exception is raised.
+    """
+    from SlackV3 import slack_send_file
+    # Set
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '999'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch('SlackV3.slack_send_request', side_effect=SlackApiError('The request to the Slack API failed. (url: https://slack.com/api/files.upload)',
+                                                                         {'ok': False, 'error': 'service_unavailable'}))
+
+    # Check that function raises DemistoException
+    with pytest.raises(DemistoException) as e:
+        slack_send_file('channel', _entry_id='123', _comment='Here is a file!')
+    assert str(e.value) == 'Could not send the file to Slack. The Slack service is temporarily unavailable.'
