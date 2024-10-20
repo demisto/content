@@ -11,6 +11,7 @@
     ],
     "tags": [],
     "useCases": [],
+    "itemPrefix": "CheckPointNDR",
     "keywords": [
         "Check Point",
         "CheckPoint",

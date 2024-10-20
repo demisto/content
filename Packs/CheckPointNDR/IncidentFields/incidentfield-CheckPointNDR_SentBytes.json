@@ -2,7 +2,7 @@
     "id": "incident_sentbytes",
     "version": -1,
     "modified": "2024-10-07T15:36:49.667762Z",
-    "name": "Sent Bytes",
+    "name": "CheckPointNDR Sent Bytes",
     "ownerOnly": false,
     "description": "The total number of bytes sent in the event.",
     "cliName": "sentbytes",

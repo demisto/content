@@ -2,7 +2,7 @@
     "id": "incident_receivedbytes",
     "version": -1,
     "modified": "2024-10-01T19:26:46.346683Z",
-    "name": "Received Bytes",
+    "name": "CheckPointNDR Received Bytes",
     "ownerOnly": false,
     "description": "The total number of bytes received in the event.",
     "cliName": "receivedbytes",

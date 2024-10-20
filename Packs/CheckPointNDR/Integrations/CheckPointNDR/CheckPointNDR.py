@@ -138,7 +138,8 @@ def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int, ma
     return incidents, last_time
 
 
-def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str, max_fetch: int, min_probability: int):
+def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str, max_fetch: int,
+                    min_probability: int):
     last_fetch = last_run.get('last_fetch', first_fetch.isoformat())
     last_fetch_time = dateparser.parse(last_fetch)
     if not last_fetch_time:
