@@ -2252,7 +2252,7 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: Deprecated. run xdr-script-run instead.
+    description: Deprecated. Run xdr-script-run instead.
     name: xdr-run-script
     deprecated: true
     outputs:
