@@ -12,7 +12,7 @@ enabled: true
 name: HealthCheckLicenseData
 outputs:
 - contextPath: FileData
-  description: Data read from war room file.
+  description: Data read from the War Room file.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
