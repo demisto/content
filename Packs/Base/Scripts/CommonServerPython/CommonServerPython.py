@@ -11959,7 +11959,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if data_type == ASSETS:
         if not snapshot_id:
             snapshot_id = str(round(time.time() * 1000))
-        headers['snapshot-id'] = instance_name + snapshot_id
+
+        # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
+        # alphabetical order such that first_snapshot < second_snapshot etc.
+        headers['snapshot-id'] = snapshot_id + instance_name
         headers['total-items-count'] = str(items_count)
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
@@ -11993,8 +11996,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
-    data_chunks = \
-        split_data_to_chunks(data, chunk_size)
+    data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         data_size += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
