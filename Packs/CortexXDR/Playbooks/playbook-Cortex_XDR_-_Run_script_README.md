@@ -1,5 +1,4 @@
-Initiates a new endpoint script execution action using a provided script unique id from Cortex XDR script library.
-
+Deprecated. Use the `xdr-script-run` command instead. Initiates a new endpoint script execution action using a provided script unique ID from Cortex XDR script library.
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
