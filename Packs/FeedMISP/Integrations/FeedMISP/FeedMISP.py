@@ -287,7 +287,7 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
     if attribute_type == 'ip-src' or attribute_type == 'ip-dst':
         return get_ip_type(attribute)
     else:
-        return ATTRIBUTE_TO_INDICATOR_MAP.get(attribute_type, None)
+        return ATTRIBUTE_TO_INDICATOR_MAP.get(attribute_type)
 
 
 def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
@@ -299,7 +299,7 @@ def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
     """
     if 'galaxy' in galaxy_tag_name:
         galaxy_name = galaxy_tag_name[0:galaxy_tag_name.index("=")]
-        return GALAXY_MAP.get(galaxy_name, None)
+        return GALAXY_MAP.get(galaxy_name)
     return None
 
 

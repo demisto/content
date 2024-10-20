@@ -511,7 +511,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
     try:
         time = dateparser.parse('1 minute')
         assert time
-        severity = params.get('severity', None)
+        severity = params.get('severity')
         if params.get('isFetch'):  # Tests fetch alert:
             fetch_incidents(
                 client=client,
@@ -550,7 +550,7 @@ def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # so the null check here as XSOAR will always check it before your code is called.
     # Although it's not mandatory to check, you are welcome to do so.
 
-    name = args.get('name', None)
+    name = args.get('name')
     if not name:
         raise ValueError('name not specified')
 
@@ -609,7 +609,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     # Make sure to use demisto.debug() to avoid flooding the general log.
 
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     last_ids: list[int] = last_run.get('last_ids', []) or []
 
     # Handle first fetch time

@@ -114,7 +114,7 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
     incident['CustomFields'].update({
         'cybersixgillstatus': status.replace('_', ' ').title(),
         'cybersixgillsite': item_info.get('site', None),
-        'cybersixgillactor': content_item.get('creator', None),
+        'cybersixgillactor': content_item.get('creator'),
         'cybersixgilltriggeredassets': triggered_assets
     })
 

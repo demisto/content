@@ -28,7 +28,7 @@ def match_ip_in_cidr_indicators(args: Dict[str, Any]) -> CommandResults:
     :return: Result of the search.
     :rtype: ``CommandResults``
     """
-    ip = args.get('ip', None)
+    ip = args.get('ip')
     if not ip:
         raise ValueError('ip not provided')
 

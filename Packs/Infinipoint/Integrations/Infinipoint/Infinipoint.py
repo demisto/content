@@ -294,7 +294,7 @@ def fetch_incidents(client, last_run: dict[str, int], first_fetch_time: int | No
     if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
         max_results = MAX_INCIDENTS_TO_FETCH
 
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     subscription = demisto.params().get('incident_type', ["event", "alert"])
 
     if last_fetch is None:

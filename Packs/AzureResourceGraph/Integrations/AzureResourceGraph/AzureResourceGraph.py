@@ -54,8 +54,8 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
     limit = arg_to_number(args.get('limit'))
     page_size = arg_to_number(args.get('page_size'))
     page_number = arg_to_number(args.get('page'))
-    management_groups = argToList(args.get('management_groups', None))
-    subscriptions = argToList(args.get('subscriptions', None))
+    management_groups = argToList(args.get('management_groups'))
+    subscriptions = argToList(args.get('subscriptions'))
 
     query = args.get('query')
 

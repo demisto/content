@@ -1404,7 +1404,7 @@ def fetch_incidents(
     demisto.info(f"fetch-incidents called {max_fetch=}")
     next_run = {}
     incidents = []
-    last_run_time = last_run.get("lastRun", None)
+    last_run_time = last_run.get("lastRun")
     if last_run_time is not None:
         after = dateutil.parser.parse(last_run_time)
 

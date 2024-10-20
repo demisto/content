@@ -424,7 +424,7 @@ def check_pagination(client: Client, response: Dict, limit: int) -> List:
         An array of all the relevant results.
     """
     arr: List[Dict] = response.get('values', [])
-    is_next = response.get('next', None)
+    is_next = response.get('next')
     pagelen = response.get('pagelen', 50)
     if is_next and limit > int(pagelen):
         return get_paged_results(client, response, limit)
@@ -443,7 +443,7 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
     """
     results = []
     arr: List[Dict] = response.get('values', [])
-    is_next = response.get('next', None)
+    is_next = response.get('next')
     while response:
         results += arr
         limit = limit - len(arr)
@@ -843,11 +843,11 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', client.repository)
     message = args.get('message', '')
     branch = args.get('branch', '')
-    file_name = args.get('file_name', None)
-    file_content = args.get('file_content', None)
-    entry_id = args.get('entry_id', None)
-    author_name = args.get('author_name', None)
-    author_email = args.get('author_email', None)
+    file_name = args.get('file_name')
+    file_content = args.get('file_content')
+    entry_id = args.get('entry_id')
+    author_name = args.get('author_name')
+    author_email = args.get('author_email')
 
     if not file_name and not entry_id:
         raise Exception('You must specify either the "file_name" and "file_content" or the "entry_id" of the file.')
@@ -880,9 +880,9 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with the list of commits.
     """
     repo = args.get('repo', client.repository)
-    file_path = args.get('file_path', None)
-    excluded_branches = argToList(args.get('excluded_branches', None))
-    included_branches = argToList(args.get('included_branches', None))
+    file_path = args.get('file_path')
+    excluded_branches = argToList(args.get('excluded_branches'))
+    included_branches = argToList(args.get('included_branches'))
     limit = arg_to_number(args.get('limit')) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     partial_response = argToBoolean(args.get('partial_response'))
@@ -942,8 +942,8 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
     message = args.get('message', '')
     branch = args.get('branch', '')
     file_name = args.get('file_name', '')
-    author_name = args.get('author_name', None)
-    author_email = args.get('author_email', None)
+    author_name = args.get('author_name')
+    author_email = args.get('author_email')
     body = {
         'message': message,
         'branch': branch,
@@ -967,7 +967,7 @@ def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
     """
     repo = args.get('repo', client.repository)
     file_path = args.get('file_path', '')
-    branch = args.get('branch', None)
+    branch = args.get('branch')
     including_list = []
     if branch:
         including_list = [branch]
@@ -1006,9 +1006,9 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
     state = args.get('state', 'new')
     issue_type = args.get('type', 'bug')
     priority = args.get('priority', 'major')
-    content = args.get('content', None)
-    assignee_id = args.get('assignee_id', None)
-    assignee_user_name = args.get('assignee_user_name', None)
+    content = args.get('content')
+    assignee_id = args.get('assignee_id')
+    assignee_user_name = args.get('assignee_user_name')
     partial_response = argToBoolean(args.get('partial_response', True))
     body = {
         "title": title,
@@ -1045,7 +1045,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with the array of issues as output.
     """
     repo = args.get('repo', client.repository)
-    issue_id = args.get('issue_id', None)
+    issue_id = args.get('issue_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 100)
@@ -1107,9 +1107,9 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
     state = args.get('state')
     issue_type = args.get('type')
     priority = args.get('priority')
-    content = args.get('content', None)
-    assignee_id = args.get('assignee_id', None)
-    assignee_user_name = args.get('assignee_user_name', None)
+    content = args.get('content')
+    assignee_id = args.get('assignee_id')
+    assignee_user_name = args.get('assignee_user_name')
     partial_response = argToBoolean(args.get('partial_response', True))
     body = {
         "title": title
@@ -1152,9 +1152,9 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     title = args.get('title', '')
     source_branch = args.get('source_branch', '')
     destination_branch = args.get('destination_branch', '')
-    reviewer_id = args.get('reviewer_id', None)
-    description = args.get('description', None)
-    close_source_branch = args.get('close_source_branch', None)
+    reviewer_id = args.get('reviewer_id')
+    description = args.get('description')
+    close_source_branch = args.get('close_source_branch')
     partial_response = argToBoolean(args.get('partial_response', True))
     body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description,
                                     close_source_branch)
@@ -1179,12 +1179,12 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
     """
     repo = args.get('repo', client.repository)
     pull_request_id = args.get('pull_request_id', '')
-    title = args.get('title', None)
-    source_branch = args.get('source_branch', None)
-    destination_branch = args.get('destination_branch', None)
-    reviewer_id = args.get('reviewer_id', None)
-    description = args.get('description', None)
-    close_source_branch = args.get('close_source_branch', None)
+    title = args.get('title')
+    source_branch = args.get('source_branch')
+    destination_branch = args.get('destination_branch')
+    reviewer_id = args.get('reviewer_id')
+    description = args.get('description')
+    close_source_branch = args.get('close_source_branch')
     partial_response = argToBoolean(args.get('partial_response', True))
     body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description,
                                     close_source_branch)
@@ -1210,8 +1210,8 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         If a state is not provided, by default a list of the open pull requests will return.
     """
     repo = args.get('repo', client.repository)
-    pull_request_id = args.get('pull_request_id', None)
-    state = args.get('state', None)
+    pull_request_id = args.get('pull_request_id')
+    state = args.get('state')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 50)
@@ -1344,7 +1344,7 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
     """
     repo = args.get('repo', client.repository)
     issue_id = args.get('issue_id', '')
-    comment_id = args.get('comment_id', None)
+    comment_id = args.get('comment_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 100)
@@ -1429,7 +1429,7 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
     """
     repo = args.get('repo', client.repository)
     pr_id = args.get('pull_request_id', '')
-    comment_id = args.get('comment_id', None)
+    comment_id = args.get('comment_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 100)
