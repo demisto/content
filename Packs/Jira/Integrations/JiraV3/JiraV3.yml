@@ -22,6 +22,11 @@ configuration:
   type: 0
   additionalinfo: This field is used to configure the Jira Cloud.
   required: false
+- name: test
+  display: test
+  type: 0
+  additionalinfo: This field is used to configure the Jira Cloud.
+  required: false
 - name: callback_url
   display: Callback URL
   type: 0

@@ -371,7 +371,7 @@ class Client(BaseClient):
         item = ITEM_TEMPLATE.format(id=alert_id,
                                     severity='low',
                                     date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
-                                    status='Testing')
+                                    status='queen')
         return json.loads("{" + item + "}")
 
     def create_note(self, alert_id: int, comment: str) -> dict:
@@ -403,11 +403,13 @@ class Client(BaseClient):
             item['id'] = last_id + 1
             item['date'] = datetime.strftime(start_time + timedelta(minutes=1), DATE_FORMAT)
 
+        test1 = 'fwdfsdf'
         incidents = self.get_alert_list(limit=limit, severity=severity, last_id=last_id)
         demisto.debug("Setting alerts time to now.")
         for item in incidents:
             mock_time(item)
             last_id += 1
+            demisto.debug(test1)
         return incidents
 
 
@@ -453,7 +455,9 @@ def convert_to_demisto_severity(severity: str) -> int:
         'medium': IncidentSeverity.MEDIUM,
         'high': IncidentSeverity.HIGH,
         'critical': IncidentSeverity.CRITICAL,
-        'unknown': IncidentSeverity.UNKNOWN
+        'unknown': IncidentSeverity.UNKNOWN,
+        'test': IncidentSeverity.UNKNOWN,
+        
     }[severity]
 
 
@@ -561,7 +565,7 @@ def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
     # More complex output can be formatted using ``tableToMarkDown()`` defined
     # in ``CommonServerPython.py``
-    readable_output = f'## {result}'
+    readable_output = f'## {result} test'
 
     # More information about Context:
     # https://xsoar.pan.dev/docs/integrations/context-and-outputs
