@@ -1123,4 +1123,7 @@ def main():  # pragma: no cover
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
+    demisto.debug("40686RASTERIZE before FIRST memory dump")
+    register_signal_handler_profiling_dump()
+    demisto.debug("40686RASTERIZE after FIRST memory dump")
     main()
