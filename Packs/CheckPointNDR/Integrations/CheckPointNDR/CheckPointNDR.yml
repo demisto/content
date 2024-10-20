@@ -50,6 +50,12 @@ configuration:
   type: 8
   required: false
 - section: Collect
+  display: Minimum probability level
+  name: min_probability
+  defaultvalue: "0"
+  type: 0
+  required: false
+- section: Collect
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "10"
