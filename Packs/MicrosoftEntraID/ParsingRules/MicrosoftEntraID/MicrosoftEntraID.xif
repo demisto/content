@@ -10,6 +10,16 @@ filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "S
 
 
 [INGEST:vendor="msft", product="Azure AD", target_dataset="msft_azure_ad_raw", no_hit=keep]
-
+filter to_string(createdDateTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter
+    _time = createdDateTime;
 
 [INGEST:vendor="msft", product="Azure AD Audit", target_dataset="msft_azure_ad_audit_raw", no_hit=keep]
+filter to_string(ActivityDateTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter 
+    tmp_get_keys = rtrim(arraystring(arraymap(arraymap(additionalDetails -> [], "@element" -> key), concat("(?P<", "@element", ">[^|]+)?\|")), ""), "\|"),
+    tmp_get_values = arraystring(arraymap(additionalDetails -> [], "@element" -> value), "|")
+| alter
+    parsed_fields = regexcapture(tmp_get_values, tmp_get_keys),
+    _time = ActivityDateTime
+| fields -tmp_*;
