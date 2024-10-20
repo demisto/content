@@ -110,10 +110,6 @@
         "type": "string",
         "is_array": false
     },
-    "tokenIssuerType": {
-        "type": "string",
-        "is_array": false
-    },
     "clientCredentialType": {
         "type": "string",
         "is_array": false
