@@ -29,7 +29,7 @@ class AuthType(Enum):
 class OktaClient(BaseClient):
     def __init__(self, auth_type: AuthType = AuthType.API_TOKEN, api_token: str | None = None,
                  client_id: str | None = None, scopes: list[str] | None = None, private_key: str | None = None,
-                 jwt_algorithm: JWTAlgorithm | None = None, key_id: str | None, *args, **kwargs):
+                 jwt_algorithm: JWTAlgorithm | None = None, key_id: str | None = None, *args, **kwargs):
         """
         Args:
             auth_type (AuthType, optional): The type of authentication to use.
