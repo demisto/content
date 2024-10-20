@@ -535,7 +535,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 2165
+          "y": 2175
         }
       }
     note: false
@@ -685,10 +685,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: a5799de6-6673-4ffb-8f04-4fc35ee16fa8
+    taskid: 1751aebc-28fb-4aa4-847d-f8f0e2c82d1d
     type: regular
     task:
-      id: a5799de6-6673-4ffb-8f04-4fc35ee16fa8
+      id: 1751aebc-28fb-4aa4-847d-f8f0e2c82d1d
       version: -1
       name: Search related alerts by  MITRE technique
       description: |+
@@ -822,10 +822,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 2eaadc92-8df5-43ce-878d-66bc77886637
+    taskid: 8e0639ee-7d11-4756-8ee4-61393368ae41
     type: regular
     task:
-      id: 2eaadc92-8df5-43ce-878d-66bc77886637
+      id: 8e0639ee-7d11-4756-8ee4-61393368ae41
       version: -1
       name: Check Previous similar Alerts
       description: |+
@@ -912,7 +912,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "32"
+      - "45"
       External:
       - "42"
     separatecontext: false
@@ -943,6 +943,72 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 0d9cfb8f-aab3-4a88-8425-40a4e43e38ff
+    type: title
+    task:
+      id: 0d9cfb8f-aab3-4a88-8425-40a4e43e38ff
+      version: -1
+      name: Close the alert - Internal IP
+      description: Set a value in context under the key you entered.
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 91ebf4a1-ffbc-4286-856b-9acd2463057f
+    type: regular
+    task:
+      id: 91ebf4a1-ffbc-4286-856b-9acd2463057f
+      version: -1
+      name: Close the Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      closeReason:
+        simple: 'Resolved - Handled by the playbook "Netcat makes or gets connections" '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 2505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -955,16 +1021,15 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3155,
-        "width": 1190,
-        "x": 140,
+        "width": 1420,
+        "x": -90,
         "y": -410
       }
     }
   }
-inputs:
+inputs: []
 inputSections:
-- inputs:
-  - InternalRange
+- inputs: []
   name: General (Inputs group)
   description: Generic group for inputs
 outputSections:
