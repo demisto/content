@@ -1,6 +1,5 @@
-from CommonServerPython import *  # noqa: F401
-import demistomock as demisto  # noqa: F401
-
+from CommonServerPython import *
+import demistomock as demisto
 
 
 OAUTH_URL = '/oauth_token.do'
