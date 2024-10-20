@@ -18,6 +18,7 @@ URL = "{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
 
 FETCH_INTERVAL_IN_SECONDS = 60
 FETCH_SLEEP = 5
+SERVER_IDLE_TIMEOUT = 300
 
 
 class EventType(str, Enum):
@@ -27,17 +28,20 @@ class EventType(str, Enum):
 
 
 class EventConnection:
-    def __init__(self, event_type: EventType, connection: Connection, idle_timeout: int = 280):
+    def __init__(self, event_type: EventType, connection: Connection, fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
+                 idle_timeout: int = SERVER_IDLE_TIMEOUT - 20):
         self.event_type = event_type
         self.connection = connection
         self.lock = threading.Lock()
         self.last_msg_time = time.time()
         self.idle_timeout = idle_timeout
+        self.fetch_interval = fetch_interval
 
     def recv(self, timeout=None):
         with self.lock:
             if res := self.connection.recv(timeout=timeout):
-                self.last_msg_time = int(time.time())
+                # Update the last message time, the message can be as old as the end of the previous fetch cycle
+                self.last_msg_time = max(self.last_msg_time, int(time.time()) - self.fetch_interval)
             return res
 
     def heartbeat(self):
@@ -45,8 +49,8 @@ class EventConnection:
             with self.lock:
                 idle_time_elapsed = int(time.time()) - self.last_msg_time
                 if idle_time_elapsed >= self.idle_timeout:
-                    self.connection.pong()
                     self.last_msg_time = int(time.time())
+                    self.connection.pong()
                     idle_time_elapsed = 0
             time.sleep(self.idle_timeout - idle_time_elapsed)
 
@@ -66,7 +70,8 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
 
 @contextmanager
 def websocket_connections(
-    host: str, cluster_id: str, api_key: str, since_time: str | None = None, to_time: str | None = None
+    host: str, cluster_id: str, api_key: str, since_time: str | None = None, to_time: str | None = None,
+    fetch_interval: int = FETCH_INTERVAL_IN_SECONDS
 ):
     demisto.info(
         f"Starting websocket connection to {host} with cluster id: {cluster_id}, sinceTime: {since_time}, toTime: {to_time}")
@@ -81,7 +86,8 @@ def websocket_connections(
     with ExitStack() as stack:  # Keep connection contexts for clean up
         connections = [EventConnection(
             event_type=event_type,
-            connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers))
+            connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers)),
+            fetch_interval=fetch_interval,
         ) for event_type in EventType]
 
         yield connections
@@ -168,9 +174,9 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
 
 
 def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
-    fetch_interval = max(1, fetch_interval // len(EventType))
-    with websocket_connections(host, cluster_id, api_key) as connections:
+    with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
         demisto.info("Connected to websocket")
+        fetch_interval = max(1, fetch_interval // len(EventType))
 
         # The Proofpoint server will close connections if they are idle for 5 minutes
         # Setting up heartbeat daemon threads to avoid this

@@ -196,9 +196,9 @@ def test_heartbeat(mocker, connection):
     idle_timeout = 3
 
     @contextmanager
-    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None):
+    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None, fetch_interval=60):
         with ExitStack():
-            yield [EventConnection(EventType.AUDIT, connection, idle_timeout)]
+            yield [EventConnection(EventType.AUDIT, connection, fetch_interval, idle_timeout)]
 
     def mock_perform_long_running_loop(connections, interval):
         # This mock will raise exceptions to stop the long running loop
