@@ -1,7 +1,15 @@
 id: Netcat makes or gets connections
 version: -1
 name: Netcat makes or gets connections
-description: "# Netcat Connection Alert Response Playbook\n\n## Overview\nThis playbook is designed to automatically respond to \"Netcat makes or gets connections\" alerts. It checks for malicious reputation or previous related alerts, and takes appropriate action if necessary, such as killing the malicious process.\n\n## Use Cases\n- Detect and respond to potential network-based malicious activity using the Netcat tool.\n- Investigate and mitigate the impact of Netcat-related security incidents.\n- Streamline the response process for \"Netcat makes or gets connections\" alerts.\n\n## Playbook Flow\n1. **Trigger**: The playbook is triggered by a \"Netcat makes or gets connections\" alert.\n2. **Check Reputation**: The playbook checks the reputation of the IP address or domain associated with the Netcat connection.\n3. **Check Previous Alerts**: The playbook searches for any previous related alerts.\n4. **Evaluate Threat Level**: Based on the reputation and previous alert information, the playbook determines the threat and if a response action is needed.\n5. **Respond and Mitigate**: If the threat level is deemed high, the playbook takes the following remediation action:\n   - Killing the malicious process."
+description: |-
+  This playbook is designed to handle the following alerts:
+    - Netcat makes or gets connections
+  The playbook executes the following stages:
+    Analysis:
+    - Investigate the IP and Domain  reputation
+    - Search previous similar alerts
+  Remediation:
+    - Handles malicious alerts by terminating the causality process.
 tags:
 - T1090 - Proxy
 - TA0011-Command and Control
@@ -20,7 +28,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "25"
+      - "42"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -203,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1945
+          "y": 2175
         }
       }
     note: false
@@ -258,24 +266,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 55b7d40a-0f6c-4ed8-8689-c7ec3c842dbd
-    type: regular
+    taskid: acc8a2c0-a3cc-4ac0-88e0-74472bca2f2c
+    type: condition
     task:
-      id: 55b7d40a-0f6c-4ed8-8689-c7ec3c842dbd
+      id: acc8a2c0-a3cc-4ac0-88e0-74472bca2f2c
       version: -1
-      name: Get Commandline prevalence
+      name: Check if Command Line exist?
       description: Get the prevalence of a process_command_line, identified by process_command_line.
-      script: '|||core-get-cmd-analytics-prevalence'
-      type: regular
-      iscommand: true
+      type: condition
+      iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
       - "30"
-    scriptarguments:
-      process_command_line:
-        simple: ${alert.osparentcmd}
+      "yes":
+      - "43"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.initiatorcmd
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -309,7 +323,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2450
+          "y": 2680
         }
       }
     note: false
@@ -340,46 +354,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: 939d4df1-3b9d-4a02-8634-59f622bffba6
-    type: regular
-    task:
-      id: 939d4df1-3b9d-4a02-8634-59f622bffba6
-      version: -1
-      name: Check Previous similar Alerts
-      description: |-
-        Finds past similar alerts based on alert fields' similarity. Includes an option to also display indicators similarity.
-        Note: For the similarity calculation, at least one field must be provided in one of the "similarTextField", "similarCategoricalField", or "similarJsonField" arguments.
-      scriptName: DBotFindSimilarAlerts
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      query:
-        simple: resolution_status:"STATUS_060_RESOLVED_FALSE_POSITIVE"
-      similarTextField:
-        simple: name
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -275
+          "y": 1680
         }
       }
     note: false
@@ -432,10 +407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 05b1c3b4-24f9-4033-89dc-fa548b12a39d
+    taskid: d22f9ed2-2511-4a8c-835a-174585ae5876
     type: condition
     task:
-      id: 05b1c3b4-24f9-4033-89dc-fa548b12a39d
+      id: d22f9ed2-2511-4a8c-835a-174585ae5876
       version: -1
       name: Destination IP is External?
       description: Checks if the destination IP of the alert is external.
@@ -536,7 +511,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1245
+          "y": 1475
         }
       }
     note: false
@@ -553,7 +528,7 @@ tasks:
     task:
       id: c699e8c2-a6d9-42ac-872a-e52b0cce4e09
       version: -1
-      name: Found Relevenat Previous Alert?
+      name: Found Relevant Previous Alert?
       description: Checks if there are any relevant previous alerts.
       type: condition
       iscommand: false
@@ -579,7 +554,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1760
+          "y": 1990
         }
       }
     note: false
@@ -610,7 +585,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 1935
+          "y": 2165
         }
       }
     note: false
@@ -622,10 +597,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: a207b768-8579-4094-817f-a4e11c6dcded
+    taskid: 4f11beab-1714-4456-8e19-80b52039ba82
     type: condition
     task:
-      id: a207b768-8579-4094-817f-a4e11c6dcded
+      id: 4f11beab-1714-4456-8e19-80b52039ba82
       version: -1
       name: Similar False Positive Alerts Found?
       description: Checks if similar false positive alerts have been found. 
@@ -641,13 +616,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isTrue
+      - - operator: isNotEmpty
           left:
             value:
-              simple: DBotFindSimilarIncidents.isSimilarIncidentFound
+              simple: foundIncidents
             iscontext: true
-          right:
-            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -665,10 +638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 8f045a85-4327-4ec2-8803-b92526a20bec
+    taskid: de4edc56-5716-44d9-8960-7c1f71cd9cda
     type: regular
     task:
-      id: 8f045a85-4327-4ec2-8803-b92526a20bec
+      id: de4edc56-5716-44d9-8960-7c1f71cd9cda
       version: -1
       name: Close the Alert as True Positive
       description: commands.local.cmd.close.inv
@@ -681,14 +654,14 @@ tasks:
       - "23"
     scriptarguments:
       closeReason:
-        simple: STATUS_090_RESOLVED_TRUE_POSITIVE
+        simple: Resolved - Handled by the playbook "Netcat makes or gets connections" as True Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 2275
+          "y": 2505
         }
       }
     note: false
@@ -814,7 +787,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1600
+          "y": 1830
         }
       }
     note: false
@@ -826,10 +799,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: f010b721-9bbf-4bd2-836d-ab0e79d3793d
+    taskid: 23878a84-73ba-4164-8964-6122438ca5b0
     type: regular
     task:
-      id: f010b721-9bbf-4bd2-836d-ab0e79d3793d
+      id: 23878a84-73ba-4164-8964-6122438ca5b0
       version: -1
       name: Close the Alert as False Positive
       description: commands.local.cmd.close.inv
@@ -842,14 +815,14 @@ tasks:
       - "23"
     scriptarguments:
       closeReason:
-        simple: STATUS_060_RESOLVED_FALSE_POSITIVE
+        simple: Resolved - Handled by the playbook "Netcat makes or gets connections" as False Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 950,
-          "y": 2275
+          "y": 2505
         }
       }
     note: false
@@ -887,7 +860,85 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2100
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 2eaadc92-8df5-43ce-878d-66bc77886637
+    type: regular
+    task:
+      id: 2eaadc92-8df5-43ce-878d-66bc77886637
+      version: -1
+      name: Check Previous similar Alerts
+      description: |+
+        Finds past similar alerts based on alert fields' similarity.
+
+
+
+
+
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      name:
+        simple: ${alert.name}
+      query:
+        simple: 'resolution_status: STATUS_060_RESOLVED_FALSE_POSITIVE and hostname: ${alert.hostname}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: bae9f51b-889b-4035-83c5-a2273f272eaf
+    type: regular
+    task:
+      id: bae9f51b-889b-4035-83c5-a2273f272eaf
+      version: -1
+      name: Get Commandline prevalence
+      description: Get the prevalence of a process_command_line, identified by process_command_line.
+      script: '|||core-get-cmd-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      process_command_line:
+        simple: ${alert.osparentcmd}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1265
         }
       }
     note: false
@@ -908,7 +959,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2925,
+        "height": 3155,
         "width": 1190,
         "x": 140,
         "y": -410

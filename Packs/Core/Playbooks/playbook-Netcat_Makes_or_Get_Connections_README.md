@@ -1,20 +1,11 @@
-# Netcat Connection Alert Response Playbook
-
-## Overview
-This playbook is designed to automatically respond to "Netcat makes or gets connections" alerts. It checks for malicious reputation or previous related alerts, and takes appropriate action if necessary, such as killing the malicious process.
-
-## Use Cases
-- Detect and respond to potential network-based malicious activity using the Netcat tool.
-- Investigate and mitigate the impact of Netcat-related security incidents.
-- Streamline the response process for "Netcat makes or gets connections" alerts.
-
-## Playbook Flow
-1. **Trigger**: The playbook is triggered by a "Netcat makes or gets connections" alert.
-2. **Check Reputation**: The playbook checks the reputation of the IP address or domain associated with the Netcat connection.
-3. **Check Previous Alerts**: The playbook searches for any previous related alerts.
-4. **Evaluate Threat Level**: Based on the reputation and previous alert information, the playbook determines the threat and if a response action is needed.
-5. **Respond and Mitigate**: If the threat level is deemed high, the playbook takes the following remediation action:
-   - Killing the malicious process.
+This playbook is designed to handle the following alerts:
+  - Netcat makes or gets connections
+The playbook executes the following stages:
+  Analysis:
+  - Investigate the IP and Domain  reputation
+  - Search previous similar alerts
+Remediation:
+  - Handles malicious alerts by terminating the causality process.
 
 ## Dependencies
 
@@ -32,7 +23,6 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* DBotFindSimilarAlerts
 * SearchAlertsV2
 
 ### Commands
