@@ -2,6 +2,8 @@ from contextlib import ExitStack, contextmanager
 from enum import Enum
 from functools import partial
 import threading
+
+from websockets import Data
 from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
@@ -37,14 +39,29 @@ class EventConnection:
         self.idle_timeout = idle_timeout
         self.fetch_interval = fetch_interval
 
-    def recv(self, timeout=None):
+    def recv(self, timeout: float | None = None) -> Data:
+        """
+        Receive the next message from the connection
+
+        Args:
+            timeout (float): Block until timeout seconds have elapsed or a message is received. If None, waits indefinitely.
+                             If timeout passes, raises TimeoutError
+
+        Returns:
+            Data: Next event received from the connection
+        """
         with self.lock:
-            if res := self.connection.recv(timeout=timeout):
-                # Update the last message time, the message can be as old as the end of the previous fetch cycle
+            if event := self.connection.recv(timeout=timeout):
+                # Update the last message time, the message could be as old as the end of the previous fetch cycle
                 self.last_msg_time = max(self.last_msg_time, int(time.time()) - self.fetch_interval)
-            return res
+            return event
 
     def heartbeat(self):
+        """
+        Heartbeat thread function to periodically send keep-alives to the server in case of prolonged inactivity.
+        The server will close the connection if there is no activity for a certain period of time (SERVER_IDLE_TIMEOUT).
+        Heartbeats will be sent if the last message received (or pong sent) was almost SERVER_IDLE_TIMEOUT seconds ago.
+        """
         while True:
             with self.lock:
                 idle_time_elapsed = int(time.time()) - self.last_msg_time
@@ -70,9 +87,22 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
 
 @contextmanager
 def websocket_connections(
-    host: str, cluster_id: str, api_key: str, since_time: str | None = None, to_time: str | None = None,
-    fetch_interval: int = FETCH_INTERVAL_IN_SECONDS
-):
+        host: str, cluster_id: str, api_key: str, since_time: str | None = None, to_time: str | None = None,
+        fetch_interval: int = FETCH_INTERVAL_IN_SECONDS):
+    """
+    Create a connection for every type of event.
+
+    Args:
+        host (str): host URL for the websocket connection.
+        cluster_id (str): Proofpoint cluster ID to connect to.
+        api_key (str): Proofpoint API key.
+        since_time (str): Start time to fetch events from.
+        to_time (str): End time for fetch, leave empty for real-time streaming.
+        fetch_interval (int): Time between fetch iterations, used for estimating message receive times for idle heartbeat.
+
+    Yields:
+        list[EventConnection]: List containing an eventConnection for every event type
+    """
     demisto.info(
         f"Starting websocket connection to {host} with cluster id: {cluster_id}, sinceTime: {since_time}, toTime: {to_time}")
     url = URL
@@ -95,12 +125,11 @@ def websocket_connections(
 
 def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
     """
-    This function fetches events from the websocket connection for the given event type, for the given fetch interval
+    This function fetches events from the given connection, for the given fetch interval
 
     Args:
-        event_type (EventType): The event type to fetch (MAILLOG, MESSAGE)
-        connection (Connection): the websocket connection to the event type
-        fetch_interval (int): the interval of events to fetch, in seconds
+        connection (EventConnection): the connection to the event type
+        fetch_interval (int): Total time to keep fetching before stopping
         recv_timeout (int): The timeout for the receive function in the socket connection
 
     Returns:
@@ -153,6 +182,13 @@ def test_module(host: str, cluster_id: str, api_key: str):
 
 
 def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int):
+    """
+    Long running loop iteration function. Fetches events from each connection and sends them to XSIAM.
+
+    Args:
+        connections (list[EventConnection]): List of connection objects to fetch events from.
+        fetch_interval (int): Fetch time per cycle allocated for each event type in seconds.
+    """
     integration_context = demisto.getIntegrationContext()
     events_to_send = []
     for connection in connections:
@@ -174,12 +210,23 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
 
 
 def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
+    """
+    Performs the long running execution loop.
+    Opens a connection to Proofpoints for every event type and fetches events in a loop.
+    Heartbeat threads are opened for every connection to send keepalives if the connection is idle for too long.
+
+    Args:
+        host (str): host URL for the websocket connection.
+        cluster_id (str): Proofpoint cluster ID to connect to.
+        api_key (str): Proofpoint API key.
+        fetch_interval (int): Total time allocated per fetch cycle.
+    """
     with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
         demisto.info("Connected to websocket")
-        fetch_interval = max(1, fetch_interval // len(EventType))
+        fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
 
         # The Proofpoint server will close connections if they are idle for 5 minutes
-        # Setting up heartbeat daemon threads to avoid this
+        # Setting up heartbeat daemon threads to send keep-alives if needed
         for connection in connections:
             threading.Thread(target=connection.heartbeat, daemon=True).start()
 

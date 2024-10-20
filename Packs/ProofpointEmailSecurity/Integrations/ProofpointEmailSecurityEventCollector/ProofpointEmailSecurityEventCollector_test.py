@@ -193,6 +193,17 @@ def test_handle_failures_of_send_events(mocker, capfd):
 
 
 def test_heartbeat(mocker, connection):
+    """
+    Given:
+        - A connection object with scarce messages
+
+    When:
+        - The long running execution loop runs
+
+    Then:
+        - Periodic keep-alive messages (pongs) are sent to the websocket connection to prevent it from closing.
+
+    """
     idle_timeout = 3
 
     @contextmanager
