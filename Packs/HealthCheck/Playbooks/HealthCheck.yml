@@ -1407,7 +1407,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checking XSOAR version
+      description: Checking the Cortex XSOAR version.
       id: d442451b-736c-43ff-8100-ea23eeabce29
       iscommand: false
       name: XSOAR Version
