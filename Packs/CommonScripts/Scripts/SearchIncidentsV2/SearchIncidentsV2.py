@@ -159,12 +159,14 @@ def search_incidents(args: Dict):  # pragma: no cover
     if includeinformational := argToBoolean(args.get('includeinformational', False)):
         if not (args.get('fromdate') and args.get('todate')):
             raise ValueError('The includeinformational argument requires fromdate and todate arguments.')
+
         if (datetime.utcnow() - fromdate).total_seconds() > 5 * 60 * 60:  # type: ignore
             args['fromdate'] = arg_to_datetime('5 hours ago').isoformat()  # type: ignore
             hr_prefix = (f'fromdate: {fromdate} is more than 5 hours from now: {datetime.utcnow()}. Currently, we support '
                          f'querying informational incidents for up to the last 5 hours. The fromdate has been'
                          f' adjusted to {args.get("fromdate")}')
         args['includeinformational'] = includeinformational
+
     else:
         args.pop('includeinformational', None)
 
