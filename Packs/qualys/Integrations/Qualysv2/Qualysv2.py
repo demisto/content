@@ -12,7 +12,7 @@ from urllib3 import disable_warnings
 
 disable_warnings()  # pylint: disable=no-member
 
-# FIX VERSION 1
+# FIX VERSION 2
 
 """ CONSTANTS """
 
@@ -2806,39 +2806,18 @@ def add_fields_to_events(events, time_field_path, event_type_field):
             event['_time'] = dict_safe_get(event, time_field_path)
             event['event_type'] = event_type_field
 
-def get_size(obj, seen=None):
-    """Recursively find the size of an object including nested objects."""
-    size = sys.getsizeof(obj)
-    if seen is None:
-        seen = set()
-    obj_id = id(obj)
-    if obj_id in seen:
-        return 0
-
-    # Mark object as seen
-    seen.add(obj_id)
-
-    if isinstance(obj, dict):
-        size += sum([get_size(v, seen) for v in obj.values()])
-        size += sum([get_size(k, seen) for k in obj.keys()])
-    elif hasattr(obj, '__dict__'):
-        size += get_size(obj.__dict__, seen)
-    elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
-        size += sum([get_size(i, seen) for i in obj])
-
-    return size
-
 
 def truncate_asset_size(asset):
     host_id = asset.get('ID') or 'NO_ID'
     detection_id = asset.get('DETECTION', {}).get('UNIQUE_VULN_ID', 'No detection')
 
-    asset_size = get_size(asset)
+    asset_size = get_size_of_object(asset)
     if asset_size > ASSET_SIZE_LIMIT:
         demisto.debug(f'{asset_size=}>{ASSET_SIZE_LIMIT=}')
         detection_str = f' detection ID: {detection_id}' if detection_id else ''
         demisto.debug(f'Asset ID: {host_id}{detection_str} has size of {asset_size}.')
         results_characters_lim = 10000
+
         if results := asset.get('DETECTION', {}).get('RESULTS'):
             asset['DETECTION']['RESULTS'] = results[:results_characters_lim]
             asset['isTruncated'] = True
@@ -2847,10 +2826,9 @@ def truncate_asset_size(asset):
 
         # For debug
         for key, val in asset.items():
-            if (val_size := get_size(val)) > ASSET_SIZE_LIMIT:  # 1 MB
+            if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
                 demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
                               f'{str(val)[:10000]}...')
-
 
 
 
