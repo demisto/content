@@ -70,7 +70,7 @@ script:
     description: Export recommended mitigations.
     arguments:
     - name: filter
-      description: ZQL filter
+      description: ZQL filter.
       required: false
       isArray: false
     outputs:

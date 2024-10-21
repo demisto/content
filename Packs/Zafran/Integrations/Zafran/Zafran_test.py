@@ -70,6 +70,7 @@ def test_mitigations_performed_command(client, requests_mock):
     assert results.readable_output == 'Mitigations status updated successfully'
     assert results.raw_response == mock_response_mitigations_performed_request
 
+
 def test_api_test_connection(client, requests_mock):
     requests_mock.post(f"{SERVER_URL}/findings?count=0", status_code=204)
     result = api_test_connection(client)
