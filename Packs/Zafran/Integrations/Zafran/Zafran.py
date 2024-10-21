@@ -103,13 +103,13 @@ def mitigations_performed_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def api_test_connection(client: Client) -> None:
+def api_test_connection(client: Client) -> str:
     try:
         response = client.findings_request(0)
         # Test functions here
         if response.status_code == 204:
             return 'ok'
-    except:
+    except DemistoException:
         pass
     return 'API test failed'
 

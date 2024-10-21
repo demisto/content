@@ -1,6 +1,8 @@
 import pytest
 from CommonServerPython import *
-from Zafran import Client, mitigation_performed_command, mitigations_export_command, mitigations_performed_command, api_test_connection
+from Zafran import Client, mitigation_performed_command, mitigations_export_command, \
+    mitigations_performed_command, api_test_connection
+
 SERVER_URL = 'https://test_url.com'
 
 
