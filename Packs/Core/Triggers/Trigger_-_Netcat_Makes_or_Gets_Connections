@@ -1,8 +1,8 @@
 {
-    "trigger_id": "36ff93e2ba62421cbaf704a395c7a7d1",
+    "trigger_id": "907c5db410d816a487249e77cbbf411a",
     "playbook_id": "Netcat Makes or Gets Connections",
     "suggestion_reason": "Recommended for `Netcat Makes or Gets Connections` Alerts ",
-    "description": "This trigger is responsible for handling `Netcat Makes or Gets Connections` alerts",
+    "description": "This trigger is responsible for handling `Netcat Makes or Gets Connections` alert",
     "trigger_name": "Netcat Makes or Gets Connections",
     "fromVersion": "8.8.0",
     "alerts_filter": {
