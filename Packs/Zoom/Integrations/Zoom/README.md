@@ -1936,6 +1936,19 @@ To list all available users use the `zoom-list-users` command.
 |-------------------|-----------------------------------------------------------------------------------------| --- |
 | user_id           | The user ID or email to be revoked.                                                     | Required | 
 
+#### Command example
+
+```!zoom-delete-user-token user_id=useremail@myself.com```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>### Message
+>User SSO token for user usetobe@myself.com is deleted
+
 ### send-notification
 
 ***
