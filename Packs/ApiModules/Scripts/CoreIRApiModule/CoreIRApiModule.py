@@ -2698,6 +2698,30 @@ def get_distribution_url_command(client, args):
     )
 
 
+def download_distribution_command(client, args):
+    distribution_id = args.get('distribution_id')
+    package_type = args.get('package_type')
+
+    url = client.get_distribution_url(distribution_id, package_type)
+
+    dist_file_contents = client._http_request(
+        method='GET',
+        full_url=url,
+        resp_type="content"
+    )
+    if package_type in ["x64", "x86"]:
+        file_ext = "msi"
+    elif package_type == "upgrade":
+        file_ext = "zip"
+    else:
+        file_ext = package_type
+    dist_file = fileResult(
+        filename=f"xdr-agent-install-package.{file_ext}",
+        data=dist_file_contents
+    )
+    return dist_file
+
+
 def get_distribution_status_command(client, args):
     distribution_ids = argToList(args.get('distribution_ids'))
 
