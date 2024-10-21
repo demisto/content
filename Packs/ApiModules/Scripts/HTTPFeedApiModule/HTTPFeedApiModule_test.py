@@ -533,7 +533,6 @@ def test_get_no_update_value(mocker):
                                             ' createIndicators will be executed with noUpdate=False.'
 
 
-
 def test_get_no_update_value_etag_with_double_quotes(mocker):
     """
     Given
@@ -681,9 +680,9 @@ def test_build_iterator_etag_with_double_quotes(mocker):
     Then
     - Ensure the next request header contains 'etag' without double-quotes.
     """
-    
+
     etag = 'd309ab6e51ed310cf869dab0dfd0d34b'
-    
+
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
     mock_session = mocker.patch.object(requests, 'get')
     mocker.patch('HTTPFeedApiModule.has_passed_time_threshold', return_value=False)
