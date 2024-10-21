@@ -18,7 +18,7 @@ filter to_string(createdDateTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
 filter to_string(ActivityDateTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
 | alter 
     tmp_get_keys = rtrim(arraystring(arraymap(arraymap(additionalDetails -> [], "@element" -> key), concat("(?P<", "@element", ">[^|]+)?\|")), ""), "\|"),
-    tmp_get_values = arraystring(arraymap(additionalDetails -> [], "@element" -> value), "|")
+    tmp_get_values = replex(replex(arraystring(arraymap(additionalDetails -> [], if("@element" -> value = "" or "@element" -> value = null, "null", "@element" -> value)), "|"), "(?:^|)null(?:\||$)", "|"), "\|$", "")
 | alter
     parsed_fields = regexcapture(tmp_get_values, tmp_get_keys),
     _time = ActivityDateTime
