@@ -973,7 +973,7 @@ def test_malop_to_incident(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345A",
-        "status": 0
+        "status": 1
     }
     command_output = malop_to_incident(args)
 
