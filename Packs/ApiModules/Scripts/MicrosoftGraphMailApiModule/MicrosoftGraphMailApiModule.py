@@ -1267,7 +1267,7 @@ class GraphMailUtils:
         return 1
 
     @staticmethod
-    def item_result_creator(raw_attachment, user_id, args={}, client=None) -> dict[str, Any] | CommandResults:
+    def item_result_creator(raw_attachment, user_id, args, client) -> dict[str, Any] | CommandResults:
         """
         Create a result object for an attachment item.
         This method processes raw attachment data and returns either an XSOAR file result or a command result
@@ -1294,6 +1294,7 @@ class GraphMailUtils:
         item_type = item.get('@odata.type', '')
         if 'message' in item_type:
             if client and argToBoolean(args.get('should_download_message_attachment', False)):
+                # return the message attachment as a file result
                 attachment_content = client._get_attachment_mime(
                     args.get('message_id'),
                     args.get('attachment_id'),
@@ -1303,6 +1304,7 @@ class GraphMailUtils:
                 demisto.debug(f'Email attachment of type "microsoft.graph.message" acquired successfully, {attachment_name=}')
                 return fileResult(attachment_name, attachment_content)
             else:
+                # return the message attachment as a command result
                 message_id = raw_attachment.get('id')
                 item['id'] = message_id
                 mail_context = GraphMailUtils.build_mail_object(item, user_id=user_id, get_body=True)
@@ -1347,7 +1349,7 @@ class GraphMailUtils:
             raise DemistoException('Attachment could not be decoded')
 
     @staticmethod
-    def create_attachment(raw_attachment, user_id, args={}, client=None, legacy_name=False) -> CommandResults | dict:
+    def create_attachment(raw_attachment, user_id, args, client, legacy_name=False) -> CommandResults | dict:
         attachment_type = raw_attachment.get('@odata.type', '')
         # Documentation about the different attachment types
         # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
