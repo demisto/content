@@ -26,32 +26,27 @@ class Client(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify, headers=headers, auth=auth)
     
-    def get_alerts_list(self):
+    def get_alerts(self, page_num, items_per_page):
         try:
             results = self._http_request(
                 method="GET",
-                url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts",
+                url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts?pageNum={page_num}&itemsPerPage={items_per_page}",
             )
         except Exception as e:
             pass
         
         return results
 
-    def get_events(self, group_id):
+    def get_events(self, page_num, items_per_page):
         try:
             results = self._http_request(
                 method="GET",
-                url_suffix=f"/api/atlas/v2/groups/{client.group_id}/events",
+                url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events?pageNum={page_num}&itemsPerPage={items_per_page}",
             )
         except Exception as e:
             pass
         
         return results
-        
-    def search_events():
-        pass
-
-    
 
 ''' HELPER FUNCTIONS '''
 
@@ -76,31 +71,58 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.get_alerts_list()
+        client.get_alerts(page_num=1, items_per_page=1)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            message = 'Authorization Error: make sure private key and public key are correctly set'
         else:
             raise e
     return message
 
-def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get('limit', 50)
-    from_date = args.get('from_date')
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status,
-        limit=limit,
-        from_date=from_date,
-    )
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
-
-def fetch_events(client: Client, last_run: dict[str, int], first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-) -> tuple[Dict, List[Dict]]:
+def get_events(client: Client):
+    #suppose to run fetch_events with some PageNum
     pass
 
+def fetch_events(client: Client, number_of_events_per_fetch: int):
+    #run every min and return all the new events from the last run
+    
+    #initialized if not exists:
+        #current_page = 1
+        #fetched_events = 0
+        #last_page_amount_of_fetched_events = 0
+        
+    #current_fetched_events = 0
+    #output = []
+    #items_per_page = min(500, number_of_events_per_fetch)
+    
+    
+    #while current_fetched_events < number_of_events_per_fetch:
+      #response = client.get_alerts(current_page, items_per_page)
+      #events = response.get('results')
+      #total_count = response.get('totalCount')
+      
+      #sort the events by the field 'created'
+      #check if we fetched all existing events: if fetched_events >= total_count: return output
+      
+      #start = last_page_amount_of_fetched_events
+      #for each event in events[start:]:
+        #append to output
+        #current_fetched_events += 1
+        #fetched_events += 1
+        
+        #if current_fetched_events == number_of_events_per_fetch:
+            #save current_fetched_events+1 as last_page_amount_of_fetched_events
+            #save fetched_events
+            #save current_page
+            #return output
+            
+      #last_page_amount_of_fetched_events = 0
+      #current_page += 1
+    
+    
+    pass
+    
 ''' MAIN FUNCTION '''
 
 
@@ -123,6 +145,7 @@ def main() -> None:
         base_url = params.get('url')
         verify = not params.get('insecure', False)
         proxy = params.get('proxy', False)
+        number_of_events_per_fetch = int(params.get('number_of_events_per_fetch', 2500))
         
         client = Client (
             base_url=base_url,
@@ -138,7 +161,7 @@ def main() -> None:
         elif command == 'mongo-db-atlas-get-events':
             return_results(get_events(client, demisto.args()))
         elif command == 'fetch-events':
-            pass
+            return_results(fetch_events(client,number_of_events_per_fetch))
 
 
     except Exception as e:

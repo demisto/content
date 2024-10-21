@@ -32,9 +32,9 @@ configuration:
   name: fetch_events
   type: 8
   section: Collect
-  advanced: true
   required: false
-- defaultvalue: 2500
+- additionalinfo: Defines the maximum number of alerts or events fetched per type in each fetch cycle.
+  defaultvalue: 2500
   display: Maximum number of events per fetch
   name: number_of_events_per_fetch
   required: true
@@ -48,20 +48,16 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: 'MongoDBAtlas is integration that supports fetching and managing alerts and events within XSIAM.'
 display: MongoDBAtlas
 name: MongoDBAtlasEventCollector
 script:
   commands:
-  - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
-      required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
+  - name: mongo-db-atlas-get-events
+    description: Retrieves a list of events from the MongoDB Atlas instance.
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: MongoDBAtlas.Event
+      description: 
       type: String
   runonce: false
   script: '-'
