@@ -4,6 +4,7 @@
     "suggestion_reason": "Recommended for `Netcat Makes or Gets Connections` Alerts ",
     "description": "This trigger is responsible for handling `Netcat Makes or Gets Connections` alerts",
     "trigger_name": "Netcat Makes or Gets Connections",
+    "fromVersion": "8.8.0",
     "alerts_filter": {
         "filter": {
             "AND": [
