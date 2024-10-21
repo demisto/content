@@ -832,6 +832,8 @@ tasks:
       '#none#':
       - "33"
     scriptarguments:
+      fromdate:
+        simple: 3 months ago
       name:
         simple: ${alert.name}
       query:
