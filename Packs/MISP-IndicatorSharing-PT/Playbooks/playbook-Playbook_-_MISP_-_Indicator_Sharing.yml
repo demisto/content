@@ -1,0 +1,1351 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 5f067623-74f6-4aaa-8f36-62c766aff7e4
+    packName: 'MISP - Indicator Sharing  - PT '
+    prevname: ''
+    propagationLabels:
+    - it_tenant
+    toServerVersion: ''
+id: Playbook - MISP - Indicator Sharing
+inputs:
+- description: Please choose between "pt_org" (Portuguese Organization) and "non_pt_org" (Non Portuguese Organization)
+  key: org_type
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Playbook - MISP - Indicator Sharing
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f6e4fed8-f1e0-4b5e-82af-97d8c45505ae
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: f6e4fed8-f1e0-4b5e-82af-97d8c45505ae
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 50\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      add_fields_to_context:
+        simple: id,associatedfilenames,fileextension,filetype,path,md5,sha1,sha256,ssdeep,size
+      query:
+        simple: (incident.id:"${incident.id}") and (type:IP or type:Email or type:URL or type:File)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: "Searches Cortex XSOAR Indicators.\n\nSearch for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.\n\nYou can add additional fields from the indicators using the add_field_to_context argument."
+      id: 594463be-2b5a-42ed-8812-214f5ba4a53e
+      iscommand: false
+      name: Search For Indicators Associated With Current Incident
+      scriptName: SearchIndicator
+      type: regular
+      version: -1
+    taskid: 594463be-2b5a-42ed-8812-214f5ba4a53e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: de10d7ee-2981-47aa-8df6-f9e10600f415
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: de10d7ee-2981-47aa-8df6-f9e10600f415
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 4745\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    form:
+      description: ''
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: Please select the URLs that should be shared via MISP
+        options: []
+        optionsarg:
+        - complex:
+            accessor: value
+            filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: foundIndicators.indicator_type
+                operator: isEqualString
+                right:
+                  value:
+                    simple: URL
+            root: foundIndicators
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '1'
+        label: ''
+        labelarg:
+          simple: Insert Additional URLs To Submit To MISP (using csv format)
+        options: []
+        optionsarg:
+        - complex:
+            accessor: value
+            filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: foundIndicators.indicator_type
+                operator: isEqualString
+                right:
+                  value:
+                    simple: URL
+            root: foundIndicators
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '2'
+        label: ''
+        labelarg:
+          simple: Please select the Domains that should be shared via MISP
+        options: []
+        optionsarg:
+        - complex:
+            accessor: value
+            filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: foundIndicators.indicator_type
+                operator: isEqualString
+                right:
+                  value:
+                    simple: Domain
+            root: foundIndicators
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '3'
+        label: ''
+        labelarg:
+          simple: Please select the File Hashes that should be shared via MISP
+        options: []
+        optionsarg:
+        - complex:
+            accessor: associatedfilenames
+            filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: foundIndicators.indicator_type
+                operator: isEqualString
+                right:
+                  value:
+                    simple: File
+            root: foundIndicators
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '4'
+        label: ''
+        labelarg:
+          simple: Do you want to share the email information?
+        options: []
+        optionsarg:
+        - {}
+        - simple: Yes
+        - simple: No
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '5'
+        label: ''
+        labelarg:
+          simple: Set a default info comment to MISP
+        options: []
+        optionsarg:
+        - simple: Yes
+        - simple: No, create a custom info comment to MISP
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: singleSelect
+      sender: ''
+      title: Please select the indicators to submit via MISP
+      totalanswers: 0
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ''
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 35f51e9f-adc6-44a5-89d1-b58751757c52
+      iscommand: false
+      name: Please select the indicators to submit via MISP
+      type: collection
+      version: -1
+    taskid: 35f51e9f-adc6-44a5-89d1-b58751757c52
+    timertriggers: []
+    type: collection
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '34'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: yes
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      id: b90f50f9-ea8c-4d82-8416-66759fcb86bf
+      iscommand: false
+      name: Delete Previous Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: b90f50f9-ea8c-4d82-8416-66759fcb86bf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 195\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: IndicatorsToShare
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: foundIndicators.value
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: Please select the indicators to submit via MISP.Answers.0
+            - left:
+                iscontext: true
+                value:
+                  simple: foundIndicators.value
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: Please select the indicators to submit via MISP.Answers.2
+            - left:
+                iscontext: true
+                value:
+                  simple: foundIndicators.associatedfilenames
+              operator: containsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: Please select the indicators to submit via MISP.Answers.3
+            - left:
+                iscontext: true
+                value:
+                  simple: foundIndicators.value
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: Please select the indicators to submit via MISP.Answers.4
+          root: foundIndicators
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: ${EmailVar}
+            operator: append
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      id: cebbb609-8513-4e86-8659-81417c062740
+      iscommand: false
+      name: Set Indicators to Share
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: cebbb609-8513-4e86-8659-81417c062740
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2995\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      analysis:
+        simple: completed
+      distribution:
+        simple: Sharing_group
+      info:
+        simple: ${MispInfoField}
+      sharing_group_id:
+        simple: '1'
+      threat_level_id:
+        simple: Low
+      to_ids:
+        simple: 'false'
+      value:
+        simple: Incident - ${incident.cncsclassification} - ${incident.cncstype} - GALP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      description: Creates a new MISP event.
+      id: 457461ef-24f5-49b1-85ae-54a251a02e2c
+      iscommand: true
+      name: Create MISP Event
+      script: MISP V3|||misp-create-event
+      type: regular
+      version: -1
+    taskid: 457461ef-24f5-49b1-85ae-54a251a02e2c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3520\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '38'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns the current datetime as an epoch value for use in timestamp comparisons.
+      id: b7f8f7fc-ffb6-4930-8a6f-f012a77bcf18
+      iscommand: false
+      name: Get Current Date
+      scriptName: DateTimeNowToEpoch
+      type: regular
+      version: -1
+    taskid: b7f8f7fc-ffb6-4930-8a6f-f012a77bcf18
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 3170\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    form:
+      description: ''
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: Please add notes to Contextualize Event
+        options: []
+        optionsarg: []
+        placeholder: ''
+        readonly: false
+        required: true
+        tooltip: ''
+        type: shortText
+      sender: ''
+      title: Please add notes to Contextualize Event
+      totalanswers: 0
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ''
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 117eb050-4c06-4862-841c-b72bf5e6565f
+      iscommand: false
+      name: Please add notes to Contextualize Event
+      type: collection
+      version: -1
+    taskid: 117eb050-4c06-4862-841c-b72bf5e6565f
+    timertriggers: []
+    type: collection
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1420\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      arrayData:
+        simple: tlp:amber
+      contextKey:
+        simple: TagsMisp
+      separator:
+        simple: ','
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Will create an array object in context from given string input '
+      id: 70e17d23-cc44-447f-8a23-0a4df8e5b813
+      iscommand: false
+      name: Create Array Predefined of Tags
+      scriptName: CreateArray
+      type: regular
+      version: -1
+    taskid: 70e17d23-cc44-447f-8a23-0a4df8e5b813
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3695\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert:
+        simple: 'false'
+      event_id:
+        simple: ${MISP.Event.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      description: Publish an event.
+      id: 6b7cca55-7285-49be-8944-912817872cf7
+      iscommand: true
+      name: misp-publish-event
+      script: MISP V3|||misp-publish-event
+      type: regular
+      version: -1
+    taskid: 6b7cca55-7285-49be-8944-912817872cf7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4570\n  }\n}"
+  '15':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Please select the indicators to submit via MISP.Answers.5
+          operator: isEqualString
+          right:
+            value:
+              simple: Yes
+      label: yes
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '9'
+      yes:
+      - '19'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4ca50469-f7b8-4f6d-82f6-76ff220586b4
+      iscommand: false
+      name: Check If Info Comment should be custom
+      type: condition
+      version: -1
+    taskid: 4ca50469-f7b8-4f6d-82f6-76ff220586b4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+  '16':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Please select the indicators to submit via MISP.Answers.1
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: yes
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '17'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 6526d3e5-aeda-41c5-8bdc-e7b2b8b370c9
+      iscommand: false
+      name: Check If Additional URLs were Submitted
+      type: condition
+      version: -1
+    taskid: 6526d3e5-aeda-41c5-8bdc-e7b2b8b370c9
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1770\n  }\n}"
+  '17':
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      arrayData:
+        simple: ${Please select the indicators to submit via MISP.Answers.1}
+      contextKey:
+        simple: AdditionalUrlsMisp
+      separator:
+        simple: ','
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Will create an array object in context from given string input '
+      id: 62b00271-4c75-4e4e-811e-0fc3b3824438
+      iscommand: false
+      name: Create Array with Additional URLs
+      scriptName: CreateArray
+      type: regular
+      version: -1
+    taskid: 62b00271-4c75-4e4e-811e-0fc3b3824438
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1945\n  }\n}"
+  '19':
+    continueonerrortype: ''
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: MispInfoField
+      value:
+        simple: ${incident.name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: bc2720b0-233c-4c41-8838-60ae1e9024f4
+      iscommand: false
+      name: Set Context Info Based Incident Name
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: bc2720b0-233c-4c41-8838-60ae1e9024f4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1595\n  }\n}"
+  '20':
+    continueonerrortype: ''
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: MispInfoField
+      value:
+        simple: ${Please add notes to Contextualize Event.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: f70a1334-c58b-4dce-8eb1-a6dbc63213e2
+      iscommand: false
+      name: Set Context Info with Notes
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: f70a1334-c58b-4dce-8eb1-a6dbc63213e2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1595\n  }\n}"
+  '21':
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: '1'
+          root: Please select the indicators to submit via MISP.Answers
+          transformers:
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' or '
+              toReplace:
+                value:
+                  simple: ','
+            operator: replace
+          - args:
+              prefix:
+                value:
+                  simple: value:(
+              suffix:
+                value:
+                  simple: ) and type:URL
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Searches Cortex XSOAR Indicators.\n\nSearch for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.\n\nYou can add additional fields from the indicators using the add_field_to_context argument."
+      id: dcb63822-8ef9-4b23-8c76-985154a3e260
+      iscommand: false
+      name: Search For Newly Created URL Indicators
+      scriptName: SearchIndicator
+      type: regular
+      version: -1
+    taskid: dcb63822-8ef9-4b23-8c76-985154a3e260
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2820\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: no
+      key:
+        simple: foundIndicators
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      id: 43d125d3-6108-43e9-8e6f-ba2d7a1a8f7b
+      iscommand: false
+      name: Remove Found Indicators Key
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 43d125d3-6108-43e9-8e6f-ba2d7a1a8f7b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2645\n  }\n}"
+  '23':
+    continueonerrortype: ''
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: IndicatorsToShare
+      value:
+        complex:
+          root: IndicatorsToShare
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: foundIndicators
+            operator: append
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: ${EmailVar}
+            operator: append
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      id: 54a5b63a-8a3b-4a60-8fb7-cbc3a5171f31
+      iscommand: false
+      name: Set Indicators to Share
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 54a5b63a-8a3b-4a60-8fb7-cbc3a5171f31
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2995\n  }\n}"
+  '24':
+    continueonerrortype: ''
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: IndicatorsToShare
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: foundIndicators.value
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: Please select the indicators to submit via MISP.Answers.0
+            - left:
+                iscontext: true
+                value:
+                  simple: foundIndicators.value
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: Please select the indicators to submit via MISP.Answers.2
+            - left:
+                iscontext: true
+                value:
+                  simple: foundIndicators.associatedfilenames
+              operator: containsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: Please select the indicators to submit via MISP.Answers.3
+            - left:
+                iscontext: true
+                value:
+                  simple: foundIndicators.value
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: Please select the indicators to submit via MISP.Answers.4
+          root: foundIndicators
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      id: 5106c256-941c-4b54-8818-8d2e6e7132ae
+      iscommand: false
+      name: Set Indicators to Share
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 5106c256-941c-4b54-8818-8d2e6e7132ae
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2470\n  }\n}"
+  '26':
+    continueonerrortype: ''
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '36'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator:
+        simple: ${IndicatorsToShare}
+      misp_event_id:
+        simple: ${MISP.Event.ID}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: b9166df5-edf0-4259-8054-8b6a7f33c438
+      iscommand: false
+      name: MISP - Set Attributes to Update
+      playbookId: MISP - Set Attributes to Update
+      type: playbook
+      version: -1
+    taskid: b9166df5-edf0-4259-8054-8b6a7f33c438
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4220\n  }\n}"
+  '27':
+    continueonerrortype: ''
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: EmailVar
+      stringify:
+        simple: 'false'
+      value:
+        simple: '{"value":"${Please select the indicators to submit via MISP.Answers.4}","indicator_type":"Email"}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      id: 581ffe28-181a-407c-8d6a-b321b4386932
+      iscommand: false
+      name: Set Email Var to Use in Subplaybook
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 581ffe28-181a-407c-8d6a-b321b4386932
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+  '28':
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incidentId:
+        complex:
+          accessor: id
+          root: incident
+      indicatorsIDs:
+        complex:
+          accessor: ID
+          root: CreateNewIndicatorsOnly
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.associate.indicators
+      id: 8250b8f7-82cc-40f4-8c23-382424e54ea9
+      iscommand: true
+      name: Associate Created Indicators to Incident
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      version: -1
+    taskid: 8250b8f7-82cc-40f4-8c23-382424e54ea9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2295\n  }\n}"
+  '29':
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator_values:
+        simple: ${AdditionalUrlsMisp}
+      type:
+        simple: URL
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Create indicators to the Threat Intel database only if they are not registered. All submitted indicators will be associated with the parent incident. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      id: f9d5e2a3-66b8-4d75-8431-db3626e8cf73
+      iscommand: false
+      name: Create Url Indicators Based On Form
+      scriptName: CreateNewIndicatorsOnly
+      type: regular
+      version: -1
+    taskid: f9d5e2a3-66b8-4d75-8431-db3626e8cf73
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2120\n  }\n}"
+  '30':
+    continueonerrortype: ''
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 19683335-580d-4b14-844b-0ef38282e024
+      iscommand: false
+      name: CNCS Classification and CNCS Type must be populated at this point for PT orgs // For non PT Orgs EnisaCode must be populated
+      type: regular
+      version: -1
+    taskid: 19683335-580d-4b14-844b-0ef38282e024
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '31':
+    continueonerrortype: ''
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      misp_event_id:
+        simple: ${MISP.Event.UUID}
+      tag:
+        complex:
+          root: MispRSIT
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: TagsMisp
+            operator: append
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 3e720403-5686-4a1f-8bd9-c4bac9c39902
+      iscommand: false
+      name: MISP - Add Several Tags to MISP Event
+      playbookId: MISP - Add Several Tags to MISP Event
+      type: playbook
+      version: -1
+    taskid: 3e720403-5686-4a1f-8bd9-c4bac9c39902
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4045\n  }\n}"
+  '33':
+    continueonerrortype: ''
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '31'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      org_type:
+        simple: ${inputs.org_type}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 862e37e6-8c79-42db-810a-2f1e7a084c70
+      iscommand: false
+      name: Create RSIT Entry Based on Classification
+      scriptName: misp_set_classification
+      type: regular
+      version: -1
+    taskid: 862e37e6-8c79-42db-810a-2f1e7a084c70
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3870\n  }\n}"
+  '34':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.org_type
+          operator: isNotEmpty
+      label: yes
+    continueonerrortype: ''
+    id: '34'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '35'
+      yes:
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 05c8e339-7cb2-4bc8-8ccf-cdfa1ff4dc9c
+      iscommand: false
+      name: Check if Org Type Input is filled
+      type: condition
+      version: -1
+    taskid: 05c8e339-7cb2-4bc8-8ccf-cdfa1ff4dc9c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 370\n  }\n}"
+  '35':
+    continueonerrortype: ''
+    id: '35'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: 'ERROR: Input org_type is empty, please fill the input before running the playbook.'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message.
+      id: e1b267eb-ccb7-49cb-8996-2f5619d6f9f9
+      iscommand: false
+      name: Please select an org type before running the playbook
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: e1b267eb-ccb7-49cb-8996-2f5619d6f9f9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 545\n  }\n}"
+  '36':
+    continueonerrortype: ''
+    id: '36'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      No:
+      - '37'
+      Yes:
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: ae814b8e-dcdf-458c-8c28-481876ee2c79
+      iscommand: false
+      name: Publish Event
+      type: condition
+      version: -1
+    taskid: ae814b8e-dcdf-458c-8c28-481876ee2c79
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4395\n  }\n}"
+  '37':
+    continueonerrortype: ''
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4f1df504-c63b-4a70-818c-488478839531
+      iscommand: false
+      name: Event Not Published To Misp
+      type: regular
+      version: -1
+    taskid: 4f1df504-c63b-4a70-818c-488478839531
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 4570\n  }\n}"
+  '38':
+    continueonerrortype: ''
+    id: '38'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      No:
+      - '39'
+      Yes:
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: cb713fb6-544b-477e-8510-8bee1b63bb10
+      iscommand: false
+      name: Create MISP Event?
+      type: condition
+      version: -1
+    taskid: cb713fb6-544b-477e-8510-8bee1b63bb10
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 3345\n  }\n}"
+  '39':
+    continueonerrortype: ''
+    id: '39'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 5c44d664-d89c-4e54-8c18-60467912f166
+      iscommand: false
+      name: Event Not Created
+      type: regular
+      version: -1
+    taskid: 5c44d664-d89c-4e54-8c18-60467912f166
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 4570\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4760,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

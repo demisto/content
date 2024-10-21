@@ -1,0 +1,214 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - it_tenant
+id: MISP - Add Several Tags to MISP Event
+inputs:
+- description: ""
+  key: misp_event_id
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MISP - Add Several Tags to MISP Event
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fbe6aecb-d0e1-4049-8b5a-290a7835a49d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: fbe6aecb-d0e1-4049-8b5a-290a7835a49d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: d5b68cb7-9624-4f00-8100-35495a3d017f
+      iscommand: false
+      name: Delete Previous Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: d5b68cb7-9624-4f00-8100-35495a3d017f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.tag
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f19c9c57-404e-4cf0-826c-5ccf99269dff
+      iscommand: false
+      name: Check if Input is filled
+      type: condition
+      version: -1
+    taskid: f19c9c57-404e-4cf0-826c-5ccf99269dff
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d6311fd9-dfd2-4ade-8384-bd8dffe440e1
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: d6311fd9-dfd2-4ade-8384-bd8dffe440e1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      tag:
+        simple: ${inputs.tag}
+      uuid:
+        simple: ${inputs.misp_event_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      description: Adds a tag to the given UUID event .
+      id: ee6ae8a2-22c2-4b8a-8464-4954e46200ff
+      iscommand: true
+      name: Set Tag
+      script: MISP V3|||misp-add-tag-to-event
+      type: regular
+      version: -1
+    taskid: ee6ae8a2-22c2-4b8a-8464-4954e46200ff
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
