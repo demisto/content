@@ -457,7 +457,7 @@ class Client(BaseClient):
         self.server = server
 
     def http_request(self, method: str, url_suffix: str, params: Optional[dict] = None,
-                     json_data: Optional[dict | list[dict]] = None, data: Optional[dict] = None,
+                     json_data: Optional[dict] = None, data: Optional[dict] = None,
                      additional_headers: Optional[dict] = None,
                      timeout: Optional[int] = None, resp_type: str = 'json') -> Any:
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
@@ -973,7 +973,7 @@ def insert_values_to_reference_set_polling(client: Client,
                                            api_version: str,
                                            args: dict,
                                            from_indicators: bool = False,
-                                           values: list[str] | None = None,
+                                           values: list[str] = None,
                                            ) -> PollResult:
     """This function inserts values to reference set using polling method.
 
@@ -1157,7 +1157,7 @@ def update_user_query(user_query: str) -> str:
 
 
 def insert_to_updated_context(context_data: dict,
-                              offense_ids: list | None = None,
+                              offense_ids: list = None,
                               should_update_last_fetch: bool = False,
                               should_update_last_mirror: bool = False,
                               should_add_reset_key: bool = False,
@@ -1206,7 +1206,7 @@ def insert_to_updated_context(context_data: dict,
 def safely_update_context_data(
     context_data: dict,
     version: Any,
-    offense_ids: list | None = None,
+    offense_ids: list = None,
     should_update_last_fetch: bool = False,
     should_update_last_mirror: bool = False,
     should_add_reset_key: bool = False,
@@ -1516,7 +1516,7 @@ def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
     return add_iso_entries_to_asset(dict(offense_without_properties, **properties, **interfaces))
 
 
-def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_limit: int | None = 100) -> List[dict]:
+def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_limit: int = 100) -> List[dict]:
     """
     Receives list of offense's IPs, and performs API call to QRadar service to retrieve assets correlated to IPs given.
     Args:
@@ -1548,7 +1548,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_li
 
 
 def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: bool,
-                           enrich_assets: bool, assets_limit: int | None = None) -> List[dict]:
+                           enrich_assets: bool, assets_limit: int = None) -> List[dict]:
     """
     Receives list of offenses, and enriches the offenses with the following:
     - Changes offense_type value from the offense type ID to the offense type name.
@@ -1780,7 +1780,7 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
 
 
 def arg_to_real_number(arg, arg_name=None, required=False):
-    # type: (Any, Optional[str], bool) -> Optional[int | float]
+    # type: (Any, Optional[str], bool) -> Optional[int]
     """Converts an XSOAR argument to a Python int or float
 
     This function acts exactly like CommonServerPython's arg_to_number, but is able to return float
@@ -1976,7 +1976,7 @@ def print_debug_msg(msg: str):
     demisto.debug(f'QRadarMsg - {msg}')
 
 
-def is_reset_triggered(ctx: dict | None = None, version: Any = None):
+def is_reset_triggered(ctx: dict = None, version: Any = None):
     """
     Checks if reset of integration context have been made by the user.
     Because fetch is long running execution, user communicates with us
@@ -2063,7 +2063,7 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, grou
     return None
 
 
-def is_positive(*values: int | None) -> bool:
+def is_positive(*values: int) -> bool:
     # checks if all values are positive or None but not a negative numbers
     return all(value is None or value >= 1 for value in values)
 
@@ -2175,7 +2175,7 @@ def create_search_with_retry(client: Client,
 def poll_offense_events(client: Client,
                         search_id: str,
                         should_get_events: bool,
-                        offense_id: int | None,
+                        offense_id: int,
                         ):
     try:
         print_debug_msg(f"Getting search status for {search_id}")
@@ -2548,7 +2548,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
             f'Successfully Created {len(incidents)} incidents. Incidents created: {[incident["name"] for incident in incidents]}')
 
 
-def recover_from_last_run(ctx: dict | None = None, version: Any = None):
+def recover_from_last_run(ctx: dict = None, version: Any = None):
     """
     This recovers the integration context from the last run, if there is inconsistency between last run and context.
     It happens when the container crashes after `demisto.createIncidents` and the integration context is not updated.
@@ -4119,7 +4119,7 @@ def create_events_search(client: Client,
                          events_columns: str,
                          events_limit: int,
                          offense_id: int,
-                         offense_start_time: str | None = None,
+                         offense_start_time: str = None,
                          return_raw_response: bool = False,
                          ) -> str:
     additional_where = ''
