@@ -1,6 +1,6 @@
 category: Messaging and Conferencing
 commonfields:
-  id: KafkaV3
+  id: KafkaV3 dev
   version: -1
 configuration:
 - display: CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093
@@ -16,6 +16,9 @@ configuration:
   name: use_ssl
   type: 8
   required: false
+- display:  Use SASL PLAIN for connection (using SSL)
+  name: use_sasl
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -37,6 +40,12 @@ configuration:
   name: additional_password
   type: 9
   required: false
+- display: SASL PLAIN Username
+  name: plain_username
+  type: 14
+- display: SASL PLAIN Password
+  name: plain_password
+  type: 14
 - display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   type: 0
@@ -70,9 +79,14 @@ configuration:
   name: max_bytes_per_message
   type: 0
   required: false
+- display: Consumer Only
+  name: consumer_only
+  type: 8
+  section: Collect
+  required: false
 description: Kafka is an open source distributed streaming platform.
-display: Kafka v3
-name: KafkaV3
+display: Kafka v3 dev
+name: KafkaV3 dev
 script:
   commands:
   - arguments:
@@ -148,7 +162,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  dockerimage: demisto/vendors-sdk:1.0.0.112045
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test
