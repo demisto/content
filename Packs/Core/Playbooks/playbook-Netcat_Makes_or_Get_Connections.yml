@@ -1,0 +1,1033 @@
+id: Netcat makes or gets connections
+version: -1
+name: Netcat makes or gets connections
+description: "This playbook is designed to handle the following alerts:\n \n- Netcat
+  makes or gets connections\n\nThe playbook executes the following stages:\n\nAnalysis:\n\n-
+  Investigate the IP and Domain  reputation\n- Search previous similar alerts\n\nRemediation:\n
+  \n- Handles malicious alerts by terminating the causality process."
+tags:
+- T1090 - Proxy
+- TA0011-Command and Control
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2a5e2861-855c-46f5-8ad9-8f590911a599
+    type: start
+    task:
+      id: 2a5e2861-855c-46f5-8ad9-8f590911a599
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 35970fa0-12e2-4aaf-8097-0f5d8f394779
+    type: title
+    task:
+      id: 35970fa0-12e2-4aaf-8097-0f5d8f394779
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: eab8d7c1-7fc0-45ac-8035-023d7d24de8c
+    type: regular
+    task:
+      id: eab8d7c1-7fc0-45ac-8035-023d7d24de8c
+      version: -1
+      name: Get IP prevalence
+      description: Get the prevalence of an IP, identified by ip_address.
+      script: '|||core-get-IP-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ip_address:
+        complex:
+          root: alert
+          accessor: remoteip
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 87d8ba03-c9f1-4c12-88f8-17c1a72acbbf
+    type: regular
+    task:
+      id: 87d8ba03-c9f1-4c12-88f8-17c1a72acbbf
+      version: -1
+      name: Get Domain Name reputation
+      description: Checks the reputation of a domain.
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      domain:
+        simple: ${alert.dnsqueryname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 85dafa8d-8c75-465f-8699-27d29a01682d
+    type: regular
+    task:
+      id: 85dafa8d-8c75-465f-8699-27d29a01682d
+      version: -1
+      name: Get destination IP reputation
+      description: Checks the specified IP address against the AbuseIP database.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      ip:
+        complex:
+          root: alert
+          accessor: remoteip
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 61055de3-bb9f-4984-8da3-45fdc40479ba
+    type: title
+    task:
+      id: 61055de3-bb9f-4984-8da3-45fdc40479ba
+      version: -1
+      name: Execute Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ccf44f37-71f0-4852-8606-640213d46253
+    type: condition
+    task:
+      id: ccf44f37-71f0-4852-8606-640213d46253
+      version: -1
+      name: Check if Domain Name Exist?
+      description: Checks if the domain name in the alert exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.dnsqueryname
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: acc8a2c0-a3cc-4ac0-88e0-74472bca2f2c
+    type: condition
+    task:
+      id: acc8a2c0-a3cc-4ac0-88e0-74472bca2f2c
+      version: -1
+      name: Check if Command Line exist?
+      description: Get the prevalence of a process_command_line, identified by process_command_line.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.initiatorcmd
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c6c19d37-04a8-4d09-8bca-3ef43b270e5f
+    type: title
+    task:
+      id: c6c19d37-04a8-4d09-8bca-3ef43b270e5f
+      version: -1
+      name: Done
+      description: commands.local.cmd.close.inv
+      type: title
+      iscommand: false
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: bfbce647-7068-4dbc-8450-d3b7436aeca4
+    type: title
+    task:
+      id: bfbce647-7068-4dbc-8450-d3b7436aeca4
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 904dd046-4637-4204-87b8-2f5e4a4eb7dd
+    type: regular
+    task:
+      id: 904dd046-4637-4204-87b8-2f5e4a4eb7dd
+      version: -1
+      name: Get Extra Data for DNS query name
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: alert
+          accessor: id
+          transformers:
+          - operator: uniq
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cea0114f-3b50-4d37-86ba-5c31855cdc15
+    type: condition
+    task:
+      id: cea0114f-3b50-4d37-86ba-5c31855cdc15
+      version: -1
+      name: Malicious reputation found?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      Malicious:
+      - "19"
+      Prevalent:
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Malicious
+            iscontext: true
+          ignorecase: true
+    - label: Prevalent
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Ip.data.local_prevalence.value
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c699e8c2-a6d9-42ac-872a-e52b0cce4e09
+    type: condition
+    task:
+      id: c699e8c2-a6d9-42ac-872a-e52b0cce4e09
+      version: -1
+      name: Found Relevant Previous Alert?
+      description: Checks if there are any relevant previous alerts.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      True Positive:
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2bb1dd37-71d9-470a-83ad-0e150d64b61a
+    type: title
+    task:
+      id: 2bb1dd37-71d9-470a-83ad-0e150d64b61a
+      version: -1
+      name: False Positive
+      description: Set a value in context under the key you entered.
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 4f11beab-1714-4456-8e19-80b52039ba82
+    type: condition
+    task:
+      id: 4f11beab-1714-4456-8e19-80b52039ba82
+      version: -1
+      name: Similar False Positive Alerts Found?
+      description: Checks if similar false positive alerts have been found. 
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: de4edc56-5716-44d9-8960-7c1f71cd9cda
+    type: regular
+    task:
+      id: de4edc56-5716-44d9-8960-7c1f71cd9cda
+      version: -1
+      name: Close the Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - Handled by the playbook "Netcat makes or gets connections" as True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: fbbb35a7-69be-46c5-8831-abec5285a2b1
+    type: title
+    task:
+      id: fbbb35a7-69be-46c5-8831-abec5285a2b1
+      version: -1
+      name: IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: e9ada220-b859-4f78-8d5b-40684b8e5fa3
+    type: title
+    task:
+      id: e9ada220-b859-4f78-8d5b-40684b8e5fa3
+      version: -1
+      name: Domain
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 1751aebc-28fb-4aa4-847d-f8f0e2c82d1d
+    type: regular
+    task:
+      id: 1751aebc-28fb-4aa4-847d-f8f0e2c82d1d
+      version: -1
+      name: Search related alerts by  MITRE technique
+      description: |+
+        This task searches for suspicious alerts related to an incident by mitre techniques that may indicate a compromised user.
+        Focus on identifying alerts associated with the following MITRE techniques & tactics:
+        - T1059- Command and Scripting Interpreter
+        - T1072 - Software Deployment Tools
+        - TA0010 - Exfiltration
+        - T0006 - Credential Access
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '(mitreattcktechnique:*T1059* or mitreattcktechnique:*T1072* or mitreattcktactic:*TA0010* or mitreattcktactic:*TA0006*) and caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 23878a84-73ba-4164-8964-6122438ca5b0
+    type: regular
+    task:
+      id: 23878a84-73ba-4164-8964-6122438ca5b0
+      version: -1
+      name: Close the Alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - Handled by the playbook "Netcat makes or gets connections" as False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 2505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 796f08e4-11e5-49c2-86bc-5fcc8f734672
+    type: regular
+    task:
+      id: 796f08e4-11e5-49c2-86bc-5fcc8f734672
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 8e0639ee-7d11-4756-8ee4-61393368ae41
+    type: regular
+    task:
+      id: 8e0639ee-7d11-4756-8ee4-61393368ae41
+      version: -1
+      name: Check Previous similar Alerts
+      description: |+
+        Finds past similar alerts based on alert fields' similarity.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      fromdate:
+        simple: 3 months ago
+      name:
+        simple: ${alert.name}
+      query:
+        simple: 'resolution_status: STATUS_060_RESOLVED_FALSE_POSITIVE and hostname: ${alert.hostname}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: bae9f51b-889b-4035-83c5-a2273f272eaf
+    type: regular
+    task:
+      id: bae9f51b-889b-4035-83c5-a2273f272eaf
+      version: -1
+      name: Get Commandline prevalence
+      description: Get the prevalence of a process_command_line, identified by process_command_line.
+      script: '|||core-get-cmd-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      process_command_line:
+        simple: ${alert.osparentcmd}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 49d94395-bb3b-463b-80cd-22755a62949c
+    type: condition
+    task:
+      id: 49d94395-bb3b-463b-80cd-22755a62949c
+      version: -1
+      name: Destination IP is External?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      External:
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: External
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.event.dst_is_internal_ip
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 0d9cfb8f-aab3-4a88-8425-40a4e43e38ff
+    type: title
+    task:
+      id: 0d9cfb8f-aab3-4a88-8425-40a4e43e38ff
+      version: -1
+      name: Close the alert - Internal IP
+      description: Set a value in context under the key you entered.
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 91ebf4a1-ffbc-4286-856b-9acd2463057f
+    type: regular
+    task:
+      id: 91ebf4a1-ffbc-4286-856b-9acd2463057f
+      version: -1
+      name: Close the Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      closeReason:
+        simple: 'Resolved - Handled by the playbook "Netcat makes or gets connections" '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 2505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "20_16_yes": 0.54,
+      "30_19_Malicious": 0.14,
+      "30_32_Prevalent": 0.13,
+      "31_19_True Positive": 0.89,
+      "44_42_External": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3155,
+        "width": 1420,
+        "x": -90,
+        "y": -410
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0
