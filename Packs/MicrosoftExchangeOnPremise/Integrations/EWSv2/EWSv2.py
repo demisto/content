@@ -88,6 +88,7 @@ ACTION = "action"
 MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
+SEARCH_MAILBOXES_LIMIT = 250
 
 MOVED_TO_MAILBOX = "movedToMailbox"
 MOVED_TO_FOLDER = "movedToFolder"
@@ -804,9 +805,25 @@ def get_searchable_mailboxes(protocol):  # pragma: no cover
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
 
-def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, email_addresses=None):  # pragma: no cover
+def search_mailboxes(protocol, filter, limit, mailbox_search_scope=None, email_addresses=None):  # pragma: no cover
+    """
+    Search mailboxes for items matching the given filter.
+
+    Args:
+        protocol (Protocol): The EWS protocol object.
+        filter (str): The search filter to apply. Default is value is SEARCH_MAILBOXES_LIMIT.
+        limit (int): The maximum number of results to return.
+        mailbox_search_scope (str or list, optional): The mailbox search scope. Defaults to None.
+        email_addresses (str, optional): Comma-separated list of email addresses to search. Defaults to None.
+
+    Returns:
+        dict: A dictionary containing the search results.
+
+    Raises:
+        Exception: If both mailbox_search_scope and email_addresses are provided, or if no searchable mailboxes are found.
+    """
     mailbox_ids = []
-    limit = int(limit)
+    limit = int(limit) if limit else SEARCH_MAILBOXES_LIMIT
     if mailbox_search_scope is not None and email_addresses is not None:
         raise Exception("Use one of the arguments - mailbox-search-scope or email-addresses, not both")
     if email_addresses:
