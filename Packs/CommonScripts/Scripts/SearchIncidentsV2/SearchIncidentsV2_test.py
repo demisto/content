@@ -278,7 +278,6 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
     """
     import SearchIncidentsV2
     mocker.patch.object(dt, 'datetime', autospec=True)
-    mocker.patch.object(SearchIncidentsV2, 'ENABLE_INCLUDEINFORMATIONAL_ARG', True)
     dt.datetime.utcnow.return_value = INCLUDE_INFORMATIONAL_FIXED_TIME
 
     class MockDateTime:
