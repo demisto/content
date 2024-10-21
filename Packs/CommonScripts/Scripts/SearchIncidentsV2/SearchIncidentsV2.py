@@ -7,6 +7,7 @@ DEFAULT_LIMIT = 100
 DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
 
+
 class AlertSeverity(Enum):
     UNKNOWN = 0
     INFO = 0.5
@@ -157,7 +158,7 @@ def search_incidents(args: Dict):  # pragma: no cover
 
     if includeinformational := argToBoolean(args.get('includeinformational', False)):
         if not is_xsiam():
-            raise ValueError(f'The includeinformational argument is supported only in XSIAM.')
+            raise ValueError('The includeinformational argument is supported only in XSIAM.')
         if not (args.get('fromdate') and args.get('todate')):
             raise ValueError('The includeinformational argument requires fromdate and todate arguments.')
 
