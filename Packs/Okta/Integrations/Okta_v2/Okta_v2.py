@@ -833,17 +833,17 @@ def set_password_command(client, args):
 
 def expire_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
-    hide_password = args.get('hide_password')
+    hide_password = argToBoolean(args.get('hide_password', False))
 
     if not (args.get('username') or user_id):
         raise Exception("You must supply either 'Username' or 'userId")
 
-    if args.get('revoke_session') == 'true':
+    if argToBoolean(args.get('revoke_session', False)) is True:
         raw_response = client.revoke_session(user_id, args)
     else:
         raw_response = client.expire_password(user_id, args)
 
-    if hide_password == 'true':
+    if hide_password is True:
         raw_response['tempPassword'] = (
             'Output removed by user. hide_password argument set to True'
         )

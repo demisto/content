@@ -1457,7 +1457,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      defaultValue: 'true'
+      defaultValue: 'false'
       description: Prevents the password from being saved in the War Room.
       name: hide_password
       predefined:
