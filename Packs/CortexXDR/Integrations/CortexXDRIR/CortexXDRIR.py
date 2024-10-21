@@ -1303,6 +1303,7 @@ def main():  # pragma: no cover
     """
     command = demisto.command()
     params = demisto.params()
+    demisto.info('test')
     LOG(f'Command being called is {command}')
     # using two different credentials object as they both fields need to be encrypted
     first_fetch_time = params.get('fetch_time', '3 days')
