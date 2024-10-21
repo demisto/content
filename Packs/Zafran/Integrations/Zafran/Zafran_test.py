@@ -1,12 +1,11 @@
 import pytest
-import io
 from CommonServerPython import *
-from Zafran import Client, mitigation_performed_command, mitigations_export_command, mitigations_performed_command
+from Zafran import Client, mitigation_performed_command, mitigations_export_command, mitigations_performed_command, api_test_connection
 SERVER_URL = 'https://test_url.com'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -68,3 +67,12 @@ def test_mitigations_performed_command(client, requests_mock):
     assert results.outputs_key_field == ''
     assert results.readable_output == 'Mitigations status updated successfully'
     assert results.raw_response == mock_response_mitigations_performed_request
+
+def test_api_test_connection(client, requests_mock):
+    requests_mock.post(f"{SERVER_URL}/findings?count=0", status_code=204)
+    result = api_test_connection(client)
+    assert result == 'ok'
+
+    requests_mock.post(f"{SERVER_URL}/findings?count=0", status_code=403)
+    result = api_test_connection(client)
+    assert result == 'API test failed'

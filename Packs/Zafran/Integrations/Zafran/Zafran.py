@@ -13,7 +13,7 @@ class Client(BaseClient):
         response = self._http_request('post', 'findings', params=params, headers=headers, return_empty_response=True)
 
         return response
-    
+
     def mitigation_performed_request(self,
                                      mitigationstatus_external_ticket_id,
                                      mitigationstatus_external_ticket_url,
@@ -103,12 +103,15 @@ def mitigations_performed_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def test_module(client: Client) -> None:
-    response = client.findings_request(0)
-    # Test functions here
-    if response.status_code == 204:
-        return_results('ok')
-    return_error('API test failed')
+def api_test_connection(client: Client) -> None:
+    try:
+        response = client.findings_request(0)
+        # Test functions here
+        if response.status_code == 204:
+            return 'ok'
+    except:
+        pass
+    return 'API test failed'
 
 
 def main() -> None:
@@ -135,7 +138,7 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            test_module(client)
+            return_results(api_test_connection(client))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
