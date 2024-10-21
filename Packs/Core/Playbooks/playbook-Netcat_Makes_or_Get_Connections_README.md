@@ -29,7 +29,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* SearchAlertsV2
+* SearchIncidentsV2
 
 ### Commands
 

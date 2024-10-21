@@ -698,13 +698,7 @@ tasks:
         - T1072 - Software Deployment Tools
         - TA0010 - Exfiltration
         - T0006 - Credential Access
-
-
-
-
-
-
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
@@ -830,12 +824,7 @@ tasks:
       name: Check Previous similar Alerts
       description: |+
         Finds past similar alerts based on alert fields' similarity.
-
-
-
-
-
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
