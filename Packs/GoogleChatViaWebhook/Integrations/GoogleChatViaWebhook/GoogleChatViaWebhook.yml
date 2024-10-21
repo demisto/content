@@ -62,6 +62,8 @@ script:
     description: Send a customizable card to Google Chat Space via Incoming Webhook.
     name: send-google-chat-custom-card
     outputs:
+    - contextPath: GoogleChatWebhook.CustomCard.Cards
+      description: Google Chat Card details.
     - contextPath: GoogleChatWebhook.CustomCard.Name
       description: Google Chat space full name.
     - contextPath: GoogleChatWebhook.CustomCard.SpaceName

@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Deleted (SpaceDisplayName, SpaceType, CreatedTime, ThreadReply, SenderDisplayName, SenderName, SenderType) to align with Google Chat Webhook API outputs. These outputs were also removed from Context Data outputs in the integration settings."
+    "breakingChangesNotes": "Deleted SpaceDisplayName, SpaceType, CreatedTime, ThreadReply, SenderDisplayName, SenderName, SenderType from the outputs to align with the Google Chat Webhook API response change which does not support it."
 }
