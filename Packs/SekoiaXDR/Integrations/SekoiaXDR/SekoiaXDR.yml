@@ -1182,9 +1182,9 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
+  defaultmapperin: Sekoia XDR - Incoming Mapper
+  defaultclassifier: Sekoia XDR - Classifier
   isFetchSamples: true
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
-defaultmapperin: Sekoia XDR - Incoming Mapper
-defaultclassifier: Sekoia XDR - Classifier

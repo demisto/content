@@ -721,7 +721,7 @@ def get_remote_data_command(
     if (
         (close_incident)
         and (alert_status in ["Closed", "Rejected"])
-        and (investigation["status"] != 1)
+        and (investigation["status"] != 2)
     ):
         demisto.debug(
             f"Alert {alert_short_id} with status {alert_status} was closed or rejected in Sekoia, closing incident {incident_id} in XSOAR"  # noqa: E501
@@ -742,7 +742,7 @@ def get_remote_data_command(
     if (
         (reopen_incident)
         and (alert_status not in ["Closed", "Rejected"])
-        and (investigation["status"] == 1)
+        and (investigation["status"] != 1)
     ):
         demisto.debug(
             f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, reopening incident {incident_id} in XSOAR"
