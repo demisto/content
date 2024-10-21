@@ -671,7 +671,7 @@ def malop_processes_command(client: Client, args: dict):
         date_time_parser = dateparser.parse(date_time)
         if not date_time_parser:
             date_time_parser = dateparser.parse('Fri, 12 Dec 2010')
-            demisto.log("Returning all the processes since the entered date is not valid.")
+            demisto.info("Returning all the processes since the entered date is not valid.")
         date_time_parser = date_time_parser.timestamp()
         milliseconds = int(date_time_parser * 1000)
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult": True}]
@@ -1788,7 +1788,7 @@ def get_batch_id(client: Client, suspect_files_guids: dict) -> list:
             del suspect_files_guids[file_status['fileName']]
     for suspect_file in list(suspect_files_guids.keys()):
         malop_comment = f'Could not download the file {suspect_file} from source machine, even after waiting for 80 seconds.'
-        demisto.log(malop_comment)
+        demisto.info(malop_comment)
     
     if new_malop_comments == []:
         raise DemistoException(malop_comment)
