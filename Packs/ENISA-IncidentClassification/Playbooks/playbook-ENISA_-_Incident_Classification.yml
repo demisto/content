@@ -1,0 +1,129 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: e270f5bc-8178-4353-8d6d-25968fab3629
+    packName: ENISA - Incident Classification
+    prevname: ''
+    propagationLabels:
+    - it_tenant
+    toServerVersion: ''
+id: ENISA - Incident Classification
+inputs: []
+name: ENISA - Incident Classification
+outputs: []
+quiet: true
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0a03ddd9-c395-46c8-897b-b0f48a64bea2
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 0a03ddd9-c395-46c8-897b-b0f48a64bea2
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      loophandlerok:
+        simple: 'False'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 917c2980-33c2-40ab-8b87-cfedb299d0e7
+      iscommand: true
+      name: Preset Loop Handler For Incident Classification
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 917c2980-33c2-40ab-8b87-cfedb299d0e7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 11b5cd7b-2c60-43bf-86c5-e8c39a16155a
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 11b5cd7b-2c60-43bf-86c5-e8c39a16155a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      builtincondition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.loophandlerok
+          operator: isTrue
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 085f91ee-88e8-43f3-8c5a-0b8989c54a58
+      iscommand: false
+      name: ENISA - Create Incident Classification
+      playbookId: ENISA - Create Incident Classification
+      type: playbook
+      version: -1
+    taskid: 085f91ee-88e8-43f3-8c5a-0b8989c54a58
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 560,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

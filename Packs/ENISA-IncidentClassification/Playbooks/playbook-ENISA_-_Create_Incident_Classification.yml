@@ -1,0 +1,443 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - it_tenant
+id: ENISA - Create Incident Classification
+inputs: []
+name: ENISA - Create Incident Classification
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cc5ad97f-4133-4ad6-8adb-87eb5fb1df31
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: cc5ad97f-4133-4ad6-8adb-87eb5fb1df31
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 27e37e29-aaab-40dd-8a99-3c8415f8db6b
+      iscommand: false
+      name: Delete Previous Form
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 27e37e29-aaab-40dd-8a99-3c8415f8db6b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      org_type:
+        simple: non_pt_org
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1d1e9847-43b3-404c-880f-847168f8206b
+      iscommand: false
+      name: Fetch Macro Enisa Classification
+      scriptName: set_incident_classification
+      type: regular
+      version: -1
+    taskid: 1d1e9847-43b3-404c-880f-847168f8206b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Please Choose the Macro Classification According to the ENISA Taxonomy
+        options: []
+        optionsarg:
+        - {}
+        - simple: ${IncidentClassification}
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Please Choose the Macro Classification According to the ENISA Taxonomy
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f489ec29-7375-4f91-8ee7-f3f48c936142
+      iscommand: false
+      name: Please Choose the Macro Classification According to the ENISA Taxonomy
+      type: collection
+      version: -1
+    taskid: f489ec29-7375-4f91-8ee7-f3f48c936142
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: IncidentClassification
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 5a2f9264-d369-4087-85d7-4569b1f80825
+      iscommand: false
+      name: Delete Previous Automation Run
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5a2f9264-d369-4087-85d7-4569b1f80825
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Please Choose the Specific Classification According to the ENISA Taxonomy
+        options: []
+        optionsarg:
+        - {}
+        - simple: ${IncidentClassification}
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Please Choose the Specific Classification According to the ENISA Taxonomy
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 029d88cf-37ac-46b4-8a5d-b9c22e6eac22
+      iscommand: false
+      name: Please Choose the Specific Classification According to the ENISA Taxonomy
+      type: collection
+      version: -1
+    taskid: 029d88cf-37ac-46b4-8a5d-b9c22e6eac22
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      classification:
+        simple: ${Please Choose the Macro Classification According to the ENISA Taxonomy.Answers.0}
+      org_type:
+        simple: non_pt_org
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 62a08079-d336-4cbd-8152-149828d10adf
+      iscommand: false
+      name: Fetch Macro Enisa Classification
+      scriptName: set_incident_classification
+      type: regular
+      version: -1
+    taskid: 62a08079-d336-4cbd-8152-149828d10adf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "No":
+      - "10"
+      "Yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 21f50d90-aa15-443e-8dea-55d9cca972b0
+      iscommand: false
+      name: Do you confirm the chosen classification?
+      type: condition
+      version: -1
+    taskid: 21f50d90-aa15-443e-8dea-55d9cca972b0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      enisacode:
+        simple: ${Please Choose the Macro Classification According to the ENISA Taxonomy.Answers.0}:${Please Choose the Specific Classification According to the ENISA Taxonomy.Answers.0}
+      loophandlerok:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 364c3892-68b9-41f8-8c02-d4612e943c68
+      iscommand: true
+      name: Set Enisa Classification
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 364c3892-68b9-41f8-8c02-d4612e943c68
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fe69e6ad-af36-4448-8f1a-1d7f3c4d2687
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: fe69e6ad-af36-4448-8f1a-1d7f3c4d2687
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
