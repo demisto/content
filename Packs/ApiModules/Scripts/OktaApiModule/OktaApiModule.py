@@ -29,7 +29,7 @@ class AuthType(Enum):
 class OktaClient(BaseClient):
     def __init__(self, auth_type: AuthType = AuthType.API_TOKEN, api_token: str | None = None,
                  client_id: str | None = None, scopes: list[str] | None = None, private_key: str | None = None,
-                 jwt_algorithm: JWTAlgorithm | None = None, *args, **kwargs):
+                 jwt_algorithm: JWTAlgorithm | None = None, key_id: str | None = None, *args, **kwargs):
         """
         Args:
             auth_type (AuthType, optional): The type of authentication to use.
@@ -50,6 +50,7 @@ class OktaClient(BaseClient):
         self.scopes = scopes
         self.jwt_algorithm = jwt_algorithm
         self.private_key = private_key
+        self.key_id = key_id
 
         missing_required_params = []
 
@@ -106,17 +107,24 @@ class OktaClient(BaseClient):
         current_time = datetime.utcnow()
         expiration_time = current_time + timedelta(minutes=TOKEN_EXPIRATION_TIME)
 
+        payload = {
+            'aud': url,
+            'iat': int((current_time - datetime(1970, 1, 1)).total_seconds()),
+            'exp': int((expiration_time - datetime(1970, 1, 1)).total_seconds()),
+            'iss': self.client_id,
+            'sub': self.client_id,
+            'jti': str(uuid.uuid4()),
+        }
+
+        headers = {}
+        if self.key_id:
+            headers['kid'] = self.key_id
+
         return jwt.encode(
-            payload={
-                'aud': url,
-                'iat': int((current_time - datetime(1970, 1, 1)).total_seconds()),
-                'exp': int((expiration_time - datetime(1970, 1, 1)).total_seconds()),
-                'iss': self.client_id,
-                'sub': self.client_id,
-                'jti': str(uuid.uuid4()),
-            },
+            payload=payload,
             key=self.private_key,  # type: ignore[arg-type]
             algorithm=self.jwt_algorithm.value,  # type: ignore[union-attr]
+            headers=headers
         )
 
     def generate_oauth_token(self, scopes: list[str]) -> dict:
