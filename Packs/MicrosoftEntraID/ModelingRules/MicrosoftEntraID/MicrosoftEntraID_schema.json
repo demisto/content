@@ -167,7 +167,7 @@
         "is_array": false
     },
     "autonomousSystemNumber": {
-        "type": "string",
+        "type": "int",
         "is_array": false
     },
     "status": {
