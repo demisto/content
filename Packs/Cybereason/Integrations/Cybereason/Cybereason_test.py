@@ -972,11 +972,12 @@ def test_close_fetchfile_command(mocker):
 def test_malop_to_incident(mocker):
     from Cybereason import malop_to_incident
     args = {
-        "guidString": "12345A"
+        "guidString": "12345A",
+        "status": 0
     }
     command_output = malop_to_incident(args)
 
-    assert command_output['name'] == "Cybereason Malop 12345A"
+    assert ((command_output['name'] == "Cybereason Malop 12345A") and (command_output['status'] == 0))
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
