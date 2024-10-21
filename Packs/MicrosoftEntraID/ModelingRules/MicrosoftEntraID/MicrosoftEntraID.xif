@@ -152,7 +152,6 @@ alter
                                             and not incidr("@element", "169.254.0.0/16") 
                                             and not incidr("@element", "100.64.0.0/10")),
   xdm.event.outcome = if(conditionalAccessStatus = "success", XDM_CONST.OUTCOME_SUCCESS, conditionalAccessStatus = "failure", XDM_CONST.OUTCOME_FAILED, conditionalAccessStatus = "notApplied", XDM_CONST.OUTCOME_UNKNOWN),
-  xdm.event.tags = XDM_CONST.EVENT_TAGAUTHENTICATION,
   xdm.event.id = id,
   xdm.source.user.username = userDisplayName,
   xdm.source.user.upn = userPrincipalName,
