@@ -214,7 +214,7 @@ alter
   check_initiatedBy_ipAddress_v6 = if(get_initiatedBy_ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_initiatedBy_ipAddress)
 | alter
   xdm.source.host.ipv4_addresses = arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v4),
-  xdm.source.host.ipv6_addresses = arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v6),
+  xdm.source.host.ipv6_addresses = arraycreate(check_parsed_fields_ipaddr_v6, check_initiatedBy_ipAddress_v6),
   xdm.source.host.ipv4_public_addresses = arrayfilter(arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v4), 
                                             not incidr("@element", "10.0.0.0/8") 
                                             and not incidr("@element", "172.16.0.0/12") 
