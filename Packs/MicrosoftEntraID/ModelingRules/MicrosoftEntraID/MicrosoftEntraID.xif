@@ -140,7 +140,7 @@ alter
   check_ipAddress_v6 = if(ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddress),
   check_ipAddressFromResourceProvider_v4 = if(ipAddressFromResourceProvider ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddressFromResourceProvider),
   check_ipAddressFromResourceProvider_v6 = if(ipAddressFromResourceProvider ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddressFromResourceProvider),
-  check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem)),
+  check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem))
 | alter
   xdm.source.host.ipv4_addresses = arraycreate(check_ipAddress_v4, check_ipAddressFromResourceProvider_v4),
   xdm.source.host.ipv6_addresses = arraycreate(check_ipAddress_v6, check_ipAddressFromResourceProvider_v6),
@@ -176,7 +176,7 @@ alter
   xdm.auth.mfa.client_details = authenticationRequirement,
   xdm.auth.is_mfa_needed = if(authenticationRequirement = "multiFactorAuthentication", to_boolean("true"), to_boolean("false")),
   xdm.event.original_event_type = to_string(signInEventTypes),
-  xdm.auth.privilege_level = aif(userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, userType = null, null, to_string(userType)),
+  xdm.auth.privilege_level = if(userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, userType = null, null, to_string(userType)),
   xdm.source.asn.as_number = to_integer(autonomousSystemNumber),
   xdm.source.host.os = check_os_field,
   xdm.source.host.os_family = if(check_os_field ~= "win|ms|microsoft", XDM_CONST.OS_FAMILY_WINDOWS,
@@ -207,7 +207,7 @@ alter
   get_parsed_fields_ipaddr = parsed_fields -> ipaddr,
   get_parsed_fields_userType = parsed_fields -> userType,
   get_parsed_fields_DeviceOSType = lowercase(parsed_fields -> DeviceOSType),
-  get_initiatedBy_ipAddress = initiatedBy -> ipAddress,
+  get_initiatedBy_ipAddress = initiatedBy -> ipAddress
 | alter
   check_parsed_fields_ipaddr_v4 = if(get_parsed_fields_ipaddr ~= "(?:\d{1,3}\.){3}\d{1,3}", get_parsed_fields_ipaddr),
   check_parsed_fields_ipaddr_v6 = if(get_parsed_fields_ipaddr ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_parsed_fields_ipaddr),
