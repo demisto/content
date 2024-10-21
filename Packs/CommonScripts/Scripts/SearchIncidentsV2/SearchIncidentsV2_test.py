@@ -278,7 +278,7 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
     """
     import SearchIncidentsV2
     mocker.patch.object(dt, 'datetime', autospec=True)
-    mocker.patch.object(SearchIncidentsV2, 'ENABLE_INCLUDEINFORMATIONAL_ARG' , True)
+    mocker.patch.object(SearchIncidentsV2, 'ENABLE_INCLUDEINFORMATIONAL_ARG', True)
     dt.datetime.utcnow.return_value = INCLUDE_INFORMATIONAL_FIXED_TIME
 
     class MockDateTime:
@@ -287,10 +287,10 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
 
     mocker.patch('SearchIncidentsV2.datetime', MockDateTime())
 
-    #mock arg to datetime since internally uses utc which is not the same as the fixed datetime
+    # mock arg to datetime since internally uses utc which is not the same as the fixed datetime
     mocker.patch.object(SearchIncidentsV2, 'arg_to_datetime', side_effect=lambda x: None if x is None
-    else INCLUDE_INFORMATIONAL_FIXED_TIME - dt.timedelta(
-        hours=int(x.split()[0])) if 'hours ago' in x else INCLUDE_INFORMATIONAL_FIXED_TIME)
+                        else INCLUDE_INFORMATIONAL_FIXED_TIME - dt.timedelta(
+                            hours=int(x.split()[0])) if 'hours ago' in x else INCLUDE_INFORMATIONAL_FIXED_TIME)
 
     execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock_include_informational)
 
@@ -328,8 +328,8 @@ def test_transform_to_alert_data():
 def test_summarize_incidents():
     assert summarize_incidents({'add_fields_to_summarize_context': 'test'}, [{'id': 'test', 'CustomFields': {}}],
                                platform='xsoar') == [
-               {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
-                'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]
+        {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
+         'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]
 
 
 @pytest.mark.parametrize('amount_of_mocked_incidents, args, expected_incidents_length', [
