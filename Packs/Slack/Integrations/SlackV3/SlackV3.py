@@ -536,6 +536,7 @@ def send_slack_request_sync(
             demisto.debug(f'Sending slack {method} (sync). Body is: {str(body)}')
             if http_verb == 'POST':
                 if file_upload_params:
+                    # Use three-stage file_upload_v2 'wrapper' method in SDK client class in case there are file_upload_params
                     response = client.files_upload_v2(**file_upload_params)
                 else:
                     response = client.api_call(method, json=body)
@@ -587,6 +588,7 @@ async def send_slack_request_async(
             demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
             if http_verb == 'POST':
                 if file_upload_params:
+                    # Use three-stage file_upload_v2 'wrapper' method in SDK client class in case there are file_upload_params
                     response = await client.files_upload_v2(**file_upload_params)
                 else:
                     response = await client.api_call(method, json=body)
@@ -2072,6 +2074,7 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
         else:
             raise DemistoException(message=error_message)
     except SlackApiError as api_error:
+        demisto.debug(f'{error_message} {api_error}')
         error_code = api_error.response.get('error')
         if error_code:
             error_explanation = RESPONSE_ERROR_EXPLANATIONS.get(error_code, error_code.replace('_', '').capitalize())

@@ -3289,26 +3289,53 @@ def test_send_message_to_destinations(mocker):
     assert args['body']['text']
 
 
-def test_send_file_to_destinations(mocker):
+def test_send_file_to_destinations_request_args(mocker):
+    """
+    Given:
+        - Sending file to a channel
+    When:
+        - Calling the send_slack_request_sync function
+    Then:
+        - Assert the function is called once and the correct arguments are sent to the function
+    """
     import SlackV3
     # Set
-
-    link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
-    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
-    mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(SlackV3, 'send_slack_request_sync')
 
     # Arrange
     SlackV3.send_file_to_destinations(['channel'], {'name': 'name', 'path': 'yo'}, None)
-
-    args = SlackV3.send_slack_request_sync.call_args[1]
+    request_args = SlackV3.send_slack_request_sync.call_args[1]
 
     # Assert
     assert SlackV3.send_slack_request_sync.call_count == 1
-    assert 'http_verb' not in args
-    assert args['file_upload_params']['file'] == 'yo'
-    assert args['file_upload_params']['filename'] == 'name'
+    assert 'http_verb' not in request_args
+    assert request_args['file_upload_params']['file'] == 'yo'
+    assert request_args['file_upload_params']['filename'] == 'name'
+
+
+def test_send_file_to_destinations_sdk_client_args(mocker):
+    """
+    Given:
+        - Sending file to a specifc thread in a channel
+    When:
+        - Calling the files_upload_v2 'wrapper' method in the slack_sdk.WebClient class
+    Then:
+        - Assert correct arguments are sent to the method
+    """
+    from SlackV3 import send_file_to_destinations
+    # Set
+    mocker.patch.object(slack_sdk.WebClient, 'files_upload_v2')
+
+    # Arrange
+    send_file_to_destinations(['channel'], {'name': 'name', 'path': 'yo'}, 'thread')
+    sdk_args = slack_sdk.WebClient.files_upload_v2.call_args[1]
+
+    # Assert
+    assert sdk_args['file'] == 'yo'
+    assert sdk_args['filename'] == 'name'
+    assert sdk_args['initial_comment'] is None
+    assert sdk_args['channel'] == 'channel'
+    assert sdk_args['thread_ts'] == 'thread'
 
 
 def test_send_message_retry(mocker):
@@ -5235,16 +5262,14 @@ def test_send_file_api_exception(mocker):
     Given:
         - Slack API non-okay response.
     When:
-        - calling the slack_send_file
+        - Calling the slack_send_file
     Then:
-        - assert readable exception is raised.
+        - Assert readable exception is raised.
     """
     from SlackV3 import slack_send_file
     # Set
     mocker.patch.object(demisto, 'args', return_value={})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch('SlackV3.slack_send_request', side_effect=SlackApiError('The request to the Slack API failed. (url: https://slack.com/api/files.upload)',
                                                                          {'ok': False, 'error': 'service_unavailable'}))
 

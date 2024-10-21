@@ -289,13 +289,15 @@ the channel exists).
 
 #### Permissions
 
-Scopes required:
+Permission scopes required for this command:
 
 | **Token Type**    | **Scope**                     |
 | --- | --- | 
 | Granular bot      | files:write                   |
 | User              | files:write files:write:user  |
 | Legacy bot        | bot                           |
+
+The full list of Slack API scopes can be accessed [here](https://api.slack.com/scopes).
 
 #### Limitations
 
