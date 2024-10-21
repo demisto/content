@@ -2063,6 +2063,7 @@ Updates the state of one or more alerts.
 | alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
 | status | Updated alert status. Possible values are: new, reopened, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
 | severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
+| resolution_comment | Descriptive comment explaining the alert change. | Optional |
 
 #### Context Output
 
