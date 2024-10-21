@@ -53,23 +53,22 @@ class RESULTS_SUMMARY:
 
         if self.results_summary["success"]:
             for playbook_success, alerts_success in self.results_summary["success"].items():
-                playbook_name = get_playbook_name(playbook_success, self.playbooks_dict)
+                playbook_info = get_playbook_info(playbook_success, self.playbooks_dict)
                 final_message.append(
-                    f"Playbook {'with ID ' + playbook_success if not playbook_name else f'{playbook_name} with ID {playbook_success}'} "
-                    f"was set successfully for alerts: {sorted(alerts_success)}.")
+                    f"Playbook {playbook_info} was set successfully for alerts: {sorted(alerts_success)}.")
 
         if self.results_summary["failure_create"]:
             for playbook_failure_create, alerts_fail in self.results_summary["failure_create"].items():
-                playbook_name = get_playbook_name(playbook_failure_create, self.playbooks_dict)
+                playbook_info = get_playbook_info(playbook_failure_create, self.playbooks_dict)
                 final_message.append(
-                    f"Playbook {'with ID ' + playbook_failure_create if not playbook_name else f'{playbook_name} with ID {playbook_failure_create}'} "
-                    f"could not be executed for alerts: {sorted(alerts_fail)} due to failure in creating an investigation playbook.")
+                    f"Playbook {playbook_info} could not be executed for alerts: "
+                    f"{sorted(alerts_fail)} due to failure in creating an investigation playbook.")
 
         if self.results_summary["failure_set"]:
             for playbook_failure_set, alerts_fail_set in self.results_summary["failure_set"].items():
-                playbook_name = get_playbook_name(playbook_failure_set, self.playbooks_dict)
+                playbook_info = get_playbook_info(playbook_failure_set, self.playbooks_dict)
                 final_message.append(
-                    f"Playbook {'with ID ' + playbook_failure_set if not playbook_name else f'{playbook_name} with ID {playbook_failure_set}'} "
+                    f"Playbook {playbook_info} "
                     f"was not found for alerts {sorted(alerts_fail_set)}.")
 
         if reopened_alerts := self.results_summary["reopened"]:
@@ -78,9 +77,26 @@ class RESULTS_SUMMARY:
         final_message.extend(self.results_summary["others"])
         return '\n'.join(final_message)
 
-def get_playbook_name(playbook_id: str, playbook_dict: dict):
+
+def get_playbook_info(playbook_id: str, playbook_dict: dict) -> str:
+    """
+    Retrieves the playbook information based on the provided playbook ID.
+
+    Args:
+        playbook_id (str): The playbook ID to look up.
+        playbook_dict (dict): A dictionary mapping playbook IDs to their names.
+
+    Returns:
+        str: A string containing the playbook name and ID if the ID exists; otherwise, a string with just the ID.
+    """
+    playbook_name = ""
     if playbook_id in playbook_dict:
-        return playbook_dict[playbook_id]
+        playbook_name = playbook_dict[playbook_id]
+    playbook_info = (
+        f"{playbook_name} with ID {playbook_id}" if playbook_name else f"with ID {playbook_id}"
+    )
+    return playbook_info
+
 
 def get_playbooks_dict():
     """

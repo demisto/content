@@ -727,7 +727,7 @@ def test_generate_summary():
             "789": ["alert4"]
         },
         "failure_set": {
-            "999": ["alert5", "alert6"] 
+            "999": ["alert5", "alert6"]
         },
         "reopened": ["alert7", "alert8"],
         "others": ["Some other information here."]
@@ -738,7 +738,8 @@ def test_generate_summary():
     expected_summary = (
         "Playbook Test Playbook 1 with ID 123 was set successfully for alerts: ['alert1', 'alert2'].\n"
         "Playbook Test Playbook 2 with ID 456 was set successfully for alerts: ['alert3'].\n"
-        "Playbook with ID 789 could not be executed for alerts: ['alert4'] due to failure in creating an investigation playbook.\n"
+        "Playbook with ID 789 could not be executed for alerts: ['alert4'] due to failure "
+        "in creating an investigation playbook.\n"
         "Playbook with ID 999 was not found for alerts ['alert5', 'alert6'].\n"
         "Alerts ['alert7', 'alert8'] have been reopened.\n"
         "Some other information here."
@@ -839,3 +840,35 @@ def test_append_to_others():
     results_summary_instance.append_to_others("Test message")
 
     assert results_summary_instance.results_summary["others"] == ["Test message"]
+
+
+def test_get_playbook_info():
+    """
+    GIVEN:
+        A playbook ID and a dictionary mapping playbook IDs to names.
+    WHEN:
+        The get_playbook_info function is called.
+    THEN:
+        It should return the correct playbook information string based on whether the ID exists in the dictionary.
+    """
+    playbook_dict = {
+        "123": "Test Playbook 1",
+        "456": "Test Playbook 2",
+        "789": "Test Playbook 3"
+    }
+
+    playbook_info_123 = get_playbook_info("123", playbook_dict)
+    expected_info_123 = "Test Playbook 1 with ID 123"
+    assert playbook_info_123 == expected_info_123
+
+    playbook_info_999 = get_playbook_info("999", playbook_dict)
+    expected_info_999 = "with ID 999"
+    assert playbook_info_999 == expected_info_999
+
+    playbook_info_456 = get_playbook_info("456", playbook_dict)
+    expected_info_456 = "Test Playbook 2 with ID 456"
+    assert playbook_info_456 == expected_info_456
+
+    playbook_info_789 = get_playbook_info("789", playbook_dict)
+    expected_info_789 = "Test Playbook 3 with ID 789"
+    assert playbook_info_789 == expected_info_789
