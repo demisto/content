@@ -4425,7 +4425,8 @@ def main():  # pragma: no cover
     client_id = params.get('credentials', {}).get('identifier', '')
     client_secret = params.get('credentials', {}).get('password', '')
     callback_url = params.get('callback_url', '')
-
+    test = params.get('test', '')
+    demisto.debug(f'!!!!!!! important {test}')
     validate_auth_params(username, api_key, client_id, client_secret)
 
     # Cloud configuration params
