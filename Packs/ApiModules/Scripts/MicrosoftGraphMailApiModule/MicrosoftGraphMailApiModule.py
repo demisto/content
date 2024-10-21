@@ -1293,7 +1293,7 @@ class GraphMailUtils:
         item = raw_attachment.get('item', {})
         item_type = item.get('@odata.type', '')
         if 'message' in item_type:
-            return_message_attachment_as_downloadable_file = client and argToBoolean(
+            return_message_attachment_as_downloadable_file: bool = client and argToBoolean(
                 args.get('should_download_message_attachment', False))
             if return_message_attachment_as_downloadable_file:
                 # return the message attachment as a file result
