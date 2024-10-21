@@ -236,7 +236,7 @@ alter
   xdm.alert.description = parsed_fields -> Details,
   xdm.alert.subcategory = parsed_fields -> ErrorCode,
   xdm.event.type = parsed_fields -> EventName,
-  xdm.auth.privilege_level = if(get_parsed_fields_userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, get_parsed_fields_userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, get_parsed_fields_userType = null, null, to_string(userType)),
+  xdm.auth.privilege_level = if(get_parsed_fields_userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, get_parsed_fields_userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, get_parsed_fields_userType = null, null, to_string(get_parsed_fields_userType)),
   xdm.source.host.device_id = coalesce(initiatedBy -> homeTenantId, parsed_fields -> DeviceId),
   xdm.source.host.hostname = initiatedBy -> homeTenantName,
   xdm.source.host.os = get_parsed_fields_DeviceOSType,
