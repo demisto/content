@@ -1481,7 +1481,7 @@ def malop_to_incident(malop: str) -> dict:
     status = 0
     if malop.get('status', ''):
         malopStatus = malop.get('status', '')
-    else:
+    elif malop.get('simpleValues', ''):
         malopStatus = malop.get('simpleValues', '').get('managementStatus', '').get('values', '')[0]
     if (malopStatus == "Active") or (malopStatus == "UNREAD"):
         status = 0
