@@ -1,0 +1,128 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: de586b19-86cc-444e-81ba-e852f800a944
+    packName: CNCS - Incident Classification
+    prevname: ''
+    propagationLabels:
+    - it_tenant
+    toServerVersion: ''
+id: CNCS - Incident Classification
+inputs: []
+name: CNCS - Incident Classification
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 914dc03b-5f20-4bdb-8775-396ccc60fd00
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 914dc03b-5f20-4bdb-8775-396ccc60fd00
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a84da7b3-076e-4bbb-8969-b97236779acb
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: a84da7b3-076e-4bbb-8969-b97236779acb
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '10':
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      loophandlerok:
+        simple: 'False'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: b94648c3-be35-4170-8ece-d086a5101293
+      iscommand: true
+      name: Preset Loop Handler For Incident Classification
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: b94648c3-be35-4170-8ece-d086a5101293
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      builtincondition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.loophandlerok
+          operator: isTrue
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: cdd667e3-a4a5-4d38-8999-f9fca4388634
+      iscommand: false
+      name: CNCS - Create Incident Classification
+      playbookId: CNCS - Create Incident Classification
+      type: playbook
+      version: -1
+    taskid: cdd667e3-a4a5-4d38-8999-f9fca4388634
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 560,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

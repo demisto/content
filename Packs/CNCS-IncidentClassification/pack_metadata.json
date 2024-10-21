@@ -1,0 +1,21 @@
+{
+    "name": "CNCS - Incident Classification",
+    "description": "CNCS - Incident Classification - Boosting Portuguese Cybersecurity - \nTogether, we can build a Safer Digital Future\n\nPortuguese National Taxonomy: A playbook to classify the incident according to CNCS taxonomy.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Luis Banza, Rodrigo Cardoso, Helder Fernandes, Celson Junior, Miguel Nogueira, GALP CSIRT TEAM  ",
+    "url": "",
+    "email": "",
+    "created": "2024-10-21T10:50:31Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Galp-Csirt-Team"
+    ]
+}

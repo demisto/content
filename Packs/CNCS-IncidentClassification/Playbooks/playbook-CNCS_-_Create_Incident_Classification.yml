@@ -1,0 +1,448 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - it_tenant
+id: CNCS - Create Incident Classification
+inputs: []
+name: CNCS - Create Incident Classification
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dd53a050-297e-4088-81aa-773cf3636b90
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: dd53a050-297e-4088-81aa-773cf3636b90
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 2d559595-4163-45c2-86a2-0586a94c2775
+      iscommand: false
+      name: Reset Previous Form
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 2d559595-4163-45c2-86a2-0586a94c2775
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      org_type:
+        simple: pt_org
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 19e2aeb0-39c3-4aa7-826a-4c3e37195367
+      iscommand: false
+      name: Fetch CNCS Classification Values
+      scriptName: set_incident_classification
+      type: regular
+      version: -1
+    taskid: 19e2aeb0-39c3-4aa7-826a-4c3e37195367
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Choose CNCS Classification
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: IncidentClassification
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Choose CNCS Classification
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f428eec8-45e4-4bbd-8196-d4c34908260e
+      iscommand: false
+      name: Choose CNCS Classification
+      type: collection
+      version: -1
+    taskid: f428eec8-45e4-4bbd-8196-d4c34908260e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      classification:
+        simple: ${Choose CNCS Classification.Answers.0}
+      org_type:
+        simple: pt_org
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f897faca-787b-4d38-8742-73bb36b086de
+      iscommand: false
+      name: Fetch CNCS Classification Values
+      scriptName: set_incident_classification
+      type: regular
+      version: -1
+    taskid: f897faca-787b-4d38-8742-73bb36b086de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Choose CNCS Type
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: IncidentClassification
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Choose CNCS Type
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8e2a813f-8149-4071-8078-1bc9933486bb
+      iscommand: false
+      name: Choose CNCS Type
+      type: collection
+      version: -1
+    taskid: 8e2a813f-8149-4071-8078-1bc9933486bb
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "No":
+      - "10"
+      "Yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fb623070-bbf1-46b7-8926-361ce3964efc
+      iscommand: false
+      name: Confirm The Chosen Values?
+      type: condition
+      version: -1
+    taskid: fb623070-bbf1-46b7-8926-361ce3964efc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cncsclassification:
+        simple: ${Choose CNCS Classification.Answers.0}
+      cncstype:
+        simple: ${Choose CNCS Type.Answers.0}
+      loophandlerok:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: b47ac9bd-ac73-4a44-85e2-87cb9d2f9c6e
+      iscommand: true
+      name: Set Incident Classification Fields
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: b47ac9bd-ac73-4a44-85e2-87cb9d2f9c6e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: IncidentClassification
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 4b005c57-7b8f-428c-8e88-7949f7d5d819
+      iscommand: false
+      name: Delete Previous Automation Run
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 4b005c57-7b8f-428c-8e88-7949f7d5d819
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df88facc-2af1-4eba-84f3-2f9d9093f41f
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: df88facc-2af1-4eba-84f3-2f9d9093f41f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
