@@ -9,6 +9,7 @@ from distutils.util import strtobool
 import aiohttp
 import slack_sdk
 from urllib.parse import urlparse
+from typing import TypedDict
 
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
@@ -26,6 +27,44 @@ SEVERITY_DICT = {
     'Medium': 2,
     'High': 3,
     'Critical': 4
+}
+
+RESPONSE_ERROR_EXPLANATIONS = {
+    'access_denied': 'Access to a resource specified in the request is denied.',
+    'channel_not_found': 'Value passed for channel_id was invalid.',
+    'file_not_found': 'Could not find the file from the upload ticket.',
+    'file_update_failed': 'Failure occurred when attempting to update the file.',
+    'invalid_channel': 'Channel could not be found or channel specified is invalid.',
+    'posting_to_channel_denied': 'User is not authorized to post to channel.',
+    'account_inactive': 'Authentication token is for a deleted user or workspace when using a bot token.',
+    'deprecated_endpoint': 'The endpoint has been deprecated.',
+    'ekm_access_denied': 'Administrators have suspended the ability to post a message.',
+    'enterprise_is_restricted': 'The method cannot be called from an Enterprise.',
+    'invalid_auth': 'Either the provided token is invalid or the request originates from a disallowed IP address.',
+    'method_deprecated': 'The method has been deprecated.',
+    'missing_scope': 'The token used is not granted the specific scope permissions required to complete this request.',
+    'not_allowed_token_type': 'The token type used in this request is not allowed.',
+    'not_authed': 'No authentication token provided.',
+    'no_permission': 'The workspace token used in this request does not have the permissions necessary to complete the request.',
+    'org_login_required': 'The workspace is undergoing an enterprise migration and is temporarily unavailable.',
+    'token_expired': 'Authentication token has expired.',
+    'token_revoked': 'Authentication token is for a deleted user or workspace or the app has been removed.',
+    'two_factor_setup_required': 'Two factor setup is required.',
+    'team_access_not_granted': 'The token used is not granted the specific workspace access required to complete this request.',
+    'accesslimited': 'Access to this method is limited on the current network.',
+    'fatal_error': 'The Slack server could not complete this operation(s).',
+    'internal_error': 'The Slack server could not complete this operation(s), likely due to a transient issue on our end.',
+    'invalid_arg_name': 'The method was passed an argument whose name falls outside the bounds of accepted or expected values.',
+    'invalid_arguments': 'The method was either called with invalid arguments.',
+    'invalid_array_arg': 'The method was passed an array as an argument. Please only input valid strings.',
+    'invalid_charset': 'The charset specified in the Content-Type header was invalid for the POST request.',
+    'invalid_form_data': 'The form data was either missing or syntactically invalid for the POST request.',
+    'invalid_post_type': 'The specified Content-Type was invalid for the POST request.',
+    'missing_post_type': 'The Content-Type header is not included in the POST request.',
+    'ratelimited': 'The request has been rate limited.',
+    'request_timeout': 'Data was either missing or truncated for the POST request.',
+    'service_unavailable': 'The Slack service is temporarily unavailable.',
+    'team_added_to_org': 'The associated workspace is currently undergoing migration to an Enterprise Organization.'
 }
 
 USER_TAG_EXPRESSION = '<@(.*?)>'
@@ -54,6 +93,15 @@ OBJECTS_TO_KEYS = {
 SYNC_CONTEXT = True
 PROFILING_DUMP_ROWS_LIMIT = 20
 MAX_SAMPLES = 10
+
+
+class FileUploadParams(TypedDict):
+    filename: str
+    file: str
+    initial_comment: Optional[str]
+    channel: str
+    thread_ts: Optional[str]
+
 
 ''' GLOBALS '''
 
@@ -458,8 +506,13 @@ def set_name_and_icon(body: dict, method: str):
             body['icon_url'] = BOT_ICON_URL
 
 
-def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
-                            body: dict = None) -> SlackResponse:
+def send_slack_request_sync(
+    client: slack_sdk.WebClient,
+    method: str = '',
+    http_verb: str = 'POST',
+    body: Optional[dict] = None,
+    file_upload_params: Optional[FileUploadParams] = None,
+) -> SlackResponse:
     """
     Sends a request to slack API while handling rate limit errors.
 
@@ -467,8 +520,8 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
         client: The slack client.
         method: The method to use.
         http_verb: The HTTP method to use.
-        file_: A file path to send.
         body: The request body.
+        file_upload_params: An instance of FileUploadParams (for file upload APIs).
 
     Returns:
         The slack API response.
@@ -482,8 +535,9 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
         try:
             demisto.debug(f'Sending slack {method} (sync). Body is: {str(body)}')
             if http_verb == 'POST':
-                if file_:
-                    response = client.api_call(method, files={"file": file_}, data=body)
+                if file_upload_params:
+                    # Use three-stage file_upload_v2 'wrapper' method in SDK client class in case there are file_upload_params
+                    response = client.files_upload_v2(**file_upload_params)
                 else:
                     response = client.api_call(method, json=body)
             else:
@@ -504,8 +558,13 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
     return response  # type: ignore
 
 
-async def send_slack_request_async(client: AsyncWebClient, method: str, http_verb: str = 'POST', file_: str = '',
-                                   body: dict = None) -> SlackResponse:
+async def send_slack_request_async(
+    client: AsyncWebClient,
+    method: str = '',
+    http_verb: str = 'POST',
+    body: Optional[dict] = None,
+    file_upload_params: Optional[FileUploadParams] = None,
+) -> SlackResponse:
     """
     Sends an async request to slack API while handling rate limit errors.
 
@@ -513,8 +572,8 @@ async def send_slack_request_async(client: AsyncWebClient, method: str, http_ver
         client: The slack client.
         method: The method to use.
         http_verb: The HTTP method to use.
-        file_: A file path to send.
         body: The request body.
+        file_upload_params: An instance of FileUploadParams (for file upload APIs).
 
     Returns:
         The slack API response.
@@ -528,12 +587,13 @@ async def send_slack_request_async(client: AsyncWebClient, method: str, http_ver
         try:
             demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
             if http_verb == 'POST':
-                if file_:
-                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
+                if file_upload_params:
+                    # Use three-stage file_upload_v2 'wrapper' method in SDK client class in case there are file_upload_params
+                    response = await client.files_upload_v2(**file_upload_params)
                 else:
-                    response = await client.api_call(method, json=body)  # type: ignore
+                    response = await client.api_call(method, json=body)
             else:
-                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
+                response = await client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
             demisto.debug(f'Got rate limit error (async). Body is: {str(body)}\n{api_error}')
             response = api_error.response
@@ -2005,15 +2065,22 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
         'name': file_path['name'],
         'comment': comment
     }
+
+    error_message = 'Could not send the file to Slack.'
     try:
         response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
         if response:
-            demisto.results('File sent to Slack successfully.')
+            return_results(CommandResults(readable_output='File sent to Slack successfully.'))
         else:
-            demisto.results('Could not send the file to Slack.')
-    except SlackApiError as e:
-        if 'method_deprecated' in str(e):
-            raise DemistoException('Command slack-send-file isn\'t available for newly created apps (from May 8, 2024).')
+            raise DemistoException(message=error_message)
+    except SlackApiError as api_error:
+        demisto.debug(f'{error_message} {api_error}')
+        error_code = api_error.response.get('error')
+        if error_code:
+            error_explanation = RESPONSE_ERROR_EXPLANATIONS.get(error_code, error_code.replace('_', '').capitalize())
+            error_message += f' {error_explanation}'
+
+        raise DemistoException(message=error_message)
 
 
 def handle_tags_in_message_sync(message: str) -> str:
@@ -2167,19 +2234,16 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
         The Slack send response.
     """
     response: Optional[SlackResponse] = None
-    body = {
-        'filename': file_dict['name']
-    }
-
-    if 'comment' in file_dict:
-        body['initial_comment'] = file_dict['comment']
 
     for destination in destinations:
-        body['channels'] = destination
-        if thread_id:
-            body['thread_ts'] = thread_id
-
-        response = send_slack_request_sync(CLIENT, 'files.upload', file_=file_dict['path'], body=body)
+        file_upload_params = FileUploadParams(
+            filename=file_dict['name'],
+            file=file_dict['path'],
+            initial_comment=file_dict.get('comment'),
+            channel=destination,
+            thread_ts=thread_id,
+        )
+        response = send_slack_request_sync(CLIENT, file_upload_params=file_upload_params)
 
     return response
 
