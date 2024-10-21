@@ -1267,7 +1267,29 @@ class GraphMailUtils:
         return 1
 
     @staticmethod
-    def item_result_creator(raw_attachment, user_id, args={}, client=None):
+    def item_result_creator(raw_attachment, user_id, args={}, client=None) -> dict[str, Any] | CommandResults:
+        """
+        Create a result object for an attachment item.
+        This method processes raw attachment data and returns either an XSOAR file result or a command result
+        based on the attachment type and provided arguments.
+
+        Args:
+            raw_attachment (dict): The raw attachment data from the API response.
+            user_id (str): The ID of the user associated with the attachment.
+            args (dict): Additional arguments for processing the attachment.
+            client (MsGraphMailBaseClient, optional): The client instance for making additional API calls.
+
+        Returns:
+            dict[str, Any] | CommandResults:
+                - If the attachment is a message and should be downloaded, returns a dict containing file result.
+                - If the attachment is a message but should not be downloaded, returns a CommandResults with message details.
+                - If the attachment is of an unsupported type, returns a CommandResults with an error message.
+
+        Note:
+            - The method handles different types of attachments, particularly focusing on message attachments.
+              It can either return the attachment as a downloadable file or as structured data in the command results.
+            - 'client' function argument is only relevant when 'should_download_message_attachment' command argument is True.
+        """
         item = raw_attachment.get('item', {})
         item_type = item.get('@odata.type', '')
         if 'message' in item_type:
