@@ -67,7 +67,7 @@ script:
       contextPath: Zafran.MitigationsPerformedResponse.message
       description: 'Error message.'
   - name: zafran-mitigations-export
-    description: Export recommended mitigations
+    description: Export recommended mitigations.
     arguments:
     - name: filter
       description: ZQL filter

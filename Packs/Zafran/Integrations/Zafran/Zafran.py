@@ -128,7 +128,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings()  # type: ignore
         client: Client = Client(urljoin(url, '/api/v2/'), verify_certificate, proxy, headers=headers, auth=None)
 
         commands = {
