@@ -717,9 +717,9 @@ def test_get_attachment_unsupported_type(client):
         assert 'Integration does not support attachments from type #microsoft.graph.contact' in output
 
 
-@pytest.mark.parametrize('function_name, attachment_type, args, client', [('file_result_creator', 'fileAttachment', {}, oproxy_client()),
-                                                                          ('item_result_creator', 'itemAttachment', {}, oproxy_client())])
-def test_create_attachment(mocker, function_name, attachment_type, args, client):
+@pytest.mark.parametrize('function_name, attachment_type, client', [('file_result_creator', 'fileAttachment', oproxy_client()),
+                                                                    ('item_result_creator', 'itemAttachment', oproxy_client())])
+def test_create_attachment(mocker, function_name, attachment_type, client):
     """
     Given:
         - raw response returned from api:
@@ -736,6 +736,7 @@ def test_create_attachment(mocker, function_name, attachment_type, args, client)
     mocker.patch(f'MicrosoftGraphMail.GraphMailUtils.{function_name}', return_value=function_name)
     raw_response = {'@odata.type': f'#microsoft.graph.{attachment_type}'}
     user_id = 'ex@example.com'
+    args = {}
     called_function = GraphMailUtils.create_attachment(raw_response, user_id, args, client)
     assert called_function == function_name
 
