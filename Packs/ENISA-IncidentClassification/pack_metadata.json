@@ -1,0 +1,21 @@
+{
+    "name": "ENISA - Incident Classification",
+    "description": "ENISA - Incident Classification - Boosting Cybersecurity - Together, we can build a Safer Digital Future\n\nThis content pack includes:\nENISA Taxonomy: A playbook to classify the incident according to ENISA taxonomy.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Luis Banza, Rodrigo Cardoso, Helder Fernandes, Celson Junior, Miguel Nogueira, GALP CSIRT TEAM  ",
+    "url": "",
+    "email": "",
+    "created": "2024-10-21T10:50:58Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Galp-Csirt-Team"
+    ]
+}
