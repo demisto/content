@@ -190,7 +190,7 @@ alter
                                   check_os_field ~= "chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
                                   check_os_field ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS,
                                   check_os_field ~= "scada", XDM_CONST.OS_FAMILY_SCADA, 
-                                  check_os_field = null, null, to_string(operatingSystem)),
+                                  check_os_field = null, null, to_string(check_os_field)),
   xdm.event.outcome_reason = status -> failureReason,
   xdm.alert.description = status -> additionalDetails,
   xdm.network.http.browser = deviceDetail -> browser,
@@ -252,7 +252,7 @@ alter
                                   get_parsed_fields_DeviceOSType ~= "chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
                                   get_parsed_fields_DeviceOSType ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS,
                                   get_parsed_fields_DeviceOSType ~= "scada", XDM_CONST.OS_FAMILY_SCADA, 
-                                  get_parsed_fields_DeviceOSType = null, null, to_string(operatingSystem)),
+                                  get_parsed_fields_DeviceOSType = null, null, to_string(get_parsed_fields_DeviceOSType)),
   xdm.target.host.hostname = parsed_fields -> targetTenant,
   xdm.target.host.device_category = parsed_fields -> targetEntityType,
   xdm.event.operation_sub_type = activityDisplayName;
