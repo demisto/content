@@ -227,12 +227,7 @@ tasks:
       id: a5a61e73-9a5f-4002-8999-d67922a6c3ad
       version: -1
       name: Search for suspicious-related alerts by MITRE Technique
-      description: |-
-        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      description: "This task searches for Cortex XSIAM suspicious alerts related to the current incident by Mitre Technique, indicating that the alert is part of an attack pattern.\n\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1003 - OS Credential Dumping \n- T1036 - Masquerading \n- T1552 - Unsecured Credentials \n- T1059 - Command and Scripting Interpreter"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
