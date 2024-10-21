@@ -823,7 +823,7 @@ def search_mailboxes(protocol, filter, limit, mailbox_search_scope=None, email_a
         Exception: If both mailbox_search_scope and email_addresses are provided, or if no searchable mailboxes are found.
     """
     mailbox_ids = []
-    limit = int(limit) if limit else SEARCH_MAILBOXES_LIMIT
+    limit = arg_to_number(limit) if limit else SEARCH_MAILBOXES_LIMIT
     if mailbox_search_scope is not None and email_addresses is not None:
         raise Exception("Use one of the arguments - mailbox-search-scope or email-addresses, not both")
     if email_addresses:
