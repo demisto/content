@@ -8,7 +8,8 @@ MAX_BULK_SIZE_ALLOWED = 10
 
 
 class RESULTS_SUMMARY:
-    def __init__(self):
+    def __init__(self, playbooks_dict):
+        self.playbooks_dict = playbooks_dict
         self.results_summary: dict = {
             "success": {},
             "failure_create": {},
@@ -52,18 +53,24 @@ class RESULTS_SUMMARY:
 
         if self.results_summary["success"]:
             for playbook_success, alerts_success in self.results_summary["success"].items():
+                playbook_name = get_playbook_name(playbook_success, self.playbooks_dict)
                 final_message.append(
-                    f"Playbook ID '{playbook_success}' was set successfully for alerts: "
-                    f"{sorted(alerts_success)}.")
+                    f"Playbook {'with ID ' + playbook_success if not playbook_name else f'{playbook_name} with ID {playbook_success}'} "
+                    f"was set successfully for alerts: {sorted(alerts_success)}.")
 
         if self.results_summary["failure_create"]:
             for playbook_failure_create, alerts_fail in self.results_summary["failure_create"].items():
-                final_message.append(f"Playbook ID '{playbook_failure_create}' could not be executed for alerts: "
-                                     f"{sorted(alerts_fail)} due to failure in creating an investigation playbook.")
+                playbook_name = get_playbook_name(playbook_failure_create, self.playbooks_dict)
+                final_message.append(
+                    f"Playbook {'with ID ' + playbook_failure_create if not playbook_name else f'{playbook_name} with ID {playbook_failure_create}'} "
+                    f"could not be executed for alerts: {sorted(alerts_fail)} due to failure in creating an investigation playbook.")
 
         if self.results_summary["failure_set"]:
             for playbook_failure_set, alerts_fail_set in self.results_summary["failure_set"].items():
-                final_message.append(f"Playbook ID '{playbook_failure_set}' was not found for alerts {sorted(alerts_fail_set)}.")
+                playbook_name = get_playbook_name(playbook_failure_set, self.playbooks_dict)
+                final_message.append(
+                    f"Playbook {'with ID ' + playbook_failure_set if not playbook_name else f'{playbook_name} with ID {playbook_failure_set}'} "
+                    f"was not found for alerts {sorted(alerts_fail_set)}.")
 
         if reopened_alerts := self.results_summary["reopened"]:
             final_message.append(f"Alerts {sorted(reopened_alerts)} have been reopened.")
@@ -71,6 +78,9 @@ class RESULTS_SUMMARY:
         final_message.extend(self.results_summary["others"])
         return '\n'.join(final_message)
 
+def get_playbook_name(playbook_id: str, playbook_dict: dict):
+    if playbook_id in playbook_dict:
+        return playbook_dict[playbook_id]
 
 def get_playbooks_dict():
     """
@@ -284,7 +294,6 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
 
 def main():
     try:
-        results_summary = RESULTS_SUMMARY()
         args = demisto.args()
         incidents = get_incidents_by_query(args)
         if not incidents:
@@ -298,6 +307,7 @@ def main():
         if playbook_id or playbook_name:
             playbook_id = get_playbook_id(playbook_id, playbook_name, playbooks_dict)
 
+        results_summary = RESULTS_SUMMARY(playbooks_dict)
         if not playbook_id:
             split_by_playbooks(incidents, limit, reopen_closed_inv, playbooks_dict, results_summary)
         else:
