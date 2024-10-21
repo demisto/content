@@ -1227,7 +1227,7 @@ def main():
     registration_id_and_url = registration_id_and_url.split('@')
     if len(registration_id_and_url) != 2:
         if is_fr:
-            token_retrieval_url = "https://cortex-gateway-dev.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"
+            token_retrieval_url = "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"
         else:
             token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
     else:
