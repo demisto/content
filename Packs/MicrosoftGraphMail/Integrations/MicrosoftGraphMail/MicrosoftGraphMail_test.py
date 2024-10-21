@@ -636,16 +636,18 @@ def test_build_message():
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_get_attachment(client):
+def test_get_attachment_as_command_result(client):
     """
     Given:
         - raw response returned from get_attachment_command
 
     When:
         - response type is itemAttachment and 'item_result_creator' is called
+        - The 'should_download_message_attachment' command argument value is False (by default)
 
     Then:
         - Validate that the message object created successfully
+        - GraphMailUtils.item_result_creator function should return a command result
 
     """
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
@@ -658,6 +660,34 @@ def test_get_attachment(client):
         output = res.to_context().get('EntryContext', {})
         assert output.get(output_prefix).get('ID') == 'exampleID'
         assert output.get(output_prefix).get('Subject') == 'Test it'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachment_as_file_result(mocker, client):
+    """
+    Given:
+        - raw response returned from get_attachment_command
+
+    When:
+        - response type is itemAttachment and 'item_result_creator' is called.
+        - The 'should_download_message_attachment' command argument is True
+
+    Then:
+        - Validate that the message object created successfully
+        - GraphMailUtils.item_result_creator function should return a command result
+
+    """
+
+    mocker.patch.object(MsGraphMailBaseClient, '_get_attachment_mime', return_value='raw data')
+    with open('test_data/mail_with_attachment') as mail_json:
+        user_id = 'ex@example.com'
+        args = {'message_id': 'example_message_id', 'attachment_id': 'example_attachment_id',
+                'should_download_message_attachment': True}
+        raw_response = json.load(mail_json)
+        res = GraphMailUtils.item_result_creator(raw_response, user_id, args, client)
+        assert isinstance(res, dict)
+        assert res['File'] == 'Test_it.eml'
+        assert res['FileID']
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])

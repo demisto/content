@@ -790,8 +790,9 @@ def test_get_attachment_unsupported_type(client):
     from MicrosoftGraphListener import GraphMailUtils
     with open('test_data/mail_with_unsupported_attachment.txt') as mail_json:
         user_id = 'ex@example.com'
+        args = {}
         raw_response = json.load(mail_json)
-        res = GraphMailUtils.item_result_creator(raw_response, user_id)
+        res = GraphMailUtils.item_result_creator(raw_response, user_id, args, client)
         assert isinstance(res, CommandResults)
         output = res.to_context().get('HumanReadable', '')
         assert 'Integration does not support attachments from type #microsoft.graph.contact' in output
