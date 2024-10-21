@@ -3,7 +3,7 @@ args:
   description: War room entryID of the file to read.
   name: entryID
   required: true
-comment: Read the license_data.log file extracted from the log bundle
+comment: Read the license_data.log file extracted from the log bundle.
 commonfields:
   id: HealthCheckLicenseData
   version: -1
@@ -12,7 +12,7 @@ enabled: true
 name: HealthCheckLicenseData
 outputs:
 - contextPath: FileData
-  description: Data read from war room file
+  description: Data read from the War Room file.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
