@@ -1,6 +1,6 @@
-id: Netcat makes or gets connections
+id: Netcat Makes or Gets Connections
 version: -1
-name: Netcat makes or gets connections
+name: Netcat Makes or Gets Connections
 description: "This playbook is designed to handle the following alerts:\n \n- Netcat makes or gets connections\n\nThe playbook executes the following stages:\n\nAnalysis:\n\n- Investigate the IP and Domain  reputation\n- Search previous similar alerts\n\nRemediation:\n \n- Handles malicious alerts by terminating the causality process."
 tags:
 - T1090 - Proxy

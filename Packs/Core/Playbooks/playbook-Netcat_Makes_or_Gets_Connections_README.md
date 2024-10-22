@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Netcat makes or gets connections](../doc_files/Netcat_makes_or_gets_connections.png)
+![Netcat Makes or Gets Connections](../doc_files/Netcat_Makes_or_Gets_Connections.png)
