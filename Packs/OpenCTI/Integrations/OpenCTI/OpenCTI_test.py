@@ -15,22 +15,22 @@ class Client:
     external_reference = ExternalReference
 
 
-def test_get_indicators(mocker):
-    """Tests get_indicators function
+def test_get_observables(mocker):
+    """Tests get_observables function
     Given
-        The following indicator types: 'registry key', 'account' that were chosen by the user.
+        The following observable types: 'registry key', 'account' that were chosen by the user.
     When
-        - `fetch_indicators_command` or `get_indicators_command` are calling the get_indicators function
+        - `fetch_observables_command` or `get_observables_command` are calling the get_observables function
     Then
-        - convert the result to indicators list
-        - validate the length of the indicators list
+        - convert the result to observables list
+        - validate the length of the observables list
         - validate the new_last_id that is saved into the integration context is the same as the ID returned by the
             command.
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    indicators = get_indicators(client, indicator_types=['registry key', 'account'], limit=10)
-    assert len(indicators) == 2
+    observables = get_observables(client, observable_types=['registry key', 'account'], limit=10)
+    assert len(observables) == 2
 
 
 @pytest.mark.parametrize(
@@ -38,41 +38,41 @@ def test_get_indicators(mocker):
         ([{"created_at": "2022-10-24T18:16:52.678Z", "entity_type": "IPv4-Addr", "id": "id", "observable_value": "8.8.8.8",
            "spec_version": "2.1", "standard_id": "standard_id", "updated_at": "2022-10-24T18:16:52.678Z", "value": "8.8.8.8",
            "x_opencti_score": 50}], "8.8.8.8", 1, "8.8.8.8")])
-def test_get_indicators_value_argument(mocker, response_mock, value, expected_length, expected_value):
-    """Tests get_indicators function
+def test_get_observables_value_argument(mocker, response_mock, value, expected_length, expected_value):
+    """Tests get_observables function
     Given
         A value to filter by
     When
-        - calling get_indicators
+        - calling get_observables
     Then
         - Ensure that only the result with the same given value is returned.
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=response_mock)
-    indicators = get_indicators(client, ["ALL"], search=value)
-    assert len(indicators) == expected_length
-    assert indicators[0].get('value') == expected_value
+    observables = get_observables(client, ["ALL"], search=value)
+    assert len(observables) == expected_length
+    assert observables[0].get('value') == expected_value
 
 
-def test_get_indicators_command(mocker):
-    """Tests get_indicators_command function
+def test_get_observables_command(mocker):
+    """Tests get_observables_command function
     Given
-        The following indicator types: 'registry key', 'account' that were chosen by the user and 'limit': 2
+        The following observable types: 'registry key', 'account' that were chosen by the user and 'limit': 2
     When
-        - Calling `get_indicators_command`
+        - Calling `get_observables_command`
     Then
         - convert the result to human readable table
         - validate the readable_output, raw_response.
     """
     client = Client
     args = {
-        'indicator_types': 'registry key,account',
+        'observable_types': 'registry key,account',
         'limit': 2
     }
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    results: CommandResults = get_indicators_command(client, args)
+    results: CommandResults = get_observables_command(client, args)
     assert len(results.raw_response) == 2
-    assert "Indicators" in results.readable_output
+    assert "Observables" in results.readable_output
 
 
 def test_get_indicators_command_no_parameters(mocker):
@@ -126,73 +126,73 @@ def test_get_indicators_command_with_just_score_start(mocker):
 def test_get_indicators_command_with_score(mocker):
     """Tests get_indicators_command function with a specified score
     Given
-        The following indicator types: 'registry key', 'account' that were chosen by the user and a specified 'score': 50
+        The following observable types: 'registry key', 'account' that were chosen by the user and a specified 'score': 50
     When
-        - Calling `get_indicators_command`
+        - Calling `get_observables_command`
     Then
-        - Verify that the result includes indicators with a score of 50.
+        - Verify that the result includes observables with a score of 50.
     """
     client = Client
     args = {
-        'indicator_types': 'registry key,account',
+        'observable_types': 'registry key,account',
         'score': '50'
     }
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    results: CommandResults = get_indicators_command(client, args)
+    results: CommandResults = get_observables_command(client, args)
     assert len(results.raw_response) == 2
-    for indicator in results.raw_response:
-        assert indicator.get('x_opencti_score') == 50
+    for observable in results.raw_response:
+        assert observable.get('x_opencti_score') == 50
 
 
-def test_get_indicators_command_with_no_data_to_return(mocker):
-    """Tests get_indicators_command function with no data to return
+def test_get_observables_command_with_no_data_to_return(mocker):
+    """Tests get_observables_command function with no data to return
     Given
-        The following indicator types: 'registry key', 'account' that were chosen by the user.
+        The following observable types: 'registry key', 'account' that were chosen by the user.
     When
-        - Calling `get_indicators_command`
+        - Calling `get_observables_command`
     Then
-        - validate the response to have a "No indicators" string
+        - validate the response to have a "No observables" string
     """
     client = Client
     args = {
-        'indicator_types': ['registry key', 'account']
+        'observable_types': ['registry key', 'account']
     }
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_WITHOUT_INDICATORS)
-    results: CommandResults = get_indicators_command(client, args)
-    assert "No indicators" in results.readable_output
+    results: CommandResults = get_observables_command(client, args)
+    assert "No observables" in results.readable_output
 
 
-def test_indicator_delete_command(mocker):
-    """Tests indicator_delete_command function
+def test_observable_delete_command(mocker):
+    """Tests observable_delete_command function
     Given
-        id of indicator to delete
+        id of observable to delete
     When
-        - Calling `indicator_delete_command`
+        - Calling `observable_delete_command`
     Then
-        - validate the response to have a "Indicator deleted." string
+        - validate the response to have a "Observable deleted." string
     """
     client = Client
     args = {
         'id': '123456'
     }
-    mocker.patch.object(client.stix_cyber_observable, 'delete', return_value="Indicator deleted")
-    results: CommandResults = indicator_delete_command(client, args)
-    assert "Indicator deleted" in results.readable_output
+    mocker.patch.object(client.stix_cyber_observable, 'delete', return_value="Observable deleted")
+    results: CommandResults = observable_delete_command(client, args)
+    assert "Observable deleted" in results.readable_output
 
 
 @pytest.mark.parametrize(argnames="field, value",
                          argvalues=[('score', '50'),
                                     ('description', 'new description')])
-def test_indicator_field_update_command(mocker, field, value):
-    """Tests indicator_field_update_command function
+def test_observable_field_update_command(mocker, field, value):
+    """Tests observable_field_update_command function
     Given
-        id of indicator to update
+        id of observable to update
         field to update
         value to update
     When
-        - Calling `indicator_field_update_command`
+        - Calling `observable_field_update_command`
     Then
-        - validate the response to have a "Indicator deleted." string and context as expected
+        - validate the response to have a "Observable deleted." string and context as expected
     """
     client = Client
     args = {
@@ -201,21 +201,21 @@ def test_indicator_field_update_command(mocker, field, value):
         'value': value
     }
     mocker.patch.object(client.stix_cyber_observable, 'update_field', return_value={'id': '123456'})
-    results: CommandResults = indicator_field_update_command(client, args)
+    results: CommandResults = observable_field_update_command(client, args)
     assert "updated successfully" in results.readable_output
     assert {'id': '123456'} == results.outputs
 
 
-def test_indicator_create_command(mocker):
-    """Tests indicator_create_command function
+def test_observable_create_command(mocker):
+    """Tests observable_create_command function
     Given
-        type of indicator to create
+        type of observable to create
         score to create
         data to create
     When
-        - Calling `indicator_create_command`
+        - Calling `observable_create_command`
     Then
-        - validate the response to have a "Indicator created successfully." string and context as expected
+        - validate the response to have a "Observable created successfully." string and context as expected
     """
     client = Client
     args = {
@@ -224,22 +224,22 @@ def test_indicator_create_command(mocker):
         'value': 'devtest.com'
     }
     mocker.patch.object(client.stix_cyber_observable, 'create', return_value={'id': '123456'})
-    results: CommandResults = indicator_create_command(client, args)
-    assert "Indicator created successfully" in results.readable_output
+    results: CommandResults = observable_create_command(client, args)
+    assert "Observable created successfully" in results.readable_output
     assert 'id' in results.outputs
 
 
 @pytest.mark.parametrize(argnames="field, value, function_name",
                          argvalues=[('marking', 'TLP:RED', 'add_marking_definition'),
                                     ('label', 'new-label', 'add_label')])
-def test_indicator_field_add_command(mocker, field, value, function_name):
-    """Tests indicator_field_add_command function
+def test_observable_field_add_command(mocker, field, value, function_name):
+    """Tests observable_field_add_command function
         Given
-            id of indicator to add
+            id of observable to add
             field to add
             value to add
         When
-            - Calling `indicator_field_add_command`
+            - Calling `observable_field_add_command`
         Then
             - validate the response to have a "added successfully." string at human readable
         """
@@ -253,21 +253,21 @@ def test_indicator_field_add_command(mocker, field, value, function_name):
     mocker.patch.object(client.marking_definition, 'create', return_value={'id': '123456'})
     mocker.patch.object(client.stix_cyber_observable, function_name, return_value=True)
 
-    results: CommandResults = indicator_field_add_command(client, args)
+    results: CommandResults = observable_field_add_command(client, args)
     assert "successfully" in results.readable_output
 
 
 @pytest.mark.parametrize(argnames="field, value, function_name",
                          argvalues=[('marking', 'TLP:RED', 'remove_marking_definition'),
                                     ('label', 'new-label', 'remove_label')])
-def test_indicator_field_remove_command(mocker, field, value, function_name):
-    """Tests indicator_field_remove_command function
+def test_observable_field_remove_command(mocker, field, value, function_name):
+    """Tests observable_field_remove_command function
     Given
-        id of indicator to remove
+        id of observable to remove
         field to remove
         value to remove
     When
-        - Calling `indicator_field_remove_command`
+        - Calling `observable_field_remove_command`
     Then
         - validate the response to have a "removed successfully." string at human readable
     """
@@ -282,7 +282,7 @@ def test_indicator_field_remove_command(mocker, field, value, function_name):
     mocker.patch.object(client.marking_definition, 'create', return_value={'id': '123456'})
     mocker.patch.object(client.stix_cyber_observable, function_name, return_value=True)
 
-    results: CommandResults = indicator_field_remove_command(client, args)
+    results: CommandResults = observable_field_remove_command(client, args)
     assert "successfully" in results.readable_output
 
 
