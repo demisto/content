@@ -1517,8 +1517,9 @@ def get_attachment_command(client: Client, args: dict) -> list:
     sys_id = str(args.get('sys_id', ''))
 
     result = client.get_ticket_attachment_entries(sys_id)  # type: ignore
-
-    return result
+    if result:
+        return [CommandResults(readable_output=f'Successfully retrieved attachments for ticket with sys id {sys_id}.'),result]
+    return [CommandResults(readable_output=f'Ticket with sys id {sys_id} has no attachments to retrieve.')]
 
 
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:

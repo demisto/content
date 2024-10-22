@@ -241,12 +241,6 @@ configuration:
   name: look_back
   type: 0
   required: false
-- additionalinfo: Mirror all war room entries marked as Note to ServiceNow even if not tagged as comment or work_note.
-  defaultvalue: 'false'
-  display: Mirror All Notes to ServiceNow
-  name: mirror_all_notes
-  required: false
-  type: 8
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
