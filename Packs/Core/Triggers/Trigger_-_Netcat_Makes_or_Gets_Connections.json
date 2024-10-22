@@ -10,7 +10,7 @@
             "AND": [
                 {
                     "SEARCH_FIELD": "alert_name",
-                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_TYPE": "EQ",
                     "SEARCH_VALUE": "Netcat Makes or Gets Connections"
                 }
             ]
