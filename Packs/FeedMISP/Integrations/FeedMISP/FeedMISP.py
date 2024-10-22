@@ -561,9 +561,14 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
-        # If the indicators created successfully , update the last run information
-        last_run_timestamp = latest_indicator_timestamp
-        last_run_value = latest_indicator_value
+
+        # If the indicators created successfully and the new indicator timestamp is bigger than last run timestamp,
+        # update the last run timestamp and last indicator value
+        if ((last_run_timestamp and latest_indicator_timestamp
+             and latest_indicator_timestamp > last_run_timestamp)
+                or not last_run_timestamp):
+            last_run_timestamp = latest_indicator_timestamp
+            last_run_value = latest_indicator_value
 
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.
