@@ -529,6 +529,9 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     }
     demisto.debug(f'[test] chrome_manager {instance_id_dict=}')
     if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
+        if instance_id:
+            demisto.debug(f'[test] chrome_manager: first cond {instance_id_dict.keys()=}')
+        demisto.debug(f'[test] chrome_manager: first cond {chrome_instances_contents}')
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
