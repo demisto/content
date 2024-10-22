@@ -263,7 +263,7 @@ def count_running_chromes(port):
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
-    demisto.debug(f'get_chrome_browser {DEFAULT_RETRIES_COUNT}')
+    demisto.debug(f'[test] get_chrome_browser {DEFAULT_RETRIES_COUNT}')
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
             demisto.debug(f"Trying to connect to {browser_url=}, iteration {i + 1}/{DEFAULT_RETRIES_COUNT}")
@@ -317,7 +317,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
     :param chrome_port: Port for Chrome instance.
     """
     existing_data = read_json_file()
-    demisto.debug(f"increase_counter_chrome_instances_file {existing_data}")
+    demisto.debug(f"[test] increase_counter_chrome_instances_file {existing_data}")
     if chrome_port in existing_data:
         existing_data[chrome_port][RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
         write_chrome_instances_file(existing_data)
@@ -333,7 +333,7 @@ def terminate_port_chrome_instances_file(chrome_port: str = ''):
     :param chrome_port: Port for Chrome instance.
     """
     existing_data = read_json_file()
-    demisto.debug(f"terminate_port_chrome_instances_file {existing_data}")
+    demisto.debug(f"[test] terminate_port_chrome_instances_file {existing_data}")
     if chrome_port in existing_data:
         del existing_data[chrome_port]
         write_chrome_instances_file(existing_data)
@@ -348,7 +348,7 @@ def add_new_chrome_instance(new_chrome_instance_content: Optional[Dict] = None) 
 
     """
     existing_data = read_json_file()
-    demisto.debug(f"add_new_chrome_instance {existing_data}")
+    demisto.debug(f"[test] add_new_chrome_instance {existing_data}")
     if new_chrome_instance_content:
         existing_data.update(new_chrome_instance_content)
 
