@@ -1,0 +1,18 @@
+[
+    {
+        "name": "my phone",
+        "clientId": "abc",
+        "assigned": [
+            {
+                "name": "Allowed",
+                "type": "ssid",
+                "groupPolicyId": "100",
+                "ssid": [
+                    {
+                        "ssidNumber": 1
+                    }
+                ]
+            }
+        ]
+    }
+]

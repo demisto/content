@@ -42,6 +42,25 @@ def test_users_search_command(client, requests_mock):
     assert results.outputs.get('id') == '01'
 
 
+def test_users_search_by_email_command(client, requests_mock):
+    """
+        When: Running zimperium-users-search
+        Given: team_id and user_id
+        Then: validate the command result returned.
+        """
+    args = {'team_id': '3', 'email': 'user1@email.com'}
+    mock_response_users_search = util_load_json(
+        './test_data/users_search_by_email.json')
+
+    requests_mock.get(f'{SERVER_URL}/auth/public/v1/users', json=mock_response_users_search)
+    results = users_search_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.User'
+    assert results.outputs_key_field == 'id'
+    assert results.raw_response == mock_response_users_search['content']
+    assert results.outputs[0].get('id') == '01'
+
+
 def test_devices_search_command(client, requests_mock):
     """
         When: running zimperium-devices-search
@@ -362,7 +381,7 @@ def test_fetch_incidents_first_run(client, requests_mock):
     )
 
     assert len(incidents) == 2
-    assert next_run['time'] == '2023-12-12T14:59:26.000000Z'
+    assert next_run['time'] == '2023-12-12T14:59:26.000Z'
 
 
 @freeze_time("2023-12-12 15:00:00 GTM")
@@ -389,7 +408,7 @@ def test_fetch_incidents_last_run_not_empty(client, requests_mock):
     )
 
     assert len(incidents) == 1
-    assert next_run['time'] == '2023-12-12T14:59:26.000000Z'
+    assert next_run['time'] == '2023-12-12T14:59:26.000Z'
 
 
 @freeze_time("2023-12-12 15:00:00 GTM")
@@ -416,7 +435,7 @@ def test_fetch_incidents_no_new_incidents(client, requests_mock):
     )
 
     assert len(incidents) == 0
-    assert next_run['time'] == '2023-12-12T15:00:00.000000Z'
+    assert next_run['time'] == '2023-12-12T15:00:00.000Z'
 
 
 @pytest.mark.parametrize('proxy, result', [('true', True), ('false', False)])

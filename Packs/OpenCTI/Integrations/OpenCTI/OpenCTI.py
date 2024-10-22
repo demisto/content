@@ -113,14 +113,21 @@ def get_observables(
         observables: dict of observables
     """
     observable_type = build_observable_list(observable_types)
-    filters = [{
-        'key': 'entity_type',
-        'values': observable_type
-    }]
+    filters: dict[str, Any] = {
+        'mode': 'and',
+        'filters': [{
+            'key': 'entity_type',
+            'values': observable_type,
+            'operator': 'eq',
+            'mode': 'or'
+        }],
+        'filterGroups': []}
     if score:
-        filters.append({
+        filters["filters"].append({
             'key': 'x_opencti_score',
-            'values': score
+            'values': score,
+            'operator': 'eq',
+            'mode': 'or'
         })
 
     observables = client.stix_cyber_observable.list(
@@ -143,11 +150,11 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
     Returns:
         readable_output, raw_response
     """
-    observable_types = argToList(args.get("observable_types"))
+    observable_types = argToList(args.get("observable_types", "ALL"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
-    start = arg_to_number(args.get('score_start'))
-    end = arg_to_number(args.get('score_end'))  # type:ignore
+    start = arg_to_number(args.get('score_start', 0))
+    end = arg_to_number(args.get('score_end', 100))  # type:ignore
     score = args.get('score')
     search = args.get("search", "")
     scores = None
@@ -647,9 +654,10 @@ def main():
     credentials = params.get('credentials', {})
     api_key = credentials.get('password')
     base_url = params.get('base_url').strip('/')
+    verify = not argToBoolean(params.get('insecure'))
 
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error',
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=verify, log_level='error',
                                   proxies=handle_proxy())
         command = demisto.command()
         demisto.info(f"Command being called is {command}")

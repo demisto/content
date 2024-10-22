@@ -31,6 +31,7 @@ except Exception:  # noqa: S110
 pymysql.install_as_MySQLdb()
 
 GLOBAL_CACHE_ATTR = '_generic_sql_engine_cache'
+GLOBAL_ENGINE_CACHE_ATTR = '_generic_sql_engines'
 DEFAULT_POOL_TTL = 600
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -116,6 +117,7 @@ class Client:
         if cache is None:
             cache = ExpiringDict(100, max_age_seconds=self.pool_ttl)
             setattr(sqlalchemy, GLOBAL_CACHE_ATTR, cache)
+            setattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {})
         return cache
 
     def _generate_db_url(self, module):
@@ -141,14 +143,14 @@ class Client:
                    host=self.host,
                    port=arg_to_number(self.port),
                    database=self.dbname,
-                   query=self.connect_parameters)
+                   query=self.connect_parameters)  # type: ignore[arg-type]
 
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
         Creating and engine according to the instance preferences and connecting
         :return: a connection object that will be used in order to execute SQL queries
         """
-        ssl_connection = {}
+        ssl_connection: dict = {}
         module = self._convert_dialect_to_module(self.dialect)
         db_url = self._generate_db_url(module)
 
@@ -156,7 +158,7 @@ class Client:
             if self.dialect == POSTGRES_SQL:
                 ssl_connection = {'sslmode': 'require'}
             else:
-                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
+                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
 
         if self.use_pool:
             if 'expiringdict' not in sys.modules:
@@ -165,8 +167,18 @@ class Client:
             cache_key = self._get_cache_string(str(db_url), ssl_connection)
             engine = cache.get(cache_key, None)
             if engine is None:  # (first time or expired) need to initialize
+
+                cached_engines = getattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {})
+
+                if cache_key in cached_engines:
+                    # engine is None, but cache_key in cached_engines, so the ttl must have passed.
+                    # let's dispose the engine to make sure the connection is closed.
+                    cached_engines[cache_key].dispose()
+                    cached_engines.pop(cache_key)
+
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
+                cached_engines[cache_key] = engine  # Keep in cache to allow disposing later
 
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
@@ -182,9 +194,9 @@ class Client:
         :return: results of query, table headers
         """
         if type(bind_vars) is dict:
-            sql_query = text(sql_query)
+            sql_query = text(sql_query)  # type: ignore[assignment]
 
-        result = self.connection.execute(sql_query, bind_vars)
+        result = self.connection.execute(sql_query, bind_vars)  # type: ignore[call-overload]
 
         # for MSSQL autocommit is True, so no need to commit again here
         if self.dialect not in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:

@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Checkpoint - Publish&Install configuration](../doc_files/Checkpoint_-_Publish&Install_configuration.png)
+![Checkpoint - Publish&Install configuration](../doc_files/Checkpoint_-_Publish_and_Install_configuration.png)

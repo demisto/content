@@ -71,7 +71,7 @@ script:
       - 'True'
       - 'False'
       required: true
-  dockerimage: demisto/fastapi:1.0.0.32142
+  dockerimage: demisto/py3-tools:1.0.0.94051
   isfetchevents: true
   subtype: python3
 fromversion: 6.8.0

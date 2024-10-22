@@ -1,6 +1,11 @@
 Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP
 
+### Setup
+Go to the `Settings` tab on the DLP web interface. 
+Choose `Alerts` on the left menu. Follow all the steps under `Setup Instructions`.
+Make sure the toggle at the bottom is switched on.
+
 ## Configure Palo Alto Networks Enterprise DLP on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -17,7 +22,6 @@ This integration was integrated and tested with version 2.0 of Palo Alto Network
     | DLP Regions |  | False |
     | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
     | Bot Message | The message to send to the user to ask for feedback. | False |
-    | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

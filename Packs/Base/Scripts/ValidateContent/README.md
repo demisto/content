@@ -2,6 +2,7 @@ Runs validation and linting using the Demisto SDK on content items, such as inte
 This automation script is used as part of the content validation that runs as part of the contribution flow.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This automation script is used as part of the content validation that runs as pa
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ This automation script is used as part of the content validation that runs as pa
 | trust_any_certificate | Trust any certificate (not secure) to download required models from GitHub. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -31,9 +34,11 @@ This automation script is used as part of the content validation that runs as pa
 
 
 ## Script Example
+
 ```!ValidateContent entry_id=G2SUaH9ZPmfw7QHWQNk2pa@6```
 
 ## Context Example
+
 ```
 {
     "ValidationResult": [
@@ -51,7 +56,9 @@ This automation script is used as part of the content validation that runs as pa
 ```
 
 ## Human Readable Output
+
 ### Validation Results
+
 |Name|Error|Line|
 |---|---|---|
 | MyScript | The docker image tag is not the latest numeric tag, please update it. | |

@@ -382,39 +382,135 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-    def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> list[dict[str, Any]]:
-        formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
+    def get_files_exposed_to_email(self, email_account) -> list[dict[str, Any]]:
+        """Get files exposed to email. Returns a list of files exposed to email with analysis."""
         params = {
             "getTableRequest": {
-                "tableName": "DATA_RISK_MANAGEMENT_VIEW_TOP_3RD_PARTIES_DOMAIN",
+                "tableName": "data_posture_view_files_by_emails_slider",
                 "pageSize": PAGE_SIZE,
                 "fieldSorts": {
                     "sorts": [
                         {
-                            "sortBy": "last_activity",
-                            "sortDirection": "SORT_DIRECTION_ASC"
-                        },
-                        {
-                            "sortBy": "num_files",
+                            "sortBy": "last_access_date",
                             "sortDirection": "SORT_DIRECTION_DESC"
                         }
                     ]
                 },
                 "fieldFilters": {
                     "relationship": "FILTER_RELATIONSHIP_AND",
-                    "filters": {
-                        "filters": [
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
                             {
-                                "field": "last_activity",
-                                "before": {
-                                    "value": f"{formatted_date}"
+                                "relationship": "FILTER_RELATIONSHIP_AND",
+                                "fieldFilterGroups": {
+                                    "fieldFilters": [
+                                        {
+                                            "relationship": "FILTER_RELATIONSHIP_AND",
+                                            "filters": {
+                                                "filters": [
+                                                    {
+                                                        "field": "email_account",
+                                                        "stringEquals": {
+                                                            "value": f"{email_account}"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "forceEstimateSize": True
+                            }
+                        ]
+                    },
+                    "forceEstimateSize": True
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_list_of_private_emails_with_access(self) -> list[dict[str, Any]]:
+        """Get files exposed to email. Returns a list of private email addresses with access."""
+        params = {
+            "getTableRequest": {
+                "tableName": "data_posture_view_private_email_with_access",
+                "pageSize": PAGE_SIZE,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "files_num",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": []
+                    }
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> list[dict[str, Any]]:
+        formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
+        params = {
+            "getTableRequest": {
+                "tableName": "data_posture_view_3rd_parties_domain",
+                "pageSize": PAGE_SIZE,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "files_num",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_AND",
+                                "fieldFilterGroups": {
+                                    "fieldFilters": [
+                                        {
+                                            "relationship": "FILTER_RELATIONSHIP_AND",
+                                            "filters": {
+                                                "filters": [
+                                                    {
+                                                        "field": "last_activity",
+                                                        "before": {
+                                                            "value": f"{formatted_date}"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
                                 }
-                            },
-                            {
-                                "field": "data_category",
-                                "stringNotContains": {
-                                    "value": "ALL"
-                                }}
+                            }
                         ]
                     }
                 }
@@ -447,12 +543,12 @@ class RecoClient(BaseClient):
         formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
         params = {
             "getTableRequest": {
-                "tableName": "DATA_RISK_MANAGEMENT_VIEW_SHARED_TOP_EXT_DOMAIN_FILES",
-                "pageSize": 100,
+                "tableName": "data_posture_view_files_by_domain_slider",
+                "pageSize": PAGE_SIZE,
                 "fieldSorts": {
                     "sorts": [
                         {
-                            "sortBy": "data_category",
+                            "sortBy": "last_access_date",
                             "sortDirection": "SORT_DIRECTION_ASC"
                         }
                     ]
@@ -462,7 +558,7 @@ class RecoClient(BaseClient):
                     "fieldFilterGroups": {
                         "fieldFilters": [
                             {
-                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "relationship": "FILTER_RELATIONSHIP_AND",
                                 "filters": {
                                     "filters": [
                                         {
@@ -472,7 +568,7 @@ class RecoClient(BaseClient):
                                             }
                                         },
                                         {
-                                            "field": "last_access_time",
+                                            "field": "last_access_date",
                                             "before": {
                                                 "value": f"{formatted_date}"
                                             }
@@ -527,7 +623,8 @@ class RecoClient(BaseClient):
                 },
             }
         }
-        if only_sensitive:
+
+        if only_sensitive is True:
             params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"][
                 "fieldFilters"
             ].append(
@@ -537,6 +634,7 @@ class RecoClient(BaseClient):
                         "filters": [
                             {
                                 "field": "sensitivity_level",
+                                # 30 confidential
                                 "stringEquals": {"value": "30"},
                             },
                             {
@@ -547,6 +645,67 @@ class RecoClient(BaseClient):
                     },
                 }
             )
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix="/asset-management",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_assets_shared_externally(self, email_address: str) -> list[dict[str, Any]]:
+        """Get assets user has access to. Returns a list of assets."""
+        params: dict[str, Any] = {
+            "getTableRequest": {
+                "tableName": "files_view",
+                "pageSize": PAGE_SIZE,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "last_access_date",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "filters": {
+                                    "filters": [
+                                        {
+                                            "field": "permission_visibility",
+                                            "stringEquals": {
+                                                "value": "PERMISSION_TYPE_SHARED_EXTERNALLY"
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "filters": {
+                                    "filters": [
+                                        {
+                                            "field": "file_owner",
+                                            "stringContains": {
+                                                "value": f"{email_address}"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
         try:
             response = self._http_request(
                 method="POST",
@@ -603,6 +762,7 @@ class RecoClient(BaseClient):
     def get_sensitive_assets_information(self,
                                          asset_name: str | None,
                                          asset_id: str | None,
+                                         sensitive_only: bool,
                                          regex_search: bool) -> list[dict[str, Any]]:
         """Get sensitive assets' information. Returns a list of assets."""
         filter = "regexCaseInsensitive" if regex_search else "stringEquals"
@@ -628,27 +788,32 @@ class RecoClient(BaseClient):
                                         }
                                     ]
                                 },
-                            },
-                            {
-                                "relationship": "FILTER_RELATIONSHIP_OR",
-                                "filters": {
-                                    "filters": [
-                                        {
-                                            "field": "sensitivity_level",
-                                            "stringEquals": {"value": "30"},
-                                        },
-                                        {
-                                            "field": "sensitivity_level",
-                                            "stringEquals": {"value": "40"},
-                                        },
-                                    ]
-                                },
                             }
                         ]
                     },
                 },
             }
         }
+        if sensitive_only:
+            params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"][
+                "fieldFilters"
+            ].append(
+                {
+                    "relationship": "FILTER_RELATIONSHIP_OR",
+                    "filters": {
+                        "filters": [
+                            {
+                                "field": "sensitivity_level",
+                                "stringEquals": {"value": "30"},
+                            },
+                            {
+                                "field": "sensitivity_level",
+                                "stringEquals": {"value": "40"},
+                            },
+                        ]
+                    },
+                }
+            )
         try:
             response = self._http_request(
                 method="POST",
@@ -1028,6 +1193,65 @@ def get_sensitive_assets_shared_with_public_link(reco_client: RecoClient) -> Com
     )
 
 
+def get_assets_shared_externally_command(reco_client: RecoClient, email_address) -> CommandResults:
+    """Get assets shared externally ."""
+    assets = reco_client.get_assets_shared_externally(email_address)
+    assets_list = []
+    for asset in assets:
+        asset_as_dict = parse_table_row_to_dict(asset.get("cells", {}))
+        assets_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Assets",
+            assets_list,
+            headers=[
+                "asset_id",
+                "asset",
+                "data_category",
+                "data_categories",
+                "last_access_date",
+                "visibility",
+                "location",
+                "file_owner"
+            ],
+        ),
+        outputs_prefix="Reco.Assets",
+        outputs_key_field="asset_id",
+        outputs=assets_list,
+        raw_response=assets,
+    )
+
+
+def get_files_exposed_to_email_command(reco_client: RecoClient, email_account: str) -> CommandResults:
+    """Get files exposed to email. Returns a list of files exposed to email with analysis."""
+    assets = reco_client.get_files_exposed_to_email(email_account)
+    assets_list = []
+    for asset in assets:
+        asset_as_dict = parse_table_row_to_dict(asset.get("cells", {}))
+        assets_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Assets",
+            assets_list,
+            headers=[
+                "asset_id",
+                "asset",
+                "data_category",
+                "data_categories",
+                "last_access_date",
+                "visibility",
+                "location",
+                "email_account",
+                "file_owner"
+            ],
+        ),
+        outputs_prefix="Reco.Assets",
+        outputs_key_field="asset_id",
+        outputs=assets_list,
+        raw_response=assets,
+    )
+
+
 def get_3rd_parties_list(reco_client: RecoClient, last_interaction_time_in_days: int) -> CommandResults:
     """Get 3rd parties list from Reco."""
     domains = reco_client.get_3rd_parties_risk_list(last_interaction_time_in_days)
@@ -1042,9 +1266,8 @@ def get_3rd_parties_list(reco_client: RecoClient, last_interaction_time_in_days:
             headers=[
                 "domain",
                 "last_activity",
-                "num_files",
-                "num_users",
-                "data_category",
+                "files_num",
+                "users_with_access_num",
             ],
         ),
         outputs_prefix="Reco.Domains",
@@ -1071,6 +1294,7 @@ def get_files_shared_with_3rd_parties(reco_client: RecoClient,
                 "domain",
                 "location",
                 "users",
+                "file_owner",
                 "data_category",
                 "asset",
                 "last_access_date",
@@ -1086,7 +1310,13 @@ def get_files_shared_with_3rd_parties(reco_client: RecoClient,
 
 def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex_search: bool) -> CommandResults:
     """Get sensitive assets from Reco. If contains is True, the asset name will be searched as a regex."""
-    assets = reco_client.get_sensitive_assets_information(asset_name, None, regex_search)
+    assets = reco_client.get_sensitive_assets_information(asset_name, None, True, regex_search)
+    return assets_to_command_result(assets)
+
+
+def get_assets_by_id(reco_client: RecoClient, asset_id: str) -> CommandResults:
+    """Get assets from Reco by file id."""
+    assets = reco_client.get_sensitive_assets_information(None, asset_id, False, False)
     return assets_to_command_result(assets)
 
 
@@ -1152,7 +1382,7 @@ def assets_to_command_result(assets: list[dict[str, Any]]) -> CommandResults:
 
 def get_sensitive_assets_by_id(reco_client: RecoClient, asset_id: str) -> CommandResults:
     """Get sensitive assets from Reco by file id."""
-    assets = reco_client.get_sensitive_assets_information(None, asset_id, False)
+    assets = reco_client.get_sensitive_assets_information(None, asset_id, True, False)
     return assets_to_command_result(assets)
 
 
@@ -1194,8 +1424,7 @@ def fetch_incidents(
 
     existing_incidents = last_run.get("incident_ids", [])
     incidents = [
-        incident
-        for incident in incidents
+        incident for incident in incidents
         if (incident.get("severity", 0) > DEMISTO_INFORMATIONAL)
         and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]  # type: ignore
@@ -1232,6 +1461,30 @@ def get_max_fetch(max_fetch: int) -> int:
     if max_fetch > 500:
         return 500
     return max_fetch
+
+
+def get_private_email_list_with_access(reco_client):
+    result = reco_client.get_list_of_private_emails_with_access()
+    identities_list = []
+    for identity in result:
+        asset_as_dict = parse_table_row_to_dict(identity.get("cells", {}))
+        identities_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "PrivateEmails",
+            identities_list,
+            headers=[
+                "email_account",
+                "primary_email",
+                "files_num",
+                "user_category",
+            ],
+        ),
+        outputs_prefix="Reco.privateEmails",
+        outputs_key_field="email_account",
+        outputs=identities_list,
+        raw_response=result,
+    )
 
 
 def main() -> None:
@@ -1367,6 +1620,18 @@ def main() -> None:
             return_results(result)
         elif command == "reco-get-user-context-by-email-address":
             result = get_user_context_by_email_address(reco_client, demisto.args()["email_address"])
+            return_results(result)
+        elif command == "reco-get-files-exposed-to-email-address":
+            result = get_files_exposed_to_email_command(reco_client, demisto.args()["email_address"])
+            return_results(result)
+        elif command == "reco-get-assets-shared-externally":
+            result = get_assets_shared_externally_command(reco_client, demisto.args()["email_address"])
+            return_results(result)
+        elif command == "reco-get-private-email-list-with-access":
+            result = get_private_email_list_with_access(reco_client)
+            return_results(result)
+        elif command == "reco-get-assets-by-id":
+            result = get_assets_by_id(reco_client, demisto.args()["asset_id"])
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

@@ -1,27 +1,31 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-import pandas as pd
-import numpy as np
-import collections
-import dill as pickle
 import builtins
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn import cluster
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.manifold import TSNE
+import collections
+import math
 import hdbscan
 from datetime import datetime
-from typing import Type, Tuple, Dict, List, Union
-import math
 
-GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
-                          "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
-                          "the group.\n #### - For %s incidents, we didn’t find any matching.\n" \
-                          " #### - Model was trained on **%s**.\n"
+import dill as pickle
+import numpy as np
+import pandas as pd
+from CommonServerUserPython import *
+from sklearn import cluster
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.manifold import TSNE
+from sklearn.pipeline import Pipeline
+
+
+GENERAL_MESSAGE_RESULTS = '\n'.join((
+    "#### - Successfully grouped **{} incidents into {} groups**.",
+    "#### - The grouping was based on the **{!r}** field(s).",
+    "#### - Each group name is based on the majority value of the **{!r}** field in the group.",
+    "#### - No matches were found for {} incident(s).",
+    "#### - Model was trained on **{}**.\n",
+))
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s. please either enlarge the time period " \
@@ -32,7 +36,6 @@ MESSAGE_INVALID_FIELD = "- %s field(s) has/have too many missing values and won'
 MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = "- Empty or incorrect fieldsForClustering " \
                                       "for training OR fieldForClusterName is incorrect."
 
-PREFIXES_TO_REMOVE = ['incident.']
 REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
                       re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
@@ -45,7 +48,6 @@ HDBSCAN_PARAMS = {
 }
 FAMILY_COLUMN_NAME = 'label'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
-MESSAGE_ERROR_MESSAGE = 'Model cannot be loaded'
 CLUSTERING_STEP_PIPELINE = 'clustering'
 PREPROCESSOR_STEP_PIPELINE = 'preprocessor'
 
@@ -53,18 +55,17 @@ PALETTE_COLOR = ['0048BA', '#B0BF1A	', '#7CB9E8	', '#B284BE	', '#E52B50', '#FFBF
                  '#D0FF14']
 
 
-class Clustering(object):
+class Clustering:
     """
     Class to build a clustering model.
     """
 
     def __init__(self, params, model_name='hdbscan'):
         """
-        Instiantiate class object for clustering
+        Instantiate class object for clustering
         """
 
         self.model_name = model_name
-        self.model_glo = None
         self.model = None
 
         # Data
@@ -98,21 +99,18 @@ class Clustering(object):
 
     def create_model(self, parameters={}):
         """ Create a new model.
-        This function takes in parameter a dictionnary.
-        The keys of this dictionnary should comply with the Scikit Learn
-        naming.
+        This function takes in parameter a dictionary.
+        The keys of this dictionary should comply with the scikit-learn naming.
         """
         if self.model_name == "DBSCAN":
             self.model = cluster.DBSCAN()
         elif self.model_name == "KMeans":
             self.model = cluster.KMeans()
         elif self.model_name == "hdbscan":
-            self.model_glo = hdbscan
-            self.model = self.model_glo.HDBSCAN()
+            self.model = hdbscan.HDBSCAN()
 
         for key, value in parameters.items():
             setattr(self.model, key, value)
-        return
 
     def get_data(self, X: np.ndarray, y: pd.DataFrame):
         """
@@ -140,11 +138,10 @@ class Clustering(object):
         else:
             self.model.fit(X)  # type: ignore
             if hasattr(self.model, 'labels_'):
-                self.results = self.model.labels_.astype(np.int)  # type: ignore
+                self.results = self.model.labels_.astype(int)  # type: ignore
             else:
                 self.results = self.model.predict(X)  # type: ignore
         self.number_clusters = len(set(self.results[self.results >= 0]))
-        return
 
     def reduce_dimension(self, dimension=2):
         """
@@ -153,8 +150,10 @@ class Clustering(object):
         :return:
         """
         if not self.TSNE_:
-            tsne = TSNE(n_jobs=-1, n_components=dimension, learning_rate=1000)
-            self.data_2d = tsne.fit_transform(pd.DataFrame(self.centers).T)
+            samples = pd.DataFrame(self.centers).T
+            perplexity = float(min(30, samples.shape[0] - 1))
+            tsne = TSNE(perplexity=perplexity, n_jobs=-1, n_components=dimension, learning_rate=1000)
+            self.data_2d = tsne.fit_transform(samples)
             for coordinates, center in zip(self.data_2d, pd.DataFrame(self.centers).T.index):
                 self.centers_2d[center] = coordinates
             self.TSNE_ = True
@@ -172,12 +171,12 @@ class Clustering(object):
                 self.centers[cluster_] = center
 
 
-class PostProcessing(object):
+class PostProcessing:
     """
     Class to analyze the clustering
     """
 
-    def __init__(self, clustering: Type[Clustering], threshold: float, generic_cluster_name: bool):
+    def __init__(self, clustering: Clustering, threshold: float, generic_cluster_name: bool):
         """
         Instantiate class object for visualization
         :param clustering: Object Clustering
@@ -185,22 +184,22 @@ class PostProcessing(object):
         :param generic_cluster_name: Boolean if cluster don't have name and needs generic naming
         :return: Instantiate class object for visualization
         """
-        self.clustering = clustering  # type: Type[Clustering]
-        self.threshold = threshold  # type: float
+        self.clustering: Clustering = clustering
+        self.threshold: float = threshold
         self.generic_cluster_name = generic_cluster_name
         self.stats = {}  # type: ignore
         self.statistics()
         self.compute_dist()
         self.date_training = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
-        self.summary = None  # type: ignore
-        self.global_msg = None  # type: ignore
-        self.json = None  # type: ignore
+        self.summary: Optional[dict] = None
+        self.global_msg: Optional[str] = None
+        self.json: Optional[str] = None
+        self.summary_description: Optional[str] = None
 
     def statistics(self):
         """
         Compute statistics of the clusters
         """
-        # plot_silhouette = self.com_silhouette()
         self.stats['General'] = {}
         self.stats['General']['Nb sample'] = self.clustering.raw_data.shape[0]  # type: ignore
         self.stats['General']['Nb cluster'] = self.clustering.number_clusters
@@ -211,11 +210,11 @@ class PostProcessing(object):
             self.stats[number_cluster]['number_samples'] = sum(
                 self.clustering.model.labels_ == number_cluster)  # type: ignore
             ind = np.where(self.clustering.model.labels_ == number_cluster)[0]  # type: ignore
-            selected_data = [x for x in self.clustering.raw_data.iloc[ind][FAMILY_COLUMN_NAME]]  # type: ignore
+            selected_data = list(self.clustering.raw_data.iloc[ind][FAMILY_COLUMN_NAME])  # type: ignore
             counter = collections.Counter(selected_data)
             total = sum(dict(counter).values(), 0.0)
             dist = {k: v * 100 / total for k, v in counter.items()}
-            dist = dict((k, v) for k, v in dist.items() if v >= 1)
+            dist = {k: v for k, v in dist.items() if v >= 1}
             self.stats[number_cluster]['distribution sample'] = dist
 
     def compute_dist(self):
@@ -238,9 +237,9 @@ class PostProcessing(object):
                         self.clustering.model.labels_ == cluster_number].label.isin(  # type: ignore
                         list(chosen.keys())))  # type: ignore
                 dist_total[cluster_number]['distribution'] = dist
-                cluster_name = ' , '.join([x for x in chosen.keys()])[:15]
-                if cluster_name in duplicate_family.keys():
-                    new_cluster_name = '%s_%s' % (cluster_name, str(duplicate_family[cluster_name]))
+                cluster_name = ' , '.join(chosen)[:15]
+                if cluster_name in duplicate_family:
+                    new_cluster_name = f'{cluster_name}_{duplicate_family[cluster_name]}'
                     duplicate_family[cluster_name] += 1
                 else:
                     new_cluster_name = cluster_name
@@ -256,32 +255,67 @@ class PostProcessing(object):
                 dist_total[cluster_number]['number_samples'] = self.stats[cluster_number]['number_samples']
                 dist_total[cluster_number]['clusterName'] = 'Cluster %s' % str(cluster_number)
         self.stats['number_of_clusterized_sample_after_selection'] = sum(dist_total[cluster_number]['number_samples']
-                                                                         for cluster_number in dist_total.keys())
+                                                                         for cluster_number in dist_total)
         self.selected_clusters = dist_total
 
 
-def extract_fields_from_args(arg: List[str]) -> List[str]:
+class Tfidf(BaseEstimator, TransformerMixin):
+    """
+    TFIDF transformer
+    """
+
+    def __init__(self, normalize_function):
+        """
+        :param model_params: parameters of TFIDF
+        :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
+        """
+        self.normalize_function = normalize_function
+        self.vec = TfidfVectorizer(**TFIDF_PARAMS)
+
+    def fit(self, x, y=None):
+        """
+        Fit TFIDF transformer
+        :param x: incident on which we want to fit the transfomer
+        :return: self
+        """
+        feature_name = x.columns[0]
+        if self.normalize_function:
+            x = x[feature_name].apply(self.normalize_function)
+        self.vec.fit(x)
+        return self
+
+    def transform(self, x):
+        """
+        Transform x with the trained vectorizer
+        :param x: DataFrame or np.array
+        :return:
+        """
+        feature_name = x.columns[0]
+        if self.normalize_function:
+            x = x[feature_name].apply(self.normalize_function)
+        else:
+            x = x[feature_name]
+        return self.vec.transform(x).toarray()
+
+
+def extract_fields_from_args(arg: list[str]) -> list[str]:
     """
     Extract field from field with prefixe (like incident.commandline)
     :param arg: List of field
     :return: List of field without prefix
     """
-    fields_list = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in arg if x]
+    fields_list = [preprocess_incidents_field(x) for x in arg if x]
     return list(dict.fromkeys(fields_list))
 
 
-def preprocess_incidents_field(incidents_field: str, prefix_to_remove: List[str]) -> str:
+def preprocess_incidents_field(incidents_field: str) -> str:
     """
     Remove prefixe from incident fields
     :param incidents_field: field
     :param prefix_to_remove: prefix_to_remove
     :return: field without prefix
     """
-    incidents_field = incidents_field.strip()
-    for prefix in prefix_to_remove:
-        if incidents_field.startswith(prefix):
-            incidents_field = incidents_field[len(prefix):]
-    return incidents_field
+    return incidents_field.strip().removeprefix('incident.')
 
 
 def get_args():  # type: ignore
@@ -326,7 +360,7 @@ def get_args():  # type: ignore
         number_feature_per_field, analyzer
 
 
-def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
+def get_all_incidents_for_time_window_and_type(populate_fields: list[str], from_date: str, to_date: str,
                                                query_sup: str, limit: int, incident_type: str):  # type: ignore
     """
     Get incidents with given parameters and return list of incidents
@@ -389,7 +423,7 @@ def match_one_regex(string: str, patterns) -> bool:  # type: ignore
         return match_one_regex(string, patterns[1:]) or bool(patterns[0].match(string))
 
 
-def recursive_filter(item, regex_patterns: List, *fieldsToRemove):  # type: ignore
+def recursive_filter(item, regex_patterns: list, *fieldsToRemove):  # type: ignore
     """
 
     :param item: Dict of list of Dict
@@ -415,12 +449,13 @@ def normalize_global(obj):
     if isinstance(obj, float) or not obj:
         return " "
     if check_list_of_dict(obj):
-        obj = {k: v for k, v in enumerate(obj)}  # type: ignore
+        obj = dict(enumerate(obj))  # type: ignore
         return normalize_json(obj)
     if isinstance(obj, dict):
         return normalize_json(obj)
-    if isinstance(obj, str) or isinstance(obj, list):
+    if isinstance(obj, str | list):
         return normalize_command_line(obj)
+    return None
 
 
 def normalize_json(obj) -> str:  # type: ignore
@@ -445,8 +480,8 @@ def json_extract(obj):
     def extract(obj, arr):
         """Recursively search for values of key in JSON tree."""
         if isinstance(obj, dict):
-            for k, v in obj.items():
-                if isinstance(v, (dict, list)):
+            for v in obj.values():
+                if isinstance(v, dict | list):
                     extract(v, arr)
                 else:
                     arr.append(v)
@@ -476,46 +511,7 @@ def normalize_command_line(command) -> str:
         return ''
 
 
-class Tfidf(BaseEstimator, TransformerMixin):
-    """
-    TFIDF transformer
-    """
-
-    def __init__(self, normalize_function):
-        """
-        :param model_params: parameters of TFIDF
-        :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
-        """
-        self.normalize_function = normalize_function
-        self.vec = TfidfVectorizer(**TFIDF_PARAMS)
-
-    def fit(self, x, y=None):
-        """
-        Fit TFIDF transformer
-        :param x: incident on which we want to fit the transfomer
-        :return: self
-        """
-        feature_name = x.columns[0]
-        if self.normalize_function:
-            x = x[feature_name].apply(self.normalize_function)
-        self.vec.fit(x)
-        return self
-
-    def transform(self, x):
-        """
-        Transform x with the trained vectorizer
-        :param x: DataFrame or np.array
-        :return:
-        """
-        feature_name = x.columns[0]
-        if self.normalize_function:
-            x = x[feature_name].apply(self.normalize_function)
-        else:
-            x = x[feature_name]
-        return self.vec.transform(x).toarray()
-
-
-def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool,
+def store_model_in_demisto(model: PostProcessing, model_name: str, model_override: bool,
                            model_hidden: bool) -> None:
     model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')  # guardrails-disable-line
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
@@ -529,7 +525,7 @@ def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_o
         return_error(get_error(res))
 
 
-def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
+def is_clustering_valid(clustering_model: Clustering) -> bool:
     """
     Criteria to decide if clustering is valid or not (like not enough clusters)
     :param clustering_model: Clustering model
@@ -537,13 +533,12 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
     """
     n_labels = len(set(clustering_model.model.labels_))  # type: ignore
     n_samples = len(clustering_model.raw_data)  # type: ignore
-    if not 1 < n_labels < n_samples:
-        return False
-    return True
+    demisto.debug(f'{n_labels=}, {n_samples=}')
+    return 1 < n_labels < n_samples
 
 
-def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str,
-                         display_fields: List[str], fields_for_clustering: List[str]) -> str:
+def create_clusters_json(model_processed: PostProcessing, incidents_df: pd.DataFrame, type: str,
+                         display_fields: list[str], fields_for_clustering: list[str]) -> str:
     """
 
     :param model_processed: Postprocessing
@@ -564,8 +559,8 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'dataType': 'incident',
              'color': PALETTE_COLOR[divmod(cluster_number, len(PALETTE_COLOR))[1]],
              'pivot': "clusterId:" + str(cluster_number),
-             'incidents_ids': [x for x in incidents_df[  # type: ignore
-                 clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
+             'incidents_ids': list(incidents_df[  # type: ignore
+                 clustering.model.labels_ == cluster_number].id.values.tolist()),  # type: ignore
              'incidents': incidents_df[clustering.model.labels_ == cluster_number]  # type: ignore
              [display_fields + fields_for_clustering_remove_display].to_json(  # type: ignore
                  orient='records'),  # type: ignore
@@ -573,8 +568,8 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
     d_outliers = {
-        'incidents_ids': [x for x in incidents_df[  # type: ignore
-            clustering.model.labels_ == -1].id.values.tolist()],  # type: ignore
+        'incidents_ids': list(incidents_df[  # type: ignore
+            clustering.model.labels_ == -1].id.values.tolist()),  # type: ignore
         'incidents': incidents_df[clustering.model.labels_ == -1][display_fields].to_json(  # type: ignore
             orient='records'),  # type: ignore
     }
@@ -583,11 +578,10 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     data['range'] = ranges[0]
     data['rangeX'] = ranges[1]
     data['rangeY'] = ranges[2]
-    pretty_json = json.dumps(data, indent=4, sort_keys=True)
-    return pretty_json
+    return json.dumps(data, indent=4, sort_keys=True)
 
 
-def find_incorrect_field(populate_fields: List[str], incidents_df: pd.DataFrame, global_msg: str):
+def find_incorrect_field(populate_fields: list[str], incidents_df: pd.DataFrame, global_msg: str):
     """
     Check Field that appear in populate_fields but are not in the incidents_df and return message
     :param populate_fields: List of fields
@@ -602,7 +596,7 @@ def find_incorrect_field(populate_fields: List[str], incidents_df: pd.DataFrame,
     return global_msg, incorrect_fields
 
 
-def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[str]:
+def remove_fields_not_in_incident(*args, incorrect_fields: list[str]) -> list[list[str]]:
     """
     Return list without field in incorrect_fields
     :param args: *List of fields
@@ -612,15 +606,15 @@ def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[st
     return [[x for x in field_type if x not in incorrect_fields] for field_type in args]  # type: ignore
 
 
-def get_results(model_processed: Type[PostProcessing]):
+def get_results(model_processed: PostProcessing):
     number_of_sample = model_processed.stats["General"]["Nb sample"]
     number_clusters_selected = len(model_processed.selected_clusters) - 1
     number_of_outliers = number_of_sample - model_processed.stats['number_of_clusterized_sample_after_selection']
     return number_of_sample, number_clusters_selected, number_of_outliers
 
 
-def create_summary(model_processed: Type[PostProcessing], fields_for_clustering: List[str],
-                   field_for_cluster_name: List[str]) -> dict:
+def create_summary(model_processed: PostProcessing, fields_for_clustering: list[str],
+                   field_for_cluster_name: list[str]) -> dict:
     """
     Create json with summary of the training
     :param model_processed: Postprocessing
@@ -637,20 +631,12 @@ def create_summary(model_processed: Type[PostProcessing], fields_for_clustering:
     percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample), 0)
     summary = {
         'Total number of samples ': str(number_of_sample),
-        'Percentage of clusterized samples after selection (after Phase 1 and Phase 2)': "%s  (%s/%s)"
-                                                                                         % (
-                                                                                             str(percentage_selected_samples),
-                                                                                             str(nb_clusterized_after_selection),
-                                                                                             str(number_of_sample)),
-        'Percentage of clusterized samples (after Phase 1)': "%s  (%s/%s)" %
-                                                             (str(percentage_clusterized_samples),
-                                                              str(number_of_clusterized),
-                                                              str(number_of_sample)),
+        'Percentage of clusterized samples after selection (after Phase 1 and Phase 2)':
+            f"{percentage_selected_samples}  ({nb_clusterized_after_selection}/{number_of_sample})",
+        'Percentage of clusterized samples (after Phase 1)':
+            f"{percentage_clusterized_samples}  ({number_of_clusterized}/{number_of_sample})",
         'Percentage of cluster selected (Number of high quality groups/Total number of groups)':
-            "%s  (%s/%s)" %
-            (str(percentage_clusters_selected),
-             str(number_clusters_selected),
-             str(nb_clusters)),
+            f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",
         'Fields used for training': ' , '.join(fields_for_clustering),
         'Fields used for cluster name': field_for_cluster_name[0] if field_for_cluster_name else "",
         'Training time': str(model_processed.date_training)
@@ -658,7 +644,7 @@ def create_summary(model_processed: Type[PostProcessing], fields_for_clustering:
     return summary
 
 
-def return_entry_clustering(output_clustering: Dict, tag: str = None) -> None:
+def return_entry_clustering(output_clustering: str, tag: str = None) -> None:
     """
     Create and return entry with the JSON containing the clusters
     :param output_clustering: json with the cluster
@@ -672,11 +658,11 @@ def return_entry_clustering(output_clustering: Dict, tag: str = None) -> None:
         "EntryContext": {'DBotTrainClustering': output_clustering},
     }
     if tag is not None:
-        return_entry["Tags"] = ['Clustering_{}'.format(tag)]
+        return_entry["Tags"] = [f'Clustering_{tag}']
     demisto.results(return_entry)
 
 
-def wrapped_list(obj: List) -> List:
+def wrapped_list(obj: Any) -> list:
     """
     Wrapped object into a list if not list
     :param obj:
@@ -687,9 +673,9 @@ def wrapped_list(obj: List) -> List:
     return obj
 
 
-def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_field_list: List[str],
-                       keep_unique_value=False) -> \
-        pd.DataFrame:
+def fill_nested_fields(
+    incidents_df: pd.DataFrame, incidents: Union[list, str], *list_of_field_list, keep_unique_value=False
+) -> pd.DataFrame:
     """
     Handle nested fields by concatening values for each sub list of the field
     :param incidents_df: DataFrame of incidents
@@ -701,41 +687,29 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_fie
         for field in field_type:
             if '.' in field:
                 if isinstance(incidents, list):
-                    value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
+                    value_list: list[Any] = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
                     if not keep_unique_value:
-                        value_list = [' '.join(  # type: ignore
-                            set(
-                                list(
-                                    filter(lambda x: x not in ['None', None, 'N/A'], x)
-                                )
-                            )
-                        )
-                            for x in value_list]
+                        value_list = [' '.join({x for x in value if x not in ('None', None, 'N/A')}) for value in value_list]
                     else:
-                        value_list = [most_frequent(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))
-                                      for x in value_list]
+                        value_list = [most_frequent([x for x in value if x not in ('None', None, 'N/A')]) for value in value_list]
                 else:
                     value_list = wrapped_list(demisto.dt(incidents, field))
-                    value_list = ' '.join(  # type: ignore
-                        set(list(filter(lambda x: x not in ['None', None, 'N/A'], value_list))))  # type: ignore
+                    value_list = ' '.join({x for x in value_list if x not in ('None', None, 'N/A')})  # type: ignore
                 incidents_df[field] = value_list
     return incidents_df
 
 
-def most_frequent(list_: List):
+def most_frequent(values: list):
     """
-    Return most frequent element of a list if not empty elase return empty string
+    Return most frequent element of a list if not empty else return empty string
     :param l: list with element
     :return: item in list with most occurrence
     """
-    if not list_:
-        return ""
-    else:
-        return max(set(list_), key=list_.count)
+    return max(set(values), key=values.count) if values else ''
 
 
-def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
-                           max_ratio_of_missing_value: float) -> Tuple[List[str], str]:
+def remove_not_valid_field(fields_for_clustering: list[str], incidents_df: pd.DataFrame, global_msg: str,
+                           max_ratio_of_missing_value: float) -> tuple[list[str], str]:
     """
     Remove fields that are not valid (like too small number of sample)
     :param fields_for_clustering: List of field to use for the clustering
@@ -744,7 +718,7 @@ def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.Da
     :param max_ratio_of_missing_value: max ratio of missing values we accept
     :return: List of valid fields, message
     """
-    missing_values_percentage = incidents_df[fields_for_clustering].applymap(lambda x: x == '').sum(axis=0) / len(
+    missing_values_percentage = incidents_df[fields_for_clustering].map(lambda x: x == '').sum(axis=0) / len(
         incidents_df)
     mask = missing_values_percentage < max_ratio_of_missing_value
     valid_field = mask[mask].index.tolist()
@@ -754,54 +728,39 @@ def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.Da
     return valid_field, global_msg
 
 
-def get_model_data(model_name):
+def get_model(model_name: str) -> Optional[PostProcessing]:
     """
-    Return model in base 64 and message about the load of the model
+    Return model
     :param model_name: model_name
-    :return:
+    :return: PostProcessing model
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
-    if not is_error(res_model):
-        model_data = res_model['Contents']['modelData']
-        try:
-            model_type = res_model['Contents']['model']["type"]["type"]
-            return model_data, model_type
-        except Exception:
-            return model_data, UNKNOWN_MODEL_TYPE
-    else:
-        return None, MESSAGE_ERROR_MESSAGE
+    if is_error(res_model):
+        demisto.debug(f'Couldn\'t get model: {model_name=}, {res_model=}')
+        return None
+    model_base64 = res_model['Contents']['modelData']
+    try:
+        return cast(PostProcessing, pickle.loads(base64.b64decode(model_base64)))  # guardrails-disable-line
+    except Exception as e:
+        demisto.debug(f'Unable to load data: {model_base64}, {e=}')
+    return None
 
 
-def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_name: str):
+def get_model_if_not_expired(force_retrain: bool, model_expiration: float, model_name: str) -> Optional[PostProcessing]:
     """
-    Return boolean if the model needs to be retrain based on the expiration of the model and force_retrain atgument
-    :param force_retrain: boolean if the user cho to retrain the model in any case
-    :param model_expiration: period in hour after which you want to retrain the model
+    Return boolean if the model needs to be retrain based on the expiration of the model and force_retrain argument
+    :param force_retrain: boolean if the user chooses to retrain the model in any case
+    :param model_expiration: period in hours after which you want to retrain the model
     :param model_name: model_name
     :return: PostProcessing model, boolean if needs to be retrained
     """
     if force_retrain:
-        return None, True
-    model_data, model_type = get_model_data(model_name)
-    if not model_data:
-        return None, True
-    else:
-        model = load_model64(model_data)
-        model_training_time = pd.to_datetime(model.date_training)
-        return model, model_training_time < datetime.now() - timedelta(hours=model_expiration)
-
-
-def load_model64(model_base64: str):
-    """
-    Load model from base64 model
-    :param model_base64: string base64 model
-    :return: PostProcessing model
-    """
-    try:
-        model = pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
-        return model
-    except pickle.UnpicklingError:
-        return_error("Model exist but cannot be loaded")
+        return None
+    model = get_model(model_name)
+    if model is None:
+        return None
+    needs_retrain = pd.to_datetime(model.date_training) < datetime.now() - timedelta(hours=model_expiration)
+    return None if needs_retrain else model
 
 
 def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_cluster_name):
@@ -822,9 +781,9 @@ def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_clus
 
 def transform_names_if_list(incidents_df, field_for_cluster_name):
     """
-    Check if field_for_cluster_name value are type list and keep the maximun value if this is the case
+    Check if field_for_cluster_name value are type list and keep the maximum value if this is the case
     :param incidents_df: Dataframe of incidents
-    :param field_for_cluster_name: List with one field that correspong to the name of the cluster
+    :param field_for_cluster_name: List with one field that corresponding to the name of the cluster
     :return: Dataframe of incidents with modification on field_for_cluster_name columns
     """
     if field_for_cluster_name and field_for_cluster_name[0] in incidents_df.columns:
@@ -833,25 +792,28 @@ def transform_names_if_list(incidents_df, field_for_cluster_name):
     return incidents_df
 
 
-def keep_high_level_field(incidents_field: List[str]) -> List[str]:
+def keep_high_level_field(incidents_field: list[str]) -> list[str]:
     """
     Return list of fields if they are in the first level of the argument - xdralert.commandline will return xdralert
     :param incidents_field: list of incident fields
     :return: Return list of fields
     """
-    return [x.split('.')[0] if '.' in x else x for x in incidents_field]
+    return [x.split('.')[0] for x in incidents_field]
 
 
 def calculate_range(data):
-    all_data_size = list(map(lambda x: x['data'][0], data['data']))
-    all_x = list(map(lambda x: x['x'], data['data']))
-    all_y = list(map(lambda x: x['y'], data['data']))
+    all_data_size = [x['data'][0] for x in data['data']]
+    all_x = [x['x'] for x in data['data']]
+    all_y = [x['y'] for x in data['data']]
     max_size = max(all_data_size)
     min_size = min(all_data_size)
     min_range = max(30, min_size)
     max_range = min_range + max(300, max_size - min_size)
-    return [min_range, max_range], [int(math.ceil(min(all_x))), int(math.ceil(max(all_x)))], \
-           [int(math.ceil(min(all_y))), int(math.ceil(max(all_y)))]
+    return (
+        [min_range, max_range],
+        [int(math.ceil(min(all_x))), int(math.ceil(max(all_x)))],
+        [int(math.ceil(min(all_y))), int(math.ceil(max(all_y)))],
+    )
 
 
 def main():
@@ -870,25 +832,23 @@ def main():
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
-
-    TFIDF_PARAMS.update({'max_features': number_feature_per_field})
-    TFIDF_PARAMS.update({'analyzer': analyzer})
+    TFIDF_PARAMS.update({'max_features': number_feature_per_field,
+                         'analyzer': analyzer})
 
     # Check if need to retrain
-    model_processed, retrain = is_model_needs_retrain(force_retrain, model_expiration, model_name)
+    model_processed = get_model_if_not_expired(force_retrain, model_expiration, model_name)
 
-    if not retrain:
+    if model_processed is not None:
         if debug:
             return_outputs(
                 readable_output=global_msg + tableToMarkdown(
-                    "Summary",
-                    model_processed.summary  # pylint: disable=E1101
+                    "Summary", model_processed.summary
                 )
             )
-        data_clusters_json = model_processed.json  # pylint: disable=E1101
+        data_clusters_json = cast(str, model_processed.json)
         search_query = demisto.args().get('searchQuery')
         if search_query:
-            data_clusters = json.loads(model_processed.json)  # pylint: disable=E1101
+            data_clusters = json.loads(data_clusters_json)
             filtered_clusters_data = []
             for row in data_clusters['data']:
                 if row['pivot'] in search_query.split(" "):
@@ -898,106 +858,104 @@ def main():
 
         return_entry_clustering(output_clustering=data_clusters_json, tag="trained")
         return model_processed, model_processed.json, ""  # pylint: disable=E1101
+
+    # Check if user gave a field for cluster name - if not use generic cluster name
+    if not field_for_cluster_name:
+        generic_cluster_name = True
+
+    # Get all the incidents from query, date and field similarity and field family
+    populate_fields = fields_for_clustering + field_for_cluster_name + display_fields
+    populate_high_level_fields = keep_high_level_field(populate_fields)
+    incidents, msg = get_all_incidents_for_time_window_and_type(
+        populate_high_level_fields, from_date, to_date, query, limit, incident_type)  # type: ignore
+    global_msg += f"{msg} \n"
+    # If no incidents found with those criteria
+    if not incidents:
+        demisto.results(global_msg)
+        return None, {}, global_msg
+
+    incidents_df = pd.DataFrame(incidents).fillna('')
+    incidents_df.index = incidents_df.id
+
+    # Fill nested fields with appropriate values
+    incidents_df = transform_names_if_list(incidents_df, field_for_cluster_name)
+    incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
+    incidents_df = fill_nested_fields(incidents_df, incidents, field_for_cluster_name, keep_unique_value=True)
+
+    # Check Field that appear in populate_fields but are not in the incidents_df and return message
+    global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
+
+    fields_for_clustering, field_for_cluster_name, display_fields = \
+        remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, display_fields,
+                                      incorrect_fields=incorrect_fields)
+
+    # Remove fields that are not valid (like too small number of sample)
+    fields_for_clustering, global_msg = remove_not_valid_field(fields_for_clustering, incidents_df, global_msg,
+                                                               max_percentage_of_missing_value)  # type: ignore
+
+    # Case where no field for clustrering or field for cluster name if not empty and incorrect)
+    if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
+        global_msg += MESSAGE_NO_FIELD_NAME_OR_CLUSTERING
+        demisto.results(global_msg)
+        return None, {}, global_msg
+
+    # Create data for training
+    labels = prepare_data_for_training(generic_cluster_name, incidents_df, field_for_cluster_name)
+
+    # TFIDF pipeline
+    tfidf_pipe = Pipeline(steps=[
+        ('tfidf', Tfidf(normalize_function=normalize_global))
+    ])
+
+    # preprocessor
+    transformers_list = [('tfidf' + field, tfidf_pipe, [field]) for field in fields_for_clustering]
+
+    # Model pipeline
+    model = Pipeline(steps=[
+        (PREPROCESSOR_STEP_PIPELINE, ColumnTransformer(transformers=transformers_list)),
+        (CLUSTERING_STEP_PIPELINE, Clustering(HDBSCAN_PARAMS))
+    ])
+    # Fit of the model on incidents_df and labels
+    model.fit(incidents_df, labels)
+
+    # Check is clustering is valid
+    if not is_clustering_valid(model.named_steps[CLUSTERING_STEP_PIPELINE]):
+        global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
+        return_results(global_msg)
+        return None, {}, global_msg
+
+    # Reduce dimension
+    model.named_steps[CLUSTERING_STEP_PIPELINE].compute_centers()
+    model.named_steps[CLUSTERING_STEP_PIPELINE].reduce_dimension()
+    model_processed = PostProcessing(model.named_steps[CLUSTERING_STEP_PIPELINE], min_homogeneity_cluster,
+                                     generic_cluster_name)
+
+    # Create summary of the training and assign it the the summary attribute of the model
+    summary = create_summary(model_processed, fields_for_clustering, field_for_cluster_name)
+    model_processed.summary = summary
+    model_processed.global_msg = global_msg
+
+    if debug:
+        return_outputs(readable_output=f'## Warning \n {global_msg}' + tableToMarkdown("Summary", summary))
     else:
-        # Check if user gave a field for cluster name - if not use generic cluster name
-        if not field_for_cluster_name:
-            generic_cluster_name = True
+        field_clustering = ' , '.join(fields_for_clustering)
+        field_name = field_for_cluster_name[0] if field_for_cluster_name else ""
+        number_of_sample, number_clusters_selected, number_of_outliers = get_results(model_processed)
+        training_date = str(model_processed.date_training)
+        msg = GENERAL_MESSAGE_RESULTS.format(
+            number_of_sample, number_clusters_selected, field_clustering, field_name, number_of_outliers, training_date)
+        return_outputs(
+            readable_output=f'## General results\n{msg}\n## Warning\n{global_msg}')
+        model_processed.summary_description = msg
 
-        # Get all the incidents from query, date and field similarity and field family
-        populate_fields = fields_for_clustering + field_for_cluster_name + display_fields
-        populate_high_level_fields = keep_high_level_field(populate_fields)
-        incidents, msg = get_all_incidents_for_time_window_and_type(populate_high_level_fields, from_date, to_date,
-                                                                    query,
-                                                                    # type: ignore
-                                                                    limit, incident_type)  # type: ignore
-        global_msg += "%s \n" % msg
-        # If no incidents found with those criteria
-        if not incidents:
-            demisto.results(global_msg)
-            return None, {}, global_msg
-
-        incidents_df = pd.DataFrame(incidents).fillna('')
-        incidents_df.index = incidents_df.id
-
-        # Fill nested fields with appropriate values
-        incidents_df = transform_names_if_list(incidents_df, field_for_cluster_name)
-        incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
-        incidents_df = fill_nested_fields(incidents_df, incidents, field_for_cluster_name, keep_unique_value=True)
-
-        # Check Field that appear in populate_fields but are not in the incidents_df and return message
-        global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
-
-        fields_for_clustering, field_for_cluster_name, display_fields = \
-            remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, display_fields,
-                                          incorrect_fields=incorrect_fields)
-
-        # Remove fields that are not valid (like too small number of sample)
-        fields_for_clustering, global_msg = remove_not_valid_field(fields_for_clustering, incidents_df, global_msg,
-                                                                   max_percentage_of_missing_value)  # type: ignore
-
-        # Case where no field for clustrering or field for cluster name if not empty and incorrect)
-        if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
-            global_msg += "%s \n" % MESSAGE_NO_FIELD_NAME_OR_CLUSTERING
-            demisto.results(global_msg)
-            return None, {}, global_msg
-
-        # Create data for training
-        labels = prepare_data_for_training(generic_cluster_name, incidents_df, field_for_cluster_name)
-
-        # TFIDF pipeline
-        tfidf_pipe = Pipeline(steps=[
-            ('tfidf', Tfidf(normalize_function=normalize_global))
-        ])
-
-        # preprocessor
-        transformers_list = [('tfidf' + field, tfidf_pipe, [field]) for field in fields_for_clustering]
-        preprocessor = ColumnTransformer(
-            transformers=transformers_list)
-
-        # Model pipeline
-        model = Pipeline(steps=[(PREPROCESSOR_STEP_PIPELINE, preprocessor),
-                                (CLUSTERING_STEP_PIPELINE, Clustering(HDBSCAN_PARAMS))
-                                ])
-        # Fit of the model on incidents_df and labels
-        model.fit(incidents_df, labels)
-
-        # Check is clustering is valid
-        if not is_clustering_valid(model.named_steps[CLUSTERING_STEP_PIPELINE]):
-            global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
-            return None, {}, global_msg
-
-        # Reduce dimension
-        model.named_steps[CLUSTERING_STEP_PIPELINE].compute_centers()
-        model.named_steps[CLUSTERING_STEP_PIPELINE].reduce_dimension()
-        model_processed = PostProcessing(model.named_steps[CLUSTERING_STEP_PIPELINE], min_homogeneity_cluster,
-                                         generic_cluster_name)
-
-        # Create summary of the training and assign it the the summary attribute of the model
-        summary = create_summary(model_processed, fields_for_clustering, field_for_cluster_name)
-        model_processed.summary = summary
-        model_processed.global_msg = global_msg
-
-        if debug:
-            return_outputs(readable_output='## Warning \n {}'.format(global_msg) + tableToMarkdown("Summary", summary))
-        else:
-            field_clustering = ' , '.join(fields_for_clustering)
-            field_name = field_for_cluster_name[0] if field_for_cluster_name else ""
-            number_of_sample, number_clusters_selected, number_of_outliers = get_results(model_processed)
-            training_date = str(model_processed.date_training)
-            msg = GENERAL_MESSAGE_RESULTS % (number_of_sample, number_clusters_selected,
-                                             field_clustering, field_name, number_of_outliers, training_date)
-            return_outputs(
-                readable_output='## General results \n {}'.format(msg) + '## Warning \n {}'.format(global_msg))
-            model_processed.summary_description = msg
-
-        # return Entry and summary
-        output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type, display_fields,
-                                                      fields_for_clustering)
-        model_processed.json = output_clustering_json
-        return_entry_clustering(output_clustering=model_processed.json, tag="trained")  # type: ignore
-        if store_model:
-            store_model_in_demisto(model_processed, model_name, model_override, model_hidden)
-        return model_processed, output_clustering_json, global_msg
+    # return Entry and summary
+    output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type, display_fields,
+                                                  fields_for_clustering)
+    model_processed.json = output_clustering_json
+    return_entry_clustering(output_clustering=model_processed.json, tag="trained")  # type: ignore
+    if store_model:
+        store_model_in_demisto(model_processed, model_name, model_override, model_hidden)
+    return model_processed, output_clustering_json, global_msg
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

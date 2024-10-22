@@ -84,7 +84,7 @@ def calculate_checksum(api_key, headers, body=''):
 
 def http_request(uri, method, headers, body={}, params={}, files={}):
     ''' Makes an API call to the server URL with the supplied uri, method, headers, body and params '''
-    url = '%s/%s' % (SERVER_URL, uri)
+    url = f'{SERVER_URL}/{uri}'
     if method not in ['put', 'post']:
         body = json.dumps(body)
     res = requests.request(
@@ -123,10 +123,7 @@ def binary_to_boolean_str(binary):
 
 
 def binary_to_boolean(binary):
-    if (binary == '0'):
-        return False
-    else:
-        return True
+    return binary == '0'
 
 
 # GLOBAL VARIABLES #
@@ -210,7 +207,7 @@ def simple_upload_sample_file(sample_file):
             'X-DTAS-Time': get_epoch_time(),
             'X-DTAS-SampleType': '0',  # 0 for file, 1 for URL
             'X-DTAS-Challenge': str(uuid.uuid4()),
-            'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName," \
+            'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,"
                                                + "X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
         }
         tmp_checksum = calculate_checksum(API_KEY, headers_simple_upload_sample_file)
@@ -259,7 +256,7 @@ def simple_upload_sample_url(sample_url):
         'X-DTAS-Time': get_epoch_time(),
         'X-DTAS-SampleType': '1',  # 0 for file, 1 for URL
         'X-DTAS-Challenge': str(uuid.uuid4()),
-        'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName," \
+        'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,"
                                            + "X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
     }
     tmp_checksum = calculate_checksum(API_KEY, headers_simple_upload_sample_url)
@@ -296,7 +293,7 @@ def simple_upload_sample_url_command():
 def get_sample(sha1, archive_type, archive_encrypted, archive_name):
     '''Issue a request to retrieve an archive of the sample given its SHA1 hash'''
     if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
-        return_error('Provided SHA1: {} is unvalid.'.format(sha1))
+        return_error(f'Provided SHA1: {sha1} is unvalid.')
 
     headers_get_sample = copy.deepcopy(DEFAULT_HEADERS)
     headers_get_sample['X-DTAS-SHA1'] = sha1  # SHA1 of the file/URL to download
@@ -322,7 +319,7 @@ def get_sample_command():
     archive_type = demisto.args()['type']
     archive_encrypted = demisto.args()['encrypted']
     archive_name = demisto.args()['archive_name'] if 'archive_name' in demisto.args() else sha1
-    archive_name += '.{}'.format(archive_type)
+    archive_name += f'.{archive_type}'
     res, file = get_sample(sha1, archive_type, archive_encrypted, archive_name)
 
     return demisto.results(file)
@@ -365,7 +362,7 @@ def get_sample_list_command():
         sha1_list = result.text.split(';')
         hr = '### Trend Micro DDA submissions SHA1\n'
         for sha1 in sha1_list:
-            hr += '- {}\n'.format(sha1)
+            hr += f'- {sha1}\n'
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -483,13 +480,12 @@ def build_report(res, threshold, status, verbose):
             context['Domain.Name(val.Name && val.Name == obj.Name)'] = file_analyze_report['MalwareSourceHost']
         if verbose == 'true':
             dropped_files = file_analyze_report['DroppedFiles']
-            if 'FileItem' in dropped_files:
-                if 'DownloadURL' in dropped_files['FileItem']:
-                    context['URL.Data(val.Data && val.Data == obj.Data)'] = dropped_files['FileItem']['DownloadURL']
-                    hr['Download URL'] = dropped_files['FileItem']['DownloadURL']
-                    context['TrendMicroDDA.Submission'].update({
-                        'DownloadURL': dropped_files['FileItem']['DownloadURL']
-                    })
+            if 'FileItem' in dropped_files and 'DownloadURL' in dropped_files['FileItem']:
+                context['URL.Data(val.Data && val.Data == obj.Data)'] = dropped_files['FileItem']['DownloadURL']
+                hr['Download URL'] = dropped_files['FileItem']['DownloadURL']
+                context['TrendMicroDDA.Submission'].update({
+                    'DownloadURL': dropped_files['FileItem']['DownloadURL']
+                })
 
     else:  # if the submission have sub-files
 
@@ -600,7 +596,7 @@ def build_report(res, threshold, status, verbose):
 def get_report(sha1):
     '''Issue a request to retrieve XML report for a given SHA1'''
     if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
-        return_error('Provided SHA1: {} is unvalid.'.format(sha1))
+        return_error(f'Provided SHA1: {sha1} is unvalid.')
 
     headers_get_report = copy.deepcopy(DEFAULT_HEADERS)
     headers_get_report['X-DTAS-SHA1'] = sha1  # SHA1 of the file/URL to download
@@ -731,7 +727,7 @@ def get_brief_report_command():
 def check_status(sha1_list):
     for sha1 in sha1_list:
         if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
-            return_error('Provided SHA1: {} is unvalid.'.format(sha1))
+            return_error(f'Provided SHA1: {sha1} is unvalid.')
     manyRes = []
     manyEC = []
 
@@ -769,7 +765,7 @@ def check_status_command():
 
 
 # EXECUTION
-LOG('command is %s' % (demisto.command(), ))
+LOG(f'command is {demisto.command()}')
 
 try:
     register()

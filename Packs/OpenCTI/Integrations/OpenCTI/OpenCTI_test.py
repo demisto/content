@@ -75,6 +75,54 @@ def test_get_observables_command(mocker):
     assert "Observables" in results.readable_output
 
 
+def test_get_observables_command_no_parameters(mocker):
+    """Test get_observables_command function where there is no parameters to filter by
+    Given
+        No parameters to filter by
+    When
+        Calling the `get_observables_command`
+    Then
+        Return all observables
+    """
+    client = Client
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    all_observables = get_observables_command(client, args={'observable_types': 'ALL'})
+    default_observables = get_observables_command(client, {})
+    assert len(all_observables.raw_response) == len(default_observables.raw_response)
+
+
+def test_get_observables_command_with_just_score_end(mocker):
+    """Test get_observables_command function where there is just score_end parameter
+    Given
+        Filter score_end = 50
+    When
+        Calling the `get_observables_command`
+    Then
+        Return all observables with score = 0 until score = 50
+    """
+    client = Client
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    observables_with_end = get_observables_command(client, args={'score_end': 50})
+    observables_with_end_start = get_observables_command(client, args={'score_end': 50, 'score_start': 0})
+    assert len(observables_with_end.raw_response) == len(observables_with_end_start.raw_response)
+
+
+def test_get_observables_command_with_just_score_start(mocker):
+    """Test get_observables_command function where there is just score_end parameter
+    Given
+        Filter score_start = 50
+    When
+        Calling the `get_observables_command`
+    Then
+        Return all observables with score = 50 until score = 100
+    """
+    client = Client
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    observables_with_end = get_observables_command(client, args={'score_start': 50})
+    observables_with_end_start = get_observables_command(client, args={'score_start': 50, 'score_end': 100})
+    assert len(observables_with_end.raw_response) == len(observables_with_end_start.raw_response)
+
+
 def test_get_observables_command_with_score(mocker):
     """Tests get_observables_command function with a specified score
     Given

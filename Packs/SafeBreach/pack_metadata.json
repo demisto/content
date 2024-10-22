@@ -2,11 +2,10 @@
     "name": "SafeBreach - Breach and Attack Simulation platform",
     "description": "Breach and Attack Simulation platform",
     "support": "partner",
-    "hidden": true,
     "videos": [
         "https://www.youtube.com/watch?v=Wb7q5Gbd2qo"
     ],
-    "currentVersion": "1.4.0",
+    "currentVersion": "1.4.3",
     "author": "SafeBreach",
     "url": "https://www.safebreach.com",
     "email": "support@safebreach.com",

@@ -2,13 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-""" IMPORTS """
-from datetime import datetime
-import requests
-import base64
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # type: ignore
 
 """ GLOBALS """
 HEADERS = {
@@ -620,9 +613,8 @@ def update_case(case_id, stage, severity):
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error('Failed to get security update case {}. \nPlease make sure user have edit permissions,'
-                     ' or case is unlocked. \nStatus Code: {}\nResponse Body: {}'.format(case_id, res.status_code,
-                                                                                         res.text))
+        return_error(f'Failed to get security update case {case_id}. \nPlease make sure user have edit permissions,'
+                     f' or case is unlocked. \nStatus Code: {res.status_code}\nResponse Body: {res.text}')
 
     res_json = parse_json_response(res)
     if 'cas.updateResponse' in res_json and 'cas.return' in res_json.get('cas.updateResponse'):
@@ -834,10 +826,8 @@ def entries_command(func):
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to add entries. Please make sure to enter Active List resource ID"
-                     "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
-                                                                                                 res.status_code, body,
-                                                                                                 res.text))
+        return_error(f"Failed to {func}. Please make sure to enter Active List resource ID"
+                     f"\nResource ID: {resource_id}\nStatus Code: {res.status_code}\nRequest Body: {body}\nResponse: {res.text}")
 
     demisto.results("Success")
 
@@ -944,7 +934,7 @@ def parse_json_response(response: requests.Response):
                       'Attempting to fix invalid escape sequences and parse the response again.')
 
         # Replace triple backslashes (where the last one doesn't escape anything) with two backslashes.
-        fixed_response_text = re.sub(r'[^\\]\\\\\\(?P<escaped_char>[^\"\\])', r'\\\\\g<escaped_char>', response.text)
+        fixed_response_text = re.sub(r'(?<!\\)((\\\\)*)\\(?![\\"])', r'\1\\\\', response.text)
 
         try:
             fixed_response_json = json.loads(fixed_response_text)

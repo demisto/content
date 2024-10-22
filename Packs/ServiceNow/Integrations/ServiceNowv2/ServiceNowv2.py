@@ -1220,8 +1220,10 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     fields_delimiter = args.get('fields_delimiter', ';')
     custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
     ticket_type_value = args.get('ticket_type')
+    demisto.debug(f'args(ticket_type): {ticket_type_value}')
     if not ticket_type_value:
         ticket_type_value = demisto.params().get('ticket_type')
+        demisto.debug(f'Empty args(ticket_type), params(ticket_type): {ticket_type_value}')
     ticket_type = client.get_table_name(str(ticket_type_value))
     demisto.debug(f'Using ticket_type: {ticket_type}, from {ticket_type_value}')
     ticket_id = str(args.get('id', ''))
@@ -2418,8 +2420,8 @@ def test_instance(client: Client):
     """
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, DATE_FORMAT)
-
-    result = client.send_request(f'table/{client.ticket_type}', params={'sysparm_limit': 1}, method='GET')
+    params = {'sysparm_limit': 1, 'sysparm_query': 'active=true'}
+    result = client.send_request(f'table/{client.ticket_type}', params=params, method='GET')
     if 'result' not in result:
         raise Exception('ServiceNow error: ' + str(result))
     ticket = result.get('result')
@@ -2831,8 +2833,14 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 if not file_extension:
                     file_extension = ''
                 if params.get('file_tag_from_service_now') not in entry.get('tags', []):
-                    client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
-                                       ticket_type)
+                    try:
+                        client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
+                                           ticket_type)
+                    except Exception as e:
+                        demisto.error(f"An attempt to mirror a file has failed. entry_id={entry.get('id')}, {file_name=}\n{e}")
+                        text_for_snow_comment = "An attempt to mirror a file from Cortex XSOAR was failed." \
+                                                f"\nFile name: {file_name}\nError from integration: {e}"
+                        client.add_comment(ticket_id, ticket_type, 'comments', text_for_snow_comment)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])

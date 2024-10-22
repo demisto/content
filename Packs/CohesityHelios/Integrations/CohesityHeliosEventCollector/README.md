@@ -1,5 +1,7 @@
 This is the Cohesity Helios Event Collector integration for XSIAM.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Cohesity Helios Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

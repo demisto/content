@@ -3,8 +3,10 @@ from CommonServerPython import *  # noqa: F401
 import openpyxl
 from docx import Document
 from pptx import Presentation
+from pptx.enum.shapes import MSO_SHAPE_TYPE
 import zipfile
 import pandas as pd
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 
 def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
@@ -34,10 +36,10 @@ def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
 def extract_hyperlinks_from_docx(file_path: str) -> Set:
     doc = Document(file_path)
     links = set()
-    for para in doc.paragraphs:
-        for hyper in para.hyperlinks:
-            if hyper.address:
-                links.add(hyper.address)
+    for rel in doc.part.rels.values():
+        if rel.reltype == RT.HYPERLINK and rel.is_external:
+            links.add(rel._target)
+
     return links
 
 
@@ -51,18 +53,23 @@ def extract_hyperlinks_from_pptx(file_path: str) -> Set:
                     for run in paragraph.runs:
                         if run.hyperlink and run.hyperlink.address:
                             links.add(run.hyperlink.address)
-            if shape.click_action and shape.click_action.hyperlink.address:
+            if shape.shape_type == MSO_SHAPE_TYPE.GROUP:    # pylint: disable=E1101
+                group_shape = shape
+                for s in group_shape.shapes:
+                    if s.click_action and s.click_action.hyperlink.address:
+                        links.add(s.click_action.hyperlink.address)
+            elif shape.click_action and shape.click_action.hyperlink.address:
                 links.add(shape.click_action.hyperlink.address)
 
     return links
 
 
 def extract_hyperlink_by_file_type(file_name: str, file_path: str) -> CommandResults:
-    if file_name.endswith('.xlsx'):
+    if file_name.lower().endswith('.xlsx'):
         result = extract_hyperlinks_from_xlsx(file_path)
-    elif file_name.endswith('.docx'):
+    elif file_name.lower().endswith('.docx'):
         result = extract_hyperlinks_from_docx(file_path)
-    elif file_name.endswith('.pptx'):
+    elif file_name.lower().endswith('.pptx'):
         result = extract_hyperlinks_from_pptx(file_path)
     else:
         raise ValueError("Unsupported file type. Supported types are: 'xlsx, docx, pptx'")

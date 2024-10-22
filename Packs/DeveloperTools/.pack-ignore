@@ -33,3 +33,16 @@ ignore=BA124
 [file:VerifyEnoughIncidents.yml]
 ignore=BA124
 
+[file:Hey.yml]
+ignore=SC101
+
+# GR103 is temporary, see CIAC-11656
+[file:indicatorfield-DeveloperTools_Param1.json]
+ignore=GR103
+
+[file:playbook-Metrics_Test_Case_Validation.yml]
+ignore=GR103
+
+[file:WaitAndCompleteTask.yml]
+ignore=GR107
+

@@ -22,7 +22,7 @@ if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -62,6 +62,28 @@ TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
+
+
+def get_value_by_dot_notation(dictionary, key):
+    """
+    Get dictionary value by key using dot notation.
+
+    Args:
+        dictionary (dict): The dictionary to search within.
+        key (str): The key in dot notation.
+
+    Returns:
+        The value corresponding to the key if found, otherwise None.
+    """
+    value = dictionary
+    demisto.debug('Trying to get value by dot notation')
+    for k in key.split('.'):
+        if isinstance(value, dict):
+            value = value.get(k)
+        else:
+            demisto.debug(f'Last value is not a dict, returning None. {value=}')
+            return None
+    return value
 
 
 def convert_date_to_timestamp(date):
@@ -138,7 +160,8 @@ def elasticsearch_builder(proxies):
     es = Elasticsearch(**connection_args)
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     if API_KEY_ID and hasattr(es, 'transport'):
-        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(  # type: ignore[attr-defined]
+            API_KEY)
 
     return es
 
@@ -354,7 +377,7 @@ def test_general_query(es):
 
     except NotFoundError as e:
         return_error("Failed executing general search command - please check the Server URL and port number "
-                     "and the supplied credentials.\nError message: {}.".format(str(e)))
+                     f"and the supplied credentials.\nError message: {str(e)}.")
 
 
 def test_time_field_query(es):
@@ -455,7 +478,7 @@ def test_connectivity_auth(proxies):
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
                     return_error("Failed to connect. "
-                                 "The following error occurred: {}".format(HTTP_ERRORS.get(res.status_code)))
+                                 f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:
                     # if it is unknown error - get the message from the error itself
@@ -503,7 +526,8 @@ def integration_health_check(proxies):
                 response = temp
 
             # get the value in the time field
-            hit_date = str(response.get('hits', {}).get('hits')[0].get('_source').get(str(TIME_FIELD)))
+            source = response.get('hits', {}).get('hits')[0].get('_source', {})
+            hit_date = str(get_value_by_dot_notation(source, str(TIME_FIELD)))
 
             # if not a timestamp test the conversion to datetime object
             if 'Timestamp' not in TIME_METHOD:
@@ -555,27 +579,31 @@ def results_to_incidents_timestamp(response, last_fetch):
     current_fetch = last_fetch
     incidents = []
     for hit in response.get('hits', {}).get('hits'):
-        if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
-            # if timestamp convert to iso format date and save the timestamp
-            hit_date = timestamp_to_date(str(hit.get('_source')[str(TIME_FIELD)]))
-            hit_timestamp = int(hit.get('_source')[str(TIME_FIELD)])
+        source = hit.get('_source')
+        if source is not None:
+            time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
 
-            if hit_timestamp > last_fetch:
-                last_fetch = hit_timestamp
+            if time_field_value is not None:
+                # if timestamp convert to iso format date and save the timestamp
+                hit_date = timestamp_to_date(str(time_field_value))
+                hit_timestamp = int(time_field_value)
 
-            # avoid duplication due to weak time query
-            if hit_timestamp > current_fetch:
-                inc = {
-                    'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
-                    'rawJSON': json.dumps(hit),
-                    'occurred': hit_date.isoformat() + 'Z',
-                    'dbotMirrorId': hit.get('_id')
-                }
+                if hit_timestamp > last_fetch:
+                    last_fetch = hit_timestamp
 
-                if MAP_LABELS:
-                    inc['labels'] = incident_label_maker(hit.get('_source'))
+                # avoid duplication due to weak time query
+                if hit_timestamp > current_fetch:
+                    inc = {
+                        'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
+                        'rawJSON': json.dumps(hit),
+                        'occurred': hit_date.isoformat() + 'Z',
+                        'dbotMirrorId': hit.get('_id')
+                    }
 
-                incidents.append(inc)
+                    if MAP_LABELS:
+                        inc['labels'] = incident_label_maker(hit.get('_source'))
+
+                    incidents.append(inc)
 
     return incidents, last_fetch
 
@@ -598,30 +626,33 @@ def results_to_incidents_datetime(response, last_fetch):
     incidents = []
 
     for hit in response.get('hits', {}).get('hits'):
-        if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
-            hit_date = parse(str(hit.get('_source')[str(TIME_FIELD)]))
-            hit_timestamp = int(hit_date.timestamp() * 1000)
+        source = hit.get('_source')
+        if source is not None:
+            time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+            if time_field_value is not None:
+                hit_date = parse(str(time_field_value))
+                hit_timestamp = int(hit_date.timestamp() * 1000)
 
-            if hit_timestamp > last_fetch_timestamp:
-                last_fetch = hit_date
-                last_fetch_timestamp = hit_timestamp
+                if hit_timestamp > last_fetch_timestamp:
+                    last_fetch = hit_date
+                    last_fetch_timestamp = hit_timestamp
 
-            # avoid duplication due to weak time query
-            if hit_timestamp > current_fetch:
-                inc = {
-                    'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
-                    'rawJSON': json.dumps(hit),
-                    # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
-                    # and sometimes as YYYY-MM-DDThh:mm:ss
-                    # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
-                    'occurred': format_to_iso(hit_date.isoformat()),
-                    'dbotMirrorId': hit.get('_id')
-                }
+                # avoid duplication due to weak time query
+                if hit_timestamp > current_fetch:
+                    inc = {
+                        'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
+                        'rawJSON': json.dumps(hit),
+                        # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
+                        # and sometimes as YYYY-MM-DDThh:mm:ss
+                        # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
+                        'occurred': format_to_iso(hit_date.isoformat()),
+                        'dbotMirrorId': hit.get('_id')
+                    }
 
-                if MAP_LABELS:
-                    inc['labels'] = incident_label_maker(hit.get('_source'))
+                    if MAP_LABELS:
+                        inc['labels'] = incident_label_maker(hit.get('_source'))
 
-                incidents.append(inc)
+                    incidents.append(inc)
 
     return incidents, last_fetch.isoformat()  # type:ignore[union-attr]
 

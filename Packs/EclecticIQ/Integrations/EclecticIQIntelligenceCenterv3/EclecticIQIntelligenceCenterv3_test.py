@@ -65,7 +65,7 @@ def test_send_api_request_good(requests_mock):
 
 
 def entity_create_response(*args, **kwargs):
-    return_value = str("123-123-123")
+    return_value = "123-123-123"
     return return_value
 
 
@@ -261,7 +261,7 @@ def test_parse_reputation_results(mocker):
 
 def test_parse_reputation_results_empty_reply(mocker):
     response = parse_reputation_results(None, "test.com", "domain", "low", "Domain")
-    assert response[0].raw_response["result"] == 'Observable not found in EcelcticIQ IC.'
+    assert response[0].raw_response["result"] == 'Observable not found in EclecticIQ IC.'
 
 
 def test_domain_command(mocker):

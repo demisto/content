@@ -806,6 +806,6 @@ outputs:
   description: The user's manager information retrieved from MSGraphUser.
   type: unknown
 tests:
-- No tests (auto formatted)
+- Test Playbook - Impossible Traveler - Enrichment
 marketplaces: ["marketplacev2"]
 fromversion: 6.6.0

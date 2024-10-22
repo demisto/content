@@ -1,6 +1,7 @@
 id: Slack Test Playbook
 version: -1
 name: Slack Test Playbook
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

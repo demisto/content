@@ -23,7 +23,14 @@ def test_set_limit(address, expected):
     assert ipv6_address == expected
 
 
-def test_main(mocker):
+@pytest.mark.parametrize(
+    "address, expected",
+    [
+        ('00:16:45:00:46:91', ''),
+        ('"1:2:3:4:5:6:7:8', '1:2:3:4:5:6:7:8'),
+    ]
+)
+def test_main(mocker, address, expected):
     """
     Given:
         - MAC Address as input
@@ -32,10 +39,10 @@ def test_main(mocker):
     Then:
         - Ensure the MAC address is caught as invalid IPv6 and returns array with empty string
     """
-    mocker.patch.object(demisto, 'args', return_value={'input': '00:16:45:00:46:91'})
+    mocker.patch.object(demisto, 'args', return_value={'input': address})
     mocker.patch.object(demisto, 'results')
     main()
-    demisto.results.assert_called_with([''])
+    demisto.results.assert_called_with([expected])
 
 
 @pytest.mark.skip(reason="Flaky test, issue #41552")

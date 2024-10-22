@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Add indicators to HarfangLab EDR](./doc_files/Hurukai_-_Add_indicators_to_HarfangLab_EDR.png)
+![Hurukai - Add indicators to HarfangLab EDR](../doc_files/Hurukai_-_Add_indicators_to_HarfangLab_EDR.png)

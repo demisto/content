@@ -37,7 +37,7 @@ configuration:
   - comments
   type: 15
   required: false
-- additionalinfo: "E.g.: OwnerId='0056s000000wGoWAAX'"
+- additionalinfo: 'E.g.: OwnerId=''0056s000000wGoWAAX'''
   display: Define a query to determine which objects to fetch.
   name: condition
   type: 0
@@ -1083,7 +1083,7 @@ script:
       name: caseNumber
     description: Retrieve a case file by file ID.
     name: salesforce-get-case-file-by-id
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.100715
   isfetch: true
   ismappable: true
   isremotesyncin: true

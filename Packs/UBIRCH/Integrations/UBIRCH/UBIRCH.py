@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import paho.mqtt.client as mqtt
 import paho
-from typing import Callable
+from collections.abc import Callable
 import traceback
 import json
 
@@ -154,7 +154,7 @@ class Client:
         self.mqtt_client.username_pw_set(username, password)
         self.mqtt_host = mqtt_host
         self.mqtt_port = mqtt_port
-        self.topic = "com/ubirch/{}/incident/tenant/{}".format(stage, tenant_id)
+        self.topic = f"com/ubirch/{stage}/incident/tenant/{tenant_id}"
 
     def connect(self, on_connect_callback: Callable[[mqtt.Client, dict, dict, int], None] = None) -> None:
         if on_connect_callback is not None:
@@ -250,7 +250,7 @@ def long_running_execution(client: Client) -> None:
 
         Create incidents, when the client subscribes to an error from the mqtt server.
         """
-        demisto.info(f"on message. {message.topic} {message.qos} {message.payload}")
+        demisto.info(f"on message. {message.topic} {message.qos} {message.payload}")  # type: ignore[str-bytes-safe]
         incidents = create_incidents(message.payload.decode("utf-8", "ignore"))  # the message payload is binary.
         demisto.info(f"catch an incident. {incidents}")
         demisto.createIncidents(incidents)
