@@ -22,14 +22,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* SearchAlertsV2
+* SearchIncidentsV2
 
 ### Commands
 
-* closeInvestigation
+* core-get-process-analytics-prevalence
 * core-get-cmd-analytics-prevalence
 * core-terminate-causality
-* core-get-process-analytics-prevalence
+* closeInvestigation
 
 ## Playbook Inputs
 
