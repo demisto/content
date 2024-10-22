@@ -7,7 +7,6 @@ from requests.auth import HTTPDigestAuth
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -27,6 +26,16 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, headers=headers, auth=auth)
     
     def get_alerts(self, page_num, items_per_page):
+        """
+        Fetch a paginated list of alerts from the service API.
+        
+        Args:
+            page_num (int): The page number to retrieve.
+            items_per_page (int): The number of alerts to retrieve per page.
+            
+        Returns:
+            dict: A dictionary containing the paginated list of alerts and metadata such as total count.
+        """
         try:
             results = self._http_request(
                 method="GET",
@@ -38,6 +47,16 @@ class Client(BaseClient):
         return results
 
     def get_events(self, page_num, items_per_page):
+        """
+        Fetch a paginated list of events from the service API.
+
+        Args:
+            page_num (int): The page number to retrieve.
+            items_per_page (int): The number of events to retrieve per page.
+
+        Returns:
+            dict: A dictionary containing the paginated list of events and metadata such as total count.
+        """
         try:
             results = self._http_request(
                 method="GET",
@@ -51,7 +70,22 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 def sort_list_by_created_field(data: list):
-    return sorted(data, key=lambda x: datetime.strptime(x["created"], "%Y-%m-%dT%H:%M:%SZ"))
+    """
+    Sort a list of JSON objects by the 'created' field, which contains the event or alert's creation date.
+    
+    Args:
+        data: the list of JSON objects.
+        
+    Returns:
+        The sorted list.
+    """
+    return sorted(data, key=lambda x: datetime.strptime(x["created"], DATE_FORMAT))
+
+def fetch_events_type(fetch_limit: int):
+    pass
+
+def fetch_alerts_type(fetch_limit: int):
+    pass
 
 ''' COMMAND FUNCTIONS '''
 
@@ -82,7 +116,7 @@ def get_events(client: Client):
     #suppose to run fetch_events with some PageNum
     pass
 
-def fetch_events(client: Client, number_of_events_per_fetch: int):
+def fetch_events(client: Client, fetch_limit: int):
     #run every min and return all the new events from the last run
     
     #fetch_events_type
@@ -98,15 +132,15 @@ def fetch_events(client: Client, number_of_events_per_fetch: int):
         
     #current_fetched_events = 0
     #output = []
-    #items_per_page = min(500, number_of_events_per_fetch)
+    #items_per_page = 500 #the maximum the api can get
     
-    #while current_fetched_events < number_of_events_per_fetch:
+    #while current_fetched_events < fetch_limit:
       #response = client.get_alerts(current_page, items_per_page)
       #events = response.get('results')
       #total_count = response.get('totalCount')
       
       #sorted_list = sort_list_by_created_field(events)
-      #check if we fetched all existing events: if fetched_events >= total_count: return output
+      #if fetched_events >= total_count: return output
       
       #start = last_page_amount_of_fetched_events
       #for each event in events[start:]:
@@ -114,14 +148,16 @@ def fetch_events(client: Client, number_of_events_per_fetch: int):
         #current_fetched_events += 1
         #fetched_events += 1
         
-        #if current_fetched_events == number_of_events_per_fetch:
+        #if current_fetched_events == fetch_limit:
             #save current_fetched_events+1 as last_page_amount_of_fetched_events
             #save fetched_events
             #save current_page
             #return output
             
-      #last_page_amount_of_fetched_events = 0
+      #current_fetched_events = 0
       #current_page += 1
+    
+    #return output
     
     pass
     
@@ -147,7 +183,7 @@ def main() -> None:
         base_url = params.get('url')
         verify = not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        number_of_events_per_fetch = int(params.get('number_of_events_per_fetch', 2500))
+        fetch_limit = int(params.get('number_of_events_per_fetch', 2500))
         
         client = Client (
             base_url=base_url,
@@ -163,7 +199,7 @@ def main() -> None:
         elif command == 'mongo-db-atlas-get-events':
             return_results(get_events(client, demisto.args()))
         elif command == 'fetch-events':
-            return_results(fetch_events(client,number_of_events_per_fetch))
+            return_results(fetch_events(client,fetch_limit))
 
 
     except Exception as e:
