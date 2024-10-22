@@ -313,7 +313,8 @@ def test_search_query_indicators_pagination(mocker):
                                          'object_relation': None, 'category': 'Payload delivery',
                                          'type': 'sha256', 'to_ids': True, 'uuid': '5fd0c620',
                                          'timestamp': '1607517728', 'distribution': '5', 'sharing_group_id': '0',
-                                         'comment': 'malspam', 'deleted': False, 'disable_correlation': False, 'first_seen': None,
+                                         'comment': 'malspam', 'deleted': False, 'disable_correlation': False,
+                                         'first_seen': None,
                                          'last_seen': None, 'value': 'val2', 'Event': {}}]}}
     returned_result_2 = {'response': {'Attribute': []}}
     mocker.patch.object(Client, '_http_request', side_effect=[returned_result_1, returned_result_2])
@@ -322,6 +323,7 @@ def test_search_query_indicators_pagination(mocker):
         'filters': {'category': ['Payload delivery']},
     }
     mocker.patch("FeedMISP.LIMIT", new=2000)
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'createIndicators')
     fetch_attributes_command(client, params_dict)
@@ -375,3 +377,92 @@ def test_parsing_user_query_timestamp_deprecated():
                  ' "tags": {"OR": ["tlp:%"]}}')
     params = parsing_user_query(query_str, limit=2)
     assert good_query == json.dumps(params)
+
+
+def test_ignore_last_fetched_indicator(mocker):
+    """
+    Given:
+        - The fetch_attributes_command function is called with a client object and a params_dict.
+    When:
+        - The last fetched indicator is returned when already fetched.
+    Then:
+        - The fetch_attributes_command function should ignore the last fetched indicator and continue fetching new indicators.
+    """
+    client = Client(base_url="example",
+                    authorization="auth",
+                    verify=False,
+                    proxy=False,
+                    timeout=60,
+                    performance=False,
+                    max_indicator_to_fetch=2000
+                    )
+    mocked_result = {'response':
+                     {'Attribute': [{'id': '1', 'event_id': '1', 'object_id': '0',
+                                     'object_relation': None, 'category': 'Payload delivery',
+                                     'type': 'sha256', 'to_ids': True, 'uuid': '5fd0c620',
+                                     'timestamp': '1607517728', 'distribution': '5', 'sharing_group_id': '0',
+                                     'comment': 'malspam', 'deleted': False, 'disable_correlation': False,
+                                     'first_seen': None, 'last_seen': None,
+                                     'value': 'test', 'Event': {}}]}}
+    mocker.patch.object(Client, '_http_request', side_effect=[mocked_result])
+    params_dict = {
+        'type': 'attribute',
+        'filters': {'category': ['Payload delivery']},
+    }
+    mocked_last_run = {"timestamp": "1607517728", "last_indicator_value": "test"}
+    mocker.patch.object(demisto, 'getLastRun', return_value=mocked_last_run)
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'createIndicators')
+    fetch_attributes_command(client, params_dict)
+    indicators = demisto.createIndicators.call_args
+    assert not indicators  # No indicators should be created since the latest indicator was already fetched
+
+
+def test_fetch_new_indicator_after_last_indicator_been_ignored(mocker):
+    """
+    Given:
+        - The fetch_attributes_command function is called with a client object and a params_dict.
+    When:
+        - The latest retrieved indicators been ignored and new indicator is fetched.
+    Then:
+        - The fetch_attributes_command function should fetch the next indicator and set the new last run.
+    """
+    client = Client(base_url="example",
+                    authorization="auth",
+                    verify=False,
+                    proxy=False,
+                    timeout=60,
+                    performance=False,
+                    max_indicator_to_fetch=2000
+                    )
+    mocked_result_1 = {'response':
+                       {'Attribute': [{'id': '1', 'event_id': '1', 'object_id': '0',
+                                       'object_relation': None, 'category': 'Payload delivery',
+                                       'type': 'sha256', 'to_ids': True, 'uuid': '5fd0c620',
+                                       'timestamp': '1607517728', 'distribution': '5', 'sharing_group_id': '0',
+                                       'comment': 'malspam', 'deleted': False, 'disable_correlation': False,
+                                       'first_seen': None, 'last_seen': None,
+                                       'value': 'test1', 'Event': {}},
+                                      {'id': '2', 'event_id': '2', 'object_id': '0',
+                                       'object_relation': None, 'category': 'Payload delivery',
+                                       'type': 'sha256', 'to_ids': True, 'uuid': '5fd0c620',
+                                       'timestamp': '1607517729', 'distribution': '5', 'sharing_group_id': '0',
+                                       'comment': 'malspam', 'deleted': False, 'disable_correlation': False,
+                                       'first_seen': None,
+                                       'last_seen': None, 'value': 'test2', 'Event': {}}]}}
+    mocked_result_2 = {'response':
+                       {'Attribute': []}}
+    mocker.patch.object(Client, '_http_request', side_effect=[mocked_result_1, mocked_result_2])
+    params_dict = {
+        'type': 'attribute',
+        'filters': {'category': ['Payload delivery']},
+    }
+    mocked_last_run = {"timestamp": "1607517728", "last_indicator_value": "test1"}
+    mocker.patch.object(demisto, 'getLastRun', return_value=mocked_last_run)
+    setLastRun_mocked = mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'createIndicators')
+    fetch_attributes_command(client, params_dict)
+    indicators = demisto.createIndicators.call_args[0][0]
+    # The last ignored indicator will be re-fetched but the new last run will proceed.
+    assert len(indicators) == 2
+    assert setLastRun_mocked.called
