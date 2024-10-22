@@ -2456,6 +2456,7 @@ def test_get_attachment_command_success():
     assert result[0].readable_output == 'Successfully retrieved attachments for ticket with sys id 12345.'
     assert result[1] == mock_attachments
 
+
 def test_get_attachment_command_missing_sys_id():
     client = MagicMock()
     args = {'sys_id': '12345'}

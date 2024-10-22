@@ -1504,7 +1504,7 @@ def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, di
     raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
 
 
-def get_attachment_command(client: Client, args: dict) -> list|CommandResults:
+def get_attachment_command(client: Client, args: dict) -> list | CommandResults:
     """Retreives attachment from a ticket.
 
     Args:
@@ -1518,7 +1518,7 @@ def get_attachment_command(client: Client, args: dict) -> list|CommandResults:
 
     result = client.get_ticket_attachment_entries(sys_id)  # type: ignore
     if result:
-        return [CommandResults(readable_output=f'Successfully retrieved attachments for ticket with sys id {sys_id}.'),result]
+        return [CommandResults(readable_output=f'Successfully retrieved attachments for ticket with sys id {sys_id}.'), result]
     return CommandResults(readable_output=f'Ticket with sys id {sys_id} has no attachments to retrieve.')
 
 
@@ -3337,7 +3337,6 @@ def main():
             'servicenow-create-item-order': create_order_item_command,
             'servicenow-document-route-to-queue': document_route_to_table,
             'servicenow-delete-file': delete_attachment_command,
-            'servicenow-get-attachments': get_attachment_command
         }
         if command == 'fetch-incidents':
             raise_exception = True
