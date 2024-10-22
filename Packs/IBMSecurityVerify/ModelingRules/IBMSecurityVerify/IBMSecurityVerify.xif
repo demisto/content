@@ -79,7 +79,9 @@ Mapping of 'authentication' event types
 filter event_type = "authentication"
 | alter
     res = lowercase(data -> result),
-    src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0) // The username can sometimes appear as a username and other times as an email.
+    src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0), // The username can sometimes appear as a username and other times as an email.
+    subtype = data -> subtype,
+    mfamethod = data -> mfamethod
 | alter
     xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
     xdm.event.operation = if(lowercase(data.subtype) = "MFA",  XDM_CONST.OPERATION_TYPE_AUTH_MFA, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
