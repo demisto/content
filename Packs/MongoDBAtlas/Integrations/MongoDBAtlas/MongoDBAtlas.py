@@ -50,23 +50,21 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+def sort_list_by_created_field(data: list):
+    return sorted(data, key=lambda x: datetime.strptime(x["created"], "%Y-%m-%dT%H:%M:%SZ"))
 
 ''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+    """
+    Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    Args:
+        client: MongoDB Atlas client
 
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Returns:
+        'ok' if test passed, anything else will fail the test
     """
 
     message: str = ''
@@ -87,22 +85,27 @@ def get_events(client: Client):
 def fetch_events(client: Client, number_of_events_per_fetch: int):
     #run every min and return all the new events from the last run
     
-    #initialized if not exists:
+    #fetch_events_type
+    #fetch_alerts_type
+    #concatenate the arrays
+    
+    #Algorithm for fetch:
+    
+    #initialize if not exists:
         #current_page = 1
-        #fetched_events = 0
-        #last_page_amount_of_fetched_events = 0
+        #fetched_events = 0 - total number of fetched events at the moment
+        #last_page_amount_of_fetched_events = 0 - the number of fetched events from the last page
         
     #current_fetched_events = 0
     #output = []
     #items_per_page = min(500, number_of_events_per_fetch)
-    
     
     #while current_fetched_events < number_of_events_per_fetch:
       #response = client.get_alerts(current_page, items_per_page)
       #events = response.get('results')
       #total_count = response.get('totalCount')
       
-      #sort the events by the field 'created'
+      #sorted_list = sort_list_by_created_field(events)
       #check if we fetched all existing events: if fetched_events >= total_count: return output
       
       #start = last_page_amount_of_fetched_events
@@ -119,7 +122,6 @@ def fetch_events(client: Client, number_of_events_per_fetch: int):
             
       #last_page_amount_of_fetched_events = 0
       #current_page += 1
-    
     
     pass
     
