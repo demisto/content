@@ -61,62 +61,41 @@ script:
     - name: group_id
       description: The group id or name to edit.
       required: true
-      isArray: false
     - name: account
       description: The account name.
       required: true
-      isArray: false
     - name: domain
       description: 'The domain name (for an account or scenario account).'
-      required: false
-      isArray: false
     - name: domain_type
       description: 'The domain type: local or global (for an account or scenario account).'
-      required: false
-      isArray: false
     - name: device
       description: The device name (null for an application).
-      required: false
-      isArray: false
     - name: service
       description: The service name (null for an application).
-      required: false
-      isArray: false
     - name: application
       description: The application name (null for a device).
-      required: false
-      isArray: false
     - name: session_account_type
       description: '''account'', ''account_mapping'', ''interactive_login'' or ''scenario_account''.'
       required: true
-      isArray: false
   - name: wab-add-password-target-to-target-group
     description: Add a password checkout account to a target group.
     arguments:
     - name: group_id
       description: The group id or name to edit.
       required: true
-      isArray: false
     - name: account
       description: The account name.
       required: true
-      isArray: false
     - name: domain
       description: The domain name.
       required: true
-      isArray: false
     - name: domain_type
       description: 'The domain type: local or global.'
       required: true
-      isArray: false
     - name: device
       description: The device name (null for an application).
-      required: false
-      isArray: false
     - name: application
       description: The application name (null for a device).
-      required: false
-      isArray: false
   - name: wab-add-restriction-to-target-group
     description: 'Add a restriction in a targetgroup
 
@@ -173,18 +152,13 @@ script:
       description: The period end time. Must respect the format "hh:mm".
       required: true
     - name: week_days
-      description: The period week days.
+      description: 'The period week days.
+
+        Comma-separated list (use [] for an empty list).
+
+        Possible values: monday,tuesday,wednesday,thursday,friday,saturday,sunday.'
       required: true
       isArray: true
-      auto: PREDEFINED
-      predefined:
-      - monday
-      - tuesday
-      - wednesday
-      - thursday
-      - friday
-      - saturday
-      - sunday
   - name: wab-get-account-references
     description: 'Get account references
 
@@ -1156,7 +1130,9 @@ script:
     - name: application_put_parameters
       description: The application parameters.
     - name: application_put_global_domains
-      description: The global domains names.
+      description: 'The global domains names.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: application_put_connection_policy
       description: The connection policy name.
@@ -2148,7 +2124,9 @@ script:
     - name: authorization_post_description
       description: The authorization description.
     - name: authorization_post_subprotocols
-      description: The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default).
+      description: 'The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default).
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: authorization_post_is_critical
       description: Define if it's critical.
@@ -2205,7 +2183,9 @@ script:
       - 'true'
       - 'false'
     - name: authorization_post_approvers
-      description: The approvers user groups.
+      description: 'The approvers user groups.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: authorization_post_active_quorum
       description: 'The quorum for active periods (-1: approval workflow with automatic approval, 0: no approval workflow (direct connection), > 0: quorum to reach).'
@@ -2334,7 +2314,9 @@ script:
     - name: authorization_put_description
       description: The authorization description.
     - name: authorization_put_subprotocols
-      description: 'The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default).'
+      description: 'The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default).
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: authorization_put_is_critical
       description: Define if it's critical.
@@ -2391,7 +2373,9 @@ script:
       - 'true'
       - 'false'
     - name: authorization_put_approvers
-      description: The approvers user groups.
+      description: 'The approvers user groups.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: authorization_put_active_quorum
       description: 'The quorum for active periods (-1: approval workflow with automatic approval, 0: no approval workflow (direct connection), > 0: quorum to reach).'
@@ -2717,6 +2701,8 @@ script:
     - name: connectionpolicy_post_authentication_methods
       description: 'The allowed authentication methods.
 
+        Comma-separated list (use [] for an empty list).
+
         Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT.'
       isArray: true
     - name: options
@@ -2777,6 +2763,8 @@ script:
       description: The connection policy description.
     - name: connectionpolicy_put_authentication_methods
       description: 'The allowed authentication methods.
+
+        Comma-separated list (use [] for an empty list).
 
         Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT.'
       isArray: true
@@ -2962,7 +2950,9 @@ script:
       - 'true'
       - 'false'
     - name: device_account_post_services
-      description: The account services.
+      description: 'The account services.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     outputs:
     - type: String
@@ -3149,7 +3139,9 @@ script:
       - hide
       - manual
     - name: device_account_put_services
-      description: The account services.
+      description: 'The account services.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
   - name: wab-delete-account-from-local-domain-of-device
     description: 'Delete an account from a local domain of a device
@@ -3438,13 +3430,17 @@ script:
     - name: service_post_subprotocols
       description: 'The sub protocols.
 
+        Comma-separated list (use [] for an empty list).
+
         Possible values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11.'
       isArray: true
     - name: service_post_connection_policy
       description: The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter.
       required: true
     - name: service_post_global_domains
-      description: The global domains names.
+      description: 'The global domains names.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: service_post_seamless_connection
       description: The seamless connection.
@@ -3509,12 +3505,16 @@ script:
     - name: service_put_subprotocols
       description: 'The sub protocols.
 
+        Comma-separated list (use [] for an empty list).
+
         Possible values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11.'
       isArray: true
     - name: service_put_connection_policy
       description: The connection policy name.
     - name: service_put_global_domains
-      description: The global domains names.
+      description: 'The global domains names.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: service_put_seamless_connection
       description: The seamless connection.
@@ -4013,7 +4013,9 @@ script:
       - 'true'
       - 'false'
     - name: domain_account_post_resources
-      description: The account resources.
+      description: 'The account resources.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     outputs:
     - type: String
@@ -4192,7 +4194,9 @@ script:
       - hide
       - manual
     - name: domain_account_put_resources
-      description: The account resources.
+      description: 'The account resources.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
   - name: wab-delete-account-from-global-domain
     description: 'Delete an account from a global domain
@@ -4680,6 +4684,8 @@ script:
     - name: notification_post_events
       description: 'The list of events that will trigger a notification.
 
+        Comma-separated list (use [] for an empty list).
+
         Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint.'
       isArray: true
     outputs:
@@ -4764,6 +4770,8 @@ script:
       - ru
     - name: notification_put_events
       description: 'The list of events that will trigger a notification.
+
+        Comma-separated list (use [] for an empty list).
 
         Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint.'
       isArray: true
@@ -5552,13 +5560,19 @@ script:
     - name: scan_put_description
       description: 'Description of the scan.'
     - name: scan_put_emails
-      description: Emails to notify when a job is finished.
+      description: 'Emails to notify when a job is finished.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: scan_put_subnets
-      description: 'List of subnets to scan.'
+      description: 'List of subnets to scan.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: scan_put_banner_regex
-      description: Regexes to mach on SSH banner.
+      description: 'Regexes to mach on SSH banner.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: scan_put_scan_for_accounts
       description: Scan for accounts on discovered devices.
@@ -5567,15 +5581,21 @@ script:
       - 'true'
       - 'false'
     - name: scan_put_master_accounts
-      description: The master accounts used to log and the devices empty if scan_for_accounts is false.
+      description: 'The master accounts used to log and the devices empty if scan_for_accounts is false.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: scan_put_search_filter
       description: Active Directory search filter.
     - name: scan_put_dn_list
-      description: List of Distinguished Names to search.
+      description: 'List of Distinguished Names to search.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: scan_put_devices
-      description: The devices to scan.
+      description: 'The devices to scan.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
   - name: wab-delete-scan
     description: 'Delete a scan
@@ -6807,10 +6827,14 @@ script:
       description: The user profile.
       required: true
     - name: user_post_groups
-      description: The groups containing this user.
+      description: 'The groups containing this user.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: user_post_user_auths
-      description: The authentication procedures(s).
+      description: 'The authentication procedures(s).
+
+        Comma-separated list (use [] for an empty list).'
       required: true
       isArray: true
     - name: user_post_password
@@ -6952,10 +6976,14 @@ script:
     - name: user_put_profile
       description: The user profile.
     - name: user_put_groups
-      description: The groups containing this user.
+      description: 'The groups containing this user.
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: user_put_user_auths
-      description: The authentication procedures(s).
+      description: 'The authentication procedures(s).
+
+        Comma-separated list (use [] for an empty list).'
       isArray: true
     - name: user_put_password
       description: The password.

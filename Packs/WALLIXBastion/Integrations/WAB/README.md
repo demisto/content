@@ -119,7 +119,7 @@ category: Timeframes.
 | end_date | The period end date. Must respect the format "yyyy-mm-dd". | Required | 
 | start_time | The period start time. Must respect the format "hh:mm". | Required | 
 | end_time | The period end time. Must respect the format "hh:mm". | Required | 
-| week_days | The period week days. Possible values are: monday, tuesday, wednesday, thursday, friday, saturday, sunday. | Required | 
+| week_days | The period week days.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: monday,tuesday,wednesday,thursday,friday,saturday,sunday. | Required | 
 
 #### Context Output
 
@@ -734,7 +734,7 @@ category: Applications
 | application_put_application_name | The application name. \/:*?"&lt;&gt;\| and space are forbidden. | Optional | 
 | application_put_description | The application description. | Optional | 
 | application_put_parameters | The application parameters. | Optional | 
-| application_put_global_domains | The global domains names. | Optional | 
+| application_put_global_domains | The global domains names.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | application_put_connection_policy | The connection policy name. | Optional | 
 
 #### Context Output
@@ -1512,7 +1512,7 @@ category: Authorizations
 | authorization_post_target_group | The target group. | Required | 
 | authorization_post_authorization_name | The authorization name. \ /:*?"&lt;&gt;\|@&amp; and space are forbidden. | Required | 
 | authorization_post_description | The authorization description. | Optional | 
-| authorization_post_subprotocols | The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default). | Optional | 
+| authorization_post_subprotocols | The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default).<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | authorization_post_is_critical | Define if it's critical. Possible values are: true, false. | Optional | 
 | authorization_post_is_recorded | Define if it's recorded. Possible values are: true, false. | Optional | 
 | authorization_post_authorize_password_retrieval | Authorize password retrieval. Enabled by default. Possible values are: true, false. | Optional | 
@@ -1522,7 +1522,7 @@ category: Authorizations
 | authorization_post_mandatory_comment | Comment is mandatory in approval. Possible values are: true, false. | Optional | 
 | authorization_post_has_ticket | Ticket is allowed in approval. Possible values are: true, false. | Optional | 
 | authorization_post_mandatory_ticket | Ticket is mandatory in approval. Possible values are: true, false. | Optional | 
-| authorization_post_approvers | The approvers user groups. | Optional | 
+| authorization_post_approvers | The approvers user groups.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | authorization_post_active_quorum | The quorum for active periods (-1: approval workflow with automatic approval, 0: no approval workflow (direct connection), &gt; 0: quorum to reach). | Optional | 
 | authorization_post_inactive_quorum | The quorum for inactive periods (-1: approval workflow with automatic approval, 0: no connection allowed, &gt; 0: quorum to reach). | Optional | 
 | authorization_post_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). Possible values are: true, false. | Optional | 
@@ -1599,7 +1599,7 @@ category: Authorizations
 | force | The default value is false. When it is set to true the values of subprotocols and approvers are replaced otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | authorization_put_authorization_name | The authorization name. \ /:*?"&lt;&gt;\|@&amp; and space are forbidden. | Optional | 
 | authorization_put_description | The authorization description. | Optional | 
-| authorization_put_subprotocols | The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default). | Optional | 
+| authorization_put_subprotocols | The authorization subprotocols. It is mandatory if "authorize_sessions" is enabled (default).<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | authorization_put_is_critical | Define if it's critical. Possible values are: true, false. | Optional | 
 | authorization_put_is_recorded | Define if it's recorded. Possible values are: true, false. | Optional | 
 | authorization_put_authorize_password_retrieval | Authorize password retrieval. Enabled by default. Possible values are: true, false. | Optional | 
@@ -1609,7 +1609,7 @@ category: Authorizations
 | authorization_put_mandatory_comment | Comment is mandatory in approval. Possible values are: true, false. | Optional | 
 | authorization_put_has_ticket | Ticket is allowed in approval. Possible values are: true, false. | Optional | 
 | authorization_put_mandatory_ticket | Ticket is mandatory in approval. Possible values are: true, false. | Optional | 
-| authorization_put_approvers | The approvers user groups. | Optional | 
+| authorization_put_approvers | The approvers user groups.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | authorization_put_active_quorum | The quorum for active periods (-1: approval workflow with automatic approval, 0: no approval workflow (direct connection), &gt; 0: quorum to reach). | Optional | 
 | authorization_put_inactive_quorum | The quorum for inactive periods (-1: approval workflow with automatic approval, 0: no connection allowed, &gt; 0: quorum to reach). | Optional | 
 | authorization_put_single_connection | Limit to one single connection during the approval period (i.e. if the user disconnects, he will not be allowed to start a new session during the original requested time). Possible values are: true, false. | Optional | 
@@ -1927,7 +1927,7 @@ category: Connection Policies
 | connectionpolicy_post_type | The connection policy type. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 | connectionpolicy_post_description | The connection policy description. | Optional | 
 | connectionpolicy_post_protocol | The connection policy protocol. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
-| connectionpolicy_post_authentication_methods | The allowed authentication methods.<br/>Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT. | Optional | 
+| connectionpolicy_post_authentication_methods | The allowed authentication methods.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT. | Optional | 
 | options | Options for the connection policy, formatted in json. | Optional | 
 
 #### Context Output
@@ -1983,7 +1983,7 @@ category: Connection Policies
 | force | The default value is false. When it is set to true the values of the authentication_methods are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | connectionpolicy_put_connection_policy_name | The connection policy name. | Optional | 
 | connectionpolicy_put_description | The connection policy description. | Optional | 
-| connectionpolicy_put_authentication_methods | The allowed authentication methods.<br/>Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT. | Optional | 
+| connectionpolicy_put_authentication_methods | The allowed authentication methods.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT. | Optional | 
 | options | Options for the connection policy, formatted in json. | Optional | 
 
 #### Context Output
@@ -2097,7 +2097,7 @@ category: Device Accounts
 | device_account_post_checkout_policy | The account checkout policy. | Required | 
 | device_account_post_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | device_account_post_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
-| device_account_post_services | The account services. | Optional | 
+| device_account_post_services | The account services.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 
 #### Context Output
 
@@ -2192,7 +2192,7 @@ category: Device Accounts
 | device_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | device_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
 | device_account_put_onboard_status | Onboarding status of the account. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
-| device_account_put_services | The account services. | Optional | 
+| device_account_put_services | The account services.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 
 #### Context Output
 
@@ -2433,9 +2433,9 @@ category: Device Services
 | service_post_service_name | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
 | service_post_protocol | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. Possible values are: RAWTCPIP, RDP, RLOGIN, SSH, TELNET, VNC. | Required | 
 | service_post_port | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
-| service_post_subprotocols | The sub protocols.<br/>Possible values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11. | Optional | 
+| service_post_subprotocols | The sub protocols.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11. | Optional | 
 | service_post_connection_policy | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
-| service_post_global_domains | The global domains names. | Optional | 
+| service_post_global_domains | The global domains names.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | service_post_seamless_connection | The seamless connection. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -2492,9 +2492,9 @@ category: Device Services
 | service_id | The service id or name to edit. | Required | 
 | force | The default value is false. When it is set to true the values of the subprotocols, global_domains and additional_interfaces are replaced, otherwise the values are added to the existing ones. Possible values are: true, false. | Optional | 
 | service_put_port | The port number. | Optional | 
-| service_put_subprotocols | The sub protocols.<br/>Possible values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11. | Optional | 
+| service_put_subprotocols | The sub protocols.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11. | Optional | 
 | service_put_connection_policy | The connection policy name. | Optional | 
-| service_put_global_domains | The global domains names. | Optional | 
+| service_put_global_domains | The global domains names.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | service_put_seamless_connection | The seamless connection. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -2801,7 +2801,7 @@ category: Domain Accounts
 | domain_account_post_checkout_policy | The account checkout policy. | Required | 
 | domain_account_post_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | domain_account_post_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
-| domain_account_post_resources | The account resources. | Optional | 
+| domain_account_post_resources | The account resources.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 
 #### Context Output
 
@@ -2893,7 +2893,7 @@ category: Domain Accounts
 | domain_account_put_certificate_validity | The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain. | Optional | 
 | domain_account_put_can_edit_certificate_validity | True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise. Possible values are: true, false. | Optional | 
 | domain_account_put_onboard_status | Onboarding status of the account. Possible values are: onboarded, to_onboard, hide, manual. | Optional | 
-| domain_account_put_resources | The account resources. | Optional | 
+| domain_account_put_resources | The account resources.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 
 #### Context Output
 
@@ -3251,7 +3251,7 @@ category: Notifications
 | notification_post_type | Notification type. Possible values are: email. | Required | 
 | notification_post_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Required | 
 | notification_post_language | The notification language (in email). Possible values are: de, en, es, fr, ru. | Required | 
-| notification_post_events | The list of events that will trigger a notification.<br/>Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint. | Optional | 
+| notification_post_events | The list of events that will trigger a notification.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint. | Optional | 
 
 #### Context Output
 
@@ -3311,7 +3311,7 @@ category: Notifications
 | notification_put_type | Notification type. Possible values are: email. | Optional | 
 | notification_put_destination | Destination for notification; for the type "email", this is a list of recipient emails separated by ";". | Optional | 
 | notification_put_language | The notification language (in email). Possible values are: de, en, es, fr, ru. | Optional | 
-| notification_put_events | The list of events that will trigger a notification.<br/>Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint. | Optional | 
+| notification_put_events | The list of events that will trigger a notification.<br/>Comma-separated list (use [] for an empty list).<br/>Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint. | Optional | 
 
 #### Context Output
 
@@ -3940,14 +3940,14 @@ category: Scans
 | scan_put_active | State of the job schedule. Possible values are: true, false. | Optional | 
 | scan_put_periodicity | Periodicity of the scan, in cron notation. | Optional | 
 | scan_put_description | Description of the scan. | Optional | 
-| scan_put_emails | Emails to notify when a job is finished. | Optional | 
-| scan_put_subnets | List of subnets to scan. | Optional | 
-| scan_put_banner_regex | Regexes to mach on SSH banner. | Optional | 
+| scan_put_emails | Emails to notify when a job is finished.<br/>Comma-separated list (use [] for an empty list). | Optional | 
+| scan_put_subnets | List of subnets to scan.<br/>Comma-separated list (use [] for an empty list). | Optional | 
+| scan_put_banner_regex | Regexes to mach on SSH banner.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | scan_put_scan_for_accounts | Scan for accounts on discovered devices. Possible values are: true, false. | Optional | 
-| scan_put_master_accounts | The master accounts used to log and the devices empty if scan_for_accounts is false. | Optional | 
+| scan_put_master_accounts | The master accounts used to log and the devices empty if scan_for_accounts is false.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | scan_put_search_filter | Active Directory search filter. | Optional | 
-| scan_put_dn_list | List of Distinguished Names to search. | Optional | 
-| scan_put_devices | The devices to scan. | Optional | 
+| scan_put_dn_list | List of Distinguished Names to search.<br/>Comma-separated list (use [] for an empty list). | Optional | 
+| scan_put_devices | The devices to scan.<br/>Comma-separated list (use [] for an empty list). | Optional | 
 
 #### Context Output
 
@@ -4861,8 +4861,8 @@ category: Users
 | user_post_ip_source | The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com. | Optional | 
 | user_post_preferred_language | The preferred language. Possible values are: de, en, es, fr, ru. | Optional | 
 | user_post_profile | The user profile. | Required | 
-| user_post_groups | The groups containing this user. | Optional | 
-| user_post_user_auths | The authentication procedures(s). | Required | 
+| user_post_groups | The groups containing this user.<br/>Comma-separated list (use [] for an empty list). | Optional | 
+| user_post_user_auths | The authentication procedures(s).<br/>Comma-separated list (use [] for an empty list). | Required | 
 | user_post_password | The password. | Optional | 
 | user_post_force_change_pwd | Force password change. Possible values are: true, false. | Optional | 
 | user_post_ssh_public_key | The SSH public key. | Optional | 
@@ -4942,8 +4942,8 @@ category: Users
 | user_put_ip_source | The source IP to limit access. Format is a comma-separated list of IPv4 or IPV6 addresses, subnets, ranges or domain, for example: 1.2.3.4,2001:db8::1234:5678,192.168.1.10/24,10.11.12.13-14.15.16.17,example.com. | Optional | 
 | user_put_preferred_language | The preferred language. Possible values are: de, en, es, fr, ru. | Optional | 
 | user_put_profile | The user profile. | Optional | 
-| user_put_groups | The groups containing this user. | Optional | 
-| user_put_user_auths | The authentication procedures(s). | Optional | 
+| user_put_groups | The groups containing this user.<br/>Comma-separated list (use [] for an empty list). | Optional | 
+| user_put_user_auths | The authentication procedures(s).<br/>Comma-separated list (use [] for an empty list). | Optional | 
 | user_put_password | The password. | Optional | 
 | user_put_force_change_pwd | Force password change. Possible values are: true, false. | Optional | 
 | user_put_ssh_public_key | The SSH public key. | Optional | 
