@@ -263,6 +263,7 @@ def count_running_chromes(port):
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
+    demisto.debug(f'get_chrome_browser {DEFAULT_RETRIES_COUNT}')
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
             demisto.debug(f"Trying to connect to {browser_url=}, iteration {i + 1}/{DEFAULT_RETRIES_COUNT}")
@@ -316,7 +317,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
     :param chrome_port: Port for Chrome instance.
     """
     existing_data = read_json_file()
-
+    demisto.debug(f"increase_counter_chrome_instances_file {existing_data}")
     if chrome_port in existing_data:
         existing_data[chrome_port][RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
         write_chrome_instances_file(existing_data)
@@ -332,7 +333,7 @@ def terminate_port_chrome_instances_file(chrome_port: str = ''):
     :param chrome_port: Port for Chrome instance.
     """
     existing_data = read_json_file()
-
+    demisto.debug(f"terminate_port_chrome_instances_file {existing_data}")
     if chrome_port in existing_data:
         del existing_data[chrome_port]
         write_chrome_instances_file(existing_data)
@@ -347,7 +348,7 @@ def add_new_chrome_instance(new_chrome_instance_content: Optional[Dict] = None) 
 
     """
     existing_data = read_json_file()
-
+    demisto.debug(f"add_new_chrome_instance {existing_data}")
     if new_chrome_instance_content:
         existing_data.update(new_chrome_instance_content)
 
@@ -518,6 +519,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+    demisto.debug(f'[test] chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}')
     instance_id_dict = {
         value[INSTANCE_ID]: {
             'chrome_port': key,
@@ -525,6 +527,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         }
         for key, value in chrome_instances_contents.items()
     }
+    demisto.debug(f'[test] chrome_manager {instance_id_dict=}')
     if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
         return generate_new_chrome_instance(instance_id, chrome_options)
 
@@ -533,6 +536,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         # it terminates the existing Chrome instance and generates a new one with the new options.
         chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
         terminate_chrome(chrome_port=chrome_port)
+        demisto.debug(f'[test] chrome_manager after_terminate_chrome {chrome_port}')
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
@@ -800,7 +804,8 @@ def perform_rasterize(path: str | list[str],
     """
     demisto.debug(f"perform_rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
-
+    file = read_json_file()
+    demisto.debug(f"[test] preform_rasterize after chrome manager {file=}")
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
@@ -856,6 +861,8 @@ def perform_rasterize(path: str | list[str],
             return rasterization_results
 
     else:
+        file = read_json_file()
+        demisto.debug(f"[test] preform_rasterize #865 else {file=}")
         message = 'Could not use local Chrome for rasterize command'
         demisto.error(message)
         return_error(message)
@@ -906,9 +913,14 @@ def rasterize_email_command():  # pragma: no cover
 
     path = f'file://{os.path.realpath(f.name)}'
 
-    rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
-                                         offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
-
+    rasterize_output:List[Any] = perform_rasterize(path=path, rasterize_type=rasterize_type,
+                                                   width=width, height=height,
+                                                   offline_mode=offline,
+                                                   navigation_timeout=navigation_timeout,
+                                                   full_screen=full_screen) or []
+    if not rasterize_output:
+        demisto.debug('[test] rasterize_email_command: rasterize_output empty')
+    
     res = fileResult(filename=file_name, data=rasterize_output[0][0])
 
     if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
@@ -960,17 +972,20 @@ def rasterize_pdf_command():  # pragma: no cover
     file_path = demisto.getFilePath(entry_id).get('path')
 
     file_name = f'{file_name}.jpeg'
+    try:
+        with open(file_path, 'rb') as f:
+            images = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password)
+            results = []
 
-    with open(file_path, 'rb') as f:
-        images = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password)
-        results = []
+            for image in images:
+                res = fileResult(filename=file_name, data=image)
+                res['Type'] = entryTypes['image']
+                results.append(res)
 
-        for image in images:
-            res = fileResult(filename=file_name, data=image)
-            res['Type'] = entryTypes['image']
-            results.append(res)
-
-        demisto.results(results)
+            demisto.results(results)
+    except Exception as e:
+        raise DemistoException(f"Failed to open PDF {e=}")
+        
 
 
 def rasterize_html_command():
@@ -989,11 +1004,14 @@ def rasterize_html_command():
 
     output = perform_rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
                                rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
+    demisto.debug(f' rasterize_html_command {output=}')
 
     res = fileResult(filename=file_name, data=output[0][0])
     if rasterize_type == 'png':
         res['Type'] = entryTypes['image']
-    return_results(res)
+    if res:
+        return_results(res)
+    raise DemistoException(f"Failed to create html {e=}")
 
 
 def module_test():  # pragma: no cover
