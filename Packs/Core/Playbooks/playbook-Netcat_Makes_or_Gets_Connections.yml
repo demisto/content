@@ -894,19 +894,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 41e12e12-e4e4-43cd-8657-7bc15b2a038a
+    taskid: 557e2a2f-1856-400b-84e6-09f3e5f093cb
     type: title
     task:
-      id: 41e12e12-e4e4-43cd-8657-7bc15b2a038a
+      id: 557e2a2f-1856-400b-84e6-09f3e5f093cb
       version: -1
-      name: Close the alert - Internal IP
+      name: Insufficient data for verdict
       description: Set a value in context under the key you entered.
       type: title
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - "46"
+      - "23"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -914,43 +914,6 @@ tasks:
         "position": {
           "x": -90,
           "y": 2175
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
-    taskid: b094aa8b-a67d-4315-8025-4c0b2bebe3a5
-    type: regular
-    task:
-      id: b094aa8b-a67d-4315-8025-4c0b2bebe3a5
-      version: -1
-      name: Close the Alert
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      closeNotes:
-        simple: Alert closed due to no findings
-      closeReason:
-        simple: 'Resolved - Handled by the playbook "Netcat makes or gets connections" '
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -90,
-          "y": 2675
         }
       }
     note: false
