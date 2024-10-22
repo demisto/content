@@ -53,7 +53,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.11.10.113941
   commands:
   - name: wab-add-session-target-to-target-group
     description: Add a target account to a target group.
@@ -2715,16 +2715,10 @@ script:
       - TELNET
       - VNC
     - name: connectionpolicy_post_authentication_methods
-      description: The allowed authentication methods.
+      description: 'The allowed authentication methods.
+
+        Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT.'
       isArray: true
-      auto: PREDEFINED
-      predefined:
-      - KERBEROS_FORWARDING
-      - PASSWORD_INTERACTIVE
-      - PASSWORD_MAPPING
-      - PASSWORD_VAULT
-      - PUBKEY_AGENT_FORWARDING
-      - PUBKEY_VAULT
     - name: options
       description: Options for the connection policy, formatted in json.
     outputs:
@@ -2782,16 +2776,10 @@ script:
     - name: connectionpolicy_put_description
       description: The connection policy description.
     - name: connectionpolicy_put_authentication_methods
-      description: The allowed authentication methods.
+      description: 'The allowed authentication methods.
+
+        Possible values: KERBEROS_FORWARDING,PASSWORD_INTERACTIVE,PASSWORD_MAPPING,PASSWORD_VAULT,PUBKEY_AGENT_FORWARDING,PUBKEY_VAULT.'
       isArray: true
-      auto: PREDEFINED
-      predefined:
-      - KERBEROS_FORWARDING
-      - PASSWORD_INTERACTIVE
-      - PASSWORD_MAPPING
-      - PASSWORD_VAULT
-      - PUBKEY_AGENT_FORWARDING
-      - PUBKEY_VAULT
     - name: options
       description: Options for the connection policy, formatted in json.
   - name: wab-delete-connection-policy
@@ -3448,30 +3436,10 @@ script:
       description: The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter.
       required: true
     - name: service_post_subprotocols
-      description: The sub protocols.
+      description: 'The sub protocols.
+
+        Possible values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11.'
       isArray: true
-      auto: PREDEFINED
-      predefined:
-      - RDP_AUDIO_INPUT
-      - RDP_AUDIO_OUTPUT
-      - RDP_CLIPBOARD_DOWN
-      - RDP_CLIPBOARD_FILE
-      - RDP_CLIPBOARD_UP
-      - RDP_COM_PORT
-      - RDP_DRIVE
-      - RDP_PRINTER
-      - RDP_SMARTCARD
-      - SFTP_SESSION
-      - SSH_AUTH_AGENT
-      - SSH_DIRECT_TCPIP
-      - SSH_DIRECT_UNIXSOCK
-      - SSH_REMOTE_COMMAND
-      - SSH_REVERSE_TCPIP
-      - SSH_REVERSE_UNIXSOCK
-      - SSH_SCP_DOWN
-      - SSH_SCP_UP
-      - SSH_SHELL_SESSION
-      - SSH_X11
     - name: service_post_connection_policy
       description: The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter.
       required: true
@@ -3539,30 +3507,10 @@ script:
     - name: service_put_port
       description: The port number.
     - name: service_put_subprotocols
-      description: The sub protocols.
+      description: 'The sub protocols.
+
+        Possible values: RDP_AUDIO_INPUT,RDP_AUDIO_OUTPUT,RDP_CLIPBOARD_DOWN,RDP_CLIPBOARD_FILE,RDP_CLIPBOARD_UP,RDP_COM_PORT,RDP_DRIVE,RDP_PRINTER,RDP_SMARTCARD,SFTP_SESSION,SSH_AUTH_AGENT,SSH_DIRECT_TCPIP,SSH_DIRECT_UNIXSOCK,SSH_REMOTE_COMMAND,SSH_REVERSE_TCPIP,SSH_REVERSE_UNIXSOCK,SSH_SCP_DOWN,SSH_SCP_UP,SSH_SHELL_SESSION,SSH_X11.'
       isArray: true
-      auto: PREDEFINED
-      predefined:
-      - RDP_AUDIO_INPUT
-      - RDP_AUDIO_OUTPUT
-      - RDP_CLIPBOARD_DOWN
-      - RDP_CLIPBOARD_FILE
-      - RDP_CLIPBOARD_UP
-      - RDP_COM_PORT
-      - RDP_DRIVE
-      - RDP_PRINTER
-      - RDP_SMARTCARD
-      - SFTP_SESSION
-      - SSH_AUTH_AGENT
-      - SSH_DIRECT_TCPIP
-      - SSH_DIRECT_UNIXSOCK
-      - SSH_REMOTE_COMMAND
-      - SSH_REVERSE_TCPIP
-      - SSH_REVERSE_UNIXSOCK
-      - SSH_SCP_DOWN
-      - SSH_SCP_UP
-      - SSH_SHELL_SESSION
-      - SSH_X11
     - name: service_put_connection_policy
       description: The connection policy name.
     - name: service_put_global_domains
@@ -4401,10 +4349,6 @@ script:
     arguments:
     - name: group_by
       description: Group the result-set by one property. Can take one of the values 'user_group' or 'domain'.
-      auto: PREDEFINED
-      predefined:
-      - 'user_group'
-      - 'domain'
     - name: q
       description: Searches for a resource matching parameters. Used only if "group_by" is not set.
     - name: sort
@@ -4734,28 +4678,10 @@ script:
       - fr
       - ru
     - name: notification_post_events
-      description: The list of events that will trigger a notification.
+      description: 'The list of events that will trigger a notification.
+
+        Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint.'
       isArray: true
-      auto: PREDEFINED
-      predefined:
-      - cx_equipment
-      - daily_reporting
-      - external_storage_full
-      - filesystem_full
-      - integrity_error
-      - licence_notifications
-      - new_fingerprint
-      - password_expired
-      - pattern_found
-      - primary_cx_failed
-      - raid_error
-      - rdp_outcxn_found
-      - rdp_pattern_found
-      - rdp_process_found
-      - secondary_cx_failed
-      - sessionlog_purge
-      - watchdog_notifications
-      - wrong_fingerprint
     outputs:
     - type: String
       contextPath: WAB.add_notification.id
@@ -4837,28 +4763,10 @@ script:
       - fr
       - ru
     - name: notification_put_events
-      description: The list of events that will trigger a notification.
+      description: 'The list of events that will trigger a notification.
+
+        Possible values: cx_equipment,daily_reporting,external_storage_full,filesystem_full,integrity_error,licence_notifications,new_fingerprint,password_expired,pattern_found,primary_cx_failed,raid_error,rdp_outcxn_found,rdp_pattern_found,rdp_process_found,secondary_cx_failed,sessionlog_purge,watchdog_notifications,wrong_fingerprint.'
       isArray: true
-      auto: PREDEFINED
-      predefined:
-      - cx_equipment
-      - daily_reporting
-      - external_storage_full
-      - filesystem_full
-      - integrity_error
-      - licence_notifications
-      - new_fingerprint
-      - password_expired
-      - pattern_found
-      - primary_cx_failed
-      - raid_error
-      - rdp_outcxn_found
-      - rdp_pattern_found
-      - rdp_process_found
-      - secondary_cx_failed
-      - sessionlog_purge
-      - watchdog_notifications
-      - wrong_fingerprint
   - name: wab-delete-notification
     description: 'Delete a notification
 
