@@ -1,12 +1,9 @@
-This Playbook is designed to handle the 'Unprivileged process opened a registry hive' alerts and executes the following:
-
-Investigation:
-Check the signature of the Actor & CGO processes. 
-Check the prevalence of the Actor & CGO process and Actor & CGO CommandLine
-Check for related XDR alerts using MITRE tactics to identify any malicious activity.
+This Playbook is designed to handle the 'Unprivileged process opened a registry hive' alerts and execute the following:
+- Check for process signatures and prevalence.
+- Searching for additional Cortex XSIAM suspicious alerts in the incident is conducted by searching relevant Mitre techniques.
 
 Remediation:
-Based on the signature status of the Actor & CGO processes, prevalence of the Actor & CGO process and Actor & CGO CommandLine, and related alerts if found, the playbook will terminate the causality process if any malicious parameters are found.
+- Handles malicious alerts by terminating causality processes.
 
 ## Dependencies
 
@@ -27,8 +24,8 @@ This playbook does not use any sub-playbooks.
 ### Commands
 
 * core-get-process-analytics-prevalence
-* core-get-cmd-analytics-prevalence
 * core-terminate-causality
+* core-get-cmd-analytics-prevalence
 * closeInvestigation
 
 ## Playbook Inputs

@@ -1,9 +1,10 @@
 id: Unprivileged process opened a registry hive
 version: -1
 name: Unprivileged process opened a registry hive
-description: "This Playbook is designed to handle the 'Unprivileged process opened a registry hive' alerts and executes the following:\n\nInvestigation:\nCheck the signature of the Actor & CGO processes. \nCheck the prevalence of the Actor & CGO process and Actor & CGO CommandLine\nCheck for related XDR alerts using MITRE tactics to identify any malicious activity.\n\nRemediation:\nBased on the signature status of the Actor & CGO processes, prevalence of the Actor & CGO process and Actor & CGO CommandLine, and related alerts if found, the playbook will terminate the causality process if any malicious parameters are found."
+description: "This Playbook is designed to handle the 'Unprivileged process opened a registry hive' alerts and execute the following:\n- Check for process signatures and prevalence.\n- Searching for additional Cortex XSIAM suspicious alerts in the incident is conducted by searching relevant Mitre techniques.\n\nRemediation:\n- Handles malicious alerts by terminating causality processes."
 tags:
 - TA0006 - Credential Access
+- T1552 - Unsecured Credentials
 starttaskid: "0"
 tasks:
   "0":
@@ -221,10 +222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: a5a61e73-9a5f-4002-8999-d67922a6c3ad
+    taskid: 02cefbac-04e3-4606-8570-a778e38fb0c0
     type: regular
     task:
-      id: a5a61e73-9a5f-4002-8999-d67922a6c3ad
+      id: 02cefbac-04e3-4606-8570-a778e38fb0c0
       version: -1
       name: Search for suspicious-related alerts by MITRE Technique
       description: "This task searches for Cortex XSIAM suspicious alerts related to the current incident by Mitre Technique, indicating that the alert is part of an attack pattern.\n\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1003 - OS Credential Dumping \n- T1036 - Masquerading \n- T1552 - Unsecured Credentials \n- T1059 - Command and Scripting Interpreter"
@@ -365,12 +366,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 76b1f4c5-07a8-45d9-8f47-a2e6e65215cc
+    taskid: 9f115642-48a0-4395-8608-b29f1d2de9ca
     type: condition
     task:
-      id: 76b1f4c5-07a8-45d9-8f47-a2e6e65215cc
+      id: 9f115642-48a0-4395-8608-b29f1d2de9ca
       version: -1
-      name: Found any related alerts?
+      name: Found related alerts requiring causality termination
       description: A verdict is determined based on whether the incident contained any related alerts.
       type: condition
       iscommand: false
@@ -449,12 +450,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 937d2db4-abbb-41d0-8385-dacbd145654c
+    taskid: eca46ccf-77d3-4853-8b71-f516e49814b7
     type: condition
     task:
-      id: 937d2db4-abbb-41d0-8385-dacbd145654c
+      id: eca46ccf-77d3-4853-8b71-f516e49814b7
       version: -1
-      name: Check the signature of the Actor & CGO process and the prevalence of the Actor & CGO process and Actor & CGO CommandLine
+      name: Check for process signatures and prevalence
       description: Determines the appropriate verdict based on the Actor & CGO process signature and the prevalence of the Actor & CGO process and Actor & CGO CommandLine.
       type: condition
       iscommand: false
@@ -557,7 +558,15 @@ view: |-
     }
   }
 inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs.
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 8.8.0
