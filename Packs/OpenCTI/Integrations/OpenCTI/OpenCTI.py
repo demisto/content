@@ -278,6 +278,7 @@ def observable_create_command(client: OpenCTIApiClient, args: Dict[str, str]) ->
     description = args.get("description")
     score = arg_to_number(args.get("score", '50'))
     value = args.get("value")
+    create_indicator = argToBoolean(args.get("create_indicator", 'false'))
     data = {'type': XSOAR_TYPES_TO_OPENCTI.get(observable_type.lower(), observable_type),  # type:ignore
             'value': value}
     if observable_type == 'Registry Key':
@@ -301,7 +302,8 @@ def observable_create_command(client: OpenCTIApiClient, args: Dict[str, str]) ->
             createdBy=created_by, objectMarking=marking_id,
             objectLabel=label_id, externalReferences=external_references_id,
             simple_observable_description=description,
-            x_opencti_score=score, observableData=data
+            x_opencti_score=score, observableData=data,
+            createIndicator=create_indicator
         )
         if redirect_std_out:
             sys.stdout = sys.__stdout__
