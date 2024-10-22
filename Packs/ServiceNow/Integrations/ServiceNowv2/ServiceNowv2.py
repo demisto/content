@@ -1504,7 +1504,7 @@ def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, di
     raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
 
 
-def get_attachment_command(client: Client, args: dict) -> list:
+def get_attachment_command(client: Client, args: dict) -> list|CommandResults:
     """Retreives attachment from a ticket.
 
     Args:
@@ -1519,7 +1519,7 @@ def get_attachment_command(client: Client, args: dict) -> list:
     result = client.get_ticket_attachment_entries(sys_id)  # type: ignore
     if result:
         return [CommandResults(readable_output=f'Successfully retrieved attachments for ticket with sys id {sys_id}.'),result]
-    return [CommandResults(readable_output=f'Ticket with sys id {sys_id} has no attachments to retrieve.')]
+    return CommandResults(readable_output=f'Ticket with sys id {sys_id} has no attachments to retrieve.')
 
 
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
