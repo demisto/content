@@ -27,6 +27,10 @@ ignore=LO107
 [file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference.yml]
 ignore=GR103
 
+# GR103 is temporary, see CIAC-11954
+[file:playbook-Netcat_Makes_or_Gets_Connections.yml]
+ignore=GR103
+
 [known_words]
 xsiam
 coreirapimodule
