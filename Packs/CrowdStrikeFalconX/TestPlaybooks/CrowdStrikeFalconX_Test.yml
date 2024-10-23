@@ -13,7 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: 'test'
     nexttasks:
       '#none#':
       - "1"

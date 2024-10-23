@@ -3,7 +3,7 @@ version: -1
 name: Eradication plan - Test
 description: |
   This playbook tests the ‘Eradication Plan’ playbook which is part of the ‘Common Playbooks’ pack.
-  he playbook includes the following conducted tests to check if the eradication actions were performed properly.
+  he playbook includes the following conducted tests to check if the eradication actions were performed properly.testing
 starttaskid: "0"
 tasks:
   "0":
