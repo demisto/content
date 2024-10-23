@@ -7,7 +7,6 @@ from CommonServerPython import *
 import socket
 import traceback
 from collections.abc import Callable
-import urllib.parse
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
@@ -1268,27 +1267,6 @@ def convert_url_to_ascii_character(url_name):
     return re.sub(r'[^\x00-\x7F]+', convert_non_ascii_chars, url_name)
 
 
-def prepare_url_for_request(url):
-    """
-    Prepare url for request
-    1. Convert non ascii chars to idna format.
-    2. Encode the query parameters.
-    """
-    url = convert_url_to_ascii_character(url)
-    parsed_url = urllib.parse.urlparse(url)
-    encoded_query = urllib.parse.quote(parsed_url.query)
-    # Reconstruct the URL with the encoded query
-    new_url = urllib.parse.urlunparse((
-        parsed_url.scheme,
-        parsed_url.netloc,
-        parsed_url.path,
-        parsed_url.params,
-        encoded_query,
-        parsed_url.fragment
-    ))
-    return new_url
-
-
 ''' COMMANDS'''
 
 
@@ -1688,7 +1666,7 @@ def search_url_command(client, url, reliability, create_relationships, separator
     relationships = []
 
     for url_name in url_list:
-        raw_res = search_indicator(client, 'url', prepare_url_for_request(url_name))
+        raw_res = search_indicator(client, 'url', convert_url_to_ascii_character(url_name))
 
         indicator = raw_res.get('indicator')
         if indicator:

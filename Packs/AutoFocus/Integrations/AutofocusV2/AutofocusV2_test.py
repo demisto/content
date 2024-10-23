@@ -436,31 +436,12 @@ URLS_LIST = [
     ("www.こんにちは.com", 'www.xn--28j2a3ar1p.com'),
     ("https://paloaltonetworks–test.com", "https://paloaltonetworksxn--7ugtest.com")    # noqa: RUF001
 ]
+
+
 @pytest.mark.parametrize("url, result", URLS_LIST)
 def test_convert_url_to_ascii_character(url, result):
     from AutofocusV2 import convert_url_to_ascii_character
     converted = convert_url_to_ascii_character(url)
-    assert converted == result
-
-
-URLS_LIST = [
-    ("www.München.com", "www.Mxn--tdanchen.com"),
-    ("www.こんにちは.com", 'www.xn--28j2a3ar1p.com'),
-    ("https://paloaltonetworks–test.com", "https://paloaltonetworksxn--7ugtest.com"),   # noqa: RUF001
-    ("https://palo!al to&.com", "https://palo!al to&.com")
-]
-@pytest.mark.parametrize("url, result", URLS_LIST)
-def test_prepare_url_for_request(url, result):
-    """
-    Given:
-        - URLs to query in autofocus
-    When:
-        - Running the url command
-    Then:
-        - Validate that the urls are prepared properly. Non ascii are replaced and the url is quoted.
-    """
-    from AutofocusV2 import prepare_url_for_request
-    converted = prepare_url_for_request(url)
     assert converted == result
 
 
