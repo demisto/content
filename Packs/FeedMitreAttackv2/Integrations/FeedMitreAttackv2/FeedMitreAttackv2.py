@@ -1,12 +1,12 @@
+from taxii2client.v20 import Server, Collection, ApiRoot
+from stix2 import TAXIICollectionSource, Filter
+import urllib3
+import json
+import logging
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import logging
+demisto.debug('pack name = MITRE ATT&CK, pack version = 1.1.42')
 
-
-import json
-import urllib3
-from stix2 import TAXIICollectionSource, Filter
-from taxii2client.v20 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
 MITRE_TYPE_TO_DEMISTO_TYPE = {  # pragma: no cover
@@ -56,7 +56,6 @@ FILTER_OBJS = {  # pragma: no cover
     "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()   # pragma: no cover
-ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'                  # pragma: no cover
 EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"   # pragma: no cover
 SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"    # pragma: no cover
 DEFAULT_YEAR = datetime(1970, 1, 1)         # pragma: no cover
@@ -133,8 +132,8 @@ class Client:
         # For each collection
         for collection in self.collections:
 
-            # fetch only enterprise objects
-            if collection.id != ENTERPRISE_COLLECTION_ID:
+            # fetch only specified objects
+            if collection.id != COLLECTION_ID:
                 continue
 
             # Stop when we have reached the limit defined
@@ -471,8 +470,8 @@ def get_mitre_data_by_filter(client, mitre_filter):
     mitre_data = []
     for collection in client.collections:
 
-        # fetch only enterprise data
-        if collection.id != ENTERPRISE_COLLECTION_ID:
+        # fetch only specified data
+        if collection.id != COLLECTION_ID:
             continue
 
         collection_url = urljoin(client.base_url, f'stix/collections/{collection.id}/')
@@ -519,11 +518,13 @@ def build_command_result(value, score, md, attack_obj):
     )
 
 
-def attack_pattern_reputation_command(client, args):
+def attack_pattern_reputation_command(client, args, params):
     command_results: list[CommandResults] = []
 
     filter_by_type = [Filter('type', '=', 'attack-pattern')]
     mitre_data = get_mitre_data_by_filter(client, filter_by_type)
+
+    collection_type = params.get('Collection_ID')
 
     mitre_names = argToList(args.get('attack_pattern'))
     for name in mitre_names:
@@ -586,7 +587,7 @@ def attack_pattern_reputation_command(client, args):
 
     if not command_results:
         return CommandResults(readable_output=f'MITRE ATTACK Attack Patterns values: '
-                                              f'No Attack Patterns found for {mitre_names} in the Enterprise collection.')
+                                              f'No Attack Patterns found for {mitre_names} in the {collection_type} collection.')
 
     return command_results
 
@@ -614,8 +615,10 @@ def filter_attack_pattern_object_by_attack_id(attack_id: str, attack_pattern_obj
     return any(external_reference.get("external_id", "") == attack_id for external_reference in external_references_list)
 
 
-def get_mitre_value_from_id(client, args):
+def get_mitre_value_from_id(client, args, params):
     attack_ids = argToList(args.get('attack_ids', []))
+
+    collection_type = params.get('Collection_ID')
 
     attack_values = []
     filter_by_type = [Filter('type', '=', 'attack-pattern')]
@@ -654,7 +657,7 @@ def get_mitre_value_from_id(client, args):
         )
 
     return CommandResults(readable_output=f'MITRE ATTACK Attack Patterns values: '
-                                          f'No Attack Patterns found for {attack_ids} in the Enterprise collection.')
+                                          f'No Attack Patterns found for {attack_ids} in the {collection_type} collection.')
 
 
 def main():
@@ -665,6 +668,14 @@ def main():
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
     tlp_color = params.get('tlp_color')
+    global COLLECTION_ID
+    collection_type = params.get('Collection_ID')
+    if collection_type == 'Enterprise':
+        COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
+    elif collection_type == 'Mobile':
+        COLLECTION_ID = '2f669986-b40b-4423-b720-4396ca6a462b'
+    elif collection_type == 'ICS':
+        COLLECTION_ID = '02c3ef24-9cd4-48f3-a99f-b74ce24f1d34'
     create_relationships = argToBoolean(params.get('create_relationships'))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -682,10 +693,10 @@ def main():
             show_feeds_command(client)
 
         elif demisto.command() == 'mitre-get-indicator-name':
-            return_results(get_mitre_value_from_id(client, args))
+            return_results(get_mitre_value_from_id(client, args, params))
 
         elif demisto.command() == 'attack-pattern':
-            return_results(attack_pattern_reputation_command(client, args))
+            return_results(attack_pattern_reputation_command(client, args, params))
 
         elif demisto.command() == 'test-module':
             test_module(client)
