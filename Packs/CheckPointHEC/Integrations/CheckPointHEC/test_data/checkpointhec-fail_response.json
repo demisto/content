@@ -1,13 +1,11 @@
 {
     "responseEnvelope": {
         "requestId": "00000000-0000-0000-0000-000000000000",
-        "responseCode": 200,
+        "responseCode": 422,
         "responseText": "",
         "additionalText": "",
-        "recordsNumber": 1,
+        "recordsNumber": 0,
         "scrollId": ""
     },
-    "responseData": [
-        "mt-rnd-ng-1:test"
-    ]
+    "responseData": []
 }
