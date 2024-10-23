@@ -1,7 +1,15 @@
 id: DSPM Send Slack Notification to User
 version: -1
 name: DSPM Send Slack Notification to User
-description: '"Send Slack Notification to User" playbook is designed to notify a user via Slack and handle their response. It begins by sending a Slack notification to a specified email using the SlackBlockBuilder script. Afterward, it waits for the user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once the response is received, it is inserted into the incident''s context. If there is an error in generating the Slack block, the incident is added for a re-run. Finally, the playbook extracts the user''s response from the Slack block state for further processing.'
+description: '"Send Slack Notification to User" playbook is designed to notify a user
+  via Slack and handle their response. It begins by sending a Slack notification to
+  a specified email using the SlackBlockBuilder script. Afterward, it waits for the
+  user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once
+  the response is received, it is inserted into the incident''s context. If there
+  is an error in generating the Slack block, the incident is added for a re-run. Finally,
+  the playbook extracts the user''s response from the Slack block state for further
+  processing.'
+fromversion: 6.10.0
 starttaskid: "0"
 tasks:
   "0":
@@ -17,13 +25,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 592.5,
           "y": 50
         }
       }
@@ -36,23 +44,29 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0d63cdcf-6f72-4d7b-8365-11c2c4e54880
+    taskid: e9592e71-5a31-4877-8cd2-c16551f2ea67
     type: regular
     task:
-      id: 0d63cdcf-6f72-4d7b-8365-11c2c4e54880
+      id: e9592e71-5a31-4877-8cd2-c16551f2ea67
       version: -1
       name: Send slack notification to ${userSlackEmail}
-      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format
+        readable by the SlackV3 integration. The script will also send the block to
+        the given destination. Make sure to mark **Trust any certificate** and fill
+        the **XSOAR API Key integration** parameters if you want to get a response
+        to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
       list_name:
         simple: ${block_list_name}
+      task:
+        simple: "3"
       user:
         simple: ${userSlackEmail}
     separatecontext: false
@@ -60,40 +74,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 78f06a05-027f-4d9b-8e73-4981d4b53e56
-    type: regular
-    task:
-      id: 78f06a05-027f-4d9b-8e73-4981d4b53e56
-      version: -1
-      name: Waiting for user replay till the set time in Prisma Cloud DSPM instance configuration.
-      scriptName: DSPMWaitUntilUserSpecifiedTime
-      type: regular
-      iscommand: false
-      brand: ""
-      description: 'This task will wait until the user-specified time set in the Prisma Cloud DSPM instance.'
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
+          "x": 910,
+          "y": 1740
         }
       }
     note: false
@@ -111,7 +93,8 @@ tasks:
       id: 539591aa-46fd-4790-84f3-a7f9afea2480
       version: -1
       name: ' Get SlackBlockBuilder response and insert it into an incident''s context.'
-      description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response and insert it into an incident's context.
+      description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response
+        and insert it into an incident's context.
       scriptName: GetSlackBlockBuilderResponse
       type: regular
       iscommand: false
@@ -125,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 590
+          "x": 285,
+          "y": 1915
         }
       }
     note: false
@@ -143,8 +126,11 @@ tasks:
     task:
       id: a6d0526e-0da1-4296-8879-2531e894d744
       version: -1
-      name: 'Are errors occurred when generating the Slack block list for the incident ID : ${incident_object.id}'
-      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
+      name: 'Are errors occurred when generating the Slack block list for the incident
+        ID : ${incident_object.id}'
+      description: This script checks for error entries based on provided entry IDs
+        and returns "yes" if any errors are found or "no" if no errors are present.
+        If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -153,7 +139,7 @@ tasks:
       "no":
       - "7"
       "yes":
-      - "5"
+      - "19"
     scriptarguments:
       entry_id:
         simple: ${lastCompletedTaskEntries}
@@ -162,42 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: ed60ca6f-8c8f-460e-8475-191d92dc4171
-    type: regular
-    task:
-      id: ed60ca6f-8c8f-460e-8475-191d92dc4171
-      version: -1
-      name: Add incident for re-run
-      scriptName: DSPMIncidentList
-      type: regular
-      iscommand: false
-      brand: ""
-      description: 'Add the incident to IncidentList for re-run'
-    scriptarguments:
-      action:
-        simple: add
-      incident_data:
-        simple: ${incident_object}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 180,
-          "y": 980
+          "x": 285,
+          "y": 2090
         }
       }
     note: false
@@ -219,7 +171,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: 'Extracts the user submitted response from SlackBlockState'
+    nexttasks:
+      '#none#':
+      - "15"
     scriptarguments:
       SlackBlockState:
         simple: ${SlackBlockState}
@@ -230,8 +184,695 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 980
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e6638794-2af4-4f42-84bb-18feb7267d31
+    type: regular
+    task:
+      id: e6638794-2af4-4f42-84bb-18feb7267d31
+      version: -1
+      name: DSPMCreateRiskSlackBlocks
+      description: This XSOAR automation script generates a Slack message block to
+        notify users of risks detected by a Data Security Posture Management (DSPM)
+        tool. The Slack block is dynamically constructed based on the details of the
+        security incident and includes options for users to take specific actions,
+        such as creating a Jira ticket or remediating the risk.
+      scriptName: DSPMCreateRiskSlackBlocks
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      dspm_incident:
+        simple: ${incident_object}
+      dspmIncident:
+        simple: ${incident_object}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a37d93da-381c-48b8-8db0-c258b7b637d6
+    type: condition
+    task:
+      id: a37d93da-381c-48b8-8db0-c258b7b637d6
+      version: -1
+      name: DSPMCheckAndSetErrorEntries
+      description: This script checks for error entries based on provided entry IDs
+        and returns "yes" if any errors are found or "no" if no errors are present.
+        If errors are detected, it sets the error messages in the XSOAR context.
+      scriptName: DSPMCheckAndSetErrorEntries
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "1"
+      - "26"
+      "yes":
+      - "13"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 852fa43f-5dd3-4f2d-829e-2775a0569a33
+    type: regular
+    task:
+      id: 852fa43f-5dd3-4f2d-829e-2775a0569a33
+      version: -1
+      name: SlackBlockBuilder
+      description: SlackBlockBuilder will format a given Slack block into a format
+        readable by the SlackV3 integration. The script will also send the block to
+        the given destination. Make sure to mark **Trust any certificate** and fill
+        the **XSOAR API Key integration** parameters if you want to get a response
+        to the incident context.
+      scriptName: SlackBlockBuilder
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      user:
+        simple: ${userSlackEmail}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 35dbf5f1-b398-4548-8881-7baf66a6ac46
+    type: playbook
+    task:
+      id: 35dbf5f1-b398-4548-8881-7baf66a6ac46
+      version: -1
+      name: DSPM notify user in case of error
+      description: The DSPM Notify User in Case of Error playbook is designed to handle
+        errors in DSPM incidents by notifying users and managing Slack notifications.
+      playbookName: DSPM notify user in case of error
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      rerunTime:
+        simple: ${inputs.rerunTime}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d6a02e0c-858e-422f-8c74-2fc0a64d134c
+    type: condition
+    task:
+      id: d6a02e0c-858e-422f-8c74-2fc0a64d134c
+      version: -1
+      name: Is Slack Integration available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "15"
+      "yes":
+      - "16"
+    scriptarguments:
+      brandname:
+        simple: Slack v3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0ddb7b08-b1da-40ea-820f-f9b2bcdf490d
+    type: title
+    task:
+      id: 0ddb7b08-b1da-40ea-820f-f9b2bcdf490d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4e666e9c-ab6a-494f-8ffa-78614086ceb3
+    type: condition
+    task:
+      id: 4e666e9c-ab6a-494f-8ffa-78614086ceb3
+      version: -1
+      name: Check invalid response?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Invalid Response:
+      - "27"
+      Slack:
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: Invalid Response
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Flow path
+            iscontext: true
+          right:
+            value:
+              simple: invalid
+    - label: Slack
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Flow path
+            iscontext: true
+          right:
+            value:
+              simple: slack
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 19cc8e2d-2b17-4027-8752-5d9f6af9fc9f
+    type: regular
+    task:
+      id: 19cc8e2d-2b17-4027-8752-5d9f6af9fc9f
+      version: -1
+      name: Add incident for re-run
+      scriptName: DSPMIncidentList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      action:
+        simple: add
+      incident_data:
+        simple: ${incident_object}
+      rerun_time:
+        simple: ${inputs.rerunTime}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 064b3688-f566-44fb-88d2-050caf2e2cd5
+    type: regular
+    task:
+      id: 064b3688-f566-44fb-88d2-050caf2e2cd5
+      version: -1
+      name: Get DSPM Incident List
+      description: commands.local.cmd.list.get
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#error#':
+      - "22"
+      '#none#':
+      - "18"
+    scriptarguments:
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 3fa2fd7e-6c16-4bff-8224-8c09c2802565
+    type: condition
+    task:
+      id: 3fa2fd7e-6c16-4bff-8224-8c09c2802565
+      version: -1
+      name: Check incident list status?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      add:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: add
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: listStatus
+            iscontext: true
+          right:
+            value:
+              simple: Successfully added incident data
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 678baa48-17cf-4a43-8656-510e2b98befd
+    type: regular
+    task:
+      id: 678baa48-17cf-4a43-8656-510e2b98befd
+      version: -1
+      name: Add incident in  DSPM Incident list
+      description: commands.local.cmd.list.add
+      script: Builtin|||addToList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      listData:
+        simple: '{"incident_id":"${incident.id}","incident_created":"${incident.assetcreatedtime}"}'
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: c70e1af9-2a54-433e-8586-547f734607e4
+    type: regular
+    task:
+      id: c70e1af9-2a54-433e-8586-547f734607e4
+      version: -1
+      name: Create DSPM Incident list
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      listData:
+        simple: '{"incident_id":"${incident.id}","incident_created":"${incident.assetcreatedtime}"}'
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: efebbcb6-56ef-4f79-8ce8-449f9f196ad0
+    type: regular
+    task:
+      id: efebbcb6-56ef-4f79-8ce8-449f9f196ad0
+      version: -1
+      name: Create Slack block sending notification to user.
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: "You have provided invalid response to ${incident_object.incidentId}
+          \n Incident notification. Resending the notification for Incident ${incident_object.incidentId}
+          respond with valid details.\nRegards."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: a4669f14-5e09-466b-8909-39ba67b7aad3
+    type: regular
+    task:
+      id: a4669f14-5e09-466b-8909-39ba67b7aad3
+      version: -1
+      name: Save the above slack block to the XSOAR list.
+      description: Set data in list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      listData:
+        simple: ${CustomSlackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 20dc9dbf-02f3-427d-86fb-9110848b6a9d
+    type: regular
+    task:
+      id: 20dc9dbf-02f3-427d-86fb-9110848b6a9d
+      version: -1
+      name: Save the above slack block to the XSOAR list.
+      description: Set data in list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      listData:
+        simple: ${slackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 81b393a6-f760-4046-80e6-3943fd1233f9
+    type: regular
+    task:
+      id: 81b393a6-f760-4046-80e6-3943fd1233f9
+      version: -1
+      name: Waiting for user replay till the set time in Prisma Cloud DSPM instance
+        configuration.
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: ${inputs.slackMessageLifetime}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 4021381c-96fe-416c-84cb-1edcd298beee
+    type: title
+    task:
+      id: 4021381c-96fe-416c-84cb-1edcd298beee
+      version: -1
+      name: Update user about invalid response
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 5b0227ef-951b-4a51-8025-d21ea7fac9d3
+    type: title
+    task:
+      id: 5b0227ef-951b-4a51-8025-d21ea7fac9d3
+      version: -1
+      name: Send slack notification to user
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1580
         }
       }
     note: false
@@ -243,19 +884,46 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_15_no": 0.55
+    },
     "paper": {
       "dimensions": {
-        "height": 1025,
-        "width": 920,
-        "x": 180,
+        "height": 2980,
+        "width": 1690,
+        "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: flowPath
+  value:
+    simple: slack
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: rerunTime
+  value: {}
+  required: false
+  description: Incident re-run time (in hours)
+  playbookInputQuery: null
+- key: slackMessageLifetime
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - flowPath
+  - rerunTime
+  - slackMessageLifetime
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 quiet: true
-fromversion: 6.10.0
-tests:
-- No tests (auto formatted)
+dirtyInputs: true

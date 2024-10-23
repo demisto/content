@@ -1,6 +1,6 @@
 commonfields:
   id: b73ae0bc-71fc-4f57-8230-c98050d78ef5
-  version: 40
+  version: 45
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPMCreateRiskSlackBlocks
 script: |-
@@ -145,8 +145,8 @@ script: |-
       """
       The main function for creating and storing a Slack block message based on DSPM risk data.
 
-      It processes the DSPM incident details, creates a Slack block, stores the block as a list in XSOAR,
-      and outputs the block list name. If the rule name matches certain conditions, a 'Remediate a Risk'
+      It processes the DSPM incident details, creates a Slack block and outputs the block.
+      If the rule name matches certain conditions, a 'Remediate a Risk'
       option is added to the Slack block.
 
       Returns:
@@ -157,19 +157,19 @@ script: |-
           "Empty storage asset"
       ]
       try:
-          incident = demisto.args().get("dspm_incident")
+          incident = demisto.args().get("dspmIncident")
 
-          block = create_slack_block(incident, rule_names_list)
-          demisto.results(block)
+          slackBlock = create_slack_block(incident, rule_names_list)
+          print(slackbBlock)
 
-          list_name = f"slack block of Incident ID : {incident['incidentId']}"
-          print("list name: ", list_name)
-          demisto.executeCommand('createList', {'listName': list_name, 'listData': block})
+          # list_name = f"slack block of Incident ID : {incident['incidentId']}"
+          # print("list name: ", list_name)
+          # demisto.executeCommand('createList', {'listName': list_name, 'listData': block})
 
           return_results(
               CommandResults(
-                  outputs_prefix="block_list_name",
-                  outputs=list_name,
+                  outputs_prefix="slackBlock",
+                  outputs=slackbBlock,
               )
           )
 
@@ -193,9 +193,10 @@ comment: This XSOAR automation script generates a Slack message block to notify 
   the risk.
 enabled: true
 args:
-- name: dspm_incident
+- name: dspmIncident
 outputs:
-- contextPath: block_list_name
+- contextPath: slackBlock
+  description: Custom Slack for risk details notification.
 scripttarget: 0
 subtype: python3
 timeout: 100800h0m0s

@@ -1,6 +1,6 @@
 commonfields:
   id: 0b39d0d8-2c04-4a9c-8def-c7a0ccbe585d
-  version: 47
+  version: 51
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPMExtractRiskDetails
 script: |-
@@ -17,19 +17,19 @@ script: |-
     import json
     from datetime import datetime
 
-    def get_config_data():
-        """
-        Retrieves the DSPM integration configuration data.
+    #def get_config_data():
+    #    """
+    #    Retrieves the DSPM integration configuration data.
 
-        Returns:
-            dict: The configuration data from the DSPM integration.
-        """
-        result = demisto.executeCommand("dspm-get-integration-config", {})
-        integration_conf = result[0].get("Contents", {})
-        return integration_conf
+    #    Returns:
+    #        dict: The configuration data from the DSPM integration.
+    #    """
+    #    result = demisto.executeCommand("dspm-get-integration-config", {})
+    #    integration_conf = result[0].get("Contents", {})
+    #    return integration_conf
 
 
-    def set_user_slack_email(incident_details):
+    def set_user_slack_email(incident_details, defaultSlackUser):
         """
         Sets the Slack email of the asset owner in the XSOAR context. If the email is not available, it defaults to a pre-configured Slack user.
 
@@ -40,7 +40,6 @@ script: |-
             None
         """
         assetDigTags = incident_details.get("asset Dig Tags")
-        integration_conf = get_config_data()
 
         # Extract the email from the 'Owner' field in assetDigTags
         email = None
@@ -49,7 +48,7 @@ script: |-
 
         # If email is not found, set it to the default value "jira"
         if not email:
-            email = integration_conf.get('defaultSlackUser')
+            email = defaultSlackUser
 
         # Set the email in XSOAR context
         demisto.setContext("userSlackEmail", email)
@@ -108,18 +107,19 @@ script: |-
         try:
             # Retrieve incident object and details
             incident_object = demisto.args().get('incident_object')
-            incident_id = incident_object.get('id')
-            incident_details = get_incident_details_command(demisto.args())
+            defaultSlackUser = demisto.args().get('defaultSlackUser')
+
+            dspmRiskObject = get_incident_details_command(demisto.args())
 
             # Set the Slack email based on asset tags
-            set_user_slack_email(incident_details)
+            set_user_slack_email(dspmRiskObject,defaultSlackUser)
 
             # Return the results in markdown format
             return_results(
                 CommandResults(
-                    readable_output=tableToMarkdown("Incident Details : ", incident_details, removeNull=True),
+                    readable_output=tableToMarkdown("Incident Details : ", dspmRiskObject, removeNull=True),
                     outputs_prefix="incident_object",
-                    outputs=incident_details
+                    outputs=dspmRiskObject
                 )
             )
         except Exception as e:
@@ -139,9 +139,10 @@ enabled: true
 args:
 - name: incident_object
   required: true
+- name: defaultSlackUser
+  required: true
 outputs:
 - contextPath: incident_object
-- contextPath: userSlackEmail
 scripttarget: 0
 subtype: python3
 pswd: ""

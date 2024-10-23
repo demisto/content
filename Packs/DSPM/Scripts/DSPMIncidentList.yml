@@ -1,6 +1,6 @@
 commonfields:
   id: 74e2f486-22da-4b9b-8a8d-18c51d79d43c
-  version: 80
+  version: 137
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPMIncidentList
 script: |-
@@ -30,29 +30,30 @@ script: |-
           str: The creation time of the incident, if found; otherwise, an empty string.
       """
       incident_time = ""
+      print("incident_list", incident_list)
       for incident in incident_list:
           if incident.get("incident_id") == incident_id:
               incident_time = incident.get("incident_created")
       return incident_time
 
 
-  def timeDifferenceInHours(incident_time):
+  def timeDifferenceInHours(incident_time, rerun_time):
       """
       Calculates the difference in hours between the current time and the incident's creation time.
       If the difference exceeds the configured threshold (default 48 hours), it returns True.
 
       Args:
           incident_time (str): The creation time of the incident in the format "%Y-%m-%d %H:%M:%S.%f".
+          rerun_time (str): The rerun time of the incident.
 
       Returns:
           bool: True if the time difference exceeds the threshold, False otherwise.
       """
-      time_duration = get_slack_lifetime()
       given_time = datetime.strptime(incident_time, "%Y-%m-%d %H:%M:%S.%f")
       current_time = datetime.now()
       difference = current_time - given_time
       hours_difference = difference.total_seconds() / 3600
-      if hours_difference >= float(time_duration):
+      if hours_difference >= float(rerun_time):
           return True
       return False
 
@@ -98,7 +99,7 @@ script: |-
           return incident_list
 
 
-  def delete_incident_list(incident_object):
+  def delete_incident_list(args):
       """
       Deletes an incident from the incident list if its time difference exceeds the threshold.
       If the incident does not exist in the list or the time limit is not exceeded, no action is taken.
@@ -109,29 +110,33 @@ script: |-
       Returns:
           str: A status message indicating the result of the delete operation.
       """
-      incident_object = incident_object.get("incident_data")
+      rerun_time = args.get("rerun_time")
+      incident_object = args.get("incident_data")
       if isinstance(incident_object, list):
           incident_object = incident_object[0]
-      incident_id = incident_object.get("incidentId")
+      incident_id = incident_object.get("id")
       status = f"Incident data with incident id {incident_id} does not exist in the list"
-      incident_list = get_incident_list(incident_object)
-      if incident_list:
-          incident_list = json.loads(incident_list)
-          # Check if the value exists in any dictionary
-          incident_time = get_incident_time(incident_list, incident_id)
-          if incident_time:
-              differenceInHours = timeDifferenceInHours(incident_time)
-              if differenceInHours:
-                  # Remove the incident_data with the incident_id
-                  incident_list = [incident for incident in incident_list if incident["incident_id"] != incident_id]
-                  delete_incident = demisto.executeCommand("setList", {"listName": "INCIDENT_LIST2", "listData": incident_list})
-                  status = f"Deleted incident data with incident id {incident_id} from the list."
-              else:
-                  status = "Re-run time limit is not exceeded"
+      # incident_list = get_incident_list(incident_object)
+      incident_list = args.get("incident_list")
+      incident_list = "["+incident_list+"]"
+      incident_list = json.loads(incident_list)
+      # Check if the value exists in any dictionary
+      incident_time = get_incident_time(incident_list, incident_id)
+      print("incident_time", incident_time)
+      if incident_time:
+          differenceInHours = timeDifferenceInHours(incident_time, rerun_time)
+          print("differenceInHours", differenceInHours)
+          if differenceInHours:
+              # Remove the incident_data with the incident_id
+              incident_list = [incident for incident in incident_list if incident["incident_id"] != incident_id]
+              # delete_incident = demisto.executeCommand("setList", {"listName": "INCIDENT_LIST2", "listData": incident_list})
+              status = f"Delete incident data with incident id {incident_id} from the list."
+          else:
+              status = "Re-run time limit is not exceeded"
       return status
 
 
-  def add_incident_list(incident_object):
+  def add_incident_list(args):
       """
       Adds a new incident to the incident list if it does not already exist.
 
@@ -142,28 +147,34 @@ script: |-
           str: A status message indicating the result of the add operation.
       """
       status = ""
-      incident_object = incident_object.get("incident_data")
+      rerun_time = args.get("rerun_time")
+      incident_object = args.get("incident_data")
       if isinstance(incident_object, list):
-          incident_object = incident_object[0]
-      incident_id = incident_object.get("incidentId")
+          incident_object = args[0]
+      incident_id = incident_object.get("id")
       incident_data = {
           "incident_id": incident_id,
-          "incident_created": incident_object.get("incidentCreated"),
+          "incident_created": incident_object.get("assetcreatedtime"), #Update the create time field after testing
       }
-      incident_list = get_incident_list(incident_object)
-      if not incident_list:
-          create_list = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2", "listData": [incident_data]})
-          status = f"Successfully created incident list with incident id :- {incident_id}"
+      # incident_list = get_incident_list(incident_object)
+      incident_list = args.get("incident_list")
+      incident_list = "["+incident_list+"]"
+      incident_list = json.loads(incident_list)
+      # if not incident_list:
+      #     create_list = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2", "listData": [incident_data]})
+      #     status = f"Successfully created incident list with incident id :- {incident_id}"
+      # else:
+      # Check if the value exists in any dictionary
+      # incident_list = json.loads(str(incident_list))
+      print("after comverting into json", type(incident_list), incident_list)
+
+      incident_time = get_incident_time(incident_list, incident_id)
+      if incident_time:
+          status = f"Incident data already exist in the list."
       else:
-          # Check if the value exists in any dictionary
-          incident_list = json.loads(incident_list)
-          incident_time = get_incident_time(incident_list, incident_id)
-          if incident_time:
-              status = f"Incident data with incident id {incident_id} already exist in the list."
-          else:
-              incident_list.append(incident_data)
-              add_incident = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2", "listData": incident_list})
-              status = f"Successfully added incident data with incident id {incident_id} in the list."
+          incident_list.append(incident_data)
+          # add_incident = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2", "listData": incident_list})
+          status = f"Successfully added incident data with incident id {incident_id} in the list."
       return status
 
   ''' MAIN FUNCTION '''
@@ -176,10 +187,17 @@ script: |-
       """
       action = demisto.args().get('action')
       if action == "delete":
-          return_results(delete_incident_list(demisto.args()))
+          status = delete_incident_list(demisto.args())
       else:
           demisto.setContext("User.Action", 'no_response')
-          return_results(add_incident_list(demisto.args()))
+          status = add_incident_list(demisto.args())
+      return_results(
+          CommandResults(
+              readable_output = status,
+              outputs_prefix="listStatus",
+              outputs=status,
+          )
+      )
 
 
   ''' ENTRY POINT '''
@@ -203,6 +221,15 @@ args:
   default: true
   description: Action to perform on incident list i.e :- add or delete list.
   defaultValue: add
+- name: incident_list
+  required: true
+  description: DSPM Incident list data
+- name: rerun_time
+  required: true
+  description: Re-run time to be checked of an incident to delete or not
+outputs:
+- contextPath: listStatus
+  description: Updated incident list status
 scripttarget: 0
 subtype: python3
 timeout: 100800h0m0s

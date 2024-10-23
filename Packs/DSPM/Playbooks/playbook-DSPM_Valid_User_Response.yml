@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 850
+          "x": 695,
+          "y": 50
         }
       }
     note: false
@@ -37,11 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e9b21790-2263-4948-8f44-939925dec2e5
+    taskid: b3fb4e53-88ad-4578-898e-4aa7c4a7ab68
     type: condition
     task:
-      id: e9b21790-2263-4948-8f44-939925dec2e5
-      description: "Check if the user action is valid."
+      id: b3fb4e53-88ad-4578-898e-4aa7c4a7ab68
       version: -1
       name: Check if the Action is value
       type: condition
@@ -49,13 +48,13 @@ tasks:
       brand: ""
     nexttasks:
       Jira action:
-      - "58"
+      - "72"
       No Response from user:
-      - "48"
+      - "73"
       Remediation action for Empty storage asset:
-      - "44"
+      - "71"
       Remedition action (Sensitive asset open to world):
-      - "40"
+      - "70"
     separatecontext: false
     conditions:
     - label: Jira action
@@ -114,22 +113,12 @@ tasks:
           right:
             value:
               simple: Empty storage asset
-    - label: Invalid response
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: User.Action
-            iscontext: true
-          right:
-            value:
-              simple: invalid_response
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 990
+          "x": 695,
+          "y": 195
         }
       }
     note: false
@@ -147,11 +136,18 @@ tasks:
       id: 01e7668f-2a5e-4277-8e18-e82655ff284c
       version: -1
       name: Send slack notification to ${userSlackEmail}
-      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format
+        readable by the SlackV3 integration. The script will also send the block to
+        the given destination. Make sure to mark **Trust any certificate** and fill
+        the **XSOAR API Key integration** parameters if you want to get a response
+        to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
     scriptarguments:
       list_name:
         simple: ${block_list_name}
@@ -162,8 +158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 1950
+          "x": 1022.5,
+          "y": 1565
         }
       }
     note: false
@@ -181,8 +177,8 @@ tasks:
       id: d3792edc-ef0c-4b03-8ed2-9b8b80bfd174
       description: "DSPM Remediation for Sensitive asset open to world."
       version: -1
-      name: DSPM Remediation for Sensitive asset open to world.
-      playbookName: DSPM Remediation for Sensitive asset open to world.
+      name: DSPM Remediation playbook for Sensitive asset open to world.
+      playbookName: DSPM Remediation playbook for Sensitive asset open to world.
       type: playbook
       iscommand: false
       brand: ""
@@ -199,8 +195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1520
+          "x": 50,
+          "y": 1390
         }
       }
     note: false
@@ -218,8 +214,8 @@ tasks:
       id: 50fe4308-911d-4d45-807c-f73fd158856a
       description: "DSPM Remediation for Empty storage asset."
       version: -1
-      name: DSPM Remediation for Empty storage asset
-      playbookName: DSPM Remediation for Empty storage asset
+      name: DSPM Remediation playbook for Empty storage asset
+      playbookName: DSPM Remediation playbook for Empty storage asset
       type: playbook
       iscommand: false
       brand: ""
@@ -236,49 +232,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1420,
-          "y": 1520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
-    taskid: a16ad3e1-f369-4428-8af3-f1122e12ac74
-    type: regular
-    task:
-      id: a16ad3e1-f369-4428-8af3-f1122e12ac74
-      version: -1
-      name: OverwriteListAndNotify
-      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
-      scriptName: DSPMOverwriteListAndNotify
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "59"
-    scriptarguments:
-      incident_id:
-        simple: ${incident_object.incidentId}
-      list_name:
-        simple: ${block_list_name}
-      message:
-        simple: |-
-          You have not responded on incident ID : ${incident_object.incidentId} in timely manner.
-          We are coming to an end of the ${incident_object.incidentId} incident playbook from XSOAR. You are welcome to reopen it. Regards.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1920,
-          "y": 1520
+          "x": 480,
+          "y": 1390
         }
       }
     note: false
@@ -314,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1520
+          "x": 910,
+          "y": 1390
         }
       }
     note: false
@@ -325,12 +280,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "59":
-    id: "59"
-    taskid: f0f4f8d9-75af-4676-8e57-32fd8c50b8e1
+  "62":
+    id: "62"
+    taskid: e046c57b-89e0-40d0-8cb6-1835dca8fd45
     type: regular
     task:
-      id: f0f4f8d9-75af-4676-8e57-32fd8c50b8e1
+      id: e046c57b-89e0-40d0-8cb6-1835dca8fd45
       description: "Add incident for re-run in DSPM Incident List."
       version: -1
       name: Add incident for re-run
@@ -340,19 +295,405 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+      - "64"
     scriptarguments:
       action:
         simple: add
       incident_data:
         simple: ${incident_object}
+      rerun_time:
+        simple: ${inputs.rerunTime}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1920,
-          "y": 1750
+          "x": 1350,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 90151a6e-8bfe-485d-87ee-5e3312936637
+    type: regular
+    task:
+      id: 90151a6e-8bfe-485d-87ee-5e3312936637
+      version: -1
+      name: Get DSPM Incident List
+      description: commands.local.cmd.list.get
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#error#':
+      - "66"
+      '#none#':
+      - "62"
+    scriptarguments:
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: a6e307cf-3b9f-4958-80d2-6e8b47d1fe0c
+    type: condition
+    task:
+      id: a6e307cf-3b9f-4958-80d2-6e8b47d1fe0c
+      version: -1
+      name: Check incident list status?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      add:
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: add
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: listStatus
+            iscontext: true
+          right:
+            value:
+              simple: Successfully added incident data
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: eaf91ca2-7486-476c-892c-8370d95eb08d
+    type: regular
+    task:
+      id: eaf91ca2-7486-476c-892c-8370d95eb08d
+      version: -1
+      name: Add incident in  DSPM Incident list
+      description: commands.local.cmd.list.add
+      script: Builtin|||addToList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      listData:
+        simple: '{"incident_id":"${incident.id}","incident_created":"${incident.assetcreatedtime}"}'
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: f9fee909-8cc1-4fd9-879e-cfb316d27043
+    type: regular
+    task:
+      id: f9fee909-8cc1-4fd9-879e-cfb316d27043
+      version: -1
+      name: Create DSPM Incident list
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      listData:
+        simple: '{"incident_id":"${incident.id}","incident_created":"${incident.assetcreatedtime}"}'
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1892.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 1c2d9abc-e1b7-472b-8a01-ec9347ed3043
+    type: title
+    task:
+      id: 1c2d9abc-e1b7-472b-8a01-ec9347ed3043
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 08f4a72e-8b3b-4744-8bfa-d854789bc875
+    type: regular
+    task:
+      id: 08f4a72e-8b3b-4744-8bfa-d854789bc875
+      version: -1
+      name: Create Slack block sending notification to user.
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: |-
+          You have not responded on incident ID : ${incident_object.incidentId} in timely manner.
+          We are coming to an end of the ${incident_object.incidentId} incident playbook from XSOAR. You are welcome to reopen it. Regards.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 44016dfc-01ea-4782-8632-3781cc48ff6b
+    type: regular
+    task:
+      id: 44016dfc-01ea-4782-8632-3781cc48ff6b
+      version: -1
+      name: Save the above slack block to the XSOAR list.
+      description: Set data in list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      listData:
+        simple: ${CustomSlackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: c4377915-53fe-42c6-87f9-cb97497536c9
+    type: title
+    task:
+      id: c4377915-53fe-42c6-87f9-cb97497536c9
+      version: -1
+      name: Remediation path for Sensitive asset open to world risk
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: f3942119-fb9c-4bbf-8469-5c5937b74f98
+    type: title
+    task:
+      id: f3942119-fb9c-4bbf-8469-5c5937b74f98
+      version: -1
+      name: Remediation path for Empty Storage asset risk.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: d94f0300-6257-48d5-82f6-2708f5809990
+    type: title
+    task:
+      id: d94f0300-6257-48d5-82f6-2708f5809990
+      version: -1
+      name: Jira Ticket creation path
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 665bb630-cf15-4476-8c7d-b6a3f58f6c41
+    type: title
+    task:
+      id: 665bb630-cf15-4476-8c7d-b6a3f58f6c41
+      version: -1
+      name: No response from user on the risk notification
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 370
         }
       }
     note: false
@@ -367,16 +708,22 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1195,
-        "width": 1890,
-        "x": 410,
-        "y": 850
+        "height": 1755,
+        "width": 2222.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: rerunTime
+  value: {}
+  required: false
+  description: Incident re-run time (in hours)
+  playbookInputQuery: null
 inputSections:
-- inputs: []
+- inputs:
+  - rerunTime
   name: General (Inputs group)
   description: Generic group for inputs
 outputSections:
@@ -384,5 +731,5 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-tests:
-- No tests (auto formatted)
+sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
+dirtyInputs: true
