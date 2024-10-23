@@ -2,11 +2,11 @@ from urllib.parse import quote
 
 import pytest
 import requests_mock
-
-from CommonServerPython import *
 from MicrosoftGraphMail import *
-from MicrosoftApiModule import MicrosoftClient
+
 import demistomock as demisto
+from CommonServerPython import *
+from MicrosoftApiModule import MicrosoftClient
 
 
 class MockedResponse:
@@ -636,27 +636,58 @@ def test_build_message():
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_get_attachment(client):
+def test_get_attachment_as_command_result(client):
     """
     Given:
         - raw response returned from get_attachment_command
 
     When:
         - response type is itemAttachment and 'item_result_creator' is called
+        - The 'should_download_message_attachment' command argument value is False (by default)
 
     Then:
         - Validate that the message object created successfully
+        - GraphMailUtils.item_result_creator function should return a command result
 
     """
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
-        res = GraphMailUtils.item_result_creator(raw_response, user_id)
+        args = {}
+        res = GraphMailUtils.item_result_creator(raw_response, user_id, args, client)
         assert isinstance(res, CommandResults)
         output = res.to_context().get('EntryContext', {})
         assert output.get(output_prefix).get('ID') == 'exampleID'
         assert output.get(output_prefix).get('Subject') == 'Test it'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachment_as_file_result(mocker, client):
+    """
+    Given:
+        - raw response returned from get_attachment_command
+
+    When:
+        - response type is itemAttachment and 'item_result_creator' is called.
+        - The 'should_download_message_attachment' command argument is True
+
+    Then:
+        - Validate that the message object created successfully
+        - GraphMailUtils.item_result_creator function should return a command result
+
+    """
+
+    mocker.patch.object(MsGraphMailBaseClient, '_get_attachment_mime', return_value='raw data')
+    with open('test_data/mail_with_attachment') as mail_json:
+        user_id = 'ex@example.com'
+        args = {'message_id': 'example_message_id', 'attachment_id': 'example_attachment_id',
+                'should_download_message_attachment': True}
+        raw_response = json.load(mail_json)
+        res = GraphMailUtils.item_result_creator(raw_response, user_id, args, client)
+        assert isinstance(res, dict)
+        assert res['File'] == 'Test_it.eml'
+        assert res['FileID']
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -709,15 +740,16 @@ def test_get_attachment_unsupported_type(client):
     with open('test_data/mail_with_unsupported_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
-        res = GraphMailUtils.item_result_creator(raw_response, user_id)
+        args = {}
+        res = GraphMailUtils.item_result_creator(raw_response, user_id, args, client)
         assert isinstance(res, CommandResults)
         output = res.to_context().get('HumanReadable', '')
         assert 'Integration does not support attachments from type #microsoft.graph.contact' in output
 
 
-@pytest.mark.parametrize('function_name, attachment_type', [('file_result_creator', 'fileAttachment'),
-                                                            ('item_result_creator', 'itemAttachment')])
-def test_create_attachment(mocker, function_name, attachment_type):
+@pytest.mark.parametrize('function_name, attachment_type, client', [('file_result_creator', 'fileAttachment', oproxy_client()),
+                                                                    ('item_result_creator', 'itemAttachment', oproxy_client())])
+def test_create_attachment(mocker, function_name, attachment_type, client):
     """
     Given:
         - raw response returned from api:
@@ -734,7 +766,8 @@ def test_create_attachment(mocker, function_name, attachment_type):
     mocker.patch(f'MicrosoftGraphMail.GraphMailUtils.{function_name}', return_value=function_name)
     raw_response = {'@odata.type': f'#microsoft.graph.{attachment_type}'}
     user_id = 'ex@example.com'
-    called_function = GraphMailUtils.create_attachment(raw_response, user_id)
+    args = {}
+    called_function = GraphMailUtils.create_attachment(raw_response, user_id, args, client)
     assert called_function == function_name
 
 
@@ -1384,8 +1417,9 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
         Then:
             - Ensure the output are as expected.
     """
-    from MicrosoftGraphMail import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
     import re
+
+    from MicrosoftGraphMail import MANAGED_IDENTITIES_TOKEN_URL, Resources, main
 
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
