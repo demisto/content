@@ -650,7 +650,7 @@ def test_report_mis_classification_success(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-ok-true.json')
+    mock_response = util_load_json('./test_data/checkpointhec-success_response.json')
     call_api = mocker.patch.object(
         Client,
         '_call_api',
@@ -664,7 +664,7 @@ def test_report_mis_classification_success(mocker):
     })
     result = checkpointhec_report_mis_classification(client)
     call_api.assert_called_once()
-    assert result.outputs == mock_response
+    assert result.readable_output == 'Mis-classification reported successfully'
 
 
 def test_report_mis_classification_fail(mocker):
@@ -676,7 +676,7 @@ def test_report_mis_classification_fail(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-ok-false.json')
+    mock_response = util_load_json('./test_data/checkpointhec-fail_response.json')
     call_api = mocker.patch.object(
         Client,
         '_call_api',

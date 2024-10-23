@@ -426,7 +426,7 @@ class Client(BaseClient):
         request_data = {
             'entityIds': entities,
             'classification': classification,
-            'confidence': confident
+            'confident': confident
         }
         payload = {
             'requestData': request_data
@@ -1007,10 +1007,9 @@ def checkpointhec_report_mis_classification(client: Client) -> CommandResults:
     confident: str = MIS_CLASSIFICATION_CONFIDENCE[args.get('confident')]
 
     result = client.report_mis_classification(entities, classification, confident)
-    if result.get('ok'):
+    if result.get('responseEnvelope', {}).get('responseCode') == 200:
         return CommandResults(
-            outputs_prefix='CheckPointHEC.Notification',
-            outputs=result
+            readable_output='Mis-classification reported successfully'
         )
     else:
         raise DemistoException('Error reporting mis-classification')
