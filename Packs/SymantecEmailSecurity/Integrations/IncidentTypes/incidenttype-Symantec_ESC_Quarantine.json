@@ -1,0 +1,49 @@
+{
+    "id": "Symantec Email Security Cloud Quarantine",
+    "version": 2,
+    "cacheVersn": 0,
+    "modified": "2024-10-07T15:45:43.163422878-04:00",
+    "packID": "",
+    "packName": "",
+    "itemVersion": "",
+    "fromServerVersion": "",
+    "toServerVersion": "",
+    "definitionId": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "commitMessage": "",
+    "shouldCommit": false,
+    "locked": false,
+    "name": "Symantec Email Security Cloud Quarantine",
+    "prevName": "Symantec Email Security Cloud Quarantine",
+    "color": "#7D3D63",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "preProcessingScript": "",
+    "closureScript": "",
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "0e7dfd99-ddc2-4762-8c4b-2e8c87384575",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {
+            "sourceip": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ipRep"
+                ]
+            }
+        }
+    }
+}

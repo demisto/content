@@ -1,0 +1,166 @@
+{
+    "start": 0,
+    "end": 4,
+    "status": "SUCCESS",
+    "total": 5,
+    "spam_count": 0,
+    "newsletter_count": 0,
+    "dataprotection_count": 5,
+    "imagecontrol_count": 0,
+    "dlp_count": 0,
+    "compliance_count": 5,
+    "mail_list": [
+        {
+            "id": "000",
+            "metadata": {
+                "email_date_received": 1728206441148,
+                "quarantine_info": {
+                    "rules": [
+                        "test"
+                    ],
+                    "direction": "inbound",
+                    "quarantine_type": "CI"
+                },
+                "email_is_viewed": true,
+                "email_is_released": true,
+                "quarantine_reason": "CC",
+                "email_sender": "Example (example@example.com)",
+                "service_type": "ess",
+                "master_recipient": "example@example.com",
+                "user_id": 0,
+                "email_envelope_sender": "example@example.com",
+                "email_released_to": "recipient",
+                "email_subject": "a",
+                "email_size": 0,
+                "email_envelope_recipient": "example@example.com"
+            },
+            "actions": {
+                "view_subject": true,
+                "delete_message": true,
+                "preview_message": true,
+                "release_message": true
+            }
+        },
+        {
+            "id": "001",
+            "metadata": {
+                "email_date_received": 1728221871295,
+                "quarantine_info": {
+                    "rules": [
+                        "test"
+                    ],
+                    "direction": "inbound",
+                    "quarantine_type": "CI"
+                },
+                "email_is_viewed": true,
+                "email_is_released": false,
+                "quarantine_reason": "CC",
+                "email_sender": "Example (example@example.com)",
+                "service_type": "ess",
+                "master_recipient": "example@example.com",
+                "user_id": 1,
+                "email_envelope_sender": "example@example.com",
+                "email_subject": "a",
+                "email_size": 0,
+                "email_envelope_recipient": "example@example.com"
+            },
+            "actions": {
+                "view_subject": true,
+                "delete_message": true,
+                "preview_message": true,
+                "release_message": true
+            }
+        },
+        {
+            "id": "002",
+            "metadata": {
+                "email_date_received": 1728221875373,
+                "quarantine_info": {
+                    "rules": [
+                        "test"
+                    ],
+                    "direction": "inbound",
+                    "quarantine_type": "CI"
+                },
+                "email_is_viewed": false,
+                "email_is_released": false,
+                "quarantine_reason": "CC",
+                "email_sender": "Example (example@example.com)",
+                "service_type": "ess",
+                "master_recipient": "example@example.com",
+                "user_id": 2,
+                "email_envelope_sender": "example@example.com",
+                "email_subject": "a",
+                "email_size": 0,
+                "email_envelope_recipient": "example@example.com"
+            },
+            "actions": {
+                "view_subject": true,
+                "delete_message": true,
+                "preview_message": true,
+                "release_message": true
+            }
+        },
+        {
+            "id": "003",
+            "metadata": {
+                "email_date_received": 1728221880677,
+                "quarantine_info": {
+                    "rules": [
+                        "test"
+                    ],
+                    "direction": "inbound",
+                    "quarantine_type": "CI"
+                },
+                "email_is_viewed": false,
+                "email_is_released": true,
+                "quarantine_reason": "CC",
+                "email_sender": "Example (example@example.com)",
+                "service_type": "ess",
+                "master_recipient": "example@example.com",
+                "user_id": 3,
+                "email_envelope_sender": "example@example.com",
+                "email_released_to": "recipient",
+                "email_subject": "a",
+                "email_size": 0,
+                "email_envelope_recipient": "example@example.com"
+            },
+            "actions": {
+                "view_subject": true,
+                "delete_message": true,
+                "preview_message": true,
+                "release_message": true
+            }
+        },
+        {
+            "id": "004",
+            "metadata": {
+                "email_date_received": 1728222011087,
+                "quarantine_info": {
+                    "rules": [
+                        "test"
+                    ],
+                    "direction": "inbound",
+                    "quarantine_type": "CI"
+                },
+                "email_is_viewed": false,
+                "email_is_released": false,
+                "quarantine_reason": "CC",
+                "email_sender": "Example (example@example.com)",
+                "service_type": "ess",
+                "master_recipient": "example@example.com",
+                "user_id": 4,
+                "email_envelope_sender": "example@example.com",
+                "email_subject": "a",
+                "email_size": 0,
+                "email_envelope_recipient": "example@example.com"
+            },
+            "actions": {
+                "view_subject": true,
+                "delete_message": true,
+                "preview_message": true,
+                "release_message": true
+            }
+        }
+    ]
+}

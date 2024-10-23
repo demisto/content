@@ -1,0 +1,126 @@
+[
+    {
+        "emailInfo": {
+            "xMsgRef": "000",
+            "longMsgRef": "server-0.tower-0.messagelabs.com!000!000!0",
+            "messageId": "000.000@quarantine.messagelabs.com",
+            "isOutbound": false,
+            "messageSize": 10000,
+            "mailProcessingStartTime": 1000000000,
+            "subject": "New Email Quarantine Account",
+            "envFrom": "bounce-newaccount-verp-00000000000000000000@eu.quarantine.symantec.com",
+            "headerFrom": "quarantine@eu.quarantine.symantec.com",
+            "rawHeaderFrom": " <bounce-newaccount-verp-00000000000000000000@eu.quarantine.symantec.com>",
+            "headerReplyTo": "",
+            "envTo": [
+                "hello@world"
+            ],
+            "headerTo": [
+                "hello@world"
+            ],
+            "senderIp": "0.0.0.0",
+            "senderMailserver": "0.0.0.0.googleusercontent.com",
+            "country": "",
+            "HELOString": "inbound.000.example",
+            "avQuarantinePenId": "",
+            "authResults": null,
+            "filesAndLinks": [
+                {
+                    "nodeType": "FILE_INCLUDED",
+                    "fileNameOrURL": "Unknown00000000.data",
+                    "fileSize": 1000,
+                    "fileType": "text/html",
+                    "md5": "00000000000000000000000000000000",
+                    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                    "urlCategories": null,
+                    "urlRiskScore": null,
+                    "index": 2,
+                    "parentIndex": 1,
+                    "linkSource": "BASIC_EMAIL_INFO"
+                },
+                {
+                    "nodeType": "LINK_INCLUDED",
+                    "fileNameOrURL": "https://www.example.com",
+                    "fileSize": 0,
+                    "fileType": "",
+                    "md5": null,
+                    "sha256": null,
+                    "urlCategories": [
+                        "Technology/Internet"
+                    ],
+                    "urlRiskScore": 1,
+                    "index": 3,
+                    "parentIndex": 2,
+                    "linkSource": "BASIC_EMAIL_INFO"
+                }
+            ],
+            "tlsInfo": {
+                "tlsAdvertised": true,
+                "tlsUsed": true,
+                "tlsPolicy": "OPPORTUNISTIC",
+                "tlsProtocol": "TLSv1.2",
+                "tlsCipher": "ECDHE-RSA-AES256-GCM-SHA384",
+                "tlsKeyLength": 256,
+                "tlsFallbackReason": "",
+                "tlsForwardSecrecy": true,
+                "tlsNegotiationFailed": false
+            },
+            "newDomainAge": null,
+            "timeInCynicSandboxMs": -1
+        },
+        "incidents": [
+            {
+                "xMsgRef": "000",
+                "addressContexts": [
+                    {
+                        "name": "lior",
+                        "domain": "lior.sb",
+                        "isSender": false
+                    }
+                ],
+                "severity": "LOW",
+                "securityService": "Anti-Malware",
+                "detectionMethod": "Skeptic Heuristics",
+                "verdict": "Malware",
+                "action": "Block",
+                "reason": "unknown",
+                "filesAndLinks": [
+                    {
+                        "nodeType": "FILE_INCLUDED",
+                        "fileNameOrURL": "message.txt",
+                        "fileSize": 1197,
+                        "fileType": "",
+                        "md5": "00000000000000000000000000000000",
+                        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                        "malwareName": "Test/Eicar",
+                        "malwareCategory": "trojan",
+                        "urlCategories": null,
+                        "urlRiskScore": null,
+                        "index": 23,
+                        "parentIndex": 22,
+                        "xMsgRef": "000",
+                        "linkSource": "INCIDENT"
+                    },
+                    {
+                        "nodeType": "FILE_INCLUDED",
+                        "fileNameOrURL": "message.txt",
+                        "fileSize": 1197,
+                        "fileType": "",
+                        "md5": "00000000000000000000000000000000",
+                        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                        "malwareName": "unknown",
+                        "malwareCategory": "uncategorized",
+                        "urlCategories": null,
+                        "urlRiskScore": null,
+                        "index": 22,
+                        "parentIndex": 0,
+                        "xMsgRef": "000",
+                        "linkSource": "INCIDENT"
+                    }
+                ],
+                "dmasInfo": [],
+                "dmasDelivered": false
+            }
+        ]
+    }
+]
