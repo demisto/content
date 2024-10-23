@@ -49,7 +49,7 @@ def test_parse_insights():
     mock_result = (util_load_json('./test_data/checkpointndr-parse_insights-output.json'),
                    datetime.datetime.fromtimestamp(1703387404.364).isoformat())
 
-    result = parse_insights(mock_insights, 'test', 0, 10)
+    result = parse_insights(mock_insights, 'test', 0, 10, 0)
     assert result == mock_result
 
 
@@ -80,7 +80,7 @@ def test_fetch_incidents(mocker):
         return_value=None,
     )
 
-    fetch_incidents(client, {}, datetime.datetime(2024, 1, 1), 'test', 10)
+    fetch_incidents(client, {}, datetime.datetime(2024, 1, 1), 'test', 10, 0)
     login.assert_called_once()
     query_insights.assert_called()
     logout.assert_called_once()
