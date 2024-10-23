@@ -1,0 +1,22 @@
+{
+    "name": "SymantecEmailSecurity",
+    "description": "Symantec Email Security.cloud is a hosted service that filters email messages and helps protect organizations from malware (including targeted attacks and phishing), spam, and unwanted bulk email. The service offers encryption and data protection options to help control sensitive information sent by email and supports multiple mailbox types from various vendors.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "08/09/2024",
+    "categories": [
+        "Email Gateway"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

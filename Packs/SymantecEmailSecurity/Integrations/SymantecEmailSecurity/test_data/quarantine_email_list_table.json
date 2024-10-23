@@ -1,0 +1,57 @@
+[
+    {
+        "ID": "000",
+        "Date Received": "2024-10-06 09:20:41.148000+00:00",
+        "Direction": "inbound",
+        "Quarantine Type": "CI",
+        "Is Released": true,
+        "Quarantine Reason": "CC",
+        "Sender": "Example (example@example.com)",
+        "Master Recipient": "example@example.com",
+        "Subject": "a"
+    },
+    {
+        "ID": "001",
+        "Date Received": "2024-10-06 13:37:51.295000+00:00",
+        "Direction": "inbound",
+        "Quarantine Type": "CI",
+        "Is Released": false,
+        "Quarantine Reason": "CC",
+        "Sender": "Example (example@example.com)",
+        "Master Recipient": "example@example.com",
+        "Subject": "a"
+    },
+    {
+        "ID": "002",
+        "Date Received": "2024-10-06 13:37:55.373000+00:00",
+        "Direction": "inbound",
+        "Quarantine Type": "CI",
+        "Is Released": false,
+        "Quarantine Reason": "CC",
+        "Sender": "Example (example@example.com)",
+        "Master Recipient": "example@example.com",
+        "Subject": "a"
+    },
+    {
+        "ID": "003",
+        "Date Received": "2024-10-06 13:38:00.677000+00:00",
+        "Direction": "inbound",
+        "Quarantine Type": "CI",
+        "Is Released": true,
+        "Quarantine Reason": "CC",
+        "Sender": "Example (example@example.com)",
+        "Master Recipient": "example@example.com",
+        "Subject": "a"
+    },
+    {
+        "ID": "004",
+        "Date Received": "2024-10-06 13:40:11.087000+00:00",
+        "Direction": "inbound",
+        "Quarantine Type": "CI",
+        "Is Released": false,
+        "Quarantine Reason": "CC",
+        "Sender": "Example (example@example.com)",
+        "Master Recipient": "example@example.com",
+        "Subject": "a"
+    }
+]
