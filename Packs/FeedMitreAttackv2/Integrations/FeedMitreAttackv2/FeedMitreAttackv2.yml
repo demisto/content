@@ -75,6 +75,7 @@ configuration:
   display: Save intrusion sets as threat actor indicator types
   name: switch_intrusion_set_to_threat_actor
   type: 8
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
@@ -90,6 +91,15 @@ configuration:
   name: insecure
   type: 8
   required: false
+- defaultvalue: Enterprise
+  display: ''
+  name: Collection_ID
+  options:
+  - Enterprise
+  - Mobile
+  - ICS
+  required: false
+  type: 15
 description: Use the MITRE ATT&CK® feed to fetch MITRE’s Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK®) content. MITRE ATT&CK is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations. The ATT&CK knowledge base is used as a foundation for the development of specific threat models and methodologies in the private sector, in government, and in the cybersecurity product and service community.
 display: MITRE ATT&CK
 name: MITRE ATT&CK v2
@@ -111,6 +121,7 @@ script:
     name: mitre-get-indicators
   - description: Shows the feed names and IDs from TAXII.
     name: mitre-show-feeds
+    arguments: []
   - arguments:
     - default: true
       description: Indicator to look up.
@@ -170,13 +181,12 @@ script:
     - contextPath: MITREATTACK.value
       description: MITRE ATTACK Attack Pattern value.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.107875
+  dockerimage: demisto/taxii2:1.0.0.113674
   feed: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
 - FeedMitreAttackv2_test
 fromversion: 5.5.0
-autoUpdateDockerImage: false
