@@ -661,6 +661,30 @@ script:
     - contextPath: CheckPointHEC.Notification.ok
       description: Result of the operation.
       type: Boolean
+  - name: checkpointhec-report-mis-classification
+    description: Report email mis-classification.
+    arguments:
+    - name: entities
+      description: Email entity ids.
+      required: true
+      isArray: true
+    - name: classification
+      description: New classification.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Clean Email
+      - Spam
+      - Phishing
+      - Legit Marketing Email
+    - name: confident
+      description: Confidence level.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Not so sure
+      - Medium Confidence
+      - High Confidence
   - name: checkpointhec-get-ap-exceptions
     description: Get Anti-Phishing and Anti-Spam exceptions or exception.
     arguments:
@@ -1012,7 +1036,7 @@ script:
         - file_type
         - ppat_sender_name
       required: true
-    - name: exc_id
+    - name: exc_str
       description: Exception id to retrieve.
       required: true
     outputs:
@@ -1393,7 +1417,7 @@ script:
         - block-url
         - block-domain
       required: true
-    - name: exc_id
+    - name: exc_str
       description: Exception id to retrieve.
       required: true
     outputs:
@@ -1606,7 +1630,7 @@ script:
         - sender_email
         - recipient_email
       required: true
-    - name: exc_id
+    - name: exc_str
       description: Exception id to retrieve.
       required: true
     outputs:

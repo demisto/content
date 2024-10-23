@@ -352,6 +352,186 @@ Retrieve security events.
 | CheckPointHEC.Event.actions | unknown | Performed actions related to the security event. | 
 | CheckPointHEC.Event.senderAddress | String | Sender of email related to the security event. | 
 | CheckPointHEC.Event.entityLink | String | Email link. | 
+### checkpointhec-get-ctp-list
+
+***
+Get Click Time Protection list.
+
+#### Base Command
+
+`checkpointhec-get-ctp-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | List id to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.CTPList.listid | String | List id. | 
+| CheckPointHEC.CTPList.listname | String | List name. | 
+| CheckPointHEC.CTPList.listitem | String | List of items in the list. | 
+
+### checkpointhec-delete-avurl-exceptions
+
+***
+Delete Avanan URL exceptions.
+
+#### Base Command
+
+`checkpointhec-delete-avurl-exceptions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: allow-url, allow-domain, block-url, block-domain. | Required | 
+| exc_str_list | List of exception strings to delete. | Required | 
+| entity_type | Entity type. | Optional | 
+| entity_id | Entity id. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-delete-avdlp-exception
+
+***
+Delete Avanan URL exception.
+
+#### Base Command
+
+`checkpointhec-delete-avdlp-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
+| exc_str | Exception string. | Required | 
+| entity_type | Entity type. | Optional | 
+| entity_id | Entity id. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-get-anomaly-exceptions
+
+***
+Get Anomaly exceptions.
+
+#### Base Command
+
+`checkpointhec-get-anomaly-exceptions`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.AnomalyException.id | String | Anomaly exception id. | 
+| CheckPointHEC.AnomalyException.anomaly_type | String | Anomaly type. | 
+| CheckPointHEC.AnomalyException.insert_time | String | Anomaly exception creation time. | 
+| CheckPointHEC.AnomalyException.update_time | String | Anomaly exception update time. | 
+| CheckPointHEC.AnomalyException.added_by | String | Anomaly exception creator. | 
+| CheckPointHEC.AnomalyException.event_id | String | Security event id. | 
+| CheckPointHEC.AnomalyException.customer_domain | String | Customer domain. | 
+| CheckPointHEC.AnomalyException.comments | String | Anomaly exception comment. | 
+| CheckPointHEC.AnomalyException.enabled | Boolean | Anomaly exception enabled. | 
+| CheckPointHEC.AnomalyException.exception_rule | String | Anomaly exception rule. | 
+| CheckPointHEC.AnomalyException.expiration_date | String | Anomaly exception expiration date. | 
+
+### checkpointhec-update-cp2-exception
+
+***
+Update Anti-Malware exception.
+
+#### Base Command
+
+`checkpointhec-update-cp2-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
+| exc_str | Exception string. | Required | 
+| comment | Exception comment. | Optional | 
+| exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-create-avdlp-exception
+
+***
+Create Avanan DLP exception.
+
+#### Base Command
+
+`checkpointhec-create-avdlp-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
+| exc_str | Exception string. | Required | 
+| entity_type | Entity type. | Optional | 
+| entity_id | Entity id. | Optional | 
+| comment | Exception comment. | Optional | 
+| exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
+| file_name | File name. | Optional | 
+| created_by_email | Exception creator email. | Optional | 
+| is_exclusive | Exclusive exception. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-delete-ctp-list-items
+
+***
+Delete Click Time Protection list items.
+
+#### Base Command
+
+`checkpointhec-delete-ctp-list-items`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_item_ids | List of item ids to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-update-avdlp-exception
+
+***
+Update Avanan URL exception.
+
+#### Base Command
+
+`checkpointhec-update-avdlp-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
+| exc_str | Exception string. | Required | 
+| comment | Exception comment. | Optional | 
+| exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
 ### checkpointhec-get-ap-exceptions
 
 ***
@@ -410,250 +590,6 @@ Get Anti-Phishing and Anti-Spam exceptions or exception.
 | CheckPointHEC.AntiPhishingException.update_time | String | Exception update. | 
 | CheckPointHEC.AntiPhishingException.user_label | String | User label. | 
 
-### checkpointhec-get-avurl-exception
-
-***
-Get Avanan URL exception.
-
-#### Base Command
-
-`checkpointhec-get-avurl-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | List name of exceptions to retrieve. Possible values are: allow-url, allow-domain, block-url, block-domain. | Required | 
-| exc_id | Exception id to retrieve. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CheckPointHEC.AvananURLException.insert_time | String | Exception insert time. | 
-| CheckPointHEC.AvananURLException.farm_customer_exception_type | String | Farm, customer and exception type info. | 
-| CheckPointHEC.AvananURLException.exception_str | String | Exception string, for id purposes. | 
-| CheckPointHEC.AvananURLException.created_by_email | String | Exception email creator. | 
-| CheckPointHEC.AvananURLException.comment | String | Exception comment. | 
-| CheckPointHEC.AvananURLException.exception_payload | String | Exception payload information. | 
-
-### checkpointhec-get-anomaly-exceptions
-
-***
-Get Anomaly exceptions.
-
-#### Base Command
-
-`checkpointhec-get-anomaly-exceptions`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CheckPointHEC.AnomalyException.id | String | Anomaly exception id. | 
-| CheckPointHEC.AnomalyException.anomaly_type | String | Anomaly type. | 
-| CheckPointHEC.AnomalyException.insert_time | String | Anomaly exception creation time. | 
-| CheckPointHEC.AnomalyException.update_time | String | Anomaly exception update time. | 
-| CheckPointHEC.AnomalyException.added_by | String | Anomaly exception creator. | 
-| CheckPointHEC.AnomalyException.event_id | String | Security event id. | 
-| CheckPointHEC.AnomalyException.customer_domain | String | Customer domain. | 
-| CheckPointHEC.AnomalyException.comments | String | Anomaly exception comment. | 
-| CheckPointHEC.AnomalyException.enabled | Boolean | Anomaly exception enabled. | 
-| CheckPointHEC.AnomalyException.exception_rule | String | Anomaly exception rule. | 
-| CheckPointHEC.AnomalyException.expiration_date | String | Anomaly exception expiration date. | 
-
-### checkpointhec-create-avdlp-exception
-
-***
-Create Avanan DLP exception.
-
-#### Base Command
-
-`checkpointhec-create-avdlp-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
-| exc_str | Exception string. | Required | 
-| entity_type | Entity type. | Optional | 
-| entity_id | Entity id. | Optional | 
-| comment | Exception comment. | Optional | 
-| exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
-| file_name | File name. | Optional | 
-| created_by_email | Exception creator email. | Optional | 
-| is_exclusive | Exclusive exception. Possible values are: yes, no. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### checkpointhec-get-ctp-list
-
-***
-Get Click Time Protection list.
-
-#### Base Command
-
-`checkpointhec-get-ctp-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| list_id | List id to retrieve. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CheckPointHEC.CTPList.listid | String | List id. | 
-| CheckPointHEC.CTPList.listname | String | List name. | 
-| CheckPointHEC.CTPList.listitem | String | List of items in the list. | 
-
-### checkpointhec-get-ctp-list-item
-
-***
-Get Click Time Protection list item.
-
-#### Base Command
-
-`checkpointhec-get-ctp-list-item`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| item_id | Item id to retrieve. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CheckPointHEC.CTPListItem.created_at | String | List item creation time. | 
-| CheckPointHEC.CTPListItem.created_by | String | List item creator. | 
-| CheckPointHEC.CTPListItem.listid | String | List id. | 
-| CheckPointHEC.CTPListItem.listitemid | String | List item id. | 
-| CheckPointHEC.CTPListItem.listitemname | String | List item name. | 
-| CheckPointHEC.CTPListItem.listname | String | List name. | 
-
-### checkpointhec-update-ap-exception
-
-***
-Update Anti-Phishing and Anti-Spam exception.
-
-#### Base Command
-
-`checkpointhec-update-ap-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: whitelist, blacklist, spam_whitelist. | Required | 
-| exc_id | Exception id. | Required | 
-| entity_id | Entity id. | Optional | 
-| attachment_md5 | Attachment MD5 checksum. | Optional | 
-| from_email | Email sender. | Optional | 
-| nickname | Sender name. | Optional | 
-| recipient | Email recipient. | Optional | 
-| sender_client_ip | Sender client IP. | Optional | 
-| from_domain_ends_with | From domain ends with. | Optional | 
-| sender_ip | Sender IP. | Optional | 
-| email_link | Email link or links separated by comma. | Optional | 
-| subject | Email subject. | Optional | 
-| comment | Exception comment. | Optional | 
-| action_needed | Action needed. | Optional | 
-| ignoring_spf_check | Ignoring SPF check. | Optional | 
-| subject_matching | Subject field condition. Possible values are: matching, contains, exact. | Optional | 
-| email_link_matching | Email link field condition. Possible values are: matching, contains, exact. | Optional | 
-| from_name_matching | From name field condition. Possible values are: matching, contains, exact. | Optional | 
-| from_domain_matching | From domain field condition. Possible values are: contains, ends_with, exact. | Optional | 
-| from_email_matching | From email field condition. Possible values are: matching, contains, exact. | Optional | 
-| recipient_matching | Recipient field condition. Possible values are: matching, contains, exact. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### checkpointhec-delete-ap-exception
-
-***
-Delete Anti-Phishing and Anti-Spam exception.
-
-#### Base Command
-
-`checkpointhec-delete-ap-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: whitelist, blacklist, spam_whitelist. | Required | 
-| exc_id | Exception id. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### checkpointhec-create-anomaly-exception
-
-***
-Create Anomaly exception.
-
-#### Base Command
-
-`checkpointhec-create-anomaly-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| request_json | Anomaly exception request json. | Required | 
-| added_by | User id exception creator. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### checkpointhec-create-ap-exception
-
-***
-Create Anti-Phishing and Anti-Spam exception.
-
-#### Base Command
-
-`checkpointhec-create-ap-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: whitelist, blacklist, spam_whitelist. | Required | 
-| entity_id | Entity id. | Optional | 
-| attachment_md5 | Attachment MD5 checksum. | Optional | 
-| from_email | Email sender. | Optional | 
-| nickname | Sender name. | Optional | 
-| recipient | Email recipient. | Optional | 
-| sender_client_ip | Sender client IP. | Optional | 
-| from_domain_ends_with | From domain ends with. | Optional | 
-| sender_ip | Sender IP. | Optional | 
-| email_link | Email link or links separated by comma. | Optional | 
-| subject | Email subject. | Optional | 
-| comment | Exception comment. | Optional | 
-| action_needed | Action needed. | Optional | 
-| ignoring_spf_check | Ignoring SPF check. | Optional | 
-| subject_matching | Subject field condition. Possible values are: matching, contains, exact. | Optional | 
-| email_link_matching | Email link field condition. Possible values are: matching, contains, exact. | Optional | 
-| from_name_matching | From name field condition. Possible values are: matching, contains, exact. | Optional | 
-| from_domain_matching | From domain field condition. Possible values are: contains, ends_with, exact. | Optional | 
-| from_email_matching | From email field condition. Possible values are: matching, contains, exact. | Optional | 
-| recipient_matching | Recipient field condition. Possible values are: matching, contains, exact. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
 ### checkpointhec-create-avurl-exception
 
 ***
@@ -680,20 +616,20 @@ Create Avanan URL exception.
 #### Context Output
 
 There is no context output for this command.
-### checkpointhec-get-cp2-exceptions
+### checkpointhec-get-avdlp-exceptions
 
 ***
-Get Anti-Malware exceptions.
+Get Avanan DLP exceptions.
 
 #### Base Command
 
-`checkpointhec-get-cp2-exceptions`
+`checkpointhec-get-avdlp-exceptions`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exc_type | List name of exceptions to retrieve. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
+| exc_type | List name of exceptions to retrieve. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
 | filter_str | Search string. | Optional | 
 | filter_index | Search index. Possible values are: insert_time, entity_type_id, exception_str, file_name, created_by_email, comment. | Optional | 
 | sort_dir | Sort direction. Possible values are: asc, desc. | Optional | 
@@ -705,123 +641,44 @@ Get Anti-Malware exceptions.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointHEC.AntiMalwareException.insert_time | String | Exception insert time. | 
-| CheckPointHEC.AntiMalwareException.farm_customer_exception_type | String | Farm, customer and exception type info. | 
-| CheckPointHEC.AntiMalwareException.exception_str | String | Exception string, for id purposes. | 
-| CheckPointHEC.AntiMalwareException.created_by_email | String | Exception email creator. | 
-| CheckPointHEC.AntiMalwareException.comment | String | Exception comment. | 
-| CheckPointHEC.AntiMalwareException.exception_payload | String | Exception payload information. | 
+| CheckPointHEC.AvananDLPException.insert_time | String | Exception insert time. | 
+| CheckPointHEC.AvananDLPException.farm_customer_exception_type | String | Farm, customer and exception type info. | 
+| CheckPointHEC.AvananDLPException.exception_str | String | Exception string, for id purposes. | 
+| CheckPointHEC.AvananDLPException.created_by_email | String | Exception email creator. | 
+| CheckPointHEC.AvananDLPException.comment | String | Exception comment. | 
+| CheckPointHEC.AvananDLPException.exception_payload | String | Exception payload information. | 
 
-### checkpointhec-update-avurl-exception
+### checkpointhec-delete-ctp-lists
 
 ***
-Update Avanan URL exception.
+Delete Click Time Protection lists.
 
 #### Base Command
 
-`checkpointhec-update-avurl-exception`
+`checkpointhec-delete-ctp-lists`
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: allow-url, allow-domain, block-url, block-domain. | Required | 
-| exc_str | Exception string. | Required | 
-| comment | Exception comment. | Optional | 
-| exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
-### checkpointhec-get-ctp-list-items
+### checkpointhec-create-anomaly-exception
 
 ***
-Get Click Time Protection list items.
+Create Anomaly exception.
 
 #### Base Command
 
-`checkpointhec-get-ctp-list-items`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CheckPointHEC.CTPListItem.created_at | String | List item creation time. | 
-| CheckPointHEC.CTPListItem.created_by | String | List item creator. | 
-| CheckPointHEC.CTPListItem.listid | String | List id. | 
-| CheckPointHEC.CTPListItem.listitemid | String | List item id. | 
-| CheckPointHEC.CTPListItem.listitemname | String | List item name. | 
-| CheckPointHEC.CTPListItem.listname | String | List name. | 
-
-### checkpointhec-get-cp2-exception
-
-***
-Get Anti-Malware exception.
-
-#### Base Command
-
-`checkpointhec-get-cp2-exception`
+`checkpointhec-create-anomaly-exception`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exc_type | List name of exceptions to retrieve. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
-| exc_id | Exception id to retrieve. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CheckPointHEC.AntiMalwareException.insert_time | String | Exception insert time. | 
-| CheckPointHEC.AntiMalwareException.farm_customer_exception_type | String | Farm, customer and exception type info. | 
-| CheckPointHEC.AntiMalwareException.exception_str | String | Exception string, for id purposes. | 
-| CheckPointHEC.AntiMalwareException.created_by_email | String | Exception email creator. | 
-| CheckPointHEC.AntiMalwareException.comment | String | Exception comment. | 
-| CheckPointHEC.AntiMalwareException.exception_payload | String | Exception payload information. | 
-
-### checkpointhec-get-ctp-lists
-
-***
-Get Click Time Protection lists.
-
-#### Base Command
-
-`checkpointhec-get-ctp-lists`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CheckPointHEC.CTPList.listid | String | List id. | 
-| CheckPointHEC.CTPList.listname | String | List name. | 
-| CheckPointHEC.CTPList.listitem | unknown | List item in the list. | 
-
-### checkpointhec-delete-cp2-exceptions
-
-***
-Delete Anti-Malware exceptions.
-
-#### Base Command
-
-`checkpointhec-delete-cp2-exceptions`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
-| exc_str_list | List of exception strings to delete. | Required | 
-| entity_type | Entity type. | Optional | 
-| entity_id | Entity id. | Optional | 
+| request_json | Anomaly exception request json. | Required | 
+| added_by | User id exception creator. | Optional | 
 
 #### Context Output
 
@@ -865,101 +722,41 @@ Delete Anomaly exceptions.
 #### Context Output
 
 There is no context output for this command.
-### checkpointhec-delete-ctp-lists
+### checkpointhec-report-mis-classification
 
 ***
-Delete Click Time Protection lists.
+Report email mis-classification.
 
 #### Base Command
 
-`checkpointhec-delete-ctp-lists`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-### checkpointhec-delete-ctp-list-items
-
-***
-Delete Click Time Protection list items.
-
-#### Base Command
-
-`checkpointhec-delete-ctp-list-items`
+`checkpointhec-report-mis-classification`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_item_ids | List of item ids to delete. | Required | 
+| entities | Email entity ids. | Required | 
+| classification | New classification. Possible values are: Clean Email, Spam, Phishing, Legit Marketing Email. | Required | 
+| confident | Confidence level. Possible values are: Not so sure, Medium Confidence, High Confidence. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-### checkpointhec-delete-avurl-exception
+### checkpointhec-get-avdlp-exception
 
 ***
-Delete Avanan URL exception.
+Get Avanan DLP exception.
 
 #### Base Command
 
-`checkpointhec-delete-avurl-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: allow-url, allow-domain, block-url, block-domain. | Required | 
-| exc_str | Exception string. | Required | 
-| entity_type | Entity type. | Optional | 
-| entity_id | Entity id. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### checkpointhec-create-ctp-list-item
-
-***
-Create Click Time Protection list item.
-
-#### Base Command
-
-`checkpointhec-create-ctp-list-item`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| list_id | List id. | Required | 
-| list_item_name | List item name. | Required | 
-| created_by | List item creator. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### checkpointhec-get-avdlp-exceptions
-
-***
-Get Avanan DLP exceptions.
-
-#### Base Command
-
-`checkpointhec-get-avdlp-exceptions`
+`checkpointhec-get-avdlp-exception`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | exc_type | List name of exceptions to retrieve. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
-| filter_str | Search string. | Optional | 
-| filter_index | Search index. Possible values are: insert_time, entity_type_id, exception_str, file_name, created_by_email, comment. | Optional | 
-| sort_dir | Sort direction. Possible values are: asc, desc. | Optional | 
-| last_evaluated_key | Last evaluated key. | Optional | 
-| insert_time_gte | Insert time field condition. Possible values are: yes, no. | Optional | 
-| limit | Number of exceptions to retrieve. | Optional | 
+| exc_str | Exception id to retrieve. | Required | 
 
 #### Context Output
 
@@ -990,41 +787,46 @@ Delete Click Time Protection list item.
 #### Context Output
 
 There is no context output for this command.
-### checkpointhec-delete-avdlp-exception
+### checkpointhec-get-ctp-list-item
 
 ***
-Delete Avanan URL exception.
+Get Click Time Protection list item.
 
 #### Base Command
 
-`checkpointhec-delete-avdlp-exception`
+`checkpointhec-get-ctp-list-item`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exc_type | Exception type. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
-| exc_str | Exception string. | Required | 
-| entity_type | Entity type. | Optional | 
-| entity_id | Entity id. | Optional | 
+| item_id | Item id to retrieve. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
-### checkpointhec-update-cp2-exception
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.CTPListItem.created_at | String | List item creation time. | 
+| CheckPointHEC.CTPListItem.created_by | String | List item creator. | 
+| CheckPointHEC.CTPListItem.listid | String | List id. | 
+| CheckPointHEC.CTPListItem.listitemid | String | List item id. | 
+| CheckPointHEC.CTPListItem.listitemname | String | List item name. | 
+| CheckPointHEC.CTPListItem.listname | String | List name. | 
+
+### checkpointhec-update-avurl-exception
 
 ***
-Update Anti-Malware exception.
+Update Avanan URL exception.
 
 #### Base Command
 
-`checkpointhec-update-cp2-exception`
+`checkpointhec-update-avurl-exception`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exc_type | Exception type. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
+| exc_type | Exception type. Possible values are: allow-url, allow-domain, block-url, block-domain. | Required | 
 | exc_str | Exception string. | Required | 
 | comment | Exception comment. | Optional | 
 | exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
@@ -1032,20 +834,171 @@ Update Anti-Malware exception.
 #### Context Output
 
 There is no context output for this command.
-### checkpointhec-delete-avdlp-exceptions
+### checkpointhec-create-ctp-list-item
 
 ***
-Delete Avanan DLP exceptions.
+Create Click Time Protection list item.
 
 #### Base Command
 
-`checkpointhec-delete-avdlp-exceptions`
+`checkpointhec-create-ctp-list-item`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exc_type | Exception type. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
+| list_id | List id. | Required | 
+| list_item_name | List item name. | Required | 
+| created_by | List item creator. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-delete-ap-exception
+
+***
+Delete Anti-Phishing and Anti-Spam exception.
+
+#### Base Command
+
+`checkpointhec-delete-ap-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: whitelist, blacklist, spam_whitelist. | Required | 
+| exc_id | Exception id. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-delete-avurl-exception
+
+***
+Delete Avanan URL exception.
+
+#### Base Command
+
+`checkpointhec-delete-avurl-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: allow-url, allow-domain, block-url, block-domain. | Required | 
+| exc_str | Exception string. | Required | 
+| entity_type | Entity type. | Optional | 
+| entity_id | Entity id. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-get-cp2-exception
+
+***
+Get Anti-Malware exception.
+
+#### Base Command
+
+`checkpointhec-get-cp2-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | List name of exceptions to retrieve. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
+| exc_str | Exception id to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.AntiMalwareException.insert_time | String | Exception insert time. | 
+| CheckPointHEC.AntiMalwareException.farm_customer_exception_type | String | Farm, customer and exception type info. | 
+| CheckPointHEC.AntiMalwareException.exception_str | String | Exception string, for id purposes. | 
+| CheckPointHEC.AntiMalwareException.created_by_email | String | Exception email creator. | 
+| CheckPointHEC.AntiMalwareException.comment | String | Exception comment. | 
+| CheckPointHEC.AntiMalwareException.exception_payload | String | Exception payload information. | 
+
+### checkpointhec-update-ap-exception
+
+***
+Update Anti-Phishing and Anti-Spam exception.
+
+#### Base Command
+
+`checkpointhec-update-ap-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: whitelist, blacklist, spam_whitelist. | Required | 
+| exc_id | Exception id. | Required | 
+| entity_id | Entity id. | Optional | 
+| attachment_md5 | Attachment MD5 checksum. | Optional | 
+| from_email | Email sender. | Optional | 
+| nickname | Sender name. | Optional | 
+| recipient | Email recipient. | Optional | 
+| sender_client_ip | Sender client IP. | Optional | 
+| from_domain_ends_with | From domain ends with. | Optional | 
+| sender_ip | Sender IP. | Optional | 
+| email_link | Email link or links separated by comma. | Optional | 
+| subject | Email subject. | Optional | 
+| comment | Exception comment. | Optional | 
+| action_needed | Action needed. | Optional | 
+| ignoring_spf_check | Ignoring SPF check. | Optional | 
+| subject_matching | Subject field condition. Possible values are: matching, contains, exact. | Optional | 
+| email_link_matching | Email link field condition. Possible values are: matching, contains, exact. | Optional | 
+| from_name_matching | From name field condition. Possible values are: matching, contains, exact. | Optional | 
+| from_domain_matching | From domain field condition. Possible values are: contains, ends_with, exact. | Optional | 
+| from_email_matching | From email field condition. Possible values are: matching, contains, exact. | Optional | 
+| recipient_matching | Recipient field condition. Possible values are: matching, contains, exact. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-create-cp2-exception
+
+***
+Create Anti-Malware exception.
+
+#### Base Command
+
+`checkpointhec-create-cp2-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
+| exc_str | Exception string. | Required | 
+| entity_type | Entity type. | Optional | 
+| entity_id | Entity id. | Optional | 
+| comment | Exception comment. | Optional | 
+| exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
+| file_name | File name. | Optional | 
+| created_by_email | Exception creator email. | Optional | 
+| is_exclusive | Exclusive exception. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-delete-cp2-exceptions
+
+***
+Delete Anti-Malware exceptions.
+
+#### Base Command
+
+`checkpointhec-delete-cp2-exceptions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
 | exc_str_list | List of exception strings to delete. | Required | 
 | entity_type | Entity type. | Optional | 
 | entity_id | Entity id. | Optional | 
@@ -1053,6 +1006,27 @@ Delete Avanan DLP exceptions.
 #### Context Output
 
 There is no context output for this command.
+### checkpointhec-get-ctp-lists
+
+***
+Get Click Time Protection lists.
+
+#### Base Command
+
+`checkpointhec-get-ctp-lists`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.CTPList.listid | String | List id. | 
+| CheckPointHEC.CTPList.listname | String | List name. | 
+| CheckPointHEC.CTPList.listitem | unknown | List item in the list. | 
+
 ### checkpointhec-update-ctp-list-item
 
 ***
@@ -1074,71 +1048,39 @@ Update Click Time Protection list item.
 #### Context Output
 
 There is no context output for this command.
-### checkpointhec-get-avdlp-exception
+### checkpointhec-create-ap-exception
 
 ***
-Get Avanan DLP exception.
+Create Anti-Phishing and Anti-Spam exception.
 
 #### Base Command
 
-`checkpointhec-get-avdlp-exception`
+`checkpointhec-create-ap-exception`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exc_type | List name of exceptions to retrieve. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
-| exc_id | Exception id to retrieve. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CheckPointHEC.AvananDLPException.insert_time | String | Exception insert time. | 
-| CheckPointHEC.AvananDLPException.farm_customer_exception_type | String | Farm, customer and exception type info. | 
-| CheckPointHEC.AvananDLPException.exception_str | String | Exception string, for id purposes. | 
-| CheckPointHEC.AvananDLPException.created_by_email | String | Exception email creator. | 
-| CheckPointHEC.AvananDLPException.comment | String | Exception comment. | 
-| CheckPointHEC.AvananDLPException.exception_payload | String | Exception payload information. | 
-
-### checkpointhec-update-avdlp-exception
-
-***
-Update Avanan URL exception.
-
-#### Base Command
-
-`checkpointhec-update-avdlp-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
-| exc_str | Exception string. | Required | 
-| comment | Exception comment. | Optional | 
-| exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### checkpointhec-delete-avurl-exceptions
-
-***
-Delete Avanan URL exceptions.
-
-#### Base Command
-
-`checkpointhec-delete-avurl-exceptions`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exc_type | Exception type. Possible values are: allow-url, allow-domain, block-url, block-domain. | Required | 
-| exc_str_list | List of exception strings to delete. | Required | 
-| entity_type | Entity type. | Optional | 
+| exc_type | Exception type. Possible values are: whitelist, blacklist, spam_whitelist. | Required | 
 | entity_id | Entity id. | Optional | 
+| attachment_md5 | Attachment MD5 checksum. | Optional | 
+| from_email | Email sender. | Optional | 
+| nickname | Sender name. | Optional | 
+| recipient | Email recipient. | Optional | 
+| sender_client_ip | Sender client IP. | Optional | 
+| from_domain_ends_with | From domain ends with. | Optional | 
+| sender_ip | Sender IP. | Optional | 
+| email_link | Email link or links separated by comma. | Optional | 
+| subject | Email subject. | Optional | 
+| comment | Exception comment. | Optional | 
+| action_needed | Action needed. | Optional | 
+| ignoring_spf_check | Ignoring SPF check. | Optional | 
+| subject_matching | Subject field condition. Possible values are: matching, contains, exact. | Optional | 
+| email_link_matching | Email link field condition. Possible values are: matching, contains, exact. | Optional | 
+| from_name_matching | From name field condition. Possible values are: matching, contains, exact. | Optional | 
+| from_domain_matching | From domain field condition. Possible values are: contains, ends_with, exact. | Optional | 
+| from_email_matching | From email field condition. Possible values are: matching, contains, exact. | Optional | 
+| recipient_matching | Recipient field condition. Possible values are: matching, contains, exact. | Optional | 
 
 #### Context Output
 
@@ -1175,28 +1117,106 @@ Get Avanan URL exceptions.
 | CheckPointHEC.AvananURLException.comment | String | Exception comment. | 
 | CheckPointHEC.AvananURLException.exception_payload | String | Exception payload information. | 
 
-### checkpointhec-create-cp2-exception
+### checkpointhec-get-ctp-list-items
 
 ***
-Create Anti-Malware exception.
+Get Click Time Protection list items.
 
 #### Base Command
 
-`checkpointhec-create-cp2-exception`
+`checkpointhec-get-ctp-list-items`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.CTPListItem.created_at | String | List item creation time. | 
+| CheckPointHEC.CTPListItem.created_by | String | List item creator. | 
+| CheckPointHEC.CTPListItem.listid | String | List id. | 
+| CheckPointHEC.CTPListItem.listitemid | String | List item id. | 
+| CheckPointHEC.CTPListItem.listitemname | String | List item name. | 
+| CheckPointHEC.CTPListItem.listname | String | List name. | 
+
+### checkpointhec-get-cp2-exceptions
+
+***
+Get Anti-Malware exceptions.
+
+#### Base Command
+
+`checkpointhec-get-cp2-exceptions`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exc_type | Exception type. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
-| exc_str | Exception string. | Required | 
+| exc_type | List name of exceptions to retrieve. Possible values are: hash, macro_hash, file_type, ppat_sender_name. | Required | 
+| filter_str | Search string. | Optional | 
+| filter_index | Search index. Possible values are: insert_time, entity_type_id, exception_str, file_name, created_by_email, comment. | Optional | 
+| sort_dir | Sort direction. Possible values are: asc, desc. | Optional | 
+| last_evaluated_key | Last evaluated key. | Optional | 
+| insert_time_gte | Insert time field condition. Possible values are: yes, no. | Optional | 
+| limit | Number of exceptions to retrieve. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.AntiMalwareException.insert_time | String | Exception insert time. | 
+| CheckPointHEC.AntiMalwareException.farm_customer_exception_type | String | Farm, customer and exception type info. | 
+| CheckPointHEC.AntiMalwareException.exception_str | String | Exception string, for id purposes. | 
+| CheckPointHEC.AntiMalwareException.created_by_email | String | Exception email creator. | 
+| CheckPointHEC.AntiMalwareException.comment | String | Exception comment. | 
+| CheckPointHEC.AntiMalwareException.exception_payload | String | Exception payload information. | 
+
+### checkpointhec-get-avurl-exception
+
+***
+Get Avanan URL exception.
+
+#### Base Command
+
+`checkpointhec-get-avurl-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | List name of exceptions to retrieve. Possible values are: allow-url, allow-domain, block-url, block-domain. | Required | 
+| exc_str | Exception id to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPointHEC.AvananURLException.insert_time | String | Exception insert time. | 
+| CheckPointHEC.AvananURLException.farm_customer_exception_type | String | Farm, customer and exception type info. | 
+| CheckPointHEC.AvananURLException.exception_str | String | Exception string, for id purposes. | 
+| CheckPointHEC.AvananURLException.created_by_email | String | Exception email creator. | 
+| CheckPointHEC.AvananURLException.comment | String | Exception comment. | 
+| CheckPointHEC.AvananURLException.exception_payload | String | Exception payload information. | 
+
+### checkpointhec-delete-avdlp-exceptions
+
+***
+Delete Avanan DLP exceptions.
+
+#### Base Command
+
+`checkpointhec-delete-avdlp-exceptions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exc_type | Exception type. Possible values are: hash, text_content, sender_email, recipient_email. | Required | 
+| exc_str_list | List of exception strings to delete. | Required | 
 | entity_type | Entity type. | Optional | 
 | entity_id | Entity id. | Optional | 
-| comment | Exception comment. | Optional | 
-| exc_payload_condition | Exception payload condition. Possible values are: with_or_without_link, with_link, without_link. | Optional | 
-| file_name | File name. | Optional | 
-| created_by_email | Exception creator email. | Optional | 
-| is_exclusive | Exclusive exception. Possible values are: yes, no. | Optional | 
 
 #### Context Output
 
