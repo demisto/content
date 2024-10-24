@@ -22,7 +22,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v44 # disable-secrets-detection
+        uses: tj-actions/changed-files@v45 # disable-secrets-detection
         with:
           files: |
             .gitlab/ci/.gitlab-ci.yml
