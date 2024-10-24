@@ -824,11 +824,19 @@ def set_password_command(client, args):
 
 def expire_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
+    hide_password = argToBoolean(args.get('hide_password', False))
+    temp_password = argToBoolean(args.get('temporary_password', False))
 
     if not (args.get('username') or user_id):
         raise Exception("You must supply either 'Username' or 'userId")
 
     raw_response = client.expire_password(user_id, args)
+
+    if hide_password is True and temp_password is True:
+        raw_response['tempPassword'] = (
+            'Output removed by user. hide_password argument set to True'
+        )
+
     user_context = client.get_users_context(raw_response)
 
     readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
