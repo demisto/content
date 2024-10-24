@@ -19,7 +19,6 @@
         "secret"
     ],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
