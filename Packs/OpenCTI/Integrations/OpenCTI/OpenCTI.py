@@ -511,7 +511,7 @@ def organization_create_command(client: OpenCTIApiClient, args: Dict[str, str]) 
                                  description=description)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException("Can't remove label from observable.")
+        raise DemistoException("Can't create organization.")
 
     if organization_id := result.get('id'):
         readable_output = f'Organization {name} was created successfully with id: {organization_id}.'
