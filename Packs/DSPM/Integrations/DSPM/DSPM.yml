@@ -586,6 +586,11 @@ script:
       name: lifecycle_in
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'RUNNING'
+      - 'STOPPED'
+      - 'DELETED'
     - description: 'A comma-separated list of project IDs.'
       isArray: true
       name: projectId_in
@@ -601,6 +606,11 @@ script:
       name: lifecycle_equal
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'RUNNING'
+      - 'STOPPED'
+      - 'DELETED'
     - description: 'Sorting criteria in the format: property,(asc|desc). Default sort
       order is ascending. Multiple sort criteria are supported.'
       isArray: false
@@ -866,7 +876,6 @@ script:
       auto: PREDEFINED
       predefined:
       - 'OPEN'
-      - 'CLOSED'
       - 'UNIMPORTANT'
       - 'WRONG'
       - 'HANDLED'
@@ -879,7 +888,6 @@ script:
       auto: PREDEFINED
       predefined:
       - 'OPEN'
-      - 'CLOSED'
       - 'UNIMPORTANT'
       - 'WRONG'
       - 'HANDLED'
