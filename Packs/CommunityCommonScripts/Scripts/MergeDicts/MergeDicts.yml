@@ -1,0 +1,30 @@
+comment: "The transformer will merge 2 dicts using {**dict1, **dict2}. The result is saved in key \"MergedDicts\""
+args:
+  - name: value
+    description: Original dictionary
+    default: true
+  - name: dictionary
+    required: true
+    description: Second dictionary to merge with original.
+  - name: overwrite
+    auto: PREDEFINED
+    predefined:
+    - "true"
+    - "false"
+    description: Overwrite the original dictionary if common keys are found.
+    defaultValue: "false"
+outputs:
+  - contextPath: MergedDicts
+    type: Unknown
+commonfields:
+  id: MergeDicts
+  version: -1
+name: MergeDicts
+script: "-"
+tags:
+  - transformer
+timeout: "0"
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.111526
+fromversion: 5.5.0
