@@ -683,6 +683,11 @@ class GetSearchableMailboxes(EWSService):  # pragma: no cover
 
 
 class SearchMailboxes(EWSService):
+
+    def __init__(self, protocol, limit):
+        self.limit = limit
+        super().__init__(protocol)
+
     SERVICE_NAME = 'SearchMailboxes'
     element_container_name = f'{{{MNS}}}SearchMailboxesResult/{{{TNS}}}Items'
 
@@ -733,6 +738,7 @@ class SearchMailboxes(EWSService):
         element = create_element('m:%s' % self.SERVICE_NAME)
         add_xml_child(element, "m:SearchQueries", mailbox_query_element)
         add_xml_child(element, "m:ResultType", "PreviewOnly")
+        add_xml_child(element, "m:PageSize", str(self.limit))
 
         return element
 
@@ -811,8 +817,8 @@ def search_mailboxes(protocol, filter, limit, mailbox_search_scope=None, email_a
 
     Args:
         protocol (Protocol): The EWS protocol object.
-        filter (str): The search filter to apply. Default is value is SEARCH_MAILBOXES_LIMIT.
-        limit (int): The maximum number of results to return.
+        filter (str): The search filter to apply.
+        limit (int): The maximum number of results to return. Default value is SEARCH_MAILBOXES_LIMIT.
         mailbox_search_scope (str or list, optional): The mailbox search scope. Defaults to None.
         email_addresses (str, optional): Comma-separated list of email addresses to search. Defaults to None.
 
@@ -842,7 +848,7 @@ def search_mailboxes(protocol, filter, limit, mailbox_search_scope=None, email_a
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in list(x.keys())]
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
     try:
-        search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
+        search_results = SearchMailboxes(protocol=protocol, limit=limit).call(filter, mailbox_ids)
         search_results = search_results[:limit]
     except TransportError as e:
         if "ItemCount>0<" in str(e):
