@@ -8,7 +8,7 @@ import urllib3
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
 
-''' CONSTANT VARIABLES '''
+''' CONSTANT VARIABLES test'''
 MITRE_TYPE_TO_DEMISTO_TYPE = {  # pragma: no cover
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
