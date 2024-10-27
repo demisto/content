@@ -97,12 +97,15 @@ class Client(BaseClient):
         config_ids: str,
         offset: str | None = '',
         limit: int = 20,
+        from_epoch: str = ''
     ) -> tuple[list[dict], str | None]:
         params: dict[str, int | str] = {
             'limit': limit
         }
         if offset:
             params["offset"] = offset
+        else:
+            params["from"] = int(from_epoch)
         raw_response: str = self._http_request(
             method='GET',
             url_suffix=f'/{config_ids}',
@@ -387,6 +390,7 @@ def fetch_events_command(
     fetch_limit: int,
     config_ids: str,
     ctx: dict,
+    fetch_time: str,
 ) -> Iterator[Any]:
     """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
 
@@ -404,7 +408,7 @@ def fetch_events_command(
     offset = ctx.get("offset")
     while total_events_count < int(fetch_limit):
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
-        events, offset = client.get_events_with_offset(config_ids, offset, page_size)
+        events, offset = client.get_events_with_offset(config_ids, offset, page_size, fetch_time)
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
@@ -492,6 +496,7 @@ def main():  # pragma: no cover
                 limit,
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
+                params.get("fetchTime", "")
             ):
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
