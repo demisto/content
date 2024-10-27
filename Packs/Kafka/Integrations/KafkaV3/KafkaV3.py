@@ -85,8 +85,8 @@ class KafkaCommunicator:
         demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
         demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
 
-    def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl,
-                           plain_username, plain_password, brokers):
+    def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password,
+                           use_sasl, plain_username, plain_password, brokers):
         """
         Updates the `conf_producer` or `conf_consumer` configuration based on the specified authentication method.
 
@@ -594,7 +594,8 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     except Exception as e:
         if 'Topic authorization failed' in str(e):
             raise DemistoException(f"Error: {str(e)}\n"
-                                   "Check if you have permission to produce messages. Your access might be restricted to consumer-only.")
+                                   "Check if you have permission to produce messages.\
+                                   Your access might be restricted to consumer-only.")
         else:
             raise DemistoException(e)
 
