@@ -37,8 +37,6 @@ To set up the integration and register the application in Azure, follow these st
    - Under **Manage**, select **API permissions** > **Add a permission**.
    - Select **APIs my organization uses**.
    - Search for "Office 365 Exchange Online".
-   - Select **Application permissions** and search for `Exchange.ManageAsApp`.
-   - Check the box and click **Add permissions**.
    - Select **Delegated permissions** and search for `Exchange.Manage`.
    - Check the box and click **Add permissions**.
    - Ensure the permissions are granted by selecting **Grant admin consent for [Your Organization]**.

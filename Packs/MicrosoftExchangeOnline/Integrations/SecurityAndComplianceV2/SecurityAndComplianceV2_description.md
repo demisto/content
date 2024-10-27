@@ -16,10 +16,9 @@ Supported authentication methods:
 
 ### Overview
 In response to Microsoft's deprecation of the App ID, the following changes to app registration in Azure are required:
-1. Add the `Exchange.ManageAsApp` application permissions.
-2. Add the `Exchange.Manage` delegated permissions.
-3. Enable "Allow public client flows" in the authentication section.
-4. Add an app secret to the app registration.
+1. Add the `Exchange.Manage` delegated permissions.
+2. Enable "Allow public client flows" in the authentication section.
+3. Add an app secret to the app registration.
 
 ### Step-by-Step Instructions
 
@@ -39,9 +38,6 @@ In response to Microsoft's deprecation of the App ID, the following changes to a
    - Click on **Add a permission**.
    - Select **APIs my organization uses**.
    - Type "Office" in the search bar and select **Office 365 Exchange Online**.
-   - Choose **Application permissions**.
-   - Search for `Exchange.ManageAsApp` and check the corresponding box.
-   - Click on **Add permissions**.
    - Choose **Delegated permissions**.
    - Search for `Exchange.Manage` and check the corresponding box.
    - Click on **Add permissions**.
