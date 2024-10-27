@@ -22,7 +22,7 @@ class UTC(tzinfo):
         return ZERO
 
 
-utc = UTC()
+utc = UTC()  # type: ignore[abstract]
 
 
 def dt_to_filetime(dt):

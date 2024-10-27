@@ -1,0 +1,28 @@
+{
+    "pageInfo": {
+        "hasMoreRecords": false,
+        "limit": 500,
+        "offset": 0,
+        "totalNumRecords": 91
+    },
+    "recordInfo": {
+        "maxTtl": 3600,
+        "minTtl": 1,
+        "totalMaliciousIP": 0
+    },
+    "records": [
+        {
+            "contentCategories": [],
+            "firstSeen": 1660314625,
+            "firstSeenISO": "2022-08-12T14:30Z",
+            "lastSeen": 1715860364,
+            "lastSeenISO": "2024-05-16T11:52Z",
+            "maxTtl": 60,
+            "minTtl": 1,
+            "name": "example.com",
+            "rr": "1.2.3.4",
+            "securityCategories": [],
+            "type": "A"
+        }
+    ]
+}

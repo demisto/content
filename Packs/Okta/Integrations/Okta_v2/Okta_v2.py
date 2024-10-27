@@ -765,7 +765,7 @@ def get_user_factors_command(client, args):
 
     raw_response = client.get_user_factors(user_id)
     if not raw_response or len(raw_response) == 0:
-        raise Exception('No Factors found')
+        return 'No Factors found'
 
     factors = client.get_readable_factors(raw_response)
     context = createContext(factors, removeNull=True)

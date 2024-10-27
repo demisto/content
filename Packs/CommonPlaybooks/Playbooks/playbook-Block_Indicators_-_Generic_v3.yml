@@ -1174,7 +1174,7 @@ tasks:
     type: condition
     task:
       id: 4b64da5f-53b9-4fdd-8e65-5a133c6700d6
-      description: ""
+      description: "Looks for available indicators to process"
       version: -1
       name: Are there indicators to block?
       type: condition
@@ -1551,12 +1551,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: |-
-    Possible values: True/False.  Default: True.
-    Should the given indicators be automatically blocked, or should the user be given the option to choose?
-
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
+  description: "Should the given indicators be automatically blocked, or should the user be prompted to select whether to block them?\n\nPossible values: True/False. \nDefault value: True.\n\nIf set to True - No prompt will appear. All of the provided indicators will be blocked automatically.\n\nIf set to False - The user will be prompted to select which indicators to block."
   playbookInputQuery:
 - key: CustomBlockRule
   value:

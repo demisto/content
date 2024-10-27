@@ -699,7 +699,7 @@ def convert_internal_url_to_base64(match):
     """
     original_src = match.group(1)
     result = demisto.executeCommand("core-api-download", {"uri": original_src})
-    with open(demisto.investigation()['id'] + '_' + result[0]['FileID'], 'rb') as f:
+    with open(demisto.getFilePath(result[0]['FileID']).get("path"), 'rb') as f:
         base64_data_image = base64.b64encode(f.read()).decode('utf-8')
     image_type = handle_image_type(base64_data_image)
     return f'src="data:image/{image_type};base64,{base64_data_image}"'
@@ -721,8 +721,8 @@ def format_body(new_email_body):
                                      'nl2br',
                                      DemistoExtension(),
                                  ])
-    # Separated the context so it will be shown properly in xsoar
-    html_body = re.sub(r'src="(/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
+    saas_xsiam_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
+    html_body = re.sub(rf'src="({saas_xsiam_prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     return context_html_body, html_body
 
 
@@ -1010,8 +1010,8 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
             # Format any markdown in the email body as HTML
             context_html_body, reply_html_body = format_body(new_email_body)
 
-            # Trim "Re:" from subject since the reply-mail command in both EWS and Gmail adds it again
-            reply_subject = reply_subject.lstrip("Re: ")
+            # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
+            reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
 
             # Send the email reply
             result = validate_email_sent(incident_id, reply_subject, subject_include_incident_id,
