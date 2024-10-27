@@ -86,7 +86,7 @@ jobs:
         github.event.pull_request.head.repo.fork == false
 
     - name: Upload junit & pack-wise pytest report
-      uses: PaloAltoNetworks/upload-secure-artifact@v1.0.4
+      uses: PaloAltoNetworks/upload-secure-artifact@v1.0.5
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
@@ -96,7 +96,7 @@ jobs:
         path: |
           packwise_pytest_time.csv
           .report_pytest.xml
-        # if-no-files-found: error
+        if-no-files-found: error
 
     - name: Pytest coverage comment
       if: |
