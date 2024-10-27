@@ -88,7 +88,6 @@ ACTION = "action"
 MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
-SEARCH_MAILBOXES_LIMIT = 250
 
 MOVED_TO_MAILBOX = "movedToMailbox"
 MOVED_TO_FOLDER = "movedToFolder"
@@ -811,7 +810,7 @@ def get_searchable_mailboxes(protocol):  # pragma: no cover
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
 
-def search_mailboxes(protocol, filter, limit, mailbox_search_scope=None, email_addresses=None):  # pragma: no cover
+def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, email_addresses=None):  # pragma: no cover
     """
     Search mailboxes for items matching the given filter.
 
@@ -829,7 +828,9 @@ def search_mailboxes(protocol, filter, limit, mailbox_search_scope=None, email_a
         Exception: If both mailbox_search_scope and email_addresses are provided, or if no searchable mailboxes are found.
     """
     mailbox_ids = []
-    limit = arg_to_number(limit) or SEARCH_MAILBOXES_LIMIT
+    limit_argument = arg_to_number(limit)
+    if not limit_argument:
+        raise(DemistoException(f"Invalid limit value: {limit}. Please provide a valid integer."))
     if mailbox_search_scope is not None and email_addresses is not None:
         raise Exception("Use one of the arguments - mailbox-search-scope or email-addresses, not both")
     if email_addresses:
@@ -848,8 +849,8 @@ def search_mailboxes(protocol, filter, limit, mailbox_search_scope=None, email_a
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in list(x.keys())]
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
     try:
-        search_results = SearchMailboxes(protocol=protocol, limit=limit).call(filter, mailbox_ids)
-        search_results = search_results[:limit]
+        search_results = SearchMailboxes(protocol=protocol, limit=limit_argument).call(filter, mailbox_ids)
+        search_results = search_results[:limit_argument]
     except TransportError as e:
         if "ItemCount>0<" in str(e):
             return "No results for search query: " + filter
