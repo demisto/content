@@ -162,9 +162,9 @@ def test_fetch_assets_command(requests_mock):
                     username='demisto',
                     password='demisto',
                     )
-    assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run={})
+    assets, last_run, amount_to_report, snapshot_id, set_new_limit = fetch_assets(client=client, assets_last_run={})
     assert len(assets) == 8
-    assert total_assets == 8
+    assert amount_to_report == 8
     assert snapshot_id
     assert last_run['stage'] == 'vulnerabilities'
 
@@ -185,7 +185,7 @@ def test_fetch_assets_command_time_out(requests_mock, mocker):
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
                       f'?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after='
                       f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', exc=requests.exceptions.ReadTimeout)
-    set_last_run_call = mocker.patch.object(demisto, 'setAssetsLastRun')
+
 
     client = Client(base_url=base_url,
                     verify=True,
@@ -194,12 +194,9 @@ def test_fetch_assets_command_time_out(requests_mock, mocker):
                     username='demisto',
                     password='demisto',
                     )
-    try:
-        assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run={})
-    except TimeoutError:
-        time_out_error = True
-    assert time_out_error
-    assert set_last_run_call.call_args.args[0].get('limit') == 1000
+    assets, new_last_run, amount_to_report, snapshot_id, set_new_limit = fetch_assets(client=client, assets_last_run={})
+    assert not assets
+    assert set_new_limit
 
 
 def test_fetch_vulnerabilities_command(requests_mock):
@@ -1457,64 +1454,65 @@ def test_build_ip_and_range_dicts():
 def test_truncate_asset_size(mocker):
     # Mock demisto.debug
 
-    with patch('demisto.debug') as mock_debug:
-        # Define test cases
-        test_cases = [
-            # Case 1: Asset with ID and detection unique vuln ID, and exceeds size limit
-            {
-                "asset": {
-                    "ID": "12345",
-                    "DETECTION": {
-                        "UNIQUE_VULN_ID": "vuln123",
-                        "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
-                    }
-                },
-                "expected_truncated": True
+    mock_debug = mocker.patch.object(demisto, 'debug')
+
+    # Define test cases
+    test_cases = [
+        # Case 1: Asset with ID and detection unique vuln ID, and exceeds size limit
+        {
+            "asset": {
+                "ID": "12345",
+                "DETECTION": {
+                    "UNIQUE_VULN_ID": "vuln1",
+                    "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
+                }
             },
-            # Case 2: Asset with no ID and detection unique vuln ID, and exceeds size limit
-            {
-                "asset": {
-                    "DETECTION": {
-                        "UNIQUE_VULN_ID": "2 * 10 ** 6",
-                        "RESULTS": "A" * 20000  # Exceeds size limit
-                    }
-                },
-                "expected_truncated": True
+            "expected_truncated": True
+        },
+        # Case 2: Asset with no ID and detection unique vuln ID, and exceeds size limit
+        {
+            "asset": {
+                "DETECTION": {
+                    "UNIQUE_VULN_ID": "vuln2",
+                    "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
+                }
             },
-            # Case 3: Asset with ID and no detection unique vuln ID, and does not exceed size limit
-            {
-                "asset": {
-                    "ID": "12345",
-                    "DETECTION": {
-                        "RESULTS": "A" * 100  # Does not exceed size limit
-                    }
-                },
-                "expected_truncated": False
+            "expected_truncated": True
+        },
+        # Case 3: Asset with ID and no detection unique vuln ID, and does not exceed size limit
+        {
+            "asset": {
+                "ID": "12345",
+                "DETECTION": {
+                    "RESULTS": "A" * 100  # Does not exceed size limit
+                }
             },
-            # Case 4: Asset with no ID and no detection unique vuln ID, and does not exceed size limit
-            {
-                "asset": {
-                    "DETECTION": {
-                        "RESULTS": "A" * 100  # Does not exceed size limit
-                    }
-                },
-                "expected_truncated": False
-            }
-        ]
+            "expected_truncated": False
+        },
+        # Case 4: Asset with no ID and no detection unique vuln ID, and does not exceed size limit
+        {
+            "asset": {
+                "DETECTION": {
+                    "RESULTS": "A" * 100  # Does not exceed size limit
+                }
+            },
+            "expected_truncated": False
+        }
+    ]
 
-        for case in test_cases:
-            asset = case["asset"]
-            expected_truncated = case["expected_truncated"]
+    for case in test_cases:
+        asset = case["asset"]
+        expected_truncated = case["expected_truncated"]
 
-            Qualysv2.truncate_asset_size(asset)
+        Qualysv2.truncate_asset_size(asset)
 
-            if expected_truncated:
-                assert asset.get('isTruncated', False) is True
-                assert len(asset['DETECTION']['RESULTS']) == 10000
-                assert mock_debug.call_count >= 3  # Expecting at least 3 debug messages
-            else:
-                assert asset.get('isTruncated', False) is False
-                assert mock_debug.call_count == 0  # No debug messages if not truncated
+        if expected_truncated:
+            assert asset.get('isTruncated', False) is True
+            assert len(asset['DETECTION']['RESULTS']) == 10000
+            assert mock_debug.call_count >= 3  # Expecting at least 3 debug messages
+        else:
+            assert asset.get('isTruncated', False) is False
+            assert mock_debug.call_count == 0  # No debug messages if not truncated
 
-            # Reset mock_debug for the next test case
-            mock_debug.reset_mock()
+        # Reset mock_debug for the next test case
+        mock_debug.reset_mock()

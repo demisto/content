@@ -2831,7 +2831,6 @@ def truncate_asset_size(asset):
                               f'{str(val)[:10000]}...')
 
 
-
 def get_detections_from_hosts(hosts):
     """
     Parses detections from hosts.
