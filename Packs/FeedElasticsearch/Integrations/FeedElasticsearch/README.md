@@ -30,12 +30,12 @@ Fetch indicators stored in an Elasticsearch database.
     | Feed Fetch Interval |  | False |
     | Tags | Supports CSV values. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Indicator Value Field | Source field that contains the indicator value in the index | False |
-    | Indicator Type Field | Source field that contains the indicator type in the index | False |
-    | Indicator Type | Default indicator type used in case no "Indicator Type Field" was provided | False |
+    | Indicator Value Field | Source field that contains the indicator value in the index. Relevant for generic feed type only. | False |
+    | Indicator Type Field | Source field that contains the indicator type in the index. Relevant for generic feed type only. | False |
+    | Indicator Type | Default indicator type used in case no "Indicator Type Field" was provided. Relevant for generic feed type only. | False |
     | Index from Which To Fetch Indicators | A comma-separated list of indexes. If empty, searches all indexes. | False |
     | Time Field Type |  | False |
-    | Index Time Field | Used for sorting and limiting data. If empty, results are not sorted. | False |
+    | Index Time Field | Used for sorting and limiting data. If empty, results are not sorted. Relevant for generic feed type only. | False |
     | Query | Elasticsearch query to execute when fetching indicators from Elasticsearch | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
