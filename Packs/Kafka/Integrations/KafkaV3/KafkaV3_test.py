@@ -1,6 +1,4 @@
-from unittest.mock import MagicMock, patch
 
-from pytest_mock import MockerFixture
 from CommonServerPython import DemistoException, demisto
 
 from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \
@@ -339,9 +337,9 @@ def test_consume_message(mocker, demisto_args, topic_partitions):
     mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(0, 2))
     close_mock = mocker.patch.object(KConsumer, 'close')
 
-    result = consume_message(KAFKA, demisto_args)
+    consume_message(KAFKA, demisto_args)
 
-    msg_value = polled_msg.value()
+    polled_msg.value()
   #  msg_value = msg_value.decode('utf-8')
    # assert result.outputs['Message'] == {'Value': msg_value, 'Offset': polled_msg.offset()}
    # assert result.outputs['Name'] == 'some-topic'
@@ -384,9 +382,9 @@ def test_consume_message_without_partition(mocker, demisto_args, topic_partition
     cluster_metadata = create_cluster_metadata(cluster)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
 
-    result = consume_message(KAFKA, demisto_args)
+    consume_message(KAFKA, demisto_args)
 
-    msg_value = polled_msg.value()
+    polled_msg.value()
   #  msg_value = msg_value.decode('utf-8')
   #  assert result.outputs['Message'] == {'Value': msg_value, 'Offset': polled_msg.offset()}
   #  assert result.outputs['Name'] == 'some-topic'
@@ -858,11 +856,11 @@ def test_ssl_configuration():
     }
     assert kafka.conf_consumer == expected_consumer_conf
     assert kafka.conf_producer == expected_producer_conf
-    with open(kafka.ca_path, 'r') as f:
+    with open(kafka.ca_path) as f:
         assert f.read() == 'ca_cert'
-    with open(kafka.client_cert_path, 'r') as f:
+    with open(kafka.client_cert_path) as f:
         assert f.read() == 'client_cert'
-    with open(kafka.client_key_path, 'r') as f:
+    with open(kafka.client_key_path) as f:
         assert f.read() == 'client_cert_key'
     os.remove(kafka.ca_path)
     os.remove(kafka.client_cert_path)
@@ -914,7 +912,7 @@ def test_sasl_ssl_configuration():
     }
     assert kafka.conf_consumer == expected_consumer_conf
     assert kafka.conf_producer == expected_producer_conf
-    with open(kafka.ca_path, 'r') as f:
+    with open(kafka.ca_path) as f:
         assert f.read() == 'ca_cert'
     os.remove(kafka.ca_path)
     

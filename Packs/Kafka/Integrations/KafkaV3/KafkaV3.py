@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE, Message
-from typing import Tuple, Union, Dict, Callable
+from collections.abc import Callable
 from io import StringIO
 
 ''' IMPORTS '''
@@ -21,14 +21,15 @@ SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'la
 class KConsumer(Consumer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
 
+
 class KProducer(Producer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
 
 
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
-    conf_producer: Optional[Dict[str, Any]] = None
-    conf_consumer: Optional[Dict[str, Any]] = None
+    conf_producer: Optional[dict[str, Any]] = None
+    conf_consumer: Optional[dict[str, Any]] = None
     ca_path: Optional[str] = None
     client_cert_path: Optional[str] = None
     client_key_path: Optional[str] = None
@@ -58,11 +59,11 @@ class KafkaCommunicator:
             client_cert_key: The contents of the client certificate's key
             ssl_password: The password with which the client certificate is protected by.
         """
-        
+
         # Set producer conf dict
         self.conf_producer = {}
-        self.update_client_dict(self.conf_producer, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl, plain_username, plain_password, brokers)
-        
+        self.update_client_dict(self.conf_producer, trust_any_cert, use_ssl, ca_cert, client_cert,
+                                client_cert_key, ssl_password, use_sasl, plain_username, plain_password, brokers)
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
             raise DemistoException(f'General offset {offset} not found in supported offsets: '
@@ -72,8 +73,9 @@ class KafkaCommunicator:
                               'auto.offset.reset': offset,
                               'group.id': group_id,
                               'enable.auto.commit': False}
-        
-        self.update_client_dict(self.conf_consumer, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl, plain_username, plain_password, brokers)
+
+        self.update_client_dict(self.conf_consumer, trust_any_cert, use_ssl, ca_cert, client_cert,
+                                client_cert_key, ssl_password, use_sasl, plain_username, plain_password, brokers)
 
         self.kafka_logger = kafka_logger
 
@@ -82,7 +84,6 @@ class KafkaCommunicator:
 
         demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
         demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
-
 
     def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password, use_sasl,
                            plain_username, plain_password, brokers):
@@ -93,9 +94,9 @@ class KafkaCommunicator:
             client_dict (dict): The configuration dictionary to be updated.
             This should be either the producer's or consumer's conf_dict.
         """
-        
+
         client_dict.update({'bootstrap.servers': brokers})
-            
+
         if use_ssl and not use_sasl:
             if self.ca_path:
                 client_dict.update({'ssl.ca.location': self.ca_path, 'ssl.certificate.location': self.client_cert_path,
@@ -106,24 +107,23 @@ class KafkaCommunicator:
                     self.ca_path = ca_descriptor.name
                     ca_descriptor.write(ca_cert)
                 client_dict.update({'ssl.ca.location': self.ca_path})
-                
+
                 # client_cert
                 with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_cert_descriptor:
                     self.client_cert_path = client_cert_descriptor.name
                     client_cert_descriptor.write(client_cert)
                 client_dict.update({'ssl.certificate.location': self.client_cert_path})
-                
+
                 # client_cert_key
                 with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
                     self.client_key_path = client_key_descriptor.name
                     client_key_descriptor.write(client_cert_key)
                 client_dict.update({'ssl.key.location': self.client_key_path,
                                     'security.protocol': 'ssl'})
-        
+
             if ssl_password:
                 client_dict.update({'ssl.key.password': ssl_password})
-        
-        
+
         # SASL with SSL
         elif use_sasl:
             client_dict.update({'security.protocol': 'SASL_SSL',
@@ -138,14 +138,13 @@ class KafkaCommunicator:
                     self.ca_path = ca_descriptor.name
                     ca_descriptor.write(ca_cert)
                 client_dict.update({'ssl.ca.location': self.ca_path})
-            
+
             if ssl_password:
                 client_dict.update({'ssl.key.password': ssl_password})
-                
+
         if trust_any_cert:
             client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})
-          
+                                'enable.ssl.certificate.verification': False})
 
     def get_kafka_consumer(self) -> KConsumer:
         if self.kafka_logger:
@@ -158,7 +157,6 @@ class KafkaCommunicator:
             return KProducer(self.conf_producer, logger=self.kafka_logger)
         else:
             return KProducer(self.conf_producer)
-        
 
     def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
         """Update consumer configurations for fetching messages
@@ -250,7 +248,7 @@ class KafkaCommunicator:
         cluster_metadata = client.list_topics(timeout=self.REQUESTS_TIMEOUT)
         return cluster_metadata.topics
 
-    def get_partition_offsets(self, topic: str, partition: int) -> Tuple[int, int]:
+    def get_partition_offsets(self, topic: str, partition: int) -> tuple[int, int]:
         """Get earliest and latest offsets for the specified partition in the specified topic.
 
         Return (earliest offset, latest offset)
@@ -295,7 +293,7 @@ class KafkaCommunicator:
         kafka_consumer.close()
         return polled_msg
 
-    def get_offset_for_partition(self, topic: str, partition: int, offset: Union[int, str]) -> int:
+    def get_offset_for_partition(self, topic: str, partition: int, offset: int | str) -> int:
         """Get the numerical offset from a partition of a topic
 
         Args:
@@ -319,8 +317,8 @@ class KafkaCommunicator:
             return number_offset
 
     @logger
-    def get_topic_partitions(self, topic: str, partition: Union[int, list],
-                             offset: Union[str, int], consumer: bool = False) -> list:
+    def get_topic_partitions(self, topic: str, partition: int | list,
+                             offset: str | int, consumer: bool = False) -> list:
         """Get relevant TopicPartiton structures to specify for the consumer.
 
         Args:
@@ -371,6 +369,8 @@ class KafkaCommunicator:
 ''' HELPER FUNCTIONS '''
 
 # unit test were modified
+
+
 def validate_params(params: dict):  # TODO add validation that trust any cert isn't with ssl or sasl?
     """
         Validates the provided parameters to ensure they meet the requirements for SSL and SASL_SSL authentication methods.
@@ -394,7 +394,7 @@ def validate_params(params: dict):  # TODO add validation that trust any cert is
     # Check if brokers are provided
     if not brokers:
         raise DemistoException('Please specify a CSV list of Kafka brokers to connect to.')
-    
+
     # Check SSL requirements
     if use_ssl and not use_sasl:
         missing = []
@@ -408,8 +408,7 @@ def validate_params(params: dict):  # TODO add validation that trust any cert is
             missing_items = ', '.join(missing)
             raise DemistoException(
                 f"When using SSL, the following are required: {missing_items}. Please provide them.")
-    
-     
+
     # Check SASL_SSL requirements
     elif use_sasl:
         missing = []
@@ -423,8 +422,8 @@ def validate_params(params: dict):  # TODO add validation that trust any cert is
             missing_items = ', '.join(missing)
             raise DemistoException(
                 f"When using SASL PLAIN with SSL, the following are required: {missing_items}. Please provide them.")
-        
-    
+
+
 def capture_logs(func: Callable):
     """Capture confluent kafka logs and add them when raising exceptions.
 
@@ -486,7 +485,7 @@ def create_incident(message: Message, topic: str) -> dict:
         'Message': message_value.decode('utf-8')
     }
     incident = {
-        'name': 'Kafka {} partition:{} offset:{}'.format(topic, message.partition(), message.offset()),
+        'name': f'Kafka {topic} partition:{message.partition()} offset:{message.offset()}',
         'details': message_value.decode('utf-8'),
         'rawJSON': json.dumps(raw)
     }
@@ -595,12 +594,12 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     except Exception as e:
         if 'Topic authorization failed' in str(e):
             raise DemistoException(f"Error: {str(e)}\n"
-                "Check if you have permission to produce messages. Your access might be restricted to consumer-only.")
+                                   "Check if you have permission to produce messages. Your access might be restricted to consumer-only.")
         else:
             raise DemistoException(e)
-            
 
-def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandResults, str]:
+
+def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> CommandResults | str:
     """Consume one message from topic
 
     Args:
@@ -619,7 +618,7 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[Comma
     else:
         message_value = message.value()
         if 'Group authorization failed' in message_value.decode('utf-8'):
-           raise DemistoException(f'{message_value} Make sure you configured the right Consumer group ID.')
+            raise DemistoException(f'{message_value} Make sure you configured the right Consumer group ID.')
         readable_output = tableToMarkdown(f'Message consumed from topic {topic}',
                                           [{'Offset': message.offset(), 'Message': message_value.decode("utf-8")}])
         content = {
@@ -655,7 +654,7 @@ def fetch_partitions(kafka: KafkaCommunicator, demisto_args: dict) -> CommandRes
         partitions = [partition.id for partition in partition_objects]
 
         readable_output = tableToMarkdown(
-            name='Available partitions for topic \'{}\''.format(topic),
+            name=f'Available partitions for topic \'{topic}\'',
             t=partitions,
             headers='Partitions'
         )
@@ -719,7 +718,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
 
 
 def get_topic_partition_if_relevant(kafka: KafkaCommunicator, topic: str, partition: str,
-                                    specific_offset: Union[str, int]) -> list:
+                                    specific_offset: str | int) -> list:
     """Return the TopicPartition if topic, partition and specific_offset are valid otherwise return []
 
     Args:
@@ -745,7 +744,7 @@ def get_topic_partition_if_relevant(kafka: KafkaCommunicator, topic: str, partit
     return []
 
 
-def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Union[str, int],
+def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: str | int,
                                last_fetched_offsets: dict) -> List[TopicPartition]:
     """Get topic partitions for fetching incidents without a specified partitions.
 
@@ -861,7 +860,7 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
                      demisto_command: str, kafka_logger: Optional[logging.Logger] = None,
                      log_stream: Optional[StringIO] = None) -> None:
     """Start command function according to demisto command."""
-            
+
     kafka_kwargs['kafka_logger'] = kafka_logger
     kafka = KafkaCommunicator(**kafka_kwargs)
 
@@ -904,14 +903,13 @@ def main():  # pragma: no cover
     use_ssl = demisto_params.get('use_ssl', False)
     # Should we use SASL (with SSL and PLAIN)
     use_sasl = demisto_params.get('use_sasl', False)
-    
+
     ca_cert = demisto_params.get('ca_cert', None)
     client_cert = demisto_params.get('client_cert', None)
     client_cert_key = demisto_params.get('client_cert_key', None)
     ssl_password = demisto_params.get('additional_password', None)
     plain_username = demisto_params.get('plain_username')
     plain_password = demisto_params.get('plain_password')
-
 
     kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
                     'use_sasl': use_sasl, 'group_id': group_id,
