@@ -830,7 +830,7 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
     mailbox_ids = []
     limit_argument = arg_to_number(limit)
     if not limit_argument:
-        raise (DemistoException(f"Invalid limit value: {limit}. Please provide a valid integer."))
+        raise DemistoException(f"Invalid limit value: {limit}. Please provide a valid integer.")
     if mailbox_search_scope is not None and email_addresses is not None:
         raise Exception("Use one of the arguments - mailbox-search-scope or email-addresses, not both")
     if email_addresses:
