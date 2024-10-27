@@ -174,12 +174,12 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
 def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     """Implements es-get-indicators command"""
     now = datetime.now()
-    if FEED_TYPE_GENERIC in feed_type: # Generic Feed
+    if FEED_TYPE_GENERIC in feed_type:  # Generic Feed
         search = get_scan_generic_format(client, now)
         ioc_lst = get_generic_indicators(search, src_val, src_type, default_type, client.tags, client.tlp_color,
                                          client.enrichment_excluded)
         hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
-    else: # Demisto Feed types
+    else:  # Demisto Feed types
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, feed_type=feed_type)
         ioc_lst, ioc_enrch_lst = get_demisto_indicators(search, client.tags, client.tlp_color, client.enrichment_excluded)
@@ -222,7 +222,7 @@ def update_last_fetch(client, ioc_lst):
     last_calculated_timestamp = None
     last_ids = []
     for ioc in reversed(ioc_lst):
-        calculate_time: Union[str, Optional[datetime]] = ''
+        calculate_time: Optional[datetime] = '' # type: ignore
         if time_val := ioc.get(client.time_field):
             calculate_time = dateparser.parse(time_val)
         if not calculate_time:
@@ -254,7 +254,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     now = datetime.now()
     ioc_lst: list = []
     ioc_enrch_lst: list = []
-    if FEED_TYPE_GENERIC not in feed_type: # Demisto Feed types
+    if FEED_TYPE_GENERIC not in feed_type:  # Demisto Feed types
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type, fetch_limit)
         for hit in search:
@@ -263,7 +263,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
                                                                          enrichment_excluded=client.enrichment_excluded)
             ioc_lst.extend(hit_lst)
             ioc_enrch_lst.extend(hit_enrch_lst)
-    else: # Generic Feed type
+    else:  # Generic Feed type
         search = get_scan_generic_format(client, now, last_fetch_timestamp, fetch_limit)
         for hit in search if client.time_field else search.scan():  # if time field isn't set we have to scan all (in every cycle)
             ioc_lst.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, client.tags,
@@ -381,8 +381,8 @@ def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_typ
     ioc_dict['rawJSON'] = dict(ioc_dict)
     if default_ioc_type:
         ioc_dict['type'] = default_ioc_type
-    if ioc_type_key and ioc_dict.get(ioc_type_key): # in case the user didn't specify a field type, we keep the default type
-            ioc_dict['type'] = ioc_dict.get(ioc_type_key)
+    if ioc_type_key and ioc_dict.get(ioc_type_key):  # in case the user didn't specify a field type, we keep the default type
+        ioc_dict['type'] = ioc_dict.get(ioc_type_key)
 
     ioc_dict['fields'] = {}
     if tags:
