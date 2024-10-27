@@ -246,7 +246,7 @@ script:
       isArray: true
       name: mailbox-search-scope
     - defaultValue: '100'
-      description: Maximum number of results to return. Default is 100.
+      description: Maximum number of results to return. Default is 100. This maximum limit can vary based on the EWS server configuration, but a safe recommendation for this argument's upper value is 1000.
       name: limit
     - description: CSV list or array of email addresses.
       isArray: true
