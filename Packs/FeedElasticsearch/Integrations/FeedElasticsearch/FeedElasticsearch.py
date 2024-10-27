@@ -222,7 +222,7 @@ def update_last_fetch(client, ioc_lst):
     last_calculated_timestamp = None
     last_ids = []
     for ioc in reversed(ioc_lst):
-        calculate_time: Optional[datetime] = '' # type: ignore
+        calculate_time: Optional[datetime] = ''  # type: ignore
         if time_val := ioc.get(client.time_field):
             calculate_time = dateparser.parse(time_val)
         if not calculate_time:
