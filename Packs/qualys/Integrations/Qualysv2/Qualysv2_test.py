@@ -178,14 +178,12 @@ def test_fetch_assets_command_time_out(requests_mock, mocker):
     Then:
     - Ensure the limit was reduced.
     """
-    time_out_error = False
     base_url = 'https://server_url/'
     with open('./test_data/host_list_detections_raw.xml') as f:
         assets = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
                       f'?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after='
                       f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', exc=requests.exceptions.ReadTimeout)
-
 
     client = Client(base_url=base_url,
                     verify=True,
