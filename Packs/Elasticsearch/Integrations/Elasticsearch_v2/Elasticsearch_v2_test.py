@@ -1161,14 +1161,18 @@ def test_key_not_found():
                          )
 def test_get_indices_statistics_command(mocker, limit, all_results, expected_context):
     """
+    Tests the 'get_indices_statistics' integration command.
     Given
-      - elastic search client
+      1. Elastic search client, a limit of 1, all_results arg set to True.
+      2. Elastic search client, a limit of 1, all_results arg set to False.
 
     When
-    - executing get_indices_statistics_command function.
+    - Running the get_indices_statistics_command function.
 
     Then
-     - Make sure that the returned function response is as expected
+     - Make sure that the returned function response includes the indices mocked data as expected:
+        1. All results were returned (2 indices).
+        2. Only the first index's data was returned.
     """
     import Elasticsearch_v2
     mocker.patch.object(Elasticsearch_v2, 'get_indices_statistics', return_value=MOCK_INDICES_STATISTICS_RESPONSE
