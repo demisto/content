@@ -405,10 +405,11 @@ def fetch_events_command(
         (list[dict], str, int, str): events, new offset, total number of events fetched, and new last_run time to set.
     """
     total_events_count = 0
+    from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
     while total_events_count < int(fetch_limit):
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
-        events, offset = client.get_events_with_offset(config_ids, offset, page_size, fetch_time)
+        events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
