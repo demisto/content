@@ -763,7 +763,7 @@ def test_read_json_file(mocker):
     assert file_result == mock_file_content
 
 
-def test_rasterize_mailto(mocker):
+def test_rasterize_mailto(capfd, mocker):
     """
         Given:
             - mailto argument as path.
@@ -775,9 +775,9 @@ def test_rasterize_mailto(mocker):
     mocker_output = mocker.patch('rasterize.return_results')
 
     with pytest.raises(SystemExit) as excinfo:
-        perform_rasterize(path='mailto:some.person@gmail.com', width=250, height=250, rasterize_type=RasterizeType.PNG)
+        with capfd.disabled():
+            perform_rasterize(path='mailto:some.person@gmail.com', width=250, height=250, rasterize_type=RasterizeType.PNG)
 
     assert mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.\nURL: [\'mailto:some.person@gmail.com\']'
     assert excinfo.type == SystemExit
     assert excinfo.value.code == 0
-
