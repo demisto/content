@@ -222,7 +222,7 @@ def update_last_fetch(client, ioc_lst):
     last_calculated_timestamp = None
     last_ids = []
     for ioc in reversed(ioc_lst):
-        calculate_time = ''
+        calculate_time: Union[str, Optional[datetime]] = ''
         if time_val := ioc.get(client.time_field):
             calculate_time = dateparser.parse(time_val)
         if not calculate_time:
@@ -379,10 +379,10 @@ def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_typ
     ioc_dict = hit.to_dict()
     ioc_dict['value'] = ioc_dict.get(ioc_val_key)
     ioc_dict['rawJSON'] = dict(ioc_dict)
-    if ioc_type_key:
-        ioc_dict['type'] = ioc_dict.get(ioc_type_key)
-    elif default_ioc_type: # in case the user didn't specify a field type, we set the default type
+    if default_ioc_type:
         ioc_dict['type'] = default_ioc_type
+    if ioc_type_key and ioc_dict.get(ioc_type_key): # in case the user didn't specify a field type, we keep the default type
+            ioc_dict['type'] = ioc_dict.get(ioc_type_key)
 
     ioc_dict['fields'] = {}
     if tags:
