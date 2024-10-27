@@ -15,7 +15,7 @@ if not demisto.params().get("proxy"):
     del os.environ["http_proxy"]
     del os.environ["https_proxy"]
 
-""" GLOBAL VARS test"""
+""" GLOBAL VARS """
 CONTEXT = demisto.getIntegrationContext()
 USE_SSL = not demisto.params().get("unsecure", False)
 DEMISTOBOT = "https://demistobot.demisto.com/azuresc-token"
