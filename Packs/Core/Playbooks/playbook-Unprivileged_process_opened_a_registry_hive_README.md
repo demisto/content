@@ -15,11 +15,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreIR
+CortexCoreIR
 
 ### Scripts
 
-* SearchIncidentsV2
+SearchIncidentsV2
 
 ### Commands
 
