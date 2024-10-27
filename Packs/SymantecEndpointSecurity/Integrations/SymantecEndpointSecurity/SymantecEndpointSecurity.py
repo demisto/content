@@ -362,6 +362,7 @@ def main() -> None:  # pragma: no cover
     proxy = argToBoolean(params.get("proxy", False))
     fetch_interval: int = arg_to_number(params.get("fetch_interval", 60), required=True)  # type: ignore
 
+    return
     command = demisto.command()
     try:
         client = Client(
