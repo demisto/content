@@ -79,11 +79,6 @@ configuration:
   name: max_bytes_per_message
   type: 0
   required: false
-- display: Consumer Only
-  name: consumer_only
-  type: 8
-  section: Collect
-  required: false
 description: Kafka is an open source distributed streaming platform.
 display: Kafka v3 dev
 name: KafkaV3 dev

@@ -15,20 +15,6 @@ import os
 KAFKA = KafkaCommunicator(brokers='some_broker_ip', use_ssl=True, use_sasl=False, trust_any_cert=False,
                           ca_cert='ca_cert', client_cert='client_cert', client_cert_key='client_cert_key')
 
-def mock_consumer_only_kafka():
-    return KafkaCommunicator(brokers='brokers',
-                              consumer_only=True,
-                              use_ssl=False,
-                              use_sasl=False,
-                              trust_any_cert=True)
-    
-def mock_not_consumer_only_kafka():
-    return KafkaCommunicator(brokers='brokers',
-                              consumer_only=False,
-                              use_ssl=False,
-                              use_sasl=False,
-                              trust_any_cert=True)
-
 
 def test_passing_simple_test_module(mocker):
     """
@@ -933,52 +919,6 @@ def test_sasl_ssl_configuration():
     os.remove(kafka.ca_path)
     
     
-def test_consumer_only():
-    """
-    Given:
-        - Kafka initialization parameters with consumer_only equals true
-    When:
-        - Initializing KafkaCommunicator object
-    Then:
-        - Only the consumer dict is initialized.
-    """
-    kafka = KafkaCommunicator(brokers='brokers',
-                              ca_cert='ca_cert',
-                              plain_username='plain_username',
-                              plain_password='plain_password',
-                              ssl_password='ssl_password',
-                              offset='earliest',
-                              trust_any_cert=False,
-                              use_ssl=True,
-                              use_sasl=True,
-                              consumer_only=True)
-    assert kafka.conf_consumer
-    assert not kafka.conf_producer
-    
-    
-def test_KafkaCommunicator__not_consumer_only():
-    """
-        Given:
-        A consumer_only=False argument and other required ones.
-        When:
-        Calling KafkaCommunicator init function.
-        Then:
-        The Kafka communicator is created with a conf_consumer and with conf_producer.
-    """
-    kafka = KafkaCommunicator(brokers='brokers',
-                              ca_cert='ca_cert',
-                              plain_username='plain_username',
-                              plain_password='plain_password',
-                              ssl_password='ssl_password',
-                              offset='earliest',
-                              trust_any_cert=False,
-                              use_ssl=True,
-                              use_sasl=True,
-                              consumer_only=False)
-    assert kafka.conf_consumer
-    assert kafka.conf_producer
-    
-    
 valid_params_cases = [
     # Valid case with SSL only
     {
@@ -1043,11 +983,6 @@ invalid_params_cases = [
         {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2', 'plain_username': 'user', 'plain_password': 'pass'},
         'When using SASL PLAIN with SSL, the following are required: CA certificate of Kafka server (.cer). Please provide them.'
     ),
-    # No connection method was chosen
-    (
-        {'use_ssl': False, 'use_sasl': False, 'insecure': False},
-        'No connection method was chosen.'
-    )
 ]
 @pytest.mark.parametrize('params, expected_message', invalid_params_cases)
 def test_validate_params_invalid(params, expected_message):
@@ -1056,58 +991,3 @@ def test_validate_params_invalid(params, expected_message):
     with pytest.raises(DemistoException) as e:
         validate_params(params)
     assert str(e.value) == expected_message
-
-    
-def test__test_connection__consumer_only(mocker:MockerFixture):
-    """
-        Given:
-        A consumer_only=True argument and other required ones.
-        When:
-        Calling test_connection function.
-        Then:
-        Assert get_kafka_producer() isn't called and get_kafka_consumer() is called
-    """
-    
-    mocker.patch.object(KConsumer, 'list_topics')
-    consumer_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_consumer')
-    producer_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_producer')
-
-    mock_consumer_only_kafka().test_connection(consumer_only=True)
-    
-    consumer_mock.assert_called_once()
-    producer_mock.assert_not_called()
-
-    
-def test__test_connection__not_consumer_only(mocker):
-    """
-        Given:
-        A consumer_only=True argument and other required ones.
-        When:
-        Calling test_connection function.
-        Then:
-        Assert get_kafka_producer() and get_kafka_consumer() are called
-    """
-    mocker.patch.object(KConsumer, 'list_topics')
-    mocker.patch.object(KProducer, 'list_topics')
-    consumer_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_consumer')
-    producer_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_producer')
-
-    mock_not_consumer_only_kafka().test_connection(consumer_only=False)
-    
-    consumer_mock.assert_called_once()
-    producer_mock.assert_called_once()
-    
-def test_command_manager_consumer_only():
-    """
-        Given:
-        A consumer_only=True argument and other required ones.
-        When:
-        Calling publish-message command.
-        Then:
-        Assert that an exception is thrown
-    """
-    from KafkaV3 import commands_manager
-    with pytest.raises(DemistoException) as e:
-        commands_manager(demisto_args={}, kafka_kwargs={}, demisto_params={'consumer_only': True},
-                         demisto_command='kafka-publish-msg')
-    assert 'This instance is consumer_only. The kafka-publish-msg command cannot be run' in str(e.value)
