@@ -800,7 +800,7 @@ def perform_rasterize(path: str | list[str],
     """
 
     # convert the path param to list in case we have only one string
-    path = [path] if isinstance(path, str) else path  # type: ignore
+    path = [path] if isinstance(path, str) else path
 
     # create a list with all the paths starts with "mailto:"
     mailto_paths = [path_value for path_value in path if path_value.startswith('mailto:')]
@@ -825,7 +825,7 @@ def perform_rasterize(path: str | list[str],
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
             demisto.debug(f'path type is: {type(path)}')
-            paths = [path] if isinstance(path, str) else path
+            paths = [path] if isinstance(path, str) else path  # type: ignore
             demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
