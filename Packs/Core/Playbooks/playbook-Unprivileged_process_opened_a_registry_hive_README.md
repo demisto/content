@@ -1,4 +1,4 @@
-This Playbook is designed to handle the 'Unprivileged process opened a registry hive' alerts and execute the following:
+This playbook is designed to handle the 'Unprivileged process opened a registry hive' alerts and execute the following:
 - Check for process signatures and prevalence.
 - Searching for additional Cortex XSIAM suspicious alerts in the incident is conducted by searching relevant Mitre techniques.
 
@@ -15,11 +15,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreIR
+CortexCoreIR
 
 ### Scripts
 
-* SearchIncidentsV2
+SearchIncidentsV2
 
 ### Commands
 
