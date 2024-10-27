@@ -867,43 +867,43 @@ script:
     name: fireeye-hx-search
     polling: true
     outputs:
-    - contextPath: FireEyeHX.Search.results.Timestamp - Modified
+    - contextPath: FireEyeHX.Search.results.data.Timestamp - Modified
       description: The time when the entry was last modified.
       type: string
-    - contextPath: FireEyeHX.Search.results.File Text Written
+    - contextPath: FireEyeHX.Search.results.data.File Text Written
       description: The file text content.
       type: string
-    - contextPath: FireEyeHX.Search.results.File Name
+    - contextPath: FireEyeHX.Search.results.data.File Name
       description: The name of the file.
       type: string
-    - contextPath: FireEyeHX.Search.results.File Full Path
+    - contextPath: FireEyeHX.Search.results.data.File Full Path
       description: The full path of the file.
       type: string
-    - contextPath: FireEyeHX.Search.results.File Bytes Written
+    - contextPath: FireEyeHX.Search.results.data.File Bytes Written
       description: The number of bytes written to the file.
       type: string
-    - contextPath: FireEyeHX.Search.results.Size in bytes
+    - contextPath: FireEyeHX.Search.results.data.Size in bytes
       description: The size of the file in bytes.
       type: string
-    - contextPath: FireEyeHX.Search.results.Browser Version
+    - contextPath: FireEyeHX.Search.results.data.Browser Version
       description: The version of the browser.
       type: string
-    - contextPath: FireEyeHX.Search.results.Browser Name
+    - contextPath: FireEyeHX.Search.results.data.Browser Name
       description: The name of the browser.
       type: string
-    - contextPath: FireEyeHX.Search.results.Cookie Name
+    - contextPath: FireEyeHX.Search.results.data.Cookie Name
       description: The name of the cookie.
       type: string
-    - contextPath: FireEyeHX.Search.results.DNS Hostname
+    - contextPath: FireEyeHX.Search.results.data.DNS Hostname
       description: The name of the DNS host.
       type: string
-    - contextPath: FireEyeHX.Search.results.URL
+    - contextPath: FireEyeHX.Search.results.data.URL
       description: The event URL.
       type: string
-    - contextPath: FireEyeHX.Search.results.Username
+    - contextPath: FireEyeHX.Search.results.data.Username
       description: The event username.
       type: string
-    - contextPath: FireEyeHX.Search.results.File MD5 Hash
+    - contextPath: FireEyeHX.Search.results.data.File MD5 Hash
       description: The MD5 hash of the file.
       type: string
     - contextPath: FireEyeHX.Search.host._id
@@ -918,31 +918,31 @@ script:
     - contextPath: FireEyeHX.Search.results.data
       description: The ID of the performed search.
       type: string
-    - contextPath: FireEyeHX.Search.results.Timestamp - Accessed
+    - contextPath: FireEyeHX.Search.results.data.Timestamp - Accessed
       description: The last accessed time.
       type: string
-    - contextPath: FireEyeHX.Search.results.Port
+    - contextPath: FireEyeHX.Search.results.data.Port
       description: The Port.
       type: number
-    - contextPath: FireEyeHX.Search.results.Process ID
+    - contextPath: FireEyeHX.Search.results.data.Process ID
       description: The ID of the process.
       type: string
-    - contextPath: FireEyeHX.Search.results.Local IP Address
+    - contextPath: FireEyeHX.Search.results.data.Local IP Address
       description: The local IP Address.
       type: string
-    - contextPath: FireEyeHX.Search.results.Local Port
+    - contextPath: FireEyeHX.Search.results.data.Local Port
       description: The local Port.
       type: number
-    - contextPath: FireEyeHX.Search.results.Remote Port
+    - contextPath: FireEyeHX.Search.results.data.Remote Port
       description: The remote port.
       type: number
-    - contextPath: FireEyeHX.Search.results.IP Address
+    - contextPath: FireEyeHX.Search.results.data.IP Address
       description: The IP address.
       type: string
-    - contextPath: FireEyeHX.Search.results.Process Name
+    - contextPath: FireEyeHX.Search.results.data.Process Name
       description: The process name.
       type: string
-    - contextPath: FireEyeHX.Search.results.Timestamp - Event
+    - contextPath: FireEyeHX.Search.results.data.Timestamp - Event
       description: The timestamp of the event.
       type: string
     - contextPath: FireEyeHX.Search.results.type
