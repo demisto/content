@@ -1,6 +1,6 @@
 from FeedMicrosoftIntune import Client
 
-URL = 'https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints'
+URL = 'https://learn.microsoft.com/en-us/mem/intune/fundamentals/intune-endpoints'
 
 
 def test_build_iterator(requests_mock):

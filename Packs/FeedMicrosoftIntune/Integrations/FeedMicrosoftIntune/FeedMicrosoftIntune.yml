@@ -68,7 +68,7 @@ configuration:
   required: false
 - display: The Microsoft Intune endpoint URL
   name: url
-  defaultvalue: https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints
+  defaultvalue: https://learn.microsoft.com/en-us/mem/intune/fundamentals/intune-endpoints
   type: 0
   required: true
 - additionalinfo: Supports CSV values.
