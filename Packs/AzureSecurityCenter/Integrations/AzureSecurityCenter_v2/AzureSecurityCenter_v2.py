@@ -4,7 +4,7 @@ import ast
 from MicrosoftApiModule import *  # noqa: E402
 
 
-""" GLOBAL VARS """
+""" GLOBAL VARS test"""
 
 APP_NAME = "ms-azure-sc"
 SUB_ID_REQUIRING_CMD = (
