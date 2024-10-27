@@ -817,7 +817,7 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
     Args:
         protocol (Protocol): The EWS protocol object.
         filter (str): The search filter to apply.
-        limit (int): The maximum number of results to return. Default value is SEARCH_MAILBOXES_LIMIT.
+        limit (int): The maximum number of results to return. Default value is 100.
         mailbox_search_scope (str or list, optional): The mailbox search scope. Defaults to None.
         email_addresses (str, optional): Comma-separated list of email addresses to search. Defaults to None.
 
