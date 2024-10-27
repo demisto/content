@@ -4,7 +4,7 @@ commonfields:
 name: Symantec Endpoint Security
 display: Symantec Endpoint Security
 category: Analytics & SIEM
-description: ""
+description: "Palo Alto Networks Symantec Endpoint Security Event Collector integration for Cortex XSIAM."
 configuration:
 - display: Server URL
   name: host
@@ -30,28 +30,28 @@ configuration:
   required: true
   additionalinfo: ""
   section: Connect
-- display: Fetch events
-  name: isFetch
-  type: 8
-  section: Collect
-  required: false
 - display: Fetch interval in seconds
   name: fetch_interval
   type: 0
   defaultvalue: 60
   required: true
   section: Collect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
 - defaultvalue: 'true'
   display: Long Running Instance
   hidden: true
   name: longRunning
   type: 8
   section: Connect
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-  section: Collect
 script:
   script: ""
   type: python
@@ -61,6 +61,6 @@ script:
   subtype: python3
 marketplaces:
 - marketplacev2
-fromversion: 6.9.0
+fromversion: 6.8.0
 tests:
 - No tests

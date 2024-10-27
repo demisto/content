@@ -1,6 +1,6 @@
 {
     "name": "Symantec Endpoint Security",
-    "description": "",
+    "description": "Use Cloud Platform Connections, a cloud-based security feature in Symantec Endpoint Security to discover and protect instances of public cloud platforms, and their workloads.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -16,8 +16,5 @@
     ],
     "marketplaces": [
         "marketplacev2"
-    ],
-    "itemPrefix": [
-        ""
     ]
 }

@@ -275,6 +275,7 @@ def get_events_command(
 
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 401:
+            demisto.debug("Unauthorized access token, trying to obtain a new access token")
             raise UnauthorizedToken
         elif e.res is not None and e.res.status_code == 410:
             raise NextPointingNotAvailable
@@ -317,7 +318,11 @@ def perform_long_running_loop(client: Client):
             get_events_command(client, integration_context=integration_context)
 
         except UnauthorizedToken:
-            client.get_token()
+            try:
+                client.get_token()
+            except Exception as e:
+                demisto.debug("Failed to obtain a new access token")
+                raise e
             continue
         except NextPointingNotAvailable:
             integration_context.pop("next_fetch")
@@ -362,7 +367,6 @@ def main() -> None:  # pragma: no cover
     proxy = argToBoolean(params.get("proxy", False))
     fetch_interval: int = arg_to_number(params.get("fetch_interval", 60), required=True)  # type: ignore
 
-    return
     command = demisto.command()
     try:
         client = Client(
