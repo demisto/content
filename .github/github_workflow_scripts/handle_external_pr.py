@@ -589,9 +589,6 @@ def main():
             f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
     if XSOAR_SUPPORT_LEVEL_LABEL or COMMUNITY_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
         pr.create_issue_comment(contributors_body)
-    pr.create_issue_comment('Hello,\nThank you for your contribution.\nUnfortunately, your PR review will be slightly delayed '
-                            'because of an Israeli holiday in the upcoming two weeks (16-26.10.24). Thank you in advance '
-                            'for the patience.')
 
 
 if __name__ == "__main__":
