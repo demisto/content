@@ -850,7 +850,6 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
     try:
         search_results = SearchMailboxes(protocol=protocol, limit=limit_argument).call(filter, mailbox_ids)
-        search_results = search_results[:limit_argument]
     except TransportError as e:
         if "ItemCount>0<" in str(e):
             return "No results for search query: " + filter
