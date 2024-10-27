@@ -1452,3 +1452,69 @@ def test_build_ip_and_range_dicts():
              and another list which consists of single values dictionaries of ranges
     """
     assert Qualysv2.build_ip_and_range_dicts(['-', 'example']) == [[{'ip': 'example'}], [{'range': '-'}]]
+
+
+def test_truncate_asset_size(mocker):
+    # Mock demisto.debug
+
+    with patch('demisto.debug') as mock_debug:
+        # Define test cases
+        test_cases = [
+            # Case 1: Asset with ID and detection unique vuln ID, and exceeds size limit
+            {
+                "asset": {
+                    "ID": "12345",
+                    "DETECTION": {
+                        "UNIQUE_VULN_ID": "vuln123",
+                        "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
+                    }
+                },
+                "expected_truncated": True
+            },
+            # Case 2: Asset with no ID and detection unique vuln ID, and exceeds size limit
+            {
+                "asset": {
+                    "DETECTION": {
+                        "UNIQUE_VULN_ID": "2 * 10 ** 6",
+                        "RESULTS": "A" * 20000  # Exceeds size limit
+                    }
+                },
+                "expected_truncated": True
+            },
+            # Case 3: Asset with ID and no detection unique vuln ID, and does not exceed size limit
+            {
+                "asset": {
+                    "ID": "12345",
+                    "DETECTION": {
+                        "RESULTS": "A" * 100  # Does not exceed size limit
+                    }
+                },
+                "expected_truncated": False
+            },
+            # Case 4: Asset with no ID and no detection unique vuln ID, and does not exceed size limit
+            {
+                "asset": {
+                    "DETECTION": {
+                        "RESULTS": "A" * 100  # Does not exceed size limit
+                    }
+                },
+                "expected_truncated": False
+            }
+        ]
+
+        for case in test_cases:
+            asset = case["asset"]
+            expected_truncated = case["expected_truncated"]
+
+            Qualysv2.truncate_asset_size(asset)
+
+            if expected_truncated:
+                assert asset.get('isTruncated', False) is True
+                assert len(asset['DETECTION']['RESULTS']) == 10000
+                assert mock_debug.call_count >= 3  # Expecting at least 3 debug messages
+            else:
+                assert asset.get('isTruncated', False) is False
+                assert mock_debug.call_count == 0  # No debug messages if not truncated
+
+            # Reset mock_debug for the next test case
+            mock_debug.reset_mock()
