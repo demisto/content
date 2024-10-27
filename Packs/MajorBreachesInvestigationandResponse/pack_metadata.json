@@ -113,6 +113,10 @@
         "IvantiCriticalVulnerabilities": {
             "mandatory": false,
             "display_name": "Ivanti Critical Vulnerabilities"
+        },
+        "CVE_2024_47575": {
+            "mandatory": false,
+            "display_name": "CVE-2024-47575 - FortiManager Authentication Bypass"
         }
     },
     "marketplaces": [
