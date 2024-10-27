@@ -20,7 +20,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/ssdeep:1.0.0.93570
+dockerimage: demisto/ssdeep:1.0.0.114703
 runas: DBotWeakRole
 engineinfo: {}
 tests:
