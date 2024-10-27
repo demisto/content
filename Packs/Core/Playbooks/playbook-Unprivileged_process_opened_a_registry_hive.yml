@@ -254,7 +254,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: '(mitreattcktechnique:* T1003* or mitreattcktechnique:* T1036* or mitreattcktechnique:* T1552* or mitreattcktechnique:* T1059*) and caseid:'
+                  simple: '(mitreattcktechnique:*T1003* or mitreattcktechnique:*T1036* or mitreattcktechnique:*T1552* or mitreattcktechnique:*T1059*) and caseid:'
               suffix: {}
     separatecontext: false
     continueonerrortype: ""
