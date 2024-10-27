@@ -497,7 +497,7 @@ def main():  # pragma: no cover
                 limit,
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
-                params.get("fetchTime", "")
+                fetch_time=params.get("fetchTime", "")
             ):
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
