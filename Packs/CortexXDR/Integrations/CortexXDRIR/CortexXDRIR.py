@@ -335,11 +335,10 @@ class Client(CoreClient):
     def save_modified_incidents_to_integration_context(self):
         last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
         modified_incidents_context = {}
-        demisto.info(f"[test] in save_modified_incidents_to_integration_context, got {len(last_modified_incidents)} {last_modified_incidents=}")
         for incident in last_modified_incidents:
             incident_id = incident.get('incident_id')
             modified_incidents_context[incident_id] = incident.get('modification_time')
-        demisto.info(f"[test] Setting integration context with {modified_incidents_context=}")
+        
         set_integration_context({'modified_incidents': modified_incidents_context})
 
     def get_contributing_event_by_alert_id(self, alert_id: int) -> dict:
@@ -1083,30 +1082,28 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                     starred_incidents_fetch_window: str = None):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
-    demisto.info(f"[test] starting to get events with {last_run=} where {type(last_run)=}")
+    demisto.info(f"Starting to get events with {last_run=}")
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
                                                                                                 dict) else []
-    demisto.info(f"[test] {incidents_from_previous_run=}, and {last_fetch=}")
+    if incidents_from_previous_run:
+        demisto.info(f"Running on {incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
-        demisto.info(f"[test] last_fetch was None, so parsed a new one, {last_fetch=}")
+        demisto.info(f"last_fetch was None, parsed a new one. {last_fetch=}")
 
     if starred:
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
-        demisto.info(f"[test] starred was given, {starred_incidents_fetch_window=}")
 
     incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
         ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1) if isinstance(last_run, dict) else -1
-        demisto.info(f"[test] incidents_from_previous_run was given, set {raw_incidents=} and {ALERTS_LIMIT_PER_INCIDENTS=}")
     else:
-        demisto.info("[test] no incidents_from_previous_run was given, in the else statement.")
         if statuses:
             raw_incidents = []
-            demisto.info(f"[test] got {statuses=}")
+            demisto.info(f"Running on {statuses=}")
             for status in statuses:
                 raw_incident_status = client.get_multiple_incidents_extra_data(
                     gte_creation_time_milliseconds=last_fetch,
@@ -1117,13 +1114,12 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 raw_incidents.extend(raw_incident_status)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
         else:
-            demisto.info("[test] didn't get any statuses, fetching all data.")
+            demisto.info("Didn't get any statuses, fetching all data.")
             raw_incidents = client.get_multiple_incidents_extra_data(
                 gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
                 starred=starred,
                 starred_incidents_fetch_window=starred_incidents_fetch_window,
                 exclude_artifacts=exclude_artifacts)
-        demisto.info(f"[test] Finished fetching new data, {raw_incidents=}")
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -1138,19 +1134,14 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
-            demisto.info(f"[test] in incident {incident_id}, {alert_count=}, and {incident_data=}")
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
-                demisto.debug(f'[test] for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
-                              "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
                 incident_data = sort_incident_data(raw_incident_)
-                demisto.info(f"[test] After the old call, got {incident_data=}")
             sort_all_list_incident_fields(incident_data)
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
-            demisto.info(f"[test] after updating fields in the incident, {incident_data=}")
             description = incident_data.get('description')
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
             incident: Dict[str, Any] = {
@@ -1158,27 +1149,16 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }
-            demisto.info(f"[test] preparing to sync data with {incident=}")
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
                 incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
-                demisto.info(f"[test] sync_owners is given, {incident['owner']=}")
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']
-                demisto.info(f"[test] creation_time > last_fetch, therefore update last_fetch, {last_fetch=}")
-            demisto.info(f"[test] preparing to append incident to incidents, currently {len(incidents)=}")
             incidents.append(incident)
-            demisto.info(f"[test] after appending incident to incidents, currently {len(incidents)=}")
-            current_non_created_incidents_len = len(non_created_incidents)
-            demisto.info(f"[test] preparing to remove raw_incident from incidents, currently {current_non_created_incidents_len=}")
             non_created_incidents.remove(raw_incident)
-            updated_non_created_incidents_len = len(non_created_incidents)
-            demisto.info(f"[test] after removing raw_incident from incidents, currently {updated_non_created_incidents_len=}")
-            if updated_non_created_incidents_len != current_non_created_incidents_len:
-                demisto.info(f"[test], didn't remove incident, {raw_incident=}\n{non_created_incidents=}")
             count_incidents += 1
             if count_incidents == max_fetch:
-                demisto.info("[test] reached max_fetch, breaking.")
+                demisto.info("Reached max_fetch, breaking.")
                 break
 
     except Exception as e:
@@ -1189,15 +1169,13 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
             raise
 
     if non_created_incidents:
-        demisto.info("[test] Still got non_created_incidents, update next_run.")
         next_run['incidents_from_previous_run'] = non_created_incidents
         next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
     else:
-        demisto.info("[test] Don't have non_created_incidents, update next_run.")
         next_run['incidents_from_previous_run'] = []
 
     next_run['time'] = last_fetch + 1
-    demisto.info(f"[test], finished fetching. got {next_run=}, and {incidents=}")
+    demisto.info(f"Finished fetching. got {next_run=}")
     return next_run, incidents
 
 
