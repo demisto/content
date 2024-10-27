@@ -246,7 +246,7 @@ script:
       isArray: true
       name: mailbox-search-scope
     - defaultValue: '250'
-      description: Maximum number of results to return. Default is 250.
+      description: Maximum number of results to return. Default is 100.
       name: limit
     - description: CSV list or array of email addresses.
       isArray: true
