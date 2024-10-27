@@ -17,6 +17,7 @@ repos:
     files: .+_test.py$
   - id: check-added-large-files
     args: ['--maxkb=5120', --enforce-all]
+  - id: check-case-conflict
 - repo: https://github.com/python-poetry/poetry
   rev: 1.8.2
   hooks:
