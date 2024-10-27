@@ -1,8 +1,30 @@
-## BaseIntegration Help
+## MongoDB Atlas Help
 
-Markdown file for integration configuration  help snippet. In this file add:
+## To create an API key for a project using the Atlas UI:
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+1. Navigate to the Access Manager page for your project.
+If it is not already displayed, select the organization that contains your desired project from the  Organizations menu in the navigation bar.
+2. Select your desired project from the list of projects in the Projects page.
+3. Click the vertical ellipsis () next to your project name in the upper left corner and select Project Settings.
+4. Click Access Manager in the navigation bar, then click your project.
+5. Click Create API Key.
+6. Enter the API Key Information.
+7. On the Create API Key page:
+    a. Enter a Description.
+    b. In the Project Permissions menu, select the new role or roles for the API key.
+    c. Click Next.
+    d. Copy and save the Public Key. The public key acts as the username when making API requests.
+    e. Copy and save the Private Key. The private key acts as the password when making API requests.
+WARNING
+Save Private Key. The Private Key is only shown once: on this page. Click the Copy button to add the Private Key to the clipboard. Save and secure both the Public and Private Keys.
+8. Add an API Access List Entry.
+9. Click Add Access List Entry.
+10. Enter an IP address from which you want Atlas to accept API requests for this API Key. You can also click Use Current IP Address if the host you are using to access Atlas will also make API requests using this API Key.
+11. Click Save.
+12. Click Done.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### IMPORTANT
+
+Customer needs to allow access from XSIAM to mongoDB via UI:
+https://cloud.mongodb.com/v2/<customer organizationid>#/security/network/accessList 
+by adding an XSIAM IP address.

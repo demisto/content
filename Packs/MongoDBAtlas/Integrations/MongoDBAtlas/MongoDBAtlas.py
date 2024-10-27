@@ -45,7 +45,8 @@ class Client(BaseClient):
                 # url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts"
             )
         except Exception as e:
-            pass
+            demisto.debug(f'This is the error from get_alerts client function {e}')
+            raise e
         
         return results
 
@@ -65,10 +66,11 @@ class Client(BaseClient):
                 method="GET",
                 url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events?pageNum={page_num}&itemsPerPage={items_per_page}",
             )
+            return results
         except Exception as e:
             pass
         
-        return results
+        
 
 ''' HELPER FUNCTIONS '''
 
@@ -84,15 +86,65 @@ def sort_list_by_created_field(data: list):
     """
     return sorted(data, key=lambda x: datetime.strptime(x["created"], DATE_FORMAT))
 
+def add_entry_status_field(event: dict):
+    """
+    Adds a _ENTRY_STATUS field to an event by checking the event status.
+
+    Args:
+        event (dict): The event.
+    """
+    updated = datetime.strptime(event.get('updated'), DATE_FORMAT)
+    created = datetime.strptime(event.get('created'), DATE_FORMAT)
+    if updated == created:
+        event['_ENTRY_STATUS'] = 'new'
+    elif updated > created:
+        event['_ENTRY_STATUS'] = 'updated'
+    
+
 def fetch_events_by_type(fetch_limit: int, last_run: dict, api_func):
     current_page = last_run.get('current_page', 1)
-    fetched_events = last_run.get('fetched_events', 0)
-    last_page_events_count = last_run.get('last_page_event_count')
+    fetched_events = last_run.get('fetched_events', 0) #fetched events in all runs in total
+    last_page_events_count = last_run.get('last_page_event_count', 0) #the amount of events from the last run in the last page
     
-    current_fetched_events = 0
+    current_fetched_events = 0 #current fetched events in this run
     output = []
     items_per_page = 500
     
+    while current_fetched_events < fetch_limit:
+        response = api_func(current_page, items_per_page)
+        events = response.get('results', {})
+        total_count = response.get('totalCount')
+        
+        if fetched_events >= total_count:
+            return output
+        
+        sorted_events = sort_list_by_created_field(events)
+        start = last_page_events_count + 1
+        for event in sorted_events[start:]:
+            if current_fetched_events >= fetch_limit: #first check if didn't reach the limit
+                last_run_dict = {
+                    'last_page_events_count': last_page_events_count,
+                    'fetched_events': fetched_events,
+                    'current_page': current_page
+                }
+                return output, last_run_dict
+            
+            add_entry_status_field(event)
+            output.append(event)
+            current_fetched_events += 1
+            fetched_events += 1
+            last_page_events_count += 1
+            
+        last_page_events_count = 0
+        current_page += 1
+    
+    last_run_dict = {
+        'last_page_events_count': last_page_events_count+1,
+        'fetched_events': fetched_events,
+        'current_page': current_page
+    }
+    return output, last_run_dict
+
     
     #initialize if not exists:
         #current_page = 1
@@ -195,7 +247,6 @@ def main() -> None:
         verify = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         fetch_limit = int(params.get('number_of_events_per_fetch', 2500))
-        should_fetch_events = argToBoolean(params.get('should_fetch_events'))
         
         client = Client (
             base_url=base_url,
@@ -211,9 +262,9 @@ def main() -> None:
         elif command == 'mongo-db-atlas-get-events':
             return_results(get_events(client, demisto.args()))
         elif command == 'fetch-events':
-            if should_fetch_events:
-                return_results(fetch_events(client,fetch_limit))
-
+            events = fetch_events(client,fetch_limit)
+            if events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
