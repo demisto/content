@@ -1,3 +1,5 @@
+import os
+
 from demisto_sdk.commands.validate.config_reader import ConfigReader
 from demisto_sdk.commands.validate.initializer import Initializer
 
@@ -9,7 +11,7 @@ import traceback
 import types
 import zipfile
 from base64 import b64decode
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from datetime import datetime
 from pathlib import Path
 from shutil import copy
@@ -34,7 +36,8 @@ from demisto_sdk.commands.validate.old_validate_manager import OldValidateManage
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
 
-
+CONTENT_DIR_NAME = 'content'
+CONTENT_REPO_URL = 'https://github.com/demisto/content.git'
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 yaml = YAML()
 
@@ -179,7 +182,7 @@ def adjust_linter_row_and_col(
 
 
 def run_validate(path_to_validate: str, json_output_file: str) -> None:
-    os.environ['DEMISTO_SDK_SKIP_VERSION_CHECK'] = '1'
+    # os.environ['DEMISTO_SDK_SKIP_VERSION_CHECK'] = '1'
     tests_dir = 'Tests'
     if not os.path.exists(tests_dir):
         os.makedirs(tests_dir)
@@ -192,10 +195,12 @@ def run_validate(path_to_validate: str, json_output_file: str) -> None:
     #     silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
     #     staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
     # old_validate_manager.run_validation()
-
+    demisto.debug('initializing results writer')
     result_writer = ResultWriter(json_file_path=json_output_file)
     # TODO - Perhaps individual validations (excluded from category) has to be assigned to `ConfigReader.explicitly_selected`.
+    demisto.debug('initializing config reader')
     config_reader = ConfigReader(category="xsoar_best_practices_path_based_validations")
+    demisto.debug('initializing initializer')
     initializer = Initializer(
         staged=False,
         committed_only=False,
@@ -203,9 +208,14 @@ def run_validate(path_to_validate: str, json_output_file: str) -> None:
         execution_mode=ExecutionMode.SPECIFIC_FILES
     )
     # TODO - Toggle `allow_autofix` (should be True).
+
+    demisto.debug(f'run_validate initializing ValidateManager.')
     validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False)
+    demisto.debug(f'run_validate validate_manager initialized. Running validations: {validate_manager.validators=}')
     exit_code = validate_manager.run_validations()
+
     demisto.info(f'run_validate {exit_code=}')
+
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
@@ -270,55 +280,64 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     # from extracting the unified yaml to a package format
     extractor.extract_to_package_format()
     code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
-    return extractor.get_output_path(), code_fp_to_row_offset
+
+    output_path = extractor.get_output_path()
+    demisto.debug(f'prepare_single_content_item_for_validation {output_path=} | {code_fp_to_row_offset=}')
+    return output_path, code_fp_to_row_offset
 
 
 def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
-    lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
+    # lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
 
-    with redirect_stderr(output_capture):
-        with NamedTemporaryFile(mode='w+') as tmp:
-            logging_setup(
-                console_log_threshold=logging.INFO,
-                file_log_threshold=logging.DEBUG,
-                log_file_path=tmp.name,
-                skip_log_file_creation=True
+    with NamedTemporaryFile(mode='w+') as tmp:
+        logging_setup(
+            console_log_threshold=logging.DEBUG,
+            file_log_threshold=logging.DEBUG,
+            log_file_path=tmp.name,
+            skip_log_file_creation=True
+        )
+
+        if filename.endswith('.zip'):
+            path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
+                filename, data, tmp_directory
+            )
+        else:
+            path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
+                filename, data, tmp_directory
             )
 
-            if filename.endswith('.zip'):
-                path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
-                    filename, data, tmp_directory
-                )
-            else:
-                path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
-                    filename, data, tmp_directory
-                )
-            run_validate(path_to_validate, json_output_path)
-            # run_lint(path_to_validate, lint_output_path)
+            demisto.debug(f'validate_content {path_to_validate=}')
+            if os.path.isdir(path_to_validate):
+                demisto.debug(f'validate_content {os.listdir(path_to_validate)}')
 
-            demisto.debug("log capture:" + tmp.read())
+        demisto.debug(f'validate_content running validate')
+        # with redirect_stdout(output_capture):
+        run_validate(path_to_validate, json_output_path)
+        # run_lint(path_to_validate, lint_output_path)
 
-            all_outputs = []
-            with open(json_output_path, 'r') as json_outputs:
-                outputs_as_json = json.load(json_outputs)
-                demisto.debug(f'validate_content {outputs_as_json=}')
-                if outputs_as_json:
-                    if type(outputs_as_json) == list:
-                        all_outputs.extend(outputs_as_json)
-                    else:
-                        all_outputs.append(outputs_as_json)
+        demisto.debug("log capture:" + tmp.read())
 
-            with open(lint_output_path, 'r') as json_outputs:
-                outputs_as_json = json.load(json_outputs)
-                if outputs_as_json:
-                    if type(outputs_as_json) == list:
-                        for validation in outputs_as_json:
-                            adjust_linter_row_and_col(validation, code_fp_to_row_offset)
-                        all_outputs.extend(outputs_as_json)
-                    else:
-                        all_outputs.append(outputs_as_json)
+        all_outputs = []
+        with open(json_output_path, 'r') as json_outputs:
+            outputs_as_json = json.load(json_outputs)
+            demisto.debug(f'validate_content {outputs_as_json=}')
+            if outputs_as_json:
+                if type(outputs_as_json) == list:
+                    all_outputs.extend(outputs_as_json)
+                else:
+                    all_outputs.append(outputs_as_json)
+
+            # with open(lint_output_path, 'r') as json_outputs:
+            #     outputs_as_json = json.load(json_outputs)
+            #     if outputs_as_json:
+            #         if type(outputs_as_json) == list:
+            #             for validation in outputs_as_json:
+            #                 adjust_linter_row_and_col(validation, code_fp_to_row_offset)
+            #             all_outputs.extend(outputs_as_json)
+            #         else:
+            #             all_outputs.append(outputs_as_json)
     return all_outputs
 
 
@@ -423,8 +442,6 @@ def get_file_name_and_contents(
 
 
 def main():
-    cwd = os.getcwd()
-    content_tmp_dir = TemporaryDirectory()
     try:
         args = demisto.args()
         if args.get('use_system_proxy') == 'no':
@@ -434,11 +451,17 @@ def main():
             del os.environ['https_proxy']
         verify_ssl = argToBoolean(args.get('trust_any_certificate'))
 
-        content_repo = git.Repo.init(content_tmp_dir.name)
-        content_repo.create_remote('origin', 'https://github.com/demisto/content.git')
-        os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
+        cwd = os.getcwd()
+        tmp_dir = TemporaryDirectory()
+        content_dir_path = os.path.join(tmp_dir.name, CONTENT_DIR_NAME)
+        os.makedirs(content_dir_path, exist_ok=True)
+        os.environ['DEMISTO_SDK_CONTENT_PATH'] = content_dir_path
+        demisto.debug(f'{os.getenv("DEMISTO_SDK_CONTENT_PATH")=}')
+        content_repo = git.Repo.init(content_dir_path)
+        content_repo.create_remote('origin', CONTENT_REPO_URL)
 
-        get_content_modules(content_tmp_dir.name, verify_ssl)
+        os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
+        get_content_modules(content_dir_path, verify_ssl)
 
         filename, file_contents = get_file_name_and_contents(
             args.get('filename'),
@@ -446,19 +469,30 @@ def main():
             args.get('entry_id'),
         )
 
-        os.makedirs(content_tmp_dir.name, exist_ok=True)
-        os.chdir(content_tmp_dir.name)
+        os.chdir(content_dir_path)
+        # TODO - Delete this
+        # Example: Running `git status` using the `git` object directly.
+        demisto.debug("\nGit Status (using command):")
+        status_output = content_repo.git.status()
+        demisto.debug(status_output)
 
-        result = validate_content(filename, file_contents, content_tmp_dir.name)
+        # Example: Running `git branch --all` directly
+        demisto.debug("\nGit Branch --all (using command):")
+        branch_output = content_repo.git.branch('-a')
+        demisto.debug(f'{branch_output=}')
+
+        result = validate_content(filename, file_contents, content_dir_path)
         outputs = []
         for validation in result:
             if validation.get('ui') or validation.get('fileType') in {'py', 'ps1', 'yml'}:
                 outputs.append({
                     'Name': validation.get('name'),
                     'Error': validation.get('message'),
-                    'Line': validation.get('row'),
+                    'Line': validation.get('row'),  # TODO - Remove
+                    # TODO - 'Error Code'
                 })
         return_results(CommandResults(
+            # TODO - Use this: readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Error Code']),
             readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Line']),
             outputs_prefix='ValidationResult',
             outputs=outputs,
@@ -468,9 +502,16 @@ def main():
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
     finally:
-        content_tmp_dir.cleanup()
-        os.chdir(cwd)
+        if tmp_dir:
+            tmp_dir.cleanup()
+        # TODO - I think we can remove this: os.chdir(cwd)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+
+    from pkg_resources import get_distribution
+    try:
+        demisto.debug(f'Using demisto-sdk version {get_distribution("demisto-sdk").version}')
+    except Exception as e:
+        demisto.debug(f'Could not get version with pkg_resources.get_distribution()')
     main()
