@@ -2,3 +2,6 @@
 ignore=RM104
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:playbook-LSASS_Credential_Dumping.yml]
+ignore=GR107
