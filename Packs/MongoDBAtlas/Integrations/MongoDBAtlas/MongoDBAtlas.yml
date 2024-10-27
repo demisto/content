@@ -29,7 +29,7 @@ configuration:
   section: Connect
 - defaultvalue: 'true'
   display: Fetch Events
-  name: fetch_events
+  name: should_fetch_events
   type: 8
   section: Collect
   required: false

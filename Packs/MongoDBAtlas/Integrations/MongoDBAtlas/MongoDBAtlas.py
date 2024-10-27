@@ -10,6 +10,8 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+VENDER = 'MongoDB'
+PRODUCT = 'Atlas'
 
 ''' CLIENT CLASS '''
 
@@ -40,6 +42,7 @@ class Client(BaseClient):
             results = self._http_request(
                 method="GET",
                 url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts?pageNum={page_num}&itemsPerPage={items_per_page}",
+                # url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts"
             )
         except Exception as e:
             pass
@@ -81,11 +84,50 @@ def sort_list_by_created_field(data: list):
     """
     return sorted(data, key=lambda x: datetime.strptime(x["created"], DATE_FORMAT))
 
-def fetch_events_type(fetch_limit: int):
-    pass
-
-def fetch_alerts_type(fetch_limit: int):
-    pass
+def fetch_events_by_type(fetch_limit: int, last_run: dict, api_func):
+    current_page = last_run.get('current_page', 1)
+    fetched_events = last_run.get('fetched_events', 0)
+    last_page_events_count = last_run.get('last_page_event_count')
+    
+    current_fetched_events = 0
+    output = []
+    items_per_page = 500
+    
+    
+    #initialize if not exists:
+        #current_page = 1
+        #fetched_events = 0 - total number of fetched events at the moment
+        #last_page_events_count = 0 - the number of fetched events from the last page
+        
+    #current_fetched_events = 0
+    #output = []
+    #items_per_page = 500 #the maximum the api can get
+    
+    #while current_fetched_events < fetch_limit:
+      #response = api_func(current_page, items_per_page)
+      #events = response.get('results')
+      #total_count = response.get('totalCount')
+      
+      #sorted_list = sort_list_by_created_field(events)
+      #if fetched_events >= total_count: return output
+      
+      #start = last_page_events_count
+      #for each event in events[start:]:
+        #add the field _ENTRY_STATUS as described in the design to event
+        #append event to output
+        #current_fetched_events += 1
+        #fetched_events += 1
+        
+        #if current_fetched_events == fetch_limit:
+            #last_run_dict = {'last_page_events_count': current_fetched_events+1, 'fetched_events': fetched_events, 'current_page': current_page}
+            #return output, last_run_dict
+            
+      #current_fetched_events = 0
+      #current_page += 1
+    
+    #last_run_dict = {'last_page_events_count': current_fetched_events+1, 'fetched_events': fetched_events, 'current_page': current_page}
+    #return output, last_run_dict
+    
 
 ''' COMMAND FUNCTIONS '''
 
@@ -112,54 +154,23 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
+def fetch_events(client: Client, fetch_limit: int):
+    #run every min and return all the new events from the last run
+    last_run = demisto.getLastRun()
+    last_run_alerts = last_run.get('alerts', {})
+    last_run_events = last_run.get('events', {})
+    
+    alerts_output, last_run_alerts = fetch_events_by_type(fetch_limit, last_run_alerts, client.get_alerts)
+    events_output, last_run_events = fetch_events_by_type(fetch_limit, last_run_events, client.get_events)
+    
+    demisto.setLastRun({'alerts': last_run_alerts, 'events': last_run_events})
+    
+    return (alerts_output + events_output)
+
 def get_events(client: Client):
     #suppose to run fetch_events with some PageNum
     pass
 
-def fetch_events(client: Client, fetch_limit: int):
-    #run every min and return all the new events from the last run
-    
-    #fetch_events_type
-    #fetch_alerts_type
-    #concatenate the arrays
-    
-    #Algorithm for fetch:
-    
-    #initialize if not exists:
-        #current_page = 1
-        #fetched_events = 0 - total number of fetched events at the moment
-        #last_page_amount_of_fetched_events = 0 - the number of fetched events from the last page
-        
-    #current_fetched_events = 0
-    #output = []
-    #items_per_page = 500 #the maximum the api can get
-    
-    #while current_fetched_events < fetch_limit:
-      #response = client.get_alerts(current_page, items_per_page)
-      #events = response.get('results')
-      #total_count = response.get('totalCount')
-      
-      #sorted_list = sort_list_by_created_field(events)
-      #if fetched_events >= total_count: return output
-      
-      #start = last_page_amount_of_fetched_events
-      #for each event in events[start:]:
-        #append to output
-        #current_fetched_events += 1
-        #fetched_events += 1
-        
-        #if current_fetched_events == fetch_limit:
-            #save current_fetched_events+1 as last_page_amount_of_fetched_events
-            #save fetched_events
-            #save current_page
-            #return output
-            
-      #current_fetched_events = 0
-      #current_page += 1
-    
-    #return output
-    
-    pass
     
 ''' MAIN FUNCTION '''
 
@@ -184,6 +195,7 @@ def main() -> None:
         verify = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         fetch_limit = int(params.get('number_of_events_per_fetch', 2500))
+        should_fetch_events = argToBoolean(params.get('should_fetch_events'))
         
         client = Client (
             base_url=base_url,
@@ -199,7 +211,8 @@ def main() -> None:
         elif command == 'mongo-db-atlas-get-events':
             return_results(get_events(client, demisto.args()))
         elif command == 'fetch-events':
-            return_results(fetch_events(client,fetch_limit))
+            if should_fetch_events:
+                return_results(fetch_events(client,fetch_limit))
 
 
     except Exception as e:
