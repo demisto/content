@@ -135,7 +135,9 @@ class IOC:
         if self.APIRowAction == APIRowActionChoices.ADD:
             self._validate_add()
         elif not self.IocBlacklistId:  # For UPDATE, DELETE, and RENEW actions, IocBlacklistId must be present
-            raise DemistoException(f"IocBlacklistId must be present for APIRowAction={self.APIRowAction.value}.")
+            raise DemistoException(
+                f"IocBlacklistId must be present for APIRowAction={self.APIRowAction and self.APIRowAction.value}."
+            )
 
     def _validate_row_action(self, api_row_action: APIRowActionChoices) -> None:
         """Validate rules based on the APIRowAction."""
@@ -166,24 +168,24 @@ class IOC:
         """Validate for the UPDATE APIRowAction."""
         if not self.IocBlacklistId:
             raise DemistoException(
-                f"IocBlacklistId must be present for APIRowAction={self.APIRowAction.value}"
+                f"IocBlacklistId must be present for APIRowAction={self.APIRowAction and self.APIRowAction.value}"
                 f" ({APIRowActionChoices(self.APIRowAction)})."
             )
 
     @staticmethod
     def _convert_to_enum(value: Any, expected_type: type) -> Enum | Any:
         """Convert value to Enum if expected_type is an Enum or Optional Enum."""
+        enum_type = None
+
         # Handle Enum and None | Enum type using `__args__`
         if isinstance(expected_type, type) and issubclass(expected_type, Enum):
             enum_type = expected_type
-        elif hasattr(expected_type, '__args__'):
+        elif args := getattr(expected_type, "__args__", []):
             # Check if it's a `None | Enum` type
             enum_type = next(
-                (t for t in expected_type.__args__ if isinstance(t, type) and issubclass(t, Enum)),
+                (t for t in args if isinstance(t, type) and issubclass(t, Enum)),
                 None,
             )
-        else:
-            enum_type = None
 
         # Convert value to Enum if applicable
         if enum_type and isinstance(value, str):
