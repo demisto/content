@@ -10,7 +10,8 @@ from SymantecEndpointSecurity import (
     UnauthorizedToken,
     NextPointingNotAvailable,
     Client,
-    test_module,
+    test_module as _test_module,
+    get_events_command,
 )
 
 
@@ -243,7 +244,7 @@ def test_test_module(mocker: MockerFixture):
     mocker.patch.object(Client, "get_token")
     client = mock_client()
     mocker.patch.object(Client, "test_module")
-    assert test_module(client) == "ok"
+    assert _test_module(client) == "ok"
 
 
 @pytest.mark.parametrize(
@@ -274,4 +275,37 @@ def test_test_module_with_raises(
         Client, "test_module", side_effect=DemistoException("Test", res=MockException())
     )
     with pytest.raises(DemistoException, match=expected_msg):
-        test_module(client)
+        _test_module(client)
+
+@pytest.mark.parametrize(
+    "mock_status_code, exception_type",
+    [
+        (500, DemistoException),
+        (401, UnauthorizedToken),
+        (410, NextPointingNotAvailable),
+    ]
+)
+def test_get_events_command_with_raises(
+    mocker: MockerFixture,
+    mock_status_code: int,
+    exception_type: type[Exception],
+):
+    """
+    Given:
+        - Client and mock_integration_context
+    When:
+        - The function `get_events_command` is called
+    Then:
+        - Ensure that the function raises Exception based on the status code that returned from the API call
+    """
+
+    class MockException:
+        status_code = mock_status_code
+
+    mocker.patch.object(Client, "get_token")
+    mocker.patch.object(
+        Client, "get_events", side_effect=DemistoException("Test", res=MockException())
+    )
+
+    with pytest.raises(exception_type):
+        get_events_command(mock_client(), {"next_fetch": {"next": "test"}})

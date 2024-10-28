@@ -100,6 +100,7 @@ class Client(BaseClient):
             url_suffix=f"/v1/event-export/stream/{self.stream_id}/{self.channel_id}",
             json_data=payload,
             params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
+            resp_type="text",
             stream=True,
         )
 
