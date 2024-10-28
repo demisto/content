@@ -190,7 +190,7 @@ tasks:
       brand: ""
       id: 6c6ba839-3113-4c9e-82d2-e867a0edf23f
       iscommand: false
-      name: Map SNOW to Defender
+      name: Do something playbook branch
       type: title
       version: -1
     taskid: 6c6ba839-3113-4c9e-82d2-e867a0edf23f
