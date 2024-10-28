@@ -63,12 +63,13 @@ class Client(BaseClient):
         get_token_headers: dict[str, str] = {
             "accept": "application/json",
             "content-type": "application/x-www-form-urlencoded",
-            "Authorization": f"Bearer {self.token}",
+            "Authorization": f"Basic {self.token}",
         }
         res = self._http_request(
             "POST",
             url_suffix="/v1/oauth2/tokens",
             headers=get_token_headers,
+            data={},
         )
         try:
             self.headers = {
@@ -88,6 +89,7 @@ class Client(BaseClient):
             url_suffix=f"/v1/event-export/stream/{self.stream_id}/{self.channel_id}",
             headers=self.headers,
             params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
+            json_data={},
             stream=True,
         )
 
