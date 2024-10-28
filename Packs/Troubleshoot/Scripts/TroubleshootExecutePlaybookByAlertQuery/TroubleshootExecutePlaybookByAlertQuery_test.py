@@ -1,5 +1,5 @@
 import pytest
-from CommonServerPython import *
+import CommonServerPython
 import demistomock as demisto
 from TroubleshootExecutePlaybookByAlertQuery import *
 
@@ -107,6 +107,20 @@ def test_get_playbook_id_id_not_found():
         get_playbook_id(playbook_id="999", playbook_name="", playbooks_dict=PLAYBOOKS_DICT)
     assert "Playbook '999' wasn't found. Please check the name and try again." in str(e)
 
+
+def test_handle_results_insufficient_permissions(mocker):
+    mock_return_error = mocker.patch('TroubleshootExecutePlaybookByAlertQuery.return_error')
+    command_results = [{'Contents': "The request requires the right permissions"}]
+    playbook_id = "test_playbook_id"
+    alert_ids = ["alert1", "alert2"]
+
+    # WHEN: Calling handle_results with insufficient permissions
+    handle_results(command_results, playbook_id, alert_ids, results_summary=RESULTS_SUMMARY({}))
+
+    # THEN: return_error is called with the expected message
+    mock_return_error.assert_called_once_with(
+        "Request Failed: Insufficient permissions. Ensure the API key has the appropriate access rights."
+    )
 
 def test_handle_results_no_response():
     """
