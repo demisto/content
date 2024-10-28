@@ -40,10 +40,12 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearch_dsl.query import QueryString
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
     from elasticsearch import Elasticsearch
+    from elasticsearch.helpers import scan
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else: # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
+    from elasticsearch7.helpers import scan
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -190,7 +192,7 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     now = datetime.now()
     if FEED_TYPE_GENERIC in feed_type:  # Generic Feed
         search = get_scan_generic_format(client, now)
-        ioc_lst = get_generic_indicators(search, src_val, src_type, default_type, client.tags, client.tlp_color,
+        ioc_lst = get_generic_indicators(client, search, src_val, src_type, default_type, client.tags, client.tlp_color,
                                          client.enrichment_excluded)
         hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
     else:  # Demisto Feed types
@@ -204,11 +206,11 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     return_outputs(hr, {}, ioc_lst)
 
 
-def get_generic_indicators(search, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded):
+def get_generic_indicators(client, search, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded):
     """Implements get indicators in generic format"""
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     ioc_lst: list = []
-    for hit in search.scan():
+    for hit in scan(client, query=search.to_dict(), index=search._index, **search._params):
         hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded)
         ioc_lst.extend(hit_lst)
         if len(ioc_lst) >= limit:
