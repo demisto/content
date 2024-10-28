@@ -23,7 +23,7 @@ def load_json_file(file_name: str) -> list[dict[str, Any]] | dict[str, Any]:
     """
     file_path = os.path.join(TEST_DATA, file_name)
 
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path) as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -1370,7 +1370,7 @@ def test_preview_quarantine_email_command(
 
 
 @pytest.mark.parametrize(
-    ("command," "args," "endpoint_suffix," "readable_output_title,"),
+    "command,args,endpoint_suffix,readable_output_title",
     [
         (
             SymantecEmailSecurity.release_quarantine_email_command,

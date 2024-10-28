@@ -178,7 +178,10 @@ class IOC:
             enum_type = expected_type
         elif hasattr(expected_type, '__args__'):
             # Check if it's a `None | Enum` type
-            enum_type = next((t for t in expected_type.__args__ if isinstance(t, type) and issubclass(t, Enum)), None)
+            enum_type = next(
+                (t for t in expected_type.__args__ if isinstance(t, type) and issubclass(t, Enum)),
+                None,
+            )
         else:
             enum_type = None
 
@@ -1393,7 +1396,7 @@ def release_quarantine_email_command(client: QuarantineClient, args: dict[str, A
         CommandResults: Outputs of the command that represent an entry in the warroom.
     """
     client.release_quarantine_email(
-        mail_list=argToList((args["message_ids"])),
+        mail_list=argToList(args["message_ids"]),
         recipient=args.get("recipient"),
         headers=argToList(args.get("headers")),
         encrypt=arg_to_optional_bool(args.get("encrypt")),
@@ -1414,7 +1417,7 @@ def delete_quarantine_email_command(client: QuarantineClient, args: dict[str, An
     Returns:
         CommandResults: Outputs of the command that represent an entry in the warroom.
     """
-    client.delete_quarantine_email(argToList((args["message_ids"])))
+    client.delete_quarantine_email(argToList(args["message_ids"]))
     return CommandResults(readable_output="## Successfully deleted all messages.")
 
 
