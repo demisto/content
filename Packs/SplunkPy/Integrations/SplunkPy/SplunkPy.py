@@ -2611,6 +2611,13 @@ def splunk_submit_event_command(service: client.Service, args: dict):
         r = index.submit(data_formatted, sourcetype=args['sourcetype'], host=args['host'])
         return_results(f'Event was created in Splunk index: {r.name}')
 
+def validate_indexes(indexes, service):
+    real_indexes = service.indexes
+    real_indexes_names_set = set()
+    for real_index in real_indexes:
+        real_indexes_names_set.add(real_index.name)
+    indexes_set = set(indexes)
+    return indexes_set.issubset(real_indexes_names_set)
 
 def splunk_submit_event_hec(
     hec_token: str | None,
@@ -2622,27 +2629,42 @@ def splunk_submit_event_hec(
     source_type: str | None,
     source: str | None,
     time_: str | None,
-    request_channel: str | None
+    request_channel: str | None,
+    batched_events: str | None,
+    entry_id: int | None,
+    service
 ):
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
-    parsed_fields = None
-    if fields:
-        try:
-            parsed_fields = json.loads(fields)
-        except Exception:
-            parsed_fields = {'fields': fields}
+    if entry_id:
+        # events = get_events_from_file(entry_id)
+        
+    elif batched_events:
+        events = batched_events
+            
+    else:
+        parsed_fields = None
+        if fields:
+            try:
+                parsed_fields = json.loads(fields)
+            except Exception:
+                parsed_fields = {'fields': fields}
 
-    args = assign_params(
-        event=event,
-        host=host,
-        fields=parsed_fields,
-        index=index,
-        sourcetype=source_type,
-        source=source,
-        time=time_
-    )
+        events = assign_params(
+            event=event,
+            host=host,
+            fields=parsed_fields,
+            index=index,
+            sourcetype=source_type,
+            source=source,
+            time=time_
+        )
+        
+    # indexes = read from events
+
+    if not validate_indexes(indexes, service):
+        raise DemistoException('Index name does not exist in your splunk instance')
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
@@ -2653,13 +2675,13 @@ def splunk_submit_event_hec(
 
     return requests.post(
         f'{baseurl}/services/collector/event',
-        data=json.dumps(args),
+        data=json.dumps(events),
         headers=headers,
         verify=VERIFY_CERTIFICATE,
     )
 
 
-def splunk_submit_event_hec_command(params: dict, args: dict):
+def splunk_submit_event_hec_command(params: dict, service, args: dict):
     hec_token = params.get('cred_hec_token', {}).get('password') or params.get('hec_token')
     baseurl = params.get('hec_url')
     if baseurl is None:
@@ -2673,9 +2695,11 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     source = args.get('source')
     time_ = args.get('time')
     request_channel = args.get('request_channel')
+    batched_events = args.get('batched_events')
+    entry_id = arg_to_number(args.get('entry_id'))
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
-                                            request_channel)
+                                            request_channel, batched_events, entry_id, service)
 
     if 'Success' not in response_info.text:
         return_error(f"Could not send event to Splunk {response_info.text}")
@@ -3148,7 +3172,7 @@ def main():  # pragma: no cover
         token = get_auth_session_key(service)
         splunk_edit_notable_event_command(base_url, token, auth_token, args)
     elif command == 'splunk-submit-event-hec':
-        splunk_submit_event_hec_command(params, args)
+        splunk_submit_event_hec_command(params, service, args)
     elif command == 'splunk-job-status':
         return_results(splunk_job_status(service, args))
     elif command.startswith('splunk-kv-') and service is not None:
