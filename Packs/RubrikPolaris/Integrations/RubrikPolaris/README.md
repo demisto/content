@@ -696,8 +696,8 @@ Request for the analysis and retrieve the download link for the Radar CSV analyz
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster_id | The unique ID of the cluster.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
-| snapshot_id | The snapshot ID.<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command. | Required | 
-| object_id | The VM object ID.<br/><br/>Note: Users can retrieve the list of object IDs by executing the "rubrik-polaris-vm-objects-list" command. | Required | 
+| snapshot_id | The CDM snapshot ID.<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command.<br/>Use the "rubrik-radar-suspicious-file-list" command to retrieve the actual CDM ID from the Anomaly ID.<br/>Example format to get the snapshot CDM ID from Anomaly ID: "&lt;Cluster-ID&gt;:::VirtualMachine:::&lt;Snappable-ID&gt;:::&lt;CDM-ID&gt;". | Required | 
+| object_id | The VM object ID (Snappable ID).<br/><br/>Note: Users can retrieve the list of Snappable IDs by executing the "rubrik-polaris-vm-objects-list" command.<br/>Example format to get the Snappable ID: "VirtualMachine:::&lt;Snappable-ID&gt;". | Required | 
 
 
 #### Context Output
@@ -1862,7 +1862,7 @@ Retrieve the user access information.
 >### User Access (Showing Records 1-1 out of 1)
 >|User ID|User Full Name|User Principal Name|Risk Level|Total Sensitive Objects|Total Sensitive Files|Total Sensitive Hits|
 >|---|---|---|---|---|---|---|
->| S-1-0-01-0000000000-0000000000-000000000-0001 | Demo Rubrik | demo@rubrik\.com | HIGH_RISK | 1 | 124 | 86972 |
+>| [S-1-0-01-0000000000-0000000000-000000000-0001](https://rubrik-test.my.rubrik.com/sonar/user_intelligence?redirected_user_id=S-1-0-01-0000000000-0000000000-000000000-0001) | Demo Rubrik | demo@rubrik\.com | HIGH_RISK | 1 | 124 | 86972 |
 >
 >Note: To retrieve the next set of results, use **next_page_token** = "cursor_2".<br/>
 >If **next_page_token** is provided, then it will reset the record numbers. For the initial use of **next_page_token**, please avoid specifying the **page_number**.
@@ -2265,7 +2265,7 @@ Retrieve the user access information based on the provided user ID.
 >### User Access
 >|User ID|User Full Name|User Principal Name|Risk Level|Access Risk Reason(s)|Insecure Reason(s)|Groups|Total Sensitive Objects|Total Sensitive Files|Total Sensitive Hits|
 >|---|---|---|---|---|---|---|---|---|---|
->| S-1-0-01-0000000000-0000000000-000000000-0001 | DemoRubrik | demo@rubrik\.com | HIGH_RISK | MEDIUM_RISK_ANALYZER_HITS, OPEN_ACCESS | PASSWORD_NEVER_EXPIRES | Domain Admins, Domain Users | 2 | 250 | 173954 |
+>| [S-1-0-01-0000000000-0000000000-000000000-0001](https://rubrik-test.my.rubrik.com/sonar/user_intelligence?redirected_user_id=S-1-0-01-0000000000-0000000000-000000000-0001) | DemoRubrik | demo@rubrik\.com | HIGH_RISK | MEDIUM_RISK_ANALYZER_HITS, OPEN_ACCESS | PASSWORD_NEVER_EXPIRES | Domain Admins, Domain Users | 2 | 250 | 173954 |
 >
 >
 >### Sensitive Hits

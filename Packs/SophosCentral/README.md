@@ -1,3 +1,3 @@
 # content-sophos-central
 
-Note: Support for this pack moved to the partner on September, 9, 2021. Please contact the partner directly via the support link on the right.
+Sophos Central is a cloud-based management platform for Sophos' cybersecurity solutions, designed to provide centralized control and real-time visibility over various security products. Organizations use it to manage a wide range of security services, including endpoint, mobile, email, web, and firewall protection, all from a single interface.

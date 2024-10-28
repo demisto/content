@@ -1581,11 +1581,14 @@ def test_get_remote_incident_data(mocker):
         Verify the function returns the expected mirrored data and updated object
     """
     client = mock_client()
-    mock_response = {'name': 'id-incident-1', 'properties': {'title': 'title-incident-1'}}
+    mock_response = {'name': 'id-incident-1', 'properties': {'title': 'title-incident-1', 'additionalData': {'alertsCount': 0}}}
     mocker.patch.object(client, 'http_request', return_value=mock_response)
 
     result = get_remote_incident_data(client, 'id-incident-1')
-    assert result == (mock_response, {'ID': 'id-incident-1', 'Title': 'title-incident-1'})
+    assert result == (
+        mock_response,
+        {'ID': 'id-incident-1', 'Title': 'title-incident-1', 'AlertsCount': 0, 'tags': [], 'relatedAnalyticRuleIds': []}
+    )
 
 
 @pytest.mark.parametrize("incident, expected_contents", [
@@ -1730,6 +1733,22 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
         {'title': 'Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
         {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
+    ),
+    (  # Update labels of active incident when no labels exist.
+        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 1, 'tags': []},
+        {'title': 'Title', 'tags': ['Test']},
+        {'title': 'Title', 'description': 'desc', 'severity': 'Medium', 'status': 'Active'},
+        {'title': 'Title', 'severity': 'Medium', 'status': 'Active', 'labels': [{'labelName': 'Test', 'type': 'User'}]},
+        False
+    ),
+    (   # Update labels of active incident when a label already exist.
+        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 1, 'tags': ['Test']},
+        {'title': 'Title', 'tags': ['Test2']},
+        {'title': 'Title', 'description': 'desc', 'severity': 'Medium', 'status': 'Active',
+         'properties': {'labels': [{'labelName': 'Test', 'type': 'User'}]}},
+        {'title': 'Title', 'severity': 'Medium', 'status': 'Active',
+         'labels': [{'labelName': 'Test', 'type': 'User'}, {'labelName': 'Test2', 'type': 'User'}]},
+        False
     )
 ])
 def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, close_ticket):

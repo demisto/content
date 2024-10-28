@@ -8,12 +8,12 @@ subtype: python3
 tags:
 - phishing
 - ml
-comment: Tokenize the words in a input text.
+comment: Deprecated. Use DBotPreProcessTextData instead.
 enabled: true
 args:
 - name: value
   required: true
-  description: The text value
+  description: The text value.
   isArray: true
 - name: type
   auto: PREDEFINED
@@ -37,17 +37,18 @@ args:
   description: Remove line breaks?
   defaultValue: "yes"
 - name: encoding
-  description: Text encoding
+  description: Text encoding.
   defaultValue: utf-8
 - name: hashWordWithSeed
   description: If non-empty hash the words with this seed.
 outputs:
 - contextPath: WordTokenizeOutput
-  description: 'Output text '
+  description: 'Output text.'
   type: string
 scripttarget: 0
 runonce: true
 dockerimage: demisto/nltk:2.0.0.86396
 fromversion: 5.0.0
 tests:
-- No tests
+- No tests (deprecated)
+deprecated: true

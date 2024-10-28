@@ -118,6 +118,22 @@
                         "transformers": []
                     },
                     "simple": ""
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "description",
+                        "filters": [],
+                        "root": "detection",
+                        "transformers": []
+                    }
+                },
+                "Detection URL": {
+                    "complex": {
+                        "accessor": "urlBackToProduct",
+                        "filters": [],
+                        "root": "detection",
+                        "transformers": []
+                    }
                 }
             }
         },

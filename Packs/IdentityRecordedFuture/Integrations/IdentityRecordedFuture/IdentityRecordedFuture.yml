@@ -4,7 +4,8 @@ commonfields:
 name: Recorded Future Identity
 display: Recorded Future Identity
 category: Data Enrichment & Threat Intelligence
-description: Recorded Future Identity Integration that provides access to Recorded Future Identity module data.
+defaultmapperin: Recorded Future Identity - Incoming Mapper
+description: Fetch & triage | Search & Lookup | Access Recorded Future Identity data and Playbook Alerts.
 configuration:
 - display: Server URL (e.g., https://api.recordedfuture.com/gw/xsoar-identity)
   name: server_url
@@ -30,6 +31,46 @@ configuration:
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: Recorded Future Identity Exposure
+  type: 13
+  required: false
+- display: 'First Incident Fetch: Time Range'
+  name: first_fetch
+  defaultvalue: "24 hours"
+  type: 0
+  required: false
+  additionalinfo: 'Limit incidents to include in the first fetch by time range. Input format: "NN hours" or "NN days". E.g., input "5 days" to fetch all incidents created in the last 5 days.'
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: "50"
+- display: 'Playbook Alerts: Fetched Statuses'
+  name: pa_statuses
+  type: 16
+  defaultvalue: New
+  options:
+  - New
+  - In Progress
+  - Dismissed
+  - Resolved
+  required: false
+- display: 'Playbook Alerts: Fetched Priorities Threshold'
+  name: pa_priorities
+  type: 15
+  additionalinfo: 'Returns alerts with this selected priority or higher. High > Moderate > Informational'
+  defaultvalue: Moderate
+  options:
+  - High
+  - Moderate
+  - Informational
   required: false
 - display: Password properties
   name: password_properties
@@ -62,14 +103,20 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.111039
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset.
     arguments:
-    - name: latest-downloaded
+    - name: first-downloaded
       defaultValue: "All time"
-      description: Time period for last downloaded time (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+      description: Time period for "first_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+    - name: latest-downloaded
+      description: Time period for "last_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+      defaultValue: "All time"
+    - name: exfiltration-date
+      description: Time period for "exfiltration_date_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+      defaultValue: "All time"
     - name: domains
       description: Domains list separated by comma (e.g. norsegods.online, norsegods.online ). If not specified, domains from app instance will be used.
     - name: domain-type
@@ -85,7 +132,7 @@ script:
       description: Recorded Future identity email values.
       type: string
   - name: recordedfuture-password-lookup
-    description: Lookup for password in Recorded Future Dataset
+    description: Lookup for password in Recorded Future Dataset.
     arguments:
     - name: password-hash
       description: Password hash value.
@@ -109,7 +156,7 @@ script:
       description: Recorded Future password exposure status.
       type: string
   - name: recordedfuture-identity-lookup
-    description: Lookup for identities in Recorded Future Identity Dataset
+    description: Lookup for identities in Recorded Future Identity Dataset.
     arguments:
     - name: identities
       required: true
@@ -118,7 +165,13 @@ script:
       description: Domains list separated by comma (e.g. norsegods.online, norsegods.online).
     - name: first-downloaded
       defaultValue: "All time"
-      description: Time period for first downloaded time (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+      description: Time period for "first_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+    - name: latest-downloaded
+      defaultValue: "All time"
+      description: Time period for "last_downloaded_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
+    - name: exfiltration-date
+      defaultValue: "All time"
+      description: Time period for "exfiltration_date_gte" filter (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
     outputs:
     - contextPath: RecordedFuture.Credentials.Identities.identity.subjects
       description: Identity value.
@@ -186,7 +239,546 @@ script:
     - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.rank
       description: Rank for the exposed password.
       type: String
-  runonce: false
+  - name: recordedfuture-identity-playbook-alerts-search
+    description: Search playbook alerts based on filters.
+    arguments:
+    - name: limit
+      description: The maximum number of alerts to fetch.
+      defaultValue: 50
+    - name: time_since_update
+      description: The amount of time since the last update. E.g., "2 hours" or "7 days" ago.
+      defaultValue: "24 hours"
+    - name: playbook_alert_status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in-progress
+      - dismissed
+      - resolved
+      description: The statuses to retrieve. Defaults to only new status if not specified.
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - high
+      - moderate
+      - informational
+      description: Actions priority assigned in Recorded Future.
+    - name: order_search_by
+      auto: PREDEFINED
+      predefined:
+      - updated
+      - created
+      description: The order by which to search for playbook alerts.
+    outputs:
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.playbook_alert_id
+      description: Unique id of the playbook alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.category
+      description: Playbook alert category.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.priority
+      description: Recommended Priority of the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.status
+      description: Current alert status in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.title
+      description: Title of the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.updated
+      description: Date of last update.
+      type: date
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.created
+      description: Date of creation.
+      type: date
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.organization_id
+      description: Organization uhash.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.organization_name
+      description: Plaintext Organization name.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.assignee_id
+      description: uhash of the assigned user.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.assignee_name
+      description: name of the assigned user.
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.owner_id
+      description: uhash of the enterprise that owns the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.owner_name
+      description: Name of the enterprise that owns the alert.
+      type: String
+  - name: recordedfuture-identity-playbook-alerts-details
+    description: Get Playbook alert details by id.
+    arguments:
+    - name: alert_ids
+      required: true
+      description: Ids of the playbook alert that should be fetched. You can get alert_ids using 'recordedfuture-identity-playbook-alerts-search' command.
+    - name: detail_sections
+      description: What evidence sections to include in the fetch, fetches all available if not specified.
+      auto: PREDEFINED
+      predefined:
+      - status
+      - summary
+      - log
+    outputs:
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.playbook_alert_id
+      description: Unique id of the playbook alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.category
+      description: Playbook alert category.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.priority
+      description: Recommended Priority of the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.status
+      description: Current alert status in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.title
+      description: Title of the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.updated
+      description: Date of last update.
+      type: date
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.created
+      description: Date of creation.
+      type: date
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.organization_id
+      description: Organization uhash.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.organization_name
+      description: Plaintext Organization name.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.assignee_id
+      description: uhash of the assigned user.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.assignee_name
+      description: name of the assigned user.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.owner_id
+      description: uhash of the enterprise that owns the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.owner_name
+      description: Name of the enterprise that owns the alert.
+      type: String
+        # Panelstatus entries
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.playbook_alert_id
+      description: Unique id of the playbook alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.category
+      description: Playbook alert category.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.priority
+      description: Recommended Priority of the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.status
+      description: Current alert status in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.title
+      description: Title of the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.updated
+      description: Date of last update.
+      type: date
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.created
+      description: Date of creation.
+      type: date
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.organization_id
+      description: Organization uhash.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.organization_name
+      description: Plaintext Organization name.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.assignee_id
+      description: uhash of the assigned user.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.assignee_name
+      description: name of the assigned user.
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.owner_id
+      description: uhash of the enterprise that owns the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.owner_name
+      description: Name of the enterprise that owns the alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.case_rule_id
+      description: Id of the playbook alert category.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.case_rule_label
+      description: Name of the playbook alert category.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.context_list.context
+      description: Context of entity connected to the Playbook alert.
+      type: Array
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.created
+      description: Date marking the creation of the Playbook alert in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.entity_criticality
+      description: Criticality of the Playbook alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.entity_id
+      description: Id of the entity in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.entity_name
+      description: Name of the entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.risk_score
+      description: Risk score of the entity in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.targets
+      description: List of targets of the Playbook alert.
+      type: Array
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_status.lifecycle_stage
+      description: Indicates what lifecycle the vulerability is in.
+      type: String
+        # Summary panel fields
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.explanation
+      description: Entails the explanation to the triggering of the Playbook alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.resolved_record_list.context_list.context
+      description: Context of entity connected to the Playbook alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.resolved_record_list.criticality
+      description: Level of criticality.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.resolved_record_list.entity
+      description: ID of the entitiy in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.resolved_record_list.record_type
+      description: Type of record A, CNAME or MX.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.resolved_record_list.risk_score
+      description: Risk score of the entity in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.screenshots.description
+      description: Description of the image.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.screenshots.image_id
+      description: ID of the screenshot in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.screenshots.tag
+      description: Image Analisys tag.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.screenshots.created
+      description: When the image was created.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.screenshots.base64
+      description: The image binary encoded as a base64 string.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.summary.targets.name
+      description: Target affected by the vulnerability.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.summary.lifecycle_stage
+      description: The current lifecycle stage of the Playbook Alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.summary.riskrules.rule
+      description: Name of the rule that triggered.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.summary.riskrules.description
+      description: Short description of the trigger (E.g 13 sightings on 1 source..)
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.affected_products.name
+      description: Name of of affected product.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.insikt_notes.id
+      description: The id of the Insikt note.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.insikt_notes.title
+      description: The title of the Insikt note.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.insikt_notes.topic
+      description: The topic of the Insikt note.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.insikt_notes.published
+      description: The time at which the Insikt note was published.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_summary.insikt_notes.fragment
+      description: A fragment of the Insikt note text.
+      type: String
+        # Log panel contexts
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.id
+      description: Log id in Recorded Future.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.actor_id
+      description: Id of the actor.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.created
+      description: When was the log created.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.modified
+      description: When was the log last modified.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.action_priority
+      description: The priority of the Playbook alert.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.message
+      description: Log message.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.assigne_change.old
+      description: Previous assignee.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.assigne_change.new
+      description: New assignee.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.assigne_change.type
+      description: Type of change.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.status_change.old
+      description: Previous status.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.status_change.new
+      description: New status.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.status_change.type
+      description: Type of change.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.title_change.old
+      description: Previous title.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.title_change.new
+      description: New title.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.title_change.type
+      description: Type of change.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.priority_change.old
+      description: Previous priority.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.priority_change.new
+      description: New priority.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.priority_change.type
+      description: Type of change.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.reopen_strategy_change.old
+      description: Previous reopen strategy.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.reopen_strategy_change.new
+      description: New reopen strategy.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.reopen_strategy_change.type
+      description: Type of change.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.entities_change.removed
+      description: Removed entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.entities_change.added
+      description: Added entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.entities_change.type
+      description: Type of change.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.related_entities_change.removed
+      description: Removed related entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.related_entities_change.added
+      description: Added related entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.related_entities_changetype
+      description: Type of change.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.description_change.old
+      description: Previous description.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.description_change.new
+      description: New description.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.description_change.type
+      description: Type of change.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.external_id_change.old
+      description: Previous external ID.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.external_id_change.new
+      description: New external ID.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_log.changes.external_id_change.type
+      description: Type of change.
+      type: String
+        # Action panel contexts
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_action.action
+      description: The name of the action.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_action.updated
+      description: When was the action last updated.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_action.assignee_name
+      description: Full name of the assignee.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_action.assignee_id
+      description: ID of the assignee.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_action.status
+      description: The status of the action.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_action.description
+      description: A short description of the action.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_action.link
+      description: A link associated with the action.
+      type: String
+        # Panel DNS
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ip_list.record
+      description: The DNS record.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ip_list.risk_score
+      description: Risk score associated with the record.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ip_list.criticality
+      description: The level of criticality.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ip_list.record_type
+      description: Type of record A, CNAME or MX.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ip_list.context_list.context
+      description: Labels of malicious behavior types that can be associated with an entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.mx_list.record
+      description: The DNS record.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.mx_list.risk_score
+      description: Risk score associated with the record.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.mx_list.criticality
+      description: The level of criticality.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.mx_list.record_type
+      description: Type of record A, CNAME or MX.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.mx_list.context_list.context
+      description: Labels of malicious behavior types that can be associated with an entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ns_list.record
+      description: The DNS record.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ns_list.risk_score
+      description: Risk score associated with the record.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ns_list.criticality
+      description: The level of criticality.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ns_list.record_type
+      description: Type of record A, CNAME or MX.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_dns.ns_list.context_list.context
+      description: Labels of malicious behavior types that can be associated with an entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.added
+      description: When the whois information was added.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.attribute
+      description: Attribute, either whois or whoisContancts.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.entity
+      description: Id of whois entity.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.provider
+      description: Name of provider.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.createdDate
+      description: When was it created.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.nameServers
+      description: List of name server IDs.
+      type: Array
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.privateRegistration
+      description: Boolean indicating private registration.
+      type: Bool
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.registrarName
+      description: Name of the registrar.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.status
+      description: Status of registrar.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.city
+      description: Contact located in this city.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.country
+      description: Contact located in this city.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.name
+      description: Name of contact.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.organization
+      description: Name of contact organization.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.postalCode
+      description: Postal code of contact organization.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.state
+      description: Contact located in state.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.street1
+      description: Street name of contact.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.telephone
+      description: Phone number of contact.
+      type: String
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.panel_whois.body.value.type
+      description: Type of contact.
+      type: String
+  - name: recordedfuture-identity-playbook-alerts-update
+    description: Update the status of one or multiple Playbook alerts.
+    arguments:
+    - name: alert_ids
+      required: true
+      description: Ids of the playbook alerts that will be updated. You can get alert_ids using 'recordedfuture-identity-playbook-alerts-search' command.
+    - name: new_status
+      description: New status to set for all alerts in alert_ids.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in-progress
+      - dismissed
+      - resolved
+    - name: comment
+      description: Add comment to all alerts in alert_ids.
+      required: false
+    - name: add_actions_taken
+      description: Add 'actions taken' to all alerts in alert_ids. Can only be used with new_status=resolved or new_status=dismissed. You can specify multiple values by providing a quoted string with values separated by comma.
+      required: false
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - enforced_password_reset
+      - placed_in_risky_group
+      - reviewed_incident_report
+      - account_disabled_or_terminated
+      - account_remediated
+      - other
+    - name: remove_actions_taken
+      description: Remove 'actions taken' from all alerts in alert_ids. You can specify multiple values by providing a quoted string with values separated by comma.
+      required: false
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - enforced_password_reset
+      - placed_in_risky_group
+      - reviewed_incident_report
+      - account_disabled_or_terminated
+      - account_remediated
+      - other
+    - name: reopen
+      description: 'Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used with new_status=resolved.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - never
+        - significant_updates
+    outputs:
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.playbook_alert_id
+      description: Unique id of the playbook alert in Recorded Future.
+      type: string
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.current_status
+      description: Current status of playbook alert in Recorded Future.
+      type: string
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.title
+      description: Title of the playbook alert in Recorded Future.
+      type: string
+    - contextPath: IdentityRecordedFuture.PlaybookAlerts.status_message
+      description: Message describing the outcome of the update.
+      type: string
+  isfetch: true
 tests:
 - No tests
 fromversion: 6.0.0

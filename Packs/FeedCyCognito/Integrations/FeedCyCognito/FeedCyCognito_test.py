@@ -1,6 +1,5 @@
 """Test file for FeedCyCognito Integration."""
 
-import io
 import json
 import os
 import time
@@ -20,7 +19,7 @@ CURRENT_TIME = time.time()
 
 def util_load_json(path):
     """Load a json file to python dictionary."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -97,7 +96,7 @@ def test_prepare_filters_for_get_indicators(expected, args, mocker):
     (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('hosting_type', AVAILABLE_HOSTING_TYPES),
      {'hosting_type': 'test', 'asset_type': 'ip'}),
     (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade',
-                                                 list(map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))),
+                                                 [x.upper() for x in AVAILABLE_SECURITY_GRADE]),
      {'security_grade': 'a,e', 'asset_type': 'ip'}),
     (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('status', AVAILABLE_STATUS_TYPES),
      {'status': 'test', 'asset_type': 'ip'})
@@ -203,7 +202,7 @@ def test_test_module(requests_mock, mocked_client):
     (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('hosting_type', AVAILABLE_HOSTING_TYPES),
      {'hosting_type': 'test', 'asset_type': 'ip', 'feed': False}),
     (ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade',
-     list(map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))),
+     [x.upper() for x in AVAILABLE_SECURITY_GRADE]),
      {'security_grade': 'a,e', 'asset_type': 'ip', 'feed': False}),
     (ERRORS['INVALID_COUNTRY_ERROR'].format('invalid_country_name'),
      {'locations': ['invalid_country_name'], 'asset_type': 'ip', 'feed': False})

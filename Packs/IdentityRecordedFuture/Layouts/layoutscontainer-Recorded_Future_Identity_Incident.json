@@ -637,6 +637,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": "",
+    "description": "Deprecated. Use Recorded Future Playbook Alert Identity Exposure instead.",
     "marketplaces": ["xsoar"]
 }

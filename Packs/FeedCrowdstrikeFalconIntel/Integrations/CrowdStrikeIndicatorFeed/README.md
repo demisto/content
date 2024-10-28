@@ -16,7 +16,7 @@ CrowdStrike Falcon Intel Indicator Feed
     | Max. indicators per fetch | Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout. | False |
     | Malicious confidence | Malicious confidence level to filter by. | False |
     | Include deleted indicators |  | False |
-    | Filter | Advanced: FQL query. For more information visit the CrowdStrike documentation. | False |
+    | Filter | Advanced: FQL query. For more information visit the CrowdStrike documentation. For example: published_date:>"now-3d" can be used to only pull indicators published in the last 3 days. | False |
     | Generic phrase match | Generic phrase match search across all indicator fields. | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |

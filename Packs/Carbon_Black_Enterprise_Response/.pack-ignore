@@ -17,7 +17,7 @@ ignore=IN126
 ignore=RM102,RM104
 
 [file:CBLiveGetFile_V2.yml]
-ignore=BA108,BA109,BA124
+ignore=BA108,BA109,BA124,GR107
 
 [known_words]
 cb
@@ -26,5 +26,24 @@ PREPREPRE
 POSTPOSTPOST
 
 [file:CBFindIP.yml]
-ignore=BA124
+ignore=BA124,GR107
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-carbonblackEDR_alerts.json]
+ignore=GR103
+
+[file:CBEvents.yml]
+ignore=GR103
+
+[file:playbook-Carbon_Black_Response_-_Unisolate_Endpoint.yml]
+ignore=GR107
+
+[file:CBSensors.yml]
+ignore=GR107
+
+[file:playbook-Search_Endpoints_By_Hash_-_Carbon_Black_Response_V2.yml]
+ignore=GR107
+
+[file:CBAlerts.yml]
+ignore=GR107
 

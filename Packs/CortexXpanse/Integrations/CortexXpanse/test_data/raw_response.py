@@ -130,6 +130,21 @@ EXTERNAL_SERVICE_RESPONSE = {
                     "Acme"
                 ],
                 "externally_inferred_vulnerability_score": 7.8,
+                "ipv6s": [
+                    "2600:1900:4000:9664:0:7::"
+                ],
+                "aws_cloud_tags": [
+                    "Name:AD Lab"
+                ],
+                "gcp_cloud_tags": [
+                    "Name:gcp Lab"
+                ],
+                "azure_cloud_tags": [
+                    "Name:azure Lab"
+                ],
+                "mac_address": ["00:11:22:33:44:55"],
+                "has_xdr_agent": "NO",
+                "has_bu_overrides": False,
                 "externally_inferred_cves": [
                     "CVE-2020-15778",
                     "CVE-2021-41617",
@@ -833,7 +848,7 @@ INTERNET_EXPOSURE_PRE_FORMAT = [
 LIST_ALERTS_RESPONSE = {
     "reply": {
         "total_count": 696,
-        "result_count": 2,
+        "result_count": 3,
         "alerts": [
             {
                 "external_id": "FAKE-GUID",
@@ -1144,6 +1159,161 @@ LIST_ALERTS_RESPONSE = {
                 "action": "NOT_AVAILABLE",
                 "action_pretty": "N/A",
                 "tags": null
+            },
+            {
+                "external_id": "FAKE-GUID-3",
+                "severity": "high",
+                "matching_status": "MATCHED",
+                "end_match_attempt_ts": null,
+                "local_insert_ts": 1659455246813,
+                "last_modified_ts": 1660240426055,
+                "bioc_indicator": null,
+                "matching_service_rule_id": null,
+                "attempt_counter": null,
+                "bioc_category_enum_key": null,
+                "is_whitelisted": false,
+                "starred": false,
+                "deduplicate_tokens": null,
+                "filter_rule_id": null,
+                "mitre_technique_id_and_name": null,
+                "mitre_tactic_id_and_name": null,
+                "agent_version": null,
+                "agent_ip_addresses_v6": null,
+                "agent_device_domain": null,
+                "agent_fqdn": null,
+                "agent_os_type": "NO_HOST",
+                "agent_os_sub_type": null,
+                "agent_data_collection_status": null,
+                "mac": null,
+                "is_pcap": false,
+                "alert_type": "Unclassified",
+                "resolution_status": "STATUS_230_REOPENED",
+                "resolution_comment": "ASM alert reopened",
+                "dynamic_fields": null,
+                "events": [
+                    {
+                        "agent_install_type": "NA",
+                        "agent_host_boot_time": null,
+                        "event_sub_type": null,
+                        "module_id": null,
+                        "association_strength": null,
+                        "dst_association_strength": null,
+                        "story_id": null,
+                        "event_id": null,
+                        "event_type": null,
+                        "event_timestamp": 1659452809020,
+                        "actor_process_instance_id": null,
+                        "actor_process_image_path": null,
+                        "actor_process_image_name": null,
+                        "actor_process_command_line": null,
+                        "actor_process_signature_status": "N/A",
+                        "actor_process_signature_vendor": null,
+                        "actor_process_image_sha256": null,
+                        "actor_process_image_md5": null,
+                        "actor_process_causality_id": null,
+                        "actor_causality_id": null,
+                        "actor_process_os_pid": null,
+                        "actor_thread_thread_id": null,
+                        "causality_actor_process_image_name": null,
+                        "causality_actor_process_command_line": null,
+                        "causality_actor_process_image_path": null,
+                        "causality_actor_process_signature_vendor": null,
+                        "causality_actor_process_signature_status": "N/A",
+                        "causality_actor_causality_id": null,
+                        "causality_actor_process_execution_time": null,
+                        "causality_actor_process_image_md5": null,
+                        "causality_actor_process_image_sha256": null,
+                        "action_file_path": null,
+                        "action_file_name": null,
+                        "action_file_md5": null,
+                        "action_file_sha256": null,
+                        "action_file_macro_sha256": null,
+                        "action_registry_data": null,
+                        "action_registry_key_name": null,
+                        "action_registry_value_name": null,
+                        "action_registry_full_key": null,
+                        "action_local_ip": null,
+                        "action_local_ip_v6": null,
+                        "action_local_port": null,
+                        "action_remote_ip": null,
+                        "action_remote_ip_v6": null,
+                        "action_remote_port": 80,
+                        "action_external_hostname": null,
+                        "action_country": "UNKNOWN",
+                        "action_process_instance_id": null,
+                        "action_process_causality_id": null,
+                        "action_process_image_name": null,
+                        "action_process_image_sha256": null,
+                        "action_process_image_command_line": null,
+                        "action_process_signature_status": "N/A",
+                        "action_process_signature_vendor": null,
+                        "os_actor_effective_username": null,
+                        "os_actor_process_instance_id": null,
+                        "os_actor_process_image_path": null,
+                        "os_actor_process_image_name": null,
+                        "os_actor_process_command_line": null,
+                        "os_actor_process_signature_status": "N/A",
+                        "os_actor_process_signature_vendor": null,
+                        "os_actor_process_image_sha256": null,
+                        "os_actor_process_causality_id": null,
+                        "os_actor_causality_id": null,
+                        "os_actor_process_os_pid": null,
+                        "os_actor_thread_thread_id": null,
+                        "fw_app_id": null,
+                        "fw_interface_from": null,
+                        "fw_interface_to": null,
+                        "fw_rule": null,
+                        "fw_rule_id": null,
+                        "fw_device_name": null,
+                        "fw_serial_number": null,
+                        "fw_url_domain": null,
+                        "fw_email_subject": null,
+                        "fw_email_sender": null,
+                        "fw_email_recipient": null,
+                        "fw_app_subcategory": null,
+                        "fw_app_category": null,
+                        "fw_app_technology": null,
+                        "fw_vsys": null,
+                        "fw_xff": null,
+                        "fw_misc": null,
+                        "fw_is_phishing": "N/A",
+                        "dst_agent_id": null,
+                        "dst_causality_actor_process_execution_time": null,
+                        "dns_query_name": null,
+                        "dst_action_external_hostname": null,
+                        "dst_action_country": null,
+                        "dst_action_external_port": null,
+                        "contains_featured_host": "NO",
+                        "contains_featured_user": "NO",
+                        "contains_featured_ip": "NO",
+                        "image_name": null,
+                        "container_id": null,
+                        "cluster_name": null,
+                        "referenced_resource": null,
+                        "operation_name": null,
+                        "identity_sub_type": null,
+                        "identity_type": null,
+                        "project": null,
+                        "cloud_provider": null,
+                        "resource_type": null,
+                        "resource_sub_type": null,
+                        "user_agent": null,
+                        "user_name": null
+                    }
+                ],
+                "alert_id": "34",
+                "detection_timestamp": 1659452809020,
+                "name": "Networking Infrastructure",
+                "category": null,
+                "endpoint_id": null,
+                "description": "Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network.",
+                "host_ip": null,
+                "host_name": null,
+                "mac_addresses": null,
+                "source": "ASM",
+                "action": "NOT_AVAILABLE",
+                "action_pretty": "N/A",
+                "tags": null
             }
         ]
     }
@@ -1407,7 +1577,7 @@ INCIDENT_GET_RAW = {
                     "country_codes": "RU",
                     "cloud_providers": "On Prem",
                     "ipv4_addresses": "1.1.1.1",
-                    "ipv6_addresses": null,
+                    "ipv6_addresses": "1111:2222:33333:4444:5555:6666:7777:8888",
                     "domain_names": "acme.com",
                     "service_ids": "8b4ea64b-e3da-3942-9fdd-aaa5289cfdc1",
                     "website_ids": null,
@@ -1583,6 +1753,294 @@ ALERT_UPDATE_RAW = {
             602,
         ]
     }
+}
+
+XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW = {
+    "total": 1,
+    "iocs": [
+        {
+            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+            "version": 26,
+            "cacheVersn": 0,
+            "sequenceNumber": 5460,
+            "primaryTerm": 1,
+            "modified": "2099-12-31T23:59:59.9999999Z",
+            "sizeInBytes": 2920,
+            "sortValues": [
+                "1718702883637",
+                "abcd1b2abcd1a0b20c7a8bc5d67e8eea"
+            ],
+            "comments": [
+                {
+                    "id": "2556bab0-4390-4383-8b61-bc8e4698e11c",
+                    "version": 0,
+                    "cacheVersn": 0,
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sizeInBytes": 0,
+                    "content": "Created",
+                    "user": "DBot",
+                    "created": "2099-12-31T23:59:59.9999999Z",
+                    "type": "IndicatorCommentTimeLine",
+                    "source": "DBot",
+                    "entryId": "",
+                    "category": "Sighting"
+                }
+            ],
+            "timestamp": "2099-12-31T23:59:59.9999999Z",
+            "indicator_type": "Domain",
+            "value": "www.toysrus.com",
+            "sourceInstances": [
+                "Cortex Xpanse"
+            ],
+            "sourceBrands": [
+                "Cortex Xpanse"
+            ],
+            "lastSeen": "2099-12-31T23:59:59.9999999Z",
+            "firstSeen": "2099-12-31T23:59:59.9999999Z",
+            "lastSeenEntryID": "f9e8d7c6-5b4a-3210-9876-543210fedcba@fedcba98-7654-3210-9876-543210fedcba",
+            "firstSeenEntryID": "f9e8d7c6-5b4a-3210-9876-543210fedcba@fedcba98-7654-3210-9876-543210fedcba",
+            "score": 0,
+            "insightCache": {
+                "id": "www.toysrus.com",
+                "version": 18,
+                "cacheVersn": 0,
+                "sequenceNumber": 652451,
+                "primaryTerm": 1,
+                "modified": "2024-06-18T09:00:00.9999999Z",
+                "sizeInBytes": 829,
+                "scores": {
+                    "Cortex Xpanse": {
+                        "score": 0,
+                        "content": "null",
+                        "contentFormat": "json",
+                        "timestamp": "2099-12-31T23:59:59.9999999Z",
+                        "scoreChangeTimestamp": "2099-12-31T23:59:59.9999999Z",
+                        "isTypedIndicator": false,
+                        "type": "domain",
+                        "context": {
+                            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                                {
+                                    "Indicator": "www.toysrus.com",
+                                    "Reliability": "A+ - 3rd party enrichment",
+                                    "Score": 0,
+                                    "Type": "domain",
+                                    "Vendor": "Cortex Xpanse"
+                                }
+                            ],
+                            "Domain(val.Name && val.Name == obj.Name)": [
+                                {
+                                    "Name": "www.toysrus.com"
+                                }
+                            ]
+                        },
+                        "reliability": "A+ - 3rd party enrichment"
+                    }
+                }
+            },
+            "moduleToFeedMap": {
+                "Cortex Xpanse": {
+                    "reliability": "A+ - 3rd party enrichment",
+                    "fetchTime": "2099-12-31T23:59:59.9999999Z",
+                    "sourceBrand": "Cortex Xpanse",
+                    "sourceInstance": "Cortex Xpanse",
+                    "moduleId": "Cortex Xpanse",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 0,
+                    "bypassExclusionList": false,
+                    "score": 0,
+                    "classifierVersion": 0,
+                    "classifierId": "",
+                    "mapperVersion": 0,
+                    "mapperId": "",
+                    "type": "Domain",
+                    "value": "www.toysrus.com",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "fields": null,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "ExpirationSource": {
+                        "setTime": "2099-12-31T23:59:59.9999999Z",
+                        "source": "indicatorType",
+                        "user": "",
+                        "brand": "Cortex Xpanse",
+                        "instance": "Cortex Xpanse",
+                        "moduleId": "Cortex Xpanse",
+                        "expirationPolicy": "indicatorType",
+                        "expirationInterval": 20160
+                    },
+                    "rawJSON": null,
+                    "isEnrichment": true
+                }
+            },
+            "expiration": "2099-12-31T23:59:59.9999999Z",
+
+            "expirationStatus": "active",
+            "expirationSource": {
+                "setTime": "2099-12-31T23:59:59.9999999Z",
+                "source": "indicatorType",
+                "user": "",
+                "brand": "Cortex Xpanse",
+                "instance": "Cortex Xpanse",
+                "moduleId": "Cortex Xpanse",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 20160
+            },
+            "calculatedTime": "2099-12-31T23:59:59.9999999Z",
+            "lastReputationRun": "2099-12-31T23:59:59.9999999Z",
+            "modifiedTime": "2099-12-31T23:59:59.9999999Z",
+            "isDetectable": false,
+            "isPreventable": false
+        }
+    ],
+    "searchAfter": [
+        "1718702883637",
+        "abcd1b2abcd1a0b20c7a8bc5d67e8eea"
+    ],
+    "accountErrors": null,
+    "totalAccounts": 0
+}
+
+XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW = {
+    "total": 1,
+    "iocs": [
+        {
+            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+            "version": 26,
+            "cacheVersn": 0,
+            "sequenceNumber": 5460,
+            "primaryTerm": 1,
+            "modified": "2099-12-31T23:59:59.9999999Z",
+            "sizeInBytes": 2920,
+            "sortValues": [
+                "1718702883637",
+                "abcd1b2abcd1a0b20c7a8bc5d67e8eea"
+            ],
+            "comments": [
+                {
+                    "id": "2556bab0-4390-4383-8b61-bc8e4698e11c",
+                    "version": 0,
+                    "cacheVersn": 0,
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sizeInBytes": 0,
+                    "content": "Created",
+                    "user": "DBot",
+                    "created": "2099-12-31T23:59:59.9999999Z",
+                    "type": "IndicatorCommentTimeLine",
+                    "source": "DBot",
+                    "entryId": "",
+                    "category": "Sighting"
+                }
+            ],
+            "timestamp": "2099-12-31T23:59:59.9999999Z",
+            "indicator_type": "IP",
+            "value": "1.1.1.2",
+            "sourceInstances": [
+                "Cortex Xpanse"
+            ],
+            "sourceBrands": [
+                "Cortex Xpanse"
+            ],
+            "lastSeen": "2099-12-31T23:59:59.9999999Z",
+            "firstSeen": "2099-12-31T23:59:59.9999999Z",
+            "lastSeenEntryID": "f9e8d7c6-5b4a-3210-9876-543210fedcba@fedcba98-7654-3210-9876-543210fedcba",
+            "firstSeenEntryID": "f9e8d7c6-5b4a-3210-9876-543210fedcba@fedcba98-7654-3210-9876-543210fedcba",
+            "score": 0,
+            "insightCache": {
+                "id": "www.toysrus.com",
+                "version": 18,
+                "cacheVersn": 0,
+                "sequenceNumber": 652451,
+                "primaryTerm": 1,
+                "modified": "2024-06-18T09:00:00.9999999Z",
+                "sizeInBytes": 829,
+                "scores": {
+                    "Cortex Xpanse": {
+                        "score": 0,
+                        "content": "null",
+                        "contentFormat": "json",
+                        "timestamp": "2099-12-31T23:59:59.9999999Z",
+                        "scoreChangeTimestamp": "2099-12-31T23:59:59.9999999Z",
+                        "isTypedIndicator": false,
+                        "type": "domain",
+                        "context": {
+                            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                                {
+                                    "Indicator": "1.1.1.2",
+                                    "Reliability": "A+ - 3rd party enrichment",
+                                    "Score": 0,
+                                    "Type": "IP",
+                                    "Vendor": "Cortex Xpanse"
+                                }
+                            ],
+                            "Domain(val.Name && val.Name == obj.Name)": [
+                                {
+                                    "Name": "1.1.1.2"
+                                }
+                            ]
+                        },
+                        "reliability": "A+ - 3rd party enrichment"
+                    }
+                }
+            },
+            "moduleToFeedMap": {
+                "Cortex Xpanse": {
+                    "reliability": "A+ - 3rd party enrichment",
+                    "fetchTime": "2099-12-31T23:59:59.9999999Z",
+                    "sourceBrand": "Cortex Xpanse",
+                    "sourceInstance": "Cortex Xpanse",
+                    "moduleId": "Cortex Xpanse",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 0,
+                    "bypassExclusionList": false,
+                    "score": 0,
+                    "classifierVersion": 0,
+                    "classifierId": "",
+                    "mapperVersion": 0,
+                    "mapperId": "",
+                    "type": "IP",
+                    "value": "1.1.1.2",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "fields": null,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "ExpirationSource": {
+                        "setTime": "2099-12-31T23:59:59.9999999Z",
+                        "source": "indicatorType",
+                        "user": "",
+                        "brand": "Cortex Xpanse",
+                        "instance": "Cortex Xpanse",
+                        "moduleId": "Cortex Xpanse",
+                        "expirationPolicy": "indicatorType",
+                        "expirationInterval": 20160
+                    },
+                    "rawJSON": null,
+                    "isEnrichment": true
+                }
+            },
+            "expiration": "2099-12-31T23:59:59.9999999Z",
+
+            "expirationStatus": "active",
+            "expirationSource": {
+                "setTime": "2099-12-31T23:59:59.9999999Z",
+                "source": "indicatorType",
+                "user": "",
+                "brand": "Cortex Xpanse",
+                "instance": "Cortex Xpanse",
+                "moduleId": "Cortex Xpanse",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 20160
+            },
+            "calculatedTime": "2099-12-31T23:59:59.9999999Z",
+            "lastReputationRun": "2099-12-31T23:59:59.9999999Z",
+            "modifiedTime": "2099-12-31T23:59:59.9999999Z",
+            "isDetectable": false,
+            "isPreventable": false
+        }
+    ],
+    "searchAfter": [
+        "1718702883637",
+        "abcd1b2abcd1a0b20c7a8bc5d67e8eea"
+    ],
+    "accountErrors": null,
+    "totalAccounts": 0
 }
 
 IP_DOMAIN_RAW = {

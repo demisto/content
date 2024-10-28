@@ -1,5 +1,5 @@
 {
-    "autorun": false,
+    "autorun": true,
     "color": "#3C64C5",
     "days": 0,
     "daysR": 0,
@@ -7,7 +7,27 @@
     "detached": false,
     "disabled": false,
     "extractSettings": {
-        "fieldCliNameToExtractSettings": {},
+        "fieldCliNameToExtractSettings": {
+            "xpansedescription": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "cveRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "xpansehostname": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "xpanseip": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "ipRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            }
+        },
         "mode": "Specific"
     },
     "hours": 0,
@@ -17,7 +37,7 @@
     "locked": false,
     "playbookId": "Xpanse - Alert Handler",
     "name": "Xpanse Alert",
-    "onChangeRepAlg": 0,
+    "onChangeRepAlg": 1,
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

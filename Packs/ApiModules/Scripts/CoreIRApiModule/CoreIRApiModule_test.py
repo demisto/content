@@ -7,6 +7,7 @@ from typing import Any
 from pytest_mock import MockerFixture
 import pytest
 
+import demistomock
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
@@ -2261,26 +2262,51 @@ OFFLINE_STATUS = {
     'host_name': 'TEST',
     'ip': '1.1.1.1'
 }
+PUBLIC_IP = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': [],
+    'public_ip': ['1.1.1.1']
+}
+NO_IP = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': [],
+    'public_ip': []
+}
 
 
-@pytest.mark.parametrize("endpoint, expected", [
-    (CONNECTED_STATUS, 'Online'),
-    (NO_STATUS, 'Offline'),
-    (OFFLINE_STATUS, 'Offline')
+@pytest.mark.parametrize("endpoint, expected_status, expected_ip", [
+    (CONNECTED_STATUS, 'Online', '1.1.1.1'),
+    (NO_STATUS, 'Offline', '1.1.1.1'),
+    (OFFLINE_STATUS, 'Offline', '1.1.1.1'),
+    (PUBLIC_IP, 'Online', ['1.1.1.1']),
+    (NO_IP, 'Online', '')
 ])
-def test_get_endpoint_properties(endpoint, expected):
+def test_get_endpoint_properties(endpoint, expected_status, expected_ip):
     """
     Given:
         - Endpoint data
     When
-        - The status of the enndpoint is 'Connected' with a capital C.
+        - Case a: The status of the endpoint is 'Connected' with a capital C and ip is 1.1.1.1.
+        - Case b: When no status is not given and ip is 1.1.1.1.
+        - Case c: The status of the endpoint is offline and ip is 1.1.1.1.
+        - Case d: The status of the endpoint is 'Connected' with a capital C ip is empty but public_ip is 1.1.1.1.
+        - Case d: The status of the endpoint is 'Connected' with a capital C and both ip and public_ip are empty.
     Then
-        - The status of the endpointn is determined to be 'Online'
+        - Case a: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
+        - Case b: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
+        - Case c: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
+        - Case d: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
+        - Case d: The status of the endpoint is determined to be 'Online' and the ip is set to empty.
     """
     from CoreIRApiModule import get_endpoint_properties
 
     status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
-    assert status == expected
+    assert status == expected_status
+    assert ip == expected_ip
 
 
 def test_remove_blocklist_files_command(requests_mock):
@@ -2502,6 +2528,97 @@ def test_filter_general_fields():
         'detection_modules': 'test1',
         "content_version": "version1",
         "detector_id": 'ID',
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+
+
+def test_filter_general_fields_with_stateful_raw_data():
+    """
+    Given:
+        - An alert dict with stateful_raw_data section
+    When
+        - Running filter_general_fields command once with events_from_decider_as_list as False and once as True.
+    Then
+        - Verify expected output
+    """
+    from CoreIRApiModule import filter_general_fields
+    alert = {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': {
+                "test_1": {
+                    "story_id": "test_1",
+                    "additional_info": "this is a test."
+                },
+                "test_2": {
+                    "story_id": "test_2",
+                    "additional_info": "this is a test."
+                }
+            }
+        }
+    }
+    assert filter_general_fields(alert, False, False) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': {
+                "test_1": {
+                    "story_id": "test_1",
+                    "additional_info": "this is a test."
+                },
+                "test_2": {
+                    "story_id": "test_2",
+                    "additional_info": "this is a test."
+                }
+            }
+        },
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+    assert filter_general_fields(alert, False, True) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': [{
+                "story_id": "test_1",
+                "additional_info": "this is a test."
+            }, {
+                "story_id": "test_2",
+                "additional_info": "this is a test."
+            }]
+        },
         'event': {
             'event_type': 'type',
             'event_id': 'id',
@@ -2998,7 +3115,7 @@ class TestPollingCommands:
 
         assert command_result.readable_output == "Waiting for the script to " \
                                                  "finish running on the following endpoints: ['1']..."
-        assert not command_result.outputs
+        assert command_result.outputs == {'action_id': 1, 'endpoints_count': 1, 'status': 1}
 
         polling_args = {
             'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True
@@ -3788,15 +3905,25 @@ class TestGetIncidents:
         }
         assert expected_output == outputs
 
-    def test_get_starred_incident_list(self, requests_mock):
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred, expected_starred',
+                             [(True, True),
+                              (False, False),
+                              ('true', True),
+                              ('false', False),
+                              (None, None),
+                              ('', None)])
+    def test_get_starred_incident_list_from_get(self, mocker, requests_mock, starred, expected_starred):
         """
         Given: A query with starred parameters.
         When: Running get_incidents_command.
-        Then: Ensure the starred output is returned.
+        Then: Ensure the starred output is returned and the request filters are set correctly.
         """
 
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
-        requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
+                                                   json=get_incidents_list_response)
+        mocker.patch.object(demisto, 'command', return_value='get-incidents')
 
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
@@ -3804,11 +3931,138 @@ class TestGetIncidents:
 
         args = {
             'incident_id_list': '1 day',
-            'starred': True,
+            'starred': starred,
             'starred_incidents_fetch_window': '3 days'
         }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_filter_false = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': False
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
         _, outputs, _ = get_incidents_command(client, args)
 
+        request_filters = get_incidents_request.last_request.json()['request_data']['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        if expected_starred:
+            assert starred_filter_true in request_filters
+            assert starred_fetch_window_filter in request_filters
+            assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+        elif expected_starred is False:
+            assert starred_filter_false in request_filters
+            assert starred_fetch_window_filter not in request_filters
+        else:  # expected_starred is None
+            assert starred_filter_true not in request_filters
+            assert starred_filter_false not in request_filters
+            assert starred_fetch_window_filter not in request_filters
+
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred', [False, "False", 'false', None, ''])
+    def test_get_starred_false_incident_list_from_fetch(self, mocker, requests_mock, starred):
+        """
+        Given: A query with starred=false parameter.
+        When: Running get_incidents_command from fetch-incidents.
+        Then: Ensure the request doesn't filter on starred incidents.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
+                                                   json=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': starred,
+            'starred_incidents_fetch_window': '3 days'
+        }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_filter_false = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': False
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        request_filters = get_incidents_request.last_request.json()['request_data']['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        assert starred_filter_true not in request_filters
+        assert starred_filter_false not in request_filters
+        assert starred_fetch_window_filter not in request_filters
+
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred', [True, 'true', "True"])
+    def test_get_starred_true_incident_list_from_fetch(self, mocker, starred):
+        """
+        Given: A query with starred=true parameter.
+        When: Running get_incidents_command from fetch-incidents.
+        Then: Ensure the request filters on starred incidents and contains the starred_fetch_window_filter filter.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        handle_fetch_starred_mock = mocker.patch.object(CoreClient,
+                                                        'handle_fetch_starred_incidents',
+                                                        return_value=get_incidents_list_response["reply"]['incidents'])
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': starred,
+            'starred_incidents_fetch_window': '3 days'
+        }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        handle_fetch_starred_mock.assert_called()
+        request_filters = handle_fetch_starred_mock.call_args.args[2]['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        assert starred_filter_true in request_filters
+        assert starred_fetch_window_filter in request_filters
         assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
 
 
@@ -3860,21 +4114,21 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                                                   "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when no mapping provided.
-                             ("", ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                             ("", ["resolved_other", "resolved_duplicate", "resolved_false_positive",
                                    "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping is provided.
                              ("Duplicate=RANDOM1, Other=Random2",
-                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
                                "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              ("Random1=Duplicate Incident",
-                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
                                "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping *format* is provided.
                              ("Duplicate=Other False Positive=Other",
-                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
                                "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
@@ -3915,3 +4169,175 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 
         assert remote_args.delta.get('status')
         assert remote_args.delta['status'] == expected_resolved_status[i]
+
+
+@pytest.mark.parametrize('data, expected_result',
+                         [('{"reply": {"container": ["1.1.1.1"]}}', {"reply": {"container": ["1.1.1.1"]}}),
+                          (b'XXXXXXX', b'XXXXXXX')])
+def test_http_request_demisto_call(mocker, data, expected_result):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+    When:
+        - Calling the http_request method.
+    Then:
+        - Make sure demisto._apiCall() is being called and the method returns the expected result.
+        - converting to json is possible - do it and return json
+        - converting to json is impossible - catch the error and return the data as is
+    """
+    from CoreIRApiModule import CoreClient
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+                                                           'status': 200,
+                                                           'data': data})
+    res = client._http_request(method="POST",
+                               url_suffix="/distributions/get_versions/")
+    assert expected_result == res
+
+
+@pytest.mark.parametrize('allow_bin_response', [True, False])
+def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+        - case 1 - build version that support response of binary files.
+        - case 2 - build version that doesn't support response of binary files.
+    When:
+        - Calling the http_request method.
+    Then:
+        - case 1 - Make sure the response are as expected (base64 decoded).
+        - case 2 - Make sure en DemistoException was thrown with details about the server version that allowed bin response.
+    """
+    from CoreIRApiModule import CoreClient, ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION, ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM
+    import base64
+    test_bin_data = b'test bin data'
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch("CoreIRApiModule.ALLOW_RESPONSE_AS_BINARY", new=allow_bin_response)
+    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+                                                           'status': 200,
+                                                           'data': base64.b64encode(test_bin_data)})
+    try:
+        res = client._http_request(method="get",
+                                   resp_type='content')
+        assert res == test_bin_data
+    except DemistoException as e:
+        assert f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}' in str(e)
+
+
+def test_terminate_process_command(mocker):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+        - instance_id_1
+        - instance_id_2
+        - agent_id
+    When:
+        - Calling the terminate_process_command method.
+    Then:
+        - case 1 - Make sure the response are as expected (action_id).
+    """
+    from CoreIRApiModule import CoreClient, terminate_process_command
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", side_effect=[
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_process',
+         'status': 200,
+         'data': json.dumps({'reply': {'group_action_id': 1}})},
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_process',
+         'status': 200,
+         'data': json.dumps({'reply': {'group_action_id': 2}})}
+    ]
+    )
+
+    result = terminate_process_command(client=client, args={'agent_id': '1', 'instance_id': ['instance_id_1', 'instance_id_2']})
+    assert result.readable_output == ('### Action terminate process created on instance ids:'
+                                      ' instance_id_1, instance_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
+    assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
+
+
+def test_terminate_causality_command(mocker):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+        - causality_id
+        - agent_id
+    When:
+        - Calling the terminate_causality_command method.
+    Then:
+        - case 1 - Make sure the response are as expected (action_id).
+    """
+    from CoreIRApiModule import CoreClient, terminate_causality_command
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", side_effect=[
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_causality',
+         'status': 200,
+         'data': json.dumps({'reply': {'group_action_id': 1}})},
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_causality',
+         'status': 200,
+         'data': json.dumps({'reply': {'group_action_id': 2}})}
+    ]
+    )
+
+    result = terminate_causality_command(client=client, args={'agent_id': '1', 'causality_id': [
+                                         'causality_id_1', 'causality_id_2']})
+    assert result.readable_output == ('### Action terminate causality created on causality_id_1,'
+                                      'causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
+    assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
+
+
+def test_run_polling_command_values_raise_error(mocker):
+    """
+    Given -
+        - run_polling_command arguments.
+        -
+
+    When -
+        - Running the run_polling_command
+
+    Then
+        - Make sure that an error is raised with the correct output.
+    """
+    from CoreIRApiModule import run_polling_command
+    from CommonServerPython import DemistoException, ScheduledCommand
+    from unittest.mock import Mock
+
+    polling_args = {
+        'endpoint_ids': '1', 'command_decision_field': 'action_id', 'action_id': '1', 'hide_polling_output': True
+    }
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    client = Mock()
+    mock_command_results = Mock()
+    mock_command_results.raw_response = {"status": "TIMEOUT"}
+    mock_command_results.return_value = mock_command_results
+    client.get_command_results.return_value = mock_command_results
+
+    with pytest.raises(DemistoException) as e:
+        run_polling_command(client=client,
+                            args=polling_args,
+                            cmd="core-terminate-causality",
+                            command_function=Mock(),
+                            command_decision_field="action_id",
+                            results_function=mock_command_results,
+                            polling_field="status",
+                            polling_value=["PENDING",
+                                           "IN_PROGRESS",
+                                           "PENDING_ABORT"],
+                            values_raise_error=["FAILED",
+                                                "TIMEOUT",
+                                                "ABORTED",
+                                                "CANCELED"]
+                            )
+    assert str(e.value) == 'The command core-terminate-causality failed. Received status TIMEOUT'

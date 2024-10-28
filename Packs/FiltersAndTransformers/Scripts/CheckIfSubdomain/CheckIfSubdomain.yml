@@ -16,7 +16,7 @@ args:
 - name: right
   required: true
   isArray: true
-  description: A list of internal assets (for example, mycompany.com)
+  description: A list of internal assets (for example, mycompany.com).
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.10.13.86272

@@ -74,7 +74,7 @@ configuration:
   type: 8
   required: false
 - additionalinfo: How far back in time to go when performing the first fetch
-  defaultvalue: '14 days'
+  defaultvalue: 14 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
@@ -150,7 +150,7 @@ script:
       name: limit
     description: Gets the feed indicators.
     name: acti-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.86612
+  dockerimage: demisto/py3-tools:1.0.0.102774
   feed: true
   runonce: false
   script: '-'

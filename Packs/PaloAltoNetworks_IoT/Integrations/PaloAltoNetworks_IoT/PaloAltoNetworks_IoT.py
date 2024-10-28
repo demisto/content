@@ -4,7 +4,7 @@ import dateparser
 from datetime import datetime, timezone
 import json
 import time
-from typing import Any, Optional
+from typing import Any
 
 import urllib3
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -27,14 +27,14 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url, tenant_id, first_fetch='-1', max_fetch=10, api_timeout=60, verify=True, proxy=False,
-                 ok_codes=tuple(), headers=None):
+                 ok_codes=(), headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.tenant_id = tenant_id
         self.api_timeout = api_timeout
         self.first_fetch = first_fetch
         self.max_fetch = min(max_fetch, PAGELENGTH)
 
-    def _http_request(self, **kwargs):
+    def _http_request(self, **kwargs):  # type: ignore[override]
         try:
             return super()._http_request(**kwargs)
         except DemistoException as error:
@@ -179,7 +179,7 @@ class Client(BaseClient):
         )
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -222,7 +222,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
             raise ValueError(f'Invalid date: {arg}')
 
         return int(date.replace(tzinfo=timezone.utc).timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg}"')
@@ -526,7 +526,7 @@ def fetch_incidents(client, last_run, is_test=False):
                         break
                 if len(others) != max_fetch:
                     break
-        demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents- vulnerability before filtering: {len(alerts)}")
+        demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents- vulnerability before filtering: {len(vulns)}")
         for vuln in vulns:
             detected_date = vuln['detected_date']
             if detected_date and isinstance(detected_date, list):
@@ -538,7 +538,7 @@ def fetch_incidents(client, last_run, is_test=False):
             incident = {
                 'name': vuln['name'],
                 "type": "IoT Vulnerability",
-                'occurred': vuln['detected_date'],
+                'occurred': detected_date,
                 'rawJSON': json.dumps(vuln),
                 'details': f'Device {vuln["name"]} at IP {vuln["ip"]}: {vuln["vulnerability_name"]}',
                 'CustomFields': {

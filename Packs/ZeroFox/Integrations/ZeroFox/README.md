@@ -843,6 +843,38 @@ Looks for registered exploits in ZeroFox's CTI feeds.
 | ZeroFox.Exploits.CVECode | string | CVE Code to identify the exploit. |
 | ZeroFox.Exploits.URLs | string | URLs associated to the threat separated by commas. |
 
+### zerofox-get-compromised-credentials
+
+***
+Gets compromised credentials data for a given ZeroFox alert and uploads it to the current investigation War Room.
+
+#### Base Command
+
+`zerofox-get-compromised-credentials`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and ZeroFox corresponding events (available from Cortex XSOAR version 6.0.0).

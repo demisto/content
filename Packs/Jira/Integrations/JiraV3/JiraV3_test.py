@@ -430,7 +430,7 @@ class TestJiraGetIssueCommand:
         assert Path.exists(Path(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}"))
         Path.unlink(Path(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}"))
 
-    @ pytest.mark.parametrize('get_attachments', [
+    @pytest.mark.parametrize('get_attachments', [
         (True), (False)
     ])
     def test_download_issue_attachments_to_war_room(self, mocker, get_attachments):
@@ -999,7 +999,7 @@ class TestJiraGetIDOffsetCommand:
 
 
 class TestJiraListIssueFieldsCommand:
-    @ pytest.mark.parametrize('pagination_args', [
+    @pytest.mark.parametrize('pagination_args', [
         ({'start_at': 0, 'max_results': 2}), ({'start_at': 1, 'max_results': 3})
     ])
     def test_list_fields_command(self, mocker, pagination_args):
@@ -1028,7 +1028,7 @@ class TestJiraListIssueFieldsCommand:
 
 
 class TestJiraIssueToBacklogCommand:
-    @ pytest.mark.parametrize('args', [
+    @pytest.mark.parametrize('args', [
         ({'rank_before_issue': 'key1', 'issues': 'issue1,issue2'}), ({'rank_after_issue': 'key1', 'issues': 'issue1,issue2'})
     ])
     def test_using_rank_without_board_id_error(self, args):
@@ -1497,6 +1497,118 @@ class TestJiraUploadFileCommand:
         command_results = upload_file_command(client=client, args={'issue_key': 'COMPANYSA-35'})
         assert command_results.to_context()['HumanReadable'] == expected_command_results_context['HumanReadable']
 
+    def test_upload_XSOAR_attachment_to_jira_mime_type_check(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that correct mime_type was given to the file.
+        """
+        from JiraV3 import upload_XSOAR_attachment_to_jira
+        client = jira_base_client_mock()
+        file_name = 'dummy_file_name.pdf'
+        issue_key = 'COMPANYSA-35'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application/pdf'
+        upload_file_raw_response = util_load_json('test_data/upload_file_test/raw_response.json')
+        files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
+        mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
+        mock_request = mocker.patch.object(client, 'upload_attachment', return_value=upload_file_raw_response)
+        upload_XSOAR_attachment_to_jira(client=client,
+                                        entry_id='',
+                                        issue_id_or_key=issue_key)
+        mock_request.assert_called_with(issue_id_or_key=issue_key,
+                                        files=files)
+
+    def test_upload_XSOAR_attachment_to_jira_mime_type_fail(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of unsuccessful upload to Jira due to mime type issue,
+            we will try again with the default mime type.
+        """
+        from JiraV3 import upload_XSOAR_attachment_to_jira
+        client = jira_base_client_mock()
+        issue_key = 'COMPANYSA-35'
+        mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
+        mocker.patch('JiraV3.guess_type', return_value=('application/pdf', ''))
+        mocker.patch.object(client, 'upload_attachment', side_effect=DemistoException('failed to upload', res={}))
+        mock_request = mocker.patch.object(client, 'upload_attachment',
+                                           side_effect=[DemistoException('failed to upload', res={}), {}])
+        upload_XSOAR_attachment_to_jira(client=client, entry_id='', issue_id_or_key=issue_key)
+
+        # Validate that we run upload_attachment twice, once with an error, and second time to use default file type
+        assert mock_request.call_count == 2
+        # Validate that the second call uses the default file type (application-type)
+        mock_request.assert_called_with(files={'file': ('dummy_file_name.pdf', b'dummy content', 'application-type')},
+                                        issue_id_or_key=issue_key)
+
+    def test_create_files_to_upload(self, mocker):
+        """
+        Given:
+            - An empty file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that correct mime_type was given to the file, and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application/pdf'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
+        result_files, result_mime_type = create_files_to_upload('', file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+
+    def test_create_files_to_upload_none_type(self, mocker):
+        """
+        Given:
+            - An empty file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of unsuccessful type guess, the default mime type is given (application-type),
+            and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application-type'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.guess_type', return_value=(None, ''))
+        result_files, result_mime_type = create_files_to_upload('', file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+
+    def test_create_files_to_upload_given_type(self, mocker):
+        """
+        Given:
+            - An application-type file mime type, a file name and a file bytes.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that in case of a given mime type the function guess_type wasn't called,
+            and the object to upload is correct.
+        """
+        from JiraV3 import create_files_to_upload
+        file_name = 'dummy_file_name.pdf'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application-type'
+        expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mock_guess_type = mocker.patch('JiraV3.guess_type', return_value=(None, ''))
+        result_files, result_mime_type = create_files_to_upload(expected_file_mime_type, file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
+        mock_guess_type.assert_not_called()
+
 
 class TestJiraGetIdByAttribute:
     @pytest.mark.parametrize('raw_response_path,parsed_result_path', [
@@ -1862,16 +1974,21 @@ class TestJiraGetRemoteData:
             them.
         """
         from JiraV3 import (get_updated_remote_data, ATTACHMENT_MIRRORED_FROM_XSOAR)
-        attachments_entries = [{'File': 'dummy_file_name', 'FileID': 'id1'},
-                               {'File': f'dummy_file_name{ATTACHMENT_MIRRORED_FROM_XSOAR}', 'FileID': 'id2'}]
+        attachments_entries = [{'File': 'dummy_file_name_old', 'FileID': 'id1', 'created': '2024-01-01T00:00:00.000+0300'},
+                               {'File': 'dummy_file_name', 'FileID': 'id1', 'created': '2024-02-01T00:00:00.000+0300'},
+                               {'File': f'dummy_file_name{ATTACHMENT_MIRRORED_FROM_XSOAR}', 'FileID': 'id2',
+                                'created': '2024-02-01T00:00:00.000+0300'}]
+        create_file_mock_res = [{k: v for k, v in item.items() if k != 'created'} for item in attachments_entries[1:]]
         client = jira_base_client_mock()
-        mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=attachments_entries)
+        mocker.patch('JiraV3.create_file_info_from_attachment', side_effect=create_file_mock_res)
+        mocker.patch('demistomock.get', return_value=attachments_entries)
         mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=[])
         updated_incident: Dict[str, Any] = {}
+        user_timezone = 'Asia/Jerusalem'
         parsed_entries = get_updated_remote_data(client=client, issue={}, updated_incident=updated_incident, issue_id='1234',
                                                  mirror_resolved_issue=False, attachment_tag_from_jira='attachment from jira',
-                                                 comment_tag_from_jira='', user_timezone_name='',
-                                                 incident_modified_date=None,
+                                                 comment_tag_from_jira='', user_timezone_name=user_timezone,
+                                                 incident_modified_date=arg_to_datetime('2024-01-01T00:00:00.000+0300'),
                                                  fetch_comments=False, fetch_attachments=True)
         expected_extracted_attachments = [{"path": "id1", "name": "dummy_file_name"},
                                           {"path": "id2", "name": "dummy_file_name_mirrored_from_xsoar"}]
@@ -2556,3 +2673,192 @@ class TestJiraIssueAssign:
 
         with pytest.raises(DemistoException):
             update_issue_assignee_command(client=client, args=args)
+
+
+class TestJiraIssueGetForms:
+    @pytest.mark.parametrize(
+        'issue_id',
+        [
+            ("TES-2"),
+            ("")
+        ]
+    )
+    def test_issue_get_forms_command(self, mocker, issue_id):
+        """
+        Given:
+            - issue_id
+        When
+            - Running the issue_get_forms_command
+        Then
+            - Ensure the body request is ok
+        """
+        from JiraV3 import issue_get_forms_command
+
+        args = {
+            'issue_id': issue_id
+        }
+        client: JiraBaseClient = jira_base_client_mock()
+        client = jira_onprem_client_mock()
+
+        raw_response_path = "test_data/get_issue_forms_test/raw_response.json"
+        parsed_result_path = "test_data/get_issue_forms_test/parsed_result.json"
+        issue_get_forms_response = util_load_json(raw_response_path)
+        expected_command_results_context = util_load_json(parsed_result_path)
+        mock_request = mocker.patch.object(client, 'issue_get_forms', return_value=issue_get_forms_response)
+
+        if issue_id:
+            command_results = issue_get_forms_command(client=client, args=args)
+            for command_result in command_results:
+                assert expected_command_results_context == command_result.to_context()
+            mock_request.assert_called_with(issue_id=issue_id)
+        else:
+            with pytest.raises(ValueError):
+                issue_get_forms_command(client=client, args=args)
+
+
+class TestJiraGetUserInfo:
+    @pytest.mark.parametrize(
+        'key, username, account_id, raw_response_path, parsed_result_path',
+        [
+            ("JIRAUSER10000", None, None, "test_data/get_user_info_test/onprem_raw_response.json",
+             "test_data/get_user_info_test/onprem_parsed_result.json"),
+            (None, "firstlast", None, "test_data/get_user_info_test/onprem_raw_response.json",
+             "test_data/get_user_info_test/onprem_parsed_result.json"),
+            (None, None, "user@example.com", "test_data/get_user_info_test/cloud_raw_response.json",
+             "test_data/get_user_info_test/cloud_parsed_result.json"),
+            (None, None, None, None, None)
+        ]
+    )
+    def test_get_user_info_command(self, mocker, key, username, account_id, raw_response_path, parsed_result_path):
+        """
+        Given:
+            - key, username or account_id for cloud/server jira
+        When
+            - Running the get_user_info_command
+        Then
+            - Ensure the body request is ok for both cloud/server jira
+        """
+        from JiraV3 import get_user_info_command
+
+        args = {
+            'key': key,                 # For Jira OnPrem
+            'username': username,       # For Jira OnPrem
+            'account_id': account_id,     # For Jira Cloud
+        }
+        client: JiraBaseClient = jira_base_client_mock()
+        if account_id:
+            client = jira_cloud_client_mock()
+            identifier = f"accountId={account_id}"
+        elif key or username:
+            client = jira_onprem_client_mock()
+            if key:
+                identifier = f"key={key}"
+            else:
+                identifier = f"username={username}"
+        else:
+            identifier = ""
+
+        if identifier:
+            get_user_info_response = util_load_json(raw_response_path)
+            expected_command_results_context = util_load_json(parsed_result_path)
+            mock_request = mocker.patch.object(client, 'get_user_info', return_value=get_user_info_response)
+
+            command_results = get_user_info_command(client=client, args=args)
+            assert expected_command_results_context == command_results.to_context()
+            mock_request.assert_called_with(identifier)
+        else:
+            with pytest.raises(ValueError):
+                get_user_info_command(client=client, args=args)
+
+
+class TestJiraCreateMetadataIssueTypes:
+    @pytest.mark.parametrize(
+        "project_id_or_key",
+        [
+            ("test_project_id"),
+            ("")
+        ]
+    )
+    def test_get_create_metadata_issue_types(self, mocker, project_id_or_key):
+        """
+        Given:
+            - project_id_or_key
+        When:
+            - running get_create_metadata_issue_types_command
+        Then:
+            - ensure the body request is ok
+        """
+
+        from JiraV3 import get_create_metadata_issue_types_command
+
+        args = {
+            "project_id_or_key": project_id_or_key,
+        }
+
+        client: JiraBaseClient = jira_base_client_mock()
+
+        raw_response_path = "test_data/get_create_metadata_issue_types_test/raw_response.json"
+        parsed_result_path = "test_data/get_create_metadata_issue_types_test/parsed_result.json"
+        metadata_response = util_load_json(raw_response_path)
+        expected_context = util_load_json(parsed_result_path)
+        mock_request = mocker.patch.object(
+            client,
+            "get_create_metadata_issue_types",
+            return_value=metadata_response
+        )
+
+        if project_id_or_key:
+            command_results = get_create_metadata_issue_types_command(client=client, args=args)
+            assert expected_context == command_results.to_context()
+            mock_request.assert_called_with(project_id_or_key=project_id_or_key, start_at=0, max_results=50)
+        else:
+            with pytest.raises(ValueError):
+                get_create_metadata_issue_types_command(client=client, args=args)
+
+
+class TestJiraCreateMetadataField:
+    @pytest.mark.parametrize(
+        "project_id_or_key, issue_type_id",
+        [
+            ("test_project_id", "100"),
+            ("", "")
+        ]
+    )
+    def test_get_create_metadata_field(self, mocker, project_id_or_key, issue_type_id):
+        """
+        Given:
+            - project_id_or_key
+            - issue_type_id
+        When:
+            - running get_create_metadata_field_command
+        Then:
+            - ensure the body request is ok
+        """
+
+        from JiraV3 import get_create_metadata_field_command
+
+        args = {
+            "project_id_or_key": project_id_or_key,
+            "issue_type_id": issue_type_id,
+        }
+
+        client: JiraBaseClient = jira_base_client_mock()
+
+        raw_response_path = "test_data/get_create_metadata_field_test/raw_response.json"
+        parsed_result_path = "test_data/get_create_metadata_field_test/parsed_result.json"
+        metadata_response = util_load_json(raw_response_path)
+        expected_context = util_load_json(parsed_result_path)
+        mock_request = mocker.patch.object(
+            client,
+            "get_create_metadata_field",
+            return_value=metadata_response
+        )
+
+        if project_id_or_key and issue_type_id:
+            command_results = get_create_metadata_field_command(client=client, args=args)
+            assert expected_context == command_results.to_context()
+            mock_request.assert_called_with(project_id_or_key=project_id_or_key,
+                                            issue_type_id=issue_type_id, start_at=0, max_results=50)
+        else:
+            with pytest.raises(ValueError):
+                get_create_metadata_field_command(client=client, args=args)

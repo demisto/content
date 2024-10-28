@@ -1,0 +1,25 @@
+{"content":[{
+    "languagePreference": null,
+    "modified": "2024-01-21T11:02:08.789+00:00",
+    "notificationEmail": "user1@email.com",
+    "phone": null,
+    "middleName": null,
+    "lastLogin": null,
+    "email": "user1@email.com",
+    "created": "2024-01-21T11:02:08.789+00:00",
+    "lastName": "user1",
+    "firstName": "user1",
+    "validated": false,
+    "teams": [
+        {
+            "name": "Default",
+            "id": "3"
+        }
+    ],
+    "role": {
+        "scopeBounds": "TEAM_BOUNDED",
+        "name": "Team Admin",
+        "id": "d3"
+    },
+    "id": "01"
+}]}

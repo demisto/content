@@ -68,7 +68,8 @@ def extract_indicators_from_file(args):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': indicators_hr,
-        'HumanReadable': string_to_markdown(indicators_hr)
+        'HumanReadable': string_to_markdown(indicators_hr),
+        'EntryContext': json.loads(indicators_hr)
     }
 
 

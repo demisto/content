@@ -195,6 +195,7 @@ Please refer to to the Devo documentation for building a query with LINQ
 | writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
 | linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional | 
 | filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional | 
+| ip_as_string | Flag to return IP as string. | Optional | 
 
 
 #### Time Format for __from__ and __to__ Arguments:

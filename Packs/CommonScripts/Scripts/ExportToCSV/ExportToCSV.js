@@ -99,6 +99,10 @@ if (args.headers && !Array.isArray(args.headers)){
 }
 
 var csvString = convertToCSV(args.csvArray, args.headers);
+if (args.codec === 'UTF-16-BOM') {
+    var utf16Bom = '\uFEFF';
+    csvString = utf16Bom + csvString;
+}
 var createdFileID = saveFile(csvString);
 
 return {

@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Callable
+from collections.abc import Callable
 
 
 import base64
@@ -820,6 +820,7 @@ def test_module(client: Client, max_fetch: str) -> None:
         return return_results('Invalid Maximum fetch value. Minimum value is 1, maximum value is 32')
 
     return_results('ok')
+    return None
 
 
 def main() -> None:

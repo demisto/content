@@ -1,9 +1,6 @@
 [file:ThreatConnect_v2.yml]
 ignore=BA108,BA109,IN144
 
-[file:ThreatConnectV3.yml]
-ignore=IN124
-
 [file:README.md]
 ignore=RM106
 

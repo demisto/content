@@ -17,10 +17,12 @@ Use the Cisco Webex Feed integration to fetch indicators from WeBex.
     | Feed Fetch Interval |  | False |
     | Tags | Supports CSV values. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -56,4 +58,3 @@ There is no context output for this command.
 >| *.wbx2.com | DomainGlob |
 >| *.ciscospark.com | DomainGlob |
 >| *.webexcontent.com | DomainGlob |
-

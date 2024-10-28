@@ -351,7 +351,7 @@ script:
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -361,6 +361,7 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
+      - std_change_template
     - auto: PREDEFINED
       description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: urgency
@@ -1635,7 +1636,7 @@ script:
       required: true
     description: Retrieve file attachments from tickets.
     name: servicenow-get-attachments
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.11.9.103066
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1647,3 +1648,4 @@ fromversion: 5.0.0
 tests:
 - servicenow_test_v2
 - ServiceNow_OAuth_Test
+- ServiceNow_Fetch_Incidents_Test

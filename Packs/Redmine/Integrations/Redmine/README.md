@@ -28,8 +28,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### redmine-issue-create
 
 ***
-- Create a new issue
-- When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
+
+- Create a new issue.
+- The status of the newly created issue will be set to the default status of the Redmine instance.
+- When attaching a file to an issue, include the entry ID in the request as file_entry_id=entry ID.
 - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**, and then proceed to create a new custom field. Once created, you can add values as needed
 - To create a category/version, navigate to the server URL > click **Settings** (top bar) > **Versions** tab and **Issue categories** tab.
 
@@ -42,17 +44,16 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The project ID for this issue. If not specified, the value from integration configuration will be taken. | Optional | 
-| tracker_id | The tracker ID for this issue. Possible values are: Bug, Feature, Support. | Required | 
-| status_id | The status ID for this issue. Possible values are: New, In progress, Resolved, Feedback, Closed, Rejected. | Required | 
-| priority_id | The priority ID for this issue. Possible values are: Low, Normal, High, Urgent, Immediate. | Required | 
+| project_id | The project ID for this issue. If not specified, the value from the instance configuration will be used. | Optional | 
+| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.<br/>- If an invalid ID was entered,  the default tracker ID set in the Redmine instance wil be used. | Required | 
+| priority_id | - A priority ID (e.g., 1,2,3).<br/>- Get the priority_name to priority_id mapping by using the command redmine-priority-id-list. | Required | 
 | subject | The subject for this issue. | Required | 
 | description | A description for this issue. | Optional | 
 | category_id | The category ID for this issue. | Optional | 
 | fixed_version_id | The target version ID for this issue. | Optional | 
 | assigned_to_id | The ID of the user to assign the issue to. | Optional | 
 | parent_issue_id | The ID of the parent issue. | Optional | 
-| custom_fields | The custom field to update. The format is costumFieldID:Value,costumFieldID:Value, etc. | Optional | 
+| custom_fields | The custom field to update.<br/>- "The format is `{\"customFieldID2\": \"value3\", \"customFieldID1\": [\"value1\",\"value2\"]}`."<br/>- Use an array if the field is of multiselect type.<br/>- Instruction for each custom field type:<br/>  - Boolean: use "0" for False and "1" for True.<br/>  - Date: the format is "yyyy-mm-dd".<br/>  - Float: A number with two digits after the decimal point.<br/>  - Integer: A number.<br/>  - Key/Value list: Use the Key (ID) of the value.<br/>  - User: Use the user ID.<br/> - Version- use the version ID.| Optional | 
 | watcher_user_ids | An array with watcher user IDs for this issue -&gt; 1,2,3. | Optional | 
 | is_private | Is the issue private?. Possible values are: True, False. | Optional | 
 | estimated_hours | The number of hours estimated for this issue. | Optional | 
@@ -73,7 +74,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | Redmine.Issue.subject | str | The subject of the issue. | 
 
 #### Command example
-```!redmine-issue-create priority_id=High status_id=Closed subject=helloExample tracker_id=Bug project_id=1 watcher_user_ids=5,6 custom_fields=1:helloCustom```
+```!redmine-issue-create priority_id=High subject=helloExample tracker_id=1 project_id=1 watcher_user_ids=5,6 custom_fields=1:helloCustom priority_id=1```
 #### Context Example
 ```json
 {
@@ -84,7 +85,7 @@ After you successfully execute a command, a DBot message appears in the War Room
                 "name": "Integration Test"
             },
             "closed_on": null,
-            "created_on": "2024-03-11T09:16:47Z",
+            "created_on": "2024-04-07T11:59:34Z",
             "custom_fields": [
                 {
                     "id": 1,
@@ -96,17 +97,17 @@ After you successfully execute a command, a DBot message appears in the War Room
             "done_ratio": 0,
             "due_date": null,
             "estimated_hours": null,
-            "id": "130",
+            "id": "167",
             "is_private": false,
             "priority": {
-                "id": 3,
-                "name": "High"
+                "id": 1,
+                "name": "Low"
             },
             "project": {
                 "id": 1,
                 "name": "Cortex XSOAR"
             },
-            "start_date": "2024-03-11",
+            "start_date": "2024-04-07",
             "status": {
                 "id": 1,
                 "is_closed": false,
@@ -118,7 +119,7 @@ After you successfully execute a command, a DBot message appears in the War Room
                 "id": 1,
                 "name": "Bug"
             },
-            "updated_on": "2024-03-11T09:16:47Z"
+            "updated_on": "2024-04-07T11:59:34Z"
         }
     }
 }
@@ -127,9 +128,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Human Readable Output
 
 >### The issue you created:
->|ID|Project|Tracker|Status| Priority|Author|Created On|Subject|Start Date|Custom Fields|
+>|Id|Project|Tracker|Status|Priority|Author|Created On|Subject|Start Date|Custom Fields|
 >|---|---|---|---|---|---|---|---|---|---|
->| 130 | Cortex XSOAR | Bug | New | High | Integration Test | 2024-03-11T09:16:47Z | helloExample | 2024-03-11 | **-**	***name***: Team_of_workers<br/>	***value***: helloCustom |
+>| 167 | Cortex XSOAR | Bug | New | Low | Integration Test | 2024-04-07T11:59:34Z | helloExample | 2024-04-07 | **-**	***name***: Team_of_workers<br/>	***value***: helloCustom |
 
 
 ### redmine-issue-list
@@ -151,13 +152,13 @@ Display a list of issues
 | sort | A field by which to sort the results. Append ":desc" to invert the order.<br/>- Possible values:<br/>1. tracker.<br/>2. status.<br/>3. priority.<br/>4. project.<br/>5. subproject.<br/>6. assigned_to.<br/>- For example: sort=tracker:desc.<br/> | Optional | 
 | include | An array of extra fields to fetch.<br/>- Possible values:<br/>    1. attachments.<br/>    2. relations.<br/> | Optional | 
 | issue_id | An array of issue IDs to display -&gt; 1,2,3. | Optional | 
-| project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
+| project_id | Aa project ID to display issues of this project. If not specified here or in the instance configuration, all projects will be displayed. | Optional | 
 | subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
-| tracker_id | A tracker ID to display issues of this tracker ID. Possible values are: Bug, Feature, Support. | Optional | 
-| status_id | A status ID to display issues of this status ID (* means all). Possible values are: open, closed, *. | Optional | 
+| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list. | Optional |
+| status | - A status ID (e.g., 1,2,3) or use predefined values.  <br/>- Possible values: Open/Closed/All from the predefined values or use any of your custom status ids (e.g., 1).| Optional | 
 | assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
-| custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID you entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
+| custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID which was entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
 
 #### Context Output
 
@@ -279,7 +280,7 @@ Display a list of issues
 ### redmine-issue-update
 
 ***
-Update an existing issue. When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created. To create a custom field, navigate to the server URL with administrative privileges, click **'Administration** (located at the top left), select **Custom fields**, and proceed to create a new custom field. Once created, you can add values as needed.
+Update an existing issue. When attaching a file to an issue, include the entry ID in the request as file_entry_id=entry ID. To create a custom field, navigate to the server URL with administrative privileges, click **'Administration** (located at the top left), select **Custom fields**, and proceed to create a new custom field. Once created, you can add values as needed.
 
 #### Base Command
 
@@ -291,16 +292,16 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | --- | --- | --- |
 | issue_id | The ID of the issue to be updated. | Required | 
 | project_id | The ID of the project to associate with the issue. If not specified, the value from integration configuration will be taken if specified. | Optional | 
-| tracker_id | The ID of the tracker type. Possible values are: Bug, Feature, Support. | Optional | 
-| status_id | The ID of the status to set for the issue. Possible values are: New, In progress, Resolved, Feedback, Closed, Rejected. | Optional | 
-| priority_id | The ID of the priority level for the issue. Possible values are: Low, Normal, High, Urgent, Immediate. | Optional | 
+| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.<br/>- If an invalid ID was entered, tracker_id won't be changed and won't raise an error. | Optional | 
+| priority_id | - A priority ID (e.g., 1,2,3).<br/>- Get the priority_name to priority_id mapping by using the command redmine-priority-id-list. | Optional | 
+| status | - A status ID (e.g., 1,2,3).<br/> - Get the status_name to status_id mapping by using the command redmine-status-id-list.<br/>  - If an invalid ID was entered, status_id won't be changed and won't raise an error. | Optional | 
 | subject | The subject of the issue. | Optional | 
 | description | The description of the issue. | Optional | 
 | category_id | The ID of the category to assign to the issue. | Optional | 
 | fixed_version_id | The ID of the fixed version for the issue. | Optional | 
 | assigned_to_id | The ID of the user to whom the issue is assigned. | Optional | 
 | parent_issue_id | The ID of the parent issue, if applicable. | Optional | 
-| custom_fields | The custom field to update. The format is costumFieldID:Value,costumFieldID:Value etc. | Optional | 
+| custom_fields | The custom field to update.<br/>- "The format is `{\"customFieldID2\": \"value3\", \"customFieldID1\": [\"value1\",\"value2\"]}`."<br/>- Use an array if the field is of multiselect type.<br/>- Instruction for each custom field type:<br/>  - Boolean: use "0" for False and "1" for True.<br/>  - Date: the format is "yyyy-mm-dd".<br/>  - Float: A number with two digits after the decimal point.<br/>  - Integer: A number.<br/>  - Key/Value list: Use the Key (ID) of the value.<br/>  - User: Use the user ID.<br/> - Version- use the version ID.| Optional | 
 | watcher_user_ids | A comma-separated list of watcher IDs. -&gt; 1,2,3. | Optional | 
 | is_private | Is the issue private?. Possible values are: True, False. | Optional | 
 | estimated_hours | The estimated number of hours to complete the issue. | Optional | 
@@ -333,20 +334,20 @@ Show an issue by id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue you want to display. | Required | 
+| issue_id | The ID of the wanted issue. | Required | 
 | include | - Fields to add to the response.<br/>- Possible values:<br/>  1.children.<br/>  2.attachments.<br/>  3.relations.<br/>  4.changesets.<br/>  5.journals.<br/>  6.watchers.<br/>  7.allowed_statuses.<br/>- Separate multiple values with comma ONLY.<br/> | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Issue.id | unknown | The ID of the found issue. | 
-| Redmine.Issue.priority.id | unknown | The ID of the priority of the issue. | 
-| Redmine.Issue.tracker.id | unknown | The ID of the tracker of the issue. | 
-| Redmine.Issue.project.id | unknown | The ID of the project of the issue. | 
-| Redmine.Issue.status.id | unknown | The ID of the status of the issue. | 
-| Redmine.Issue.subject | unknown | The subject of the issue. | 
-| Redmine.Issue.watchers.id | unknown | The watchers of the issue. | 
+| Redmine.Issue.id | str | The ID of the found issue. | 
+| Redmine.Issue.priority.id | str | The ID of the priority of the issue. | 
+| Redmine.Issue.tracker.id | str | The ID of the tracker of the issue. | 
+| Redmine.Issue.project.id | str | The ID of the project of the issue. | 
+| Redmine.Issue.status.id | str | The ID of the status of the issue. | 
+| Redmine.Issue.subject | str | The subject of the issue. | 
+| Redmine.Issue.watchers.id | str | The watchers of the issue. | 
 
 #### Command example
 ```!redmine-issue-get issue_id=130 include=watchers```
@@ -433,7 +434,7 @@ Delete an issue by its ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue you want to delete. | Required | 
+| issue_id | The ID of the about to be deleted issue. | Required | 
 
 #### Context Output
 
@@ -513,7 +514,7 @@ Retrieve a list of all projects, including both public and private ones that the
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Project | unknown | Display a list of projects accessible to the user. | 
+| Redmine.Project | Array | Display a list of projects accessible to the user. | 
 
 #### Command example
 ```!redmine-project-list ```
@@ -732,4 +733,191 @@ There are no input arguments for this command.
 >| 5 | admin | True | admin | tests | admin@redmine-test.local | 2024-02-28T19:47:56Z | 2024-02-29T10:25:08Z |
 >| 6 | demiadmin | True | Integration | Test | demiadmin@redmine-test.local | 2024-02-29T10:27:31Z | 2024-02-29T10:55:25Z |
 >| 1 | user | True | UserName | LastName | user@example.com | 2024-02-28T18:34:10Z | 2024-02-29T09:50:10Z |
+
+### redmine-priority-id-list
+
+***
+Returns a list of priorities (priority_name to priority_id).
+
+#### Base Command
+
+`redmine-priority-id-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redmine.priorities.ID | str | ID of the priority field. | 
+| Redmine.priorities.Name | str | Name of the priority field. | 
+
+#### Command example
+```!redmine-priority-id-list```
+#### Context Example
+```json
+{
+    "Redmine": {
+        "priorities": [
+            {
+                "ID": 1,
+                "Name": "Low"
+            },
+            {
+                "ID": 2,
+                "Name": "Normal"
+            },
+            {
+                "ID": 3,
+                "Name": "High"
+            },
+            {
+                "ID": 4,
+                "Name": "Urgent"
+            },
+            {
+                "ID": 5,
+                "Name": "Immediate"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### priorities name to id List:
+>|ID|Name|
+>|---|---|
+>| 1 | Low |
+>| 2 | Normal |
+>| 3 | High |
+>| 4 | Urgent |
+>| 5 | Immediate |
+
+
+### redmine-status-id-list
+
+***
+Returns a list of statuses (status_name to status_id).
+
+#### Base Command
+
+`redmine-status-id-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redmine.statuses.ID | str | ID of the status field. | 
+| Redmine.Users.Name | str | Name of the status field. | 
+
+#### Command example
+```!redmine-status-id-list```
+#### Context Example
+```json
+{
+    "Redmine": {
+        "statuses": [
+            {
+                "ID": 1,
+                "Name": "help"
+            },
+            {
+                "ID": 2,
+                "Name": "In Progress"
+            },
+            {
+                "ID": 3,
+                "Name": "Resolved"
+            },
+            {
+                "ID": 4,
+                "Name": "Feedback"
+            },
+            {
+                "ID": 5,
+                "Name": "Closed"
+            },
+            {
+                "ID": 6,
+                "Name": "Rejected"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### statuses name to id List:
+>|ID|Name|
+>|---|---|
+>| 1 | help |
+>| 2 | In Progress |
+>| 3 | Resolved |
+>| 4 | Feedback |
+>| 5 | Closed |
+>| 6 | Rejected |
+
+
+### redmine-tracker-id-list
+
+***
+Returns a list of trackers (tracker_name to tracker_id).
+
+#### Base Command
+
+`redmine-tracker-id-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redmine.trackers.ID | str | ID of the tracker field. | 
+| Redmine.trackers.Name | str | Name of the tracker field. | 
+
+#### Command example
+```!redmine-tracker-id-list```
+#### Context Example
+```json
+{
+    "Redmine": {
+        "trackers": [
+            {
+                "ID": 1,
+                "Name": "Bug111"
+            },
+            {
+                "ID": 2,
+                "Name": "Feature"
+            },
+            {
+                "ID": 3,
+                "Name": "Support"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### trackers name to id List:
+>|ID|Name|
+>|---|---|
+>| 1 | Bug111 |
+>| 2 | Feature |
+>| 3 | Support |
+
 

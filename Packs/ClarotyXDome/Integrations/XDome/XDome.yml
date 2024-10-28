@@ -1,0 +1,730 @@
+category: Network Security
+commonfields:
+  id: XDome
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- defaultvalue: https://api.claroty.com/
+  display: XDome API Base URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Token
+  additionalinfo: The API token to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- defaultvalue: 7 days
+  display: Initial Incidents Fetch Time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: '50000'
+  type: 0
+  required: false
+- display: Fetch Only Unresolved Device-Alert Pairs
+  name: fetch_only_unresolved
+  type: 8
+  required: false
+  defaultvalue: 'true'
+- display: Alert Types Selection
+  name: alert_types
+  type: 16
+  additionalinfo: If no alert types are selected, all types will be fetched
+  options:
+  - Malicious Internet Communication
+  - Outdated Firmware
+  - Functionality Recall
+  - Weak/Default Password
+  - Attempted Malicious Internet Communication
+  - Multiple Failed Login Attempts
+  - External Plaintext Credentials Transmission
+  - External Unencrypted PHI Transmission
+  - Guest VLAN Segmentation Violation
+  - Corporate VLAN Segmentation Violation
+  - Industrial VLAN Segmentation Violation
+  - Out-of-Policy Communication
+  - Expired TLS Certificate
+  - SMBv1 Communication
+  - Executable File Transfer
+  - Suspicious Device Behavior
+  - Infected Device
+  - Custom Device Alert
+  - Custom Communication Alert
+  - Network Threat Signature
+  - Device End-of-Life
+  - Offline Status Change
+  - OT Activity
+  - Location Change
+  - Version Change
+  - Risk Change
+  - Network Change
+  - Utilization Change
+  - Retention Change
+  - Enforcement Change
+  required: false
+description: Use the xDome integration to manage assets and alerts.
+display: xDome
+name: XDome
+script:
+  commands:
+  - name: xdome-get-device-alert-relations
+    description: Gets all device-alert pairs from xDome. You can apply a query-filter.
+    arguments:
+    - name: fields
+      description: Fields to return.
+      required: false
+      defaultValue: all
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - all
+      - alert_assignees
+      - alert_category
+      - alert_class
+      - alert_id
+      - alert_labels
+      - alert_name
+      - alert_type_name
+      - alert_description
+      - device_alert_detected_time
+      - device_alert_status
+      - device_alert_updated_time
+      - device_assignees
+      - device_category
+      - device_effective_likelihood_subscore
+      - device_effective_likelihood_subscore_points
+      - device_first_seen_list
+      - device_impact_subscore
+      - device_impact_subscore_points
+      - device_insecure_protocols
+      - device_insecure_protocols_points
+      - device_internet_communication
+      - device_ip_list
+      - device_known_vulnerabilities
+      - device_known_vulnerabilities_points
+      - device_labels
+      - device_last_seen_list
+      - device_likelihood_subscore
+      - device_likelihood_subscore_points
+      - device_mac_list
+      - device_manufacturer
+      - device_name
+      - device_network_list
+      - device_purdue_level
+      - device_retired
+      - device_risk_score
+      - device_risk_score_points
+      - device_site_name
+      - device_subcategory
+      - device_type
+      - device_uid
+      - mitre_technique_enterprise_ids
+      - mitre_technique_enterprise_names
+      - mitre_technique_ics_ids
+      - mitre_technique_ics_names
+    - name: filter_by
+      description: A filter_by object, refer to the xDome API documentation.
+      required: false
+      isArray: false
+    - name: offset
+      description: An offset in the data. This can be used to fetch all data in a paginated manner, by e.g requesting (offset=0, limit=100) followed by (offset=100, limit=100), (offset=200, limit=100), etc.
+      required: false
+      isArray: false
+    - name: limit
+      description: Maximum amount of items to fetch.
+      required: false
+      isArray: false
+    - name: sort_by
+      description: 'Default: [{"field":"device_uid","order":"asc"},{"field":"alert_id","order":"asc"}]. Specifies how the returned data should be sorted. If more than one sort clause is passed, additional clauses will be used to sort data that is equal in all previous clauses.'
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: XDome.DeviceAlert.alert_id
+      description: Platform unique Alert ID.
+      type: Number
+    - contextPath: XDome.DeviceAlert.alert_name
+      description: 'The alert name, such as “Malicious Internet Communication: 62.172.138.35”.'
+      type: String
+    - contextPath: XDome.DeviceAlert.alert_type_name
+      description: An alert type such as "Outdated Firmware".
+      type: String
+    - contextPath: XDome.DeviceAlert.alert_class
+      description: The alert class, such as “Pre-Defined Alerts” and “Custom Alerts”.
+      type: String
+    - contextPath: XDome.DeviceAlert.alert_category
+      description: Alert category such as "Risk" or "Segmentation".
+      type: String
+    - contextPath: XDome.DeviceAlert.alert_labels
+      description: The labels added to the alert manually or automatically.
+      type: String
+    - contextPath: XDome.DeviceAlert.alert_assignees
+      description: The users and or groups the alert is assigned to.
+      type: String
+    - contextPath: XDome.DeviceAlert.alert_description
+      description: 'The alert description, such as "SMBv1 Communication was detected by 2 OT Device devices".'
+      type: String
+    - contextPath: XDome.DeviceAlert.device_alert_detected_time
+      description: Date and time when the Alert was first detected.
+      type: Date
+    - contextPath: XDome.DeviceAlert.device_alert_updated_time
+      description: Date and time of last Alert update.
+      type: Date
+    - contextPath: XDome.DeviceAlert.device_alert_status
+      description: Device-Alert relation status (Resolved or Unresolved).
+      type: String
+    - contextPath: XDome.DeviceAlert.device_uid
+      description: A universal unique identifier (UUID) for the device.
+      type: UUID
+    - contextPath: XDome.DeviceAlert.device_name
+      description: The Device Name attribute is set automatically based on the priority of the Auto-Assigned Device attribute. You can also set it manually. The Device Name can be the device’s IP, hostname, etc.
+      type: String
+    - contextPath: XDome.DeviceAlert.device_ip_list
+      description: IP address associated with the device. IPs may be suffixed by a / (annotation), where annotation may be a child device ID or (Last Known IP).
+      type: List
+    - contextPath: XDome.DeviceAlert.device_mac_list
+      description: MAC address associated with the device.
+      type: List
+    - contextPath: XDome.DeviceAlert.device_network_list
+      description: The network types, "Corporate" and or "Guest", that the device belongs to.
+      type: List
+    - contextPath: XDome.DeviceAlert.device_category
+      description: The device category group (see "About Device Categorization" in the Knowledge Base).
+      type: String
+    - contextPath: XDome.DeviceAlert.device_subcategory
+      description: The device sub-category group (see "About Device Categorization" in the Knowledge Base).
+      type: String
+    - contextPath: XDome.DeviceAlert.device_type
+      description: The device type group (see "About Device Categorization" in the Knowledge Base).
+      type: String
+    - contextPath: XDome.DeviceAlert.device_assignees
+      description: The users and or groups the device is assigned to.
+      type: String
+    - contextPath: XDome.DeviceAlert.device_labels
+      description: The labels added to the device manually or automatically.
+      type: String
+    - contextPath: XDome.DeviceAlert.device_retired
+      description: A boolean field indicating if the device is retired or not.
+      type: String
+    - contextPath: XDome.DeviceAlert.device_purdue_level
+      description: The network layer the device belongs to, based on the Purdue Reference Model for Industrial Control System (ICS). The network segmentation-based model defines OT and IT systems into six levels and the logical network boundary controls for securing these networks.
+      type: String
+    - contextPath: XDome.DeviceAlert.device_site_name
+      description: The name of the site within the organization the device is associated with.
+      type: String
+    - contextPath: XDome.DeviceAlert.device_first_seen_list
+      description: The date and time a device's NIC was first seen.
+      type: List
+    - contextPath: XDome.DeviceAlert.device_last_seen_list
+      description: The date and time a device's NIC was last seen.
+      type: List
+    - contextPath: XDome.DeviceAlert.device_risk_score
+      description: The calculated risk level of a device, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceAlert.device_risk_score_points
+      description: The calculated risk points of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceAlert.device_effective_likelihood_subscore
+      description: The calculated effective likelihood subscore level of a device, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceAlert.device_effective_likelihood_subscore_points
+      description: The calculated effective likelihood subscore points of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceAlert.device_likelihood_subscore
+      description: The calculated likelihood subscore level of a device, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceAlert.device_likelihood_subscore_points
+      description: The calculated likelihood subscore points of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceAlert.device_impact_subscore
+      description: The calculated impact subscore level of a device, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceAlert.device_impact_subscore_points
+      description: The calculated impact subscore points of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceAlert.device_insecure_protocols
+      description: The calculated level of the device’s ‘insecure protocols’ likelihood factor, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceAlert.device_insecure_protocols_points
+      description: The calculated points for ‘insecure protocols’ likelihood factor of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceAlert.device_internet_communication
+      description: The manner of the device's communication over the internet.
+      type: String
+    - contextPath: XDome.DeviceAlert.device_known_vulnerabilities
+      description: The calculated level of the device’s ‘known vulnerabilities’ likelihood factor, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceAlert.device_known_vulnerabilities_points
+      description: The calculated points for ‘known vulnerabilities’ likelihood factor of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceAlert.device_manufacturer
+      description: Manufacturer of the device, such as "Alaris".
+      type: String
+    - contextPath: XDome.DeviceAlert.mitre_technique_enterprise_ids
+      description: 'MITRE ATT&CK® Enterprise technique IDs mapped to the alert.'
+      type: List
+    - contextPath: XDome.DeviceAlert.mitre_technique_enterprise_names
+      description: 'MITRE ATT&CK® Enterprise technique names mapped to the alert.'
+      type: List
+    - contextPath: XDome.DeviceAlert.mitre_technique_ics_ids
+      description: 'MITRE ATT&CK® ICS technique IDs mapped to the alert.'
+      type: List
+    - contextPath: XDome.DeviceAlert.mitre_technique_ics_names
+      description: 'MITRE ATT&CK® ICS technique names mapped to the alert.'
+      type: List
+  - name: xdome-set-status-for-device-alert-relations
+    description: Set device-alert status to resolved or unresolved.
+    arguments:
+    - name: alert_id
+      description: Alert ID, as indicated in the id field of an alert.
+      required: true
+      isArray: false
+    - name: device_uids
+      description: Device UUIDs, as indicated in the uid field of a device.
+      required: false
+      isArray: true
+    - name: status
+      description: Set the device-alert status to resolve or unresolved.
+      required: true
+      isArray: false
+      predefined:
+      - resolved
+      - unresolved
+      auto: PREDEFINED
+  - name: xdome-get-device-vulnerability-relations
+    description: Get details of devices with their related vulnerabilities from the database. The data returned by this endpoint for each device corresponds to the vulnerabilities table in the single device page.
+    arguments:
+    - name: fields
+      description: Fields to return.
+      required: false
+      defaultValue: all
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - all
+      - device_network_list
+      - device_category
+      - device_subcategory
+      - device_type
+      - device_uid
+      - device_asset_id
+      - device_mac_list
+      - device_ip_list
+      - device_type_family
+      - device_model
+      - device_os_category
+      - device_serial_number
+      - device_vlan_list
+      - device_retired
+      - device_labels
+      - device_assignees
+      - device_hw_version
+      - device_local_name
+      - device_os_name
+      - device_os_version
+      - device_os_revision
+      - device_os_subcategory
+      - device_combined_os
+      - device_endpoint_security_names
+      - device_equipment_class
+      - device_consequence_of_failure
+      - device_management_services
+      - device_ad_distinguished_name
+      - device_ad_description
+      - device_mdm_ownership
+      - device_mdm_enrollment_status
+      - device_mdm_compliance_status
+      - device_last_domain_user
+      - device_fda_class
+      - device_mobility
+      - device_purdue_level
+      - device_purdue_level_source
+      - device_dhcp_hostnames
+      - device_http_hostnames
+      - device_snmp_hostnames
+      - device_windows_hostnames
+      - device_other_hostnames
+      - device_windows_last_seen_hostname
+      - device_dhcp_last_seen_hostname
+      - device_http_last_seen_hostname
+      - device_snmp_last_seen_hostname
+      - device_ae_titles
+      - device_dhcp_fingerprint
+      - device_note
+      - device_domains
+      - device_battery_level
+      - device_internet_communication
+      - device_financial_cost
+      - device_handles_pii
+      - device_machine_type
+      - device_phi
+      - device_cmms_state
+      - device_cmms_ownership
+      - device_cmms_asset_tag
+      - device_cmms_campus
+      - device_cmms_building
+      - device_cmms_location
+      - device_cmms_floor
+      - device_cmms_department
+      - device_cmms_owning_cost_center
+      - device_cmms_asset_purchase_cost
+      - device_cmms_room
+      - device_cmms_manufacturer
+      - device_cmms_model
+      - device_cmms_serial_number
+      - device_cmms_last_pm
+      - device_cmms_technician
+      - device_edr_is_up_to_date_text
+      - device_mac_oui_list
+      - device_ip_assignment_list
+      - device_protocol_location_list
+      - device_vlan_name_list
+      - device_vlan_description_list
+      - device_connection_type_list
+      - device_ssid_list
+      - device_bssid_list
+      - device_wireless_encryption_type_list
+      - device_ap_name_list
+      - device_ap_location_list
+      - device_switch_mac_list
+      - device_switch_ip_list
+      - device_switch_name_list
+      - device_switch_port_list
+      - device_switch_location_list
+      - device_switch_port_description_list
+      - device_wlc_name_list
+      - device_wlc_location_list
+      - device_applied_acl_list
+      - device_applied_acl_type_list
+      - device_collection_servers
+      - device_edge_locations
+      - device_number_of_nics
+      - device_last_domain_user_activity
+      - device_last_scan_time
+      - device_edr_last_scan_time
+      - device_retired_since
+      - device_os_eol_date
+      - device_last_seen_list
+      - device_first_seen_list
+      - device_wifi_last_seen_list
+      - device_last_seen_on_switch_list
+      - device_is_online
+      - device_network_scope_list
+      - device_ise_authentication_method_list
+      - device_ise_endpoint_profile_list
+      - device_ise_identity_group_list
+      - device_ise_security_group_name_list
+      - device_ise_security_group_tag_list
+      - device_ise_logical_profile_list
+      - device_cppm_authentication_status_list
+      - device_cppm_roles_list
+      - device_cppm_service_list
+      - device_name
+      - device_manufacturer
+      - device_site_name
+      - device_risk_score
+      - device_risk_score_points
+      - device_effective_likelihood_subscore
+      - device_effective_likelihood_subscore_points
+      - device_likelihood_subscore
+      - device_likelihood_subscore_points
+      - device_impact_subscore
+      - device_impact_subscore_points
+      - device_known_vulnerabilities
+      - device_known_vulnerabilities_points
+      - device_insecure_protocols
+      - device_insecure_protocols_points
+      - device_suspicious
+      - device_switch_group_name_list
+      - device_managed_by
+      - device_authentication_user_list
+      - device_collection_interfaces
+      - device_slot_cards
+      - device_cmms_financial_cost
+      - device_software_or_firmware_version
+      - device_enforcement_or_authorization_profiles_list
+      - device_ise_security_group_description_list
+      - device_recommended_firewall_group_name
+      - device_recommended_zone_name
+      - vulnerability_id
+      - vulnerability_name
+      - vulnerability_type
+      - vulnerability_cve_ids
+      - vulnerability_cvss_v2_score
+      - vulnerability_cvss_v2_exploitability_subscore
+      - vulnerability_cvss_v3_score
+      - vulnerability_cvss_v3_exploitability_subscore
+      - vulnerability_adjusted_vulnerability_score
+      - vulnerability_adjusted_vulnerability_score_level
+      - vulnerability_epss_score
+      - vulnerability_sources
+      - vulnerability_description
+      - vulnerability_affected_products
+      - vulnerability_recommendations
+      - vulnerability_exploits_count
+      - vulnerability_is_known_exploited
+      - vulnerability_published_date
+      - vulnerability_labels
+      - vulnerability_assignees
+      - vulnerability_note
+      - vulnerability_last_updated
+      - vulnerability_relevance
+      - vulnerability_relevance_sources
+      - vulnerability_manufacturer_remediation_info
+      - vulnerability_manufacturer_remediation_info_source
+      - vulnerability_overall_cvss_v3_score
+      - device_vulnerability_detection_date
+      - device_vulnerability_resolution_date
+      - device_vulnerability_days_to_resolution
+      - patch_install_date
+    - name: filter_by
+      description: 'A filter_by object, refer to the xDome API documentation. Input as a string and dont forget to escape quotes (\").'
+      required: false
+      isArray: false
+    - name: sort_by
+      description: 'Default: [{"field":"device_uid","order":"asc"}, {"field":"vulnerability_id","order":"asc"}]. Specifies how the returned data should be sorted. If more than one sort clause is passed, additional clauses will be used to sort data that is equal in all previous clauses.'
+      required: false
+      isArray: false
+    - name: offset
+      description: An offset in the data. This can be used to fetch all data in a paginated manner, by e.g requesting (offset=0, limit=100) followed by (offset=100, limit=100), (offset=200, limit=100), etc.
+      required: false
+      isArray: false
+    - name: limit
+      description: Maximum amount of items to fetch.
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: XDome.DeviceVulnerability.vulnerability_name
+      description: Name designated by Claroty's Research team, based on the advisory name or CVE ID.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.vulnerability_type
+      description: Type such as "Application", "Clinical", "IoT" or "Platform".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.vulnerability_cve_ids
+      description: Relevant Common Vulnerability Exploits for the selected vulnerability.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.vulnerability_cvss_v3_score
+      description: Common Vulnerability Scoring System Version 3 score (0-10). In case of multiple CVEs, the highest Subscore is displayed.
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.vulnerability_adjusted_vulnerability_score
+      description: The Adjusted Vulnerability Score represents the vulnerability score based on its impact and exploitability.
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.vulnerability_adjusted_vulnerability_score_level
+      description: The calculated Adjusted vulnerability Score (AVS) level of a vulnerability, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.vulnerability_epss_score
+      description: A probability score between 0 to 1 indicating the likelihoodof a vulnerability to be exploited in the wild, based on the Exploit Prediction Scoring System (EPSS) model.
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.vulnerability_description
+      description: Details about the vulnerability.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.vulnerability_exploits_count
+      description: An aggregated numeric field of the number of known exploits based on ExploitDB.
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.vulnerability_is_known_exploited
+      description: A boolean field indicating whether a vulnerability is currently exploited in-the-wild, based on the CISA Catalog of Known Exploited Vulnerabilities.
+      type: Boolean
+    - contextPath: XDome.DeviceVulnerability.vulnerability_published_date
+      description: The date and time the vulnerability was released.
+      type: Date
+    - contextPath: XDome.DeviceVulnerability.vulnerability_relevance
+      description: The device vulnerability relevance reflects the confidence level of the detection process, corresponding to several components, such as the vulnerability type.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_vulnerability_detection_date
+      description: The date when the vulnerability was initially detected on the device. A vulnerability is considered detected once marked as “confirmed” or “potentially relevant” for the respective device.
+      type: Date
+    - contextPath: XDome.DeviceVulnerability.device_network_list
+      description: The network types, "Corporate" and or "Guest", that the device belongs to.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_category
+      description: The device category group (see "About Device Categorization" in the Knowledge Base).
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_subcategory
+      description: The device sub-category group (see "About Device Categorization" in the Knowledge Base).
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_type
+      description: The device type group (see "About Device Categorization" in the Knowledge Base).
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_uid
+      description: A universal unique identifier (UUID) for the device.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_asset_id
+      description: Asset ID.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_mac_list
+      description: MAC address associated with the device.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_ip_list
+      description: IP address associated with the device. IPs may be suffixed by a / (annotation), where annotation may be a child device ID or (Last Known IP).
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_type_family
+      description: The device type family group (see "About Device Categorization" in the Knowledge Base).
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_model
+      description: The device's model.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_os_category
+      description: The device's OS category, such as "Windows", "Linux" or "Other".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_serial_number
+      description: The device's serial number.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_vlan_list
+      description: The virtual LAN to which the device belongs.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_labels
+      description: The labels added to the device manually or automatically.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_assignees
+      description: The users and or groups the device is assigned to.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_hw_version
+      description: The hardware version of the device.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_local_name
+      description: Similar to hostname, the device name identifier is extracted from protocol traffic.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_combined_os
+      description: The aggregated value of OS name, version and revision, such as "Windows XP SP3".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_endpoint_security_names
+      description: The names of endpoint security applications installed on the device.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_equipment_class
+      description: Determines the equipment class of the device, according to The Joint Commission (TJC).
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_management_services
+      description: Defines whether the device is managed by Active Directory, Mobile Device Management, or neither.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_purdue_level
+      description: The network layer the device belongs to, based on the Purdue Reference Model for Industrial Control System (ICS). The network segmentation-based model defines OT and IT systems into six levels and the logical network boundary controls for securing these networks.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_http_last_seen_hostname
+      description: The most recent unique hostname identifier of the device, extracted from HTTP protocol traffic.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_snmp_last_seen_hostname
+      description: The most recent unique hostname identifier of the device, extracted from SNMP protocol traffic.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_note
+      description: The notes added to the device.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_domains
+      description: The domain name of the network that the device belongs to.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_internet_communication
+      description: The manner of the device's communication over the internet.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_edr_is_up_to_date_text
+      description: Determines whether the endpoint security application installed on the device is up-to-date.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_mac_oui_list
+      description: The vendor of the device's NIC, according to the OUI (Organizational Unique Identifier) in the MAC address.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_ip_assignment_list
+      description: The device's IP assignment method, extracted from DHCP protocol traffic, such as "DHCP", "DHCP (Static Lease)", or "Static".
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_vlan_name_list
+      description: The name of the VLAN, extracted from switch configurations.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_vlan_description_list
+      description: The description of the VLAN, extracted from switch configurations.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_connection_type_list
+      description: The connection types of a device, such as "Ethernet".
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_ssid_list
+      description: The name of the wireless network the device is connected to, such as "Guest".
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_ap_location_list
+      description: The location of the access point the device is connected to, extracted from Network Management integrations.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_switch_port_list
+      description: The port identifier of the switch the device is connected to.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_switch_location_list
+      description: The location of the switch the device is connected to.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_number_of_nics
+      description: The number of network interface cards seen on the network.
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.device_last_seen_list
+      description: The date and time a device's NIC was last seen.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_first_seen_list
+      description: The date and time a device's NIC was first seen.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_is_online
+      description: A boolean field indicating whether the device is online or not.
+      type: Boolean
+    - contextPath: XDome.DeviceVulnerability.device_network_scope_list
+      description: The device's Network Scope - used to differentiate between internal networks that share the same IP subnets.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_name
+      description: The Device Name attribute is set automatically based on the priority of the Auto-Assigned Device attribute. You can also set it manually. The Device Name can be the device’s IP, hostname, etc.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_manufacturer
+      description: Manufacturer of the device, such as "Alaris".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_site_name
+      description: The name of the site within the healthcare organization the device is associated with.
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_risk_score
+      description: The calculated risk level of a device, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_risk_score_points
+      description: The calculated risk points of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.device_effective_likelihood_subscore
+      description: The calculated effective likelihood subscore level of a device, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_effective_likelihood_subscore_points
+      description: The calculated effective likelihood subscore points of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.device_likelihood_subscore
+      description: The calculated likelihood subscore level of a device, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_likelihood_subscore_points
+      description: The calculated likelihood subscore points of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.device_impact_subscore
+      description: The calculated impact subscore level of a device, such as "Critical", or "High".
+      type: String
+    - contextPath: XDome.DeviceVulnerability.device_impact_subscore_points
+      description: The calculated impact subscore points of a device, such as "54.1".
+      type: Number
+    - contextPath: XDome.DeviceVulnerability.device_suspicious
+      description: The reasons for which the device was marked as suspicious.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_authentication_user_list
+      description: The User name used to authenticate the device to the network using Radius/802.1x is extracted from the NAC integration and the traffic.
+      type: List
+    - contextPath: XDome.DeviceVulnerability.device_software_or_firmware_version
+      description: The application version running on the device.
+      type: String
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.111526
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
