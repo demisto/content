@@ -479,14 +479,14 @@ def send_slack_request_sync(
     Sends a request to slack API while handling rate limit errors.
 
     Args:
-        client: The slack client.
-        method: The method to use.
+        client: The Synchronous Slack client.
+        method: The Slack web API method to use (not relevant when file_upload_params are specified).
         http_verb: The HTTP method to use.
         body: The request body.
         file_upload_params: An instance of FileUploadParams (for uploading using the file-upload APIs).
 
     Returns:
-        The slack API response.
+        The Slack API response.
     """
     if body is None:
         body = {}
@@ -531,14 +531,14 @@ async def send_slack_request_async(
     Sends an async request to slack API while handling rate limit errors.
 
     Args:
-        client: The slack client.
-        method: The method to use.
+        client: The Asynchronous Slack client.
+        method: The Slack web API method to use (not relevant when file_upload_params are specified).
         http_verb: The HTTP method to use.
         body: The request body.
         file_upload_params: An instance of FileUploadParams (for uploading using the file upload APIs).
 
     Returns:
-        The slack API response.
+        The Slack API response.
     """
     if body is None:
         body = {}
