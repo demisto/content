@@ -29,38 +29,6 @@ SEVERITY_DICT = {
     'Critical': 4
 }
 
-RESPONSE_ERROR_EXPLANATIONS = {
-    'access_denied': 'Access to a resource specified in the request is denied.',
-    'channel_not_found': 'The value passed for channel_id was invalid.',
-    'file_not_found': 'Could not find the file from the upload ticket.',
-    'file_update_failed': 'Failure occurred when attempting to update the file.',
-    'invalid_channel': 'The channel could not be found or the channel specified is invalid.',
-    'posting_to_channel_denied': 'The user is not authorized to post to the target channel(s).',
-    'account_inactive': 'The authentication token is for a deleted user or workspace when using a bot token.',
-    'deprecated_endpoint': 'The endpoint has been deprecated.',
-    'ekm_access_denied': 'Administrators have suspended the ability to post a message.',
-    'enterprise_is_restricted': 'The method cannot be called from an Enterprise.',
-    'invalid_auth': 'The provided token is invalid or the request originates from a disallowed IP address.',
-    'method_deprecated': 'The method has been deprecated.',
-    'missing_scope': 'The token used is not granted the specific scope permissions required to complete this request.',
-    'not_allowed_token_type': 'The token type used in this request is not allowed.',
-    'not_authed': 'No authentication token provided.',
-    'not_in_channel': 'The user or bot used is not in the target channel(s). Ensure they are invited to the channel(s).',
-    'no_permission': 'The workspace token used in this request does not have the permissions necessary to complete the request.',
-    'org_login_required': 'The workspace is undergoing an enterprise migration and is temporarily unavailable.',
-    'token_expired': 'The authentication token has expired.',
-    'token_revoked': 'The authentication token is for a deleted user or workspace or the app has been removed.',
-    'two_factor_setup_required': 'Two factor setup is required.',
-    'team_access_not_granted': 'The token used is not granted the specific workspace access required to complete this request.',
-    'accesslimited': 'Access to this method is limited on the current network.',
-    'fatal_error': 'The Slack server could not complete this operation(s).',
-    'internal_error': 'The Slack server could not complete this operation(s), likely due to a transient issue on our end.',
-    'ratelimited': 'The request has been rate limited.',
-    'request_timeout': 'Data was either missing or truncated for the POST request.',
-    'service_unavailable': 'The Slack service is temporarily unavailable.',
-    'team_added_to_org': 'The Slack workspace is currently undergoing migration to an Enterprise Organization.'
-}
-
 USER_TAG_EXPRESSION = '<@(.*?)>'
 CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
 URL_EXPRESSION = r'<(https?://.+?)(?:\|.+)?>'
@@ -91,10 +59,10 @@ MAX_SAMPLES = 10
 
 class FileUploadParams(TypedDict):
     filename: str
-    file: str
+    file: str                       # file path
     initial_comment: Optional[str]
-    channel: str
-    thread_ts: Optional[str]
+    channel: str                    # channel ID
+    thread_ts: Optional[str]        # thread ID
 
 
 ''' GLOBALS '''
@@ -2032,6 +2000,39 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
     set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
+SEND_FILE_ERROR_EXPLANATIONS = {
+    'access_denied': 'Access to a resource specified in the request is denied.',
+    'channel_not_found': 'The value passed for channel_id was invalid.',
+    'file_not_found': 'Could not find the file from the upload ticket.',
+    'file_update_failed': 'Failure occurred when attempting to update the file.',
+    'invalid_channel': 'The channel could not be found or the channel specified is invalid.',
+    'posting_to_channel_denied': 'The user is not authorized to post to the target channel(s).',
+    'account_inactive': 'The authentication token is for a deleted user or workspace when using a bot token.',
+    'deprecated_endpoint': 'The endpoint has been deprecated.',
+    'ekm_access_denied': 'Administrators have suspended the ability to post a message.',
+    'enterprise_is_restricted': 'The method cannot be called from an Enterprise.',
+    'invalid_auth': 'The provided token is invalid or the request originates from a disallowed IP address.',
+    'method_deprecated': 'The method has been deprecated.',
+    'missing_scope': 'The token used is not granted the specific scope permissions required to complete this request.',
+    'not_allowed_token_type': 'The token type used in this request is not allowed.',
+    'not_authed': 'No authentication token provided.',
+    'not_in_channel': 'The user or bot used is not in the target channel(s). Ensure they are invited to the channel(s).',
+    'no_permission': 'The workspace token used in this request does not have the permissions necessary to complete the request.',
+    'org_login_required': 'The workspace is undergoing an enterprise migration and is temporarily unavailable.',
+    'token_expired': 'The authentication token has expired.',
+    'token_revoked': 'The authentication token is for a deleted user or workspace or the app has been removed.',
+    'two_factor_setup_required': 'Two factor setup is required.',
+    'team_access_not_granted': 'The token used is not granted the specific workspace access required to complete this request.',
+    'accesslimited': 'Access to this method is limited on the current network.',
+    'fatal_error': 'The Slack server could not complete this operation(s).',
+    'internal_error': 'The Slack server could not complete this operation(s), likely due to a transient issue on our end.',
+    'ratelimited': 'The request has been rate limited.',
+    'request_timeout': 'Data was either missing or truncated for the POST request.',
+    'service_unavailable': 'The Slack service is temporarily unavailable.',
+    'team_added_to_org': 'The Slack workspace is currently undergoing migration to an Enterprise Organization.'
+}
+
+
 def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_id: str | None = None, _comment: str = ""):
     """
     Sends a file to slack
@@ -2070,7 +2071,7 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
     except SlackApiError as e:
         demisto.debug(f'{error_message} {e}')
         if error_code := e.response.get('error'):
-            error_explanation = RESPONSE_ERROR_EXPLANATIONS.get(error_code, error_code.replace('_', ' ').capitalize())
+            error_explanation = SEND_FILE_ERROR_EXPLANATIONS.get(error_code, error_code.replace('_', ' ').capitalize())
             error_message += f' {error_explanation}'
 
         raise DemistoException(message=error_message)
