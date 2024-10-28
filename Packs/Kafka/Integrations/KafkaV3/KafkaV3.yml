@@ -40,12 +40,14 @@ configuration:
   name: additional_password
   type: 9
   required: false
-- display: SASL PLAIN Username
+- displaypassword: SASL PLAIN Username
+  hiddenusername: true
   name: plain_username
-  type: 14
-- display: SASL PLAIN Password
+  type: 9
+- displaypassword: SASL PLAIN Password
+  hiddenusername: true
   name: plain_password
-  type: 14
+  type: 9
 - display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   type: 0
