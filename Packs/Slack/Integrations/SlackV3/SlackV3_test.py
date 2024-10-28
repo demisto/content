@@ -5282,7 +5282,7 @@ def test_send_file_api_exception(mocker):
 def test_validate_slack_request_args():
     """
     Given:
-        - An invalid Slack API request arguments.
+        - Invalid Slack API request arguments.
     When:
         - Calling the validate_slack_request_args function.
     Then:
