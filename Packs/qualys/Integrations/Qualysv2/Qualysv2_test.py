@@ -1294,17 +1294,17 @@ class TestAssetTags:
 
     def test_handle_asset_tag_result(self):
         raw_response = (
-                '<?xml version="1.0" encoding="UTF-8"?>\n<ServiceResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-                + ' xsi:noNamespaceSchemaLocation="https://qualysapi.qg2.apps.qualys.com/qps/xsd/2.0/am/tag.xsd">\n '
-                + " <responseCode>SUCCESS</responseCode>\n  <count>1</count>\n  <hasMoreRecords>false</hasMoreRecords>\n "
-                + " <data>\n    <Tag>\n      <id>71163393</id>\n      <name>parent_tag</name>\n      "
-                + "<created>2022-11-24T12:38:13Z</created>\n      <modified>2022-11-24T13:09:35Z</modified>\n     "
-                + " <ruleType>INSTALLED_SOFTWARE</ruleType>\n      <children>\n        <list>\n          <TagSimple>\n"
-                + "            <id>71163395</id>\n            <name>child_1</name>\n          </TagSimple>\n          "
-                + "<TagSimple>\n            <id>71163394</id>\n            <name>child_2</name>\n          </TagSimple>\n"
-                + "          <TagSimple>\n            <id>71163396</id>\n            <name>child_3</name>\n          "
-                + "</TagSimple>\n        </list>\n      </children>\n      <criticalityScore>3</criticalityScore>\n"
-                + "    </Tag>\n  </data>\n</ServiceResponse>"
+            '<?xml version="1.0" encoding="UTF-8"?>\n<ServiceResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            + ' xsi:noNamespaceSchemaLocation="https://qualysapi.qg2.apps.qualys.com/qps/xsd/2.0/am/tag.xsd">\n '
+            + " <responseCode>SUCCESS</responseCode>\n  <count>1</count>\n  <hasMoreRecords>false</hasMoreRecords>\n "
+            + " <data>\n    <Tag>\n      <id>71163393</id>\n      <name>parent_tag</name>\n      "
+            + "<created>2022-11-24T12:38:13Z</created>\n      <modified>2022-11-24T13:09:35Z</modified>\n     "
+            + " <ruleType>INSTALLED_SOFTWARE</ruleType>\n      <children>\n        <list>\n          <TagSimple>\n"
+            + "            <id>71163395</id>\n            <name>child_1</name>\n          </TagSimple>\n          "
+            + "<TagSimple>\n            <id>71163394</id>\n            <name>child_2</name>\n          </TagSimple>\n"
+            + "          <TagSimple>\n            <id>71163396</id>\n            <name>child_3</name>\n          "
+            + "</TagSimple>\n        </list>\n      </children>\n      <criticalityScore>3</criticalityScore>\n"
+            + "    </Tag>\n  </data>\n</ServiceResponse>"
         )
         command_name = "qualys-asset-tag-list"
         expected_result = {
@@ -1464,37 +1464,37 @@ def test_build_ip_and_range_dicts():
 truncate_test_cases = [
     # Case 1: Asset with ID and detection unique vuln ID, and exceeds size limit
     ({
-         "ID": "12345",
-         "DETECTION": {
-             "UNIQUE_VULN_ID": "vuln1",
-             "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
-         }
-     },
-     True),
+        "ID": "12345",
+        "DETECTION": {
+            "UNIQUE_VULN_ID": "vuln1",
+            "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
+        }
+    },
+        True),
 
     # Case 2: Asset with no ID and detection unique vuln ID, and exceeds size limit
     ({
-         "DETECTION": {
-             "UNIQUE_VULN_ID": "vuln2",
-             "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
-         }
-     },
-     True),
+        "DETECTION": {
+            "UNIQUE_VULN_ID": "vuln2",
+            "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
+        }
+    },
+        True),
     # Case 3: Asset with ID and no detection unique vuln ID, and does not exceed size limit
     ({
-         "ID": "12345",
-         "DETECTION": {
-             "RESULTS": "A" * 100  # Does not exceed size limit
-         }
-     },
-     False),
+        "ID": "12345",
+        "DETECTION": {
+            "RESULTS": "A" * 100  # Does not exceed size limit
+        }
+    },
+        False),
     # Case 4: Asset with no ID and no detection unique vuln ID, and does not exceed size limit
     ({
-         "DETECTION": {
-             "RESULTS": "A" * 100  # Does not exceed size limit
-         }
-     },
-     False)
+        "DETECTION": {
+            "RESULTS": "A" * 100  # Does not exceed size limit
+        }
+    },
+        False)
 ]
 
 
