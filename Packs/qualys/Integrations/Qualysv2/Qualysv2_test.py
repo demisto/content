@@ -23,11 +23,11 @@ from Qualysv2 import (
     get_simple_response_from_raw,
     validate_required_group,
     get_activity_logs_events_command,
-    fetch_events, get_activity_logs_events, fetch_assets, fetch_vulnerabilities, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT, HOST_LIMIT
+    fetch_events, get_activity_logs_events, fetch_assets, fetch_vulnerabilities, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT,
+    HOST_LIMIT
 )
 
 from CommonServerPython import *  # noqa: F401
-
 
 ACTIVITY_LOGS_NEWEST_EVENT_DATETIME = 'activity_logs_newest_event_datetime'
 ACTIVITY_LOGS_NEXT_PAGE = 'activity_logs_next_page'
@@ -183,7 +183,8 @@ def test_fetch_assets_command_time_out(requests_mock, mocker):
         assets = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
                       f'?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after='
-                      f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', exc=requests.exceptions.ReadTimeout)
+                      f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
+                      exc=requests.exceptions.ReadTimeout)
 
     client = Client(base_url=base_url,
                     verify=True,
@@ -384,7 +385,8 @@ class TestFormatAndValidateResponse:
             raw_xml_response_success,
             {
                 "SIMPLE_RETURN": {
-                    "RESPONSE": {"DATETIME": "2021-03-24T15:40:23Z", "TEXT": "IPs successfully added to Vulnerability Management"}
+                    "RESPONSE": {"DATETIME": "2021-03-24T15:40:23Z",
+                                 "TEXT": "IPs successfully added to Vulnerability Management"}
                 }
             },
         ),
@@ -410,7 +412,7 @@ class TestFormatAndValidateResponse:
                 "SIMPLE_RETURN": {
                     "RESPONSE": {
                         "DATETIME": "2021-03-24T15:40:23Z",
-                        "TEXT": "IPs successfully added to Vulnerability " "Management",
+                        "TEXT": "IPs successfully added to Vulnerability Management",
                     }
                 }
             },
@@ -447,7 +449,8 @@ class TestHandleGeneralResult:
         mocker.patch.object(Qualysv2, "format_and_validate_response", return_value=json_obj)
         dummy_response = requests.Response()
 
-        assert handle_general_result(dummy_response, "qualys-ip-list") == {"DATETIME": "sometime", "IP_SET": {"IP": ["1.1.1.1"]}}
+        assert handle_general_result(dummy_response, "qualys-ip-list") == {"DATETIME": "sometime",
+                                                                           "IP_SET": {"IP": ["1.1.1.1"]}}
 
     def test_handle_general_result_doesnt_exist(self, mocker):
         """
@@ -890,7 +893,8 @@ class TestBuildArgsDict:
             "launched_after_datetime": "2021-12-26T08:49:29Z",
             "start_date": "2021-12-26T08:49:29Z",
         }
-        expected_result = {"launched_after_datetime": "2021-12-26", "published_before": "2021-12-26", "start_date": "12/26/2021"}
+        expected_result = {"launched_after_datetime": "2021-12-26", "published_before": "2021-12-26",
+                           "start_date": "12/26/2021"}
 
         build_args_dict(args, {"args": ["published_before", "launched_after_datetime", "start_date"]}, False)
         assert Qualysv2.args_values == expected_result
@@ -1015,7 +1019,8 @@ class TestHostDetectionOutputBuilder:
         """
         Qualysv2.inner_args_values["limit"] = 1
         assert build_host_list_detection_outputs(
-            handled_result=result, command_parse_and_output_data=COMMANDS_PARSE_AND_OUTPUT_DATA["qualys-host-list-detection"]
+            handled_result=result,
+            command_parse_and_output_data=COMMANDS_PARSE_AND_OUTPUT_DATA["qualys-host-list-detection"]
         ) == (expected_outputs, readable)
 
 
@@ -1053,7 +1058,7 @@ class TestClientClass:
 </SIMPLE_RETURN>""",
                 500,
             ),
-            "Error in API call [500] - None\nError Code: 999\nError Message: Internal error. Please " "contact customer support.",
+            "Error in API call [500] - None\nError Code: 999\nError Message: Internal error. Please contact customer support.",
         ),
         (MockResponse("Invalid XML", 500), "Error in API call [500] - None\nInvalid XML"),
     ]
@@ -1085,7 +1090,8 @@ class TestInputValidations:
     VALIDATE_DEPENDED_ARGS_INPUT = [
         ({}, {}),
         ({"required_depended_args": DEPENDANT_ARGS}, {}),
-        ({"required_depended_args": DEPENDANT_ARGS}, {k: 3 for k, v in DEPENDANT_ARGS.items() if v == "frequency_months"}),
+        ({"required_depended_args": DEPENDANT_ARGS},
+         {k: 3 for k, v in DEPENDANT_ARGS.items() if v == "frequency_months"}),
     ]
 
     @pytest.mark.parametrize("command_data, args", VALIDATE_DEPENDED_ARGS_INPUT)
@@ -1117,7 +1123,8 @@ class TestInputValidations:
         - Ensure exception is thrown.
         """
         Qualysv2.args_values = {"frequency_months": 1}
-        with pytest.raises(DemistoException, match="Argument day_of_month is required when argument frequency_months is given."):
+        with pytest.raises(DemistoException,
+                           match="Argument day_of_month is required when argument frequency_months is given."):
             validate_depended_args({"required_depended_args": self.DEPENDANT_ARGS})
 
     EXACTLY_ONE_GROUP_ARGS = [
@@ -1198,9 +1205,14 @@ class TestInputValidations:
     AT_MOST_ONE_ARGS_INPUT = [
         ({}, {}),
         ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS}, {}),
-        ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS}, {"asset_group_ids": 1, "scanners_in_ag": 1, "frequency_days": 1}),
-        ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS}, {"asset_groups": 1, "scanners_in_ag": 1, "frequency_weeks": 1}),
-        ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS}, {"ip": "1.1.1.1", "default_scanner": 1, "frequency_months": 1}),
+        ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS},
+         {"asset_group_ids": 1, "scanners_in_ag": 1, "frequency_days": 1}),
+        (
+            {"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS},
+            {"asset_groups": 1, "scanners_in_ag": 1, "frequency_weeks": 1}),
+        (
+            {"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS},
+            {"ip": "1.1.1.1", "default_scanner": 1, "frequency_months": 1}),
     ]
 
     @pytest.mark.parametrize("command_data, args", AT_MOST_ONE_ARGS_INPUT)
@@ -1282,17 +1294,17 @@ class TestAssetTags:
 
     def test_handle_asset_tag_result(self):
         raw_response = (
-            '<?xml version="1.0" encoding="UTF-8"?>\n<ServiceResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-            + ' xsi:noNamespaceSchemaLocation="https://qualysapi.qg2.apps.qualys.com/qps/xsd/2.0/am/tag.xsd">\n '
-            + " <responseCode>SUCCESS</responseCode>\n  <count>1</count>\n  <hasMoreRecords>false</hasMoreRecords>\n "
-            + " <data>\n    <Tag>\n      <id>71163393</id>\n      <name>parent_tag</name>\n      "
-            + "<created>2022-11-24T12:38:13Z</created>\n      <modified>2022-11-24T13:09:35Z</modified>\n     "
-            + " <ruleType>INSTALLED_SOFTWARE</ruleType>\n      <children>\n        <list>\n          <TagSimple>\n"
-            + "            <id>71163395</id>\n            <name>child_1</name>\n          </TagSimple>\n          "
-            + "<TagSimple>\n            <id>71163394</id>\n            <name>child_2</name>\n          </TagSimple>\n"
-            + "          <TagSimple>\n            <id>71163396</id>\n            <name>child_3</name>\n          "
-            + "</TagSimple>\n        </list>\n      </children>\n      <criticalityScore>3</criticalityScore>\n"
-            + "    </Tag>\n  </data>\n</ServiceResponse>"
+                '<?xml version="1.0" encoding="UTF-8"?>\n<ServiceResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+                + ' xsi:noNamespaceSchemaLocation="https://qualysapi.qg2.apps.qualys.com/qps/xsd/2.0/am/tag.xsd">\n '
+                + " <responseCode>SUCCESS</responseCode>\n  <count>1</count>\n  <hasMoreRecords>false</hasMoreRecords>\n "
+                + " <data>\n    <Tag>\n      <id>71163393</id>\n      <name>parent_tag</name>\n      "
+                + "<created>2022-11-24T12:38:13Z</created>\n      <modified>2022-11-24T13:09:35Z</modified>\n     "
+                + " <ruleType>INSTALLED_SOFTWARE</ruleType>\n      <children>\n        <list>\n          <TagSimple>\n"
+                + "            <id>71163395</id>\n            <name>child_1</name>\n          </TagSimple>\n          "
+                + "<TagSimple>\n            <id>71163394</id>\n            <name>child_2</name>\n          </TagSimple>\n"
+                + "          <TagSimple>\n            <id>71163396</id>\n            <name>child_3</name>\n          "
+                + "</TagSimple>\n        </list>\n      </children>\n      <criticalityScore>3</criticalityScore>\n"
+                + "    </Tag>\n  </data>\n</ServiceResponse>"
         )
         command_name = "qualys-asset-tag-list"
         expected_result = {
@@ -1449,68 +1461,74 @@ def test_build_ip_and_range_dicts():
     assert Qualysv2.build_ip_and_range_dicts(['-', 'example']) == [[{'ip': 'example'}], [{'range': '-'}]]
 
 
-def test_truncate_asset_size(mocker):
-    # Mock demisto.debug
+truncate_test_cases = [
+    # Case 1: Asset with ID and detection unique vuln ID, and exceeds size limit
+    ({
+         "ID": "12345",
+         "DETECTION": {
+             "UNIQUE_VULN_ID": "vuln1",
+             "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
+         }
+     },
+     True),
 
+    # Case 2: Asset with no ID and detection unique vuln ID, and exceeds size limit
+    ({
+         "DETECTION": {
+             "UNIQUE_VULN_ID": "vuln2",
+             "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
+         }
+     },
+     True),
+    # Case 3: Asset with ID and no detection unique vuln ID, and does not exceed size limit
+    ({
+         "ID": "12345",
+         "DETECTION": {
+             "RESULTS": "A" * 100  # Does not exceed size limit
+         }
+     },
+     False),
+    # Case 4: Asset with no ID and no detection unique vuln ID, and does not exceed size limit
+    ({
+         "DETECTION": {
+             "RESULTS": "A" * 100  # Does not exceed size limit
+         }
+     },
+     False)
+]
+
+
+@pytest.mark.parametrize('asset, expected_truncated', truncate_test_cases)
+def test_truncate_asset_size(mocker, asset, expected_truncated):
+    """
+    Given:
+    - Case 1: Asset which exceeds size limit with ID and detection unique vuln ID.
+    - Case 2: Asset which exceeds size limit with no ID and detection unique vuln ID.
+    - Case 3: Asset which does not exceed size limit with ID and no detection unique vuln ID.
+    - Case 4: Asset which does not exceed size limit with no ID and no detection unique vuln ID.
+
+    When: calling truncate_asset_size with the given asset
+
+    Then:
+    - Case 1: ensure the isTruncated flag is set to true, that the size of the assets was truncated to 1000 and that
+        debug logs were printed.
+    - Case 2: ensure the isTruncated flag is set to true, that the size of the assets was truncated to 1000 and that
+        debug logs were printed.
+    - Case 3: ensure the isTruncated flag is set to false or does not exist and that debug logs were not printed.
+    - Case 4: ensure the isTruncated flag is set to false or does not exist and that debug logs were not printed.
+
+    """
     mock_debug = mocker.patch.object(demisto, 'debug')
 
-    # Define test cases
-    test_cases = [
-        # Case 1: Asset with ID and detection unique vuln ID, and exceeds size limit
-        {
-            "asset": {
-                "ID": "12345",
-                "DETECTION": {
-                    "UNIQUE_VULN_ID": "vuln1",
-                    "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
-                }
-            },
-            "expected_truncated": True
-        },
-        # Case 2: Asset with no ID and detection unique vuln ID, and exceeds size limit
-        {
-            "asset": {
-                "DETECTION": {
-                    "UNIQUE_VULN_ID": "vuln2",
-                    "RESULTS": "A" * 2 * 10 ** 6  # Exceeds size limit
-                }
-            },
-            "expected_truncated": True
-        },
-        # Case 3: Asset with ID and no detection unique vuln ID, and does not exceed size limit
-        {
-            "asset": {
-                "ID": "12345",
-                "DETECTION": {
-                    "RESULTS": "A" * 100  # Does not exceed size limit
-                }
-            },
-            "expected_truncated": False
-        },
-        # Case 4: Asset with no ID and no detection unique vuln ID, and does not exceed size limit
-        {
-            "asset": {
-                "DETECTION": {
-                    "RESULTS": "A" * 100  # Does not exceed size limit
-                }
-            },
-            "expected_truncated": False
-        }
-    ]
+    Qualysv2.truncate_asset_size(asset)
 
-    for case in test_cases:
-        asset = case["asset"]
-        expected_truncated = case["expected_truncated"]
+    if expected_truncated:
+        assert asset.get('isTruncated', False) is True
+        assert len(asset['DETECTION']['RESULTS']) == 10000
+        assert mock_debug.call_count >= 3  # Expecting at least 3 debug messages
+    else:
+        assert asset.get('isTruncated', False) is False
+        assert mock_debug.call_count == 0  # No debug messages if not truncated
 
-        Qualysv2.truncate_asset_size(asset)
-
-        if expected_truncated:
-            assert asset.get('isTruncated', False) is True
-            assert len(asset['DETECTION']['RESULTS']) == 10000
-            assert mock_debug.call_count >= 3  # Expecting at least 3 debug messages
-        else:
-            assert asset.get('isTruncated', False) is False
-            assert mock_debug.call_count == 0  # No debug messages if not truncated
-
-        # Reset mock_debug for the next test case
-        mock_debug.reset_mock()
+    # Reset mock_debug for the next test case
+    mock_debug.reset_mock()
