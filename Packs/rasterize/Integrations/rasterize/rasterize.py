@@ -576,7 +576,7 @@ def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[Pychr
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
-
+    tab.call_method("Network.setBlockedURLs", urls=['*cloudflare.com*'])
     return tab_event_handler, tab_ready_event
 
 
