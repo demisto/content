@@ -6213,7 +6213,6 @@
         "Campaign"
     ],
     "unmockable_integrations": {
-        "NetscoutArborSightline": "Uses timestamp",
         "Cylance Protect v2": "uses time-based JWT token",
         "EwsExtension": "Powershell does not support proxy",
         "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
