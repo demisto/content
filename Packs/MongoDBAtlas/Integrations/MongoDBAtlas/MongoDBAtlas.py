@@ -68,10 +68,10 @@ class Client(BaseClient):
             )
             return results
         except Exception as e:
-            pass
+            demisto.debug(f'This is the error from get_events client function {e}')
+            raise e
         
         
-
 ''' HELPER FUNCTIONS '''
 
 def sort_list_by_created_field(data: list):
@@ -102,6 +102,17 @@ def add_entry_status_field(event: dict):
     
 
 def fetch_events_by_type(fetch_limit: int, last_run: dict, api_func):
+    """
+    Fetches events or alerts until fetch_limit is reached, or no more events are available.
+    
+    Args:
+        fetch_limit: The maximum number of events to fetch.
+        last_run (dict): Dictionary containing data from the previous run.
+        api_func (function): The client function used for making API calls.
+        
+    Returns:
+        A list containing all fetched events or alerts.
+    """
     current_page = last_run.get('current_page', 1)
     fetched_events = last_run.get('fetched_events', 0) #fetched events in all runs in total
     last_page_events_count = last_run.get('last_page_event_count', 0) #the amount of events from the last run in the last page
@@ -129,7 +140,7 @@ def fetch_events_by_type(fetch_limit: int, last_run: dict, api_func):
                 }
                 return output, last_run_dict
             
-            add_entry_status_field(event)
+            add_entry_status_field(event) #just for alerts
             output.append(event)
             current_fetched_events += 1
             fetched_events += 1
@@ -271,7 +282,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

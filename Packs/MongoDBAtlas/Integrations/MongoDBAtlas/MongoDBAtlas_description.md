@@ -1,6 +1,6 @@
 ## MongoDB Atlas Help
 
-## To create an API key for a project using the Atlas UI:
+### To create an API key for a project using the Atlas UI:
 
 1. Navigate to the Access Manager page for your project.
 If it is not already displayed, select the organization that contains your desired project from the  Organizations menu in the navigation bar.
@@ -10,11 +10,11 @@ If it is not already displayed, select the organization that contains your desir
 5. Click Create API Key.
 6. Enter the API Key Information.
 7. On the Create API Key page:
-    a. Enter a Description.
-    b. In the Project Permissions menu, select the new role or roles for the API key.
-    c. Click Next.
-    d. Copy and save the Public Key. The public key acts as the username when making API requests.
-    e. Copy and save the Private Key. The private key acts as the password when making API requests.
+    - Enter a Description.
+    - In the Project Permissions menu, select the new role or roles for the API key.
+    - Click Next.
+    - Copy and save the Public Key. The public key acts as the username when making API requests.
+    - Copy and save the Private Key. The private key acts as the password when making API requests.
 WARNING
 Save Private Key. The Private Key is only shown once: on this page. Click the Copy button to add the Private Key to the clipboard. Save and secure both the Public and Private Keys.
 8. Add an API Access List Entry.
