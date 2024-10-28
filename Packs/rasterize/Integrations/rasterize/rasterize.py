@@ -799,16 +799,16 @@ def perform_rasterize(path: str | list[str],
     :param height: window height
     """
 
-    # convert the paths param to list in case we have only one string
+    # convert the path param to list in case we have only one string
     paths = argToList(path)
 
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith('mailto:')]
 
     if mailto_paths:
-        # remove the mailto from path param
+        # remove the mailto from the paths to rasterize
         paths = list(set(paths) - set(mailto_paths))
-        demisto.error(f'perform_rasterize skip the following invalid paths: {mailto_paths}')
+        demisto.error(f'Not rasterizing the following invalid paths: {mailto_paths}')
         return_results(CommandResults(
             readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_paths}'))
 
