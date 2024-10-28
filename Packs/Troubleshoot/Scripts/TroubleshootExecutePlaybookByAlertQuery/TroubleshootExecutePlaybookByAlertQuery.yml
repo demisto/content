@@ -38,8 +38,7 @@ args:
   predefined:
   - "No"
   - "Yes"
-  description: 	If set to true, the script will reopen any closed investigations to 
-    execute the pending playbook on the matching alerts.
+  description: If set to true, the script will reopen any closed investigations to execute the pending playbook on the matching alerts.
   defaultValue: "No"
 outputs:
 - contextPath: ReopenedAlerts.IDs
