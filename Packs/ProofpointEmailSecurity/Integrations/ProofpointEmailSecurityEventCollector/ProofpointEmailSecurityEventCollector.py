@@ -35,7 +35,6 @@ class EventConnection:
         self.event_type = event_type
         self.connection = connection
         self.lock = threading.Lock()
-        self.last_msg_time = time.time()
         self.idle_timeout = idle_timeout
         self.fetch_interval = fetch_interval
 
@@ -51,25 +50,18 @@ class EventConnection:
             Data: Next event received from the connection
         """
         with self.lock:
-            if event := self.connection.recv(timeout=timeout):
-                # Update the last message time, the message could be as old as the end of the previous fetch cycle
-                self.last_msg_time = max(self.last_msg_time, int(time.time()) - self.fetch_interval)
-            return event
+            event = self.connection.recv(timeout=timeout)
+        return event
 
     def heartbeat(self):
         """
-        Heartbeat thread function to periodically send keep-alives to the server in case of prolonged inactivity.
-        The server will close the connection if there is no activity for a certain period of time (SERVER_IDLE_TIMEOUT).
-        Heartbeats will be sent if the last message received (or pong sent) was almost SERVER_IDLE_TIMEOUT seconds ago.
+        Heartbeat thread function to periodically send keep-alives to the server.
+        For the sake of simplicity and error prevention, keep-alives are sent regardless of the actual connection activity.
         """
         while True:
             with self.lock:
-                idle_time_elapsed = int(time.time()) - self.last_msg_time
-                if idle_time_elapsed >= self.idle_timeout:
-                    self.last_msg_time = int(time.time())
-                    self.connection.pong()
-                    idle_time_elapsed = 0
-            time.sleep(self.idle_timeout - idle_time_elapsed)
+                self.connection.pong()
+            time.sleep(self.idle_timeout)
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -204,7 +196,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
         # clear the context after sending the events
         demisto.setIntegrationContext({})
     except DemistoException:
-        demisto.error(f"Failed to send events to XSOAR. Error: {traceback.format_exc()}")
+        demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
         demisto.setIntegrationContext(integration_context)
 
