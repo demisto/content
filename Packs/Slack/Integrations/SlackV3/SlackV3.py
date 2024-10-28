@@ -2060,7 +2060,7 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
         'comment': comment
     }
 
-    error_message = 'Could not send the file to Slack.'
+    error_message = 'Failed sending the file to Slack.'
     try:
         response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
         if response:
