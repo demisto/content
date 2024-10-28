@@ -776,7 +776,7 @@ def rasterize_thread(browser, chrome_port, path: str,
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
-def perform_rasterize(path: str | list[str],
+def perform_rasterize(paths: str | list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
                       wait_time: int = DEFAULT_WAIT_TIME,
                       offline_mode: bool = False,
@@ -789,7 +789,7 @@ def perform_rasterize(path: str | list[str],
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
-    :param path: file path, or website url
+    :param paths: file path, or website url
     :param rasterize_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
     :param navigation_timeout: amount of time to wait for a page load to complete before throwing an error
@@ -799,32 +799,32 @@ def perform_rasterize(path: str | list[str],
     :param height: window height
     """
 
-    # convert the path param to list in case we have only one string
-    path = [path] if isinstance(path, str) else path
+    # convert the paths param to list in case we have only one string
+    paths = argToList(paths)
 
     # create a list with all the paths starts with "mailto:"
-    mailto_paths = [path_value for path_value in path if path_value.startswith('mailto:')]
+    mailto_paths = [path_value for path_value in paths if path_value.startswith('mailto:')]
 
     if mailto_paths:
         # remove the mailto from path param
-        path = list(set(path) - set(mailto_paths))
+        paths = list(set(paths) - set(mailto_paths))
         demisto.error(f'perform_rasterize skip the following paths: {mailto_paths}')
         return_results(CommandResults(
             readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_paths}'))
 
-    if not path:
+    if not paths:
         message = 'There are no valid paths to rasterize'
         demisto.error(message)
         return_error(message)
         return None
 
-    demisto.debug(f"perform_rasterize, {path=}, {rasterize_type=}")
+    demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
 
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            demisto.debug(f'path type is: {type(path)}')
+            demisto.debug(f'path type is: {type(paths)}')
             paths = [path] if isinstance(path, str) else path  # type: ignore
             demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
@@ -899,7 +899,7 @@ def rasterize_image_command():
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output = perform_rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
+        output = perform_rasterize(paths=f'file://{os.path.realpath(f.name)}', width=width, height=height,
                                    rasterize_type=RasterizeType.PDF, full_screen=full_screen)
         res = []
         for current_output in output:
@@ -926,7 +926,7 @@ def rasterize_email_command():  # pragma: no cover
 
     path = f'file://{os.path.realpath(f.name)}'
 
-    rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
+    rasterize_output = perform_rasterize(paths=path, rasterize_type=rasterize_type, width=width, height=height,
                                          offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=rasterize_output[0][0])
@@ -1007,7 +1007,7 @@ def rasterize_html_command():
     file_path = demisto.getFilePath(entry_id).get('path')
     os.rename(f'./{file_path}', 'file.html')
 
-    output = perform_rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
+    output = perform_rasterize(paths=f"file://{os.path.realpath('file.html')}", width=width, height=height,
                                rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=output[0][0])
@@ -1025,7 +1025,7 @@ def module_test():  # pragma: no cover
         file_path = f'file://{os.path.realpath(test_file.name)}'
 
         # Rasterize the file
-        perform_rasterize(path=file_path, wait_time=0)
+        perform_rasterize(paths=file_path, wait_time=0)
 
     demisto.results('ok')
 
@@ -1063,7 +1063,7 @@ def rasterize_command():  # pragma: no cover
     file_names = argToList(file_name)
     file_names = add_filename_suffix(file_names, file_extension)
 
-    rasterize_output = perform_rasterize(path=urls, rasterize_type=rasterize_type, wait_time=wait_time,
+    rasterize_output = perform_rasterize(paths=urls, rasterize_type=rasterize_type, wait_time=wait_time,
                                          navigation_timeout=navigation_timeout, include_url=include_url,
                                          full_screen=full_screen, width=width, height=height)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
