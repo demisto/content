@@ -277,13 +277,14 @@ def test_test_module_with_raises(
     with pytest.raises(DemistoException, match=expected_msg):
         _test_module(client)
 
+
 @pytest.mark.parametrize(
     "mock_status_code, exception_type",
     [
         (500, DemistoException),
         (401, UnauthorizedToken),
         (410, NextPointingNotAvailable),
-    ]
+    ],
 )
 def test_get_events_command_with_raises(
     mocker: MockerFixture,
