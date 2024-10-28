@@ -1183,6 +1183,7 @@ def check_ref_set_exist(ref_set_name):
         raise e
 
 
+
 def get_indicators_list(indicator_query, limit, page):
     """
         Get Demisto indicators list using demisto.searchIndicators
