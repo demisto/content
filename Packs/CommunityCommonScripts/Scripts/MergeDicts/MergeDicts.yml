@@ -1,4 +1,4 @@
-comment: "The transformer will merge 2 dicts using {**dict1, **dict2}. The result is saved in key \"MergedDicts\""
+comment: "The transformer will merge 2 dicts using {**dict1, **dict2}. The result is saved in key \"MergedDicts\"".
 args:
   - name: value
     description: Original dictionary
