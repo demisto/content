@@ -1,7 +1,16 @@
 id: Unprivileged process opened a registry hive
 version: -1
 name: Unprivileged process opened a registry hive
-description: "This playbook is designed to handle the 'Unprivileged process opened a registry hive' alerts and execute the following:\n- Check for process signatures and prevalence.\n- Searching for additional Cortex XSIAM suspicious alerts in the incident is conducted by searching relevant Mitre techniques.\n\nRemediation:\n- Handles malicious alerts by terminating causality processes."
+description: |-
+  This playbook is designed to handle the 'Unprivileged process opened a registry hive' alert.
+  
+  Playbook Stages:
+  
+  Investigation:
+  The playbook is designed to investigate and respond to unprivileged processes opening registry hives. It examines the unprivileged process that triggered the alert, the command line, and searches for additional suspicious Cortex XSIAM alerts within the same incident in order to determine whether a remediation measure is required.
+  
+  Remediation:
+  To prevent malicious activity from continuing, the playbook terminates the causality processes that triggered the alert.
 tags:
 - TA0006 - Credential Access
 - T1552 - Unsecured Credentials
@@ -567,6 +576,7 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs.
 outputs: []
+marketplaces: ["marketplacev2"]
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
