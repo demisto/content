@@ -7,7 +7,6 @@ import copy
 import dataclasses
 import functools
 import http
-import inspect
 from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, cast
@@ -136,7 +135,7 @@ class IOC:
         if self.APIRowAction == APIRowActionChoices.ADD:
             self._validate_add()
         elif not self.IocBlacklistId:  # For UPDATE, DELETE, and RENEW actions, IocBlacklistId must be present
-            raise DemistoException(f"IocBlacklistId must be present for APIRowAction={self.APIRowAction}.")
+            raise DemistoException(f"IocBlacklistId must be present for APIRowAction={self.APIRowAction.value}.")
 
     def _validate_row_action(self, api_row_action: APIRowActionChoices) -> None:
         """Validate rules based on the APIRowAction."""
@@ -167,14 +166,43 @@ class IOC:
         """Validate for the UPDATE APIRowAction."""
         if not self.IocBlacklistId:
             raise DemistoException(
-                f"IocBlacklistId must be present for APIRowAction={self.APIRowAction}"
+                f"IocBlacklistId must be present for APIRowAction={self.APIRowAction.value}"
                 f" ({APIRowActionChoices(self.APIRowAction)})."
             )
 
+    @staticmethod
+    def _convert_to_enum(value, expected_type):
+        """Convert value to Enum if expected_type is an Enum or Optional Enum."""
+        # Handle Enum and None | Enum type using `__args__`
+        if isinstance(expected_type, type) and issubclass(expected_type, Enum):
+            enum_type = expected_type
+        elif hasattr(expected_type, '__args__'):
+            # Check if it's a `None | Enum` type
+            enum_type = next((t for t in expected_type.__args__ if isinstance(t, type) and issubclass(t, Enum)), None)
+        else:
+            enum_type = None
+
+        # Convert value to Enum if applicable
+        if enum_type and isinstance(value, str):
+            try:
+                return enum_type(value)
+            except ValueError:
+                raise DemistoException(f"{value} is not a valid {enum_type.__name__}")
+
+        return value
+
     @classmethod
     def from_dict(cls, env: dict, api_list_action: APIListAction):
-        ioc = cls(**{k: v for k, v in env.items() if k in inspect.signature(cls).parameters})
+        field_types = {f.name: f.type for f in dataclasses.fields(cls)}
+        processed_env = {
+            key: cls._convert_to_enum(value, field_types[key])
+            for key, value in env.items()
+            if key in field_types
+        }
+
+        ioc = cls(**processed_env)
         ioc.validate(api_list_action)
+
         return ioc
 
 

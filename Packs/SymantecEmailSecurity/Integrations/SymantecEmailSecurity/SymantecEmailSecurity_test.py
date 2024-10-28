@@ -5,10 +5,9 @@ import unittest.mock
 from datetime import datetime, timezone
 from typing import Any, Callable
 
+import CommonServerPython
 import pytest
 import SymantecEmailSecurity
-
-import CommonServerPython
 
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com"
