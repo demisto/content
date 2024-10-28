@@ -3291,8 +3291,9 @@ def test_send_message_to_destinations(mocker):
 
 def test_send_file_to_destinations_request_args(mocker):
     """
+    This mocks SlackV3.send_slack_request_sync while the other test mocks slack_sdk.WebClient.files_upload_v2
     Given:
-        - Sending file to a channel
+        - A file to send to a specific Slack channel
     When:
         - Calling the send_slack_request_sync function
     Then:
@@ -3315,8 +3316,9 @@ def test_send_file_to_destinations_request_args(mocker):
 
 def test_send_file_to_destinations_sdk_client_args(mocker):
     """
+    This mocks slack_sdk.WebClient.files_upload_v2 while the other test mocks SlackV3.send_slack_request_sync
     Given:
-        - Sending file to a specifc thread in a channel
+        - A file to send to a specifc thread in a channel
     When:
         - Calling the files_upload_v2 'wrapper' method in the slack_sdk.WebClient class
     Then:
@@ -5260,7 +5262,7 @@ class TestGetWarRoomURL:
 def test_send_file_api_exception(mocker):
     """
     Given:
-        - Slack API non-okay response.
+        - A mocked, faulty Slack API response.
     When:
         - Calling the slack_send_file
     Then:
@@ -5268,12 +5270,10 @@ def test_send_file_api_exception(mocker):
     """
     from SlackV3 import slack_send_file
     # Set
-    mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'investigation', return_value={'id': '999'})
     mocker.patch('SlackV3.slack_send_request', side_effect=SlackApiError('The request to the Slack API failed. (url: https://slack.com/api/files.upload)',
-                                                                         {'ok': False, 'error': 'service_unavailable'}))
+                                                                         {'ok': False, 'error': 'method_deprecated'}))
 
     # Check that function raises DemistoException
     with pytest.raises(DemistoException) as e:
         slack_send_file('channel', _entry_id='123', _comment='Here is a file!')
-    assert str(e.value) == 'Could not send the file to Slack. The Slack service is temporarily unavailable.'
+    assert str(e.value) == 'Failed sending the file to Slack. The method has been deprecated.'

@@ -515,7 +515,7 @@ def send_slack_request_sync(
         method: The method to use.
         http_verb: The HTTP method to use.
         body: The request body.
-        file_upload_params: An instance of FileUploadParams (for file upload APIs).
+        file_upload_params: An instance of FileUploadParams (for uploading using the file-upload APIs).
 
     Returns:
         The slack API response.
@@ -528,12 +528,12 @@ def send_slack_request_sync(
     while True:
         try:
             demisto.debug(f'Sending slack {method} (sync). Body is: {str(body)}')
-            if http_verb == 'POST':
-                if file_upload_params:
-                    # Use three-stage file_upload_v2 'wrapper' method in SDK client class in case there are file_upload_params
-                    response = client.files_upload_v2(**file_upload_params)
-                else:
-                    response = client.api_call(method, json=body)
+            if file_upload_params:
+                # When file_upload_params provided, use three-stage `file_upload_v2` wrapper method in Slack's SDK client
+                # https://tools.slack.dev/python-slack-sdk/web/#uploading-files
+                response = client.files_upload_v2(**file_upload_params)
+            elif http_verb == 'POST':
+                response = client.api_call(method, json=body)
             else:
                 response = client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
@@ -567,7 +567,7 @@ async def send_slack_request_async(
         method: The method to use.
         http_verb: The HTTP method to use.
         body: The request body.
-        file_upload_params: An instance of FileUploadParams (for file upload APIs).
+        file_upload_params: An instance of FileUploadParams (for uploading using the file upload APIs).
 
     Returns:
         The slack API response.
@@ -580,12 +580,12 @@ async def send_slack_request_async(
     while True:
         try:
             demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
-            if http_verb == 'POST':
-                if file_upload_params:
-                    # Use three-stage file_upload_v2 'wrapper' method in SDK client class in case there are file_upload_params
-                    response = await client.files_upload_v2(**file_upload_params)
-                else:
-                    response = await client.api_call(method, json=body)
+            if file_upload_params:
+                # When file_upload_params provided, use three-stage `file_upload_v2` wrapper method in Slack's SDK client
+                # https://tools.slack.dev/python-slack-sdk/web/#uploading-files
+                response = await client.files_upload_v2(**file_upload_params)
+            elif http_verb == 'POST':
+                response = await client.api_call(method, json=body)
             else:
                 response = await client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
@@ -2067,10 +2067,9 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
             return_results(CommandResults(readable_output='File sent to Slack successfully.'))
         else:
             raise DemistoException(message=error_message)
-    except SlackApiError as api_error:
-        demisto.debug(f'{error_message} {api_error}')
-        error_code = api_error.response.get('error')
-        if error_code:
+    except SlackApiError as e:
+        demisto.debug(f'{error_message} {e}')
+        if error_code := e.response.get('error'):
             error_explanation = RESPONSE_ERROR_EXPLANATIONS.get(error_code, error_code.replace('_', ' ').capitalize())
             error_message += f' {error_explanation}'
 
