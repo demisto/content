@@ -171,7 +171,7 @@ class IOC:
             )
 
     @staticmethod
-    def _convert_to_enum(value, expected_type) -> Enum | Any:
+    def _convert_to_enum(value: Any, expected_type: type) -> Enum | Any:
         """Convert value to Enum if expected_type is an Enum or Optional Enum."""
         # Handle Enum and None | Enum type using `__args__`
         if isinstance(expected_type, type) and issubclass(expected_type, Enum):
