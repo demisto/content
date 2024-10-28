@@ -429,7 +429,7 @@ def update_access_entry_command(args: dict) -> CommandResults:
     )
 
 
-def test_module() -> str:
+def test_module() -> str:  # pragma: no cover
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
