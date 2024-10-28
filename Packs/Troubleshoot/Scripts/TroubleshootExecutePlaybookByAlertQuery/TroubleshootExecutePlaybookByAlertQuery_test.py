@@ -1,5 +1,4 @@
 import pytest
-import CommonServerPython
 import demistomock as demisto
 from TroubleshootExecutePlaybookByAlertQuery import *
 
@@ -121,6 +120,7 @@ def test_handle_results_insufficient_permissions(mocker):
     mock_return_error.assert_called_once_with(
         "Request Failed: Insufficient permissions. Ensure the API key has the appropriate access rights."
     )
+
 
 def test_handle_results_no_response():
     """
