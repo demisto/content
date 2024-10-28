@@ -179,6 +179,9 @@ def test_hit_to_indicator():
     assert ioc['type'] == 'IP'
     assert ioc[CUSTOM_TYPE_KEY] == ''
 
+    ioc = esf.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, '', 'URL', ['tag1', 'tag2'], 'AMBER')
+    assert ioc['type'] == 'URL'
+
 
 def test_hit_to_indicator_enrichment_excluded():
     """
