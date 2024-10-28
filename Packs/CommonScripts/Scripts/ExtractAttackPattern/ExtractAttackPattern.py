@@ -6,6 +6,7 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
 def get_mitre_technique_name(mitre_id: str, indicator_type: str) -> dict[str, str]:
     """
     Searches XSOAR TIM for an 'Attack Pattern' indicator matching the given MITRE ID and returns the indicator value.
@@ -72,6 +73,7 @@ def main():
         return_results(entries_list)
     else:
         return_results([])
+
 
 if __name__ in ("__builtin__", "builtins"):
     main()

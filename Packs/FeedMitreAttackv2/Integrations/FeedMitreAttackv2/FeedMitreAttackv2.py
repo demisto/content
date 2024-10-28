@@ -181,7 +181,7 @@ class Client:
                 if concept == "relationships" and not create_relationships:
                     demisto.debug('MA: Skipping relationships as create_relationships is False')
                     continue
-                
+
                 if 0 < limit <= counter:
                     break
 
@@ -189,7 +189,7 @@ class Client:
                 try:
                     demisto.debug(f'MA: Fetching data for {concept}')
                     mitre_data = tc_source.query(input_filter)
-                
+
                 except Exception as e:
                     demisto.debug(f'MA: Failed to fetch data for {concept} - {e}')
                     continue
@@ -200,10 +200,10 @@ class Client:
                     if isinstance(mitre_item, dict):
                         # Extended STIX objects such as tactic are already in dict format
                         mitre_item_json = mitre_item
-                    
+
                     else:
                         mitre_item_json = json.loads(str(mitre_item))
-                        
+
                     if mitre_item_json.get('id') not in mitre_id_list:
                         value = mitre_item_json.get('name')
                         item_type = get_item_type(mitre_item_json.get('type'), is_up_to_6_2)
@@ -224,6 +224,7 @@ class Client:
                         mitre_id_list.add(mitre_item_json['id'])
 
         return indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name
+
 
 def add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json) -> None:
     if mitre_item_json['type'] in ('attack-pattern', 'x-mitre-tactic'):
@@ -761,7 +762,7 @@ def main():
                 else:
                     demisto.debug(f'Uploading indicators {index*2000} / {len(indicators)}')
                 demisto.createIndicators(iter_)
-                
+
     # Log exceptions
     except requests.exceptions.ConnectTimeout as exception:
         err_msg = 'Connection Timeout Error - potential reason might be that the server is not accessible from your host.'
@@ -783,7 +784,7 @@ def main():
         err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
         err_msg = 'Verify that you have access to the server from your host.' \
                   f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n' \
-            
+
         return_error(err_msg, exception)
     except Exception as exception:
         return_error(str(exception), exception)
