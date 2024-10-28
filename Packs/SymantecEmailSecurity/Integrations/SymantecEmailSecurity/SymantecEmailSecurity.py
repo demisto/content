@@ -208,7 +208,7 @@ class IOC:
             if key in field_types
         }
 
-        ioc = cls(**processed_env)
+        ioc = cls(**processed_env)  # type: ignore[arg-type]  # Doesn't recognize arguments typing in pre-commit
         ioc.validate(api_list_action)
 
         return ioc
