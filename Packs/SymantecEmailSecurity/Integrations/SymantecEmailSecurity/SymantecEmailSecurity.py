@@ -354,7 +354,7 @@ class Client(BaseClient):
         self,
         iocs: list[IOC],
         domain: str = "global",
-        api_list_action: str = "IOC",
+        api_list_action: APIListAction = APIListAction.IOC,
     ) -> list[dict[str, Any]]:
         """Add, update, delete and renew multiple IOCs.
 
@@ -375,7 +375,7 @@ class Client(BaseClient):
         return self._http_request(
             "POST",
             url_suffix=f"domains/{domain}/iocs/upload",
-            params={"api-list-action": api_list_action},
+            params={"api-list-action": api_list_action.value},
             json_data=remove_empty_elements([dataclasses.asdict(ioc) for ioc in iocs]),
         )
 
@@ -825,7 +825,7 @@ def convert_datetime_string(dt_str: str | datetime) -> str:
     Returns:
         str: The converted datetime string in ISO 8601 format with 'Z' appended.
     """
-    dt = arg_to_datetime(dt_str, required=True) if not isinstance(dt_str, datetime) else dt_str
+    dt = cast(datetime, arg_to_datetime(dt_str, required=True)) if not isinstance(dt_str, datetime) else dt_str
     dt = dt.replace(microsecond=0)
 
     # Remove timezone information if present
@@ -987,10 +987,10 @@ def action_ioc_command(client: Client, args: dict[str, Any]) -> CommandResults:
     api_row_action = None
 
     if action in APIListAction.__members__:
-        api_list_action = APIListAction[action].value
+        api_list_action = APIListAction[action]
     else:  # action in APIRowActionChoices
-        api_list_action = "IOC"
-        api_row_action = APIRowActionChoices[action].value
+        api_list_action = APIListAction.IOC
+        api_row_action = APIRowActionChoices[action]
 
     iocs: list[IOC] = []
 

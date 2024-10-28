@@ -1119,7 +1119,7 @@ def test_list_data_command(requests_mock, mock_client: SymantecEmailSecurity.Cli
         ),
         (
             SymantecEmailSecurity.list_item_allow_block_command,
-            {"access_control": SymantecEmailSecurity.AccessControl.WHITELIST},
+            {"access_control": SymantecEmailSecurity.AccessControl.WHITELIST.value},
             "v1/users/whitelist",
             "item_allow_block_list_response.json",
             "item_allow_block_list_table.json",
@@ -1129,7 +1129,7 @@ def test_list_data_command(requests_mock, mock_client: SymantecEmailSecurity.Cli
         ),
         (
             SymantecEmailSecurity.list_item_allow_block_command,
-            {"access_control": SymantecEmailSecurity.AccessControl.BLACKLIST},
+            {"access_control": SymantecEmailSecurity.AccessControl.BLACKLIST.value},
             "v1/users/blacklist",
             "item_allow_block_list_response.json",
             "item_allow_block_list_table.json",
@@ -1237,7 +1237,7 @@ def test_automatic_pagination_commands(
         ),
         (
             SymantecEmailSecurity.list_item_allow_block_command,
-            {"access_control": SymantecEmailSecurity.AccessControl.WHITELIST},
+            {"access_control": SymantecEmailSecurity.AccessControl.WHITELIST.value},
             "v1/users/whitelist",
             "item_allow_block_list_response.json",
             "item_allow_block_list_table.json",
@@ -1247,7 +1247,7 @@ def test_automatic_pagination_commands(
         ),
         (
             SymantecEmailSecurity.list_item_allow_block_command,
-            {"access_control": SymantecEmailSecurity.AccessControl.BLACKLIST},
+            {"access_control": SymantecEmailSecurity.AccessControl.BLACKLIST.value},
             "v1/users/blacklist",
             "item_allow_block_list_response.json",
             "item_allow_block_list_table.json",
@@ -1388,7 +1388,7 @@ def test_preview_quarantine_email_command(
         (
             SymantecEmailSecurity.update_item_allow_block_list_command,
             {
-                "access_control": SymantecEmailSecurity.AccessControl.BLACKLIST,
+                "access_control": SymantecEmailSecurity.AccessControl.BLACKLIST.value,
                 "suduls_user": "Lior",
                 "email_or_domain": "was",
                 "description": "here",
@@ -1398,7 +1398,7 @@ def test_preview_quarantine_email_command(
         ),
         (
             SymantecEmailSecurity.delete_item_allow_block_list_command,
-            {"access_control": SymantecEmailSecurity.AccessControl.WHITELIST, "item_id": "000"},
+            {"access_control": SymantecEmailSecurity.AccessControl.WHITELIST.value, "item_id": "000"},
             "v1/users/whitelist",
             "## The items were successfully deleted.",
         ),
