@@ -1,0 +1,48 @@
+args:
+- description: The ID argument to poll
+  name: Ids
+  required: true
+- description: The command to poll
+  name: PollingCommandName
+  required: true
+- description: The argument name to pass the ID
+  name: PollingCommandArgName
+  required: true
+- description: 'DT filter for polling IDs. Polling will stop when no results are returned. Use single quotes, for example: WildFire.Report(val.Status!==''Success'').SHA256.'
+  name: dt
+  required: true
+- defaultValue: "60"
+  description: The interval between polls in seconds
+  name: schedule_next_run
+  required: true
+- defaultValue: "600"
+  description: The schedule command timeout.
+  name: schedule_timeout
+  required: true
+- description: other arguments for the poll command divided by comma
+  name: AdditionalPollingCommandArgNames
+- description: the values of other arguments of the poll command  divided by comma
+  name: AdditionalPollingCommandArgValues
+- description: The ID of the task to loop on every poll interval.
+  name: looper_task_id
+- description: comma separated task ID's only to be  reopen before the looper task ID is run. This is useful if you have sub-condition else tasks.
+  name: reopen_task_id
+comment: This is generic polling on steroids :)
+commonfields:
+  id: 'AdvancedGenericPolling'
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: AdvancedGenericPolling
+polling: true
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 10.08µs
+type: python

@@ -1,0 +1,250 @@
+id: 'AdvancedGenericPolling - ServiceNow'
+inputs: []
+name: AdvancedGenericPolling - ServiceNow
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1b37ed63-5a70-44a7-8415-63ffbc9cd3ff
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 1b37ed63-5a70-44a7-8415-63ffbc9cd3ff
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ServiceNow v2
+      description: Creates new ServiceNow ticket.
+      id: 7c0051c3-0b9a-46f8-881a-d5e3f8bfbb69
+      iscommand: true
+      name: Create ServiceNow Ticket
+      script: ServiceNow v2|||servicenow-create-ticket
+      type: regular
+      version: -1
+    taskid: 7c0051c3-0b9a-46f8-881a-d5e3f8bfbb69
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d3cfc72a-c7ab-4f75-814c-1bd4fe222e76
+      iscommand: false
+      name: Poll SNOW ticket
+      type: title
+      version: -1
+    taskid: d3cfc72a-c7ab-4f75-814c-1bd4fe222e76
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${ServiceNow.Ticket.ID}
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: servicenow-get-ticket
+      dt:
+        simple: ServiceNow.Ticket(val.State != 7).State
+      looper_task_id:
+        simple: "9"
+      schedule_next_run:
+        simple: "10"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This is generic polling on steroids :)
+      id: 70b2651e-5635-462e-8e58-699bcda6e5e2
+      iscommand: false
+      name: Poll for service now ticket until status is not Closed
+      script: 'AdvancedGenericPolling'
+      type: regular
+      version: -1
+    taskid: 70b2651e-5635-462e-8e58-699bcda6e5e2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves ticket information by ticket ID.
+      id: 2248d154-1dd9-4789-8e00-2f1c64964bc9
+      iscommand: true
+      name: Get Snow ticket
+      script: '|||servicenow-get-ticket'
+      type: regular
+      version: -1
+    taskid: 2248d154-1dd9-4789-8e00-2f1c64964bc9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6c6ba839-3113-4c9e-82d2-e867a0edf23f
+      iscommand: false
+      name: Map SNOW to Defender
+      type: title
+      version: -1
+    taskid: 6c6ba839-3113-4c9e-82d2-e867a0edf23f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Do something if condition is met while the polling is working
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Prints text to war room (Markdown supported)
+      id: e58828ec-af67-49d0-8756-b1ee62e796b3
+      iscommand: false
+      name: Do something while the polling is working
+      script: Print
+      type: regular
+      version: -1
+    taskid: e58828ec-af67-49d0-8756-b1ee62e796b3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
