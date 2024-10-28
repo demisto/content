@@ -1,0 +1,343 @@
+{
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"hidden": false,
+				"id": "zmjvpqxkcs",
+				"name": "XDR disconnected endpoints",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "zmjvpqxkcs-1vduzkpmlh-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 26,
+								"id": "1cc0c4a0-9bd7-11e9-ba23-8723b1f1df6b",
+								"index": 0,
+								"listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotsource",
+								"height": 26,
+								"id": "87e18ad0-9bd7-11e9-ba23-8723b1f1df6b",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 26,
+								"id": "43cfe2d0-9bee-11e9-9a3f-8b4b2158e260",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 26,
+								"id": "20430d90-9bd7-11e9-ba23-8723b1f1df6b",
+								"index": 2,
+								"listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 26,
+								"id": "4fd2b640-a7d6-11e9-8433-9f52f2917950",
+								"index": 3,
+								"listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 26,
+								"id": "930bb7a0-a866-11e9-aeb8-c3448b5d692d",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 26,
+								"id": "42f03130-9bee-11e9-9a3f-8b4b2158e260",
+								"index": 5,
+								"listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cortexxdrunprotectedendpoints",
+								"height": 106,
+								"id": "184c31b5-05cc-4c9f-b413-8151f34df281",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "zmjvpqxkcs-1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"readOnly": true,
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "id",
+								"width": 110
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "owner",
+								"width": 160
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "type",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "status",
+								"width": 80
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "closeNotes",
+								"width": 300
+							}
+						],
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "zmjvpqxkcs-1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"readOnly": true,
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "zmjvpqxkcs-1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Child Incidents",
+						"readOnly": true,
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "zmjvpqxkcs-1vduzkpmlh-5cc7f260-ad4f-11e9-a2d3-c520aeb407da",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Affected Hosts Count",
+						"query": "EntryWidgetNumberHostsXDR",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "zmjvpqxkcs-1vduzkpmlh-11cd1fd0-ad52-11e9-a2d3-c520aeb407da",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Affected Users Count",
+						"query": "EntryWidgetNumberUsersXDR",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"description": "",
+						"h": 4,
+						"i": "zmjvpqxkcs-93bb4a30-42de-11eb-90c6-9596ff5a2455",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Disconnected endpoints report",
+						"query": {
+							"categories": [],
+							"fromTime": "0001-01-01T00:00:00Z",
+							"pageSize": 0,
+							"tags": [
+								"Endpoint report"
+							],
+							"tagsAndOperator": false,
+							"usersAndOperator": false
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "zmjvpqxkcs-2db4b4db-25f6-4eb6-a6eb-ac00619e81ec",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cortexxdrunprotectedendpoints",
+								"height": 106,
+								"id": "10311a32-9e83-4ea2-a5a4-282c990759f8",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Partially Protected Endpoints",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": null,
+	"fromServerVersion": "6.0.0",
+	"group": "incident",
+	"id": "Cortex XDR Partially Protected Endpoints",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Cortex XDR Partially Protected Endpoints",
+	"packID": "f68f175e-caa0-4a79-8932-7b7c4427cabf",
+	"packName": "Cortex XDR Partially Protected Endpoints",
+	"propagationLabels": [],
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "99.99.99",
+	"version": -1
+}

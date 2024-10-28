@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#F06292",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Cortex XDR Partially Protected Endpoints",
+    "layout": "Cortex XDR Partially Protected Endpoints",
+    "locked": false,
+    "name": "Cortex XDR Partially Protected Endpoints",
+    "onChangeRepAlg": 0,
+    "playbookId": "Cortex XDR Partially Protected Endpoints",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.10.0"
+}
