@@ -46,7 +46,7 @@ elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
 else: # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch7.helpers import scan
-    from elasticsearch_dsl import Search
+    from elasticsearch_dsl import Search, AttrDict
     from elasticsearch_dsl.query import QueryString
 
 
@@ -75,7 +75,7 @@ class ElasticsearchClient:
 
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8: # TODO: need to understand what could replace the proxies parameter of the client in v8
             if self._api_key:
                 es = Elasticsearch(hosts=[self._server], verify_certs=self._insecure, api_key=self._api_key)
             else:
@@ -192,31 +192,73 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     now = datetime.now()
     if FEED_TYPE_GENERIC in feed_type:  # Generic Feed
         search = get_scan_generic_format(client, now)
-        ioc_lst = get_generic_indicators(client, search, src_val, src_type, default_type, client.tags, client.tlp_color,
-                                         client.enrichment_excluded)
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+            ioc_lst = get_generic_indicators(search, src_val, src_type, default_type, client.tags, client.tlp_color,
+                                            client.enrichment_excluded)
+        else: # Elasticsearch v7 and below or OpenSearch
+              ioc_lst = get_generic_indicators_elastic_v7(client.es, search, src_val, src_type, default_type, client.tags, client.tlp_color,
+                                                  client.enrichment_excluded)
+            
         hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
+    
     else:  # Demisto Feed types
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, feed_type=feed_type)
-        ioc_lst, ioc_enrch_lst = get_demisto_indicators(search, client.tags, client.tlp_color, client.enrichment_excluded)
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+            ioc_lst, ioc_enrch_lst = get_demisto_indicators(search, client.tags, client.tlp_color, client.enrichment_excluded)
+        else: # Elasticsearch v7 and below or OpenSearch
+            ioc_lst, ioc_enrch_lst = get_demisto_indicators_elastic_v7(client.es, search, client.tags, client.tlp_color, client.enrichment_excluded)
         hr = tableToMarkdown('Indicators', list({ioc.get('name') for ioc in ioc_lst}), 'Name')
+        
         if ioc_enrch_lst:
             for ioc_enrch in ioc_enrch_lst:
                 hr += tableToMarkdown('Enrichment', ioc_enrch, ['value', 'sourceBrand', 'score'])
     return_outputs(hr, {}, ioc_lst)
 
 
-def get_generic_indicators(client, search, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded):
-    """Implements get indicators in generic format"""
+def get_generic_indicators_elastic_v7(es, search, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded):
+    """Implements get indicators in generic format for Elasticsearch v7 and below or OpenSearch.
+    Maintain BC by using the ES client directly instead of using the elasticsearch_dsl library.
+    """
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     ioc_lst: list = []
-    for hit in scan(client, query=search.to_dict(), index=search._index, **search._params):
+    scan_res = scan(es, query=search.to_dict(), index=search._index, **search._params)
+    for hit in scan_res:
+        hit = search._get_result(cast(AttrDict[Any], hit)) # type: ignore
         hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded)
         ioc_lst.extend(hit_lst)
         if len(ioc_lst) >= limit:
             break
     return ioc_lst
 
+def get_generic_indicators( search, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded):
+    """Implements get indicators in generic format"""
+    limit = int(demisto.args().get('limit', FETCH_SIZE))
+    ioc_lst: list = []
+    for hit in search.scan():
+        hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded)
+        ioc_lst.extend(hit_lst)
+        if len(ioc_lst) >= limit:
+            break
+    return ioc_lst
+
+
+def get_demisto_indicators_elastic_v7(es, search, tags, tlp_color, enrichment_excluded):
+    """Implements get indicators in insight format for Elasticsearch v7 and below or OpenSearch.
+    Maintain BC by using the ES client directly instead of using the elasticsearch_dsl library."""
+    limit = int(demisto.args().get('limit', FETCH_SIZE))
+    ioc_lst: list = []
+    ioc_enrch_lst: list = []
+    scan_res = scan(es, query=search.to_dict(), index=search._index, **search._params)
+    for hit in scan_res:
+        hit = search._get_result(cast(AttrDict[Any], hit)) # type: ignore
+        hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit, tags=tags, tlp_color=tlp_color,
+                                                                     enrichment_excluded=enrichment_excluded)
+        ioc_lst.extend(hit_lst)
+        ioc_enrch_lst.extend(hit_enrch_lst)
+        if len(ioc_lst) >= limit:
+            break
+    return ioc_lst, ioc_enrch_lst
 
 def get_demisto_indicators(search, tags, tlp_color, enrichment_excluded):
     """Implements get indicators in insight format"""
