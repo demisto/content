@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from ValidateContent import get_content_modules, adjust_linter_row_and_col
+from old_ValidateContent import get_content_modules, adjust_linter_row_and_col
 
 
 def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
