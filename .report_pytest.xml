@@ -1,0 +1,974 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="16" time="6.180" timestamp="2024-03-17T12:49:07.792219" hostname="98f36df80b66"><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_parseIds[None-None]" time="0.009"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_parseIds[value1-1,2,3]" time="0.004"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_parseIds[value2-a,b,c]" time="0.003"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_calculate_end_time[0-2023-04-01 00:00:00]" time="0.116"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_calculate_end_time[17-2023-04-01 00:17:00]" time="0.025"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_calculate_end_time[70-2023-04-01 01:10:00]" time="0.026"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_is_value_sanitized[1234-True]" time="0.007"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_is_value_sanitized[additionalPollingCommandArgNames-False]" time="0.011"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_is_value_sanitized[ab&quot; additionalPollingCommandArgNames-False]" time="0.006"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_is_value_sanitized[abc\\&quot; additionalPollingCommandArgNames-False]" time="0.006"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_is_command_sanitized" time="0.130"><failure message="AssertionError: assert (False, 'The ...s malformed.') == (False, 'The ...s malformed.')&#10;  &#10;  At index 1 diff: #x1B[0m#x1B[33m'#x1B[39;49;00m#x1B[33mThe value of additionalPollingCommandArgNames, pollingCommandArgName, pollingCommand is malformed.#x1B[39;49;00m#x1B[33m'#x1B[39;49;00m#x1B[90m#x1B[39;49;00m != #x1B[0m#x1B[33m'#x1B[39;49;00m#x1B[33mThe value of additionalPollingCommandArgNames is malformed.#x1B[39;49;00m#x1B[33m'#x1B[39;49;00m#x1B[90m#x1B[39;49;00m&#10;  &#10;  Full diff:&#10;  #x1B[0m#x1B[90m #x1B[39;49;00m (#x1B[90m#x1B[39;49;00m&#10;  #x1B[90m #x1B[39;49;00m     False,#x1B[90m#x1B[39;49;00m&#10;  #x1B[91m-     'The value of additionalPollingCommandArgNames is malformed.',#x1B[39;49;00m#x1B[90m#x1B[39;49;00m...&#10;  &#10;  ...Full output truncated (5 lines hidden), use '-vv' to show">def test_is_command_sanitized():
+    
+        # Trivial - pass
+        command = "1234"
+        result = is_command_sanitized(command)
+        assert result == (True, None)
+    
+        # Twice additionalPollingCommandArgNames - fail
+        command = "additionalPollingCommandArgNames additionalPollingCommandArgNames"
+        result = is_command_sanitized(command)
+&gt;       assert result == (False, 'The value of additionalPollingCommandArgNames is malformed.')
+E       AssertionError: assert (False, 'The ...s malformed.') == (False, 'The ...s malformed.')
+E         
+E         At index 1 diff: #x1B[0m#x1B[33m'#x1B[39;49;00m#x1B[33mThe value of additionalPollingCommandArgNames, pollingCommandArgName, pollingCommand is malformed.#x1B[39;49;00m#x1B[33m'#x1B[39;49;00m#x1B[90m#x1B[39;49;00m != #x1B[0m#x1B[33m'#x1B[39;49;00m#x1B[33mThe value of additionalPollingCommandArgNames is malformed.#x1B[39;49;00m#x1B[33m'#x1B[39;49;00m#x1B[90m#x1B[39;49;00m
+E         
+E         Full diff:
+E         #x1B[0m#x1B[90m #x1B[39;49;00m (#x1B[90m#x1B[39;49;00m
+E         #x1B[90m #x1B[39;49;00m     False,#x1B[90m#x1B[39;49;00m
+E         #x1B[91m-     'The value of additionalPollingCommandArgNames is malformed.',#x1B[39;49;00m#x1B[90m#x1B[39;49;00m...
+E         
+E         ...Full output truncated (5 lines hidden), use '-vv' to show
+
+ScheduleGenericPolling_test.py:53: AssertionError</failure></testcase><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_get_command_string_pass" time="0.004"><failure message="AssertionError: assert (False, 'The ...s malformed.') == (True, None)&#10;  &#10;  At index 0 diff: #x1B[0m#x1B[94mFalse#x1B[39;49;00m#x1B[90m#x1B[39;49;00m != #x1B[0m#x1B[94mTrue#x1B[39;49;00m#x1B[90m#x1B[39;49;00m&#10;  &#10;  Full diff:&#10;  #x1B[0m#x1B[90m #x1B[39;49;00m (#x1B[90m#x1B[39;49;00m&#10;  #x1B[91m-     True,#x1B[39;49;00m#x1B[90m#x1B[39;49;00m&#10;  #x1B[91m-     None,#x1B[39;49;00m#x1B[90m#x1B[39;49;00m...&#10;  &#10;  ...Full output truncated (3 lines hidden), use '-vv' to show">def test_get_command_string_pass():
+        """
+        Given
+                Sample input values
+        When
+                Calling get_command_string
+        Then
+                Test the command result structure
+        """
+        good_input = {
+            'ids': "123",
+            'pollingCommand': "jira-get-issue",
+            'pollingCommandArgName': "issueId",
+            'playbookId': "pi",
+            'dt': "Ticket(val.Status != 'Done').Id",
+            'interval': "3",
+            'timeout': "5",
+            'tag': "polling",
+            'args_names': "my_arg_name",
+            'args_values': "my_arg_value",
+        }
+    
+        command_String = get_command_string(good_input.get('ids'),
+                                            good_input.get('pollingCommand'),
+                                            good_input.get('pollingCommandArgName'),
+                                            good_input.get('playbookId'),
+                                            good_input.get('dt'),
+                                            good_input.get('interval'),
+                                            good_input.get('timeout'),
+                                            good_input.get('tag'),
+                                            good_input.get('args_names'),
+                                            good_input.get('args_values'),
+                                            None,
+                                            )
+    
+        expected_command = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
+                           '"issueId"pi               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"' \
+                           ' timeout="5" tag="polling" additionalPollingCommandArgNames="my_arg_name"' \
+                           '               additionalPollingCommandArgValues="my_arg_value"'
+    
+        assert command_String == expected_command
+        result = is_command_sanitized(command_String)
+    
+        expected_result = (True, None)
+&gt;       assert result == expected_result
+E       AssertionError: assert (False, 'The ...s malformed.') == (True, None)
+E         
+E         At index 0 diff: #x1B[0m#x1B[94mFalse#x1B[39;49;00m#x1B[90m#x1B[39;49;00m != #x1B[0m#x1B[94mTrue#x1B[39;49;00m#x1B[90m#x1B[39;49;00m
+E         
+E         Full diff:
+E         #x1B[0m#x1B[90m #x1B[39;49;00m (#x1B[90m#x1B[39;49;00m
+E         #x1B[91m-     True,#x1B[39;49;00m#x1B[90m#x1B[39;49;00m
+E         #x1B[91m-     None,#x1B[39;49;00m#x1B[90m#x1B[39;49;00m...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+ScheduleGenericPolling_test.py:123: AssertionError</failure></testcase><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_get_command_string_fail" time="0.003"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_get_command_string_with_extract_mode" time="0.004"/><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_main_pass" time="0.009"><failure message="SystemExit: 0">mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f73149974f0&gt;
+
+    def test_main_pass(mocker):
+        """
+        Given
+                Sample input values
+        When
+                Calling main
+        Then
+                Test the command result structure
+        """
+        good_input = {
+            'ids': "123",
+            'pollingCommand': "jira-get-issue",
+            'pollingCommandArgName': "issueId",
+            'playbookId': "pi",
+            'dt': "Ticket(val.Status != 'Done').Id",
+            'interval': "3",
+            'timeout': "5",
+            'tag': "polling",
+            'additionalPollingCommandArgNames': "my_arg_name",
+            'additionalPollingCommandArgValues': "my_arg_value",
+        }
+    
+        mocker.patch.object(demisto, 'args', return_value=good_input)
+        # mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-without-approval')
+    
+        execute_command_mocker = mocker.patch("ScheduleGenericPolling.demisto.executeCommand")
+        mocker.patch("ScheduleGenericPolling.demisto.dt", return_value='abc')
+&gt;       main()
+
+ScheduleGenericPolling_test.py:246: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ScheduleGenericPolling.py:128: in main
+    return_error(message)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+message = 'The value of pollingCommandArgName, pollingCommand is malformed.'
+error = '', outputs = None
+
+    def return_error(message, error='', outputs=None):
+        """
+            Returns error entry with given message and exits the script
+    
+            :type message: ``str``
+            :param message: The message to return in the entry (required)
+    
+            :type error: ``str`` or Exception
+            :param error: The raw error message to log (optional)
+    
+            :type outputs: ``dict or None``
+            :param outputs: the outputs that will be returned to playbook/investigation context (optional)
+    
+            :return: Error entry object
+            :rtype: ``dict``
+        """
+        is_command = hasattr(demisto, 'command')
+        try:
+            is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                                     'fetch-credentials',
+                                                                     'long-running-execution',
+                                                                     'fetch-indicators')
+        except Exception:
+            is_server_handled = False
+        message = LOG(message)
+        if error:
+            LOG(str(error))
+        if any(sys.exc_info()):  # Checking that an exception occurred
+            fixed_traceback = fix_traceback_line_numbers(traceback.format_exc())
+            LOG('\n{}'.format(fixed_traceback))
+            if is_debug_mode():
+                message = '{}\n\n{}'.format(message, fixed_traceback)
+    
+        LOG.print_log()
+        if not isinstance(message, str):
+            message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+    
+        if is_command and demisto.command() == 'get-modified-remote-data':
+            if (error and not isinstance(error, NotImplementedError)) or sys.exc_info()[0] != NotImplementedError:
+                message = 'skip update. error: ' + message
+    
+        if is_server_handled:
+            raise Exception(message)
+        else:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': message,
+                'EntryContext': outputs,
+            })
+&gt;           sys.exit(0)
+E           SystemExit: 0
+
+../../../Base/Scripts/CommonServerPython/CommonServerPython.py:7278: SystemExit</failure></testcase><testcase classname="Packs.CommonScripts.Scripts.ScheduleGenericPolling.ScheduleGenericPolling_test" name="test_main_fail" time="0.015"/></testsuite><testsuite errors="1" failures="0" hostname="8f7bb97cba45" name="pytest" skipped="0" tests="1" time="3.823" timestamp="2024-06-02T17:33:39.710275"><testcase classname="" file="Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py" name="Packs.Base.Scripts.CommonServerPython.CommonServerPython_test" time="0.000"><error message="collection failure">Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8804: in &lt;module&gt;
+    class TestSendEventsToXSIAMTest:
+Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8805: in TestSendEventsToXSIAMTest
+    with open('test_data/events.json') as f:
+E   IOError: [Errno 2] No such file or directory: 'test_data/events.json'</error></testcase></testsuite><testsuite name="pytest" errors="0" failures="18" skipped="0" tests="55" time="5.802" timestamp="2024-04-30T13:08:36.882432" hostname="e753f2223d2b"><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_test_command" time="0.008"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'">mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c61979d80&gt;
+
+    def test_test_command(mocker: MockerFixture):
+        mocker.patch.object(demisto, 'results')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+&gt;       mocker.patch("Whois.get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
+
+Packs/Whois/Integrations/Whois/Whois_test.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+json_path = './test_data/whois_raw_response.json'
+
+    def load_test_data(json_path):
+&gt;       with open(json_path) as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:40: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_domain_from_query[app.paloaltonetwork.com-paloaltonetwork.com]" time="0.007"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_domain_from_query[test.this.google.co.il-google.co.il]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_domain_from_query[app.XSOAR.test-app.XSOAR.test]" time="0.006"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_socks_proxy_fail" time="0.024"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_socks_proxy" time="0.017"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/microsocks'">mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c619d0f70&gt;
+request = &lt;FixtureRequest for &lt;Function test_socks_proxy&gt;&gt;
+
+    def test_socks_proxy(mocker, request):
+        mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5h://localhost:9980'})
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'results')
+        tmp = tempfile.TemporaryFile('w+')
+        microsocks = './test_data/microsocks_darwin' if 'darwin' in sys.platform else './test_data/microsocks'
+&gt;       process = subprocess.Popen([microsocks, "-p", "9980"], stderr=subprocess.STDOUT, stdout=tmp)
+
+Packs/Whois/Integrations/Whois/Whois_test.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.10/subprocess.py:971: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: 255 args: ['./test_data/microsocks', '-p', '9980']&gt;
+args = ['./test_data/microsocks', '-p', '9980']
+executable = b'./test_data/microsocks', preexec_fn = None, close_fds = True
+pass_fds = (), cwd = None, env = None, startupinfo = None, creationflags = 0
+shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1, c2pwrite = 15
+errread = -1, errwrite = 15, restore_signals = True, gid = None, gids = None
+uid = None, umask = -1, start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and not close_fds
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread &gt; 2)
+                and (c2pwrite == -1 or c2pwrite &gt; 2)
+                and (errwrite == -1 or errwrite &gt; 2)
+                and not start_new_session
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask &lt; 0):
+            self._posix_spawn(args, executable, env, restore_signals,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write &lt; 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _posixsubprocess.fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) &gt; 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                child_exec_never_called = (err_msg == "noexec")
+                if child_exec_never_called:
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+&gt;               raise child_exception_type(errno_num, err_msg, err_filename)
+E               FileNotFoundError: [Errno 2] No such file or directory: './test_data/microsocks'
+
+/usr/local/lib/python3.10/subprocess.py:1863: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_query_result[whois_result0-rsqupuo.info-B - Usually reliable-False]" time="0.006"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_query_result[whois_result1-BLABLA43213422342AS.COM-B - Usually reliable-False]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_query_result[whois_result2-google.com-B - Usually reliable-True]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_query_result[whois_result3-rsqupuo.info-B - Usually reliable-False]" time="0.006"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_query_result[whois_result4-google.com-B - Usually reliable-True]" time="0.006"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_query_result[whois_result5-google.com-B - Usually reliable-True]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_query_result[whois_result6-rsqupuo.info-B - Usually reliable-True]" time="0.004"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_ip_command" time="0.005"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/ip_output.json'">mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c63704190&gt;
+
+    def test_ip_command(mocker: MockerFixture):
+        """
+        Given:
+            - IP addresses
+    
+        When:
+            - running the IP command
+    
+        Then:
+            - Verify the result is as expected
+            - Verify support list of IPs
+        """
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
+&gt;       response = load_test_data('./test_data/ip_output.json')
+
+Packs/Whois/Integrations/Whois/Whois_test.py:203: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+json_path = './test_data/ip_output.json'
+
+    def load_test_data(json_path):
+&gt;       with open(json_path) as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/ip_output.json'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:40: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_whois_ip_proxy_param" time="0.008"><failure message="assert None">mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c61b59330&gt;
+
+    def test_get_whois_ip_proxy_param(mocker: MockerFixture):
+        """
+        Given:
+            - proxy address
+    
+        When:
+            - running the get_whois_ip function
+    
+        Then:
+            - Verify the function doesn't fail due to type errors
+        """
+        from Whois import get_whois_ip
+        mocker.patch.object(demisto, 'params', return_value={"proxy": True})
+        mocker.patch("ipwhois.IPWhois.lookup_rdap", return_value={"raw": None})
+        result = get_whois_ip('1.1.1.1')
+&gt;       assert result
+E       assert None
+
+Packs/Whois/Integrations/Whois/Whois_test.py:243: AssertionError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_indian_tld" time="0.003"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_ph_tld" time="0.003"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_parse_raw_whois" time="0.004"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/EU domains.text'">def test_parse_raw_whois():
+&gt;       with open('test_data/EU domains.text') as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/EU domains.text'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:279: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_parse_raw_whois_empty_nameserver" time="0.005"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/EU domains_empty_nameservers.text'">def test_parse_raw_whois_empty_nameserver():
+&gt;       with open('test_data/EU domains_empty_nameservers.text') as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/EU domains_empty_nameservers.text'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:286: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_parse_dates_invalid_time[input0-expected_result0]" time="0.004"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_parse_dates_invalid_time[input1-expected_result1]" time="0.003"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_parse_dates_invalid_time[input2-expected_result2]" time="0.004"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_parse_dates_invalid_time[input3-expected_result3]" time="0.003"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_swap_month_day_in_parse_dates[input0-expected_result0]" time="0.004"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_swap_month_day_in_parse_dates[input1-expected_result1]" time="0.004"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_create_outputs_invalid_time[updated_date0-0-0-0]" time="0.004"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_create_outputs_invalid_time[updated_date1-08-06-2025]" time="0.004"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_whois_with_verbose[args0-2]" time="0.005"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/cnn_pickled'">args = {'is_recursive': 'true', 'query': 'cnn.com', 'should_error': 'false', 'verbose': 'true'}
+expected_res = 2
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c6152d780&gt;
+
+    @pytest.mark.parametrize('args, expected_res', [
+        ({"query": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
+        ({"query": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)
+    ])
+    def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
+        """
+        Given:
+            - The args for the whois command with or without the verbose arg.
+        When:
+            - calling the whois command.
+        Then:
+            - validate that another context path is added for the raw-response if verbose arg is true.
+        """
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
+        mocker.patch.object(demisto, 'command', 'whois')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
+&gt;       with open('test_data/cnn_pickled', 'rb') as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/cnn_pickled'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:333: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_whois_with_verbose[args1-2]" time="0.005"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/cnn_pickled'">args = {'is_recursive': 'true', 'query': 'cnn.com', 'should_error': 'false'}
+expected_res = 2
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c615e9990&gt;
+
+    @pytest.mark.parametrize('args, expected_res', [
+        ({"query": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
+        ({"query": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)
+    ])
+    def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
+        """
+        Given:
+            - The args for the whois command with or without the verbose arg.
+        When:
+            - calling the whois command.
+        Then:
+            - validate that another context path is added for the raw-response if verbose arg is true.
+        """
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
+        mocker.patch.object(demisto, 'command', 'whois')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
+&gt;       with open('test_data/cnn_pickled', 'rb') as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/cnn_pickled'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:333: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_parse_nic_contact" time="0.004"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_response.txt'">def test_parse_nic_contact():
+&gt;       with open('./test_data/whois_response.txt') as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_response.txt'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:344: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_raw_response_with_non_recursive_data_query" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_param_or_arg[param_key-param_value-arg_key-arg_value-param_value]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_param_or_arg[param_key-None-arg_key-arg_value-arg_value]" time="0.006"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_param_or_arg[param_key-param_value-arg_key-None-param_value]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_param_or_arg[param_key-None-arg_key-None-None]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_execution_metrics_appended[args0-True-2]" time="0.007"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'">args = {'query': 'google.com'}, execution_metrics_supported = True
+expected_entries = 2
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c61629630&gt;
+capfd = &lt;_pytest.capture.CaptureFixture object at 0x7f7c615edf30&gt;
+
+    @pytest.mark.parametrize('args,execution_metrics_supported,expected_entries', [
+        ({"query": "google.com"}, True, 2),
+        ({"query": "127.0.0.1"}, True, 2),
+        ({"query": "google.com,amazon.com"}, True, 3),
+        ({"query": "google.com"}, False, 1)
+    ])
+    def test_execution_metrics_appended(
+        args: dict[str, str],
+        execution_metrics_supported: bool,
+        expected_entries: int,
+        mocker: MockerFixture,
+        capfd
+    ):
+        """
+        Test whether the metrics entry is appended to the list of results according to the XSOAR version.
+        API Execution Metrics is only supported for 6.8+.
+    
+        Given: Arguments passed to the `whois` command.
+    
+        When:
+            - Case A: 1 valid domain is passed to v &gt; 6.8.0.
+            - Case B: 1 invalid domain is passed to v &gt; 6.8.0.
+            - Case C: 2 valid domains are passed to v &gt; 6.8.0.
+            - Case D: 1 valid domain is passed to v &lt; 6.8.0.
+    
+        Then:
+            - Case A: 2 entries are expected (1 for query, 1 for execution metrics).
+            - Case B: 2 entries are expected (1 for query, 1 for execution metrics).
+            - Case C: 3 entries are expected (2 for queries, 1 for execution metrics).
+            - Case D: 1 entries are expected (1 for query, no execution metrics since it's not supported).
+    
+        """
+        mocker.patch.object(demisto, 'command', 'whois')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=execution_metrics_supported)
+&gt;       mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
+
+Packs/Whois/Integrations/Whois/Whois_test.py:455: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+json_path = './test_data/whois_raw_response.json'
+
+    def load_test_data(json_path):
+&gt;       with open(json_path) as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:40: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_execution_metrics_appended[args1-True-2]" time="0.004"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'">args = {'query': '127.0.0.1'}, execution_metrics_supported = True
+expected_entries = 2
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c6161d6c0&gt;
+capfd = &lt;_pytest.capture.CaptureFixture object at 0x7f7c6161d570&gt;
+
+    @pytest.mark.parametrize('args,execution_metrics_supported,expected_entries', [
+        ({"query": "google.com"}, True, 2),
+        ({"query": "127.0.0.1"}, True, 2),
+        ({"query": "google.com,amazon.com"}, True, 3),
+        ({"query": "google.com"}, False, 1)
+    ])
+    def test_execution_metrics_appended(
+        args: dict[str, str],
+        execution_metrics_supported: bool,
+        expected_entries: int,
+        mocker: MockerFixture,
+        capfd
+    ):
+        """
+        Test whether the metrics entry is appended to the list of results according to the XSOAR version.
+        API Execution Metrics is only supported for 6.8+.
+    
+        Given: Arguments passed to the `whois` command.
+    
+        When:
+            - Case A: 1 valid domain is passed to v &gt; 6.8.0.
+            - Case B: 1 invalid domain is passed to v &gt; 6.8.0.
+            - Case C: 2 valid domains are passed to v &gt; 6.8.0.
+            - Case D: 1 valid domain is passed to v &lt; 6.8.0.
+    
+        Then:
+            - Case A: 2 entries are expected (1 for query, 1 for execution metrics).
+            - Case B: 2 entries are expected (1 for query, 1 for execution metrics).
+            - Case C: 3 entries are expected (2 for queries, 1 for execution metrics).
+            - Case D: 1 entries are expected (1 for query, no execution metrics since it's not supported).
+    
+        """
+        mocker.patch.object(demisto, 'command', 'whois')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=execution_metrics_supported)
+&gt;       mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
+
+Packs/Whois/Integrations/Whois/Whois_test.py:455: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+json_path = './test_data/whois_raw_response.json'
+
+    def load_test_data(json_path):
+&gt;       with open(json_path) as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:40: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_execution_metrics_appended[args2-True-3]" time="0.007"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'">args = {'query': 'google.com,amazon.com'}, execution_metrics_supported = True
+expected_entries = 3
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c61620b20&gt;
+capfd = &lt;_pytest.capture.CaptureFixture object at 0x7f7c61620c70&gt;
+
+    @pytest.mark.parametrize('args,execution_metrics_supported,expected_entries', [
+        ({"query": "google.com"}, True, 2),
+        ({"query": "127.0.0.1"}, True, 2),
+        ({"query": "google.com,amazon.com"}, True, 3),
+        ({"query": "google.com"}, False, 1)
+    ])
+    def test_execution_metrics_appended(
+        args: dict[str, str],
+        execution_metrics_supported: bool,
+        expected_entries: int,
+        mocker: MockerFixture,
+        capfd
+    ):
+        """
+        Test whether the metrics entry is appended to the list of results according to the XSOAR version.
+        API Execution Metrics is only supported for 6.8+.
+    
+        Given: Arguments passed to the `whois` command.
+    
+        When:
+            - Case A: 1 valid domain is passed to v &gt; 6.8.0.
+            - Case B: 1 invalid domain is passed to v &gt; 6.8.0.
+            - Case C: 2 valid domains are passed to v &gt; 6.8.0.
+            - Case D: 1 valid domain is passed to v &lt; 6.8.0.
+    
+        Then:
+            - Case A: 2 entries are expected (1 for query, 1 for execution metrics).
+            - Case B: 2 entries are expected (1 for query, 1 for execution metrics).
+            - Case C: 3 entries are expected (2 for queries, 1 for execution metrics).
+            - Case D: 1 entries are expected (1 for query, no execution metrics since it's not supported).
+    
+        """
+        mocker.patch.object(demisto, 'command', 'whois')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=execution_metrics_supported)
+&gt;       mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
+
+Packs/Whois/Integrations/Whois/Whois_test.py:455: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+json_path = './test_data/whois_raw_response.json'
+
+    def load_test_data(json_path):
+&gt;       with open(json_path) as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:40: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_execution_metrics_appended[args3-False-1]" time="0.008"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'">args = {'query': 'google.com'}, execution_metrics_supported = False
+expected_entries = 1
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c619c8b20&gt;
+capfd = &lt;_pytest.capture.CaptureFixture object at 0x7f7c619c97b0&gt;
+
+    @pytest.mark.parametrize('args,execution_metrics_supported,expected_entries', [
+        ({"query": "google.com"}, True, 2),
+        ({"query": "127.0.0.1"}, True, 2),
+        ({"query": "google.com,amazon.com"}, True, 3),
+        ({"query": "google.com"}, False, 1)
+    ])
+    def test_execution_metrics_appended(
+        args: dict[str, str],
+        execution_metrics_supported: bool,
+        expected_entries: int,
+        mocker: MockerFixture,
+        capfd
+    ):
+        """
+        Test whether the metrics entry is appended to the list of results according to the XSOAR version.
+        API Execution Metrics is only supported for 6.8+.
+    
+        Given: Arguments passed to the `whois` command.
+    
+        When:
+            - Case A: 1 valid domain is passed to v &gt; 6.8.0.
+            - Case B: 1 invalid domain is passed to v &gt; 6.8.0.
+            - Case C: 2 valid domains are passed to v &gt; 6.8.0.
+            - Case D: 1 valid domain is passed to v &lt; 6.8.0.
+    
+        Then:
+            - Case A: 2 entries are expected (1 for query, 1 for execution metrics).
+            - Case B: 2 entries are expected (1 for query, 1 for execution metrics).
+            - Case C: 3 entries are expected (2 for queries, 1 for execution metrics).
+            - Case D: 1 entries are expected (1 for query, no execution metrics since it's not supported).
+    
+        """
+        mocker.patch.object(demisto, 'command', 'whois')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=execution_metrics_supported)
+&gt;       mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
+
+Packs/Whois/Integrations/Whois/Whois_test.py:455: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+json_path = './test_data/whois_raw_response.json'
+
+    def load_test_data(json_path):
+&gt;       with open(json_path) as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:40: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_error_entry_type[args0-4]" time="0.007"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'">args = {'is_recursive': 'true', 'query': '1.1.1.1', 'with_error': True}
+entry_type = 4
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c6161e3b0&gt;
+capfd = &lt;_pytest.capture.CaptureFixture object at 0x7f7c6161e3e0&gt;
+
+    @pytest.mark.parametrize('args,entry_type', [
+        ({"query": "1.1.1.1", "is_recursive": "true", "with_error": True}, EntryType.ERROR),
+        ({"query": "1.1.1.1", "is_recursive": "true", "with_error": False}, EntryType.WARNING)
+    ])
+    def test_error_entry_type(
+        args: dict[str, str],
+        entry_type: EntryType,
+        mocker: MockerFixture,
+        capfd: pytest.CaptureFixture
+    ):
+    
+        mocker.patch.object(demisto, 'command', 'whois')
+        mocker.patch.object(demisto, 'args', return_value=args)
+&gt;       mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
+
+Packs/Whois/Integrations/Whois/Whois_test.py:474: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+json_path = './test_data/whois_raw_response.json'
+
+    def load_test_data(json_path):
+&gt;       with open(json_path) as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:40: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_error_entry_type[args1-11]" time="0.008"><failure message="FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'">args = {'is_recursive': 'true', 'query': '1.1.1.1', 'with_error': False}
+entry_type = 11
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c6364f880&gt;
+capfd = &lt;_pytest.capture.CaptureFixture object at 0x7f7c6161e6e0&gt;
+
+    @pytest.mark.parametrize('args,entry_type', [
+        ({"query": "1.1.1.1", "is_recursive": "true", "with_error": True}, EntryType.ERROR),
+        ({"query": "1.1.1.1", "is_recursive": "true", "with_error": False}, EntryType.WARNING)
+    ])
+    def test_error_entry_type(
+        args: dict[str, str],
+        entry_type: EntryType,
+        mocker: MockerFixture,
+        capfd: pytest.CaptureFixture
+    ):
+    
+        mocker.patch.object(demisto, 'command', 'whois')
+        mocker.patch.object(demisto, 'args', return_value=args)
+&gt;       mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
+
+Packs/Whois/Integrations/Whois/Whois_test.py:474: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+json_path = './test_data/whois_raw_response.json'
+
+    def load_test_data(json_path):
+&gt;       with open(json_path) as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: './test_data/whois_raw_response.json'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:40: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_exception_type_to_metrics[em0-mapping0-WhoisLookupError-expected0]" time="0.007"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_exception_type_to_metrics[em1-mapping1-BlacklistError-expected1]" time="0.007"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_exception_type_to_metrics[em2-mapping2-NetError-expected2]" time="0.008"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_exception_type_to_metrics[em3-mapping3-BaseException-expected3]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_exception_type_to_metrics[em4-mapping4-BaseException-expected4]" time="0.006"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_exception_type_to_metrics[em5-mapping5-OSError-expected5]" time="0.008"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_exception_type_to_metrics[em6-mapping6-TypeError-expected6]" time="0.007"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_exception_type_to_metrics[em7-mapping7-WhoisInvalidDomain-expected7]" time="0.006"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_root_server[google.com-whois.verisign-grs.com]" time="0.005"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_root_server_invalid_domain[com]" time="0.006"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_get_root_server_invalid_domain[1.1.1.1]" time="0.007"/><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_domain_command[args0-2]" time="0.007"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/cnn_pickled'">args = {'domain': 'cnn.com', 'is_recursive': 'true', 'should_error': 'false', 'verbose': 'true'}
+expected_res = 2
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c61621990&gt;
+
+    @pytest.mark.parametrize('args, expected_res', [
+        ({"domain": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
+        ({"domain": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)
+    ])
+    def test_domain_command(args: dict[str, Any], expected_res, mocker: MockerFixture):
+        """
+        Given:
+            - The args for the domain command.
+        When:
+            - calling the whois command.
+        Then:
+            - validate that another context path is added for the raw-response if verbose arg is true.
+        """
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
+        mocker.patch.object(demisto, 'command', 'domain')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
+&gt;       with open('test_data/cnn_pickled', 'rb') as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/cnn_pickled'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:629: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_domain_command[args1-2]" time="0.006"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/cnn_pickled'">args = {'domain': 'cnn.com', 'is_recursive': 'true', 'should_error': 'false'}
+expected_res = 2
+mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f7c62fa4040&gt;
+
+    @pytest.mark.parametrize('args, expected_res', [
+        ({"domain": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
+        ({"domain": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)
+    ])
+    def test_domain_command(args: dict[str, Any], expected_res, mocker: MockerFixture):
+        """
+        Given:
+            - The args for the domain command.
+        When:
+            - calling the whois command.
+        Then:
+            - validate that another context path is added for the raw-response if verbose arg is true.
+        """
+        mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
+        mocker.patch.object(demisto, 'command', 'domain')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
+&gt;       with open('test_data/cnn_pickled', 'rb') as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/cnn_pickled'
+
+Packs/Whois/Integrations/Whois/Whois_test.py:629: FileNotFoundError</failure></testcase><testcase classname="Packs.Whois.Integrations.Whois.Whois_test" name="test_parse_nic_contact_new_regex" time="0.008"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/whois_response_text.txt'">def test_parse_nic_contact_new_regex():
+        """
+        Given:
+            - Data fetched from the API.
+        When:
+            - calling the whois/domain command.
+        Then:
+            - validate that the data extracted without timeout.
+        """
+        from Whois import parse_nic_contact
+&gt;       data = pathlib.Path('test_data/whois_response_text.txt').read_text()
+
+Packs/Whois/Integrations/Whois/Whois_test.py:649: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.10/pathlib.py:1134: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('test_data/whois_response_text.txt'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return self._accessor.open(self, mode, buffering, encoding, errors,
+                                   newline)
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/whois_response_text.txt'
+
+/usr/local/lib/python3.10/pathlib.py:1119: FileNotFoundError</failure></testcase></testsuite><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="28.355" timestamp="2024-06-02T17:33:19.157797" hostname="0048dd8ea348"><testcase classname="" name="Packs.Base.Scripts.CommonServerPython.CommonServerPython_test" time="0.000"><error message="collection failure">Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8804: in &lt;module&gt;
+    class TestSendEventsToXSIAMTest:
+Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8805: in TestSendEventsToXSIAMTest
+    with open('test_data/events.json') as f:
+E   FileNotFoundError: [Errno 2] No such file or directory: 'test_data/events.json'</error></testcase></testsuite><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="25.112" timestamp="2024-06-02T17:33:24.421949" hostname="864ae35a4ab6"><testcase classname="" name="Packs.Base.Scripts.CommonServerPython.CommonServerPython_test" time="0.000"><error message="collection failure">Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8804: in &lt;module&gt;
+    class TestSendEventsToXSIAMTest:
+Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8805: in TestSendEventsToXSIAMTest
+    with open('test_data/events.json') as f:
+E   FileNotFoundError: [Errno 2] No such file or directory: 'test_data/events.json'</error></testcase></testsuite><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="19.896" timestamp="2024-06-02T17:33:08.442202" hostname="57ead3cade78"><testcase classname="" name="Packs.Base.Scripts.CommonServerPython.CommonServerPython_test" time="0.000"><error message="collection failure">Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8804: in &lt;module&gt;
+    class TestSendEventsToXSIAMTest:
+Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8805: in TestSendEventsToXSIAMTest
+    with open('test_data/events.json') as f:
+E   FileNotFoundError: [Errno 2] No such file or directory: 'test_data/events.json'</error></testcase></testsuite><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="136" time="-59959538.420" timestamp="2024-03-25T12:18:07.419705" hostname="0fbebb2235eb"><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_force_default_url_arg" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_server_url" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_context" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_context_additional_fields" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_context_nested_additional_fields" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_human_readable" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_generate_body" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_split_fields" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_split_fields_with_special_delimiter" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_convert_to_notes_result" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_split_notes" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_timezone_offset" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_notes_command_success" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_notes_command_use_display_value" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_notes_command_use_display_value_no_comments" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_entries_for_notes_with_comment[notes0-params0-expected0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[update_ticket_command-args0-response0-expected_result0-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[update_ticket_command-args1-response1-expected_result1-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[update_ticket_command-args2-response2-expected_result2-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[create_ticket_command-args3-response3-expected_result3-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[create_ticket_command-args4-The ticket was successfully created.-expected_result4-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[query_tickets_command-args5-response5-expected_result5-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[query_tickets_command-args6-response6-expected_result6-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[upload_file_command-args7-response7-expected_result7-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[get_record_command-args8-response8-expected_result8-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[update_record_command-args9-response9-expected_result9-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[create_record_command-args10-response10-expected_result10-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[query_table_command-args11-response11-expected_result11-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[query_table_command-args12-response12-expected_result12-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[list_table_fields_command-args13-response13-expected_result13-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[query_computers_command-args14-response14-expected_result14-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[get_table_name_command-args15-response15-expected_result15-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[add_tag_command-args16-response16-expected_result16-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[query_items_command-args17-response17-expected_result17-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[get_item_details_command-args18-response18-expected_result18-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[create_order_item_command-args19-response19-expected_result19-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_commands[document_route_to_table-args20-response20-expected_result20-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_no_ec_commands[delete_ticket_command-args0-response0-Ticket with ID 1234 was successfully deleted.-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_no_ec_commands[add_link_command-args1-response1-### Link successfully added to ServiceNow ticket-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_no_ec_commands[add_comment_command-args2-response2-### Comment successfully added to ServiceNow ticket-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_no_ec_commands[delete_record_command-args3-response3-ServiceNow record with ID 1234 was successfully deleted.-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_delete_attachment_command" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_delete_attachment_command_failed" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_fetch_incidents" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_fetch_incidents_with_changed_fetch_limit" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_fetch_incidents_with_attachments" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_fetch_incidents_with_incident_name" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test.TestFetchIncidentsWithLookBack" name="test_fetch_incidents_with_look_back_greater_than_zero[start_incidents0-phase2_incident0-phase3_incident0-15]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test.TestFetchIncidentsWithLookBack" name="test_fetch_incidents_with_look_back_greater_than_zero[start_incidents1-phase2_incident1-phase3_incident1-1000]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test.TestFetchIncidentsWithLookBack" name="test_fetch_incidents_with_look_back_equals_zero[incidents0-phase2_incident0-phase3_incident0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test.TestFetchIncidentsWithLookBack" name="test_fetch_incidents_with_look_back_equals_zero[incidents1-phase2_incident1-phase3_incident1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_incident_name_is_initialized" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_file_tags_names_are_the_same_main_flow" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_not_authenticated_retry_positive" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_not_authenticated_retry_negative" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_oauth_authentication" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_test_module" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_oauth_test_module" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_oauth_login_command" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_sysparm_input_display_value" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_mapping_fields" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_remote_data" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_assigned_to_field_no_user" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_assigned_to_field_user_exists" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_remote_data_closing_incident[response_closing_ticket_mirror0-parameters0-closed_at-closing_response0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_remote_data_closing_incident[response_closing_ticket_mirror1-parameters1-resolved_at-closing_response1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_remote_data_closing_incident[response_closing_ticket_mirror2-parameters2--closing_response2]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_remote_data_closing_incident_with_different_closing_state" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_remote_data_no_attachment" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_remote_data_no_entries" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_upload_entries_update_remote_system_command[mirror_entries0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_upload_entries_update_remote_system_command[mirror_entries1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_update_remote_data_sc_task_sc_req_item[sc_task]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_update_remote_data_sc_task_sc_req_item[sc_req_item]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_update_remote_data_sc_task_sc_req_item[incident]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_multiple_query_params[query_tickets_command-args0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_multiple_query_params[query_table_command-args1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_modified_remote_data[api_response0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_modified_remote_data[api_response1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_attachments[None-table_sys_id=id]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_attachments[-table_sys_id=id]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_attachments[2020-11-18 11:16:52-table_sys_id=id^sys_created_on&gt;2020-11-18 11:16:52]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_clear_fields_in_get_ticket_fields[args0-expected_ticket_fields0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_clear_fields_in_get_ticket_fields[args1-expected_ticket_fields1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_clear_fields_in_get_ticket_fields[args2-expected_ticket_fields2]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_clear_fields_for_update_remote_system" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_query_table_with_fields" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_create_co_from_template_command" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_tasks_for_co_command" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_ticket_attachment_entries_with_oauth_token" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_generic_api_call_command[generic_api_call_command-args0-response0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_generic_api_call_command[generic_api_call_command-args1-response1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_entry_type_mirror_supported[3-True0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_entry_type_mirror_supported[3-True1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_entry_type_mirror_supported[7-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_entry_type_mirror_supported[1-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_entry_type_mirror_supported[15-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_closure_case[params0-closed]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_closure_case[params1-None]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_closure_case[params2-resolved]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_closure_case[params3-resolved]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_closure_case[params4-closed]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_get_closure_case[params5-closed]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[1-default close code---Other]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[7-default close code---Resolved]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[6-default close code---Resolved]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[10-default close code-10=Test--Test]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[10-default close code-10=Test,11=Test2--Test]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[6-default close code-6=Test--Test]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[corrupt_state-default close code---Other]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[corrupt_state-default close code-custom_state=Test--Other]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[6-default close code-custom_state=Test--Resolved]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[10-custom close code-10=Test,11=Test2-custom close code=Custom,90=90 Custom-Custom]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_converts_close_code_or_state_to_close_reason[10-90-10=Test,11=Test2-80=Custom, 90=90 Custom-90 Custom]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_upload_file_types[123.png-image/png]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_upload_file_types[123.gif-image/gif]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_upload_file_types[123.jpeg-image/jpeg]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_upload_file_types[123.pdf-application/pdf]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_upload_file_types[123-*/*]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_update_remote_data_custom_state[case - 1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_update_remote_data_custom_state[case - 2]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_update_remote_data_custom_state[case - 3]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_update_remote_data_custom_state[case - 4]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_send_request_with_str_error_response[mock_json0-ServiceNow Error: invalid client.]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_send_request_with_str_error_response[mock_json1-ServiceNow Error: invalid client, details: the client you have entered is invalid.]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_parse_dict_ticket_fields_empty_ticket[ticket0-expected_ticket0]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_parse_dict_ticket_fields_empty_ticket[ticket1-expected_ticket1]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_parse_dict_ticket_fields_empty_ticket[ticket2-expected_ticket2]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_format_incidents_response_with_display_values_with_no_incidents" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_format_incidents_response_with_display_values_with_incidents" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_time_field[2023-02-15 10:30:45-True]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_time_field[invalid-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_time_field[15.02.2023 10:30:45-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_time_field[a2023-02-15 10:30:45-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_time_field[2023-02-15 10:30:45a-False]" time="0.000"/><testcase classname="Packs.ServiceNow.Integrations.ServiceNowv2.ServiceNowv2_test" name="test_is_time_field[2023-02-15 10:30:45 a-False]" time="0.000"/></testsuite><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="42.192" timestamp="2024-05-22T11:50:04.371545" hostname="32b558188482"><testcase classname="" name="Packs.Base.Scripts.CommonServerPython.CommonServerPython_test" time="0.000"><error message="collection failure">Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8803: in &lt;module&gt;
+    class TestSendEventsToXSIAMTest:
+Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8804: in TestSendEventsToXSIAMTest
+    with open('test_data/events.json') as f:
+E   FileNotFoundError: [Errno 2] No such file or directory: 'test_data/events.json'</error></testcase></testsuite><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="17" time="2.612" timestamp="2024-04-07T07:48:13.197630" hostname="a0229a7bc303"><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_eml_type" time="0.021"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_eml_contains_eml" time="0.078"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_eml_contains_msg" time="0.364"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_eml_contains_eml_depth" time="0.024"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_msg" time="0.123"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_no_content_type_file" time="0.013"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_no_content_file" time="0.012"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_md_output_empty_body_text" time="0.004"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_md_output_with_body_text" time="0.003"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_parse_nesting_level[All files-output0-res0]" time="0.003"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_parse_nesting_level[Outer file-output1-res1]" time="0.003"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_parse_nesting_level[Inner file-output2-res2]" time="0.003"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_eml_contains_eml_nesting_level[All files-4-0-2]" time="0.036"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_eml_contains_eml_nesting_level[Outer file-3-0-2]" time="0.033"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_eml_contains_eml_nesting_level[Inner file-1-1-0]" time="0.026"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_eml_contains_empty_htm_not_containing_file_data" time="0.015"/><testcase classname="Packs.CommonScripts.Scripts.ParseEmailFilesV2.ParseEmailFilesV2_test" name="test_smime_without_to_from_subject" time="0.022"/></testsuite><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="24" time="51.933" timestamp="2024-05-26T13:09:51.421209" hostname="67e687391c7c"><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_rasterize_email_image" time="4.432"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_rasterize_email_image_array" time="2.417"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_rasterize_email_pdf" time="2.387"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_rasterize_email_pdf_offline" time="2.408"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_get_chrome_options" time="0.003"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_rasterize_large_html" time="2.377"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_rasterize_html" time="2.144"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_rasterize_url_long_load" time="25.702"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_rasterize_image_to_pdf" time="0.012"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/src/test_data/image.png'">mocker = &lt;pytest_mock.plugin.MockerFixture object at 0x7f09614db4f0&gt;
+
+    @pytest.mark.filterwarnings('ignore::ResourceWarning')
+    def test_rasterize_image_to_pdf(mocker):
+        path = os.path.realpath('test_data/image.png')
+        mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
+        mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
+        mocker.patch.object(demisto, 'results')
+        mocker.patch.object(rasterize, 'support_multithreading')
+&gt;       rasterize_image_command()
+
+Packs/rasterize/Integrations/rasterize/rasterize_test.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def rasterize_image_command():
+        args = demisto.args()
+        entry_id = args.get('EntryID')
+        width, height = get_width_height(demisto.args())
+        full_screen = argToBoolean(demisto.args().get('full_screen', False))
+    
+        file_name = args.get('file_name', entry_id)
+    
+        file_path = demisto.getFilePath(entry_id).get('path')
+        file_name = f'{file_name}.pdf'
+    
+&gt;       with open(file_path, 'rb') as f:
+E       FileNotFoundError: [Errno 2] No such file or directory: '/src/test_data/image.png'
+
+Packs/rasterize/Integrations/rasterize/rasterize.py:702: FileNotFoundError</failure></testcase><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_convert_pdf_to_jpeg[test_data/many_pages.pdf-21-21-None]" time="0.004"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/many_pages.pdf'">file_path = 'test_data/many_pages.pdf', max_pages = 21, expected_length = 21
+pw = None
+
+    @pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
+    def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
+&gt;       res = convert_pdf_to_jpeg(file_path, max_pages, pw)
+
+Packs/rasterize/Integrations/rasterize/rasterize_test.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = 'test_data/many_pages.pdf', max_pages = 21, password = None
+
+    def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
+        """
+        Converts a PDF file into a jpeg image
+        :param path: file's path
+        :param max_pages: max pages to render,
+        :param password: PDF password
+        :return: A list of stream of combined images
+        """
+        demisto.debug(f'Loading file at Path: {path}')
+&gt;       input_pdf = PdfReader(open(path, "rb"), strict=False, password=password)
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/many_pages.pdf'
+
+Packs/rasterize/Integrations/rasterize/rasterize.py:750: FileNotFoundError</failure></testcase><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_convert_pdf_to_jpeg[test_data/many_pages.pdf-20-20-None]" time="0.003"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/many_pages.pdf'">file_path = 'test_data/many_pages.pdf', max_pages = 20, expected_length = 20
+pw = None
+
+    @pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
+    def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
+&gt;       res = convert_pdf_to_jpeg(file_path, max_pages, pw)
+
+Packs/rasterize/Integrations/rasterize/rasterize_test.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = 'test_data/many_pages.pdf', max_pages = 20, password = None
+
+    def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
+        """
+        Converts a PDF file into a jpeg image
+        :param path: file's path
+        :param max_pages: max pages to render,
+        :param password: PDF password
+        :return: A list of stream of combined images
+        """
+        demisto.debug(f'Loading file at Path: {path}')
+&gt;       input_pdf = PdfReader(open(path, "rb"), strict=False, password=password)
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/many_pages.pdf'
+
+Packs/rasterize/Integrations/rasterize/rasterize.py:750: FileNotFoundError</failure></testcase><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_convert_pdf_to_jpeg[test_data/many_pages.pdf-*-51-None]" time="0.004"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/many_pages.pdf'">file_path = 'test_data/many_pages.pdf', max_pages = '*', expected_length = 51
+pw = None
+
+    @pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
+    def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
+&gt;       res = convert_pdf_to_jpeg(file_path, max_pages, pw)
+
+Packs/rasterize/Integrations/rasterize/rasterize_test.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = 'test_data/many_pages.pdf', max_pages = '*', password = None
+
+    def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
+        """
+        Converts a PDF file into a jpeg image
+        :param path: file's path
+        :param max_pages: max pages to render,
+        :param password: PDF password
+        :return: A list of stream of combined images
+        """
+        demisto.debug(f'Loading file at Path: {path}')
+&gt;       input_pdf = PdfReader(open(path, "rb"), strict=False, password=password)
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/many_pages.pdf'
+
+Packs/rasterize/Integrations/rasterize/rasterize.py:750: FileNotFoundError</failure></testcase><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_convert_pdf_to_jpeg[test_data/test_pw_mathias.pdf-*-1-mathias]" time="0.004"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'test_data/test_pw_mathias.pdf'">file_path = 'test_data/test_pw_mathias.pdf', max_pages = '*'
+expected_length = 1, pw = 'mathias'
+
+    @pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
+    def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
+&gt;       res = convert_pdf_to_jpeg(file_path, max_pages, pw)
+
+Packs/rasterize/Integrations/rasterize/rasterize_test.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = 'test_data/test_pw_mathias.pdf', max_pages = '*', password = 'mathias'
+
+    def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
+        """
+        Converts a PDF file into a jpeg image
+        :param path: file's path
+        :param max_pages: max pages to render,
+        :param password: PDF password
+        :return: A list of stream of combined images
+        """
+        demisto.debug(f'Loading file at Path: {path}')
+&gt;       input_pdf = PdfReader(open(path, "rb"), strict=False, password=password)
+E       FileNotFoundError: [Errno 2] No such file or directory: 'test_data/test_pw_mathias.pdf'
+
+Packs/rasterize/Integrations/rasterize/rasterize.py:750: FileNotFoundError</failure></testcase><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_get_width_height[8001-700-8000-700]" time="0.003"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_get_width_height[700-80001-700-8000]" time="0.003"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_get_width_height[700-600-700-600]" time="0.002"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test.TestRasterizeIncludeUrl" name="test_sanity_rasterize_with_include_url[False]" time="2.440"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test.TestRasterizeIncludeUrl" name="test_sanity_rasterize_with_include_url[True]" time="2.464"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_log_warning" time="0.004"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_excepthook_recv_loop" time="0.005"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_poppler_version" time="0.014"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_get_list_item" time="0.002"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_add_filename_suffix" time="0.002"/><testcase classname="Packs.rasterize.Integrations.rasterize.rasterize_test" name="test_get_output_filenames" time="0.002"/></testsuite><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="22.327" timestamp="2024-06-02T17:33:30.366663" hostname="641fe6f27e1d"><testcase classname="" name="Packs.Base.Scripts.CommonServerPython.CommonServerPython_test" time="0.000"><error message="collection failure">Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8804: in &lt;module&gt;
+    class TestSendEventsToXSIAMTest:
+Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py:8805: in TestSendEventsToXSIAMTest
+    with open('test_data/events.json') as f:
+E   FileNotFoundError: [Errno 2] No such file or directory: 'test_data/events.json'</error></testcase></testsuite></testsuites>
