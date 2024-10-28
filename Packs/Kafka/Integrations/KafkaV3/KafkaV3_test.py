@@ -956,21 +956,21 @@ invalid_params_cases = [
     (
         {'use_ssl': True, 'brokers': 'broker1,broker2'},
         'When using SSL, the following are required: CA certificate of Kafka server (.cer), Client certificate (.cer),\
-            Client certificate key (.key). Please provide them.'),
+Client certificate key (.key). Please provide them.'),
     (
         {'use_ssl': True, 'brokers': 'broker1, broker2', 'ca_cert': 'cert'},
         'When using SSL, the following are required: Client certificate (.cer), Client certificate key (.key).\
-            Please provide them.'
+Please provide them.'
     ),
     (
         {'use_ssl': True, 'brokers': 'broker1, broker2', 'client_cert': 'client_cert'},
         'When using SSL, the following are required: CA certificate of Kafka server (.cer), Client certificate key (.key).\
-            Please provide them.'
+Please provide them.'
     ),
     (
         {'use_ssl': True, 'brokers': 'broker1, broker2', 'client_cert_key': 'client_key'},
         'When using SSL, the following are required: CA certificate of Kafka server (.cer), Client certificate (.cer).\
-            Please provide them.'
+Please provide them.'
     ),
     # SASL_SSL missing username/password/ca_cert
     (
