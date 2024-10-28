@@ -265,7 +265,8 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
         try:
             execute_shell_command(ssh_client, args={'cmd': f'mkdir -p {destination_dir}'})
         except Exception as e:
-            # ignore the error of creating the dir, as sometime is already exist and the error are due to permission - otherwise the next operation will fail
+            # ignore the error of creating the dir, as sometime is already exist and the error are due to permission
+            # otherwise the next operation will fail.
             demisto.debug(f'Ignoring the error: {str(e)}, occurred when run the command: mkdir -p {destination_dir}')
 
     perform_copy_command(ssh_client, file_path, destination_path, copy_to_remote=True, socket_timeout=timeout)
