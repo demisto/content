@@ -31,13 +31,19 @@ FEED_TYPE_GENERIC = 'Generic Feed'
 FEED_TYPE_CORTEX = 'Cortex XSOAR Feed'
 FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
 
+ELASTICSEARCH_V8 = 'Elasticsearch_v8'
+OPEN_SEARCH = 'OpenSearch'
 ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
-if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
+if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
-else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
+elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+    from elasticsearch import Elasticsearch
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
+else: # Elasticsearch (<= v7)
+    from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -67,12 +73,20 @@ class ElasticsearchClient:
 
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-        if self._api_key:
-            es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection,
-                               verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
-        else:
-            es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
-                               verify_certs=self._insecure, proxies=self._proxy)
+        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+            if self._api_key:
+                es = Elasticsearch(hosts=[self._server], verify_certs=self._insecure, api_key=self._api_key)
+            else:
+                es = Elasticsearch(hosts=[self._server], basic_auth=self._http_auth, verify_certs=self._insecure)
+        
+        else: # Elasticsearch v7 and below or OpenSearch
+            if self._api_key:
+                es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection,
+                                verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
+            else:
+                es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
+                                verify_certs=self._insecure, proxies=self._proxy)
+            
         # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
         if self._api_key and hasattr(es, 'transport'):
             es.transport.get_connection().session.headers["authorization"] = self._get_api_key_header_val(  # type: ignore
