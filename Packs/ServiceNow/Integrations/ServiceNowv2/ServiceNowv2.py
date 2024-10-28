@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import re
 from collections.abc import Callable, Iterable
 
@@ -1502,6 +1504,24 @@ def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, di
     raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
 
 
+def get_attachment_command(client: Client, args: dict) -> list | CommandResults:
+    """Retreives attachment from a ticket.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    sys_id = str(args.get('sys_id', ''))
+
+    result = client.get_ticket_attachment_entries(sys_id)  # type: ignore
+    if result:
+        return [CommandResults(readable_output=f'Successfully retrieved attachments for ticket with sys id {sys_id}.'), result]
+    return CommandResults(readable_output=f'Ticket with sys id {sys_id} has no attachments to retrieve.')
+
+
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Add tag to a ticket.
 
@@ -2843,6 +2863,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                         client.add_comment(ticket_id, ticket_type, 'comments', text_for_snow_comment)
             else:
                 # Mirroring comment and work notes as entries
+
                 tags = entry.get('tags', [])
                 key = ''
                 if params.get('work_notes_tag') in tags:
@@ -3339,6 +3360,8 @@ def main():
             return_results(get_tasks_for_co_command(client, demisto.args()))
         elif demisto.command() == 'servicenow-get-ticket-notes':
             return_results(get_ticket_notes_command(client, args, params))
+        elif demisto.command() == 'servicenow-get-attachments':
+            return_results(get_attachment_command(client, args))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
