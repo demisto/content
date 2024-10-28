@@ -459,11 +459,3 @@ def test_update_access_entry_command(mocker):
     result = update_access_entry_command(args)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
-
-
-def mock_command_func(_):
-    return CommandResults(
-        outputs=[{}],
-        readable_output='readable_output',
-        outputs_prefix='prefix',
-    )

@@ -449,3 +449,84 @@ def test_aws_session_sts_endpoint_url(mocker, params, region, expected_sts_endpo
         'config': aws_client.config,
         'endpoint_url': expected_sts_endpoint_url
     }
+
+
+def mock_command_func(_):
+    return CommandResults(
+        outputs=[{}],
+        readable_output='readable_output',
+        outputs_prefix='prefix',
+    )
+
+
+def test_run_on_all_accounts(mocker):
+    """
+    Given:
+        - The accounts_to_access and access_role_name params are provided.
+
+    When:
+        - Calling a command function that is decorated with test_account_runner.
+
+    Then:
+        - Ensure account_runner runs the command function for each of the accounts provided.
+    """
+    mocker.patch.object(demisto, 'params',return_value={'accounts_to_access': '1,2','access_role_name':'name'})
+    mocker.patch.object(demisto, 'getArg', return_value=None)
+
+    # list as output
+    result_func = run_on_all_accounts(mock_command_func)
+    results: list[CommandResults] = result_func({})
+
+    assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
+    assert results[0].outputs == [{'AccountId': '1'}]
+    assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
+    assert results[1].outputs == [{'AccountId': '2'}]
+
+    # dict as output
+    result_func = run_on_all_accounts(lambda _: CommandResults(
+        outputs={},
+        readable_output='readable_output',
+        outputs_prefix='prefix',
+    ))
+    results: list[CommandResults] = result_func({})
+
+    assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
+    assert results[0].outputs == {'AccountId': '1'}
+    assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
+    assert results[1].outputs == {'AccountId': '2'}
+
+
+@pytest.mark.parametrize('role_name, roleArn', [
+    (None, None), ('name', 'role'),
+])
+def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
+    """
+    Given:
+        - 1. The access_role_name param is not provided.
+        - 2. The roleArn arg is provided.
+
+    When:
+        - Calling a command function that is decorated with test_account_runner.
+
+    Then:
+        - Ensure account_runner returns the command function unchanged.
+    """
+    # case 1
+    mocker.patch.object(demisto, 'params',return_value={'access_role_name':role_name})
+    mocker.patch.object(demisto, 'args',return_value={'roleArn':'roleName'})
+
+    result_func = run_on_all_accounts(mock_command_func)
+    result: CommandResults = result_func({})
+
+    assert result.readable_output == 'readable_output'
+    assert result.outputs == [{}]
+
+    # case 2
+    mocker.patch.object(demisto, 'params',return_value={'access_role_name':None})
+    mocker.patch.object(demisto, 'args',return_value={'roleArn':None})
+    
+    result_func = run_on_all_accounts(mock_command_func)
+    result: CommandResults = result_func({})
+
+    assert result.readable_output == 'readable_output'
+    assert result.outputs == [{}]
