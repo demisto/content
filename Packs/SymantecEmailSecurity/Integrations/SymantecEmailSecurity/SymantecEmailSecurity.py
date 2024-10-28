@@ -136,7 +136,7 @@ class IOC:
         if self.APIRowAction == APIRowActionChoices.ADD:
             self._validate_add()
         elif not self.IocBlacklistId:  # For UPDATE, DELETE, and RENEW actions, IocBlacklistId must be present
-            raise DemistoException(f"IocBlacklistId must be present for APIRowAction={self.APIRowAction.value}.")
+            raise DemistoException(f"IocBlacklistId must be present for APIRowAction={self.APIRowAction}.")
 
     def _validate_row_action(self, api_row_action: APIRowActionChoices) -> None:
         """Validate rules based on the APIRowAction."""
@@ -167,7 +167,7 @@ class IOC:
         """Validate for the UPDATE APIRowAction."""
         if not self.IocBlacklistId:
             raise DemistoException(
-                f"IocBlacklistId must be present for APIRowAction={self.APIRowAction.value}"
+                f"IocBlacklistId must be present for APIRowAction={self.APIRowAction}"
                 f" ({APIRowActionChoices(self.APIRowAction)})."
             )
 
