@@ -5264,7 +5264,7 @@ def test_send_file_api_exception(mocker):
     Given:
         - A mocked, faulty Slack API response.
     When:
-        - Calling the slack_send_file
+        - Calling the slack_send_file function.
     Then:
         - Assert readable exception is raised.
     """
@@ -5277,3 +5277,19 @@ def test_send_file_api_exception(mocker):
     with pytest.raises(DemistoException) as e:
         slack_send_file('channel', _entry_id='123', _comment='Here is a file!')
     assert str(e.value) == 'Failed to send file: test.txt to Slack. The method has been deprecated.'
+
+
+def test_validate_slack_request_args():
+    """
+    Given:
+        - An invalid Slack API request arguments.
+    When:
+        - Calling the validate_slack_request_args function.
+    Then:
+        - Assert ValueError is raised.
+    """
+    from SlackV3 import validate_slack_request_args
+
+    with pytest.raises(ValueError) as e:
+        validate_slack_request_args(http_verb='HI', method='chat.postMessage', file_upload_params=None)
+    assert str(e.value) == 'Invalid http_verb: HI. Allowed values: POST, GET.'

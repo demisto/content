@@ -9,7 +9,7 @@ from distutils.util import strtobool
 import aiohttp
 import slack_sdk
 from urllib.parse import urlparse
-from typing import TypedDict
+from typing import TypedDict, Literal, get_args
 
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
@@ -21,6 +21,7 @@ from slack_sdk.web.slack_response import SlackResponse
 
 ''' CONSTANTS '''
 
+ALLOWED_HTTP_VERBS = Literal['POST', 'GET']
 SEVERITY_DICT = {
     'Unknown': 0,
     'Low': 1,
@@ -468,10 +469,35 @@ def set_name_and_icon(body: dict, method: str):
             body['icon_url'] = BOT_ICON_URL
 
 
+def validate_slack_request_args(
+    http_verb: str,
+    method: Optional[str],
+    file_upload_params: Optional[FileUploadParams],
+) -> None:
+    """
+    Performs basic pre-validation on the Slack request arguments
+
+    Args:
+        http_verb: The HTTP method to use.
+        method: The Slack web API method to use (not relevant when file_upload_params are specified).
+        file_upload_params: An instance of FileUploadParams (for uploading using the file-upload APIs).
+
+    Raises:
+        ValueError: If neither method nor file_upload_params are specified, or if an invalid http_verb is used.
+    """
+    if not method and not file_upload_params:
+        # empty method is only allowed when uploading a file
+        raise ValueError('Either a Slack web API method or file_upload_params need to specified')
+
+    allowed_http_verb_values: tuple = get_args(ALLOWED_HTTP_VERBS)
+    if http_verb not in allowed_http_verb_values:
+        raise ValueError(f'Invalid http_verb: {http_verb}. Allowed values: {", ".join(allowed_http_verb_values)}.')
+
+
 def send_slack_request_sync(
     client: slack_sdk.WebClient,
     method: str = '',
-    http_verb: str = 'POST',
+    http_verb: ALLOWED_HTTP_VERBS = 'POST',
     body: Optional[dict] = None,
     file_upload_params: Optional[FileUploadParams] = None,
 ) -> SlackResponse:
@@ -488,6 +514,8 @@ def send_slack_request_sync(
     Returns:
         The Slack API response.
     """
+    validate_slack_request_args(http_verb=http_verb, method=method, file_upload_params=file_upload_params)
+
     if body is None:
         body = {}
 
@@ -523,7 +551,7 @@ def send_slack_request_sync(
 async def send_slack_request_async(
     client: AsyncWebClient,
     method: str = '',
-    http_verb: str = 'POST',
+    http_verb: ALLOWED_HTTP_VERBS = 'POST',
     body: Optional[dict] = None,
     file_upload_params: Optional[FileUploadParams] = None,
 ) -> SlackResponse:
@@ -540,6 +568,8 @@ async def send_slack_request_async(
     Returns:
         The Slack API response.
     """
+    validate_slack_request_args(http_verb=http_verb, method=method, file_upload_params=file_upload_params)
+
     if body is None:
         body = {}
 
