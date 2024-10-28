@@ -67,6 +67,35 @@ List the IOCs that apply to a specific domain or to all domains.
 | SymantecEmailSecurity.IOC.remediationAction | String | Remediation Action can be one of: B=Block and delete, Q=Quarantine, M=Redirect, T=Tag subject or H=Append header. | 
 | SymantecEmailSecurity.IOC.expiryDate | String | Retention period for an IOC until it is removed from the system. | 
 
+#### Command example
+```!symantec-email-security-ioc-list```
+#### Context Example
+```json
+{
+    "SymantecEmailSecurity": {
+        "IOC": {
+            "description": "url to block",
+            "emailDirection": "O",
+            "expiryDate": "2024-01-01 00:00:00.0",
+            "iocBlackListId": "00000000-0000-0000-0000-000000000000",
+            "iocType": "url",
+            "iocValue": "https://www.example.com",
+            "remediationAction": "H",
+            "status": "Active"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IOC(s)
+>|ID|Type|Value|Status|Description|Email Direction|Remediation Action|Expiry Date|
+>|---|---|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000000 | subject | Test | Active | Test | inbound | quarantine | 2024-01-01 00:00:00.0 |
+>| 00000000-0000-0000-0000-000000000000 | url | https:<span>//</span>www.example.com | Active | url to block | outbound | append header | 2024-01-01 00:00:00.0 |
+
+
 ### symantec-email-security-ioc-action
 
 ***
@@ -93,6 +122,12 @@ Add, update, delete and renew multiple IOCs through the `entry_id` or a single t
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-email-security-ioc-action action=add ioc_type=subject ioc_value=Test123 description=test email_direction=inbound remediation_action=block_and_delete```
+#### Human Readable Output
+
+>## All IOC(s) were uploaded successfully.
+
 ### symantec-email-security-ioc-renew
 
 ***
@@ -111,6 +146,12 @@ Renew all IOCs previously uploaded and still in the database, whether active or 
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-email-security-ioc-renew```
+#### Human Readable Output
+
+>## All IOC(s) were renewed.
+
 ### symantec-email-security-data-list
 
 ***
@@ -289,6 +330,150 @@ Retrieves data feeds from Symantec Email Security.cloud. Available feeds: 'all' 
 | SymantecEmailSecurity.Data.reportWindowStartTime | Number | Start time of the report window. | 
 | SymantecEmailSecurity.Data.reportWindowEndTime | Number | End time of the report window. | 
 
+#### Command example
+```!symantec-email-security-data-list```
+#### Context Example
+```json
+{
+    "SymantecEmailSecurity": {
+        "Data": [
+            {
+                "emailInfo": {
+                    "HELOString": "inbound.000.example",
+                    "authResults": null,
+                    "avQuarantinePenId": "",
+                    "country": "",
+                    "envFrom": "bounce-newaccount-verp-00000000000000000000@eu.quarantine.symantec.com",
+                    "envTo": [
+                        "hello@world"
+                    ],
+                    "filesAndLinks": [
+                        {
+                            "fileNameOrURL": "Unknown00000000.data",
+                            "fileSize": 1000,
+                            "fileType": "text/html",
+                            "index": 2,
+                            "linkSource": "BASIC_EMAIL_INFO",
+                            "md5": "00000000000000000000000000000000",
+                            "nodeType": "FILE_INCLUDED",
+                            "parentIndex": 1,
+                            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                            "urlCategories": null,
+                            "urlRiskScore": null
+                        },
+                        {
+                            "fileNameOrURL": "https://www.example.com",
+                            "fileSize": 0,
+                            "fileType": "",
+                            "index": 3,
+                            "linkSource": "BASIC_EMAIL_INFO",
+                            "md5": null,
+                            "nodeType": "LINK_INCLUDED",
+                            "parentIndex": 2,
+                            "sha256": null,
+                            "urlCategories": [
+                                "Technology/Internet"
+                            ],
+                            "urlRiskScore": 1
+                        }
+                    ],
+                    "headerFrom": "quarantine@eu.quarantine.symantec.com",
+                    "headerReplyTo": "",
+                    "headerTo": [
+                        "hello@world"
+                    ],
+                    "isOutbound": false,
+                    "longMsgRef": "server-0.tower-0.messagelabs.com!000!000!0",
+                    "mailProcessingStartTime": 1000000000,
+                    "messageId": "000.000@quarantine.messagelabs.com",
+                    "messageSize": 10000,
+                    "newDomainAge": null,
+                    "rawHeaderFrom": " <bounce-newaccount-verp-00000000000000000000@eu.quarantine.symantec.com>",
+                    "senderIp": "0.0.0.0",
+                    "senderMailserver": "0.0.0.0.googleusercontent.com",
+                    "subject": "New Email Quarantine Account",
+                    "timeInCynicSandboxMs": -1,
+                    "tlsInfo": {
+                        "tlsAdvertised": true,
+                        "tlsCipher": "ECDHE-RSA-AES256-GCM-SHA384",
+                        "tlsFallbackReason": "",
+                        "tlsForwardSecrecy": true,
+                        "tlsKeyLength": 256,
+                        "tlsNegotiationFailed": false,
+                        "tlsPolicy": "OPPORTUNISTIC",
+                        "tlsProtocol": "TLSv1.2",
+                        "tlsUsed": true
+                    },
+                    "xMsgRef": "000"
+                },
+                "incidents": [
+                    {
+                        "action": "Block",
+                        "addressContexts": [
+                            {
+                                "domain": "lior.sb",
+                                "isSender": false,
+                                "name": "lior"
+                            }
+                        ],
+                        "detectionMethod": "Skeptic Heuristics",
+                        "dmasDelivered": false,
+                        "dmasInfo": [],
+                        "filesAndLinks": [
+                            {
+                                "fileNameOrURL": "message.txt",
+                                "fileSize": 1197,
+                                "fileType": "",
+                                "index": 23,
+                                "linkSource": "INCIDENT",
+                                "malwareCategory": "trojan",
+                                "malwareName": "Test/Eicar",
+                                "md5": "00000000000000000000000000000000",
+                                "nodeType": "FILE_INCLUDED",
+                                "parentIndex": 22,
+                                "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "urlCategories": null,
+                                "urlRiskScore": null,
+                                "xMsgRef": "000"
+                            },
+                            {
+                                "fileNameOrURL": "message.txt",
+                                "fileSize": 1197,
+                                "fileType": "",
+                                "index": 22,
+                                "linkSource": "INCIDENT",
+                                "malwareCategory": "uncategorized",
+                                "malwareName": "unknown",
+                                "md5": "00000000000000000000000000000000",
+                                "nodeType": "FILE_INCLUDED",
+                                "parentIndex": 0,
+                                "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                                "urlCategories": null,
+                                "urlRiskScore": null,
+                                "xMsgRef": "000"
+                            }
+                        ],
+                        "reason": "unknown",
+                        "securityService": "Anti-Malware",
+                        "severity": "LOW",
+                        "verdict": "Malware",
+                        "xMsgRef": "000"
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Email Data Feed(s)
+>|Message Size|Subject|Envelope From|Envelope To|Sender IP|Sender Mail Server|File/URLs With Risk|Incidents|
+>|---|---|---|---|---|---|---|---|
+>| 10000 | New Email Quarantine Account | bounce-newaccount-verp-00000000000000000000@eu.quarantine.symantec.com | hello@world | 0.0.0.0 | 0.0.0.0.googleusercontent.com | Unknown00000000.data-None,<br/>https:<span>//</span>www.example.com-1 | {'Severity': 'LOW', 'Security Service': 'Anti-Malware', 'Detection Method': 'Skeptic Heuristics', 'Verdict': 'Malware', 'Action': 'Block'} |
+
+
 ### symantec-email-security-email-queue-list
 
 ***
@@ -329,6 +514,54 @@ Returns a list of domains owned by the customer, with queue statistics for each 
 | SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInReceiveQueueOutbound | Number | Average \(mean\) wait time for outbound messages waiting to be processed. Measured in seconds. | 
 | SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInDeliveryQueueInbound | Number | Average \(mean\) wait time for inbound messages waiting to be delivered after processing. Measured in seconds. | 
 | SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInDeliveryQueueOutbound | Number | Average \(mean\) wait time for outbound messages waiting to be delivered after processing. Measured in seconds. | 
+
+#### Command example
+```!symantec-email-security-email-queue-list```
+#### Context Example
+```json
+{
+    "SymantecEmailSecurity": {
+        "EmailQueue": {
+            "Domains": [
+                {
+                    "DeliveryQueueCountInbound": 0,
+                    "DeliveryQueueCountOutbound": 0,
+                    "LongestTimeInDeliveryQueueInbound": 0,
+                    "LongestTimeInDeliveryQueueOutbound": 0,
+                    "LongestTimeInReceiveQueueInbound": 0,
+                    "LongestTimeInReceiveQueueOutbound": 0,
+                    "MeanTimeInDeliveryQueueInbound": 0,
+                    "MeanTimeInDeliveryQueueOutbound": 0,
+                    "MeanTimeInReceiveQueueInbound": 0,
+                    "MeanTimeInReceiveQueueOutbound": 0,
+                    "Name": "lior.sb",
+                    "ReceiveQueueCountInbound": 0,
+                    "ReceiveQueueCountOutbound": 0
+                }
+            ],
+            "LongestTimeInInbound": 0,
+            "LongestTimeInOutbound": 0,
+            "MeanTimeInQueueInbound": 0,
+            "MeanTimeInQueueOutbound": 0,
+            "TotalMessagesInbound": 0,
+            "TotalMessagesOutbound": 0
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Email Queue Statistic(s)
+>|Totalmessagesinbound|Totalmessagesoutbound|Meantimeinqueueinbound|Meantimeinqueueoutbound|Longesttimeininbound|Longesttimeinoutbound|
+>|---|---|---|---|---|---|
+>| 0 | 0 | 0 | 0 | 0 | 0 |
+>
+>### Domain Statistic(s)
+>|Name|Receivequeuecountinbound|Receivequeuecountoutbound|Deliveryqueuecountinbound|Deliveryqueuecountoutbound|
+>|---|---|---|---|---|
+>| lior.sb | 0 | 0 | 0 | 0 |
+
 
 ### symantec-email-security-quarantine-email-list
 
@@ -380,6 +613,182 @@ Retrieves the metadata for quarantined emails belonging to the authenticated use
 | SymantecEmailSecurity.QuarantineEmail.actions.preview_message | Bool | Whether the email can be previewed. | 
 | SymantecEmailSecurity.QuarantineEmail.actions.release_message | Bool | Whether the email can be released. | 
 
+#### Command example
+```!symantec-email-security-quarantine-email-list```
+#### Context Example
+```json
+{
+    "SymantecEmailSecurity": {
+        "QuarantineEmail": [
+            {
+                "actions": {
+                    "delete_message": true,
+                    "preview_message": true,
+                    "release_message": true,
+                    "view_subject": true
+                },
+                "id": "000",
+                "metadata": {
+                    "email_date_received": 1728206441148,
+                    "email_envelope_recipient": "example@example.com",
+                    "email_envelope_sender": "example@example.com",
+                    "email_is_released": true,
+                    "email_is_viewed": true,
+                    "email_released_to": "recipient",
+                    "email_sender": "Example (example@example.com)",
+                    "email_size": 0,
+                    "email_subject": "a",
+                    "master_recipient": "example@example.com",
+                    "quarantine_info": {
+                        "direction": "inbound",
+                        "quarantine_type": "CI",
+                        "rules": [
+                            "test"
+                        ]
+                    },
+                    "quarantine_reason": "CC",
+                    "service_type": "ess",
+                    "user_id": 0
+                }
+            },
+            {
+                "actions": {
+                    "delete_message": true,
+                    "preview_message": true,
+                    "release_message": true,
+                    "view_subject": true
+                },
+                "id": "001",
+                "metadata": {
+                    "email_date_received": 1728221871295,
+                    "email_envelope_recipient": "example@example.com",
+                    "email_envelope_sender": "example@example.com",
+                    "email_is_released": false,
+                    "email_is_viewed": true,
+                    "email_sender": "Example (example@example.com)",
+                    "email_size": 0,
+                    "email_subject": "a",
+                    "master_recipient": "example@example.com",
+                    "quarantine_info": {
+                        "direction": "inbound",
+                        "quarantine_type": "CI",
+                        "rules": [
+                            "test"
+                        ]
+                    },
+                    "quarantine_reason": "CC",
+                    "service_type": "ess",
+                    "user_id": 1
+                }
+            },
+            {
+                "actions": {
+                    "delete_message": true,
+                    "preview_message": true,
+                    "release_message": true,
+                    "view_subject": true
+                },
+                "id": "002",
+                "metadata": {
+                    "email_date_received": 1728221875373,
+                    "email_envelope_recipient": "example@example.com",
+                    "email_envelope_sender": "example@example.com",
+                    "email_is_released": false,
+                    "email_is_viewed": false,
+                    "email_sender": "Example (example@example.com)",
+                    "email_size": 0,
+                    "email_subject": "a",
+                    "master_recipient": "example@example.com",
+                    "quarantine_info": {
+                        "direction": "inbound",
+                        "quarantine_type": "CI",
+                        "rules": [
+                            "test"
+                        ]
+                    },
+                    "quarantine_reason": "CC",
+                    "service_type": "ess",
+                    "user_id": 2
+                }
+            },
+            {
+                "actions": {
+                    "delete_message": true,
+                    "preview_message": true,
+                    "release_message": true,
+                    "view_subject": true
+                },
+                "id": "003",
+                "metadata": {
+                    "email_date_received": 1728221880677,
+                    "email_envelope_recipient": "example@example.com",
+                    "email_envelope_sender": "example@example.com",
+                    "email_is_released": true,
+                    "email_is_viewed": false,
+                    "email_released_to": "recipient",
+                    "email_sender": "Example (example@example.com)",
+                    "email_size": 0,
+                    "email_subject": "a",
+                    "master_recipient": "example@example.com",
+                    "quarantine_info": {
+                        "direction": "inbound",
+                        "quarantine_type": "CI",
+                        "rules": [
+                            "test"
+                        ]
+                    },
+                    "quarantine_reason": "CC",
+                    "service_type": "ess",
+                    "user_id": 3
+                }
+            },
+            {
+                "actions": {
+                    "delete_message": true,
+                    "preview_message": true,
+                    "release_message": true,
+                    "view_subject": true
+                },
+                "id": "004",
+                "metadata": {
+                    "email_date_received": 1728222011087,
+                    "email_envelope_recipient": "example@example.com",
+                    "email_envelope_sender": "example@example.com",
+                    "email_is_released": false,
+                    "email_is_viewed": false,
+                    "email_sender": "Example (example@example.com)",
+                    "email_size": 0,
+                    "email_subject": "a",
+                    "master_recipient": "example@example.com",
+                    "quarantine_info": {
+                        "direction": "inbound",
+                        "quarantine_type": "CI",
+                        "rules": [
+                            "test"
+                        ]
+                    },
+                    "quarantine_reason": "CC",
+                    "service_type": "ess",
+                    "user_id": 4
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Quarantine Email(s)
+>|ID|Date Received|Direction|Quarantine Type|Is Released|Quarantine Reason|Sender|Master Recipient|Subject|
+>|---|---|---|---|---|---|---|---|---|
+>| 000 | 2024-10-06 09:20:41.148000+00:00 | inbound | CI | true | CC | Example (example@example.com) | example@example.com | a |
+>| 001 | 2024-10-06 13:37:51.295000+00:00 | inbound | CI | false | CC | Example (example@example.com) | example@example.com | a |
+>| 002 | 2024-10-06 13:37:55.373000+00:00 | inbound | CI | false | CC | Example (example@example.com) | example@example.com | a |
+>| 003 | 2024-10-06 13:38:00.677000+00:00 | inbound | CI | true | CC | Example (example@example.com) | example@example.com | a |
+>| 004 | 2024-10-06 13:40:11.087000+00:00 | inbound | CI | false | CC | Example (example@example.com) | example@example.com | a |
+
+
 ### symantec-email-security-quarantine-email-preview
 
 ***
@@ -420,6 +829,74 @@ Retrieves the contents of the email specified in the request. To preview an emai
 | SymantecEmailSecurity.QuarantineEmailPreview.bodypart.type | String | The type of the email's body part. | 
 | SymantecEmailSecurity.QuarantineEmailPreview.bodypart.content | String | The content of the email's body part. | 
 
+#### Command example
+```!symantec-email-security-quarantine-email-preview message_id=000```
+#### Context Example
+```json
+{
+    "SymantecEmailSecurity": {
+        "QuarantineEmailPreview": {
+            "attachments": [
+                {
+                    "name": "hello",
+                    "type": "world"
+                }
+            ],
+            "bodypart": [
+                {
+                    "content": "xxx",
+                    "type": "text/plain; charset=\"UTF-8\""
+                },
+                {
+                    "content": "xxx",
+                    "type": "text/html; charset=\"UTF-8\""
+                }
+            ],
+            "headers": {
+                "authentication-results": "xxx",
+                "content-type": "multipart/alternative;",
+                "date": "Wed, 02 Oct 2024 04:37:01 +0000",
+                "dkim-signature": "v=1; a=rsa-sha256;",
+                "feedback-id": "xxx",
+                "from": "xxx",
+                "mailfrom": "example@example.com",
+                "message-id": "123",
+                "mime-version": "1.0",
+                "received": "xxx",
+                "reply-to": "xxx",
+                "subject": "xxx",
+                "to": "xxx",
+                "x-atlassian-mail-message-id": "xxx",
+                "x-atlassian-mail-transaction-id": "xxx",
+                "x-brightmail-tracker": "xxx",
+                "x-msfbl": "xxx",
+                "x-originating-ip": "[0.0.0.0]",
+                "x-spamquarantineinfo": "spam detected heuristically",
+                "x-spamquarantinereason": "Yes, hits=1.2 required=7.0 tests=newsletters: ,  newsletters: Newsletter detected: 5.12 >"
+            },
+            "message_id": "000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Quarantine Email Preview
+>|Date|From|To|Subject|
+>|---|---|---|---|
+>| Wed, 02 Oct 2024 04:37:01 +0000 | xxx | xxx | xxx |
+>### Attachments
+>|Name|Type|
+>|---|---|
+>| hello | world |
+>### Body Parts
+>|Content|
+>|---|
+>| xxx |
+>| xxx |
+
+
 ### symantec-email-security-quarantine-email-release
 
 ***
@@ -441,6 +918,12 @@ Releases the set of quarantined emails specified in the request.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-email-security-quarantine-email-release message_ids=000```
+#### Human Readable Output
+
+>## Successfully released all messages.
+
 ### symantec-email-security-quarantine-email-delete
 
 ***
@@ -459,6 +942,12 @@ Deletes the set of quarantined emails specified in the request. The items are ma
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-email-security-quarantine-email-delete message_ids=000```
+#### Human Readable Output
+
+>## Successfully deleted all messages.
+
 ### symantec-email-security-item-allow-list
 
 ***
@@ -492,6 +981,47 @@ Retrieve the allow list items.
 | SymantecEmailSecurity.AllowList.date_created | Date | Date at which the item was created. | 
 | SymantecEmailSecurity.AllowList.date_amended | Date | Date at which the item was amended. | 
 
+#### Command example
+```!symantec-email-security-item-allow-list```
+#### Context Example
+```json
+{
+    "SymantecEmailSecurity": {
+        "Allow": [
+            {
+                "description": "Test",
+                "emailDirection": "I",
+                "expiryDate": "2024-01-01 00:00:00.0",
+                "iocBlackListId": "00000000-0000-0000-0000-000000000000",
+                "iocType": "subject",
+                "iocValue": "Test",
+                "remediationAction": "Q",
+                "status": "Active"
+            },
+            {
+                "description": "url to block",
+                "emailDirection": "O",
+                "expiryDate": "2024-01-01 00:00:00.0",
+                "iocBlackListId": "00000000-0000-0000-0000-000000000000",
+                "iocType": "url",
+                "iocValue": "https://www.example.com",
+                "remediationAction": "H",
+                "status": "Active"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Allow List Item(s)
+>|Description|
+>|---|
+>| Test |
+>| url to block |
+
+
 ### symantec-email-security-item-allow-list-update
 
 ***
@@ -513,6 +1043,12 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-email-security-item-allow-list-update suduls_user=lior description=sb email_or_domain=lior.sb item_id=000```
+#### Human Readable Output
+
+>## The items were successfully merged.
+
 ### symantec-email-security-item-allow-list-delete
 
 ***
@@ -531,6 +1067,12 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-email-security-item-allow-list-delete item_id=000```
+#### Human Readable Output
+
+>## The items were successfully deleted.
+
 ### symantec-email-security-item-block-list
 
 ***
@@ -564,6 +1106,47 @@ Retrieve the block list items.
 | SymantecEmailSecurity.BlockList.date_created | Date | Date at which the item was created. | 
 | SymantecEmailSecurity.BlockList.date_amended | Date | Date at which the item was amended. | 
 
+#### Command example
+```!symantec-email-security-item-block-list```
+#### Context Example
+```json
+{
+    "SymantecEmailSecurity": {
+        "Block": [
+            {
+                "description": "Test",
+                "emailDirection": "I",
+                "expiryDate": "2024-01-01 00:00:00.0",
+                "iocBlackListId": "00000000-0000-0000-0000-000000000000",
+                "iocType": "subject",
+                "iocValue": "Test",
+                "remediationAction": "Q",
+                "status": "Active"
+            },
+            {
+                "description": "url to block",
+                "emailDirection": "O",
+                "expiryDate": "2024-01-01 00:00:00.0",
+                "iocBlackListId": "00000000-0000-0000-0000-000000000000",
+                "iocType": "url",
+                "iocValue": "https://www.example.com",
+                "remediationAction": "H",
+                "status": "Active"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Block List Item(s)
+>|Description|
+>|---|
+>| Test |
+>| url to block |
+
+
 ### symantec-email-security-item-block-list-update
 
 ***
@@ -585,6 +1168,12 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-email-security-item-block-list-update suduls_user=lior description=sb email_or_domain=lior.sb item_id=000```
+#### Human Readable Output
+
+>## The items were successfully merged.
+
 ### symantec-email-security-item-block-list-delete
 
 ***
@@ -603,3 +1192,8 @@ Allows a SUDULS (allow quarantine users to maintain their own lists of email add
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-email-security-item-block-list-delete item_id=000```
+#### Human Readable Output
+
+>## The items were successfully deleted.
