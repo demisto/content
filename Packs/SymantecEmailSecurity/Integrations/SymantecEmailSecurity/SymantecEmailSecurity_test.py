@@ -5,9 +5,10 @@ import unittest.mock
 from datetime import datetime, timezone
 from typing import Any, Callable
 
-import CommonServerPython
 import pytest
 import SymantecEmailSecurity
+
+import CommonServerPython
 
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com"
@@ -1179,7 +1180,7 @@ def test_automatic_pagination_commands(
     number_of_calls = args["limit"] // SymantecEmailSecurity.QUARANTINE_API_MAX_LIMIT
 
     for i in range(number_of_calls + 1):
-        expected_output = mock_response[outputs_key][number_of_calls * i : number_of_calls * (i + 1)]
+        expected_output = mock_response[outputs_key][number_of_calls * i: number_of_calls * (i + 1)]
 
         if not expected_output:
             break

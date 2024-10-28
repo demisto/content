@@ -10,7 +10,7 @@ import http
 import inspect
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, cast
 
 """ Global Variables """
 
@@ -84,10 +84,10 @@ class QuarantineType(str, Enum):
 
 @dataclasses.dataclass
 class IOC:
-    IocType: str
-    IocValue: str
-    Description: str
-    EmailDirection: EmailDirectionChoices
+    IocType: str | None
+    IocValue: str | None
+    Description: str | None
+    EmailDirection: EmailDirectionChoices | None
     APIRowAction: APIRowActionChoices | None = None
     IocBlacklistId: str | None = None
     RemediationAction: RemediationActionChoices | None = None
@@ -269,9 +269,9 @@ def pagination(items_key: str) -> Callable:
                 dict[str, Any]: Paginated response.
             """
             if page is not None:
-                return _manual(self, page=page, page_size=page_size or DEFAULT_LIMIT, *args, **kwargs)
+                return _manual(self, page, page_size or DEFAULT_LIMIT, *args, **kwargs)
 
-            return _automatic(self, limit=limit, *args, **kwargs)
+            return _automatic(self, limit, *args, **kwargs)
 
         return wrapper
 
@@ -407,7 +407,7 @@ class Client(BaseClient):
         feed_type: str,
         reset: str | None = None,
         include: str | None = None,
-    ) -> str | dict[str, Any]:
+    ) -> str | list[dict[str, Any]]:
         """Retrieves data feeds from Symantec Email Security.cloud.
 
         Available feeds:
@@ -621,7 +621,7 @@ class QuarantineClient(BaseClient):
                     "mail_list": mail_list,
                     "options": {
                         "recipient": recipient,
-                        "headers": {f"x-header-{i + 1}": header for i, header in enumerate(headers)},
+                        "headers": {f"x-header-{i + 1}": header for i, header in enumerate(headers or [])},
                         "encrypt": encrypt,
                     },
                 }
@@ -825,7 +825,7 @@ def convert_datetime_string(dt_str: str | datetime) -> str:
     Returns:
         str: The converted datetime string in ISO 8601 format with 'Z' appended.
     """
-    dt = arg_to_datetime(dt_str) if not isinstance(dt_str, datetime) else dt_str
+    dt = arg_to_datetime(dt_str, required=True) if not isinstance(dt_str, datetime) else dt_str
     dt = dt.replace(microsecond=0)
 
     # Remove timezone information if present
@@ -1092,14 +1092,17 @@ def list_data_command(client: Client, args: dict[str, Any]) -> CommandResults:
         reset=convert_datetime_string(args.get("start_from", "3 days")),
     )
     # Fetch email data feed from start time.
-    raw_response = client.list_data(
-        feed_type=feed_type,
-        include="delivery" if argToBoolean(args.get("include_delivery", False)) else None,
+    raw_response = cast(
+        list[dict[str, Any]],
+        client.list_data(
+            feed_type=feed_type,
+            include="delivery" if argToBoolean(args.get("include_delivery", False)) else None,
+        ),
     )
 
     if raw_response:
         if argToBoolean(args.get("fetch_only_incidents", False)):
-            raw_response = [item for item in raw_response if item.get("incidents")]
+            raw_response = [item for item in raw_response or [] if item.get("incidents")]
 
         if not argToBoolean(args.get("all_results", False)):
             limit = arg_to_number(args.get("limit", 50))
@@ -1108,7 +1111,7 @@ def list_data_command(client: Client, args: dict[str, Any]) -> CommandResults:
     table = []
 
     for item in raw_response or []:
-        row = {"Incidents": []}
+        row: dict[str, Any] = {"Incidents": []}
 
         if email_info := item.get("emailInfo"):
             row["Message Size"] = email_info.get("messageSize")
@@ -1530,9 +1533,12 @@ def fetch_incidents(
         reset=convert_datetime_string(reset),
     )
     # Fetch email data feed from start time.
-    raw_response = client.list_data(
-        feed_type=feed_type,
-        include="delivery" if include_delivery else None,
+    raw_response = cast(
+        list[dict[str, Any]],
+        client.list_data(
+            feed_type=feed_type,
+            include="delivery" if include_delivery else None,
+        ),
     )
 
     new_ids = []
@@ -1780,13 +1786,13 @@ def main() -> None:
                     arg=params.get("max_fetch"),
                     arg_name="max_fetch",
                     required=False,
-                ),
+                ) or MAX_INCIDENTS_TO_FETCH,
                 MAX_INCIDENTS_TO_FETCH,
             )
             last_run = demisto.getLastRun()
 
-            both_next_run = {}
-            both_incidents = []
+            both_next_run: dict[str, Any] = {}
+            both_incidents: list[dict[str, Any]] = []
 
             if fetch_type in ["both", "email_data_feed"]:
                 accepted_severities = [
