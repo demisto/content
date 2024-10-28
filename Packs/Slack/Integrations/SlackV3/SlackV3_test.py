@@ -5276,4 +5276,4 @@ def test_send_file_api_exception(mocker):
     # Check that function raises DemistoException
     with pytest.raises(DemistoException) as e:
         slack_send_file('channel', _entry_id='123', _comment='Here is a file!')
-    assert str(e.value) == 'Failed sending the file to Slack. The method has been deprecated.'
+    assert str(e.value) == 'Failed to send file: test.txt to Slack. The method has been deprecated.'
