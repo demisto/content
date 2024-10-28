@@ -126,7 +126,7 @@ script:
     name: phisher-create-comment
   - arguments:
     - auto: PREDEFINED
-      description: "Message Category, can be: UNKNOWN,CLEAN,SPAM,THREAT\t\t".
+      description: "Message Category, can be: UNKNOWN,CLEAN,SPAM,THREAT\t\t."
       name: category
       predefined:
       - UNKNOWN
@@ -134,14 +134,14 @@ script:
       - SPAM
       - THREAT
     - auto: PREDEFINED
-      description: 'Message Status, can be: RECEIVED,IN_REVIEW,RESOLVED'.
+      description: 'Message Status, can be: RECEIVED,IN_REVIEW,RESOLVED.'
       name: status
       predefined:
       - RECEIVED
       - IN_REVIEW
       - RESOLVED
     - auto: PREDEFINED
-      description: 'Message Severity, can be: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'.
+      description: 'Message Severity, can be: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL.'
       name: severity
       predefined:
       - UNKNOWN
