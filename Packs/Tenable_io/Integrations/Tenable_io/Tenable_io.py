@@ -516,6 +516,7 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
 
 def get_scan_info(scans_result_elem):
     response = send_scan_request(scans_result_elem['id'], ignore_license_error=True)
+    demisto.debug(f'Response from scan info request: {response}')
     if response:
         response['info'].update(scans_result_elem)
         return response['info']
@@ -787,11 +788,16 @@ def relational_date_to_epoch_date_format(date: Optional[str]) -> Optional[int]:
 
 def get_scans_command():
     folder_id = demisto.args().get('folderId'),
+    demisto.debug(f'folder_id is {folder_id}')
     last_modification_date = relational_date_to_epoch_date_format(demisto.getArg('lastModificationDate'))
+    demisto.debug(f'last_modification_date: {last_modification_date}')
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
+    demisto.debug(f'Response scan request: {response}')
     scan_entries = list(map(get_scan_info, response['scans']))
     valid_scans = [x for x in scan_entries if x is not None]
+    demisto.debug(f'Valid scan entries: {valid_scans}')
     invalid_scans = [k for k, v in zip(response['scans'], scan_entries) if v is None]
+    demisto.debug(f'Invalid scan entries: {invalid_scans}')
     res = [get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
                                 replace_keys(valid_scans), GET_SCANS_HEADERS)]
     if invalid_scans:
