@@ -533,6 +533,30 @@ def test_get_no_update_value(mocker):
                                             ' createIndicators will be executed with noUpdate=False.'
 
 
+def test_get_no_update_value_etag_with_double_quotes(mocker):
+    """
+    Given
+    - response with etag header that contains double-quotes.
+
+    When
+    - Running get_no_update_value method.
+
+    Then
+    - Ensure that the etag value in setLastRun is without double-quotes.
+    """
+    mocker.patch.object(demisto, 'setLastRun')
+
+    url = 'https://www.spamhaus.org/drop/asndrop.txt'
+    etag = 'd309ab6e51ed310cf869dab0dfd0d34b'
+
+    class MockResponse:
+        headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'ETag': f'"{etag}"'}  # guardrails-disable-line
+        status_code = 200
+    get_no_update_value(MockResponse(), url)
+    assert demisto.setLastRun.mock_calls[0][1][0][url]['etag'] == etag
+
+
 def test_build_iterator_not_modified_header(mocker):
     """
     Given
@@ -643,3 +667,34 @@ def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_pass
 
     client.build_iterator()
     assert mock_session.call_args[1].get('headers') == expected_result
+
+
+def test_build_iterator_etag_with_double_quotes(mocker):
+    """
+    Given
+    - getLastRun with etag header that contains double-quotes.
+
+    When
+    - Running build_iterator method.
+
+    Then
+    - Ensure the next request header contains 'etag' without double-quotes.
+    """
+
+    etag = 'd309ab6e51ed310cf869dab0dfd0d34b'
+
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+    mock_session = mocker.patch.object(requests, 'get')
+    mocker.patch('HTTPFeedApiModule.has_passed_time_threshold', return_value=False)
+    mocker.patch('demistomock.getLastRun', return_value={
+        'https://api.github.com/meta': {
+            'etag': f'"{etag}"',
+            'last_modified': '2023-05-29T12:34:56Z',
+            'last_updated': '2023-05-05T09:09:06Z'
+        }})
+    client = Client(
+        url='https://api.github.com/meta',
+        credentials={'identifier': 'user', 'password': 'password'})
+
+    client.build_iterator()
+    assert mock_session.call_args[1]['headers']['If-None-Match'] == etag
