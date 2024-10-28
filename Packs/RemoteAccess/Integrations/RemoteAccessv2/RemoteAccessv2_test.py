@@ -183,6 +183,31 @@ def test_copy_to_command_valid(mocker):
     assert results.readable_output == '### The file corresponding to entry ID: 456 was copied to remote host.'
 
 
+def test_copy_to_command_failed_to_mkdir(mocker):
+    """
+    Given:
+    - Cortex XSOAR arguments
+
+    When:
+    - Calling the copy-to command but failing to run the mkdir.
+
+    Then:
+    - Ensure the error info printed to debug but the command finished successfully.
+    """
+    from RemoteAccessv2 import copy_to_command
+    from paramiko import SSHClient
+    mock_client: SSHClient = SSHClient()
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test', 'name': 'file-name.txt'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('RemoteAccessv2.perform_copy_command', return_value='')
+    mocker.patch('RemoteAccessv2.execute_shell_command', side_effect=Exception('permission error'))
+
+    results: CommandResults = copy_to_command(mock_client, {'entry': 123, 'entry_id': 456, 'dest-dir': 'test_dir'})
+
+    assert 'permission error, occurred when run the command: mkdir -p test_dir' in demisto.debug.call_args[0][0]
+    assert results.readable_output == '### The file corresponding to entry ID: 456 was copied to remote host.'
+
+
 def test_copy_to_command_invalid_entry_id(mocker):
     """
     Given:
