@@ -1,0 +1,22 @@
+[MODEL: dataset = dragos_platform_raw]
+alter
+        src_ip = if(src_asset_ip != "" and src_asset_ip != null, src_asset_ip, asset_ip != "" and asset_ip != null, asset_ip, null),
+        src_mac = if(src_asset_mac != "" and src_asset_mac != null, src_asset_mac, asset_mac != "" and asset_mac != null, asset_mac, null),
+        src_id = to_string(if(src_asset_id != "" and src_asset_id != null, src_asset_id, asset_id != "" and asset_id != null, asset_id, null))
+| alter
+        xdm.alert.description = content,
+        xdm.alert.subcategory = detection_quad,
+        xdm.alert.severity = if(to_string(cefSeverity) in("0", "1", "2", "3"), "Low", to_string(cefSeverity) in("4", "5", "6"), "Medium", to_string(cefSeverity) in ("7", "8"), "High", to_string(cefSeverity) in ("9", "10"), "Very-High", to_string(cefSeverity)),
+        xdm.alert.original_alert_id = matchedRuleId,
+        xdm.event.type = type,
+        xdm.event.id = id,
+        xdm.source.ipv4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+        xdm.source.ipv6 =  if(src_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", src_ip, null),
+        xdm.source.host.hostname = if(src_asset_hostname != "" and src_asset_hostname != null, src_asset_hostname, asset_hostname != "" and asset_hostname != null, asset_hostname, null),
+        xdm.source.host.mac_addresses = if(src_mac = "" or src_mac = null, src_mac -> [], src_mac not contains "," ,arraycreate(src_mac), src_mac contains ",", split(src_mac, ","), null),
+        xdm.source.host.device_id = src_id,
+        xdm.target.ipv4 = if(dst_asset_ip  ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst_asset_ip, null),
+        xdm.target.ipv6 =  if(dst_asset_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", dst_asset_ip, null),
+        xdm.target.host.hostname = dst_asset_hostname,
+        xdm.target.host.mac_addresses = if(dst_asset_mac = "" or dst_asset_mac = null, dst_asset_mac -> [], dst_asset_mac not contains "," ,arraycreate(dst_asset_mac), dst_asset_mac contains ",", split(dst_asset_mac, ","), null),
+        xdm.target.host.device_id = to_string(dst_asset_id);

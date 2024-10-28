@@ -37,7 +37,7 @@ To set up the integration and register the application in Azure, follow these st
    - Under **Manage**, select **API permissions** > **Add a permission**.
    - Select **APIs my organization uses**.
    - Search for "Office 365 Exchange Online".
-   - Select **Application permissions** and search for `Exchange.ManageAsApp`.
+   - Select **Delegated permissions** and search for `Exchange.Manage`.
    - Check the box and click **Add permissions**.
    - Ensure the permissions are granted by selecting **Grant admin consent for [Your Organization]**.
 
@@ -287,7 +287,7 @@ Create compliance search in the Security & Compliance Center.
 | description | Description of the compliance search. | Optional |
 | allow_not_found_exchange_locations | Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false". | Optional |
 | exchange_location | Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all. | Optional |
-| exchange_location_exclusion | Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. | Optional |
+| exchange_location_exclusion | Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. Deprecated since Microsoft is supporting it only on-premise. | Optional |
 | public_folder_location | Comma-separated list of public folders to include, or you can use the value "All" to include all. | Optional |
 | share_point_location | Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites. | Optional |
 | share_point_location_exclusion | Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value. | Optional |
