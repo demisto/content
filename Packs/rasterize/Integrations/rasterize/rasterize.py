@@ -776,7 +776,7 @@ def rasterize_thread(browser, chrome_port, path: str,
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
-def perform_rasterize(paths: str | list[str],
+def perform_rasterize(path: str | list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
                       wait_time: int = DEFAULT_WAIT_TIME,
                       offline_mode: bool = False,
@@ -789,7 +789,7 @@ def perform_rasterize(paths: str | list[str],
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
-    :param paths: file path, or website url
+    :param path: file path, or website url
     :param rasterize_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
     :param navigation_timeout: amount of time to wait for a page load to complete before throwing an error
@@ -800,15 +800,15 @@ def perform_rasterize(paths: str | list[str],
     """
 
     # convert the paths param to list in case we have only one string
-    paths = argToList(paths)
+    paths = argToList(path)
 
-    # create a list with all the paths starts with "mailto:"
+    # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith('mailto:')]
 
     if mailto_paths:
         # remove the mailto from path param
         paths = list(set(paths) - set(mailto_paths))
-        demisto.error(f'perform_rasterize skip the following paths: {mailto_paths}')
+        demisto.error(f'perform_rasterize skip the following invalid paths: {mailto_paths}')
         return_results(CommandResults(
             readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_paths}'))
 
@@ -824,8 +824,6 @@ def perform_rasterize(paths: str | list[str],
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            demisto.debug(f'path type is: {type(paths)}')
-            paths = [path] if isinstance(path, str) else path  # type: ignore
             demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
