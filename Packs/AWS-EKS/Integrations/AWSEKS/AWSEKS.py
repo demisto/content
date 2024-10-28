@@ -14,9 +14,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 PARAMS = demisto.params()
-MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
-IS_ARN_PROVIDED = bool(demisto.getArg('roleArn'))
 
 ''' HELPER FUNCTIONS '''
 

@@ -3,6 +3,7 @@ from CommonServerUserPython import *
 import boto3
 from botocore.config import Config
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 
 STS_ENDPOINTS = {
     "us-gov-west-1": "https://sts.us-gov-west-1.amazonaws.com",
@@ -51,15 +52,19 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
     roleSessionDuration for accessing each account before calling the function
     and adds the account details to the result.
     """
+    params = demisto.params()
+    max_workers = arg_to_number(params.get('max_workers'))
+    role_name: str = params.get('access_role_name', '')
+    is_arn_provided = bool(demisto.getArg('roleArn'))
 
     def account_runner(args: dict) -> list[CommandResults]:
-        role_name = ROLE_NAME.removeprefix('role/')
-        accounts = argToList(PARAMS.get('accounts_to_access'))
+        suffix_role_name = role_name.removeprefix('role/')
+        accounts = argToList(params.get('accounts_to_access'))
 
         def run_command(account_id: str) -> CommandResults:
             new_args = args | {
                 #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
-                'roleArn': f'arn:aws:iam::{account_id}:role/{role_name}',
+                'roleArn': f'arn:aws:iam::{account_id}:role/{suffix_role_name}',
                 'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             }
@@ -79,11 +84,11 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                     content_format=EntryFormat.MARKDOWN,
                 )
 
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
             results = executor.map(run_command, accounts)
         return list(results)
 
-    return account_runner if (ROLE_NAME and not IS_ARN_PROVIDED) else func
+    return account_runner if (role_name and not is_arn_provided) else func
 
 
 class AWSClient:
