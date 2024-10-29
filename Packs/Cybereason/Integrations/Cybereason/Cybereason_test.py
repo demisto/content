@@ -982,23 +982,29 @@ def test_malop_to_incident(mocker):
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
     assert exc_info.match(r"Cybereason raw response is not valid")
-    
+
 
 def test_malop_to_incident_status(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345A",
-        "status": "Remediated"
-    }
+        "status": "Remediated",
+        'simpleValues': {
+            'creationTime': {
+                'values': ["2345"]
+            }
+		}
+	}
     command_output = malop_to_incident(args)
 
-    assert all([(command_output['name'] == "Cybereason Malop 12345A"), (command_output['status'] == 1)])
+    assert all([(command_output['name'] == "Cybereason Malop 12345A"), (command_output['status'] == 1), 
+                (command_output['CustomFields']['malopcreationtime'])])
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
     assert exc_info.match(r"Cybereason raw response is not valid")
-    
-    
+
+
 def test_malop_to_incident_status_closed(mocker):
     from Cybereason import malop_to_incident
     args = {
@@ -1012,7 +1018,6 @@ def test_malop_to_incident_status_closed(mocker):
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
     assert exc_info.match(r"Cybereason raw response is not valid")
-
 
 
 def test_get_pylum_id(mocker):
