@@ -2,17 +2,17 @@
 
 ## Collector Configuration
 
-You could use any one of the following options to collect Linux events into Cortex XSIAM:
+Use one of the following options to collect Linux events into Cortex XSIAM:
   - [Broker VM Syslog Applet](#broker-vm)
   - [Filebeat XDRC (XDR Collector)](#xdrc-xdr-collector)
 
-After the Cortex XSIAM Collector starts ingesting logs from the configured paths on the Linux servers, you could query the collected logs under the *`linux_linux_raw`* dataset. 
+After the Cortex XSIAM collector starts ingesting logs from the Linux servers, you can query the logs under the linux_linux_raw dataset.
 
 ### Broker VM
 
 #### Prerequisites
 
-You would need to have a Broker VM set and configured as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Broker-VM).
+You need to set and configure a Broker VM. For more information, see [Broker VM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Broker-VM).
 
 #### Configuration Steps
 
@@ -22,8 +22,8 @@ You would need to have a Broker VM set and configured as described [here](https:
 4. When configuring the Syslog Collector, set the following parameters:
    | Parameter     | Value    
    | :---          | :---                    
-   | `Vendor`      | Enter **linux**. 
-   | `Product`     | Enter **linux**. 
+   | `Vendor`      | **linux**. 
+   | `Product`     | **linux**. 
   
 ### XDRC (XDR Collector)
 
@@ -56,11 +56,14 @@ Follow the steps bellow for configuring an [XDR Collector](https://docs-cortex.p
 
 #### Supported Timestamp formats 
 ##### Broker VM Syslog
-- [RFC 3164](https://datatracker.ietf.org/doc/html/rfc3164#section-4.1.2) compatible timestamps, in UTC, for example: *`Oct  8 19:44:40`*. Note: You can run the following command on the relevant Linux servers for configuring their timezone to UTC:       
+- [RFC 3164](https://datatracker.ietf.org/doc/html/rfc3164#section-4.1.2) compatible timestamps, in UTC, for example: *`Oct  8 19:44:40`*. 
+  **Note**: 
+  You can run the following command on the relevant Linux servers to configure their timezone to UTC:    
   ```bash 
   sudo timedatectl set-timezone UTC
   ```
-- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) compatible like timestamps. Examples: 
+- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) compatible like timestamps. 
+  **Examples**: 
    - *`2024-10-28T14:30:55Z`*
    - *`2024-10-28T14:30:55-0300`*
    - *`2024-10-28T14:30:55.123+02:00`*
@@ -72,4 +75,5 @@ Follow the steps bellow for configuring an [XDR Collector](https://docs-cortex.p
    - *`2024-10-28T14:30:55-0300`*
    - *`2024-10-28T14:30:55.123+02:00`*  
 
-**Note**: Events logs collected via Filebeat with timestamp formats other than those listed above would be assigned with the agent collection time.
+**Note**: 
+Event logs collected via Filebeat with timestamp formats other than those listed above are assigned the agent collection time.
