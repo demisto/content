@@ -505,7 +505,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       all_results:
-        simple: "true"
+        simple: "false"
       last_seen_gte:
         complex:
           filters:
