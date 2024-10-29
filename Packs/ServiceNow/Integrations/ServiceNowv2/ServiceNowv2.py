@@ -2861,7 +2861,6 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                         client.add_comment(ticket_id, ticket_type, 'comments', text_for_snow_comment)
             else:
                 # Mirroring comment and work notes as entries
-
                 tags = entry.get('tags', [])
                 key = ''
                 if params.get('work_notes_tag') in tags:
