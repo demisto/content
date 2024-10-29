@@ -828,7 +828,7 @@ def test_ssl_configuration():
                               ssl_password='ssl_password',
                               offset='earliest',
                               trust_any_cert=False,
-                              use_ssl= True)
+                              use_ssl=True)
     
     assert type(kafka.ca_path) is str
     assert type(kafka.client_cert_path) is str
@@ -883,7 +883,7 @@ def test_sasl_ssl_configuration():
                               ssl_password='ssl_password',
                               offset='earliest',
                               trust_any_cert=False,
-                              use_ssl= True,
+                              use_ssl=True,
                               use_sasl=True)
     
     assert type(kafka.ca_path) is str
@@ -937,15 +937,16 @@ valid_params_cases = [
     {
         'use_ssl': False, 'use_sasl': False, 'brokers': 'broker1,broker2', 'insecure': True
     }
- ]
+]
+
+
 @pytest.mark.parametrize('params', valid_params_cases)
 def test_validate_params__valid(params):
     from KafkaV3 import validate_params
     # This test should not raise any exceptions
     validate_params(params)
      
-     
-     
+
 invalid_params_cases = [
     # Missing brokers
     (
@@ -986,6 +987,8 @@ Please provide them.'
         'When using SASL PLAIN with SSL, the following are required: CA certificate of Kafka server (.cer). Please provide them.'
     ),
 ]
+
+
 @pytest.mark.parametrize('params, expected_message', invalid_params_cases)
 def test_validate_params_invalid(params, expected_message):
     from KafkaV3 import validate_params
