@@ -470,14 +470,14 @@ def test_run_on_all_accounts(mocker):
     Then:
         - Ensure account_runner runs the command function for each of the accounts provided.
     """
-    mocker.patch.object(demisto, 'params',return_value={'accounts_to_access': '1,2','access_role_name':'name'})
+    mocker.patch.object(demisto, 'params', return_value={'accounts_to_access': '1,2', 'access_role_name': 'name'})
     mocker.patch.object(demisto, 'getArg', return_value=None)
 
     # list as output
     result_func = run_on_all_accounts(mock_command_func)
     results: list[CommandResults] = result_func({})
 
-    assert isinstance(results,list)
+    assert isinstance(results, list)
     assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
     assert results[0].outputs == [{'AccountId': '1'}]
     assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
@@ -491,7 +491,7 @@ def test_run_on_all_accounts(mocker):
     ))
     results: list[CommandResults] = result_func({})
 
-    assert isinstance(results,list)
+    assert isinstance(results, list)
     assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
     assert results[0].outputs == {'AccountId': '1'}
     assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
@@ -514,8 +514,8 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
         - Ensure account_runner returns the command function unchanged.
     """
     # case 1
-    mocker.patch.object(demisto, 'params',return_value={'access_role_name':role_name})
-    mocker.patch.object(demisto, 'args',return_value={'roleArn':'roleName'})
+    mocker.patch.object(demisto, 'params', return_value={'access_role_name': role_name})
+    mocker.patch.object(demisto, 'args', return_value={'roleArn': 'roleName'})
 
     result_func = run_on_all_accounts(mock_command_func)
     result: CommandResults = result_func({})
@@ -524,8 +524,8 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
     assert result.outputs == [{}]
 
     # case 2
-    mocker.patch.object(demisto, 'params',return_value={'access_role_name':None})
-    mocker.patch.object(demisto, 'args',return_value={'roleArn':None})
+    mocker.patch.object(demisto, 'params', return_value={'access_role_name': None})
+    mocker.patch.object(demisto, 'args', return_value={'roleArn': None})
     
     result_func = run_on_all_accounts(mock_command_func)
     result: CommandResults = result_func({})
