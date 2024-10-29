@@ -150,7 +150,7 @@ script:
       name: score
     - description: Observable value.
       name: value
-    - description: Create indicator related with the observable created
+    - description: Create indicator related with the observable created.
       name: create_indicator
       defaultValue: "false"
       predefined:
