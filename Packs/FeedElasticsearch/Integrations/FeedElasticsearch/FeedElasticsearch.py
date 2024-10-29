@@ -30,6 +30,8 @@ MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 FEED_TYPE_GENERIC = 'Generic Feed'
 FEED_TYPE_CORTEX = 'Cortex XSOAR Feed'
 FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
+TIME_FORMAT = 'strict_date_optional_time||date_optional_time||epoch_millis||epoch_second||yyyy-MM-dd HH:mm:ss.SSSSSS'
+# The time format is added to the fetch query to support all possible time formats the integration allows
 
 ELASTICSEARCH_V8 = 'Elasticsearch_v8'
 OPEN_SEARCH = 'OpenSearch'
@@ -440,8 +442,8 @@ def get_scan_generic_format(client, now, last_fetch_timestamp=None, fetch_limit=
     if time_field:
         query = QueryString(query=time_field + ':*')
         range_field = {
-            time_field: {'gte': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
-            time_field: {'lte': now}}
+            time_field: {'gte': str(last_fetch_timestamp), 'lte': "now", 'format': TIME_FORMAT}} if last_fetch_timestamp else {
+            time_field: {'lte': "now", 'format': TIME_FORMAT}}
         search = Search(using=es, index=fetch_index).filter({'range': range_field}).extra(
             size=fetch_limit).sort({time_field: {'order': 'asc'}}).query(query)
     else:
@@ -462,8 +464,8 @@ def get_scan_insight_format(client, now, last_fetch_timestamp=None, feed_type=No
     """Gets a scan object in insight format"""
     time_field = client.time_field
     range_field = {
-        time_field: {'gte': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
-        time_field: {'lte': now}}
+        time_field: {'gte': str(last_fetch_timestamp), 'lte': "now", 'format': TIME_FORMAT}} if last_fetch_timestamp else {
+        time_field: {'lte': "now", 'format': TIME_FORMAT}}
     es = client.es
     query = QueryString(query=time_field + ":*")
     indices = client.fetch_index
