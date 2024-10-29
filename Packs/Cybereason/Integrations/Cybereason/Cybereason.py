@@ -723,7 +723,8 @@ def malop_processes_command(client: Client, args: dict):
     for output in outputs:
         # Remove whitespaces from dictionary keys
         context.append({key.translate({32: None}): value for key, value in output.items()})
-
+    demisto.info(f"context, {context}")
+    demisto.info(f"outputs, {outputs}")
     return CommandResults(
         readable_output=tableToMarkdown('Cybereason Malop Processes', outputs, headers=PROCESS_HEADERS, removeNull=True),
         outputs_prefix='Cybereason.Process',
@@ -755,7 +756,6 @@ def malop_processes(client: Client, malop_guids: list, filter_value: list) -> di
         'templateContext': 'MALOP',
         'queryTimeout': None
     }
-
     return client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
 
 
@@ -1480,21 +1480,73 @@ def malop_to_incident(malop: str) -> dict:
 
     status = 0
     if malop.get('status', ''):
-        malopStatus = malop.get('status', '')
+        malopStatus = (malop.get('status', 'UNREAD'))
     elif malop.get('simpleValues', ''):
-        malopStatus = malop.get('simpleValues', '').get('managementStatus', '').get('values', '')[0]
+        malopStatus = (malop.get('simpleValues', {}).get('managementStatus', {}).get('values', ['UNREAD'])[0])
     if (malopStatus == "Active") or (malopStatus == "UNREAD"):
         status = 0
     elif (malopStatus == "Remediated") or (malopStatus == "TODO"):
         status = 1
     elif (malopStatus == "Closed") or (malopStatus == "RESOLVED"):
         status = 2
+    else:
+        status = 0
+
     guid_string = malop.get('guidString', '')
     if not guid_string:
         guid_string = malop.get('guid', '')
+
+    if malop.get("isEdr", '') or malop.get("edr", '') or malop.get('simpleValues', ''):
+        link = SERVER + '/#/malop/' + guid_string
+    else:
+        link = SERVER + '/#/detection-malop/' + guid_string
+    if malop.get("isEdr", '') or malop.get("edr", '') or malop.get('simpleValues', ''):
+        isEdr = True
+    else:
+        isEdr = False
+
+    if malop.get('simpleValues'):
+        malopCreationTime = malop.get('simpleValues', {}).get('creationTime', {}).get('values', ['2010-01-01'])[0]
+        malopUpdateTime = malop.get('simpleValues', {}).get('malopLastUpdateTime', {}).get('values', ['2010-01-01'])[0]
+    else:
+        malopCreationTime = str(malop.get('creationTime', '2010-01-01'))
+        malopUpdateTime = str(malop.get('lastUpdateTime', '2010-01-01'))
+
+    if malop.get('elementValues'):
+        if malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', ''):
+            rootCauseElementName = (malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', '')[0]).get('name', '')
+            rootCauseElementType = (malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', '')[0]).get('elementType', '')
+        else:
+            rootCauseElementName = ''
+            rootCauseElementType = ''
+    else:
+        rootCauseElementName = malop.get('primaryRootCauseName' , '')
+        rootCauseElementType = malop.get('rootCauseElementType', '')
+
+    if malop.get('malopDetectionType'):
+        detectionType = malop.get('malopDetectionType', '')
+    else:
+        detectionType = (malop.get('simpleValues', {}).get('detectionType', {}).get('values', [''])[0]) 
+
+    malopGroup =  malop.get('group', '')
+    
+    severity = malop.get('severity', '')
+
     incident = {
-        'rawJSON': json.dumps(malop),
+        'rawjson': json.dumps(malop),
         'name': 'Cybereason Malop ' + guid_string,
+        'dbotmirrorid': guid_string,
+        'CustomFields': {
+            'malopcreationtime': malopCreationTime,
+            'malopupdatetime': malopUpdateTime,
+            'maloprootcauseelementname': rootCauseElementName,
+            'maloprootcauseelementtype': rootCauseElementType,
+            'malopseverity': severity,
+            'malopdetectiontype': detectionType,
+            'malopedr': isEdr,
+            'malopurl': link,
+            'malopgroup': malopGroup
+        },
         'labels': [{'type': 'GUID', 'value': guid_string}],
         'status': status }
 
@@ -1543,7 +1595,15 @@ def fetch_incidents(client: Client):
             if int(malop_update_time) > int(max_update_time):
                 max_update_time = malop_update_time
 
-            incident = malop_to_incident(malop)
+            guid_string = malop.get('guidString', '')
+            if not guid_string:
+                guid_string = malop.get('guid', '')
+            
+            try:
+                incident = malop_to_incident(malop)
+            except Exception:
+                demisto.debug(f"edr malop got failed to convert into incident : {guid_string} and malop : {malop}")
+                continue
             incidents.append(incident)
 
     # Enable Polling for Cybereason EPP Malops
@@ -1556,7 +1616,15 @@ def fetch_incidents(client: Client):
             if malop_update_time > max_update_time:
                 max_update_time = malop_update_time
 
-            incident = malop_to_incident(non_edr_malops)
+            guid_string = malop.get('guidString', '')
+            if not guid_string:
+                guid_string = malop.get('guid', '')
+            
+            try:
+                incident = malop_to_incident(non_edr_malops)
+            except Exception:
+                demisto.debug(f"non edr malop got failed to convert into incident : {guid_string} and malop : {non_edr_malops}")
+                continue
             incidents.append(incident)
         demisto.debug(f"Fetching the length of incidents list if epp in enabled : {len(incidents)}")
 
