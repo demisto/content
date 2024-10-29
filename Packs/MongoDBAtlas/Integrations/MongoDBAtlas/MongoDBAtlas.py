@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 VENDER = 'MongoDB'
 PRODUCT = 'Atlas'
+last_run = {}
 
 ''' CLIENT CLASS '''
 
@@ -70,21 +71,28 @@ class Client(BaseClient):
         except Exception as e:
             demisto.debug(f'This is the error from get_events client function {e}')
             raise e
+    
+    def get_response_from_page_link(self, page_link: str):
+        try:
+            page_link = page_link[len(self._base_url):]
+            results = self._http_request(
+                method="GET",
+                url_suffix=page_link
+            )
+            return results
+        except Exception as e:
+            demisto.debug(f'This is the error from get_response_from_page_link client function {e}')
+            raise e
+        
+    def first_time_fetch_events(self, event_type: str):
+        if event_type == 'alerts':
+            return self.get_alerts(page_num=1, items_per_page=10)
+        elif event_type == 'events':
+            return self.get_events(page_num=1, items_per_page=10)
+        return None
         
         
 ''' HELPER FUNCTIONS '''
-
-def sort_list_by_created_field(data: list):
-    """
-    Sort a list of JSON objects by the 'created' field, which contains the event or alert's creation date.
-    
-    Args:
-        data: the list of JSON objects.
-        
-    Returns:
-        The sorted list.
-    """
-    return sorted(data, key=lambda x: datetime.strptime(x["created"], DATE_FORMAT))
 
 def add_entry_status_field(event: dict):
     """
@@ -99,98 +107,86 @@ def add_entry_status_field(event: dict):
         event['_ENTRY_STATUS'] = 'new'
     elif updated > created:
         event['_ENTRY_STATUS'] = 'updated'
-    
 
-def fetch_events_by_type(fetch_limit: int, last_run: dict, api_func):
+def remove_events_by_ids(events: list, ids: list):
+    return [event for event in events if event["id"] not in ids]
+
+def get_next_url(links: list):
+    for link in links:
+        if link.get("rel") == "next":
+            return link.get("href")
+    return None
+
+def get_self_url(links):
+    for link in links:
+        if link.get("rel") == "self":
+            return link.get("href")
+    return None
+
+def get_page_from_last_run(page_link: str, event_type: str):
+    if page_link:
+        response = client.get_response_from_page_link(page_link)
+    else:
+        response = client.first_time_fetch_events(event_type)
+    return response
+
+def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
     """
     Fetches events or alerts until fetch_limit is reached, or no more events are available.
     
     Args:
+        client (Client): MongoDBAtlas client.
         fetch_limit: The maximum number of events to fetch.
         last_run (dict): Dictionary containing data from the previous run.
-        api_func (function): The client function used for making API calls.
+        event_type: The event type, can be 'alerts' or 'events'.
         
     Returns:
         A list containing all fetched events or alerts.
     """
-    current_page = last_run.get('current_page', 1)
-    fetched_events = last_run.get('fetched_events', 0) #fetched events in all runs in total
-    last_page_events_count = last_run.get('last_page_event_count', 0) #the amount of events from the last run in the last page
     
-    current_fetched_events = 0 #current fetched events in this run
+    response = get_page_from_last_run(last_run.get('page_link'), event_type) #get the last page or get the first page
+    links = response.get('links')
+    results = response.get('results')
+    
+    last_page_events_ids = last_run.get('last_page_events_ids', [])
+    events = remove_events_by_ids(results, last_page_events_ids)
+    
+    current_fetched_events_amount = 0
     output = []
-    items_per_page = 500
     
-    while current_fetched_events < fetch_limit:
-        response = api_func(current_page, items_per_page)
-        events = response.get('results', {})
-        total_count = response.get('totalCount')
-        
-        if fetched_events >= total_count:
-            return output
-        
-        sorted_events = sort_list_by_created_field(events)
-        start = last_page_events_count + 1
-        for event in sorted_events[start:]:
-            if current_fetched_events >= fetch_limit: #first check if didn't reach the limit
-                last_run_dict = {
-                    'last_page_events_count': last_page_events_count,
-                    'fetched_events': fetched_events,
-                    'current_page': current_page
-                }
-                return output, last_run_dict
-            
-            add_entry_status_field(event) #just for alerts
+    while current_fetched_events_amount <= fetch_limit:
+        for event in events:
+            #running on the current page
+            event['source_log_type'] = event_type
             output.append(event)
-            current_fetched_events += 1
-            fetched_events += 1
-            last_page_events_count += 1
+            last_page_events_ids.append(event.get('id'))
+            current_fetched_events_amount += 1
             
-        last_page_events_count = 0
-        current_page += 1
-    
-    last_run_dict = {
-        'last_page_events_count': last_page_events_count+1,
-        'fetched_events': fetched_events,
-        'current_page': current_page
-    }
-    return output, last_run_dict
-
-    
-    #initialize if not exists:
-        #current_page = 1
-        #fetched_events = 0 - total number of fetched events at the moment
-        #last_page_events_count = 0 - the number of fetched events from the last page
-        
-    #current_fetched_events = 0
-    #output = []
-    #items_per_page = 500 #the maximum the api can get
-    
-    #while current_fetched_events < fetch_limit:
-      #response = api_func(current_page, items_per_page)
-      #events = response.get('results')
-      #total_count = response.get('totalCount')
-      
-      #sorted_list = sort_list_by_created_field(events)
-      #if fetched_events >= total_count: return output
-      
-      #start = last_page_events_count
-      #for each event in events[start:]:
-        #add the field _ENTRY_STATUS as described in the design to event
-        #append event to output
-        #current_fetched_events += 1
-        #fetched_events += 1
-        
-        #if current_fetched_events == fetch_limit:
-            #last_run_dict = {'last_page_events_count': current_fetched_events+1, 'fetched_events': fetched_events, 'current_page': current_page}
-            #return output, last_run_dict
+            if current_fetched_events_amount == fetch_limit:
+                #the limit is reached, save the current page and the ids.
+                self_url = get_self_url(links)
+                last_run_new_dict = {
+                    'page_link': self_url,
+                    'last_page_events_ids': last_page_events_ids
+                }
+                return output, last_run_new_dict
             
-      #current_fetched_events = 0
-      #current_page += 1
-    
-    #last_run_dict = {'last_page_events_count': current_fetched_events+1, 'fetched_events': fetched_events, 'current_page': current_page}
-    #return output, last_run_dict
-    
+        next_url = get_next_url(links)
+        if next_url:
+            #change to the next page and start again
+            response = client.get_response_from_page_link(next_url)
+            events = response.get('results')
+            links = response.get('links')
+            last_page_events_ids = []
+        else:
+            #no more pages left, save the last page and all the ids
+            last_run_new_dict = {
+                    'page_link': get_self_url(links),
+                    'last_page_events_ids': last_page_events_ids
+            }
+            return output, last_run_new_dict
+        
+    return output, last_run_new_dict
 
 ''' COMMAND FUNCTIONS '''
 
@@ -219,15 +215,20 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, fetch_limit: int):
     #run every min and return all the new events from the last run
-    last_run = demisto.getLastRun()
+    # last_run = demisto.getLastRun()
+    global last_run
     last_run_alerts = last_run.get('alerts', {})
     last_run_events = last_run.get('events', {})
     
-    alerts_output, last_run_alerts = fetch_events_by_type(fetch_limit, last_run_alerts, client.get_alerts)
-    events_output, last_run_events = fetch_events_by_type(fetch_limit, last_run_events, client.get_events)
+    alerts_output, last_run_alerts = fetch_events_by_type(client, fetch_limit, last_run_alerts, 'alerts')
+    events_output, last_run_events = fetch_events_by_type(client, fetch_limit, last_run_events, 'events')
     
-    demisto.setLastRun({'alerts': last_run_alerts, 'events': last_run_events})
-    
+    # demisto.setLastRun({'alerts': last_run_alerts,
+    #                     'events': last_run_events
+    #                     })
+    last_run = ({'alerts': last_run_alerts,
+                    'events': last_run_events
+                         })
     return (alerts_output + events_output)
 
 def get_events(client: Client):
@@ -273,9 +274,10 @@ def main() -> None:
         elif command == 'mongo-db-atlas-get-events':
             return_results(get_events(client, demisto.args()))
         elif command == 'fetch-events':
-            events = fetch_events(client,fetch_limit)
-            if events:
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            while True:
+                events = fetch_events(client,fetch_limit)
+            # if events:
+            #     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
