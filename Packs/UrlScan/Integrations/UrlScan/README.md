@@ -12,6 +12,7 @@
 <li><strong>API Key (needed only for submitting URLs for scanning)</strong></li>
 <li><strong>Scan Visibility</strong>: Determines the visibility level of the scan. This will override the 'public submissions' setting.</li>
 <li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is C - Fairly reliable)</li>
+<li><strong>Scan Country.</strong> Specify which country the scan should be performed from. If you omit this value, urlscan will try to do automatic country detection based on the TLD of the URL, GeoIP information of the server and of the user.</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
