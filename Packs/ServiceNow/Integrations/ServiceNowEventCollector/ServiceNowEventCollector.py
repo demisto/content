@@ -18,7 +18,7 @@ VALID_EVENT_TITLES = ['Audit', 'Syslog Transactions']
 
 
 class Client:
-    def __init__(self, use_oauth, credentials, client_id, client_secret, url, verify, proxy, api_server_url, fetch_limit_audit, 
+    def __init__(self, use_oauth, credentials, client_id, client_secret, url, verify, proxy, api_server_url, fetch_limit_audit,
                  fetch_limit_syslog):
         self.sn_client = ServiceNowClient(
             credentials=credentials,
@@ -36,10 +36,10 @@ class Client:
 
     def search_events(self, from_time: str, log_type: str, limit: Optional[int] = None, offset: int = 0):
         """Make a request to the ServiceNow REST API to retrieve audit logs"""
-        
+
         if limit is None:
             limit = self.fetch_limit_audit if log_type == AUDIT else self.fetch_limit_syslog
-            
+
         params = {
             "sysparm_limit": limit,
             "sysparm_offset": offset,
@@ -52,9 +52,10 @@ class Client:
             params=remove_empty_elements(params),
         )
         return res.get("result")
-    
+
 
 """ HELPER METHODS """
+
 
 def handle_log_types(event_types_to_fetch: list) -> list:
     """
@@ -79,6 +80,7 @@ def handle_log_types(event_types_to_fetch: list) -> list:
                 f"'{type_title}' is not valid event type, please select from the following list: {VALID_EVENT_TITLES}")
 
     return log_types
+
 
 def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: str, previous_run_ids: list) -> dict:
     """
@@ -107,7 +109,7 @@ def initialize_from_date(last_run: dict[str, Any], log_type: str) -> str:
     Args:
         last_run (dict[str, Any]): Dictionary containing the last fetch timestamps for different log types.
         log_type (str): Type of log for which to initialize the start timestamp.
-        
+
     Returns:
         str: The start timestamp for fetching logs.
     """
@@ -119,8 +121,9 @@ def initialize_from_date(last_run: dict[str, Any], log_type: str) -> str:
         from_date = first_fetch_str
     else:
         from_date = last_run.get("last_fetch_time", "")
-    
+
     return from_date
+
 
 def add_time_field(events: List[Dict[str, Any]], log_type) -> List[Dict[str, Any]]:
     """Adds time field to the events
@@ -130,7 +133,7 @@ def add_time_field(events: List[Dict[str, Any]], log_type) -> List[Dict[str, Any
     for event in events:
         event["_time"] = datetime.strptime(event["sys_created_on"], LOGS_DATE_FORMAT).strftime(DATE_FORMAT)
         event["source_log_type"] = log_type
-        
+
     return events
 
 
@@ -139,8 +142,9 @@ def get_limit(args: dict, client: Client, log_type: str):
         limit = arg_to_number(args.get("max_fetch_audit")) or client.fetch_limit_audit or 1000
     else:
         limit = arg_to_number(args.get("max_fetch_syslog_transactions")) or client.fetch_limit_syslog or 1000
-        
+
     return limit
+
 
 def process_and_filter_events(events: list, previous_run_ids: set, from_date: str, log_type: str):
     """
@@ -255,8 +259,8 @@ def module_of_testing(client: Client, log_types: list) -> str:  # pragma: no cov
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-   
-    _, _ = fetch_events_command(client, {},  log_types=log_types)
+
+    _, _ = fetch_events_command(client, {}, log_types=log_types)
     return "ok"
 
 
@@ -284,7 +288,7 @@ def main() -> None:  # pragma: no cover
     isFetch = params.get('isFetchEvents')
     if isFetch and not log_types:
         raise DemistoException("At least one event type must be specified for fetching.")
-    
+
     version = params.get("api_version")
     if version:
         api = f"/api/now/{version}/"
@@ -293,7 +297,7 @@ def main() -> None:  # pragma: no cover
     api_server_url = f"{server_url}{api}"
 
     demisto.debug(f"Command being called is {command}")
-    
+
     try:
         client = Client(
             use_oauth=use_oauth,
@@ -307,10 +311,10 @@ def main() -> None:  # pragma: no cover
             fetch_limit_audit=max_fetch_audit,
             fetch_limit_syslog=max_fetch_syslog
         )
-        
+
         if client.sn_client.use_oauth and not get_integration_context().get("refresh_token", None):
             client.sn_client.login(username=user_name, password=password)
-        
+
         if command == "test-module":
             return_results(module_of_testing(client, log_types))
 
