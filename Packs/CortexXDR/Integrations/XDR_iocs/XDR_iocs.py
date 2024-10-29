@@ -686,7 +686,7 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
     if Client.tlp_color:
         entry['fields']['trafficlightprotocol'] = Client.tlp_color
 
-    # demisto.debug(f'Processed incoming entry: {entry}') # uncomment to debug, otherwise it spams the log
+    extensive_log(f'Processed incoming entry: {entry}')
     return entry
 
 
@@ -855,7 +855,6 @@ def parse_xsoar_field_name_and_link(xsoar_comment_field: list[str]) -> tuple[str
     Returns:
         xsoar field name and bool flag if add a link as a comment.
     """
-    demisto.debug(f"{xsoar_comment_field=}")
     if len(xsoar_comment_field) == 1:
         if xsoar_comment_field[0] == "indicator_link":
             return "comments", True
