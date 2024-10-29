@@ -21,6 +21,7 @@ def test_post_closure_comment(mocker):
     mocker.patch.object(SekoiaXDRCloseAlert, "get_username", return_value="admin1")
     assert post_closure_comment("1", "reason", "notes", "admin") is None
 
+
 def test_alert_closure_status(mocker):
     output_data = [{"Type": 3, "Contents": {}}]
     mocker.patch.object(demisto, "executeCommand", return_value=output_data)
@@ -28,6 +29,7 @@ def test_alert_closure_status(mocker):
     assert alert_closure_status("Outgoing", "1", "Closed") is None
     assert alert_closure_status("Incoming", "1", "Rejected") is None
     assert alert_closure_status(None, "1", "Rejected") is None
+
 
 def test_close_alert(mocker):
     mocker.patch.object(SekoiaXDRCloseAlert, "get_status_name", return_value="Ongoing")

@@ -20,7 +20,7 @@ def post_comment(alert_short_id: str, comment: Optional[str], author: str):
         )
 
 
-def update_status(new_status: str, mirror_status:str, short_id: str):
+def update_status(new_status: str, mirror_status: str, short_id: str):
     if mirror_status == "Both":
         execute_command("sekoia-xdr-update-status-alert", {"id": short_id, "status": new_status})
     elif mirror_status == "Outgoing":

@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 def get_status_name(alert_id: str):
     get_alert = execute_command("sekoia-xdr-get-alert", {"id": alert_id})
     return get_alert["status"]["name"]  # type: ignore

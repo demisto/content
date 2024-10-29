@@ -9,12 +9,14 @@ def test_get_username(mocker):
     mocker.patch.object(demisto, "executeCommand", return_value=output_data)
     assert get_username() == "admin"
 
+
 def test_update_status(mocker):
     output_data = [{"Type": 3, "Contents": {}}]
     mocker.patch.object(demisto, "executeCommand", return_value=output_data)
     assert update_status("Ongoing", "Both", "1") is None
     assert update_status("Ongoing", "Outgoing", "1") is None
     assert update_status("Ongoing", None, "1") is None
+
 
 def test_main(mocker):
     mocker.patch.object(
