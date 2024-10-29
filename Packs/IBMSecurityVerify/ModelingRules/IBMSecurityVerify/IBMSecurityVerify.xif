@@ -81,11 +81,13 @@ filter event_type = "authentication"
     res = lowercase(data -> result),
     src_user = arrayindex(regextract(data -> username, "(.+)\@") ,0), // The username can sometimes appear as a username and other times as an email.
     subtype = data -> subtype,
-    mfamethod = data -> mfamethod
+    mfamethod = data -> mfamethod,
+    cause_lower = lowercase(data -> cause),
+    mfaresult_lower = lowercase(data -> mfaresult)
 | alter
     xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
     xdm.event.operation = if(lowercase(data.subtype) = "MFA",  XDM_CONST.OPERATION_TYPE_AUTH_MFA, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
-    xdm.event.operation_sub_type = coalesce(data -> dict_op, data -> action),
+    xdm.event.operation_sub_type = if(mfamethod = "FIDO2", "hardware_token", mfamethod = "Email OTP", "email", mfamethod = "IBM Verify push", "application", mfamethod = "SMS OTP", "sms", subtype in ("certificate", "social", "socialjwt"), "application", subtype = "user_password", "password", subtype = "federation", "Generic SSO", subtype = "device trust", "trusted_login", subtype),
     xdm.event.description = data -> cause,
     xdm.auth.service = data -> sourcetype,
     xdm.source.user.identifier = if(data -> subject = "UNKNOWN", null, coalesce(data -> subject, data -> performedby)),
