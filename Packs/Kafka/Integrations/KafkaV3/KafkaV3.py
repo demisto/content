@@ -384,13 +384,12 @@ def validate_params(params: dict):  # TODO add validation that trust any cert is
     """
     use_ssl = params.get('use_ssl')
     use_sasl = params.get('use_sasl')
-    plain_username = params.get('plain_username')
-    plain_password = params.get('plain_password')
+    plain_username = params.get('credentials', {}).get('identifier')
+    plain_password = params.get('credentials', {}).get('password')
     brokers = params.get('brokers')
     ca_cert = params.get('ca_cert')
     client_cert = params.get('client_cert')
     client_cert_key = params.get('client_cert_key')
-
     # Check if brokers are provided
     if not brokers:
         raise DemistoException('Please specify a CSV list of Kafka brokers to connect to.')
@@ -909,8 +908,9 @@ def main():  # pragma: no cover
     client_cert = demisto_params.get('client_cert', None)
     client_cert_key = demisto_params.get('client_cert_key', None)
     ssl_password = demisto_params.get('additional_password', None)
-    plain_username = demisto_params.get('plain_username')
-    plain_password = demisto_params.get('plain_password')
+    plain_username = demisto_params.get('credentials', {}).get('identifier')
+    plain_password = demisto_params.get('credentials', {}).get('password')
+    
 
     kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
                     'use_sasl': use_sasl, 'group_id': group_id,
