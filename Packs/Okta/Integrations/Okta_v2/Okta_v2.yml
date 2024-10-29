@@ -1451,7 +1451,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Revokes the User's existing sessions if true.
+      description: Revokes the User's existing sessions and returns a temporary password if true.
       name: revoke_session
       predefined:
       - 'true'

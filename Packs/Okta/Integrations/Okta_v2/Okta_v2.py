@@ -834,7 +834,6 @@ def set_password_command(client, args):
 def expire_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
     hide_password = argToBoolean(args.get('hide_password', False))
-    temp_password = argToBoolean(args.get('temporary_password', False))
     revoke_session = argToBoolean(args.get('revoke_session', False))
     
     if not (args.get('username') or user_id):
@@ -843,7 +842,7 @@ def expire_password_command(client, args):
         raw_response = client.revoke_session(user_id, args)
     else:
         raw_response = client.expire_password(user_id, args)
-    if hide_password is True and temp_password is True:
+    if 'tempPassword' in raw_response and hide_password:
         raw_response['tempPassword'] = (
             'Output removed by user. hide_password argument set to True'
         )
