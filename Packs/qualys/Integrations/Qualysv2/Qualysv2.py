@@ -3507,12 +3507,12 @@ def main():  # pragma: no cover
                     for asset in assets:
                         if asset.get('DETECTION', {}).get('QID'):
                             qid_list.append(asset.get('DETECTION', {}).get('QID'))
-                # Look for QIDs already in last_run and deduplicate.
-                if qid_list:
-                    if qids_last_run := last_run.get('qids'):
-                        qid_list.extend(qids_last_run)
-                    qid_set = set(qid_list)
-                    new_last_run['qids'] = list(qid_set)
+                    # Look for QIDs already in last_run and deduplicate.
+                    if qid_list:
+                        if qids_last_run := last_run.get('qids'):
+                            qid_list.extend(qids_last_run)
+                        qid_set = set(qid_list)
+                        new_last_run['qids'] = list(qid_set)
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                                    snapshot_id=snapshot_id, items_count=total_assets, should_update_health_module=False)
