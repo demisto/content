@@ -477,6 +477,7 @@ def test_run_on_all_accounts(mocker):
     result_func = run_on_all_accounts(mock_command_func)
     results: list[CommandResults] = result_func({})
 
+    assert isinstance(results,list)
     assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
     assert results[0].outputs == [{'AccountId': '1'}]
     assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
@@ -490,6 +491,7 @@ def test_run_on_all_accounts(mocker):
     ))
     results: list[CommandResults] = result_func({})
 
+    assert isinstance(results,list)
     assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
     assert results[0].outputs == {'AccountId': '1'}
     assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
