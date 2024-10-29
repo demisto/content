@@ -328,7 +328,6 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
     if single_comment_for_field_name:
         comments.extend(single_comment_for_field_name)
 
-    demisto.debug(f"{Client.add_link_as_a_comment=}")
     # if the flag is True, add a link as a comment
     if Client.add_link_as_a_comment:
         comments.extend(create_an_indicator_link(ioc))
