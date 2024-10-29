@@ -527,6 +527,7 @@ tasks:
       id: 670d8449-b528-465d-8b3f-6e22cda63229
       version: -1
       name: Was the SOC email address provided?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -567,6 +568,7 @@ tasks:
       id: 355b3075-9035-4285-82b0-c4d63679b10c
       version: -1
       name: Was the SIEM admin email address provided?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -1000,6 +1002,7 @@ tasks:
       id: 9a80f6b4-18be-413a-8397-794a919efa0b
       version: -1
       name: Use custom severity?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -1043,6 +1046,7 @@ tasks:
       id: 359cb86e-fb0e-4a4c-8291-edef6d443ee2
       version: -1
       name: Run additional searches?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
