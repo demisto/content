@@ -1011,7 +1011,7 @@ def test_malop_to_incident(mocker):
                 (command_output['CustomFields']['malopdetectiontype'] == "EXTENSION_MANIPULATION"),
                 (command_output['CustomFields']['maloprootcauseelementname'] == "avg_secure_browser_setup.pdf.exe"),
                 (command_output['CustomFields']['maloprootcauseelementtype'] == "File"),
-                (command_output['malopedr']), (command_output['dbotmirrorid'] == "12345A")])
+                (command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345A")])
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
