@@ -426,6 +426,7 @@ List of event types ordered by the number of requests made for each type of even
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | page | The page number. Default is 1. | Optional | 
 | page_size | The number of requested results per page. Default is 50. | Optional | 
+| categories | A comma-separated list of category ids to filter on. | Optional | 
 
 #### Context Output
 
