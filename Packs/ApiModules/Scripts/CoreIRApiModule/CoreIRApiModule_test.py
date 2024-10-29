@@ -4228,3 +4228,116 @@ def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
         assert res == test_bin_data
     except DemistoException as e:
         assert f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}' in str(e)
+
+
+def test_terminate_process_command(mocker):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+        - instance_id_1
+        - instance_id_2
+        - agent_id
+    When:
+        - Calling the terminate_process_command method.
+    Then:
+        - case 1 - Make sure the response are as expected (action_id).
+    """
+    from CoreIRApiModule import CoreClient, terminate_process_command
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", side_effect=[
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_process',
+         'status': 200,
+         'data': json.dumps({'reply': {'group_action_id': 1}})},
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_process',
+         'status': 200,
+         'data': json.dumps({'reply': {'group_action_id': 2}})}
+    ]
+    )
+
+    result = terminate_process_command(client=client, args={'agent_id': '1', 'instance_id': ['instance_id_1', 'instance_id_2']})
+    assert result.readable_output == ('### Action terminate process created on instance ids:'
+                                      ' instance_id_1, instance_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
+    assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
+
+
+def test_terminate_causality_command(mocker):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+        - causality_id
+        - agent_id
+    When:
+        - Calling the terminate_causality_command method.
+    Then:
+        - case 1 - Make sure the response are as expected (action_id).
+    """
+    from CoreIRApiModule import CoreClient, terminate_causality_command
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", side_effect=[
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_causality',
+         'status': 200,
+         'data': json.dumps({'reply': {'group_action_id': 1}})},
+        {'name': '/api/webapp/public_api/v1/endpoints/terminate_causality',
+         'status': 200,
+         'data': json.dumps({'reply': {'group_action_id': 2}})}
+    ]
+    )
+
+    result = terminate_causality_command(client=client, args={'agent_id': '1', 'causality_id': [
+                                         'causality_id_1', 'causality_id_2']})
+    assert result.readable_output == ('### Action terminate causality created on causality_id_1,'
+                                      'causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
+    assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
+
+
+def test_run_polling_command_values_raise_error(mocker):
+    """
+    Given -
+        - run_polling_command arguments.
+        -
+
+    When -
+        - Running the run_polling_command
+
+    Then
+        - Make sure that an error is raised with the correct output.
+    """
+    from CoreIRApiModule import run_polling_command
+    from CommonServerPython import DemistoException, ScheduledCommand
+    from unittest.mock import Mock
+
+    polling_args = {
+        'endpoint_ids': '1', 'command_decision_field': 'action_id', 'action_id': '1', 'hide_polling_output': True
+    }
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    client = Mock()
+    mock_command_results = Mock()
+    mock_command_results.raw_response = {"status": "TIMEOUT"}
+    mock_command_results.return_value = mock_command_results
+    client.get_command_results.return_value = mock_command_results
+
+    with pytest.raises(DemistoException) as e:
+        run_polling_command(client=client,
+                            args=polling_args,
+                            cmd="core-terminate-causality",
+                            command_function=Mock(),
+                            command_decision_field="action_id",
+                            results_function=mock_command_results,
+                            polling_field="status",
+                            polling_value=["PENDING",
+                                           "IN_PROGRESS",
+                                           "PENDING_ABORT"],
+                            values_raise_error=["FAILED",
+                                                "TIMEOUT",
+                                                "ABORTED",
+                                                "CANCELED"]
+                            )
+    assert str(e.value) == 'The command core-terminate-causality failed. Received status TIMEOUT'

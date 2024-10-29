@@ -1,0 +1,28 @@
+{
+	"id": "Review Indicators Manually For Allowlisting",
+    "fromVersion": "5.5.0",
+    "marketplaces": [
+    "xsoar"
+    ],
+	"version": -1,
+	"sortValues": null,
+	"locked": false,
+	"name": "Review Indicators Manually For Allowlisting",
+	"color": "#4CAF50",
+	"playbookId": "TIM - Review Indicators Manually For Allowlisting",
+	"hours": 0,
+	"days": 0,
+	"weeks": 0,
+	"hoursR": 0,
+	"daysR": 0,
+	"weeksR": 0,
+	"system": false,
+	"readonly": false,
+	"default": false,
+	"autorun": true,
+	"preProcessingScript": "",
+	"closureScript": "",
+	"disabled": false,
+	"reputationCalc": 0,
+	"layout": "Review Indicators Manually For Allowlisting"
+}

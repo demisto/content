@@ -1,11 +1,11 @@
-Microsoft 365 Defender event collector integration for Cortex XSIAM.
+Microsoft Defender for Endpoint Alerts integration for Cortex XSIAM.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Microsoft 365 Defender Event Collector on Cortex XSIAM
+## Configure Microsoft Defender for Endpoint Alerts on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft 365 Defender Event Collector.
+2. Search for Microsoft Defender for Endpoint Alerts.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                                                                          | **Description**                                                                                                                                                        | **Required** |

@@ -55,6 +55,22 @@ configuration:
   - Incoming
   - Outgoing
   - Both
+- additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
+  defaultvalue: 'true'
+  display: Close Mirrored XSOAR Incident
+  name: close_xsoar_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR.
+  defaultvalue: 'true'
+  display: Close Mirrored Cortex XDR Incident
+  name: close_xdr_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: '1'
   display: XDR mirroring delay in minutes
   name: xdr_delay

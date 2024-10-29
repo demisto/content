@@ -622,6 +622,8 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     last_run = demisto.getLastRun()
     alert_events, alert_next_run = [], {}
     audit_events, audit_next_run = [], {}
+    computer_events: list = []
+    computer_next_run: dict = {}
     alert_next_page = last_run.get("alert", {}).get("next_page", "")
     audit_next_page = last_run.get("audit", {}).get("next_page", "")
     computer_next_page = last_run.get("computer", {}).get("next_page", "")

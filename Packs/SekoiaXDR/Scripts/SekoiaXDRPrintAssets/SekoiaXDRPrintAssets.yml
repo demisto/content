@@ -1,0 +1,19 @@
+commonfields:
+  id: SekoiaXDRPrintAssets
+  version: -1
+name: SekoiaXDRPrintAssets
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Print all assets by incident.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.111039
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

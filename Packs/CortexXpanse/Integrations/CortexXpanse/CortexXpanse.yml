@@ -784,6 +784,8 @@ script:
       - high
       - critical
       description: The severity of the alert.
+    - name: resolution_comment
+      description: Descriptive comment explaining the alert change.
     outputs:
     - contextPath: ASM.UpdatedAlerts
       description: IDs of the updated alerts.

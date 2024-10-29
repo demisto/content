@@ -151,7 +151,7 @@ class Email:
                            'value': ','.join([attachment['filename'] for attachment in self.attachments])})
         return labels
 
-    def parse_attachments(self) -> list:
+    def parse_attachments(self, output_to_warroom: bool = False) -> list:
         """
         Writes the attachments of the files and returns a list of file entry details.
         If self.save_eml_file is set, will also save the email itself as file
@@ -169,7 +169,9 @@ class Email:
                 demisto.error(f'parse_attachments: Failed to decode the attachment data - {str(e)}')
 
             # save the attachment
-            file_result = fileResult(attachment.get('filename'), file_data, attachment.get('mail_content_type'))
+            file_result = fileResult(attachment.get('filename'), file_data)
+            if output_to_warroom:
+                demisto.results(file_result)
 
             # check for error
             if file_result['Type'] == entryTypes['error']:
@@ -209,7 +211,7 @@ class Email:
             'rawJSON': json.dumps(self.raw_json)
         }
 
-    def generate_raw_json(self, parse_attachments: bool = False) -> dict:
+    def generate_raw_json(self, parse_attachments: bool = False, output_to_warroom: bool = False) -> dict:
         """
 
         Args:
@@ -224,7 +226,7 @@ class Email:
             'format': self.format,
             'text': self.text,
             'subject': self.subject,
-            'attachments': self.parse_attachments() if parse_attachments else ','.join(
+            'attachments': self.parse_attachments(output_to_warroom) if parse_attachments else ','.join(
                 [attachment['filename'] for attachment in self.attachments]),
             'rawHeaders': self.parse_raw_headers(),
             'headers': remove_empty_elements(self.headers)
@@ -536,7 +538,7 @@ def list_emails(client: IMAPClient,
 
 def get_email(client: IMAPClient, message_id: int) -> CommandResults:
     mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
-    mails_json = [mail.generate_raw_json(parse_attachments=True) for mail in mails_fetched]
+    mails_json = [mail.generate_raw_json(parse_attachments=True, output_to_warroom=True) for mail in mails_fetched]
     return CommandResults(outputs_prefix='MailListener.Email',
                           outputs_key_field='ID',
                           outputs=mails_json)
@@ -639,10 +641,10 @@ def main():     # pragma: no cover
                                            _limit=limit))
             elif demisto.command() == 'mail-listener-get-email':
                 return_results(get_email(client=client,
-                                         message_id=args.get('message-id')))
+                                         message_id=arg_to_number(args.get('message-id')) or 0))
             elif demisto.command() == 'mail-listener-get-email-as-eml':
                 return_results(get_email_as_eml(client=client,
-                                                message_id=args.get('message-id')))
+                                                message_id=arg_to_number(args.get('message-id')) or 0))
             elif demisto.command() == 'fetch-incidents':
                 next_run, incidents = fetch_incidents(client=client, last_run=demisto.getLastRun(),
                                                       first_fetch_time=first_fetch_time,

@@ -1572,6 +1572,52 @@ class CoreClient(BaseClient):
             }},
         )
 
+    def terminate_on_agent(self,
+                           url_suffix_endpoint: str,
+                           id_key: str,
+                           id_value: str,
+                           agent_id: str,
+                           process_name: Optional[str],
+                           incident_id: Optional[str]) -> dict[str, dict[str, str]]:
+        """
+            Terminate a specific process or a the causality on an agent.
+
+            :type url_suffix_endpoint: ``str``
+            :param agent_id: The endpoint of the command(terminate_causality or terminate_process).
+
+            :type agent_id: ``str``
+            :param agent_id: The ID of the agent.
+
+            :type id_key: ``str``
+            :param id_key: The key name ID- causality_id or process_id.
+
+            :type id_key: ``str``
+            :param id_key: The ID data- causality_id or process_id.
+
+            :type process_name: ``Optional[str]``
+            :param process_name: The name of the process. Optional.
+
+            :type incident_id: ``Optional[str]``
+            :param incident_id: The ID of the incident. Optional.
+
+            :return: The response from the API.
+            :rtype: ``dict[str, dict[str, str]]``
+        """
+        request_data: Dict[str, Any] = {
+            "agent_id": agent_id,
+            id_key: id_value,
+        }
+        if process_name:
+            request_data["process_name"] = process_name
+        if incident_id:
+            request_data["incident_id"] = incident_id
+        response = self._http_request(
+            method='POST',
+            url_suffix=f'/endpoints/{url_suffix_endpoint}/',
+            json_data={"request_data": request_data},
+        )
+        return response.get('reply')
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -1651,7 +1697,8 @@ def run_polling_command(client: CoreClient,
                         results_function: Callable,
                         polling_field: str,
                         polling_value: List,
-                        stop_polling: bool = False) -> CommandResults:
+                        stop_polling: bool = False,
+                        values_raise_error: List = []) -> CommandResults:
     """
     Arguments:
     args: args
@@ -1664,6 +1711,7 @@ def run_polling_command(client: CoreClient,
     polling_value: list of values of the polling_field we want to check. The list can contain values to stop or
     continue polling on, not both.
     stop_polling: True - polling_value stops the polling. False - polling_value does not stop the polling.
+    values_raise_error: list of polling values that require raising an error.
 
     Return:
     command_results(CommandResults)
@@ -1708,6 +1756,8 @@ def run_polling_command(client: CoreClient,
     result = outputs_result_func.get(polling_field) if isinstance(outputs_result_func, dict) else \
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
+    if values_raise_error and result in values_raise_error:
+        raise DemistoException(f"The command {cmd} failed. Received status {result}")
     if cond:
         # schedule next poll
         polling_args = {
@@ -1906,7 +1956,7 @@ def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
 def action_status_get_command(client: CoreClient, args) -> CommandResults:
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
-
+    demisto.debug(f'action_status_get_command {action_id_list=}')
     result = []
     for action_id in action_id_list:
         data = client.action_status_get(action_id)
@@ -1915,7 +1965,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
             result.append({
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
-                'status': status
+                'status': status,
             })
 
     return CommandResults(
@@ -3343,7 +3393,10 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
 
         return PollResult(
             response=get_script_execution_results_command(
-                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+                client, {'action_id': action_id,
+                         'integration_context_brand': 'Core'
+                         if argToBoolean(args.get('is_core', False))
+                         else 'PaloAltoNetworksXDR'}
             ),
             continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
         )
@@ -4399,4 +4452,85 @@ def get_incidents_command(client, args):
             f'{args.get("integration_context_brand", "CoreApiModule")}.Incident(val.incident_id==obj.incident_id)': raw_incidents
         },
         raw_incidents
+    )
+
+
+def terminate_process_command(client, args) -> CommandResults:
+    """
+    AVAILABLE ONLY TO XDR3.12 / XSIAM2.4
+    Terminate the process command for a specific agent and instance IDs.
+
+    :type client: ``Client``
+    :param client: The client to use for making API calls.
+
+    :type args: ``Dict[str, Any]``
+    :param args: The arguments for the command.
+
+    :return: The results of the command.
+    :rtype: ``CommandResults``
+    """
+    agent_id = args.get('agent_id')
+    instance_ids = argToList(args.get('instance_id'))
+    process_name = args.get('process_name')
+    incident_id = args.get('incident_id')
+    replies: List[Dict[str, Any]] = []
+    for instance_id in instance_ids:
+        reply_per_instance_id = client.terminate_on_agent(
+            url_suffix_endpoint='terminate_process',
+            id_key='instance_id',
+            id_value=instance_id,
+            agent_id=agent_id,
+            process_name=process_name,
+            incident_id=incident_id
+        )
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        replies.append({"action_id": action_id})
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Action terminate process created on instance ids: {", ".join(instance_ids)}', replies),
+        outputs={
+            f'{args.get("integration_context_brand", "CoreApiModule")}'
+            f'.TerminateProcess(val.actionId && val.actionId == obj.actionId)': replies},
+        raw_response=replies
+    )
+
+
+def terminate_causality_command(client, args) -> CommandResults:
+    """
+    AVAILABLE ONLY TO XDR3.12 / XSIAM2.4
+    Terminate the causality command for a specific agent and causality IDs.
+
+    :type client: ``Client``
+    :param client: The client to use for making API calls.
+
+    :type args: ``Dict[str, Any]``
+    :param args: The arguments for the command.
+
+    :return: The results of the command.
+    :rtype: ``CommandResults``
+    """
+    agent_id = args.get('agent_id')
+    causality_ids = argToList(args.get('causality_id'))
+    process_name = args.get('process_name')
+    incident_id = args.get('incident_id')
+    replies: List[Dict[str, Any]] = []
+    for causality_id in causality_ids:
+        reply_per_instance_id = client.terminate_on_agent(
+            url_suffix_endpoint='terminate_causality',
+            id_key='causality_id',
+            id_value=causality_id,
+            agent_id=agent_id,
+            process_name=process_name,
+            incident_id=incident_id
+        )
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        replies.append({"action_id": action_id})
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)':
+                 replies},
+        raw_response=replies
     )
