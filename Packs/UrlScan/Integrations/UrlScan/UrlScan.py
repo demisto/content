@@ -45,7 +45,7 @@ RELATIONSHIP_TYPE = {
 
 class Client:
     def __init__(self, api_key='', user_agent='', scan_visibility=None, threshold=None, use_ssl=False,
-                 reliability=DBotScoreReliability.C):
+                 reliability=DBotScoreReliability.C, country=None):
         self.base_url = 'https://urlscan.io/'
         self.base_api_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
@@ -54,6 +54,7 @@ class Client:
         self.scan_visibility = scan_visibility
         self.use_ssl = use_ssl
         self.reliability = reliability
+        self.country = country
 
 
 '''HELPER FUNCTIONS'''
@@ -251,6 +252,9 @@ def urlscan_submit_url(client, url):
         submission_dict['customagent'] = demisto.args().get('useragent')
     elif demisto.params().get('useragent'):
         submission_dict['customagent'] = demisto.params().get('useragent')
+
+    if client.country:
+        submission_dict['country'] = client.country.split(' ')[0]
 
     sub_json = json.dumps(submission_dict)
     retries = int(demisto.args().get('retries', 0))
@@ -829,6 +833,7 @@ def main():
     use_ssl = not params.get('insecure', False)
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C
+    country = params.get('country', '')
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
@@ -843,7 +848,8 @@ def main():
         scan_visibility=scan_visibility,
         threshold=threshold,
         use_ssl=use_ssl,
-        reliability=reliability
+        reliability=reliability,
+        country=country
     )
 
     demisto.debug(f'Command being called is {demisto.command()}')
