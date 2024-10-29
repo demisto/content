@@ -328,6 +328,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
     if single_comment_for_field_name:
         comments.extend(single_comment_for_field_name)
 
+    demisto.debug(f"{Client.add_link_as_a_comment=}")
     # if the flag is True, add a link as a comment
     if Client.add_link_as_a_comment:
         comments.extend(create_an_indicator_link(ioc))
@@ -407,7 +408,8 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
 
         xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'], ioc['value'])
 
-        # demisto.debug(f'Processed outgoing IOC: {xdr_ioc}') # uncomment to debug, otherwise spams the log
+        extensive_log(f'Processed outgoing IOC: {xdr_ioc}')
+
         return xdr_ioc
 
     except KeyError as error:
@@ -853,6 +855,7 @@ def parse_xsoar_field_name_and_link(xsoar_comment_field: list[str]) -> tuple[str
     Returns:
         xsoar field name and bool flag if add a link as a comment.
     """
+    demisto.debug(f"{xsoar_comment_field=}")
     if len(xsoar_comment_field) == 1:
         if xsoar_comment_field[0] == "indicator_link":
             return "comments", True
