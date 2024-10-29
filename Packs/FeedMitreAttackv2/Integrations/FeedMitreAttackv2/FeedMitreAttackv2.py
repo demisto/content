@@ -17,7 +17,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {  # pragma: no cover
     "tool": ThreatIntel.ObjectsNames.TOOL,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "relationship": "Relationship",
-    "x-mitre-tactic": "ThreatIntel.ObjectsNames.TACTIC"
+    "x-mitre-tactic": ThreatIntel.ObjectsNames.TACTIC
 }
 INDICATOR_TYPE_TO_SCORE = {  # pragma: no cover
     "Intrusion Set": ThreatIntel.ObjectsScore.INTRUSION_SET,

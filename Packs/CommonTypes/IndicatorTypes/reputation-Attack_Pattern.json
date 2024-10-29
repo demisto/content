@@ -10,7 +10,7 @@
     "expiration": 0,
     "file": false,
     "fileHashesPriority": null,
-    "formatScript": "ExtractAttackPattern",
+    "formatScript": "MITRENameByID_Formatter",
     "id": "Attack Pattern",
     "locked": false,
     "manualMapping": {

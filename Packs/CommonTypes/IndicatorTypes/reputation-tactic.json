@@ -6,6 +6,7 @@
     "regex": "TA-?\\d{4}",
     "details": "Tactic",
     "prevDetails": "Tactic",
+    "formatScript": "MITRENameByID_Formatter",
     "system": false,
     "locked": false,
     "disabled": false,
@@ -21,6 +22,6 @@
         }
     },
     "expiration": 0,
-    "layout": "24c69371-83a0-4b04-8352-4ab9a39a0f97",
+    "layout": "Tactic Layout",
     "fromVersion": "6.10.0"
 }

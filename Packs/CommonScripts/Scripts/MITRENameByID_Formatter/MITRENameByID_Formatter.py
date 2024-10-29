@@ -1,10 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import urllib3
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
     """
@@ -44,7 +40,7 @@ def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
                                                 fail_on_error=False)
 
             if isinstance(response, str) and response.lower() == "no":
-                demisto.warning("Please set an instance of MITRE Att&ck Feed.")
+                demisto.debug("Please set an instance of MITRE Att&ck Feed.")
 
         return technique_names
 
