@@ -2174,7 +2174,7 @@ def handle_incorrect_message_id(message_id: str) -> str:
 
 
 def decode_email_data(email_obj: Message):
-    # Use the email's policy to get the appropriate bytes representation
+    # Use SMTP policy to handle emails containing non-ASCII characters
     email_policy = SMTP if email_obj.as_string().isascii() else SMTPUTF8
     attached_email_bytes = email_obj.as_bytes(policy=email_policy)
 
