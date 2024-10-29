@@ -9,6 +9,8 @@ Integration with Okta's cloud-based identity management service.
 
 #### Notes
 - API tokens have the same permissions as the user who creates them, and if the permissions of a user change, so do the permissions of the API token.
+- If more than one certificate is assigned to the application, the Key ID parameter is required to specify which
+  certificate to use for signing the JWT token.
 
 For more information, see the '[Create an API token](https://developer.okta.com/docs/guides/create-an-api-token/main/)' official documentation article.
 
