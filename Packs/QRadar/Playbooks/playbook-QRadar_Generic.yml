@@ -483,6 +483,7 @@ tasks:
       id: b419c44d-1762-4553-8493-f9d7606af7bc
       version: -1
       name: Use Calculate Severity?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
