@@ -41,7 +41,7 @@ script:
     - name: description
       description: A free text description of the issue.
     - name: devices
-      description: A list of device names, on which the change should be made
+      description: A list of device names, on which the change should be made.
     - name: action
       required: true
       description: |
