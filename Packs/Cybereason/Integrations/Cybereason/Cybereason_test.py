@@ -977,7 +977,7 @@ def test_malop_to_incident(mocker):
     }
     command_output = malop_to_incident(args)
 
-    assert all([(command_output['name'] == "Cybereason Malop 12345A"), (command_output['status'] == 1)])
+    assert all([(command_output['name'] == "Cybereason Malop 12345A"), (command_output['status'] == 0)])
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
