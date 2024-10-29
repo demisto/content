@@ -2174,7 +2174,10 @@ def handle_incorrect_message_id(message_id: str) -> str:
 
 
 def decode_email_data(email_obj: Message):
-    attached_email_bytes = email_obj.as_bytes()
+    # Use the email's policy to get the appropriate bytes representation
+    email_policy = SMTP if email_obj.as_string().isascii() else SMTPUTF8
+    attached_email_bytes = email_obj.as_bytes(policy=email_policy)
+
     chardet_detection = chardet.detect(attached_email_bytes)
     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
     try:
