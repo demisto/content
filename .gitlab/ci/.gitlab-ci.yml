@@ -1,5 +1,5 @@
 variables:
-  CURRENT_BRANCH_NAME: "CIAC-12002"
+  CURRENT_BRANCH_NAME: $INFRA_BRANCH
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
