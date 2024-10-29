@@ -366,7 +366,7 @@ def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}
         with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
             json.dump(new_chrome_content, file, indent=4)
     except Exception as e:
-        raise DemistoException(f"An error occurred while writing to the {CHROME_INSTANCES_FILE_PATH} file: {e}")
+        demisto.debug(f"An error occurred while writing to the file: {e}")
 
 
 def opt_name(opt):
@@ -556,7 +556,7 @@ def generate_chrome_port() -> str | None:
 
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
-            demisto.debug(f"No Chrome found on port {chrome_port}, using this port.")
+            demisto.debug(f"No Chrome found on port {chrome_port}, using it.")
             return str(chrome_port)
 
         # There's already a Chrome listening on that port, Don't use it
