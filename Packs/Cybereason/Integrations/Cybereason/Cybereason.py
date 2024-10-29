@@ -161,6 +161,7 @@ class Client(BaseClient):
                     error_msg = 'Authentication failed, verify the credentials are correct.'
                 raise ValueError(
                     f'Failed to process the API response. {str(error_msg)} {str(error_content)} - {str(e)}')
+        return None
 
     def error_handler(self, res: requests.Response):
         # Handle error responses gracefully
@@ -416,6 +417,7 @@ def query_connections_command(client: Client, args: dict):
             outputs_prefix='Cybereason.Connection',
             outputs_key_field='Name',
             outputs=context)
+    return None
 
 
 def query_connections(client: Client, machine: str, ip: str, filter_input: str) -> dict:
@@ -665,17 +667,17 @@ def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = str(args.get('machineName'))
     date_time = str(args.get('dateTime'))
-    
+
     milliseconds = 0
     filter_input = []
-    
+
     if date_time != 'None':
         date_time_parser = dateparser.parse(date_time)
         if not date_time_parser:
             demisto.info("Returning all the processes since the entered date is not valid.")
         if date_time_parser:
-            date_time_parser = date_time_parser.timestamp()
-            milliseconds = int(date_time_parser * 1000)
+            epoch_time = date_time_parser.timestamp()
+            milliseconds = int(epoch_time) * 1000
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult": True}]
 
     if isinstance(malop_guids, str):
@@ -919,6 +921,7 @@ def kill_process_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -943,6 +946,7 @@ def quarantine_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -967,6 +971,7 @@ def unquarantine_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -991,6 +996,7 @@ def block_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1015,6 +1021,7 @@ def delete_registry_key_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1039,6 +1046,7 @@ def kill_prevent_unsuspend_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n" Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1063,6 +1071,7 @@ def unsuspend_process_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1216,6 +1225,7 @@ def query_file_command(client: Client, args: dict) -> Any:
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_file(client: Client, filters: list) -> dict:
@@ -1306,6 +1316,7 @@ def query_domain_command(client: Client, args: dict) -> Any:
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_domain(client: Client, filters: list) -> dict:
@@ -1367,6 +1378,7 @@ def query_user_command(client: Client, args: dict):
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_user(client: Client, filters: list) -> dict:
@@ -1516,22 +1528,24 @@ def malop_to_incident(malop: str) -> dict:
 
     if malop.get('elementValues'):
         if malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', ''):
-            rootCauseElementName = (malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', '')[0]).get('name', '')
-            rootCauseElementType = (malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', '')[0]).get('elementType', '')
+            rootCauseElementName = (malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues',
+                                                                                                    '')[0]).get('name', '')
+            rootCauseElementType = (malop.get('elementValues', {}).get('rootCauseElements', {}).get('elementValues', '')[0]
+                                    ).get('elementType', '')
         else:
             rootCauseElementName = ''
             rootCauseElementType = ''
     else:
-        rootCauseElementName = malop.get('primaryRootCauseName' , '')
+        rootCauseElementName = malop.get('primaryRootCauseName', '')
         rootCauseElementType = malop.get('rootCauseElementType', '')
 
     if malop.get('malopDetectionType'):
         detectionType = malop.get('malopDetectionType', '')
     else:
-        detectionType = (malop.get('simpleValues', {}).get('detectionType', {}).get('values', [''])[0]) 
+        detectionType = (malop.get('simpleValues', {}).get('detectionType', {}).get('values', [''])[0])
 
-    malopGroup =  malop.get('group', '')
-    
+    malopGroup = malop.get('group', '')
+
     severity = malop.get('severity', '')
 
     incident = {
@@ -1550,7 +1564,7 @@ def malop_to_incident(malop: str) -> dict:
             'malopgroup': malopGroup
         },
         'labels': [{'type': 'GUID', 'value': guid_string}],
-        'status': status }
+        'status': status}
 
     return incident
 
@@ -1600,7 +1614,7 @@ def fetch_incidents(client: Client):
             guid_string = malop.get('guidString', '')
             if not guid_string:
                 guid_string = malop.get('guid', '')
-            
+
             try:
                 incident = malop_to_incident(malop)
             except Exception:
@@ -1621,7 +1635,7 @@ def fetch_incidents(client: Client):
             guid_string = malop.get('guidString', '')
             if not guid_string:
                 guid_string = malop.get('guid', '')
-            
+
             try:
                 incident = malop_to_incident(non_edr_malops)
             except Exception:
@@ -1807,6 +1821,7 @@ def start_fetchfile_command(client: Client, args: dict):
                 return CommandResults(readable_output="Successfully started fetching file for the given malop")
         except Exception:
             raise Exception("Failed to start fetch file process")
+    return None
 
 
 def start_fetchfile(client: Client, element_id: str, user_name: str) -> dict:
@@ -1859,7 +1874,7 @@ def get_batch_id(client: Client, suspect_files_guids: dict) -> list:
     for suspect_file in list(suspect_files_guids.keys()):
         malop_comment = f'Could not download the file {suspect_file} from source machine, even after waiting for 80 seconds.'
         demisto.info(malop_comment)
-    
+
     if new_malop_comments == []:
         raise DemistoException(malop_comment)
     else:
@@ -1912,6 +1927,7 @@ def malware_query_command(client: Client, args: dict):
         if limit_range > 0:
             filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
             return CommandResults(raw_response=filter_response)
+        return None
     else:
         raise DemistoException("Limit cannot be zero or a negative number.")
 
