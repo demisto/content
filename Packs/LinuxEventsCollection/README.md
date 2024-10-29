@@ -70,7 +70,8 @@ Follow the steps bellow for configuring an [XDR Collector](https://docs-cortex.p
   
 
 ##### Filebeat XDR Collector
-- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) compatible like timestamps. Examples: 
+- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) compatible like timestamps. 
+**Examples**: 
    - *`2024-10-28T14:30:55Z`*
    - *`2024-10-28T14:30:55-0300`*
    - *`2024-10-28T14:30:55.123+02:00`*  
