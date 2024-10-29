@@ -893,7 +893,7 @@ def main():  # pragma: no cover
     # in case of xsoar_comment_field is an empty list -> the Client.xsoar_comments_field is defined to "comments" by default
     if xsoar_comment_field := argToList(params.get('xsoar_comments_field')):
         xsoar_comment_field, add_link_as_a_comment = parse_xsoar_field_name_and_link(xsoar_comment_field)
-        Client.xsoar_comments_field, Client.add_link_as_a_comment = xsoar_comment_field, xsoar_comment_field
+        Client.xsoar_comments_field, Client.add_link_as_a_comment = xsoar_comment_field, add_link_as_a_comment
 
     client = Client(params)
     commands = {
