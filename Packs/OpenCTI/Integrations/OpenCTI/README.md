@@ -1,4 +1,4 @@
-Manages indicators from OpenCTI.  
+Manages observables from OpenCTI.  
 This integration was tested with version 5.12.17 of OpenCTI.  
 
 ## Configure OpenCTI on Cortex XSOAR
@@ -18,50 +18,50 @@ This integration was tested with version 5.12.17 of OpenCTI.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### opencti-get-indicators
+### opencti-get-observables
 ***
-Gets indicators from OpenCTI.
+Gets observables from OpenCTI.
 
 
 #### Base Command
 
-`opencti-get-indicators`
+`opencti-get-observables`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default value is 50. Maximum value is 500. | Optional | 
+| limit | The maximum number of observables to return. Default value is 50. Maximum value is 500. | Optional | 
 | score_start | Score minimum value to filter by. Values range is 0-100. | Optional | 
 | score_end | Score maximum value to filter by. Values range is 0-100.| Optional | 
-| indicator_types | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
-| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path. | Optional | 
+| observable_types | The observable types to fetch. Out-of-the-box observable types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
+| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.ObservablesList.LastRunID context path. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Indicators.IndicatorsList.type | String | Indicator type. | 
-| OpenCTI.Indicators.IndicatorsList.value | String | Indicator value. | 
-| OpenCTI.Indicators.IndicatorsList.id | String | Indicator ID. | 
-| OpenCTI.Indicators.IndicatorsList.createdBy | Unknown | The creator of the indicator. | 
-| OpenCTI.Indicators.IndicatorsList.score | Number | Indicator score. | 
-| OpenCTI.Indicators.IndicatorsList.description | String | Indicator description. | 
-| OpenCTI.Indicators.IndicatorsList.labels | Unknown | Indicator labels. | 
-| OpenCTI.Indicators.IndicatorsList.marking | Unknown | Indicator marking definitions. | 
-| OpenCTI.Indicators.IndicatorsList.externalReferences | Unknown | Indicator external references. | 
-| OpenCTI.Indicators.LastRunID | String | The last ID of the previous fetch to use for pagination. | 
+| OpenCTI.Observables.ObservablesList.type | String | Observable type. | 
+| OpenCTI.Observables.ObservablesList.value | String | Observable value. | 
+| OpenCTI.Observables.ObservablesList.id | String | Observable ID. | 
+| OpenCTI.Observables.ObservablesList.createdBy | Unknown | The creator of the observable. | 
+| OpenCTI.Observables.ObservablesList.score | Number | Observable score. | 
+| OpenCTI.Observables.ObservablesList.description | String | Observable description. | 
+| OpenCTI.Observables.ObservablesList.labels | Unknown | Observable labels. | 
+| OpenCTI.Observables.ObservablesList.marking | Unknown | Observable marking definitions. | 
+| OpenCTI.Observables.ObservablesList.externalReferences | Unknown | Observable external references. | 
+| OpenCTI.Observables.LastRunID | String | The last ID of the previous fetch to use for pagination. | 
 
 
 #### Command Example
-```!opencti-get-indicators score_start=20 score_end=70 indicator_types=Domain```
+```!opencti-get-observables score_start=20 score_end=70 observable_types=Domain```
 
 #### Context Example
 ```json
 {
     "OpenCTI": {
-        "Indicators": {
-            "IndicatorsList": [
+        "Observables": {
+            "ObservablesList": [
                 {
                     "createdBy": "0c7cb378-64c3-4809-b423-986ac7cecf91",
                     "description": "test",
@@ -152,7 +152,7 @@ Gets indicators from OpenCTI.
 
 #### Human Readable Output
 
->### Indicators
+>### Observables
 >|type|value|id|
 >|---|---|---|
 >| Domain | TestDomainDocs.com | 7ed5946a-81a2-4490-8be8-06d3633a41fb |
@@ -160,19 +160,19 @@ Gets indicators from OpenCTI.
 >| Domain | xcvbnm | 74faf2e8-bbab-4a1a-a548-58db202c5e57 |
 
 
-### opencti-indicator-delete
+### opencti-observable-delete
 ***
-Delete indicator.
+Delete observable.
 
 
 #### Base Command
 
-`opencti-indicator-delete`
+`opencti-observable-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Indicator ID. | Required | 
+| id | Observable ID. | Required | 
 
 
 #### Context Output
@@ -180,26 +180,26 @@ Delete indicator.
 There is no context output for this command.
 
 #### Command Example
-```!opencti-indicator-delete id=74faf2e8-bbab-4a1a-a548-58db202c5e57```
+```!opencti-observable-delete id=74faf2e8-bbab-4a1a-a548-58db202c5e57```
 
 #### Human Readable Output
 
->Indicator deleted.
+>Observable deleted.
 
-### opencti-indicator-field-update
+### opencti-observable-field-update
 ***
-Update the indicator field. The fields that can be updated are: score, description.
+Update the observable field. The fields that can be updated are: score, description.
 
 
 #### Base Command
 
-`opencti-indicator-field-update`
+`opencti-observable-field-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Indicator ID. | Required | 
-| field | Indicator field to update. Possible values are: score, description. | Required | 
+| id | Observable ID. | Required | 
+| field | Observable field to update. Possible values are: score, description. | Required | 
 | value | Value of the field to update. | Required | 
 
 
@@ -207,17 +207,17 @@ Update the indicator field. The fields that can be updated are: score, descripti
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Indicator.id | String | Updated indicator ID. | 
+| OpenCTI.Observable.id | String | Updated observable ID. | 
 
 
 #### Command Example
-```!opencti-indicator-field-update field=score id=81d63245-9ba3-495d-8e78-03b037d71e01 value=100```
+```!opencti-observable-field-update field=score id=81d63245-9ba3-495d-8e78-03b037d71e01 value=100```
 
 #### Context Example
 ```json
 {
     "OpenCTI": {
-        "Indicator": {
+        "Observable": {
             "id": "81d63245-9ba3-495d-8e78-03b037d71e01"
         }
     }
@@ -226,47 +226,47 @@ Update the indicator field. The fields that can be updated are: score, descripti
 
 #### Human Readable Output
 
->Indicator 81d63245-9ba3-495d-8e78-03b037d71e01 updated successfully.
+>Observable 81d63245-9ba3-495d-8e78-03b037d71e01 updated successfully.
 
-### opencti-indicator-create
+### opencti-observable-create
 ***
-Create new indicator.
+Create new observable.
 
 
 #### Base Command
 
-`opencti-indicator-create`
+`opencti-observable-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The indicator type to create. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPV6, Registry Key, and URL. Possible values are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPv6, Registry Key, URL. | Required | 
+| type | The observable type to create. Out-of-the-box observable types supported in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPV6, Registry Key, and URL. Possible values are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPv6, Registry Key, URL. | Required | 
 | created_by | Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID. | Optional | 
-| marking_id | Indicator marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Optional | 
-| label_id | Indicator label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. | Optional | 
+| marking_id | Observable marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Optional | 
+| label_id | Observable label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. | Optional | 
 | external_references_id | External references URL. Use opencti-external-reference-create to create a new external reference. | Optional | 
-| description | Indicator description. | Optional | 
-| score | Indicator score. Values range is 0 - 100. Default value is 50. | Optional | 
-| value | Indicator value. | Optional | 
+| description | Observable description. | Optional | 
+| score | Observable score. Values range is 0 - 100. Default value is 50. | Optional | 
+| value | Observable value. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Indicator.id | String | New indicator ID. | 
-| OpenCTI.Indicator.value | String | New indicator value. | 
-| OpenCTI.Indicator.type | String | New indicator type. | 
+| OpenCTI.Observable.id | String | New observable ID. | 
+| OpenCTI.Observable.value | String | New observable value. | 
+| OpenCTI.Observable.type | String | New observable type. | 
 
 
 #### Command Example
-```!opencti-indicator-create type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 description=test value="TestDomainDocs.com" score=70 label_id=fa57f98e-f2f5-45fd-97f2-bf2c53119044 marking_id=9128e411-c759-4af0-aeb0-b65f12082648```
+```!opencti-observable-create type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 description=test value="TestDomainDocs.com" score=70 label_id=fa57f98e-f2f5-45fd-97f2-bf2c53119044 marking_id=9128e411-c759-4af0-aeb0-b65f12082648```
 
 #### Context Example
 ```json
 {
     "OpenCTI": {
-        "Indicator": {
+        "Observable": {
             "id": "7ed5946a-81a2-4490-8be8-06d3633a41fb",
             "type": "Domain",
             "value": "TestDomainDocs.com"
@@ -277,22 +277,22 @@ Create new indicator.
 
 #### Human Readable Output
 
->Indicator created successfully. New Indicator id: 7ed5946a-81a2-4490-8be8-06d3633a41fb
+>Observable created successfully. New Observable id: 7ed5946a-81a2-4490-8be8-06d3633a41fb
 
-### opencti-indicator-field-add
+### opencti-observable-field-add
 ***
-Add a field to the indicator. Fields that can be added are marking definition and label.
+Add a field to the observable. Fields that can be added are marking definition and label.
 
 
 #### Base Command
 
-`opencti-indicator-field-add`
+`opencti-observable-field-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Indicator ID. | Required | 
-| field | Indicator field to add. Possible values are: marking, label. | Required | 
+| id | Observable ID. | Required | 
+| field | Observable field to add. Possible values are: marking, label. | Required | 
 | value | Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
 
 
@@ -301,26 +301,26 @@ Add a field to the indicator. Fields that can be added are marking definition an
 There is no context output for this command.
 
 #### Command Example
-```!opencti-indicator-field-add id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=label value=07cfae2d-6cc9-42c5-9fd0-32eff8142404```
+```!opencti-observable-field-add id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=label value=07cfae2d-6cc9-42c5-9fd0-32eff8142404```
 
 #### Human Readable Output
 
 >Added label successfully.
 
-### opencti-indicator-field-remove
+### opencti-observable-field-remove
 ***
-Remove indicator field value. Fields which values can be removed are marking definition and label.
+Remove observable field value. Fields which values can be removed are marking definition and label.
 
 
 #### Base Command
 
-`opencti-indicator-field-remove`
+`opencti-observable-field-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Indicator ID. | Required | 
-| field | Indicator field to update. Possible values are: marking, label. | Required | 
+| id | Observable ID. | Required | 
+| field | Observable field to update. Possible values are: marking, label. | Required | 
 | value | Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
 
 
@@ -329,11 +329,11 @@ Remove indicator field value. Fields which values can be removed are marking def
 There is no context output for this command.
 
 #### Command Example
-```!opencti-indicator-field-remove id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=marking value=c9819001-c80c-45e1-8edb-e543e350f195```
+```!opencti-observable-field-remove id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=marking value=c9819001-c80c-45e1-8edb-e543e350f195```
 
 #### Human Readable Output
 
->marking: c9819001-c80c-45e1-8edb-e543e350f195 was removed successfully from indicator: 33bd535b-fa1c-41e2-a6f9-80d82dd29a9b.
+>marking: c9819001-c80c-45e1-8edb-e543e350f195 was removed successfully from observable: 33bd535b-fa1c-41e2-a6f9-80d82dd29a9b.
 
 ### opencti-organization-list
 ***
