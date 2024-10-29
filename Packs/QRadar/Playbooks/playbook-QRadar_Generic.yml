@@ -1241,6 +1241,7 @@ tasks:
       id: 57166b79-05fa-43af-8d85-fa6e622371ca
       version: -1
       name: Is Indicator exclusion allowed in XSOAR?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -1285,6 +1286,7 @@ tasks:
       version: -1
       name: Any indicators to exclude?
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
