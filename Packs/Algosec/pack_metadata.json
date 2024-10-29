@@ -1,6 +1,6 @@
 {
     "name": "AlgoSec",
-    "description": "Algosec BusinessFlow(ABF), Firewall Analyzer (AFA) and FireFlow(AFF).",
+    "description": "Algosec AppViz, Firewall Analyzer (AFA) and FireFlow(AFF).",
     "support": "xsoar",
     "currentVersion": "1.0.13",
     "author": "Cortex XSOAR",

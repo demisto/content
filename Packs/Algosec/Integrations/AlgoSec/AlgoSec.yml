@@ -5,7 +5,7 @@ name: AlgoSec
 display: AlgoSec
 system: true
 category: Network Security
-description: Algosec BusinessFlow(ABF), Firewall Analyzer (AFA) and FireFlow(AFF).
+description: Algosec AppViz, Firewall Analyzer (AFA) and FireFlow(AFF).
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -87,7 +87,7 @@ script:
       - CONTAINING
       - EXACT
       description: The search method for the address
-    description: Find applications containing network objects related to IP address using BusinessFlow
+    description: Find applications containing network objects related to IP address using AppViz
   - name: algosec-get-network-object
     arguments:
     - name: address
