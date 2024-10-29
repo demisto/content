@@ -1,9 +1,20 @@
-id: QRadar Generic
-version: -1
+id: 1238bc50-a308-4c88-8073-9bc8d5ddeb9a
+version: 3
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: IBM QRadar
+    itemVersion: 2.5.5
+    fromServerVersion: 6.0.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: QRadar Generic
-description: The QRadar Generic playbook is executed for the QRadar Generic alert type. It performs all the common parts of the investigation, including notifying the SOC, enriching data for indicators and users, calculating severity, assigning alerts, and notifying the SIEM admin about false positives.
+description: The QRadar Generic playbook is executed for the QRadar Generic incident
+  type. It performs all the common parts of the investigation, including notifying
+  the SOC, enriching data for indicators and users, calculating severity, assigning
+  incidents, and notifying the SIEM admin about false positives.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,11 +27,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,7 +44,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -67,6 +77,7 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -79,7 +90,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -90,7 +100,7 @@ tasks:
       id: c74d18c6-9939-4701-828f-149cddba2b8d
       version: -1
       name: Start Remediation SLA Timer
-      description: Assigns a random analyst to this alert.
+      description: Assigns a random analyst to this incident.
       type: title
       iscommand: false
       brand: ""
@@ -98,6 +108,7 @@ tasks:
       '#none#':
       - "28"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -112,7 +123,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -126,11 +136,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -143,7 +153,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -153,8 +162,8 @@ tasks:
     task:
       id: e3efbacf-f8e3-4291-8ab7-459037ce9a64
       version: -1
-      name: Manually review the alert
-      description: Manually review and investigate this alert.
+      name: Manually review the incident
+      description: Manually review and investigate this incident.
       type: collection
       iscommand: false
       brand: ""
@@ -162,6 +171,7 @@ tasks:
       '#none#':
       - "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -173,13 +183,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -209,7 +219,6 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -220,7 +229,7 @@ tasks:
       id: 4b1a5788-3cef-4857-8023-dcd01dfa8793
       version: -1
       name: Close investigation
-      description: Closes the current alert.
+      description: Closes the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -235,6 +244,7 @@ tasks:
           ${Investigation Notes.Answers.0}
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -247,7 +257,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -257,8 +266,9 @@ tasks:
     task:
       id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
       version: -1
-      name: Extract indicators from alert
-      description: Extracts all indicators from the alert and enriches the indicators by using the reputation command defined for each indicator type.
+      name: Extract indicators from incident
+      description: Extracts all indicators from the incident and enriches the indicators
+        by using the reputation command defined for each indicator type.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -269,9 +279,10 @@ tasks:
     scriptarguments:
       text:
         complex:
-          root: alert
+          root: incident
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -284,7 +295,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
@@ -298,8 +308,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -312,7 +322,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -355,7 +364,7 @@ tasks:
               prefix:
                 value:
                   simple: |
-                    Link to the alert
+                    Link to the incident
               suffix: {}
       subject:
         complex:
@@ -366,11 +375,12 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: alert.id
+                  simple: incident.id
                 iscontext: true
       to:
         simple: ${inputs.SocEmailAddress}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -383,7 +393,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -403,6 +412,7 @@ tasks:
       True Positive:
       - "45"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -414,13 +424,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -432,7 +442,6 @@ tasks:
       - "No"
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -456,9 +465,10 @@ tasks:
     scriptarguments:
       incidentId:
         complex:
-          root: alert
+          root: incident
           accessor: id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -471,7 +481,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -502,6 +511,7 @@ tasks:
           right:
             value:
               simple: "true"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -514,7 +524,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -542,6 +551,7 @@ tasks:
             value:
               simple: inputs.SocEmailAddress
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -554,7 +564,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -582,6 +591,7 @@ tasks:
             value:
               simple: inputs.SiemAdminEmailAddress
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -594,7 +604,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
@@ -604,8 +613,8 @@ tasks:
     task:
       id: 0c7b3033-c209-4a87-8ef5-63fbd907f68d
       version: -1
-      name: Assign an analyst to the alert
-      description: Assigns a random analyst to this alert.
+      name: Assign an analyst to the incident
+      description: Assigns a random analyst to this incident.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -620,6 +629,7 @@ tasks:
         complex:
           root: inputs.OnCall
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -632,7 +642,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -646,11 +655,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "39"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -663,7 +672,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "22":
@@ -674,14 +682,16 @@ tasks:
       id: 4dfa75fe-917f-4eed-894a-3f2dfda362fc
       version: -1
       name: Provide data for rule adjustment
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
       type: collection
       iscommand: false
       brand: ""
-      description: 'Provide data to adjust the rule in order to avoid similar false positives in the future.'
     nexttasks:
       '#none#':
       - "18"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -693,13 +703,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -719,7 +729,7 @@ tasks:
         options: []
         optionsarg:
         - {}
-        - simple: ${alert.listofrulesoffense}
+        - simple: ${incident.listofrulesoffense}
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -779,7 +789,6 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "25":
@@ -789,9 +798,11 @@ tasks:
     task:
       id: 8873fc30-eabd-4137-8f78-8ba80684a2a0
       version: -1
-      name: Determine alert severity according to offense info
-      description: Sets the alert severity according to the FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense field and the scale for the severity translation.
-      script: Builtin|||setAlert
+      name: Determine incident severity according to offense info
+      description: Sets the incident severity according to the FieldToSetSeverityFrom
+        and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense
+        field and the scale for the severity translation.
+      script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
@@ -813,6 +824,7 @@ tasks:
                   simple: inputs.ScaleToSetSeverityFrom
                 iscontext: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -825,7 +837,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "28":
@@ -839,11 +850,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -856,7 +867,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "29":
@@ -867,8 +877,8 @@ tasks:
       id: d8d79caa-94a4-4f02-8bda-d306a1357b34
       version: -1
       name: Set as false positive
-      description: Sets the alert status as false positive.
-      script: Builtin|||setAlert
+      description: Sets the incident status as false positive.
+      script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
@@ -879,6 +889,7 @@ tasks:
       closeReason:
         simple: False Positive
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -891,7 +902,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "30":
@@ -905,12 +915,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
       - "52"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -923,7 +933,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "31":
@@ -937,12 +946,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -955,7 +964,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "32":
@@ -970,11 +978,11 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -987,7 +995,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
@@ -1018,6 +1025,7 @@ tasks:
           right:
             value:
               simple: "false"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1032,7 +1040,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "34":
     id: "34"
     taskid: 359cb86e-fb0e-4a4c-8291-edef6d443ee2
@@ -1064,12 +1071,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: alert.starttime
+              simple: incident.starttime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: alert.idoffense
+              simple: incident.idoffense
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1094,7 +1101,13 @@ tasks:
       id: bb27c52d-e30b-491a-80a8-c20fb7f914dd
       version: -1
       name: QRadar - Get Offense Logs
-      description: "Works for QRadar integrations versions 2 and 3, v1 is deprecated.\n\nNote: For QRadar v2 and v3 you can use the integration to fetch the events according to the limit defined in the instance settings. Using this playbook you can define you can define an additional search to query a larger number of logs.\n\nDefault playbook inputs use the QRadar alert fields such as idoffense, starttime. These fields can be replaced, but need to point to relevant offense ID and starttime fields. "
+      description: "Works for QRadar integrations versions 2 and 3, v1 is deprecated.\n\nNote:
+        For QRadar v2 and v3 you can use the integration to fetch the events according
+        to the limit defined in the instance settings. Using this playbook you can
+        define you can define an additional search to query a larger number of logs.\n\nDefault
+        playbook inputs use the QRadar incident fields such as idoffense, starttime.
+        These fields can be replaced, but need to point to relevant offense ID and
+        starttime fields. "
       playbookName: QRadar - Get Offense Logs
       type: playbook
       iscommand: false
@@ -1109,15 +1122,16 @@ tasks:
         simple: ${inputs.GetOnlyCREEvents}
       ID:
         complex:
-          root: alert
+          root: incident
           accessor: idoffense
       MaxLogsCount:
         simple: ${inputs.MaxLogsCount}
       StartTime:
         complex:
-          root: alert
+          root: incident
           accessor: starttime
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1137,7 +1151,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "37":
     id: "37"
     taskid: 379235d9-c4b9-46c1-81f8-ceac15a2b23a
@@ -1175,6 +1188,7 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1189,7 +1203,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "38":
     id: "38"
     taskid: 78b79c26-5204-4982-8530-8cc48542474d
@@ -1212,6 +1225,7 @@ tasks:
       value:
         simple: ${Provide closing reason and tag indicators.Answers.0}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1226,7 +1240,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "39":
     id: "39"
     taskid: 57166b79-05fa-43af-8d85-fa6e622371ca
@@ -1255,6 +1268,7 @@ tasks:
           right:
             value:
               simple: "false"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1269,7 +1283,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "41":
     id: "41"
     taskid: 511e4e6a-ea30-4ca6-8249-d1a11fc267b3
@@ -1302,6 +1315,7 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1316,7 +1330,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "42":
     id: "42"
     taskid: f6ca219f-b710-403c-8d4b-c9dbc86b607c
@@ -1328,11 +1341,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1347,7 +1360,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "43":
     id: "43"
     taskid: f5ef5d8f-37c9-4fe1-8021-f1f49e9cad32
@@ -1368,6 +1380,7 @@ tasks:
       indicatorsValues:
         simple: ${Indicators to exclude in XSOAR.Answers.0}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1382,7 +1395,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "44":
     id: "44"
     taskid: 1d1b35bd-3d25-4ffa-839e-b2b4f647bd2c
@@ -1391,7 +1403,8 @@ tasks:
       id: 1d1b35bd-3d25-4ffa-839e-b2b4f647bd2c
       version: -1
       name: Select indicators to exclude
-      description: Provide data to adjust the rule in order to avoid similar false positives in the future.
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
       type: collection
       iscommand: false
       brand: ""
@@ -1399,6 +1412,7 @@ tasks:
       '#none#':
       - "41"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1410,13 +1424,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1482,7 +1496,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "45":
     id: "45"
     taskid: 19cfa6ac-e92f-4950-8a66-e38083737378
@@ -1491,7 +1504,8 @@ tasks:
       id: 19cfa6ac-e92f-4950-8a66-e38083737378
       version: -1
       name: Provide closing reason and tag indicators
-      description: Provide data to adjust the rule in order to avoid similar false positives in the future.
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
       type: collection
       iscommand: false
       brand: ""
@@ -1499,6 +1513,7 @@ tasks:
       '#none#':
       - "50"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1510,13 +1525,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1596,7 +1611,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "50":
     id: "50"
     taskid: eacc95db-5005-477b-88d5-ecc5947beccb
@@ -1606,7 +1620,7 @@ tasks:
       version: -1
       name: Set closing reason
       description: commands.local.cmd.set.incident
-      script: Builtin|||setAlert
+      script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
@@ -1617,6 +1631,7 @@ tasks:
       closeReason:
         simple: ${Provide closing reason and tag indicators.Answers.1}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1631,7 +1646,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "52":
     id: "52"
     taskid: bb2db2a5-aa9b-403c-828b-b89904706e34
@@ -1668,7 +1682,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: alert.linktooffense
+                  simple: incident.linktooffense
                 iscontext: true
           - operator: concat
             args:
@@ -1705,11 +1719,12 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: alert.idoffense
+                  simple: incident.idoffense
                 iscontext: true
       to:
         simple: ${inputs.SiemAdminEmailAddress}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1732,7 +1747,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: alert.idoffense
+                  simple: incident.idoffense
                 iscontext: true
       body:
         simple: |
@@ -1745,8 +1760,8 @@ tasks:
       methods:
       - email
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1798,20 +1813,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "53":
     id: "53"
-    taskid: a86eba6f-90aa-4a61-8aed-48bb00da3598
+    taskid: 2bbee7bc-a5b9-4c8a-81ff-6a165827f860
     type: playbook
     task:
-      id: a86eba6f-90aa-4a61-8aed-48bb00da3598
+      id: 2bbee7bc-a5b9-4c8a-81ff-6a165827f860
       version: -1
       name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
       playbookName: Entity Enrichment - Generic v3
       type: playbook
       iscommand: false
       brand: ""
-      description: 'Enrich entities using one or more integrations.'
     nexttasks:
       '#none#':
       - "16"
@@ -1870,36 +1884,28 @@ tasks:
           accessor: Data
           transformers:
           - operator: uniq
-      Username:
-        complex:
-          root: QRadar
-          accessor: Username
-          transformers:
-          - operator: uniq
-      InternalRange:
-        complex:
-          root: lists
-          accessor: PrivateIPs
-          transformers:
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
-              unpack_matches: {}
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
       URLSSLVerification:
         simple: "False"
       UseReputationCommand:
         simple: "False"
+      Username:
+        complex:
+          root: QRadar.Username
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: QRadar.Username
+                iscontext: true
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Account.Username
+                iscontext: true
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1944,101 +1950,127 @@ inputs:
     simple: "true"
   required: false
   description: Determines whether to enrich all indicators in the incident.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: OnCall
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only the user that is currently on shift. Requires Cortex XSIAM v5.5 or later.
-  playbookInputQuery:
+  description: Set to true to assign only the user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
+  playbookInputQuery: null
 - key: SocEmailAddress
   value: {}
   required: false
   description: The SOC team's email address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SocMailSubject
   value:
     simple: 'XSOAR Summary report, ID - '
   required: false
   description: The subject of the email to send to the SOC.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SiemAdminEmailAddress
   value: {}
   required: false
   description: The SIEM admin's email address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UseCalculateSeverity
   value:
     simple: "true"
   required: false
-  description: Determines whether to use the Calculate Severity playbook to calculate the incident severity. If the playbook isn't used, the severity is determined by the QRadar magnitude value.
-  playbookInputQuery:
+  description: Determines whether to use the Calculate Severity playbook to calculate
+    the incident severity. If the playbook isn't used, the severity is determined
+    by the QRadar magnitude value.
+  playbookInputQuery: null
 - key: SiemAdminMailSubject
   value:
     simple: 'Adjustment/Exclusion for offense '
   required: false
   description: The subject of the email to send to the SIEM admin.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UseCustomSeveritySettings
   value:
     simple: "false"
   required: false
-  description: Determines whether to use the default mapping in the QRadar generic mapper to set the XSOAR incident severity, or set the severity using the FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. Any value other than false is considered as true and causes the playbook inputs to be used.
-  playbookInputQuery:
+  description: Determines whether to use the default mapping in the QRadar generic
+    mapper to set the XSOAR incident severity, or set the severity using the FieldToSetSeverityFrom
+    and ScaleToSetSeverityFrom playbook inputs. Any value other than false is considered
+    as true and causes the playbook inputs to be used.
+  playbookInputQuery: null
 - key: FieldToSetSeverityFrom
   value:
     complex:
-      root: alert
+      root: incident
       accessor: magnitudeoffense
   required: false
   description: |
     Specifies the field to use for calculating the incident severity, for example the severity field.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ScaleToSetSeverityFrom
   value:
     simple: 1,1,1,2,2,2,2,3,3,3
   required: false
-  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident severity field value range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n3 - High\n4 - Critical\n\nThe scale translates the value of FieldToSetSeverityFrom to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3 \nThis means that values 1-3 of FieldToSetSeverityFrom are translated to low severity (positions 1-3 in the scale), values 4-7 are translated to medium severity (positions 4-7 in the scale) and values 8-10 are translated to high severity (positions 8-10 in the scale)."
-  playbookInputQuery:
+  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident
+    severity field value range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n3
+    - High\n4 - Critical\n\nThe scale translates the value of FieldToSetSeverityFrom
+    to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3 \nThis
+    means that values 1-3 of FieldToSetSeverityFrom are translated to low severity
+    (positions 1-3 in the scale), values 4-7 are translated to medium severity (positions
+    4-7 in the scale) and values 8-10 are translated to high severity (positions 8-10
+    in the scale)."
+  playbookInputQuery: null
 - key: RunAdditionalSeach
   value:
     simple: "true"
   required: false
-  description: By default the incident fetches the events defined in the integration instance settings (default is 20 events). To fetch additional events, change this setting to true.
-  playbookInputQuery:
+  description: By default the incident fetches the events defined in the integration
+    instance settings (default is 20 events). To fetch additional events, change this
+    setting to true.
+  playbookInputQuery: null
 - key: MaxLogsCount
   value:
     simple: "50"
   required: false
-  description: 'Maximum number of log entires to query from QRadar. Used for the QRadar - Get Offense Logs subplaybook.'
-  playbookInputQuery:
+  description: Maximum number of log entires to query from QRadar. Used for the QRadar
+    - Get Offense Logs subplaybook.
+  playbookInputQuery: null
 - key: GetOnlyCREEvents
   value:
     simple: All
   required: false
   description: |
     If this value is "OnlyCRE", get only events made by CRE. Values can be "OnlyCRE", "OnlyNotCRE", "All". Used for the QRadar - Get Offense Logs subplaybook.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Fields
   value:
-    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
+    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+      CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+      destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+      sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+      destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+      eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+      postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort,
+      UTF8(payload), starttime, devicetime
   required: false
   description: |
     A comma-separated list of extra fields to get from each event. You can use different fields or rename the existing fields. Used for the QRadar - Get Offense Logs subplaybook.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: IndicatorTag
   value:
     simple: block
   required: false
-  description: The tag to provide for true positive indicators, for example to use the indicators in an EDL (External Dynamic List).
-  playbookInputQuery:
+  description: The tag to provide for true positive indicators, for example to use
+    the indicators in an EDL (External Dynamic List).
+  playbookInputQuery: null
 - key: ExcludeIndicatorsInXSOAR
   value:
     simple: "false"
   required: false
-  description: If this value is not false, add indicators to the XSOAR exclude list. The excluded indicators won't be created in XSOAR anymore.
-  playbookInputQuery:
+  description: If this value is not false, add indicators to the XSOAR exclude list.
+    The excluded indicators won't be created in XSOAR anymore.
+  playbookInputQuery: null
 outputs: []
+sourceplaybookid: QRadar Generic
 tests:
 - No test
 fromversion: 6.0.0
