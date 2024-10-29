@@ -14,8 +14,8 @@ filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2
 | alter // construct timestamp basted on log timestamp and current year, assuming timestamp is given in UTC 
     tmp_current_year = format_timestamp("%Y", _insert_time), 
     tmp_rfc_3164_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0) // RFC 3164 compatible timestamp, e.g., Oct 28 14:30:55
-| alter tmp_current_year_timestamp = parse_timestamp("%Y %b %e %H:%M:%S", concat(tmp_current_year, " ", tmp_rfc_3164_timestamp)) 
+| alter tmp_current_year_timestamp = parse_timestamp("%Y %b %e %H:%M:%S", concat(tmp_current_year, " ", tmp_rfc_3164_timestamp), "UTC") 
 | alter _time = if( // validate the evaluated timestamp with current year is not in the future due to year transition during ingestion. If so, fallback to previous year. 
     timestamp_diff(tmp_current_year_timestamp, current_time(), "MILLISECOND") <= 0, tmp_current_year_timestamp, // current (ingestion time) year 
-    parse_timestamp("%Y %b %e %H:%M:%S", concat(to_string(subtract(to_integer(tmp_current_year), 1)), " ", tmp_rfc_3164_timestamp))) // previous year 
+    parse_timestamp("%Y %b %e %H:%M:%S", concat(to_string(subtract(to_integer(tmp_current_year), 1)), " ", tmp_rfc_3164_timestamp), "UTC")) // previous year 
 | fields - tmp*;
