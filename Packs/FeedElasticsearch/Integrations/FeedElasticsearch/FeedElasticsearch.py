@@ -508,7 +508,7 @@ def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_typ
     """Convert a single hit to an indicator"""
     ioc_dict:dict = hit
     if ELASTIC_SEARCH_CLIENT not in [ELASTICSEARCH_V8, OPEN_SEARCH] and isinstance(hit, dict):
-        # If the client version is elastic v7, we get a different hit struct during the fetch indicators (due to BC code changes).
+        # For client version elastic v7, we get a different hit structure during the fetch indicators (due to BC code changes).
         ioc_dict = hit.get("_source", {})
     else:
         ioc_dict = hit.to_dict()
