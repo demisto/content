@@ -9,13 +9,19 @@ This integration was integrated and tested with version 1.29 of AWS-EKS.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | AWS Default Region | AWS Default Region | True |
+    | AWS Default Region |  | True |
     | Access Key |  | True |
     | Secret Key |  | True |
+    | Role Arn |  | False |
+    | Role Session Name |  | False |
+    | Role Session Duration |  | False |
     | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
-    | Use system proxy settings | Use system proxy settings | False |
+    | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature. | False |
+    | Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. | False |
+    | Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts to access". | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -40,6 +46,9 @@ Lists the Amazon EKS clusters in your Amazon Web Services account in the specifi
 | limit | The maximum number of clusters to return. Default is 50. | Optional | 
 | next_token | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. | Optional | 
 | region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
@@ -94,6 +103,9 @@ Updates an Amazon EKS cluster configuration. Only one type of update is allowed.
 | logging | A JSON representation of the logging configuration for the cluster. An example: "{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}". | Optional | 
 | authentication_mode | Whether to update the authentication mode to 'API_AND_CONFIG_MAP' or not. Possible values are: true, false. | Optional | 
 | region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
@@ -156,6 +168,9 @@ Describes an Amazon EKS cluster.
 | --- | --- | --- |
 | cluster_name | The name of the cluster to describe. | Required | 
 | region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
@@ -298,6 +313,9 @@ Creates an access entry.
 | username | Username for Kubernetes authentication. | Optional | 
 | type | The type of access entry to create. Possible values are: Standard, FARGATE_LINUX, EC2_LINUX, EC2_WINDOWS. Default is Standard. | Optional | 
 | region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
@@ -368,6 +386,9 @@ Associates an access policy and its scope to an access entry.
 | type | The scope type of an access policy. Possible values are: cluster, namespace. | Required | 
 | namespaces | A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type. | Optional | 
 | region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
@@ -432,6 +453,9 @@ Updates an access entry.
 | client_request_token | Unique identifier for idempotency. | Optional | 
 | username | Username for Kubernetes authentication. | Optional | 
 | region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
