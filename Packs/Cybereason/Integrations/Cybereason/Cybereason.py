@@ -1512,11 +1512,9 @@ def malop_to_incident(malop: str) -> dict:
 
     if malop.get("isEdr", '') or malop.get("edr", '') or malop.get('simpleValues', ''):
         link = SERVER + '/#/malop/' + guid_string
-    else:
-        link = SERVER + '/#/detection-malop/' + guid_string
-    if malop.get("isEdr", '') or malop.get("edr", '') or malop.get('simpleValues', ''):
         isEdr = True
     else:
+        link = SERVER + '/#/detection-malop/' + guid_string
         isEdr = False
 
     if malop.get('simpleValues'):
