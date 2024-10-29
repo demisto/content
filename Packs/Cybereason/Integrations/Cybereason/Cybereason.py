@@ -665,15 +665,17 @@ def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = str(args.get('machineName'))
     date_time = str(args.get('dateTime'))
-
+    
+    milliseconds = 0
     filter_input = []
+    
     if date_time != 'None':
         date_time_parser = dateparser.parse(date_time)
         if not date_time_parser:
-            date_time_parser = dateparser.parse('Fri, 12 Dec 2010')
             demisto.info("Returning all the processes since the entered date is not valid.")
-        date_time_parser = date_time_parser.timestamp()
-        milliseconds = int(date_time_parser * 1000)
+        if date_time_parser:
+            date_time_parser = date_time_parser.timestamp()
+            milliseconds = int(date_time_parser * 1000)
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult": True}]
 
     if isinstance(malop_guids, str):
