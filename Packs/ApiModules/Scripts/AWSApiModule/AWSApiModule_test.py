@@ -526,7 +526,7 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
     # case 2
     mocker.patch.object(demisto, 'params', return_value={'access_role_name': None})
     mocker.patch.object(demisto, 'args', return_value={'roleArn': None})
-    
+
     result_func = run_on_all_accounts(mock_command_func)
     result: CommandResults = result_func({})
 
