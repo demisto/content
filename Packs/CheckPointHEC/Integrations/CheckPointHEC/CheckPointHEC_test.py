@@ -4,16 +4,14 @@ import pytest
 
 import demistomock as demisto
 from CheckPointHEC import (
-    Client, fetch_incidents, checkpointhec_get_entity, checkpointhec_get_events, checkpointhec_get_scan_info,
-    checkpointhec_search_emails, checkpointhec_send_action, checkpointhec_get_action_result,
+    Client, fetch_incidents, fetch_restore_requests, checkpointhec_get_entity, checkpointhec_get_events,
+    checkpointhec_get_scan_info, checkpointhec_search_emails, checkpointhec_send_action, checkpointhec_get_action_result,
     checkpointhec_send_notification, checkpointhec_report_mis_classification, checkpointhec_get_ap_exceptions,
     checkpointhec_create_ap_exception, checkpointhec_update_ap_exception, checkpointhec_delete_ap_exception,
     checkpointhec_get_cp2_exception, checkpointhec_create_cp2_exception, checkpointhec_update_cp2_exception,
     checkpointhec_delete_cp2_exception, checkpointhec_get_cp2_exceptions, checkpointhec_delete_cp2_exceptions,
-    checkpointhec_get_anomaly_exceptions, checkpointhec_create_anomaly_exception,
-    checkpointhec_delete_anomaly_exceptions,
-    checkpointhec_get_ctp_lists, checkpointhec_get_ctp_list, checkpointhec_get_ctp_list_items,
-    checkpointhec_get_ctp_list_item,
+    checkpointhec_get_anomaly_exceptions, checkpointhec_create_anomaly_exception, checkpointhec_delete_anomaly_exceptions,
+    checkpointhec_get_ctp_lists, checkpointhec_get_ctp_list, checkpointhec_get_ctp_list_items, checkpointhec_get_ctp_list_item,
     checkpointhec_create_ctp_list_item, checkpointhec_update_ctp_list_item, checkpointhec_delete_ctp_list_item,
     checkpointhec_delete_ctp_list_items, checkpointhec_delete_ctp_lists, checkpointhec_create_avurl_exception,
     checkpointhec_update_avurl_exception, checkpointhec_delete_avurl_exception, checkpointhec_delete_avurl_exceptions,
@@ -268,13 +266,12 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_fetch': '2023-06-30T00:00:00'})
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
 
-    mocker.patch.object(demisto, 'params', return_value={'first_fetch': '1 day', 'saas_apps': 'Microsoft Exchange'})
-    fetch_incidents(client)
+    fetch_incidents(client, {'first_fetch': '1 day', 'saas_apps': 'Microsoft Exchange'})
     call_api.assert_called_once()
     demisto_incidents.assert_called_once()
 
 
-def test_fetch_incidents_restore_requests(mocker):
+def test_fetch_restore_requests(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
         client_id='****',
@@ -290,12 +287,10 @@ def test_fetch_incidents_restore_requests(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={'last_fetch': '2023-06-30T00:00:00'})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_rr_fetch': '2023-06-30T00:00:00'})
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
 
-    mocker.patch.object(demisto, 'args', return_value={'saas_apps': 'Microsoft Exchange', 'collect_restore_requests': 'yes'})
-    mocker.patch.object(demisto, 'params', return_value={'first_fetch': '1 day'})
-    fetch_incidents(client)
+    fetch_restore_requests(client, {'first_fetch': '1 day'})
     call_api.assert_called()
     demisto_incidents.assert_called_once()
 
@@ -316,8 +311,7 @@ def test_checkpointhec_get_entity_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'entity': '0' * 32})
-    result = checkpointhec_get_entity(client)
+    result = checkpointhec_get_entity(client, {'entity': '0' * 32})
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData'][0]['entityPayload']
 
@@ -338,8 +332,7 @@ def test_checkpointhec_get_entity_fail(mocker):
     )
 
     entity = '0' * 31 + '1'
-    mocker.patch.object(demisto, 'args', return_value={'entity': entity})
-    result = checkpointhec_get_entity(client)
+    result = checkpointhec_get_entity(client, {'entity': entity})
     call_api.assert_called_once()
     assert result.readable_output == f'Entity with id {entity} not found'
 
@@ -360,14 +353,13 @@ def test_checkpointhec_get_events_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
+    result = checkpointhec_get_events(client, {
         'start_date': '2023-11-01 00:00:00',
         'saas_apps': ['Microsoft Exchange'],
         'states': 'New',
         'severities': 'critical',
         'threat_types': 'DLP'
     })
-    result = checkpointhec_get_events(client)
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
@@ -387,8 +379,7 @@ def test_checkpointhec_get_events_fail(mocker):
         return_value={'responseData': []}
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'start_date': '2023-11-01 00:00:00'})
-    result = checkpointhec_get_events(client)
+    result = checkpointhec_get_events(client, {'start_date': '2023-11-01 00:00:00'})
     call_api.assert_called_once()
     assert result.readable_output == 'Events not found with the given criteria'
 
@@ -409,8 +400,7 @@ def test_checkpointhec_get_scan_info_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'entity': '0' * 32})
-    result = checkpointhec_get_scan_info(client)
+    result = checkpointhec_get_scan_info(client, {'entity': '0' * 32})
     call_api.assert_called_once()
     assert result.outputs == {'av': json.dumps(mock_response['responseData'][0]['entitySecurityResult']['av'])}
 
@@ -431,8 +421,7 @@ def test_checkpointhec_get_scan_info_fail(mocker):
     )
 
     entity = '0' * 31 + '1'
-    mocker.patch.object(demisto, 'args', return_value={'entity': entity})
-    result = checkpointhec_get_scan_info(client)
+    result = checkpointhec_get_scan_info(client, {'entity': entity})
     call_api.assert_called_once()
     assert result.readable_output == f'Entity with id {entity} not found'
 
@@ -460,16 +449,11 @@ def test_checkpointhec_search_emails_success(mocker):
         email['entityId'] = entity['entityInfo']['entityId']
         emails.append(email)
 
-    args_mock = mocker.patch.object(demisto, 'args')
-    args_mock.side_effect = [
-        {'date_last': '1 day'},
-        {'date_from': '2023-11-01 00:00:00', 'date_to': '2023-11-02 00:00:00'}
-    ]
-    result = checkpointhec_search_emails(client)
+    result = checkpointhec_search_emails(client, {'date_last': '1 day'}, {})
     call_api.assert_called()
     assert result.outputs == emails
 
-    checkpointhec_search_emails(client)
+    checkpointhec_search_emails(client, {'date_from': '2023-11-01 00:00:00', 'date_to': '2023-11-02 00:00:00'}, {})
     call_api.assert_called()
     assert result.outputs == emails
 
@@ -488,58 +472,53 @@ def test_checkpointhec_search_emails_fail(mocker):
         '_call_api'
     )
 
-    args_mock = mocker.patch.object(demisto, 'args')
-    args_mock.side_effect = [{
+    result = checkpointhec_search_emails(client, {
         'date_last': '1 day',
         'date_from': '2023-11-01 00:00:00',
         'date_to': None
-    }, {
-        'date_last': 'uno week'
-    }, {
-    }, {
-        'date_last': '1 day',
-        'subject_contains': 'Any subject, ...',
-        'subject_match': 'This subject'
-    }, {
-        'date_last': '1 day',
-        'sender_contains': 'a@b.c',
-        'sender_match': 'd@e.f'
-    }, {
-        'date_last': '1 day',
-        'recipients_contains': 'a@b.c',
-        'recipients_match': 'd@e.f'
-    }, {
-        'date_last': '1 day',
-        'name_contains': 'My Nam',
-        'name_match': 'My Name'
-    }]
-    result = checkpointhec_search_emails(client)
+    }, {})
     call_api.assert_not_called()
     assert result.readable_output == ("Argument date_last='1 day' cannot be used with date_from='2023-11-01 00:00:00' or "
                                       "date_to=None")
 
-    result = checkpointhec_search_emails(client)
+    result = checkpointhec_search_emails(client, {'date_last': 'uno week'}, {})
     call_api.assert_not_called()
     assert result.readable_output == "Could not establish start date with date_last='uno week'"
 
-    result = checkpointhec_search_emails(client)
+    result = checkpointhec_search_emails(client, {}, {})
     call_api.assert_not_called()
     assert result.readable_output == 'Argument date_last and date_from cannot be both empty'
 
-    result = checkpointhec_search_emails(client)
+    result = checkpointhec_search_emails(client, {
+        'date_last': '1 day',
+        'subject_contains': 'Any subject, ...',
+        'subject_match': 'This subject'
+    }, {})
     call_api.assert_not_called()
     assert result.readable_output == ("Argument subject_contains='Any subject, ...' and subject_match='This subject' cannot be "
                                       "both set")
 
-    result = checkpointhec_search_emails(client)
+    result = checkpointhec_search_emails(client, {
+        'date_last': '1 day',
+        'sender_contains': 'a@b.c',
+        'sender_match': 'd@e.f'
+    }, {})
     call_api.assert_not_called()
     assert result.readable_output == "Argument sender_contains='a@b.c' and sender_match='d@e.f' cannot be both set"
 
-    result = checkpointhec_search_emails(client)
+    result = checkpointhec_search_emails(client, {
+        'date_last': '1 day',
+        'recipients_contains': 'a@b.c',
+        'recipients_match': 'd@e.f'
+    }, {})
     call_api.assert_not_called()
     assert result.readable_output == "Argument recipients_contains='a@b.c' and recipients_match='d@e.f' cannot be both set"
 
-    result = checkpointhec_search_emails(client)
+    result = checkpointhec_search_emails(client, {
+        'date_last': '1 day',
+        'name_contains': 'My Nam',
+        'name_match': 'My Name'
+    }, {})
     call_api.assert_not_called()
     assert result.readable_output == "Argument name_contains='My Nam' and name_match='My Name' cannot be both set"
 
@@ -560,12 +539,11 @@ def test_checkpointhec_send_action(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'entities': '0' * 32,
-        'entity_type': 'office365_emails_email',
+    result = checkpointhec_send_action(client, {
+        'entity': '0' * 32,
+        'saas': 'Microsoft Exchange',
         'action': 'restore'
     })
-    result = checkpointhec_send_action(client)
     call_api.assert_called_once()
     assert result.outputs == {'task': mock_response['responseData'][0]['taskId']}
 
@@ -586,8 +564,7 @@ def test_checkpointhec_get_action_result(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'task': '0' * 16})
-    result = checkpointhec_get_action_result(client)
+    result = checkpointhec_get_action_result(client, {'task': '0' * 16})
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
@@ -608,8 +585,7 @@ def test_send_notification_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'entity': '0' * 32, 'emails': 'a@b.c, d@e.f'})
-    result = checkpointhec_send_notification(client)
+    result = checkpointhec_send_notification(client, {'entity': '0' * 32, 'emails': 'a@b.c, d@e.f'})
     call_api.assert_called_once()
     assert result.outputs == mock_response
 
@@ -630,13 +606,8 @@ def test_send_notification_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'entities': '0' * 32,
-        'classification': 'Clean Email',
-        'confident': 'Not so sure'
-    })
     with pytest.raises(DemistoException) as e:
-        checkpointhec_send_notification(client)
+        checkpointhec_send_notification(client, {'entity': '0' * 32, 'emails': 'a@b.c, d@e.f'})
     assert str(e.value) == 'Error sending notification email'
     call_api.assert_called()
 
@@ -657,12 +628,11 @@ def test_report_mis_classification_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
+    result = checkpointhec_report_mis_classification(client, {
         'entities': '0' * 32,
         'classification': 'Clean Email',
         'confident': 'Not so sure'
     })
-    result = checkpointhec_report_mis_classification(client)
     call_api.assert_called_once()
     assert result.readable_output == 'Mis-classification reported successfully'
 
@@ -683,13 +653,12 @@ def test_report_mis_classification_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'entities': '0' * 32,
-        'classification': 'Clean Email',
-        'confident': 'Not so sure'
-    })
     with pytest.raises(DemistoException) as e:
-        checkpointhec_report_mis_classification(client)
+        checkpointhec_report_mis_classification(client, {
+            'entities': '0' * 32,
+            'classification': 'Clean Email',
+            'confident': 'Not so sure'
+        })
     assert str(e.value) == 'Error reporting mis-classification'
     call_api.assert_called()
 
@@ -710,8 +679,7 @@ def test_get_ap_exceptions_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'whitelist'})
-    result = checkpointhec_get_ap_exceptions(client)
+    result = checkpointhec_get_ap_exceptions(client, {'exc_type': 'whitelist'})
     call_api.assert_called_once()
     assert result.readable_output == 'No Anti-Phishing exceptions found'
 
@@ -732,8 +700,7 @@ def test_get_ap_exceptions_non_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'whitelist'})
-    result = checkpointhec_get_ap_exceptions(client)
+    result = checkpointhec_get_ap_exceptions(client, {'exc_type': 'whitelist'})
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
@@ -754,8 +721,7 @@ def test_create_ap_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'whitelist', 'comment': 'From Unit Tests'})
-    result = checkpointhec_create_ap_exception(client)
+    result = checkpointhec_create_ap_exception(client, {'exc_type': 'whitelist', 'comment': 'From Unit Tests'})
     call_api.assert_called()
     assert result.readable_output == 'Anti-Phishing exception created successfully'
 
@@ -776,9 +742,8 @@ def test_create_ap_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_whitelist', 'comment': 'From Unit Tests'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_create_ap_exception(client)
+        checkpointhec_create_ap_exception(client, {'exc_type': 'not_whitelist', 'comment': 'From Unit Tests'})
     assert str(e.value) == 'Error creating Anti-Phishing exception'
     call_api.assert_called()
 
@@ -799,8 +764,7 @@ def test_update_ap_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'whitelist', 'exc_id': '0000', 'comment': 'New comment'})
-    result = checkpointhec_update_ap_exception(client)
+    result = checkpointhec_update_ap_exception(client, {'exc_type': 'whitelist', 'exc_id': '0000', 'comment': 'New comment'})
     call_api.assert_called()
     assert result.readable_output == 'Anti-Phishing exception updated successfully'
 
@@ -821,9 +785,8 @@ def test_update_ap_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_whitelist', 'exc_id': '0000', 'comment': 'New comment'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_update_ap_exception(client)
+        checkpointhec_update_ap_exception(client, {'exc_type': 'not_whitelist', 'exc_id': '0000', 'comment': 'New comment'})
     assert str(e.value) == 'Error updating Anti-Phishing exception'
     call_api.assert_called()
 
@@ -845,8 +808,7 @@ def test_delete_ap_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'whitelist', 'exc_id': '0000'})
-    result = checkpointhec_delete_ap_exception(client)
+    result = checkpointhec_delete_ap_exception(client, {'exc_type': 'whitelist', 'exc_id': '0000'})
     call_api.assert_called()
     assert result.readable_output == 'Anti-Phishing exception deleted successfully'
 
@@ -867,9 +829,8 @@ def test_delete_ap_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_whitelist', 'exc_id': '0000'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_ap_exception(client)
+        checkpointhec_delete_ap_exception(client, {'exc_type': 'not_whitelist', 'exc_id': '0000'})
     assert str(e.value) == 'Error deleting Anti-Phishing exception'
     call_api.assert_called()
 
@@ -890,8 +851,7 @@ def test_get_cp2_exception_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'hash', 'exc_str': '0' * 32})
-    result = checkpointhec_get_cp2_exception(client)
+    result = checkpointhec_get_cp2_exception(client, {'exc_type': 'hash', 'exc_str': '0' * 32})
     call_api.assert_called_once()
     assert result.readable_output == 'No Anti-Malware exception found'
 
@@ -913,8 +873,7 @@ def test_get_cp2_exception_not_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'hash', 'exc_str': '0' * 32})
-    result = checkpointhec_get_cp2_exception(client)
+    result = checkpointhec_get_cp2_exception(client, {'exc_type': 'hash', 'exc_str': '0' * 32})
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
@@ -936,8 +895,11 @@ def test_create_cp2_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'file_type', 'exc_str': '.pdf', 'comment': 'From Unit Tests'})
-    result = checkpointhec_create_cp2_exception(client)
+    result = checkpointhec_create_cp2_exception(client, {
+        'exc_type': 'file_type',
+        'exc_str': '.pdf',
+        'comment': 'From Unit Tests'
+    })
     call_api.assert_called()
     assert result.readable_output == 'Anti-Malware exception created successfully'
 
@@ -958,13 +920,12 @@ def test_create_cp2_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'exc_type': 'not_file_type',
-        'exc_str': '.pdf',
-        'comment': 'From Unit Tests'
-    })
     with pytest.raises(DemistoException) as e:
-        checkpointhec_create_cp2_exception(client)
+        checkpointhec_create_cp2_exception(client, {
+            'exc_type': 'not_file_type',
+            'exc_str': '.pdf',
+            'comment': 'From Unit Tests'
+        })
     assert str(e.value) == 'Error creating Anti-Malware exception'
     call_api.assert_called()
 
@@ -985,8 +946,7 @@ def test_update_cp2_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'file_type', 'exc_str': '.pdf', 'comment': 'New comment'})
-    result = checkpointhec_update_cp2_exception(client)
+    result = checkpointhec_update_cp2_exception(client, {'exc_type': 'file_type', 'exc_str': '.pdf', 'comment': 'New comment'})
     call_api.assert_called()
     assert result.readable_output == 'Anti-Malware exception updated successfully'
 
@@ -1007,9 +967,8 @@ def test_update_cp2_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_file_type', 'exc_str': '.pdf', 'comment': 'New comment'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_update_cp2_exception(client)
+        checkpointhec_update_cp2_exception(client, {'exc_type': 'not_file_type', 'exc_str': '.pdf', 'comment': 'New comment'})
     assert str(e.value) == 'Error updating Anti-Malware exception'
     call_api.assert_called()
 
@@ -1031,8 +990,7 @@ def test_delete_cp2_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'file_type', 'exc_str': '.pdf'})
-    result = checkpointhec_delete_cp2_exception(client)
+    result = checkpointhec_delete_cp2_exception(client, {'exc_type': 'file_type', 'exc_str': '.pdf'})
     call_api.assert_called()
     assert result.readable_output == 'Anti-Malware exception deleted successfully'
 
@@ -1053,9 +1011,8 @@ def test_delete_cp2_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_file_type', 'exc_str': '.pdf'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_cp2_exception(client)
+        checkpointhec_delete_cp2_exception(client, {'exc_type': 'not_file_type', 'exc_str': '.pdf'})
     assert str(e.value) == 'Error deleting Anti-Malware exception'
     call_api.assert_called()
 
@@ -1076,8 +1033,7 @@ def test_get_cp2_exceptions_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'hash'})
-    result = checkpointhec_get_cp2_exceptions(client)
+    result = checkpointhec_get_cp2_exceptions(client, {'exc_type': 'hash'})
     call_api.assert_called_once()
     assert result.readable_output == 'No Anti-Malware exceptions found'
 
@@ -1098,8 +1054,7 @@ def test_get_cp2_exceptions_not_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'hash'})
-    result = checkpointhec_get_cp2_exceptions(client)
+    result = checkpointhec_get_cp2_exceptions(client, {'exc_type': 'hash'})
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
@@ -1121,8 +1076,7 @@ def test_delete_cp2_exceptions_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'file_type', 'exc_str_list': '.pdf'})
-    result = checkpointhec_delete_cp2_exceptions(client)
+    result = checkpointhec_delete_cp2_exceptions(client, {'exc_type': 'file_type', 'exc_str_list': '.pdf'})
     call_api.assert_called()
     assert result.readable_output == 'Anti-Malware exceptions deleted successfully'
 
@@ -1143,9 +1097,8 @@ def test_delete_cp2_exceptions_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_file_type', 'exc_str_list': '.pdf'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_cp2_exceptions(client)
+        checkpointhec_delete_cp2_exceptions(client, {'exc_type': 'not_file_type', 'exc_str_list': '.pdf'})
     assert str(e.value) == 'Error deleting Anti-Malware exceptions'
     call_api.assert_called()
 
@@ -1209,7 +1162,7 @@ def test_create_anomaly_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
+    result = checkpointhec_create_anomaly_exception(client, {
         'request_json': {
             "whitelist-option:superman_anomaly": "0" * 32,
             "apply-to-past": "Yes",
@@ -1218,7 +1171,6 @@ def test_create_anomaly_exception_success(mocker):
         },
         'added_by': 'a@b.test'
     })
-    result = checkpointhec_create_anomaly_exception(client)
     call_api.assert_called()
     assert result.readable_output == 'Anomaly exception created successfully'
 
@@ -1239,17 +1191,16 @@ def test_create_anomaly_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'request_json': {
-            "whitelist-option:superman_anomaly": "0" * 32,
-            "apply-to-past": "Yes",
-            "anomaly-comment": "Test for XSOAR",
-            "event_id": "0" * 32
-        },
-        'added_by': 'a@b.test'
-    })
     with pytest.raises(DemistoException) as e:
-        checkpointhec_create_anomaly_exception(client)
+        checkpointhec_create_anomaly_exception(client, {
+            'request_json': {
+                "whitelist-option:superman_anomaly": "0" * 32,
+                "apply-to-past": "Yes",
+                "anomaly-comment": "Test for XSOAR",
+                "event_id": "0" * 32
+            },
+            'added_by': 'a@b.test'
+        })
     assert str(e.value) == 'Error creating Anomaly exception'
     call_api.assert_called()
 
@@ -1271,8 +1222,7 @@ def test_delete_anomaly_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'rule_ids': '00000'})
-    result = checkpointhec_delete_anomaly_exceptions(client)
+    result = checkpointhec_delete_anomaly_exceptions(client, {'rule_ids': '00000'})
     call_api.assert_called()
     assert result.readable_output == 'Anomaly exceptions deleted successfully'
 
@@ -1293,9 +1243,8 @@ def test_delete_anomaly_exceptions_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'rule_ids': '00000'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_anomaly_exceptions(client)
+        checkpointhec_delete_anomaly_exceptions(client, {'rule_ids': '00000'})
     assert str(e.value) == 'Error deleting Anomaly exceptions'
     call_api.assert_called()
 
@@ -1358,8 +1307,7 @@ def test_get_ctp_list_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'list_id': '0'})
-    result = checkpointhec_get_ctp_list(client)
+    result = checkpointhec_get_ctp_list(client, {'list_id': '0'})
     call_api.assert_called_once()
     assert result.readable_output == 'No CTP list found'
 
@@ -1380,8 +1328,7 @@ def test_get_ctp_list_not_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'list_id': '0'})
-    result = checkpointhec_get_ctp_list(client)
+    result = checkpointhec_get_ctp_list(client, {'list_id': '0'})
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
@@ -1444,8 +1391,7 @@ def test_get_ctp_list_item_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'item_id': '0000000000000000'})
-    result = checkpointhec_get_ctp_list_item(client)
+    result = checkpointhec_get_ctp_list_item(client, {'item_id': '0000000000000000'})
     call_api.assert_called_once()
     assert result.readable_output == 'No CTP list items found'
 
@@ -1466,8 +1412,7 @@ def test_get_ctp_list_item_not_empty(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'item_id': '0000000000000000'})
-    result = checkpointhec_get_ctp_list_item(client)
+    result = checkpointhec_get_ctp_list_item(client, {'item_id': '0000000000000000'})
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
@@ -1489,12 +1434,11 @@ def test_create_ctp_list_item_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
+    result = checkpointhec_create_ctp_list_item(client, {
         'list_id': '0',
         'list_item_name': 'example.com',
         'created_by': 'a@b.test'
     })
-    result = checkpointhec_create_ctp_list_item(client)
     call_api.assert_called()
     assert result.readable_output == 'CTP list item created successfully'
 
@@ -1515,13 +1459,12 @@ def test_create_ctp_list_item_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'list_id': '-1',
-        'list_item_name': 'example.com',
-        'created_by': 'a@b.test'
-    })
     with pytest.raises(DemistoException) as e:
-        checkpointhec_create_ctp_list_item(client)
+        checkpointhec_create_ctp_list_item(client, {
+            'list_id': '-1',
+            'list_item_name': 'example.com',
+            'created_by': 'a@b.test'
+        })
     assert str(e.value) == 'Error creating CTP list item'
     call_api.assert_called()
 
@@ -1542,13 +1485,12 @@ def test_update_ctp_list_item_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
+    result = checkpointhec_update_ctp_list_item(client, {
         'item_id': '00000000000',
         'list_id': '0',
         'list_item_name': 'new.example.com',
         'created_by': 'a@b.test'
     })
-    result = checkpointhec_update_ctp_list_item(client)
     call_api.assert_called()
     assert result.readable_output == 'CTP list item updated successfully'
 
@@ -1569,14 +1511,13 @@ def test_update_ctp_list_item_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'item_id': '00000000000',
-        'list_id': '-1',
-        'list_item_name': 'example.com',
-        'created_by': 'a@b.test'
-    })
     with pytest.raises(DemistoException) as e:
-        checkpointhec_update_ctp_list_item(client)
+        checkpointhec_update_ctp_list_item(client, {
+            'item_id': '00000000000',
+            'list_id': '-1',
+            'list_item_name': 'example.com',
+            'created_by': 'a@b.test'
+        })
     assert str(e.value) == 'Error updating CTP list item'
     call_api.assert_called()
 
@@ -1598,8 +1539,7 @@ def test_delete_ctp_list_item_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'item_id': '0' * 11})
-    result = checkpointhec_delete_ctp_list_item(client)
+    result = checkpointhec_delete_ctp_list_item(client, {'item_id': '0' * 11})
     call_api.assert_called()
     assert result.readable_output == 'CTP list item deleted successfully'
 
@@ -1621,9 +1561,8 @@ def test_delete_ctp_list_item_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'item_id': '0' * 11})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_ctp_list_item(client)
+        checkpointhec_delete_ctp_list_item(client, {'item_id': '0' * 11})
     assert str(e.value) == 'Error deleting CTP list item'
     call_api.assert_called()
 
@@ -1645,8 +1584,7 @@ def test_delete_ctp_list_items_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'list_item_ids': '0' * 11})
-    result = checkpointhec_delete_ctp_list_items(client)
+    result = checkpointhec_delete_ctp_list_items(client, {'list_item_ids': '0' * 11})
     call_api.assert_called()
     assert result.readable_output == 'CTP list items deleted successfully'
 
@@ -1668,9 +1606,8 @@ def test_delete_ctp_list_items_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'list_item_ids': '0' * 11})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_ctp_list_items(client)
+        checkpointhec_delete_ctp_list_items(client, {'list_item_ids': '0' * 11})
     assert str(e.value) == 'Error deleting CTP list items'
     call_api.assert_called()
 
@@ -1736,12 +1673,11 @@ def test_create_avurl_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
+    result = checkpointhec_create_avurl_exception(client, {
         'exc_type': 'allow-url',
         'exc_str': 'example.com',
         'comment': 'From Unit Tests'
     })
-    result = checkpointhec_create_avurl_exception(client)
     call_api.assert_called()
     assert result.readable_output == 'Avanan URL exception created successfully'
 
@@ -1762,13 +1698,12 @@ def test_create_avurl_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'exc_type': 'not-allow-url',
-        'exc_str': 'example.com',
-        'comment': 'From Unit Tests'
-    })
     with pytest.raises(DemistoException) as e:
-        checkpointhec_create_avurl_exception(client)
+        checkpointhec_create_avurl_exception(client, {
+            'exc_type': 'not-allow-url',
+            'exc_str': 'example.com',
+            'comment': 'From Unit Tests'
+        })
     assert str(e.value) == 'Error creating Avanan URL exception'
     call_api.assert_called()
 
@@ -1789,12 +1724,11 @@ def test_update_avurl_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
+    result = checkpointhec_update_avurl_exception(client, {
         'exc_type': 'allow-url',
         'exc_str': 'example.com',
         'comment': 'New comment'
     })
-    result = checkpointhec_update_avurl_exception(client)
     call_api.assert_called()
     assert result.readable_output == 'Avanan URL exception updated successfully'
 
@@ -1815,13 +1749,12 @@ def test_update_avurl_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'exc_type': 'not-allow-url',
-        'exc_str': 'example.com',
-        'comment': 'New comment'
-    })
     with pytest.raises(DemistoException) as e:
-        checkpointhec_update_avurl_exception(client)
+        checkpointhec_update_avurl_exception(client, {
+            'exc_type': 'not-allow-url',
+            'exc_str': 'example.com',
+            'comment': 'New comment'
+        })
     assert str(e.value) == 'Error updating Avanan URL exception'
     call_api.assert_called()
 
@@ -1843,8 +1776,7 @@ def test_delete_avurl_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'allow-url', 'exc_str': 'example.com'})
-    result = checkpointhec_delete_avurl_exception(client)
+    result = checkpointhec_delete_avurl_exception(client, {'exc_type': 'allow-url', 'exc_str': 'example.com'})
     call_api.assert_called()
     assert result.readable_output == 'Avanan URL exception deleted successfully'
 
@@ -1865,9 +1797,8 @@ def test_delete_avurl_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not-allow-url', 'exc_str': 'example.com'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_avurl_exception(client)
+        checkpointhec_delete_avurl_exception(client, {'exc_type': 'not-allow-url', 'exc_str': 'example.com'})
     assert str(e.value) == 'Error deleting Avanan URL exception'
     call_api.assert_called()
 
@@ -1889,8 +1820,7 @@ def test_delete_avurl_exceptions_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'allow-url', 'exc_str_list': 'example.com'})
-    result = checkpointhec_delete_avurl_exceptions(client)
+    result = checkpointhec_delete_avurl_exceptions(client, {'exc_type': 'allow-url', 'exc_str_list': 'example.com'})
     call_api.assert_called()
     assert result.readable_output == 'Avanan URL exceptions deleted successfully'
 
@@ -1911,9 +1841,8 @@ def test_delete_avurl_exceptions_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not-allow-url', 'exc_str_list': 'example.com'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_avurl_exceptions(client)
+        checkpointhec_delete_avurl_exceptions(client, {'exc_type': 'not-allow-url', 'exc_str_list': 'example.com'})
     assert str(e.value) == 'Error deleting Avanan URL exceptions'
     call_api.assert_called()
 
@@ -1935,8 +1864,7 @@ def test_create_avdlp_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'hash', 'exc_str': '0' * 32, 'comment': 'From Unit Tests'})
-    result = checkpointhec_create_avdlp_exception(client)
+    result = checkpointhec_create_avdlp_exception(client, {'exc_type': 'hash', 'exc_str': '0' * 32, 'comment': 'From Unit Tests'})
     call_api.assert_called()
     assert result.readable_output == 'Avanan DLP exception created successfully'
 
@@ -1957,9 +1885,8 @@ def test_create_avdlp_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_hash', 'exc_str': '0' * 32, 'comment': 'From Unit Tests'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_create_avdlp_exception(client)
+        checkpointhec_create_avdlp_exception(client, {'exc_type': 'not_hash', 'exc_str': '0' * 32, 'comment': 'From Unit Tests'})
     assert str(e.value) == 'Error creating Avanan DLP exception'
     call_api.assert_called()
 
@@ -1980,8 +1907,7 @@ def test_update_avdlp_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'hash', 'exc_str': '0' * 32, 'comment': 'New comment'})
-    result = checkpointhec_update_avdlp_exception(client)
+    result = checkpointhec_update_avdlp_exception(client, {'exc_type': 'hash', 'exc_str': '0' * 32, 'comment': 'New comment'})
     call_api.assert_called()
     assert result.readable_output == 'Avanan DLP exception updated successfully'
 
@@ -2002,9 +1928,8 @@ def test_update_avdlp_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_hash', 'exc_str': '0' * 32, 'comment': 'New comment'})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_update_avdlp_exception(client)
+        checkpointhec_update_avdlp_exception(client, {'exc_type': 'not_hash', 'exc_str': '0' * 32, 'comment': 'New comment'})
     assert str(e.value) == 'Error updating Avanan DLP exception'
     call_api.assert_called()
 
@@ -2026,8 +1951,7 @@ def test_delete_avdlp_exception_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'hash', 'exc_str': '0' * 32})
-    result = checkpointhec_delete_avdlp_exception(client)
+    result = checkpointhec_delete_avdlp_exception(client, {'exc_type': 'hash', 'exc_str': '0' * 32})
     call_api.assert_called()
     assert result.readable_output == 'Avanan DLP exception deleted successfully'
 
@@ -2048,9 +1972,8 @@ def test_delete_avdlp_exception_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_hash', 'exc_str': '0' * 32})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_avdlp_exception(client)
+        checkpointhec_delete_avdlp_exception(client, {'exc_type': 'not_hash', 'exc_str': '0' * 32})
     assert str(e.value) == 'Error deleting Avanan DLP exception'
     call_api.assert_called()
 
@@ -2072,8 +1995,7 @@ def test_delete_avdlp_exceptions_success(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'hash', 'exc_str_list': '0' * 32})
-    result = checkpointhec_delete_avdlp_exceptions(client)
+    result = checkpointhec_delete_avdlp_exceptions(client, {'exc_type': 'hash', 'exc_str_list': '0' * 32})
     call_api.assert_called()
     assert result.readable_output == 'Avanan DLP exceptions deleted successfully'
 
@@ -2094,8 +2016,7 @@ def test_delete_avdlp_exceptions_fail(mocker):
         return_value=mock_response,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'exc_type': 'not_hash', 'exc_str_list': '0' * 32})
     with pytest.raises(DemistoException) as e:
-        checkpointhec_delete_avdlp_exceptions(client)
+        checkpointhec_delete_avdlp_exceptions(client, {'exc_type': 'not_hash', 'exc_str_list': '0' * 32})
     assert str(e.value) == 'Error deleting Avanan DLP exceptions'
     call_api.assert_called()

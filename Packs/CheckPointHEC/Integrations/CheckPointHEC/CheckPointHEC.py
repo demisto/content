@@ -3,6 +3,7 @@ import uuid
 from urllib.parse import urlencode
 
 import urllib3
+from pytz import UTC
 
 from CommonServerPython import *
 
@@ -75,7 +76,7 @@ MIS_CLASSIFICATION_OPTIONS = {
 }
 
 
-def arg_to_bool(arg: str) -> Union[bool, None]:
+def arg_to_bool(arg: Optional[str]) -> Union[bool, None]:
     if arg:
         return argToBoolean(arg)
     return None
@@ -133,7 +134,7 @@ class Client(BaseClient):
                 'x-av-req-id': request_id,
             }
         else:
-            timestamp = datetime.utcnow().isoformat()
+            timestamp = datetime.now(UTC).isoformat()
             headers = {
                 'x-av-req-id': request_id,
                 'x-av-app-id': self.client_id,
@@ -206,7 +207,7 @@ class Client(BaseClient):
                 {
                     'saasAttrName': 'entityPayload.restoreRequestTime',
                     'saasAttrOp': 'greaterThan',
-                    'saasAttrValue': (datetime.utcnow() - timedelta(minutes=15)).isoformat()
+                    'saasAttrValue': (datetime.now(UTC) - timedelta(minutes=15)).isoformat()
                 }
             ]
         }
@@ -687,19 +688,16 @@ def test_module(client: Client):
     return 'ok'
 
 
-def fetch_incidents(client: Client):
-    params = demisto.params()
-
-    first_fetch: str = params.get('first_fetch')
+def fetch_incidents(client: Client, params: dict):
+    first_fetch: str = params.get('first_fetch', '1 hour')
     saas_apps: List[str] = [SAAS_APPS_TO_SAAS_NAMES[x] for x in argToList(params.get('saas_apps'))] or SAAS_NAMES
     states: List[str] = [x.lower() for x in argToList(params.get('event_state'))]
     severities: List[int] = [SEVERITY_VALUES[x.lower()] for x in argToList(params.get('event_severity'))]
     threat_types: List[str] = [x.lower().replace(' ', '_') for x in argToList(params.get('threat_type'))]
     max_fetch: int = arg_to_number(params.get('max_fetch')) or MAX_FETCH_DEFAULT
     fetch_interval: int = arg_to_number(params.get('incidentFetchInterval')) or FETCH_INTERVAL_DEFAULT
-    collect_restore_requests: Optional[bool] = arg_to_bool(params.get('collect_restore_requests'))
 
-    now = datetime.utcnow()  # We get current time before processing
+    now = datetime.now(UTC)  # We get current time before processing
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_fetch')):
         if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
@@ -709,35 +707,6 @@ def fetch_incidents(client: Client):
 
     counter = 0
     incidents: List[dict[str, Any]] = []
-    rr_incidents: List[dict[str, Any]] = []
-
-    if collect_restore_requests:
-        if not (last_rr_fetch := last_run.get('last_rr_fetch')):
-            last_rr_fetch = last_fetch
-        for saas in saas_apps:
-            result = client.restore_requests(last_rr_fetch, saas)
-            for restore_request in result['responseData']:
-                entity_info = restore_request.get('entityInfo')
-                entity_payload = restore_request.get('entityPayload')
-                if (occurred := entity_payload.get('restoreRequestTime')) <= last_rr_fetch:
-                    continue
-
-                count_field = 'count_restore_request'
-                count = last_run.get(count_field, 0) + 1
-                last_run[count_field] = count
-
-                rr_incidents.append({
-                    'dbotMirrorId': entity_info.get('entityId'),
-                    'details': entity_payload.get('restoreCommentary'),
-                    'name': f'Threat: Restore Request {count}',
-                    'occurred': occurred,
-                    'rawJSON': json.dumps(entity_payload),
-                })
-
-        if rr_incidents:
-            last_run['last_rr_fetch'] = rr_incidents[-1]['occurred']
-        else:
-            last_run['last_rr_fetch'] = (now - timedelta(minutes=fetch_interval)).isoformat()
 
     result = client.query_events(
         start_date=last_fetch, states=states, saas_apps=saas_apps, severities=severities, threat_types=threat_types
@@ -771,13 +740,60 @@ def fetch_incidents(client: Client):
         last_run['last_fetch'] = (now - timedelta(minutes=fetch_interval)).isoformat()
 
     demisto.setLastRun(last_run)
-    demisto.incidents(rr_incidents + incidents)
+    demisto.incidents(incidents)
 
 
-def checkpointhec_get_entity(client: Client) -> CommandResults:
-    args = demisto.args()
+def fetch_restore_requests(client: Client, params: dict):
+    first_fetch: str = params.get('first_fetch', '1 hour')
+    saas_apps: List[str] = [SAAS_APPS_TO_SAAS_NAMES[x] for x in argToList(params.get('saas_apps'))] or SAAS_NAMES
+    max_fetch: int = arg_to_number(params.get('max_fetch')) or MAX_FETCH_DEFAULT
+    fetch_interval: int = arg_to_number(params.get('incidentFetchInterval')) or FETCH_INTERVAL_DEFAULT
 
-    entity: str = args.get('entity')
+    now = datetime.now(UTC)  # We get current time before processing
+    last_run = demisto.getLastRun()
+    if not (last_fetch := last_run.get('last_rr_fetch')):
+        if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
+            last_fetch = last_fetch.isoformat()
+        else:
+            raise DemistoException('Could not get last restore request fetch')
+
+    counter = 0
+    incidents: List[dict[str, Any]] = []
+
+    for saas in saas_apps:
+        result = client.restore_requests(last_fetch, saas)
+        for restore_request in result['responseData']:
+            entity_info = restore_request.get('entityInfo')
+            entity_payload = restore_request.get('entityPayload')
+            if (occurred := entity_payload.get('restoreRequestTime')) <= last_fetch:
+                continue
+
+            count_field = 'count_restore_request'
+            count = last_run.get(count_field, 0) + 1
+            last_run[count_field] = count
+
+            incidents.append({
+                'dbotMirrorId': entity_info.get('entityId'),
+                'details': entity_payload.get('restoreCommentary'),
+                'name': f'Threat: Restore Request {count}',
+                'occurred': occurred,
+                'rawJSON': json.dumps(entity_payload),
+            })
+
+            if max_fetch == (counter := counter + 1):
+                break
+
+    if incidents:
+        last_run['last_rr_fetch'] = incidents[-1]['occurred']
+    else:
+        last_run['last_rr_fetch'] = (now - timedelta(minutes=fetch_interval)).isoformat()
+
+    demisto.setLastRun(last_run)
+    demisto.incidents(incidents)
+
+
+def checkpointhec_get_entity(client: Client, args: dict) -> CommandResults:
+    entity: str = args['entity']
 
     result = client.get_entity(entity)
     if entities := result.get('responseData'):
@@ -795,15 +811,13 @@ def checkpointhec_get_entity(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_get_events(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    start_date: str = args.get('start_date')
-    end_date: str = args.get('end_date')
-    saas_apps: List[str] = [SAAS_APPS_TO_SAAS_NAMES[x] for x in argToList(args.get('saas_apps'))]
-    states: List[str] = [x.lower() for x in argToList(args.get('states'))]
-    severities: List[int] = [SEVERITY_VALUES[x.lower()] for x in argToList(args.get('severities'))]
-    threat_types: List[str] = [x.lower().replace(' ', '_') for x in argToList(args.get('threat_type'))]
+def checkpointhec_get_events(client: Client, args: dict) -> CommandResults:
+    start_date: str = args['start_date']
+    end_date: Optional[str] = args.get('end_date')
+    saas_apps: Optional[List[str]] = [SAAS_APPS_TO_SAAS_NAMES[x] for x in argToList(args.get('saas_apps'))]
+    states: Optional[List[str]] = [x.lower() for x in argToList(args.get('states'))]
+    severities: Optional[List[int]] = [SEVERITY_VALUES[x.lower()] for x in argToList(args.get('severities'))]
+    threat_types: Optional[List[str]] = [x.lower().replace(' ', '_') for x in argToList(args.get('threat_type'))]
     limit: int = arg_to_number(args.get('limit')) or 1000
 
     result = client.query_events(
@@ -825,10 +839,8 @@ def checkpointhec_get_events(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_get_scan_info(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    entity = args.get('entity')
+def checkpointhec_get_scan_info(client: Client, args: dict) -> CommandResults:
+    entity: str = args['entity']
 
     result = client.get_entity(entity)
     outputs = {}
@@ -847,13 +859,10 @@ def checkpointhec_get_scan_info(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_search_emails(client: Client) -> CommandResults:
-    args = demisto.args()
-    params = demisto.params()
-
-    date_last: str = args.get('date_last')
-    date_from: str = args.get('date_from')
-    date_to: str = args.get('date_to')
+def checkpointhec_search_emails(client: Client, args: dict, params: dict) -> CommandResults:
+    date_last: Optional[str] = args.get('date_last')
+    date_from: Optional[str] = args.get('date_from')
+    date_to: Optional[str] = args.get('date_to')
     if saas := args.get('saas'):
         saas = SAAS_APPS_TO_SAAS_NAMES.get(saas)
     else:  # If no saas, we default to the first one from params
@@ -861,29 +870,37 @@ def checkpointhec_search_emails(client: Client) -> CommandResults:
             saas = SAAS_APPS_TO_SAAS_NAMES.get(saas[0])
         else:  # If no params, we default to the first one from SAAS_NAMES
             saas = SAAS_NAMES[0]
-    direction: str = args.get('direction')
-    subject_contains: str = args.get('subject_contains')
-    subject_match: str = args.get('subject_match')
-    sender_contains: str = args.get('sender_contains')
-    sender_match: str = args.get('sender_match')
-    domain: str = args.get('domain')
+    direction: Optional[str] = args.get('direction')
+    subject_contains: Optional[str] = args.get('subject_contains')
+    subject_match: Optional[str] = args.get('subject_match')
+    sender_contains: Optional[str] = args.get('sender_contains')
+    sender_match: Optional[str] = args.get('sender_match')
+    domain: Optional[str] = args.get('domain')
     cp_detection: List[str] = [CP_DETECTION_VALUES[x] for x in argToList(args.get('cp_detection'))]
     ms_detection: List[str] = [MS_DETECTION_VALUES[x] for x in argToList(args.get('ms_detection'))]
     detection_op: str = args.get('detection_op', 'OR')
-    server_ip: str = args.get('server_ip')
-    recipients_contains: str = args.get('recipients_contains')
-    recipients_match: str = args.get('recipients_match')
-    links: str = args.get('links')
-    message_id: str = args.get('message_id')
-    cp_quarantined_state: Optional[str] = CP_QUARANTINED_VALUES.get(args.get('cp_quarantined_state'))
-    ms_quarantined_state: Optional[str] = MS_QUARANTINED_VALUES.get(args.get('ms_quarantined_state'))
+    server_ip: Optional[str] = args.get('server_ip')
+    recipients_contains: Optional[str] = args.get('recipients_contains')
+    recipients_match: Optional[str] = args.get('recipients_match')
+    links: Optional[str] = args.get('links')
+    message_id: Optional[str] = args.get('message_id')
+    cp_quarantined_state: Optional[str]
+    if _key := args.get('cp_quarantined_state'):
+        cp_quarantined_state = CP_QUARANTINED_VALUES.get(_key)
+    else:
+        cp_quarantined_state = None
+    ms_quarantined_state: Optional[str]
+    if _key := args.get('ms_quarantined_state'):
+        ms_quarantined_state = MS_QUARANTINED_VALUES.get(_key)
+    else:
+        ms_quarantined_state = None
     quarantined_state_op: str = args.get('quarantined_state_op', 'OR')
-    name_contains: str = args.get('name_contains')
-    name_match: str = args.get('name_match')
-    client_ip: str = args.get('client_ip')
-    attachment_md5: str = args.get('attachment_md5')
+    name_contains: Optional[str] = args.get('name_contains')
+    name_match: Optional[str] = args.get('name_match')
+    client_ip: Optional[str] = args.get('client_ip')
+    attachment_md5: Optional[str] = args.get('attachment_md5')
 
-    end_date = None
+    end_date: Optional[str] = None
 
     if date_last:
         if date_from or date_to:
@@ -948,13 +965,11 @@ def checkpointhec_search_emails(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_send_action(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    entities: list = argToList(args.get('entity'))
-    entity_type: str = f"{SAAS_APPS_TO_SAAS_NAMES.get(args.get('saas'))}_email"
-    action: str = args.get('action')
-    restore_decline_reason: str = args.get('restore_decline_reason')
+def checkpointhec_send_action(client: Client, args: dict) -> CommandResults:
+    entities: list = argToList(args['entity'])
+    entity_type: str = SAAS_APPS_TO_SAAS_NAMES[args['saas']] + '_email'
+    action: str = args['action']
+    restore_decline_reason: Optional[str] = args.get('restore_decline_reason')
 
     result = client.send_action(entities, entity_type, action, restore_decline_reason)
     if resp := result.get('responseData'):
@@ -966,10 +981,8 @@ def checkpointhec_send_action(client: Client) -> CommandResults:
         raise DemistoException('Task not queued successfully')
 
 
-def checkpointhec_get_action_result(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    task = args.get('task')
+def checkpointhec_get_action_result(client: Client, args: dict) -> CommandResults:
+    task: str = args['task']
 
     result = client.get_task(task)
     if resp := result.get('responseData'):
@@ -983,11 +996,9 @@ def checkpointhec_get_action_result(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_send_notification(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    entity: str = args.get('entity')
-    emails: List[str] = argToList(args.get('emails'))
+def checkpointhec_send_notification(client: Client, args: dict) -> CommandResults:
+    entity: str = args['entity']
+    emails: List[str] = argToList(args['emails'])
 
     result = client.send_notification(entity, emails)
     if result.get('ok'):
@@ -999,12 +1010,10 @@ def checkpointhec_send_notification(client: Client) -> CommandResults:
         raise DemistoException('Error sending notification email')
 
 
-def checkpointhec_report_mis_classification(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    entities: List[str] = argToList(args.get('entities'))
-    classification: str = MIS_CLASSIFICATION_OPTIONS[args.get('classification')]
-    confident: str = MIS_CLASSIFICATION_CONFIDENCE[args.get('confident')]
+def checkpointhec_report_mis_classification(client: Client, args: dict) -> CommandResults:
+    entities: List[str] = argToList(args['entities'])
+    classification: str = MIS_CLASSIFICATION_OPTIONS[args['classification']]
+    confident: str = MIS_CLASSIFICATION_CONFIDENCE[args['confident']]
 
     result = client.report_mis_classification(entities, classification, confident)
     if result.get('responseEnvelope', {}).get('responseCode') == 200:
@@ -1015,11 +1024,9 @@ def checkpointhec_report_mis_classification(client: Client) -> CommandResults:
         raise DemistoException('Error reporting mis-classification')
 
 
-def checkpointhec_get_ap_exceptions(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_id: str = args.get('exc_id')
+def checkpointhec_get_ap_exceptions(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_id: Optional[str] = args.get('exc_id')
 
     result = client.get_ap_exceptions(exc_type, exc_id)
     if exceptions := result.get('responseData'):
@@ -1036,29 +1043,27 @@ def checkpointhec_get_ap_exceptions(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_create_ap_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    entity_id: str = args.get('entity_id')
-    attachment_md5: str = args.get('attachment_md5')
-    from_email: str = args.get('from_email')
-    nickname: str = args.get('nickname')
-    recipient: str = args.get('recipient')
-    sender_client_ip: str = args.get('sender_client_ip')
-    from_domain_ends_with: str = args.get('from_domain_ends_with')
-    sender_ip: str = args.get('sender_ip')
-    email_link: List[str] = argToList(args.get('email_link'))
-    subject: str = args.get('subject')
-    comment: str = args.get('comment')
-    action_needed: str = args.get('action_needed')
+def checkpointhec_create_ap_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    entity_id: Optional[str] = args.get('entity_id')
+    attachment_md5: Optional[str] = args.get('attachment_md5')
+    from_email: Optional[str] = args.get('from_email')
+    nickname: Optional[str] = args.get('nickname')
+    recipient: Optional[str] = args.get('recipient')
+    sender_client_ip: Optional[str] = args.get('sender_client_ip')
+    from_domain_ends_with: Optional[str] = args.get('from_domain_ends_with')
+    sender_ip: Optional[str] = args.get('sender_ip')
+    email_link: Optional[List[str]] = argToList(args.get('email_link'))
+    subject: Optional[str] = args.get('subject')
+    comment: Optional[str] = args.get('comment')
+    action_needed: Optional[str] = args.get('action_needed')
     ignoring_spf_check: Optional[bool] = arg_to_bool(args.get('ignoring_spf_check'))
-    subject_matching: str = args.get('subject_matching')
-    email_link_matching: str = args.get('email_link_matching')
-    from_name_matching: str = args.get('from_name_matching')
-    from_domain_matching: str = args.get('from_domain_matching')
-    from_email_matching: str = args.get('from_email_matching')
-    recipient_matching: str = args.get('recipient_matching')
+    subject_matching: Optional[str] = args.get('subject_matching')
+    email_link_matching: Optional[str] = args.get('email_link_matching')
+    from_name_matching: Optional[str] = args.get('from_name_matching')
+    from_domain_matching: Optional[str] = args.get('from_domain_matching')
+    from_email_matching: Optional[str] = args.get('from_email_matching')
+    recipient_matching: Optional[str] = args.get('recipient_matching')
 
     result = client.create_ap_exception(exc_type, entity_id, attachment_md5, from_email, nickname, recipient, sender_client_ip,
                                         from_domain_ends_with, sender_ip, email_link, subject, comment, action_needed,
@@ -1072,30 +1077,28 @@ def checkpointhec_create_ap_exception(client: Client) -> CommandResults:
         raise DemistoException('Error creating Anti-Phishing exception')
 
 
-def checkpointhec_update_ap_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_id: str = args.get('exc_id')
-    entity_id: str = args.get('entity_id')
-    attachment_md5: str = args.get('attachment_md5')
-    from_email: str = args.get('from_email')
-    nickname: str = args.get('nickname')
-    recipient: str = args.get('recipient')
-    sender_client_ip: str = args.get('sender_client_ip')
-    from_domain_ends_with: str = args.get('from_domain_ends_with')
-    sender_ip: str = args.get('sender_ip')
-    email_link: List[str] = argToList(args.get('email_link'))
-    subject: str = args.get('subject')
-    comment: str = args.get('comment')
-    action_needed: str = args.get('action_needed')
+def checkpointhec_update_ap_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_id: str = args['exc_id']
+    entity_id: Optional[str] = args.get('entity_id')
+    attachment_md5: Optional[str] = args.get('attachment_md5')
+    from_email: Optional[str] = args.get('from_email')
+    nickname: Optional[str] = args.get('nickname')
+    recipient: Optional[str] = args.get('recipient')
+    sender_client_ip: Optional[str] = args.get('sender_client_ip')
+    from_domain_ends_with: Optional[str] = args.get('from_domain_ends_with')
+    sender_ip: Optional[str] = args.get('sender_ip')
+    email_link: Optional[List[str]] = argToList(args.get('email_link'))
+    subject: Optional[str] = args.get('subject')
+    comment: Optional[str] = args.get('comment')
+    action_needed: Optional[str] = args.get('action_needed')
     ignoring_spf_check: Optional[bool] = arg_to_bool(args.get('ignoring_spf_check'))
-    subject_matching: str = args.get('subject_matching')
-    email_link_matching: str = args.get('email_link_matching')
-    from_name_matching: str = args.get('from_name_matching')
-    from_domain_matching: str = args.get('from_domain_matching')
-    from_email_matching: str = args.get('from_email_matching')
-    recipient_matching: str = args.get('recipient_matching')
+    subject_matching: Optional[str] = args.get('subject_matching')
+    email_link_matching: Optional[str] = args.get('email_link_matching')
+    from_name_matching: Optional[str] = args.get('from_name_matching')
+    from_domain_matching: Optional[str] = args.get('from_domain_matching')
+    from_email_matching: Optional[str] = args.get('from_email_matching')
+    recipient_matching: Optional[str] = args.get('recipient_matching')
 
     result = client.update_ap_exception(exc_type, exc_id, entity_id, attachment_md5, from_email, nickname, recipient,
                                         sender_client_ip, from_domain_ends_with, sender_ip, email_link, subject, comment,
@@ -1109,11 +1112,9 @@ def checkpointhec_update_ap_exception(client: Client) -> CommandResults:
         raise DemistoException('Error updating Anti-Phishing exception')
 
 
-def checkpointhec_delete_ap_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_id: str = args.get('exc_id')
+def checkpointhec_delete_ap_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_id: str = args['exc_id']
 
     result = client.delete_ap_exception(exc_type, exc_id)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1124,11 +1125,9 @@ def checkpointhec_delete_ap_exception(client: Client) -> CommandResults:
         raise DemistoException('Error deleting Anti-Phishing exception')
 
 
-def checkpointhec_get_cp2_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str = args.get('exc_str')
+def checkpointhec_get_cp2_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
 
     result = client.get_sectool_exception(ANTI_MALWARE_SAAS_NAME, exc_type, exc_str)
     if exception := result.get('responseData'):
@@ -1145,17 +1144,15 @@ def checkpointhec_get_cp2_exception(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_create_cp2_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
-    comment: str = args.get('comment')
-    exc_payload_condition: str = args.get('exc_payload_condition')
-    file_name: str = args.get('file_name')
-    created_by_email: str = args.get('created_by_email')
+def checkpointhec_create_cp2_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
+    comment: Optional[str] = args.get('comment')
+    exc_payload_condition: Optional[str] = args.get('exc_payload_condition')
+    file_name: Optional[str] = args.get('file_name')
+    created_by_email: Optional[str] = args.get('created_by_email')
     is_exclusive: Optional[bool] = arg_to_bool(args.get('is_exclusive'))
 
     result = client.create_sectool_exception(ANTI_MALWARE_SAAS_NAME, exc_type, exc_str, entity_type, entity_id, comment,
@@ -1168,13 +1165,11 @@ def checkpointhec_create_cp2_exception(client: Client) -> CommandResults:
         raise DemistoException('Error creating Anti-Malware exception')
 
 
-def checkpointhec_update_cp2_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    comment: str = args.get('comment')
-    exc_payload_condition: str = args.get('exc_payload_condition')
+def checkpointhec_update_cp2_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    comment: Optional[str] = args.get('comment')
+    exc_payload_condition: Optional[str] = args.get('exc_payload_condition')
 
     result = client.update_sectool_exception(ANTI_MALWARE_SAAS_NAME, exc_type, exc_str, comment, exc_payload_condition)
     if result.get('responseEnvelope', {}).get('responseCode') == 200:
@@ -1185,13 +1180,11 @@ def checkpointhec_update_cp2_exception(client: Client) -> CommandResults:
         raise DemistoException('Error updating Anti-Malware exception')
 
 
-def checkpointhec_delete_cp2_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
+def checkpointhec_delete_cp2_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
 
     result = client.delete_sectool_exception(ANTI_MALWARE_SAAS_NAME, exc_type, exc_str, entity_type, entity_id)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1202,14 +1195,12 @@ def checkpointhec_delete_cp2_exception(client: Client) -> CommandResults:
         raise DemistoException('Error deleting Anti-Malware exception')
 
 
-def checkpointhec_get_cp2_exceptions(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    filter_str: str = args.get('filter_str')
-    filter_index: str = args.get('filter_index')
-    sort_dir: str = args.get('sort_dir')
-    last_evaluated_key: str = args.get('last_evaluated_key')
+def checkpointhec_get_cp2_exceptions(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    filter_str: Optional[str] = args.get('filter_str')
+    filter_index: Optional[str] = args.get('filter_index')
+    sort_dir: Optional[str] = args.get('sort_dir')
+    last_evaluated_key: Optional[str] = args.get('last_evaluated_key')
     insert_time_gte: Optional[bool] = arg_to_bool(args.get('insert_time_gte'))
     limit: Optional[int] = arg_to_number(args.get('limit'))
 
@@ -1229,13 +1220,11 @@ def checkpointhec_get_cp2_exceptions(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_delete_cp2_exceptions(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str_list: List[str] = argToList(args.get('exc_str_list'))
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
+def checkpointhec_delete_cp2_exceptions(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str_list: List[str] = argToList(args['exc_str_list'])
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
 
     result = client.delete_sectool_exceptions(ANTI_MALWARE_SAAS_NAME, exc_type, exc_str_list, entity_type, entity_id)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1262,11 +1251,9 @@ def checkpointhec_get_anomaly_exceptions(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_create_anomaly_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    request_json: dict = args.get('request_json')
-    added_by: str = args.get('added_by')
+def checkpointhec_create_anomaly_exception(client: Client, args: dict) -> CommandResults:
+    request_json: dict = args['request_json']
+    added_by: Optional[str] = args.get('added_by')
 
     result = client.create_anomaly_exceptions(request_json, added_by)
     if result.get('responseEnvelope', {}).get('responseCode') == 201:
@@ -1277,10 +1264,8 @@ def checkpointhec_create_anomaly_exception(client: Client) -> CommandResults:
         raise DemistoException('Error creating Anomaly exception')
 
 
-def checkpointhec_delete_anomaly_exceptions(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    rule_ids: List[str] = argToList(args.get('rule_ids'))
+def checkpointhec_delete_anomaly_exceptions(client: Client, args: dict) -> CommandResults:
+    rule_ids: List[str] = argToList(args['rule_ids'])
 
     result = client.delete_anomaly_exceptions(rule_ids)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1307,10 +1292,8 @@ def checkpointhec_get_ctp_lists(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_get_ctp_list(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    list_id: str = args.get('list_id')
+def checkpointhec_get_ctp_list(client: Client, args: dict) -> CommandResults:
+    list_id: str = args['list_id']
 
     result = client.get_ctp_list(list_id)
     if lists := result.get('responseData'):
@@ -1343,10 +1326,8 @@ def checkpointhec_get_ctp_list_items(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_get_ctp_list_item(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    item_id: str = args.get('item_id')
+def checkpointhec_get_ctp_list_item(client: Client, args: dict) -> CommandResults:
+    item_id: str = args['item_id']
 
     result = client.get_ctp_list_item(item_id)
     if item := result.get('responseData'):
@@ -1363,12 +1344,10 @@ def checkpointhec_get_ctp_list_item(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_create_ctp_list_item(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    list_id: str = args.get('list_id')
-    list_item_name: str = args.get('list_item_name')
-    created_by: str = args.get('created_by')
+def checkpointhec_create_ctp_list_item(client: Client, args: dict) -> CommandResults:
+    list_id: str = args['list_id']
+    list_item_name: str = args['list_item_name']
+    created_by: str = args['created_by']
 
     result = client.create_ctp_list_item(list_id, list_item_name, created_by)
     if result.get('responseEnvelope', {}).get('responseCode') == 201:
@@ -1379,13 +1358,11 @@ def checkpointhec_create_ctp_list_item(client: Client) -> CommandResults:
         raise DemistoException('Error creating CTP list item')
 
 
-def checkpointhec_update_ctp_list_item(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    item_id: str = args.get('item_id')
-    list_id: str = args.get('list_id')
-    list_item_name: str = args.get('list_item_name')
-    created_by: str = args.get('created_by')
+def checkpointhec_update_ctp_list_item(client: Client, args: dict) -> CommandResults:
+    item_id: str = args['item_id']
+    list_id: str = args['list_id']
+    list_item_name: str = args['list_item_name']
+    created_by: str = args['created_by']
 
     result = client.update_ctp_list_item(item_id, list_id, list_item_name, created_by)
     if result.get('responseEnvelope', {}).get('responseCode') == 200:
@@ -1396,10 +1373,8 @@ def checkpointhec_update_ctp_list_item(client: Client) -> CommandResults:
         raise DemistoException('Error updating CTP list item')
 
 
-def checkpointhec_delete_ctp_list_item(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    item_id: str = args.get('item_id')
+def checkpointhec_delete_ctp_list_item(client: Client, args: dict) -> CommandResults:
+    item_id: str = args['item_id']
 
     result = client.delete_ctp_list_item(item_id)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1410,10 +1385,8 @@ def checkpointhec_delete_ctp_list_item(client: Client) -> CommandResults:
         raise DemistoException('Error deleting CTP list item')
 
 
-def checkpointhec_delete_ctp_list_items(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    list_item_ids: List[str] = argToList(args.get('list_item_ids'))
+def checkpointhec_delete_ctp_list_items(client: Client, args: dict) -> CommandResults:
+    list_item_ids: List[str] = argToList(args['list_item_ids'])
 
     result = client.delete_ctp_list_items(list_item_ids)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1434,11 +1407,9 @@ def checkpointhec_delete_ctp_lists(client: Client) -> CommandResults:
         raise DemistoException('Error deleting CTP lists')
 
 
-def checkpointhec_get_avurl_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
+def checkpointhec_get_avurl_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
 
     result = client.get_sectool_exception(AVANAN_URL_SAAS_NAME, exc_type, exc_str)
     if exception := result.get('responseData'):
@@ -1455,17 +1426,15 @@ def checkpointhec_get_avurl_exception(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_create_avurl_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
-    comment: str = args.get('comment')
-    exc_payload_condition: str = args.get('exc_payload_condition')
-    file_name: str = args.get('file_name')
-    created_by_email: str = args.get('created_by_email')
+def checkpointhec_create_avurl_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
+    comment: Optional[str] = args.get('comment')
+    exc_payload_condition: Optional[str] = args.get('exc_payload_condition')
+    file_name: Optional[str] = args.get('file_name')
+    created_by_email: Optional[str] = args.get('created_by_email')
     is_exclusive: Optional[bool] = arg_to_bool(args.get('is_exclusive'))
 
     result = client.create_sectool_exception(AVANAN_URL_SAAS_NAME, exc_type, exc_str, entity_type, entity_id, comment,
@@ -1478,13 +1447,11 @@ def checkpointhec_create_avurl_exception(client: Client) -> CommandResults:
         raise DemistoException('Error creating Avanan URL exception')
 
 
-def checkpointhec_update_avurl_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    comment: str = args.get('comment')
-    exc_payload_condition: str = args.get('exc_payload_condition')
+def checkpointhec_update_avurl_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    comment: Optional[str] = args.get('comment')
+    exc_payload_condition: Optional[str] = args.get('exc_payload_condition')
 
     result = client.update_sectool_exception(AVANAN_URL_SAAS_NAME, exc_type, exc_str, comment, exc_payload_condition)
     if result.get('responseEnvelope', {}).get('responseCode') == 200:
@@ -1495,13 +1462,11 @@ def checkpointhec_update_avurl_exception(client: Client) -> CommandResults:
         raise DemistoException('Error updating Avanan URL exception')
 
 
-def checkpointhec_delete_avurl_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
+def checkpointhec_delete_avurl_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
 
     result = client.delete_sectool_exception(AVANAN_URL_SAAS_NAME, exc_type, exc_str, entity_type, entity_id)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1512,14 +1477,12 @@ def checkpointhec_delete_avurl_exception(client: Client) -> CommandResults:
         raise DemistoException('Error deleting Avanan URL exception')
 
 
-def checkpointhec_get_avurl_exceptions(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    filter_str: str = args.get('filter_str')
-    filter_index: str = args.get('filter_index')
-    sort_dir: str = args.get('sort_dir')
-    last_evaluated_key: str = args.get('last_evaluated_key')
+def checkpointhec_get_avurl_exceptions(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    filter_str: Optional[str] = args.get('filter_str')
+    filter_index: Optional[str] = args.get('filter_index')
+    sort_dir: Optional[str] = args.get('sort_dir')
+    last_evaluated_key: Optional[str] = args.get('last_evaluated_key')
     insert_time_gte: Optional[bool] = arg_to_bool(args.get('insert_time_gte'))
     limit: Optional[int] = arg_to_number(args.get('limit'))
 
@@ -1539,13 +1502,11 @@ def checkpointhec_get_avurl_exceptions(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_delete_avurl_exceptions(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str_list: List[str] = argToList(args.get('exc_str_list'))
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
+def checkpointhec_delete_avurl_exceptions(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str_list: List[str] = argToList(args['exc_str_list'])
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
 
     result = client.delete_sectool_exceptions(AVANAN_URL_SAAS_NAME, exc_type, exc_str_list, entity_type, entity_id)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1556,11 +1517,9 @@ def checkpointhec_delete_avurl_exceptions(client: Client) -> CommandResults:
         raise DemistoException('Error deleting Avanan URL exceptions')
 
 
-def checkpointhec_get_avdlp_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
+def checkpointhec_get_avdlp_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
 
     result = client.get_sectool_exception(AVANAN_DLP_SAAS_NAME, exc_type, exc_str)
     if exception := result.get('responseData'):
@@ -1577,17 +1536,15 @@ def checkpointhec_get_avdlp_exception(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_create_avdlp_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
-    comment: str = args.get('comment')
-    exc_payload_condition: str = args.get('exc_payload_condition')
-    file_name: str = args.get('file_name')
-    created_by_email: str = args.get('created_by_email')
+def checkpointhec_create_avdlp_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
+    comment: Optional[str] = args.get('comment')
+    exc_payload_condition: Optional[str] = args.get('exc_payload_condition')
+    file_name: Optional[str] = args.get('file_name')
+    created_by_email: Optional[str] = args.get('created_by_email')
     is_exclusive: Optional[bool] = arg_to_bool(args.get('is_exclusive'))
 
     result = client.create_sectool_exception(AVANAN_DLP_SAAS_NAME, exc_type, exc_str, entity_type, entity_id, comment,
@@ -1600,13 +1557,11 @@ def checkpointhec_create_avdlp_exception(client: Client) -> CommandResults:
         raise DemistoException('Error creating Avanan DLP exception')
 
 
-def checkpointhec_update_avdlp_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    comment: str = args.get('comment')
-    exc_payload_condition: str = args.get('exc_payload_condition')
+def checkpointhec_update_avdlp_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    comment: Optional[str] = args.get('comment')
+    exc_payload_condition: Optional[str] = args.get('exc_payload_condition')
 
     result = client.update_sectool_exception(AVANAN_DLP_SAAS_NAME, exc_type, exc_str, comment, exc_payload_condition)
     if result.get('responseEnvelope', {}).get('responseCode') == 200:
@@ -1617,13 +1572,11 @@ def checkpointhec_update_avdlp_exception(client: Client) -> CommandResults:
         raise DemistoException('Error updating Avanan DLP exception')
 
 
-def checkpointhec_delete_avdlp_exception(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str: str = args.get('exc_str')
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
+def checkpointhec_delete_avdlp_exception(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str: str = args['exc_str']
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
 
     result = client.delete_sectool_exception(AVANAN_DLP_SAAS_NAME, exc_type, exc_str, entity_type, entity_id)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1634,14 +1587,12 @@ def checkpointhec_delete_avdlp_exception(client: Client) -> CommandResults:
         raise DemistoException('Error deleting Avanan DLP exception')
 
 
-def checkpointhec_get_avdlp_exceptions(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    filter_str: str = args.get('filter_str')
-    filter_index: str = args.get('filter_index')
-    sort_dir: str = args.get('sort_dir')
-    last_evaluated_key: str = args.get('last_evaluated_key')
+def checkpointhec_get_avdlp_exceptions(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    filter_str: Optional[str] = args.get('filter_str')
+    filter_index: Optional[str] = args.get('filter_index')
+    sort_dir: Optional[str] = args.get('sort_dir')
+    last_evaluated_key: Optional[str] = args.get('last_evaluated_key')
     insert_time_gte: Optional[bool] = arg_to_bool(args.get('insert_time_gte'))
     limit: Optional[int] = arg_to_number(args.get('limit'))
 
@@ -1661,13 +1612,11 @@ def checkpointhec_get_avdlp_exceptions(client: Client) -> CommandResults:
         )
 
 
-def checkpointhec_delete_avdlp_exceptions(client: Client) -> CommandResults:
-    args = demisto.args()
-
-    exc_type: str = args.get('exc_type')
-    exc_str_list: List[str] = argToList(args.get('exc_str_list'))
-    entity_type: str = args.get('entity_type')
-    entity_id: str = args.get('entity_id')
+def checkpointhec_delete_avdlp_exceptions(client: Client, args: dict) -> CommandResults:
+    exc_type: str = args['exc_type']
+    exc_str_list: List[str] = argToList(args['exc_str_list'])
+    entity_type: Optional[str] = args.get('entity_type')
+    entity_id: Optional[str] = args.get('entity_id')
 
     result = client.delete_sectool_exceptions(AVANAN_DLP_SAAS_NAME, exc_type, exc_str_list, entity_type, entity_id)
     if result.get('responseEnvelope', {}).get('responseCode') == 204:
@@ -1679,6 +1628,7 @@ def checkpointhec_delete_avdlp_exceptions(client: Client) -> CommandResults:
 
 
 def main() -> None:  # pragma: no cover
+    args = demisto.args()
     params = demisto.params()
 
     base_url = params.get('url')
@@ -1700,91 +1650,94 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-incidents':
-            fetch_incidents(client)
+            if arg_to_bool(params.get('collect_restore_requests')):
+                fetch_restore_requests(client, params)
+            else:
+                fetch_incidents(client, params)
         elif command == 'checkpointhec-get-entity':
-            return_results(checkpointhec_get_entity(client))
+            return_results(checkpointhec_get_entity(client, args))
         elif command == 'checkpointhec-get-events':
-            return_results(checkpointhec_get_events(client))
+            return_results(checkpointhec_get_events(client, args))
         elif command == 'checkpointhec-get-scan-info':
-            return_results(checkpointhec_get_scan_info(client))
+            return_results(checkpointhec_get_scan_info(client, args))
         elif command == 'checkpointhec-search-emails':
-            return_results(checkpointhec_search_emails(client))
+            return_results(checkpointhec_search_emails(client, args, params))
         elif command == 'checkpointhec-send-action':
-            return_results(checkpointhec_send_action(client))
+            return_results(checkpointhec_send_action(client, args))
         elif command == 'checkpointhec-get-action-result':
-            return_results(checkpointhec_get_action_result(client))
+            return_results(checkpointhec_get_action_result(client, args))
         elif command == 'checkpointhec-send-notification':
-            return_results(checkpointhec_send_notification(client))
+            return_results(checkpointhec_send_notification(client, args))
         elif command == 'checkpointhec-report-mis-classification':
-            return_results(checkpointhec_report_mis_classification(client))
+            return_results(checkpointhec_report_mis_classification(client, args))
         elif command == 'checkpointhec-get-ap-exceptions':
-            return_results(checkpointhec_get_ap_exceptions(client))
+            return_results(checkpointhec_get_ap_exceptions(client, args))
         elif command == 'checkpointhec-create-ap-exception':
-            return_results(checkpointhec_create_ap_exception(client))
+            return_results(checkpointhec_create_ap_exception(client, args))
         elif command == 'checkpointhec-update-ap-exception':
-            return_results(checkpointhec_update_ap_exception(client))
+            return_results(checkpointhec_update_ap_exception(client, args))
         elif command == 'checkpointhec-delete-ap-exception':
-            return_results(checkpointhec_delete_ap_exception(client))
+            return_results(checkpointhec_delete_ap_exception(client, args))
         elif command == 'checkpointhec-get-cp2-exception':
-            return_results(checkpointhec_get_cp2_exception(client))
+            return_results(checkpointhec_get_cp2_exception(client, args))
         elif command == 'checkpointhec-create-cp2-exception':
-            return_results(checkpointhec_create_cp2_exception(client))
+            return_results(checkpointhec_create_cp2_exception(client, args))
         elif command == 'checkpointhec-update-cp2-exception':
-            return_results(checkpointhec_update_cp2_exception(client))
+            return_results(checkpointhec_update_cp2_exception(client, args))
         elif command == 'checkpointhec-delete-cp2-exception':
-            return_results(checkpointhec_delete_cp2_exception(client))
+            return_results(checkpointhec_delete_cp2_exception(client, args))
         elif command == 'checkpointhec-get-cp2-exceptions':
-            return_results(checkpointhec_get_cp2_exceptions(client))
+            return_results(checkpointhec_get_cp2_exceptions(client, args))
         elif command == 'checkpointhec-delete-cp2-exceptions':
-            return_results(checkpointhec_delete_cp2_exceptions(client))
+            return_results(checkpointhec_delete_cp2_exceptions(client, args))
         elif command == 'checkpointhec-get-anomaly-exceptions':
             return_results(checkpointhec_get_anomaly_exceptions(client))
         elif command == 'checkpointhec-create-anomaly-exception':
-            return_results(checkpointhec_create_anomaly_exception(client))
+            return_results(checkpointhec_create_anomaly_exception(client, args))
         elif command == 'checkpointhec-delete-anomaly-exceptions':
-            return_results(checkpointhec_delete_anomaly_exceptions(client))
+            return_results(checkpointhec_delete_anomaly_exceptions(client, args))
         elif command == 'checkpointhec-get-ctp-lists':
             return_results(checkpointhec_get_ctp_lists(client))
         elif command == 'checkpointhec-get-ctp-list':
-            return_results(checkpointhec_get_ctp_list(client))
+            return_results(checkpointhec_get_ctp_list(client, args))
         elif command == 'checkpointhec-get-ctp-list-items':
             return_results(checkpointhec_get_ctp_list_items(client))
         elif command == 'checkpointhec-get-ctp-list-item':
-            return_results(checkpointhec_get_ctp_list_item(client))
+            return_results(checkpointhec_get_ctp_list_item(client, args))
         elif command == 'checkpointhec-create-ctp-list-item':
-            return_results(checkpointhec_create_ctp_list_item(client))
+            return_results(checkpointhec_create_ctp_list_item(client, args))
         elif command == 'checkpointhec-update-ctp-list-item':
-            return_results(checkpointhec_update_ctp_list_item(client))
+            return_results(checkpointhec_update_ctp_list_item(client, args))
         elif command == 'checkpointhec-delete-ctp-list-item':
-            return_results(checkpointhec_delete_ctp_list_item(client))
+            return_results(checkpointhec_delete_ctp_list_item(client, args))
         elif command == 'checkpointhec-delete-ctp-list-items':
-            return_results(checkpointhec_delete_ctp_list_items(client))
+            return_results(checkpointhec_delete_ctp_list_items(client, args))
         elif command == 'checkpointhec-delete-ctp-lists':
             return_results(checkpointhec_delete_ctp_lists(client))
         elif command == 'checkpointhec-get-avurl-exception':
-            return_results(checkpointhec_get_avurl_exception(client))
+            return_results(checkpointhec_get_avurl_exception(client, args))
         elif command == 'checkpointhec-create-avurl-exception':
-            return_results(checkpointhec_create_avurl_exception(client))
+            return_results(checkpointhec_create_avurl_exception(client, args))
         elif command == 'checkpointhec-update-avurl-exception':
-            return_results(checkpointhec_update_avurl_exception(client))
+            return_results(checkpointhec_update_avurl_exception(client, args))
         elif command == 'checkpointhec-delete-avurl-exception':
-            return_results(checkpointhec_delete_avurl_exception(client))
+            return_results(checkpointhec_delete_avurl_exception(client, args))
         elif command == 'checkpointhec-get-avurl-exceptions':
-            return_results(checkpointhec_get_avurl_exceptions(client))
+            return_results(checkpointhec_get_avurl_exceptions(client, args))
         elif command == 'checkpointhec-delete-avurl-exceptions':
-            return_results(checkpointhec_delete_avurl_exceptions(client))
+            return_results(checkpointhec_delete_avurl_exceptions(client, args))
         elif command == 'checkpointhec-get-avdlp-exception':
-            return_results(checkpointhec_get_avdlp_exception(client))
+            return_results(checkpointhec_get_avdlp_exception(client, args))
         elif command == 'checkpointhec-create-avdlp-exception':
-            return_results(checkpointhec_create_avdlp_exception(client))
+            return_results(checkpointhec_create_avdlp_exception(client, args))
         elif command == 'checkpointhec-update-avdlp-exception':
-            return_results(checkpointhec_update_avdlp_exception(client))
+            return_results(checkpointhec_update_avdlp_exception(client, args))
         elif command == 'checkpointhec-delete-avdlp-exception':
-            return_results(checkpointhec_delete_avdlp_exception(client))
+            return_results(checkpointhec_delete_avdlp_exception(client, args))
         elif command == 'checkpointhec-get-avdlp-exceptions':
-            return_results(checkpointhec_get_avdlp_exceptions(client))
+            return_results(checkpointhec_get_avdlp_exceptions(client, args))
         elif command == 'checkpointhec-delete-avdlp-exceptions':
-            return_results(checkpointhec_delete_avdlp_exceptions(client))
+            return_results(checkpointhec_delete_avdlp_exceptions(client, args))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
