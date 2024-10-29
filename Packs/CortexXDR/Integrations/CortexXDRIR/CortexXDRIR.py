@@ -1362,8 +1362,8 @@ def main():  # pragma: no cover
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
                                                   )
-            demisto.debug(f"After a cycle of fetch incidents. This is the next run = {next_run}. "
-                          f"{len(incidents)} incidents are fetched")
+            demisto.debug(f"Finished a fetch incidents cycle, {next_run=}."
+                          f"Fetched {len(incidents)} incidents.")
             # demisto.debug(f"{incidents=}") # uncomment to debug, otherwise spams the log
 
             last_run_obj = demisto.getLastRun()
