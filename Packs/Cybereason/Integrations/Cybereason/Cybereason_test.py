@@ -1112,6 +1112,48 @@ def test_malop_to_incident_4(mocker):
     assert exc_info.match(r"Cybereason raw response is not valid")
 
 
+def test_malop_to_incident_5(mocker):
+    from Cybereason import malop_to_incident
+    args = {
+        "guidString": "12345D",
+        "status": "",
+        "malopDetectionType": "ABCD",
+        "creationTime": "23456",
+        "lastUpdateTime": "6789"
+    }
+    command_output = malop_to_incident(args)
+
+    assert all([(command_output['name'] == "Cybereason Malop 12345D"), (command_output['status'] == 0),
+                (command_output['CustomFields']['malopcreationtime'] == "23456"),
+                (command_output['CustomFields']['malopupdatetime'] == "6789"),
+                (command_output['CustomFields']['malopdetectiontype'] == "ABCD"),
+                (not command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345D")])
+
+    with pytest.raises(Exception) as exc_info:
+        command_output = malop_to_incident("args")
+    assert exc_info.match(r"Cybereason raw response is not valid")
+
+
+def test_malop_to_incident_6(mocker):
+    from Cybereason import malop_to_incident
+    args = {
+        "guidString": "12345D",
+        "creationTime": 23456,
+        "lastUpdateTime": 6789
+    }
+    command_output = malop_to_incident(args)
+
+    assert all([(command_output['name'] == "Cybereason Malop 12345D"), (command_output['status'] == 0),
+                (command_output['CustomFields']['malopcreationtime'] == "23456"),
+                (command_output['CustomFields']['malopupdatetime'] == "6789"),
+                (command_output['CustomFields']['malopdetectiontype'] == ""),
+                (not command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345D")])
+
+    with pytest.raises(Exception) as exc_info:
+        command_output = malop_to_incident("args")
+    assert exc_info.match(r"Cybereason raw response is not valid")
+
+
 def test_get_pylum_id(mocker):
     from Cybereason import get_pylum_id, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
