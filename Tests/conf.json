@@ -5973,6 +5973,8 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
+        "Elasticsearch_Fetch_Custom_Indicators_Test": "CRTX-134283",
+        "Elasticsearch_Fetch_Demisto_Indicators_Test": "CRTX-134283", 
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
