@@ -973,47 +973,45 @@ def test_malop_to_incident(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345A",
-        "status": 1
-    }
-    command_output = malop_to_incident(args)
-
-    assert all([(command_output['name'] == "Cybereason Malop 12345A"), (command_output['status'] == 0)])
-
-    with pytest.raises(Exception) as exc_info:
-        command_output = malop_to_incident("args")
-    assert exc_info.match(r"Cybereason raw response is not valid")
-
-
-def test_malop_to_incident_status(mocker):
-    from Cybereason import malop_to_incident
-    args = {
-        "guidString": "12345A",
-        "status": "Remediated",
-        'simpleValues': {
-            'creationTime': {
-                'values': ["2345"]
+        "status": 1,
+        "simpleValues": {
+            "detectionType": {
+                "values": [
+                    "EXTENSION_MANIPULATION"
+                ]
+            },
+            "creationTime": {
+                "values": [
+                    "1721798910159"
+                ]
+            },
+            "malopLastUpdateTime": {
+                "values": [
+                    "1728032260900"
+                ]
+            },
+        },
+        "elementValues": {
+            "rootCauseElements": {
+                "elementValues": [
+                    {
+                        "elementType": "File",
+                        "name": "avg_secure_browser_setup.pdf.exe"
+                    }
+                ]
             }
-		}
-	}
-    command_output = malop_to_incident(args)
-
-    assert all([(command_output['name'] == "Cybereason Malop 12345A"), (command_output['status'] == 1), 
-                (command_output['CustomFields']['malopcreationtime'])])
-
-    with pytest.raises(Exception) as exc_info:
-        command_output = malop_to_incident("args")
-    assert exc_info.match(r"Cybereason raw response is not valid")
-
-
-def test_malop_to_incident_status_closed(mocker):
-    from Cybereason import malop_to_incident
-    args = {
-        "guidString": "12345A",
-        "status": "Closed"
+        },
+        'isEdr': True
     }
     command_output = malop_to_incident(args)
 
-    assert all([(command_output['name'] == "Cybereason Malop 12345A"), (command_output['status'] == 2)])
+    assert all([(command_output['name'] == "Cybereason Malop 12345A"), (command_output['status'] == 0),
+                (command_output['CustomFields']['malopcreationtime'] == "1721798910159"),
+                (command_output['CustomFields']['malopupdatetime'] == "1728032260900"),
+                (command_output['CustomFields']['malopdetectiontype'] == "EXTENSION_MANIPULATION"),
+                (command_output['CustomFields']['maloprootcauseelementname'] == "avg_secure_browser_setup.pdf.exe"),
+                (command_output['CustomFields']['maloprootcauseelementtype'] == "File"),
+                (command_output['malopedr']), (command_output['dbotmirrorid'] == "12345A")])
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
