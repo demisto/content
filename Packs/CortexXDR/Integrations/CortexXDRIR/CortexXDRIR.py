@@ -1082,19 +1082,19 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-    demisto.debug(f"XDR_IR Integration:{last_fetch=}")
+    demisto.debug(f"{last_fetch=}")
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
                                                                                                 dict) else []
-    demisto.debug(f"XDR_IR Integration:{incidents_from_previous_run=}")
+    demisto.debug(f"{incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
-        demisto.debug(f"XDR_IR Integration: last_fetch after parsing date range {last_fetch}")
+        demisto.debug(f"last_fetch after parsing date range {last_fetch}")
 
     if starred:
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
         demisto.debug(
-            f"XDR_IR Integration: starred_incidents_fetch_window after parsing date range {starred_incidents_fetch_window}")
+            f"starred_incidents_fetch_window after parsing date range {starred_incidents_fetch_window}")
 
     incidents = []
     if incidents_from_previous_run:
@@ -1119,7 +1119,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 starred_incidents_fetch_window=starred_incidents_fetch_window,
                 exclude_artifacts=exclude_artifacts)
 
-    demisto.debug(f"XDR_IR Integration: {raw_incidents=}")
+    # demisto.debug(f"{raw_incidents=}") # uncomment to debug, otherwise spams the log
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -1353,7 +1353,7 @@ def main():  # pragma: no cover
             integration_instance = demisto.integrationInstance()
             last_run = demisto.getLastRun().get('next_run')
             demisto.debug(
-                f"XDR_IR Integration: Before starting a new cycle of fetch incidents\n{last_run=}\n{integration_instance=}")
+                f"Before starting a new cycle of fetch incidents\n{last_run=}\n{integration_instance=}")
             next_run, incidents = fetch_incidents(client=client,
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
@@ -1364,7 +1364,7 @@ def main():  # pragma: no cover
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
                                                   )
-            demisto.debug(f"XDR_IR Integration: After a cycle of fetch incidents.\nThis is the next run = {next_run}\n"
+            demisto.debug(f"After a cycle of fetch incidents.\nThis is the next run = {next_run}\n"
                           f"{len(incidents)} incidents are fetched, {incidents=}")
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
