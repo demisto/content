@@ -394,6 +394,7 @@ tasks:
       id: 1b3aae31-8d82-401d-87cf-d0148d0b278b
       version: -1
       name: Was this a true positive?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
