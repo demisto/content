@@ -1145,9 +1145,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
             description = incident_data.get('description')
-            occurred = timestamp_to_datestring(
-                incident_data['creation_time'], f'{TIME_FORMAT}Z'
-            )
+            occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
             incident: Dict[str, Any] = {
                 'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
