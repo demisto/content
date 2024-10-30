@@ -225,6 +225,7 @@ def format_incidents(alerts, hide_cvv_expiry):
     :return: incidents to feed into XSOAR
     """
     events: List[dict[str, Any]] = []
+
     try:
         for alert in alerts:
 
