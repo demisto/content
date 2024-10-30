@@ -84,6 +84,7 @@ Packs/Whois/Integrations/Whois/test_data/microsocks
 .pre-commit-config-content.yaml
 .report.json
 .report_mypy.xml
+.report_pytest.xml
 coverage.xml
 Packs/**/Integrations/**/.pytest.ini
 Packs/**/Scripts/**/.pytest.ini
