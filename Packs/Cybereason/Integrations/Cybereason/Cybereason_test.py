@@ -1116,7 +1116,7 @@ def test_malop_to_incident_5(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345D",
-        "status": "",
+        "status": "123",
         "malopDetectionType": "ABCD",
         "creationTime": "23456",
         "lastUpdateTime": "6789"
@@ -1138,6 +1138,7 @@ def test_malop_to_incident_6(mocker):
     from Cybereason import malop_to_incident
     args = {
         "guidString": "12345D",
+        "status": 3,
         "creationTime": 23456,
         "lastUpdateTime": 6789
     }
