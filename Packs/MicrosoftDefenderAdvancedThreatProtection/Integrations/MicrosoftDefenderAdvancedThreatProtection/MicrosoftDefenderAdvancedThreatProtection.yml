@@ -329,10 +329,10 @@ script:
   - arguments:
     - description: Flag for the rate limit retry.
       name: ran_once_flag
-      polling: true
       deprecated: true
     description: Tests connectivity to Microsoft Defender for Endpoint.
     name: microsoft-atp-test
+    polling: true
   - arguments:
     - description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
@@ -3471,8 +3471,8 @@ script:
       deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
     name: microsoft-atp-indicator-delete
-    polling: true
     deprecated: true
+    polling: true
   - arguments:
     - description: The value of the indicator to update.
       name: indicator_value
@@ -4311,7 +4311,6 @@ script:
       deprecated: true
     description: Retrieves a list of machines affected by a vulnerability.
     name: microsoft-atp-list-machines-by-vulnerability
-    polling: true
     outputs:
     - contextPath: MicrosoftATP.CveMachine.ID
       description: The machine ID.
@@ -4328,6 +4327,7 @@ script:
     - contextPath: MicrosoftATP.CveMachine.CVE
       description: The given CVE IDs related to this machine.
       type: Unknown
+    polling: true
   - arguments:
     - description: A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information.
       isArray: true
@@ -5209,7 +5209,6 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Detects process details. When you select a “query_purpose” argument, a designated query template is used.
-    polling: true
     name: microsoft-atp-advanced-hunting-process-details
     outputs:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
@@ -5230,6 +5229,7 @@ script:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
       description: The query results for process_excecution_powershell query_purpose.
       type: String
+    polling: true
   - name: microsoft-atp-advanced-hunting-network-connections
     description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
     arguments:
