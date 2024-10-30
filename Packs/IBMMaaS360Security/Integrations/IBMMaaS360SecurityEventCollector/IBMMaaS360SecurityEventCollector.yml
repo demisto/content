@@ -6,37 +6,57 @@ commonfields:
   id: IBMMaaS360SecurityEventCollector
   version: -1
 configuration:
-- defaultvalue: https://test.com
-  display: Server URL
+- display: Server URL
   name: url
-  required: false
+  required: true
   type: 0
   section: Connect
-- defaultvalue: ACTIVE
-  section: Collect
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  options:
-  - ACTIVE
-  - CLOSED
-  required: false
-  type: 15
-- defaultvalue: 10000
-  section: Collect
-  display: Max number of events per fetch
-  name: max_events_per_fetch
-  required: false
+- name: credentials
+  display: User Name
+  required: true
+  type: 9
+  displaypassword: Password
+  section: Connect
+  hiddenusername: false
+- display: App ID
+  name: app_id
+  required: true
   type: 0
+  section: Connect
+- display: App Version
+  name: app_version
+  required: true
+  type: 0
+  section: Connect
+- display: Platform ID
+  name: platform_id
+  required: true
+  type: 0
+  section: Connect
+- name: app_access_key
+  required: true
+  type: 9
+  displaypassword: App Access Key
+  section: Connect
+  hiddenusername: true
+- name: billing_id
+  required: true
+  type: 9
+  displaypassword: Billing ID
+  section: Connect
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
+  advanced: true
 description: This is the Hello World event collector integration for Cortex XSIAM.
 display: IBMMaaS360SecurityEventCollector
 name: IBMMaaS360SecurityEventCollector
@@ -75,7 +95,7 @@ script:
     deprecated: false
     description: Gets events from Hello World.
     execution: false
-    name: hello-world-get-events
+    name: ibm-maas360-security-get-events
   dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true
   runonce: false
