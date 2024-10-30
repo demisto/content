@@ -52,13 +52,14 @@ def parse_slack_block_builder_res(SlackBlockState: Any) -> None:
             demisto.setContext("User.Action", "remediate")
         else:
             raise Exception(f"Sorry!!, this '{action_name}' action type is not supported")
-
     except AttributeError as ae:
         demisto.error(traceback.format_exc())  # log the traceback
         demisto.setContext("User.Action", "invalid_response")
+        return_error(f"Failed to parse Slack block builder response: {str(ae)}")
     except TypeError as ex:
         demisto.error(traceback.format_exc())  # log the traceback
         demisto.setContext("User.Action", "invalid_response")
+        return_error(f"Failed to parse Slack block builder response: {str(ex)}")
     except Exception as ex:
         demisto.setContext("User.Action", "invalid_response")
         return_error(f"Failed to parse Slack block builder response: {str(ex)}")
