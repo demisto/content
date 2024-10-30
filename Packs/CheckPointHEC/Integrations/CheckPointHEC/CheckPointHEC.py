@@ -3,7 +3,6 @@ import uuid
 from urllib.parse import urlencode
 
 import urllib3
-from pytz import UTC
 
 from CommonServerPython import *
 
@@ -134,7 +133,7 @@ class Client(BaseClient):
                 'x-av-req-id': request_id,
             }
         else:
-            timestamp = datetime.now(UTC).isoformat()
+            timestamp = datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
             headers = {
                 'x-av-req-id': request_id,
                 'x-av-app-id': self.client_id,
@@ -207,7 +206,7 @@ class Client(BaseClient):
                 {
                     'saasAttrName': 'entityPayload.restoreRequestTime',
                     'saasAttrOp': 'greaterThan',
-                    'saasAttrValue': (datetime.now(UTC) - timedelta(minutes=15)).isoformat()
+                    'saasAttrValue': (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=15)).isoformat()
                 }
             ]
         }
@@ -677,13 +676,13 @@ def test_module(client: Client):
     scopes = result.get('responseData')
 
     if not isinstance(scopes, list):
-        return 'error'
+        return 'scope format wrong'
 
     if len(scopes) != 1:
-        return 'error'
+        return 'multi customer supported'
 
     if len(scopes[0].split(':')) != 2:
-        return 'error'
+        return 'customer format wrong'
 
     return 'ok'
 
@@ -697,7 +696,7 @@ def fetch_incidents(client: Client, params: dict):
     max_fetch: int = arg_to_number(params.get('max_fetch')) or MAX_FETCH_DEFAULT
     fetch_interval: int = arg_to_number(params.get('incidentFetchInterval')) or FETCH_INTERVAL_DEFAULT
 
-    now = datetime.now(UTC)  # We get current time before processing
+    now = datetime.now(timezone.utc).replace(tzinfo=None)  # We get current time before processing
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_fetch')):
         if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
@@ -749,7 +748,7 @@ def fetch_restore_requests(client: Client, params: dict):
     max_fetch: int = arg_to_number(params.get('max_fetch')) or MAX_FETCH_DEFAULT
     fetch_interval: int = arg_to_number(params.get('incidentFetchInterval')) or FETCH_INTERVAL_DEFAULT
 
-    now = datetime.now(UTC)  # We get current time before processing
+    now = datetime.now(timezone.utc).replace(tzinfo=None)  # We get current time before processing
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_rr_fetch')):
         if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
