@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 890
+          "y": 710
         }
       }
     note: false
@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -870
+          "y": -1050
         }
       }
     note: false
@@ -132,7 +132,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1210
+          "y": -1390
         }
       }
     note: false
@@ -157,7 +157,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "186"
+      - "150"
     scriptarguments:
       key:
         simple: Hash
@@ -206,7 +206,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 170
+          "y": -10
         }
       }
     note: false
@@ -243,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -10
+          "y": -190
         }
       }
     note: false
@@ -282,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 355
+          "y": 175
         }
       }
     note: false
@@ -332,7 +332,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 540
+          "y": 360
         }
       }
     note: false
@@ -367,7 +367,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 720
+          "y": 540
         }
       }
     note: false
@@ -603,7 +603,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -380
+          "y": -560
         }
       }
     note: false
@@ -640,7 +640,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1040
+          "y": -1220
         }
       }
     note: false
@@ -999,7 +999,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -710
+          "y": -890
         }
       }
     note: false
@@ -1036,7 +1036,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -550
+          "y": -730
         }
       }
     note: false
@@ -1073,43 +1073,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "186":
-    id: "186"
-    taskid: af8cc56d-d7b3-4805-8f2c-66ff1d31b61b
-    type: regular
-    task:
-      id: af8cc56d-d7b3-4805-8f2c-66ff1d31b61b
-      version: -1
-      name: Remove hash from blocklist
-      description: Removes requested files from block list.
-      script: '|||core-remove-blocklist-files'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "150"
-    scriptarguments:
-      hash_list:
-        simple: 724e1e4079191f086c3a2bcc15133b4309ce5125dbb31c5443262599ca992601
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": -1400
+          "y": -385
         }
       }
     note: false
@@ -1126,7 +1090,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4665,
+        "height": 4485,
         "width": 650,
         "x": 60,
         "y": -3710

@@ -1,5 +1,15 @@
 id: Containment Plan - Block Indicators
-version: -1
+version: 40
+contentitemexportablefields:
+  contentitemfields:
+    packID: CommonPlaybooks
+    packName: Common Playbooks
+    itemVersion: 2.6.43
+    fromServerVersion: 6.6.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Containment Plan - Block Indicators
 description: |-
   ## Containment Plan - Block Indicators
@@ -24,7 +34,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -52,7 +61,8 @@ tasks:
       id: 42177fdd-e676-4494-8430-473b77c4d326
       version: -1
       name: Add to XSIAM hash block list
-      description: Block lists requested files which have not already been block listed or added to allow list.
+      description: Block lists requested files which have not already been block listed
+        or added to allow list.
       script: '|||core-blocklist-files'
       type: regular
       iscommand: true
@@ -116,7 +126,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -186,8 +195,8 @@ tasks:
     task:
       id: 58da2cac-8a9e-4f4f-88de-623361cde61f
       version: -1
-      name: Set Block list files to the Incident context
-      description: commands.local.cmd.set.parent.incident.context
+      name: Set Block list files to the Alert context
+      description: commands.local.cmd.set.parent.alert.context
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
@@ -225,8 +234,8 @@ tasks:
     task:
       id: 4fb0cfd4-2555-4d5b-844c-c83c447c4a99
       version: -1
-      name: Set Blocked Indicators to the Incident context
-      description: commands.local.cmd.set.parent.incident.context
+      name: Set Blocked Indicators to the Alert context
+      description: commands.local.cmd.set.parent.alert.context
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
@@ -315,7 +324,8 @@ tasks:
       id: 56214186-2922-4165-820b-062ad475cf73
       version: -1
       name: Should block indicators automatically?
-      description: Whether to disable the account automatically based on the input values.
+      description: Whether to disable the account automatically based on the input
+        values.
       type: condition
       iscommand: false
       brand: ""
@@ -405,7 +415,8 @@ tasks:
       id: fca5352e-ba68-4776-8b35-903387490051
       version: -1
       name: Add to XSIAM hash block list
-      description: Block lists requested files which have not already been block listed or added to allow list.
+      description: Block lists requested files which have not already been block listed
+        or added to allow list.
       script: '|||core-blocklist-files'
       type: regular
       iscommand: true
@@ -566,7 +577,7 @@ tasks:
       RuleDirection:
         simple: outbound
       RuleName:
-        simple: XSOAR - Block Indicators playbook - ${incident.id}
+        simple: XSOAR - Block Indicators playbook - ${alert.id}
       SHA256:
         complex:
           root: inputs.FileHash
@@ -629,8 +640,8 @@ tasks:
     task:
       id: cb04e962-15e3-4189-8fcc-73efa9cb71fb
       version: -1
-      name: Set Block list files to the Incident context
-      description: commands.local.cmd.set.parent.incident.context
+      name: Set Block list files to the Alert context
+      description: commands.local.cmd.set.parent.alert.context
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
@@ -788,6 +799,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -816,13 +828,16 @@ inputs:
     simple: "True"
   required: false
   description: Set to 'True' to block the indicators.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UserVerification
   value:
     simple: "False"
   required: false
-  description: "Possible values: True/False.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
-  playbookInputQuery:
+  description: "Possible values: True/False.\nWhether to provide user verification
+    for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue
+    - The server will ask the user for blocking verification and will display the
+    blocking list."
+  playbookInputQuery: null
 - key: AutoBlockIndicators
   value:
     simple: "True"
@@ -833,47 +848,42 @@ inputs:
 
     If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
     If set to True - the user will be prompted to select which indicators to block.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FileHash
   value: {}
   required: false
   description: The file hash to block.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: IP
   value: {}
   required: false
   description: The IP indicators.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Domain
   value: {}
   required: false
   description: The domain indicators.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: URL
   value: {}
   required: false
   description: The URL indicator.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Username
   value: {}
   required: false
   description: The username to disable.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FilePath
   value: {}
   required: false
   description: The path of the file to block.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutoContainment
   value: {}
   required: false
   description: Whether to execute containment plan automatically.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Core.blocklist.added_hashes
   description: The file Hash that was added to the blocklist.
-tests:
-- No tests (auto formatted)
-fromversion: 6.6.0
-marketplaces:
-- marketplacev2
