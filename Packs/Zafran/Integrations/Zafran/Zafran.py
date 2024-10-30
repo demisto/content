@@ -52,6 +52,7 @@ def mitigation_performed_command(client: Client, args: Dict[str, Any]) -> Comman
     mitigationstatus_external_ticket_url = args.get('external_ticket_url', '')
     mitigationstatus_id = args.get('id', '')
     mitigationstatus_state = args.get('state', '')
+    pass
 
     response = client.mitigation_performed_request(
         mitigationstatus_external_ticket_id, mitigationstatus_external_ticket_url,

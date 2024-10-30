@@ -38,7 +38,7 @@ ERR_DICT = {
     '4031': 'User does not have permission.',
     '4034': 'Request is not yet approved.',
     '4091': 'Conflicting request exists. This user or another user has already requested a password for the'
-            ' specified account.',
+            ' specified account.'
 }
 
 
