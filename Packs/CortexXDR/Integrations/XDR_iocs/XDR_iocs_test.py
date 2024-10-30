@@ -1154,12 +1154,12 @@ def test_xdr_iocs_sync_command_sync_for_fetch_fails(mock_update_integration_cont
 @patch('XDR_iocs.update_integration_context_override', return_value={})
 @patch('XDR_iocs.demisto.debug')
 def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
-    mock_demisto_debug,
-    mock_update_integration_context_override,
-    mock_set_integration_context,
-    mock_http_request,
-    mock_get_iocs_generator,
-    mock_get_integration_context):
+        mock_demisto_debug,
+        mock_update_integration_context_override,
+        mock_set_integration_context,
+        mock_http_request,
+        mock_get_iocs_generator,
+        mock_get_integration_context):
     """
     Given the xdr_iocs_sync_command function is called with is_first_stage_sync=true, called_from_fetch=true
     When  There are validation errors in the response
