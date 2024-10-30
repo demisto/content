@@ -1,8 +1,13 @@
-id: DSPM Valid User Response
-version: -1
+id: 08655808-4525-45cd-8540-48e7d75e6610
+version: 36
+vcShouldKeepItemLegacyProdMachine: false
 name: DSPM Valid User Response
-description: "Playbook to validate user response in DSPM."
-fromversion: "6.10.0"
+description: The DSPM Valid User Response playbook is designed to assess and manage
+  user responses to DSPM-identified risks. It checks the user’s selected action (e.g.,
+  creating a Jira ticket or remediating specific risk types) and initiates the appropriate
+  remediation or notification workflows. If no user response is received, the playbook
+  logs the incident for future action, ensuring comprehensive tracking and response
+  handling for DSPM incidents.
 starttaskid: "0"
 tasks:
   "0":
@@ -11,7 +16,6 @@ tasks:
     type: start
     task:
       id: bf838bc6-fd32-4cfb-8907-d8ab44600b88
-      description: "Start task for DSPM Valid User Response playbook."
       version: -1
       name: ""
       iscommand: false
@@ -24,7 +28,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1350,
           "y": 50
         }
       }
@@ -37,12 +41,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b3fb4e53-88ad-4578-898e-4aa7c4a7ab68
+    taskid: 788ca4f6-959f-4b2e-8ce8-e01fa3593363
     type: condition
     task:
-      id: b3fb4e53-88ad-4578-898e-4aa7c4a7ab68
+      id: 788ca4f6-959f-4b2e-8ce8-e01fa3593363
       version: -1
-      name: Check if the Action is value
+      name: Identify User-Selected Action
       type: condition
       iscommand: false
       brand: ""
@@ -117,7 +121,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1350,
           "y": 195
         }
       }
@@ -130,10 +134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 01e7668f-2a5e-4277-8e18-e82655ff284c
+    taskid: 685c33f1-7d4d-4a78-8224-b681e9bd60d5
     type: regular
     task:
-      id: 01e7668f-2a5e-4277-8e18-e82655ff284c
+      id: 685c33f1-7d4d-4a78-8224-b681e9bd60d5
       version: -1
       name: Send slack notification to ${userSlackEmail}
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -150,7 +154,7 @@ tasks:
       - "67"
     scriptarguments:
       list_name:
-        simple: ${block_list_name}
+        simple: 'slack block of Incident ID : ${incident.id}'
       user:
         simple: ${userSlackEmail}
     separatecontext: false
@@ -158,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1565
+          "x": 1135,
+          "y": 1740
         }
       }
     note: false
@@ -175,7 +179,6 @@ tasks:
     type: playbook
     task:
       id: d3792edc-ef0c-4b03-8ed2-9b8b80bfd174
-      description: "DSPM Remediation for Sensitive asset open to world."
       version: -1
       name: DSPM Remediation playbook for Sensitive asset open to world.
       playbookName: DSPM Remediation playbook for Sensitive asset open to world.
@@ -195,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1390
+          "x": 2220,
+          "y": 1565
         }
       }
     note: false
@@ -212,7 +215,6 @@ tasks:
     type: playbook
     task:
       id: 50fe4308-911d-4d45-807c-f73fd158856a
-      description: "DSPM Remediation for Empty storage asset."
       version: -1
       name: DSPM Remediation playbook for Empty storage asset
       playbookName: DSPM Remediation playbook for Empty storage asset
@@ -232,8 +234,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1390
+          "x": 1790,
+          "y": 1565
         }
       }
     note: false
@@ -249,7 +251,6 @@ tasks:
     type: playbook
     task:
       id: 5df01203-bf70-447d-80d1-68b3cad379f5
-      description: "DSPM Jira Ticket Creation playbook."
       version: -1
       name: DSPM Jira Ticket Creation
       playbookName: DSPM Jira Ticket Creation
@@ -269,8 +270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1390
+          "x": 480,
+          "y": 1565
         }
       }
     note: false
@@ -282,11 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: e046c57b-89e0-40d0-8cb6-1835dca8fd45
+    taskid: beae8cc3-91d4-4ff8-8064-5303e2fccaf5
     type: regular
     task:
-      id: e046c57b-89e0-40d0-8cb6-1835dca8fd45
-      description: "Add incident for re-run in DSPM Incident List."
+      id: beae8cc3-91d4-4ff8-8064-5303e2fccaf5
       version: -1
       name: Add incident for re-run
       scriptName: DSPMIncidentList
@@ -301,6 +301,8 @@ tasks:
         simple: add
       incident_data:
         simple: ${incident_object}
+      incident_list:
+        simple: ${lists.INCIDENT_LIST2}
       rerun_time:
         simple: ${inputs.rerunTime}
     separatecontext: false
@@ -308,8 +310,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 1040
+          "x": 1247.5,
+          "y": 1215
         }
       }
     note: false
@@ -346,8 +348,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
-          "y": 865
+          "x": 1135,
+          "y": 1040
         }
       }
     note: false
@@ -389,8 +391,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 1215
+          "x": 1247.5,
+          "y": 1390
         }
       }
     note: false
@@ -402,10 +404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: eaf91ca2-7486-476c-892c-8370d95eb08d
+    taskid: ff34303b-396f-46b0-861b-2403a252ca5d
     type: regular
     task:
-      id: eaf91ca2-7486-476c-892c-8370d95eb08d
+      id: ff34303b-396f-46b0-861b-2403a252ca5d
       version: -1
       name: Add incident in  DSPM Incident list
       description: commands.local.cmd.list.add
@@ -418,7 +420,7 @@ tasks:
       - "34"
     scriptarguments:
       listData:
-        simple: '{"incident_id":"${incident.id}","incident_created":"${incident.assetcreatedtime}"}'
+        simple: '{"incident_id":"${incident.id}","incident_created":"${incident_object.incidentCreated}"}'
       listName:
         simple: INCIDENT_LIST2
     separatecontext: false
@@ -426,8 +428,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 1390
+          "x": 1360,
+          "y": 1565
         }
       }
     note: false
@@ -463,8 +465,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1892.5,
-          "y": 1390
+          "x": 910,
+          "y": 1565
         }
       }
     note: false
@@ -490,8 +492,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1740
+          "x": 1135,
+          "y": 1915
         }
       }
     note: false
@@ -503,10 +505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 08f4a72e-8b3b-4744-8bfa-d854789bc875
+    taskid: cf3b20bb-6049-4052-8f60-ee1340394f88
     type: regular
     task:
-      id: 08f4a72e-8b3b-4744-8bfa-d854789bc875
+      id: cf3b20bb-6049-4052-8f60-ee1340394f88
       version: -1
       name: Create Slack block sending notification to user.
       description: This automation script overwrites the value of a specified list
@@ -524,6 +526,8 @@ tasks:
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -535,7 +539,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1135,
           "y": 515
         }
       }
@@ -548,10 +552,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 44016dfc-01ea-4782-8632-3781cc48ff6b
+    taskid: 02110131-d79f-4d62-8714-63a756ad562c
     type: regular
     task:
-      id: 44016dfc-01ea-4782-8632-3781cc48ff6b
+      id: 02110131-d79f-4d62-8714-63a756ad562c
       version: -1
       name: Save the above slack block to the XSOAR list.
       description: Set data in list
@@ -561,10 +565,10 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "63"
+      - "77"
     scriptarguments:
       listData:
-        simple: ${CustomSlackBlock}
+        simple: ${slackBlock}
       listName:
         simple: 'slack block of Incident ID : ${incident.id}'
     separatecontext: false
@@ -572,7 +576,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1135,
           "y": 690
         }
       }
@@ -602,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1230
+          "x": 2220,
+          "y": 1405
         }
       }
     note: false
@@ -632,8 +636,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1230
+          "x": 1790,
+          "y": 1405
         }
       }
     note: false
@@ -656,14 +660,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "58"
+      - "74"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1230
+          "x": 265,
+          "y": 880
         }
       }
     note: false
@@ -692,8 +696,208 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1135,
           "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: ec22cd28-8fef-4c86-85fd-92a5cf6a0494
+    type: condition
+    task:
+      id: ec22cd28-8fef-4c86-85fd-92a5cf6a0494
+      version: -1
+      name: Is Jira Integration Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "75"
+      "yes":
+      - "58"
+    scriptarguments:
+      brandname:
+        simple: Jira V3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: ef6c25cc-93bd-4dbd-846b-31376eb2154f
+    type: regular
+    task:
+      id: ef6c25cc-93bd-4dbd-846b-31376eb2154f
+      version: -1
+      name: Create Slack block for sending error message notification to user.
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: Jira Pack/Integration is not enable on XSOAR instance.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: d6d5fb01-f43c-4633-8995-7e0220a14491
+    type: regular
+    task:
+      id: d6d5fb01-f43c-4633-8995-7e0220a14491
+      version: -1
+      name: Save the above slack block to the XSOAR list.
+      description: Set data in list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      listData:
+        simple: ${slackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 366ae2cf-5c2b-428f-861f-97b70ceb478a
+    type: regular
+    task:
+      id: 366ae2cf-5c2b-428f-861f-97b70ceb478a
+      version: -1
+      name: Deleting slack block from context after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 66170a98-198e-4993-854b-474d84f60d26
+    type: regular
+    task:
+      id: 66170a98-198e-4993-854b-474d84f60d26
+      version: -1
+      name: Deleting slack block from context after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
         }
       }
     note: false
@@ -708,8 +912,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1755,
-        "width": 2222.5,
+        "height": 1930,
+        "width": 2550,
         "x": 50,
         "y": 50
       }

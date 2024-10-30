@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-This playbook does not use any sub-playbooks.
+* DSPM notify user in case of error
 
 ### Integrations
 
@@ -14,21 +14,32 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* DSPMWaitUntilUserSpecifiedTime
-* DSPMExtractUserResponseFromSlackBlockState
 * DSPMIncidentList
-* GetSlackBlockBuilderResponse
+* DSPMCreateSimpleSlackMessageBlock
+* DeleteContext
+* DSPMExtractUserResponseFromSlackBlockState
 * SlackBlockBuilder
+* GetSlackBlockBuilderResponse
 * DSPMCheckAndSetErrorEntries
+* DSPMCreateRiskSlackBlocks
+* Sleep
 
 ### Commands
 
-This playbook does not use any commands.
+* addToList
+* createList
+* getList
+* setList
 
 ## Playbook Inputs
 
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| flowPath |  | slack | Optional |
+| rerunTime | Incident re-run time \(in hours\) |  | Optional |
+| slackMessageLifetime | Lifetime for slack notification \(in seconds\) |  | Optional |
 
 ## Playbook Outputs
 

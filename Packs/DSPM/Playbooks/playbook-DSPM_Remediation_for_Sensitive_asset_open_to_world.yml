@@ -1,11 +1,11 @@
-id: DSPM Remediation for Sensitive asset open to world.
-version: -1
-name: DSPM Remediation for Sensitive asset open to world.
+id: c7f9a77b-18e3-45ca-8307-b39035938abe
+version: 34
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM Remediation playbook for Sensitive asset open to world.
 description: 'The DSPM Remediation Playbook for Sensitive Asset Open to World is designed
   to handle incidents where sensitive assets are exposed to the public, with specific
   focus on remediating this vulnerability across different cloud providers (AWS).
   Below is an overview of the key steps and actions included in this playbook:'
-fromversion: "6.10.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -18,7 +18,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -27,7 +26,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 602.5,
           "y": 50
         }
       }
@@ -72,8 +71,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 690
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
@@ -139,7 +138,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 602.5,
           "y": 195
         }
       }
@@ -178,8 +177,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 865
+          "x": 1052.5,
+          "y": 1215
         }
       }
     note: false
@@ -218,8 +217,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 827.5,
-          "y": 1040
+          "x": 920,
+          "y": 1390
         }
       }
     note: false
@@ -257,8 +256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 827.5,
-          "y": 1215
+          "x": 920,
+          "y": 1565
         }
       }
     note: false
@@ -291,8 +290,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 1565
+          "x": 1697.5,
+          "y": 2090
         }
       }
     note: false
@@ -330,7 +329,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 865
         }
       }
     note: false
@@ -342,10 +341,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: cbf03c56-98d2-43fb-8044-b0dea34462f7
+    taskid: eb69506e-8c47-4b8a-845d-184b5d2f867e
     type: condition
     task:
-      id: cbf03c56-98d2-43fb-8044-b0dea34462f7
+      id: eb69506e-8c47-4b8a-845d-184b5d2f867e
       version: -1
       name: |-
         Is Azure Storage Container
@@ -360,17 +359,16 @@ tasks:
       "no":
       - "29"
       "yes":
-      - "28"
+      - "34"
     scriptarguments:
       brandname:
-        simple: |
-          Azure Storage Container
+        simple: Azure Storage Container
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 827.5,
+          "x": 602.5,
           "y": 515
         }
       }
@@ -408,8 +406,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1595,
-          "y": 515
+          "x": 1482.5,
+          "y": 865
         }
       }
     note: false
@@ -446,8 +444,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1595,
-          "y": 690
+          "x": 1492.5,
+          "y": 1040
         }
       }
     note: false
@@ -477,7 +475,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 705
         }
       }
     note: false
@@ -506,7 +504,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 827.5,
+          "x": 602.5,
           "y": 370
         }
       }
@@ -536,8 +534,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1595,
-          "y": 370
+          "x": 1482.5,
+          "y": 705
         }
       }
     note: false
@@ -563,8 +561,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 827.5,
-          "y": 1740
+          "x": 1052.5,
+          "y": 2265
         }
       }
     note: false
@@ -576,10 +574,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 6955d029-6332-470f-8af2-34ba55021195
+    taskid: 0bd1f70e-13b1-4682-88b4-38bf073221d6
     type: regular
     task:
-      id: 6955d029-6332-470f-8af2-34ba55021195
+      id: 0bd1f70e-13b1-4682-88b4-38bf073221d6
       version: -1
       name: Create Slack block for sending success message notification to user.
       description: This automation script overwrites the value of a specified list
@@ -597,6 +595,8 @@ tasks:
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -608,8 +608,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 1390
+          "x": 837.5,
+          "y": 1740
         }
       }
     note: false
@@ -621,10 +621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 8dd93160-cbf6-4342-802e-b54c52e348a6
+    taskid: b3f621b6-975c-45dd-81e2-5499737bac11
     type: regular
     task:
-      id: 8dd93160-cbf6-4342-802e-b54c52e348a6
+      id: b3f621b6-975c-45dd-81e2-5499737bac11
       version: -1
       name: Save the above slack block to the XSOAR list.
       description: Set data in list
@@ -634,10 +634,10 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "22"
+      - "32"
     scriptarguments:
       listData:
-        simple: ${CustomSlackBlock}
+        simple: ${slackBlock}
       listName:
         simple: 'slack block of Incident ID : ${incident.id}'
     separatecontext: false
@@ -645,8 +645,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 827.5,
-          "y": 1565
+          "x": 695,
+          "y": 1915
         }
       }
     note: false
@@ -658,10 +658,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 21952e8d-0a15-4869-8949-403c3466d1c5
+    taskid: 195f27cc-07aa-4110-815e-aecb4d24faaa
     type: regular
     task:
-      id: 21952e8d-0a15-4869-8949-403c3466d1c5
+      id: 195f27cc-07aa-4110-815e-aecb4d24faaa
       version: -1
       name: Create Slack block for sending error message notification to user.
       description: This automation script overwrites the value of a specified list
@@ -679,6 +679,8 @@ tasks:
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -690,8 +692,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 1390
+          "x": 1267.5,
+          "y": 1740
         }
       }
     note: false
@@ -703,10 +705,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 4d0ba725-3bb8-42a7-8c62-bca269850c39
+    taskid: f3545f09-9731-4ac2-8a83-7e5e9bec6b78
     type: regular
     task:
-      id: 4d0ba725-3bb8-42a7-8c62-bca269850c39
+      id: f3545f09-9731-4ac2-8a83-7e5e9bec6b78
       version: -1
       name: Create Slack block for sending error message notification to user.
       description: This automation script overwrites the value of a specified list
@@ -724,6 +726,8 @@ tasks:
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -734,8 +738,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 1215
+          "x": 1697.5,
+          "y": 1565
         }
       }
     note: false
@@ -747,10 +751,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 8b12ab75-a0a9-4d95-8b95-6a6c0129a4de
+    taskid: 6c807eca-8d92-4e72-8095-98a2c916a503
     type: regular
     task:
-      id: 8b12ab75-a0a9-4d95-8b95-6a6c0129a4de
+      id: 6c807eca-8d92-4e72-8095-98a2c916a503
       version: -1
       name: Save the above slack block to the XSOAR list.
       description: Set data in list
@@ -760,10 +764,10 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "13"
+      - "33"
     scriptarguments:
       listData:
-        simple: ${CustomSlackBlock}
+        simple: ${slackBlock}
       listName:
         simple: 'slack block of Incident ID : ${incident.id}'
     separatecontext: false
@@ -771,43 +775,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 1e534e2f-7b9d-43d4-8306-a33dbf8450c2
-    type: regular
-    task:
-      id: 1e534e2f-7b9d-43d4-8306-a33dbf8450c2
-      version: -1
-      name: azure-storage-container-block-public-access
-      description: Block public access to a container.
-      script: Azure Storage Container|||azure-storage-container-block-public-access
-      type: regular
-      iscommand: true
-      brand: Azure Storage Container
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      container_name:
-        simple: ${incident.assetname}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1052.5,
-          "y": 690
+          "x": 1697.5,
+          "y": 1740
         }
       }
     note: false
@@ -819,10 +788,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 37e870e2-2d11-423f-8825-30aab71c98b5
+    taskid: 8573fda4-07bc-4e67-813a-427371e16ada
     type: regular
     task:
-      id: 37e870e2-2d11-423f-8825-30aab71c98b5
+      id: 8573fda4-07bc-4e67-813a-427371e16ada
       version: -1
       name: Create Slack block for sending error message notification to user.
       description: This automation script overwrites the value of a specified list
@@ -836,10 +805,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "24"
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -850,7 +821,126 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: fe2e46b4-cf4a-4ff7-8238-484b91410a9e
+    type: regular
+    task:
+      id: fe2e46b4-cf4a-4ff7-8238-484b91410a9e
+      version: -1
+      name: Deleting slack block from context data after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 60d01f3c-5038-49f3-8436-1296409eb9d1
+    type: regular
+    task:
+      id: 60d01f3c-5038-49f3-8436-1296409eb9d1
+      version: -1
+      name: Deleting slack block from context data after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1697.5,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: ac588f7b-bd72-48aa-882f-4a6a0d209037
+    type: regular
+    task:
+      id: ac588f7b-bd72-48aa-882f-4a6a0d209037
+      version: -1
+      name: dspm-get-asset-files-by-id
+      description: Retrieves file details for the specified asset ID.
+      script: DSPM|||dspm-get-asset-files-by-id
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      asset_id:
+        simple: ${incident.assetid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
           "y": 690
         }
       }
@@ -861,34 +951,66 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 64a2b10d-75af-4f29-87b7-3349fa52e361
+  "35":
+    id: "35"
+    taskid: 5cb4bd26-7972-4d3e-88fb-07575c0c8da9
     type: regular
     task:
-      id: 64a2b10d-75af-4f29-87b7-3349fa52e361
+      id: 5cb4bd26-7972-4d3e-88fb-07575c0c8da9
       version: -1
-      name: Save the above slack block to the XSOAR list.
-      description: Set data in list
-      script: Builtin|||setList
+      name: Get azure containers
+      scriptName: DSPMGetContianers
       type: regular
-      iscommand: true
-      brand: Builtin
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "36"
     scriptarguments:
-      listData:
-        simple: ${CustomSlackBlock}
-      listName:
-        simple: 'slack block of Incident ID : ${incident.id}'
+      asset_files:
+        simple: ${DSPM.AssetFiles}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 285,
+          "x": 920,
           "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 6f571698-bb88-43eb-8b84-3c73e68fafc7
+    type: regular
+    task:
+      id: 6f571698-bb88-43eb-8b84-3c73e68fafc7
+      version: -1
+      name: azure-storage-container-block-public-access
+      description: Block public access to a container.
+      script: Azure Storage Container|||azure-storage-container-block-public-access
+      type: regular
+      iscommand: true
+      brand: Azure Storage Container
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      container_name:
+        simple: ${containers}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1040
         }
       }
     note: false
@@ -903,8 +1025,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1755,
-        "width": 1925,
+        "height": 2280,
+        "width": 2027.5,
         "x": 50,
         "y": 50
       }

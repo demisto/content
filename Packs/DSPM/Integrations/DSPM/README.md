@@ -15,6 +15,17 @@ The Prisma Cloud DSPM(Data Security Posture Management) Integration enhances the
  6. Google Cloud Storage Pack. ( Optional )
  7. Azure Storage Container Pack. ( Optional )
 
+## Configure Cortex XSOAR on Prisma Cloud DSPM
+
+1. Log in to you Prisma Cloud DSPM platform.
+2. Navigate to **Settings** > **Workflow** > **XSOAR**.
+3. Click **Connect** to create and configure a new XSOAR integration.
+4. **XSOAR link** - Add the XSOAR API URL.
+5. **Notified On** - Select the Risks option. 
+6. **Severity Threshold** - Set the severity threshold to receive notifications for assets that fall under that severity.
+7. **Filter By Tags** - Notifications will be sent for assets that match any of the selected tags.
+8. **Advanced** - Add required headers **Authorization** and **x-xdr-auth-id**
+
 ## Configure Prisma Cloud DSPM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

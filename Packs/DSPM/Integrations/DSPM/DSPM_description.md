@@ -9,8 +9,6 @@ Configure the instance by providing following mandatory details:
 - Name of the instance
 - Prisma Cloud DSPM server URL
 - DSPM API Key
-- Lifetime for slack notification ( in hours)
-- Default Slack user for notifications
 
 #### Prisma Cloud DSPM
  - To retrieve DSPM API Token, login to [Prisma Cloud DSPM Portal](https://login.dig.security/).

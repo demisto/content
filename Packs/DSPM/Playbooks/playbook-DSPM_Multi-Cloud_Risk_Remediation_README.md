@@ -6,11 +6,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* DSPM Invalid User Response
-* DSPM notify user in case of error
-* Send Slack Notification to User
 * DSPM Valid User Response
-* DSPM Error Notification
+* Send slack notificaton to user
+* Invalid response sending notification to user again
+* DSPM notify user in case of error
 
 ### Integrations
 
@@ -18,23 +17,34 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* DSPMIncidentList
-* DSPMCreateRiskSlackBlocks
-* DSPMOverwriteListAndNotify
+* DSPMCreateSimpleSlackMessageBlock
 * DSPMCheckAndSetErrorEntries
+* IsIntegrationAvailable
+* DSPMIncidentList
+* DSPMExtractRiskDetails
+* DeleteContext
+* DSPMCreateRiskSlackBlocks
 * isError
 * SlackBlockBuilder
-* DSPMRemoveSlackBlockList
-* DSPMExtractRiskDetails
 
 ### Commands
 
+* createList
+* setList
+* getList
+* addToList
 * closeInvestigation
+* core-api-post
 
 ## Playbook Inputs
 
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| defaultSlackUserName | In the event that the risk asset tag is absent, the risk notice will be sent to this Slack user email address. | sachin.indoriya@metronlabs.com | Required |
+| slackMessageLifetime | Lifetime for slack notification \(in seconds\) | 300 | Optional |
+| rerunTime | Incident re-run time \(in hours\) | 24 | Optional |
 
 ## Playbook Outputs
 

@@ -1,4 +1,4 @@
-The DSPM Jira Ticket Creation is designed as a sub-playbook for Jira Ticket Creation, streamlining the process of creating a Jira ticket and providing immediate notification to the user with ticket details upon successful creation. If an error occurs during ticket creation, the user receives a notification containing relevant incident details.
+This playbook automates the process of creating and managing Jira issues for DSPM-related risks detected in XSOAR incidents. It creates a Jira ticket with risk details, checks for errors, updates incident details, and sends a Slack notification with ticket information. This streamlines risk tracking and notification.
 
 ## Dependencies
 
@@ -14,13 +14,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* DSPMCreateSimpleSlackMessageBlock
+* DeleteContext
 * DSPMCheckAndSetErrorEntries
-* DSPMOverwriteListAndNotify
 
 ### Commands
 
-* setIncident
 * jira-create-issue
+* setList
+* setIncident
 
 ## Playbook Inputs
 

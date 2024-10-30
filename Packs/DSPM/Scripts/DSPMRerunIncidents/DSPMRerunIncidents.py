@@ -9,9 +9,9 @@ INCIDENT_LIST = "INCIDENT_LIST2"
 
 def timeDifferenceInHours(given_timestamp, rerun_time):
     """
-      Function will fetch the time difference and
-      if the difference is more than 48 hours then
-      we will re-open the investigation.
+    Function will fetch the time difference and
+    if the difference is more than 48 hours then
+    we will re-open the investigation.
     """
     given_time = datetime.strptime(given_timestamp, "%Y-%m-%d %H:%M:%S.%f")
     current_time = datetime.now()
@@ -24,8 +24,8 @@ def timeDifferenceInHours(given_timestamp, rerun_time):
 
 def reopenInvestigation(incidentId):
     """
-      Function will re-open the investigation
-      and re-reun the same playbook.
+    Function will re-open the investigation
+    and re-reun the same playbook.
     """
     resp = demisto.executeCommand("reopenInvestigation", {"id": incidentId})
     demisto.info(f"Response from reopenInvestigation command:- {resp}")
@@ -39,54 +39,45 @@ def reopenInvestigation(incidentId):
 
 def reopenIncident(args):
     """
-      Function will fetch the incident list and
-      get the count of total number of re-opened
-      incidents.
+    Function will fetch the incident list and
+    get the count of total number of re-opened
+    incidents.
     """
     count, status = 0, ""
     incident_ids = []
-    # listData = demisto.executeCommand("getList", {"listName": INCIDENT_LIST})
-    # demisto.info(f"Response from getList command:- {listData}")
-    # incidentList = listData[0].get("Contents", None)
-    # print("incidentList", incidentList)
-    # if incidentList == "null" or incidentList is None:
-    #     status = f"No {INCIDENT_LIST} is available."
-    #     return count, status
-    # else:
     rerun_time = args.get("rerun_time")
     incident_list = args.get("incident_list")
     incident_list = "[" + incident_list + "]"
     incidentList = json.loads(incident_list)
-    print("incidentList", incidentList)
     for incident in incidentList:
         differenceInHours = timeDifferenceInHours(incident.get("incident_created"), rerun_time)
         if differenceInHours:
             incident_ids.append(incident.get("incident_id"))
-            # # result = reopenInvestigation(incident.get("incident_id"))
-            # if result:
-            #     count += 1
-    # if count == 0:
-    #     status = "No incidents were reopened."
-    # status = f"Successfully reopened {count} incidents."
-    # demisto.info(status)
-    print("incident_ids", incident_ids)
+            result = reopenInvestigation(incident.get("incident_id"))
+            if result:
+                count += 1
+    if count == 0:
+        status = "No incidents were reopened."
+    else:
+        status = f"Successfully reopened {count} incidents."
+    demisto.info(status)
     return count, status
 
 
 def main():
-    # try:
-    count, status = reopenIncident(demisto.args())
-    reportSummary = {"Total Number of Reopened Incidents": count}
-    return_results(
-        CommandResults(
-            readable_output=tableToMarkdown("Report Summary:", reportSummary, removeNull=True),
-            outputs_prefix="dspm",
-            outputs=status
+    try:
+        count, status = reopenIncident(demisto.args())
+        reportSummary = {"Total Number of Reopened Incidents": count}
+        return_results(
+            CommandResults(
+                readable_output=tableToMarkdown("Report Summary:", reportSummary, removeNull=True),
+                outputs_prefix="dspm",
+                outputs=status,
+            )
         )
-    )
-    # except Exception as ex:
-    #     demisto.error(traceback.format_exc())
-    #     return_error(str(ex))
+    except Exception as ex:
+        demisto.error(traceback.format_exc())
+        return_error(str(ex))
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":

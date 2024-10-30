@@ -1,16 +1,19 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-'''
+
+"""
 Script Name: DSPMIncidentList
 Description:
 This automation script manages incidents in a list by adding or deleting incidents based on the provided action.
 For incidents older than the configured time limit (default is 48 hours), the script performs a cleanup by removing
 the incident from the list. Additionally, the script supports adding new incidents to the list if they do not already exist.
-'''
+"""
 
+from typing import Dict, Any
+import traceback
 from datetime import datetime
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def get_incident_time(incident_list, incident_id):
@@ -25,7 +28,6 @@ def get_incident_time(incident_list, incident_id):
         str: The creation time of the incident, if found; otherwise, an empty string.
     """
     incident_time = ""
-    print("incident_list", incident_list)
     for incident in incident_list:
         if incident.get("incident_id") == incident_id:
             incident_time = incident.get("incident_created")
@@ -85,7 +87,7 @@ def get_incident_list(incident_object):
     if (
         incident_data[0].get("Contents") == "null"
         or incident_data[0].get("Contents") is None
-        or 'Item not found' in incident_data[0].get("Contents")
+        or "Item not found" in incident_data[0].get("Contents")
         or not incident_data[0].get("Contents")
     ):
         return incident_list
@@ -111,16 +113,13 @@ def delete_incident_list(args):
         incident_object = incident_object[0]
     incident_id = incident_object.get("id")
     status = f"Incident data with incident id {incident_id} does not exist in the list"
-    # incident_list = get_incident_list(incident_object)
     incident_list = args.get("incident_list")
     incident_list = "[" + incident_list + "]"
     incident_list = json.loads(incident_list)
     # Check if the value exists in any dictionary
     incident_time = get_incident_time(incident_list, incident_id)
-    print("incident_time", incident_time)
     if incident_time:
         differenceInHours = timeDifferenceInHours(incident_time, rerun_time)
-        print("differenceInHours", differenceInHours)
         if differenceInHours:
             # Remove the incident_data with the incident_id
             incident_list = [incident for incident in incident_list if incident["incident_id"] != incident_id]
@@ -142,30 +141,20 @@ def add_incident_list(args):
         str: A status message indicating the result of the add operation.
     """
     status = ""
-    rerun_time = args.get("rerun_time")
     incident_object = args.get("incident_data")
     if isinstance(incident_object, list):
-        incident_object = args[0]
+        incident_object = incident_object[0]
     incident_id = incident_object.get("id")
     incident_data = {
         "incident_id": incident_id,
-        "incident_created": incident_object.get("assetcreatedtime"),  # Update the create time field after testing
+        "incident_created": incident_object.get("incidentCreated"),  # Update the create time field after testing
     }
-    # incident_list = get_incident_list(incident_object)
     incident_list = args.get("incident_list")
     incident_list = "[" + incident_list + "]"
     incident_list = json.loads(incident_list)
-    # if not incident_list:
-    #     create_list = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2", "listData": [incident_data]})
-    #     status = f"Successfully created incident list with incident id :- {incident_id}"
-    # else:
-    # Check if the value exists in any dictionary
-    # incident_list = json.loads(str(incident_list))
-    print("after comverting into json", type(incident_list), incident_list)
-
     incident_time = get_incident_time(incident_list, incident_id)
     if incident_time:
-        status = "Incident data already exist in the list."
+        status = f"Incident data already exist in the list."
     else:
         incident_list.append(incident_data)
         # add_incident = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2", "listData": incident_list})
@@ -173,7 +162,7 @@ def add_incident_list(args):
     return status
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -181,11 +170,11 @@ def main():
     Main function that handles the script's logic. It decides whether to add or delete an incident
     from the list based on the `action` argument passed to the script.
     """
-    action = demisto.args().get('action')
+    action = demisto.args().get("action")
     if action == "delete":
         status = delete_incident_list(demisto.args())
     else:
-        demisto.setContext("User.Action", 'no_response')
+        demisto.setContext("User.Action", "no_response")
         status = add_incident_list(demisto.args())
     return_results(
         CommandResults(
@@ -196,7 +185,7 @@ def main():
     )
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -10,19 +10,28 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* AWS - S3
 * DSPM
+* Google Cloud Storage
+* AWS - S3
+* Azure Storage Container
 
 ### Scripts
 
 * DSPMIncidentList
-* DSPMOverwriteListAndNotify
+* DSPMCreateSimpleSlackMessageBlock
 * DSPMCheckAndSetErrorEntries
+* DeleteContext
+* DSPMGetContianers
+* IsIntegrationAvailable
 
 ### Commands
 
 * dspm-update-risk-finding-status
+* setList
 * aws-s3-put-public-access-block
+* gcs-block-public-access-bucket
+* azure-storage-container-block-public-access
+* dspm-get-asset-files-by-id
 
 ## Playbook Inputs
 
@@ -38,4 +47,4 @@ There are no outputs for this playbook.
 
 ---
 
-![DSPM Remediation playbook for Sensitive asset open to world.](../doc_files/DSPM_Remediation_playbook_for_Sensitive_asset_open_to_world..png)
+![DSPM Remediation playbook for Sensitive asset open to world.](../doc_files/DSPM_Remediation_playbook_for_Sensitive_asset_open_to_world.png)

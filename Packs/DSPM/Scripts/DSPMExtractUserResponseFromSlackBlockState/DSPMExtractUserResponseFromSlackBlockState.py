@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Any
 import traceback
+import urllib.parse
 
 CREATE_JIRA_TICKET = "Create a Jira ticket"
 REMEDIATE_RISK = "Remediate a Risk"
@@ -29,11 +30,13 @@ def parse_slack_block_builder_res(SlackBlockState: Any) -> None:
         if user_input_data is None:
             raise TypeError("values in SlackBlockState is None or missing")
 
-        action_name = user_input_data.get("radio_buttons_0", {}).get("actionId-0", {}).get("selected_option", {}).get("value")
+        action_name = (
+            user_input_data.get("radio_buttons_0", {}).get("actionId-0", {}).get("selected_option", {}).get("value")
+        )
         if action_name is None:
             raise TypeError("selected_option value is None or missing")
 
-        project_name = None
+        project_key = None
         ticket_type = None
 
         if action_name == CREATE_JIRA_TICKET:
@@ -46,30 +49,30 @@ def parse_slack_block_builder_res(SlackBlockState: Any) -> None:
             else:
                 demisto.setContext("User.Action", "invalid_response")
         elif action_name == REMEDIATE_RISK:
-            demisto.setContext("User.Action", 'remediate')
+            demisto.setContext("User.Action", "remediate")
         else:
             raise Exception(f"Sorry!!, this '{action_name}' action type is not supported")
 
     except AttributeError as ae:
-        print('Check for invalid response', str(ae))
+        print("Check for invalid response", str(ae))
         demisto.error(traceback.format_exc())  # log the traceback
         print(traceback.format_exc())
         print("Invalid response found.")
-        demisto.setContext("User.Action", 'invalid_response')
+        demisto.setContext("User.Action", "invalid_response")
     except TypeError as ex:
-        print('Check for invalid response', str(ex))
+        print("Check for invalid response", str(ex))
         demisto.error(traceback.format_exc())  # log the traceback
         print(traceback.format_exc())
         print("Invalid response found.")
-        demisto.setContext("User.Action", 'invalid_response')
+        demisto.setContext("User.Action", "invalid_response")
     except Exception as ex:
-        print('Check for invalid response', str(ex))
+        print("Check for invalid response", str(ex))
         print(traceback.format_exc())  # log the traceback
-        demisto.setContext("User.Action", 'invalid_response')
-        return_error(f'Failed to parse Slack block builder response: {str(ex)}')
+        demisto.setContext("User.Action", "invalid_response")
+        return_error(f"Failed to parse Slack block builder response: {str(ex)}")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -91,11 +94,11 @@ def main() -> None:
         parse_slack_block_builder_res(SlackBlockState)
     except Exception as excep:
         print(traceback.format_exc())  # print the traceback
-        demisto.setContext("User.Action", 'no_response 1')
-        return_error(f'Failed to execute DSPMExtractUserResponseFromSlackBlockState. Error: {str(excep)}')
+        demisto.setContext("User.Action", "no_response 1")
+        return_error(f"Failed to execute DSPMExtractUserResponseFromSlackBlockState. Error: {str(excep)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

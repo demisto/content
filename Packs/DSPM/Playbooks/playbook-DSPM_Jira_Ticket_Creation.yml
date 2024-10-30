@@ -1,7 +1,11 @@
-id: DSPM Jira Ticket Creation
-version: -1
+id: 44096456-af98-45b0-8e48-531f647f426f
+version: 22
+vcShouldKeepItemLegacyProdMachine: false
 name: DSPM Jira Ticket Creation
-description: 'The DSPM Jira Ticket Creation is designed as a sub-playbook for Jira Ticket Creation, streamlining the process of creating a Jira ticket and providing immediate notification to the user with ticket details upon successful creation. If an error occurs during ticket creation, the user receives a notification containing relevant incident details.'
+description: This playbook automates the process of creating and managing Jira issues
+  for DSPM-related risks detected in XSOAR incidents. It creates a Jira ticket with
+  risk details, checks for errors, updates incident details, and sends a Slack notification
+  with ticket information. This streamlines risk tracking and notification.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,7 +18,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -34,48 +37,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 849ba9fa-f6b4-4ea8-80be-59ab250c97c8
-    type: regular
-    task:
-      id: 849ba9fa-f6b4-4ea8-80be-59ab250c97c8
-      version: -1
-      name: OverwriteListAndNotify
-      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
-      scriptName: DSPMOverwriteListAndNotify
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      list_name:
-        simple: ${block_list_name}
-      message:
-        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} on Project Key: ${Ticket.Key}. Associated XSOAR incident ID: ${incident.id}.'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: cd8b682e-f8f4-4db3-8115-5680f9f5c28c
+    taskid: 4f9bcc91-ad98-4d76-8973-979922d5b0e0
     type: regular
     task:
-      id: cd8b682e-f8f4-4db3-8115-5680f9f5c28c
+      id: 4f9bcc91-ad98-4d76-8973-979922d5b0e0
       version: -1
-      name: Create Jira Issue without Assignee ID
+      name: 'Create Jira Issue for XSOAR incident Id: ${incident.id} of DSPM risk
+        : ${incident.riskfindingid}.'
       description: Creates a new issue in Jira.
       script: '|||jira-create-issue'
       type: regular
@@ -105,7 +75,8 @@ tasks:
       project_name:
         simple: ${User.JiraProjectName}
       summary:
-        simple: 'The issue created from XSOAR incident Id: ${incident.id} of DSPM risk : ${incident.riskfindingid}. Rule Name: ${incident.riskname}'
+        simple: 'The issue created for XSOAR incident Id: ${incident.id} of DSPM risk
+          : ${incident.riskfindingid}. Rule Name: ${incident.riskname}'
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -125,12 +96,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 78a8f56b-7686-4466-826f-dcefcbb782d5
+    taskid: 32986954-53af-4f13-882c-c075e8b3407b
     type: regular
     task:
-      id: 78a8f56b-7686-4466-826f-dcefcbb782d5
+      id: 32986954-53af-4f13-882c-c075e8b3407b
       version: -1
-      name: Update Slack Incident with JIRA details
+      name: Update Incident Details Field
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -138,16 +109,19 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "33"
+      - "57"
     scriptarguments:
       details:
-        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} and Key: ${Ticket.Key}. Associated Remediation ID: ${riskFindingId}. The ticket is not assigned to anybody because an error occurred when retrieving the assignee ID for ${User.Email} from Jira.'
+        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} and Key: ${Ticket.Key}.
+          Associated Remediation ID: ${riskFindingId}. The ticket is not assigned
+          to anybody because an error occurred when retrieving the assignee ID for
+          ${User.Email} from Jira.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
@@ -166,7 +140,9 @@ tasks:
       id: 6f0b05ed-e4e7-4f09-8201-263531e8ea3c
       version: -1
       name: Is there an error when creating a Jira ticket?
-      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs
+        and returns "yes" if any errors are found or "no" if no errors are present.
+        If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -207,10 +183,9 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: 'This sub-playbook notify the user in case of any error'
     nexttasks:
       '#none#':
-      - "56"
+      - "60"
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -221,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -232,24 +207,36 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
-    taskid: 953eaa61-e5cd-42dd-8e90-618748a296fd
+  "57":
+    id: "57"
+    taskid: 317ebc42-821b-43aa-8962-d259be4f9c59
     type: regular
     task:
-      id: 953eaa61-e5cd-42dd-8e90-618748a296fd
+      id: 317ebc42-821b-43aa-8962-d259be4f9c59
       version: -1
-      name: OverwriteListAndNotify
-      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
-      scriptName: DSPMOverwriteListAndNotify
+      name: Create Slack block for sending Jira ticket details to user.
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
     scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
-        simple: 'Error while creating JIRA Ticket with ID: ${Ticket.Id} on Project Key: ${Ticket.Key}. Associated XSOAR incident ID: ${incident.id}.'
+        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} on Project
+          Key: ${Ticket.Key}. Associated XSOAR incident ID: ${incident.id}.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -266,12 +253,116 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 82cff08c-8e02-467a-8c11-2518e792fa11
+    type: regular
+    task:
+      id: 82cff08c-8e02-467a-8c11-2518e792fa11
+      version: -1
+      name: Save the above slack block to the XSOAR list.
+      description: Set data in list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      listData:
+        simple: ${slackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 610e4a63-7c86-44b0-828b-9b3b70ba2df8
+    type: title
+    task:
+      id: 610e4a63-7c86-44b0-828b-9b3b70ba2df8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: b16e6d1c-f6c5-4429-8a7d-5c2e5e9f331d
+    type: regular
+    task:
+      id: b16e6d1c-f6c5-4429-8a7d-5c2e5e9f331d
+      version: -1
+      name: Deleting slack block from context after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
+        "height": 1260,
         "width": 810,
         "x": 50,
         "y": 50
@@ -288,6 +379,5 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-fromversion: 6.10.0
-tests:
-- No tests (auto formatted)
+sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
+dirtyInputs: true

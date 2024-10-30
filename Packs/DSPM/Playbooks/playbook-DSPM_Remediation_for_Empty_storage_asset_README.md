@@ -11,22 +11,23 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * AWS - S3
-* Azure Storage Container
 * DSPM
 * Google Cloud Storage
 
 ### Scripts
 
-* DSPMOverwriteListAndNotify
+* IsIntegrationAvailable
 * DSPMIncidentList
 * DSPMCheckAndSetErrorEntries
+* DeleteContext
+* DSPMCreateSimpleSlackMessageBlock
 
 ### Commands
 
 * aws-s3-delete-bucket
-* gcs-delete-bucket
 * dspm-update-risk-finding-status
-* azure-storage-container-delete
+* gcs-delete-bucket
+* setList
 
 ## Playbook Inputs
 
@@ -42,4 +43,4 @@ There are no outputs for this playbook.
 
 ---
 
-![DSPM Remediation for Empty storage asset](../doc_files/DSPM_Remediation_for_Empty_storage_asset.png)
+![DSPM Remediation playbook for Empty storage asset](../doc_files/DSPM_Remediation_playbook_for_Empty_storage_asset.png)

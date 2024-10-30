@@ -1,12 +1,12 @@
-id: DSPM Remediation for Empty storage asset
-version: -1
-name: DSPM Remediation for Empty storage asset
+id: e0f37ddb-21de-40f7-89cf-58d51ac7f00f
+version: 27
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM Remediation playbook for Empty storage asset
 description: This playbook is designed to remediate risks associated with empty storage
   assets across AWS, Azure, and GCP environments. It identifies the cloud provider
   for the asset and proceeds to delete the storage container or bucket accordingly.
   Additionally, it sends notifications via Slack to inform stakeholders about the
   status of the remediation process.
-fromversion: 6.10.0
 starttaskid: "0"
 tasks:
   "0":
@@ -19,7 +19,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -28,7 +27,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 735,
+          "x": 1257.5,
           "y": 50
         }
       }
@@ -36,43 +35,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: da85e48a-a63b-489c-8009-0fb183513f5f
-    type: regular
-    task:
-      id: da85e48a-a63b-489c-8009-0fb183513f5f
-      version: -1
-      name: Delete Azure Storage Container
-      description: Marks the specified Container for deletion. The Container and any
-        Blobs contained within it, will be deleted during garbage collection.
-      script: Azure Storage Container|||azure-storage-container-delete
-      type: regular
-      iscommand: true
-      brand: Azure Storage Container
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      container_name:
-        simple: ${incident.assetname}
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -101,7 +63,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1585,
+          "x": 377.5,
           "y": 690
         }
       }
@@ -137,7 +99,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 807.5,
           "y": 690
         }
       }
@@ -204,7 +166,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 735,
+          "x": 1257.5,
           "y": 195
         }
       }
@@ -237,47 +199,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: AWS - S3
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 9db32f23-3197-4b5f-8bf3-664e636b61fc
-    type: condition
-    task:
-      id: 9db32f23-3197-4b5f-8bf3-664e636b61fc
-      version: -1
-      name: |-
-        Is Azure Storage Container
-         Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "36"
-      "yes":
-      - "8"
-    scriptarguments:
-      brandname:
-        simple: |
-          Azure Storage Container
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -321,7 +242,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1595,
+          "x": 1257.5,
           "y": 515
         }
       }
@@ -351,7 +272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 817.5,
           "y": 370
         }
       }
@@ -375,14 +296,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 370
+          "x": 1482.5,
+          "y": 1230
         }
       }
     note: false
@@ -411,7 +332,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1595,
+          "x": 1257.5,
           "y": 370
         }
       }
@@ -450,7 +371,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 695,
           "y": 865
         }
       }
@@ -490,7 +411,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 807.5,
           "y": 1040
         }
       }
@@ -529,7 +450,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 807.5,
           "y": 1215
         }
       }
@@ -563,8 +484,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 1565
+          "x": 50,
+          "y": 1740
         }
       }
     note: false
@@ -590,8 +511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 1740
+          "x": 920,
+          "y": 1915
         }
       }
     note: false
@@ -603,10 +524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 06db63d4-a35e-49c7-89ed-934aa21b7f1e
+    taskid: 11e31632-707b-40a9-8c7d-db93b0d4a20e
     type: regular
     task:
-      id: 06db63d4-a35e-49c7-89ed-934aa21b7f1e
+      id: 11e31632-707b-40a9-8c7d-db93b0d4a20e
       version: -1
       name: Create Slack block for sending success message notification to user.
       description: This automation script overwrites the value of a specified list
@@ -624,6 +545,8 @@ tasks:
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -635,7 +558,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 182.5,
+          "x": 480,
           "y": 1390
         }
       }
@@ -648,10 +571,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: a5188547-1841-4ce1-821c-5a9a16b73597
+    taskid: 98f5d8bd-39a9-48a7-8f71-6a19b8be92b3
     type: regular
     task:
-      id: a5188547-1841-4ce1-821c-5a9a16b73597
+      id: 98f5d8bd-39a9-48a7-8f71-6a19b8be92b3
       version: -1
       name: Save the above slack block to the XSOAR list.
       description: Set data in list
@@ -661,10 +584,10 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "29"
+      - "37"
     scriptarguments:
       listData:
-        simple: ${CustomSlackBlock}
+        simple: ${slackBlock}
       listName:
         simple: 'slack block of Incident ID : ${incident.id}'
     separatecontext: false
@@ -672,7 +595,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 1350,
           "y": 1565
         }
       }
@@ -685,10 +608,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: f17d4c62-dab3-42f1-80f4-877f834b97f2
+    taskid: 44952f07-1ad8-4397-8bb7-b0c8db7129ba
     type: regular
     task:
-      id: f17d4c62-dab3-42f1-80f4-877f834b97f2
+      id: 44952f07-1ad8-4397-8bb7-b0c8db7129ba
       version: -1
       name: Create Slack block for sending error message notification to user.
       description: This automation script overwrites the value of a specified list
@@ -706,6 +629,8 @@ tasks:
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -717,7 +642,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
+          "x": 910,
           "y": 1390
         }
       }
@@ -730,10 +655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 3809ab3b-edae-431c-8b04-130773550e32
+    taskid: 8d07c51f-1039-4a0f-8553-699f0a08ae5c
     type: regular
     task:
-      id: 3809ab3b-edae-431c-8b04-130773550e32
+      id: 8d07c51f-1039-4a0f-8553-699f0a08ae5c
       version: -1
       name: Create Slack block for sending error message notification to user.
       description: This automation script overwrites the value of a specified list
@@ -751,6 +676,8 @@ tasks:
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -761,7 +688,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
+          "x": 50,
           "y": 1215
         }
       }
@@ -774,10 +701,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 937a726e-05cc-468d-858b-7b879223de68
+    taskid: 9761d420-7935-4b68-8edb-6423a1be1688
     type: regular
     task:
-      id: 937a726e-05cc-468d-858b-7b879223de68
+      id: 9761d420-7935-4b68-8edb-6423a1be1688
       version: -1
       name: Save the above slack block to the XSOAR list.
       description: Set data in list
@@ -787,10 +714,10 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "28"
+      - "38"
     scriptarguments:
       listData:
-        simple: ${CustomSlackBlock}
+        simple: ${slackBlock}
       listName:
         simple: 'slack block of Incident ID : ${incident.id}'
     separatecontext: false
@@ -798,45 +725,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
+          "x": 50,
           "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 0057ddce-334e-4911-8b7e-ff22aff1f3cc
-    type: regular
-    task:
-      id: 0057ddce-334e-4911-8b7e-ff22aff1f3cc
-      version: -1
-      name: Save the above slack block to the XSOAR list.
-      description: Set data in list
-      script: Builtin|||setList
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      listData:
-        simple: ${CustomSlackBlock}
-      listName:
-        simple: 'slack block of Incident ID : ${incident.id}'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1360,
-          "y": 865
         }
       }
     note: false
@@ -848,10 +738,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 6b0b4165-9af4-41fe-81dd-616bed12834d
+    taskid: c6ac12fa-ce93-40a1-892f-deb00bc42b7d
     type: regular
     task:
-      id: 6b0b4165-9af4-41fe-81dd-616bed12834d
+      id: c6ac12fa-ce93-40a1-892f-deb00bc42b7d
       version: -1
       name: Create Slack block for sending error message notification to user.
       description: This automation script overwrites the value of a specified list
@@ -865,10 +755,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "31"
     scriptarguments:
       incident_id:
         simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
       list_name:
         simple: ${block_list_name}
       message:
@@ -879,8 +771,138 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 1257.5,
           "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 6f748f59-f693-46db-8ddd-d06359615948
+    type: regular
+    task:
+      id: 6f748f59-f693-46db-8ddd-d06359615948
+      version: -1
+      name: Deleting slack block from context data after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 81f5c242-80bb-4d88-859c-3e1a02d8f245
+    type: regular
+    task:
+      id: 81f5c242-80bb-4d88-859c-3e1a02d8f245
+      version: -1
+      name: Deleting slack block from context data after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 926aac14-f5ca-41d7-8509-9e0f8dd599fa
+    type: regular
+    task:
+      id: 926aac14-f5ca-41d7-8509-9e0f8dd599fa
+      version: -1
+      name: Create Slack block for Azure Empty Storage notification
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: 'For XSOAR incident ID : ${incident.id} You need to delete the storage
+          account -  ${incident.assetname} in order to remediate the risk. Thanks.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1482.5,
+          "y": 1390
         }
       }
     note: false
@@ -895,8 +917,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1755,
-        "width": 1925,
+        "height": 1930,
+        "width": 1812.5,
         "x": 50,
         "y": 50
       }

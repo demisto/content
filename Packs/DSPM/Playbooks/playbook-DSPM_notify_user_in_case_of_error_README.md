@@ -14,19 +14,27 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* DSPMRemoveSlackBlockList
 * DSPMIncidentList
-* DSPMNotifyUser
+* SetIfEmpty
+* DeleteContext
 * SlackBlockBuilder
+* DSPMCreateSimpleSlackMessageBlock
 
 ### Commands
 
-This playbook does not use any commands.
+* createList
+* getList
+* setList
+* core-api-post
+* addToList
 
 ## Playbook Inputs
 
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| rerunTime | Incident re-run time \(in hours\) |  | Optional |
 
 ## Playbook Outputs
 
