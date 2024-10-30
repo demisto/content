@@ -1,12 +1,12 @@
 import json
 from datetime import datetime, timedelta
-from freezegun import freeze_time
 
 import pytest
 from ServiceNowEventCollector import (
     Client, LOGS_DATE_FORMAT, get_events_command, fetch_events_command, process_and_filter_events, get_limit,
-    SYSLOG_TRANSACTIONS,AUDIT, add_time_field, DATE_FORMAT, initialize_from_date, update_last_run, handle_log_types)
+    SYSLOG_TRANSACTIONS, AUDIT, add_time_field, DATE_FORMAT, initialize_from_date, update_last_run, handle_log_types)
 from CommonServerPython import DemistoException
+
 
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
@@ -26,10 +26,9 @@ class TestFetchActivity:
             verify=False,
             proxy=False,
             api_server_url=f"{self.base_url}/api/now",
-            fetch_limit_audit = 10,
-            fetch_limit_syslog = 10
+            fetch_limit_audit=10,
+            fetch_limit_syslog=10
         )
-        
 
     @staticmethod
     def create_response_by_limit(from_time, limit, offset):
@@ -65,99 +64,8 @@ class TestFetchActivity:
             output, id_to_start_from = create_single(single_response.copy(), new_time, id_to_start_from, output)
         return output
 
-    @pytest.mark.parametrize("logs_to_fetch", [1, 4, 6], ids=["Single", "Part", "All"])
-    def test_get_max_fetch_activity_logging(self, logs_to_fetch, mocker):
-        """
-        Given: number of logging to fetch.
-        When: running get activity logging command or fetch.
-        Then: return the correct number of loggings.
+    # get_events_command
 
-        """
-        from ServiceNowEventCollector import get_audit_logs_command
-
-        mocker.patch.object(Client, "get_audit_logs", side_effect=self.create_response_by_limit)
-        res, _ = get_audit_logs_command(client=self.client, args={"limit": logs_to_fetch})
-        assert len(res) == logs_to_fetch
-
-    DUPLICATED_AUDIT_LOGS = [
-        (("2023-04-15 07:00:00", 5, 2, 0), 5, 2, {"last_fetch_time": "2023-04-15 07:00:00", "previous_run_ids": set()}),
-        (("2023-04-15 07:00:00", 5, 0, 0), 3, 5, {"last_fetch_time": "2023-04-15 07:00:00", "previous_run_ids": {"1", "2"}}),
-    ]
-
-    @pytest.mark.parametrize("args, len_of_audit_logs, len_of_previous, last_run", DUPLICATED_AUDIT_LOGS)
-    def test_remove_duplicated_activity_logging(self, args, len_of_audit_logs, len_of_previous, last_run):
-        """
-        Given: responses with potential duplications from last fetch.
-        When: running fetch command.
-        Then: return last responses with the latest requestTime to check if there are duplications.
-
-        """
-        from ServiceNowEventCollector import process_and_filter_events
-
-        loggings = self.create_response_with_duplicates(*args)
-
-        activity_loggings, previous_run_ids = process_and_filter_events(
-            loggings, last_run.get('previous_run_ids'), "2023-04-15 07:00:00")
-        assert len(activity_loggings) == len_of_audit_logs
-        assert len(previous_run_ids) == len_of_previous
-
-    def test_get_activity_logging_command(self, mocker):
-        """
-        Given: params to run get_activity_logging_command
-        When: running the command
-        Then: Accurate response and readable output is returned.
-        """
-        from ServiceNowEventCollector import get_audit_logs_command
-
-        mocker.patch.object(Client, "get_audit_logs", side_effect=self.create_response_by_limit)
-        activity_loggings, res = get_audit_logs_command(client=self.client, args={"from_date": "2023-04-15 07:00:00", "limit": 4})
-        assert len(activity_loggings) == 4
-        assert "Audit Logs List" in res.readable_output
-
-    @freeze_time("2023-04-12 07:01:00")
-    def test_fetch_activity_logging(self, mocker):
-        """
-        Tests the fetch_events function
-
-        Given:
-            - first_fetch_time
-        When:
-            - Running the 'fetch_activity_logging' function.
-        Then:
-            - Validates that the function generates the correct API requests with the expected parameters.
-            - Validates that the function returns the expected events and next_run timestamps.
-        """
-        from ServiceNowEventCollector import fetch_events_command
-
-        fetched_events = util_load_json("test_data/fetch_audit_logs.json")
-        http_responses = mocker.patch.object(
-            Client,
-            "get_audit_logs",
-            return_value=fetched_events.get("fetch_logs"),
-        )
-
-        audit_logs, new_last_run = fetch_events_command(self.client, last_run={})
-
-        assert http_responses.call_args[0][0] == "2023-04-12 07:00:00"
-
-        assert audit_logs == fetched_events.get("fetched_events")
-        assert new_last_run.get("last_fetch_time") == "2023-04-15 07:00:00"
-        assert "2"
-        assert "3" in new_last_run.get("previous_run_ids")
-
-        # assert no new results when given the last_run:
-        http_responses = mocker.patch.object(Client, "get_audit_logs", return_value=fetched_events.get("fetch_loggings"))
-
-        audit_logs, new_last_run = fetch_events_command(self.client, last_run=new_last_run)
-
-        assert http_responses.call_args[0][0] == "2023-04-15 07:00:00"
-        assert audit_logs == []
-        assert new_last_run.get("last_fetch_time") == "2023-04-15 07:00:00"
-        assert "2"
-        assert "3" in new_last_run.get("previous_run_ids")
-
-
-    ### get_events_command
     def test_get_events_command_standard(self, mocker):
         """
         Test get_events_command with typical arguments and multiple log types.
@@ -169,7 +77,7 @@ class TestFetchActivity:
         Then:
             - Validates that the function returns the expected events and human-readable output.
         """
-        
+
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 10}
         log_types = ["audit", "syslog transactions"]
         mock_logs = [{"event_id": 1, "timestamp": "2023-01-01 01:00:00"}]
@@ -178,16 +86,16 @@ class TestFetchActivity:
             "search_events",
             return_value=mock_logs
         )
-        
+
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
         all_events, command_results = get_events_command(self.client, args, log_types)
-        
-        assert http_responses.call_args[1] == {"from_time": "2023-01-01T00:00:00Z", "log_type": "syslog transactions", "limit": 10, "offset": 0,}
+
+        assert http_responses.call_args[1] == {"from_time": "2023-01-01T00:00:00Z",
+                                               "log_type": "syslog transactions", "limit": 10, "offset": 0, }
         assert len(all_events) == 2
         assert isinstance(command_results.readable_output, str)
         assert "Audit Events" in command_results.readable_output
         assert "Syslog Transactions Events" in command_results.readable_output
-
 
     def test_get_events_command_empty_response(self, mocker):
         """
@@ -210,7 +118,6 @@ class TestFetchActivity:
         assert len(all_events) == 0
         assert http_responses.call_count == 1
         assert "No entries." in command_results.readable_output
-
 
     def test_get_events_command_large_limit(self, mocker):
         """
@@ -237,7 +144,6 @@ class TestFetchActivity:
         assert "Audit Events" in command_results.readable_output
         assert http_responses.call_count == 1
 
-
     def test_fetch_events_command_standard(self, mocker):
         """
         Test fetch_events_command with standard parameters.
@@ -253,18 +159,20 @@ class TestFetchActivity:
         log_types = ["audit"]
         last_run = {"audit": {"previous_run_ids": []}}
         mock_events = [{"event_id": 1, "sys_created_on": "2023-01-01 01:00:00"}]
-        
+
         mocker.patch("ServiceNowEventCollector.initialize_from_date", return_value="2023-01-01T00:00:00Z")
         mocker.patch.object(self.client, "search_events", return_value=mock_events)
-        mock_process_and_filter = mocker.patch("ServiceNowEventCollector.process_and_filter_events", return_value=(mock_events, {"1"}))
-        mock_update_last_run = mocker.patch("ServiceNowEventCollector.update_last_run", return_value={"audit": {"previous_run_ids": ["1"], "last_fetch_time": "2023-01-01 01:00:00"}})
+        mock_process_and_filter = mocker.patch(
+            "ServiceNowEventCollector.process_and_filter_events", return_value=(mock_events, {"1"}))
+        mocker.patch("ServiceNowEventCollector.update_last_run", return_value={
+                     "audit": {"previous_run_ids": ["1"], "last_fetch_time": "2023-01-01 01:00:00"}})
 
         collected_events, updated_last_run = fetch_events_command(self.client, last_run, log_types)
 
         assert collected_events == mock_events
-        mock_process_and_filter.assert_called_once_with(events=mock_events, previous_run_ids=set(), from_date="2023-01-01T00:00:00Z", log_type="audit")
+        mock_process_and_filter.assert_called_once_with(
+            events=mock_events, previous_run_ids=set(), from_date="2023-01-01T00:00:00Z", log_type="audit")
         assert updated_last_run["audit"]["last_fetch_time"] == "2023-01-01 01:00:00"
-
 
     def test_fetch_events_command_no_new_events(self, mocker):
         """
@@ -279,15 +187,15 @@ class TestFetchActivity:
         """
         log_types = ["audit"]
         last_run = {"audit": {"previous_run_ids": []}}
-        
+
         mocker.patch("ServiceNowEventCollector.initialize_from_date", return_value="2023-01-01T00:00:00Z")
         mocker.patch.object(self.client, "search_events", return_value=[])
-        
+
         collected_events, updated_last_run = fetch_events_command(self.client, last_run, log_types)
 
         assert collected_events == []
         assert updated_last_run == last_run
-        
+
     def test_fetch_events_command_multiple_log_types(self, mocker):
         """
         Test fetch_events_command with multiple log types.
@@ -306,12 +214,12 @@ class TestFetchActivity:
         }
         mock_audit_events = [{"event_id": 1, "sys_created_on": "2023-01-01 01:00:00"}]
         mock_syslog_events = [{"event_id": 2, "sys_created_on": "2023-01-01T02:00:00Z"}]
-        
+
         mocker.patch("ServiceNowEventCollector.initialize_from_date",
                      side_effect=["2023-01-01T00:00:00Z", "2023-01-01T00:00:00Z"])
         mocker.patch.object(self.client, "search_events", side_effect=[mock_audit_events, mock_syslog_events])
-        mock_process_and_filter = mocker.patch("ServiceNowEventCollector.process_and_filter_events",
-                                               side_effect=[(mock_audit_events, {"1"}), (mock_syslog_events, {"2"})])
+        mocker.patch("ServiceNowEventCollector.process_and_filter_events",
+                     side_effect=[(mock_audit_events, {"1"}), (mock_syslog_events, {"2"})])
 
         collected_events, updated_last_run = fetch_events_command(self.client, last_run, log_types)
 
@@ -331,13 +239,15 @@ class TestFetchActivity:
             - Validates that the function returns an empty list and does not update last_run.
         """
         last_run = {"audit": {"previous_run_ids": []}}
-        
+
         collected_events, updated_last_run = fetch_events_command(self.client, last_run, [])
 
         assert collected_events == []
         assert updated_last_run == last_run
-        
-###process_and_filter_events
+
+# process_and_filter_events
+
+
 def test_process_and_filter_events_standard_case():
     """
     Test process_and_filter_events with a standard set of events.
@@ -362,8 +272,8 @@ def test_process_and_filter_events_standard_case():
     assert len(unique_events) == 2
     assert all(event["source_log_type"] == log_type for event in unique_events)
     assert previous_run_ids == {"2"}
-    
-    
+
+
 def test_process_and_filter_events_duplicate_event():
     """
     Test process_and_filter_events with duplicate events.
@@ -388,6 +298,7 @@ def test_process_and_filter_events_duplicate_event():
     assert len(unique_events) == 0
     assert updated_previous_run_ids == {"1"}
 
+
 def test_process_and_filter_events_with_same_time():
     """
     Test process_and_filter_events when events have the same creation time as the from_date.
@@ -410,6 +321,7 @@ def test_process_and_filter_events_with_same_time():
 
     assert len(unique_events) == 2
     assert previous_run_ids == {"1", "2"}
+
 
 def test_process_and_filter_events_after_from_date():
     """
@@ -434,6 +346,7 @@ def test_process_and_filter_events_after_from_date():
     assert len(unique_events) == 2
     assert previous_run_ids == {"3", "4"}
 
+
 def test_process_and_filter_events_no_events():
     """
     Test process_and_filter_events when the events list is empty.
@@ -454,6 +367,7 @@ def test_process_and_filter_events_no_events():
 
     assert unique_events == []
     assert updated_previous_run_ids == set()
+
 
 def test_process_and_filter_events_log_type_assignment():
     """
@@ -499,7 +413,6 @@ def test_process_and_filter_events_handles_event_time_formatting():
     unique_events, _ = process_and_filter_events(events, set(), from_date, log_type)
 
     assert unique_events[0]["_time"] == expected_time_format
-    
 
 
 def test_get_limit_audit_with_args():
@@ -524,13 +437,14 @@ def test_get_limit_audit_with_args():
         verify=False,
         proxy=False,
         api_server_url="https://test.com/api/now",
-        fetch_limit_audit = 300,
-        fetch_limit_syslog = 400
+        fetch_limit_audit=300,
+        fetch_limit_syslog=400
     )
-    
+
     limit = get_limit(args, client, AUDIT)
-    
+
     assert limit == 200
+
 
 def test_get_limit_audit_with_client_default():
     """
@@ -545,7 +459,7 @@ def test_get_limit_audit_with_client_default():
     Then:
         - Validates that 'fetch_limit_audit' from client is used as the limit.
     """
-    
+
     args = {}
     client = Client(
         use_oauth=True,
@@ -556,12 +470,13 @@ def test_get_limit_audit_with_client_default():
         verify=False,
         proxy=False,
         api_server_url="https://test.com/api/now",
-        fetch_limit_audit = 300,
-        fetch_limit_syslog = 400
+        fetch_limit_audit=300,
+        fetch_limit_syslog=400
     )
     limit = get_limit(args, client, AUDIT)
-    
+
     assert limit == 300
+
 
 def test_get_limit_audit_with_no_args_or_client_default():
     """
@@ -576,7 +491,7 @@ def test_get_limit_audit_with_no_args_or_client_default():
     Then:
         - Validates that the default limit of 1000 is used.
     """
-    
+
     args = {}
     client = Client(
         use_oauth=True,
@@ -587,12 +502,13 @@ def test_get_limit_audit_with_no_args_or_client_default():
         verify=False,
         proxy=False,
         api_server_url="https://test.com/api/now",
-        fetch_limit_audit = None,
-        fetch_limit_syslog = 400
+        fetch_limit_audit=None,
+        fetch_limit_syslog=400
     )
     limit = get_limit(args, client, AUDIT)
-    
+
     assert limit == 1000
+
 
 def test_get_limit_syslog_with_args():
     """
@@ -616,12 +532,13 @@ def test_get_limit_syslog_with_args():
         verify=False,
         proxy=False,
         api_server_url="https://test.com/api/now",
-        fetch_limit_audit = 300,
-        fetch_limit_syslog = 400
+        fetch_limit_audit=300,
+        fetch_limit_syslog=400
     )
     limit = get_limit(args, client, SYSLOG_TRANSACTIONS)
-    
+
     assert limit == 150
+
 
 def test_get_limit_syslog_with_client_default():
     """
@@ -646,12 +563,13 @@ def test_get_limit_syslog_with_client_default():
         verify=False,
         proxy=False,
         api_server_url="https://test.com/api/now",
-        fetch_limit_audit = 300,
-        fetch_limit_syslog = 400
+        fetch_limit_audit=300,
+        fetch_limit_syslog=400
     )
     limit = get_limit(args, client, SYSLOG_TRANSACTIONS)
-    
+
     assert limit == 400
+
 
 def test_get_limit_syslog_with_no_args_or_client_default():
     """
@@ -676,11 +594,11 @@ def test_get_limit_syslog_with_no_args_or_client_default():
         verify=False,
         proxy=False,
         api_server_url="https://test.com/api/now",
-        fetch_limit_audit = 300,
-        fetch_limit_syslog = None
+        fetch_limit_audit=300,
+        fetch_limit_syslog=None
     )
     limit = get_limit(args, client, SYSLOG_TRANSACTIONS)
-    
+
     assert limit == 1000
 
 
@@ -709,6 +627,7 @@ def test_add_time_field_standard_case():
     assert result[0]["source_log_type"] == log_type
     assert result[1]["source_log_type"] == log_type
 
+
 def test_add_time_field_empty_list():
     """
     Test add_time_field with an empty list of events.
@@ -725,6 +644,7 @@ def test_add_time_field_empty_list():
 
     result = add_time_field(events, log_type)
     assert result == []
+
 
 def test_add_time_field_invalid_date_format():
     """
@@ -744,6 +664,7 @@ def test_add_time_field_invalid_date_format():
 
     with pytest.raises(ValueError):
         add_time_field(events, log_type)
+
 
 def test_add_time_field_partial_valid_dates():
     """
@@ -765,6 +686,7 @@ def test_add_time_field_partial_valid_dates():
     with pytest.raises(ValueError):
         add_time_field(events, log_type)
 
+
 def test_add_time_field_no_sys_created_on_field():
     """
     Test add_time_field with events that lack 'sys_created_on' field.
@@ -783,7 +705,7 @@ def test_add_time_field_no_sys_created_on_field():
 
     with pytest.raises(KeyError):
         add_time_field(events, log_type)
-        
+
 
 def test_initialize_from_date_with_existing_timestamp():
     """
@@ -801,9 +723,10 @@ def test_initialize_from_date_with_existing_timestamp():
         "syslog transactions": {"last_fetch_time": "2023-01-02T00:00:00Z"}
     }
     log_type = "audit"
-    
+
     result = initialize_from_date(last_run, log_type)
     assert result == "2023-01-01T00:00:00Z"
+
 
 def test_initialize_from_date_without_existing_timestamp():
     """
@@ -823,7 +746,9 @@ def test_initialize_from_date_without_existing_timestamp():
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
 
     # Check that the result is close to the expected time (within a few seconds tolerance)
-    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
+    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT)
+               - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
+
 
 def test_initialize_from_date_with_different_log_type():
     """
@@ -843,7 +768,9 @@ def test_initialize_from_date_with_different_log_type():
 
     result = initialize_from_date(last_run, log_type)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
-    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
+    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT)
+               - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
+
 
 def test_initialize_from_date_missing_last_fetch_key():
     """
@@ -864,8 +791,9 @@ def test_initialize_from_date_missing_last_fetch_key():
     result = initialize_from_date(last_run, log_type)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
 
-    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
-    
+    assert abs(datetime.strptime(result, LOGS_DATE_FORMAT)
+               - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(seconds=5)
+
 
 def test_update_existing_log_type():
     """
@@ -886,9 +814,10 @@ def test_update_existing_log_type():
     previous_run_ids = ["id3", "id4"]
 
     updated_last_run = update_last_run(last_run, log_type, last_event_time, previous_run_ids)
-    
+
     assert updated_last_run["audit"]["last_fetch_time"] == last_event_time
     assert updated_last_run["audit"]["previous_run_ids"] == previous_run_ids
+
 
 def test_update_new_log_type():
     """
@@ -909,10 +838,11 @@ def test_update_new_log_type():
     previous_run_ids = ["id5", "id6"]
 
     updated_last_run = update_last_run(last_run, log_type, last_event_time, previous_run_ids)
-    
+
     assert "syslog transactions" in updated_last_run
     assert updated_last_run["syslog transactions"]["last_fetch_time"] == last_event_time
     assert updated_last_run["syslog transactions"]["previous_run_ids"] == previous_run_ids
+
 
 def test_update_empty_previous_run_ids():
     """
@@ -934,7 +864,7 @@ def test_update_empty_previous_run_ids():
     previous_run_ids = []
 
     updated_last_run = update_last_run(last_run, log_type, last_event_time, previous_run_ids)
-    
+
     assert updated_last_run["audit"]["last_fetch_time"] == last_event_time
     assert updated_last_run["audit"]["previous_run_ids"] == []
 
@@ -956,9 +886,10 @@ def test_update_no_existing_data():
     previous_run_ids = ["id1"]
 
     updated_last_run = update_last_run(last_run, log_type, last_event_time, previous_run_ids)
-    
+
     assert updated_last_run["audit"]["last_fetch_time"] == last_event_time
     assert updated_last_run["audit"]["previous_run_ids"] == previous_run_ids
+
 
 def test_update_multiple_log_types():
     """
@@ -985,7 +916,8 @@ def test_update_multiple_log_types():
     updated_last_run = update_last_run(last_run, "syslog transactions", "2023-01-03T00:00:00Z", ["id7", "id8"])
     assert updated_last_run["syslog transactions"]["last_fetch_time"] == "2023-01-03T00:00:00Z"
     assert updated_last_run["syslog transactions"]["previous_run_ids"] == ["id7", "id8"]
-    
+
+
 def test_handle_log_types_valid_titles():
     """
     Test handle_log_types with valid event type titles.
@@ -1001,6 +933,7 @@ def test_handle_log_types_valid_titles():
     expected_log_types = [AUDIT, SYSLOG_TRANSACTIONS]
     assert handle_log_types(event_types_to_fetch) == expected_log_types
 
+
 def test_handle_log_types_single_valid_title():
     """
     Test handle_log_types with a single valid event type title.
@@ -1015,6 +948,7 @@ def test_handle_log_types_single_valid_title():
     event_types_to_fetch = ["Audit"]
     expected_log_types = [AUDIT]
     assert handle_log_types(event_types_to_fetch) == expected_log_types
+
 
 def test_handle_log_types_invalid_title():
     """
@@ -1032,6 +966,7 @@ def test_handle_log_types_invalid_title():
         handle_log_types(event_types_to_fetch)
     assert "'Invalid Title' is not valid event type" in str(excinfo.value)
 
+
 def test_handle_log_types_mixed_titles():
     """
     Test handle_log_types with a mix of valid and invalid event type titles.
@@ -1048,6 +983,7 @@ def test_handle_log_types_mixed_titles():
         handle_log_types(event_types_to_fetch)
     assert "'Invalid Title' is not valid event type" in str(excinfo.value)
 
+
 def test_handle_log_types_empty_list():
     """
     Test handle_log_types with an empty list.
@@ -1061,6 +997,7 @@ def test_handle_log_types_empty_list():
     """
     event_types_to_fetch = []
     assert handle_log_types(event_types_to_fetch) == []
+
 
 def test_handle_log_types_case_sensitivity():
     """
