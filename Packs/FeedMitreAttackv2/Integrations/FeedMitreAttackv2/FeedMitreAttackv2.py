@@ -614,7 +614,7 @@ def filter_attack_pattern_object_by_attack_id(attack_id: str, attack_pattern_obj
     return any(external_reference.get("external_id", "") == attack_id for external_reference in external_references_list)
 
 
-def get_mitre_value_from_id(client, args, params):
+def get_mitre_value_from_id(client, args, collection_id):
     attack_ids = argToList(args.get('attack_ids', []))
 
     collection_type = params.get('Collection_ID')
