@@ -26,4 +26,4 @@
 Note: SASL is supported only when used in combination with SSL.
 
 An important point:
-This integration supports users with consumer only permissions.
+This integration also supports users with consumer only permissions.

@@ -196,8 +196,8 @@ def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     result = print_topics(KAFKA, demisto_args)
-    assert type(result) is CommandResults
-    assert type(result.outputs) is list
+    assert type(result) is CommandResults  # for Pylance
+    assert type(result.outputs) is list  # for Pylance
     for topic in cluster_tree.keys():
         topic_partitions = [{'ID': partition} for partition in cluster_tree[topic]]
         assert {'Name': topic, 'Partitions': topic_partitions} in result.outputs
@@ -225,8 +225,8 @@ def test_print_topics_with_offsets(mocker, demisto_args, first_offset, last_offs
     expected = {'Name': 'some-topic',
                 'Partitions': [{'ID': 1, 'EarliestOffset': first_offset, 'OldestOffset': last_offset}]}
     from CommonServerPython import CommandResults
-    assert type(result) is CommandResults
-    assert type(result.outputs) is list
+    assert type(result) is CommandResults  # for PyLance
+    assert type(result.outputs) is list  # for PyLance
     assert expected in result.outputs
 
 
@@ -337,12 +337,12 @@ def test_consume_message(mocker, demisto_args, topic_partitions):
     mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(0, 2))
     close_mock = mocker.patch.object(KConsumer, 'close')
 
-    consume_message(KAFKA, demisto_args)
+    result = consume_message(KAFKA, demisto_args)
 
-    polled_msg.value()
-  #  msg_value = msg_value.decode('utf-8')
-   # assert result.outputs['Message'] == {'Value': msg_value, 'Offset': polled_msg.offset()}
-   # assert result.outputs['Name'] == 'some-topic'
+    msg_value = polled_msg.value()
+    msg_value = msg_value.decode('utf-8')
+    assert result.outputs['Message'] == {'Value': msg_value, 'Offset': polled_msg.offset()}
+    assert result.outputs['Name'] == 'some-topic'
 
     assign_mock.assert_called_once_with(topic_partitions)
     called_topic_partitions = assign_mock.call_args.args[0]
@@ -382,12 +382,12 @@ def test_consume_message_without_partition(mocker, demisto_args, topic_partition
     cluster_metadata = create_cluster_metadata(cluster)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
 
-    consume_message(KAFKA, demisto_args)
+    result = consume_message(KAFKA, demisto_args)
 
-    polled_msg.value()
-  #  msg_value = msg_value.decode('utf-8')
-  #  assert result.outputs['Message'] == {'Value': msg_value, 'Offset': polled_msg.offset()}
-  #  assert result.outputs['Name'] == 'some-topic'
+    msg_value = polled_msg.value()
+    msg_value = msg_value.decode('utf-8')
+    assert result.outputs['Message'] == {'Value': msg_value, 'Offset': polled_msg.offset()}
+    assert result.outputs['Name'] == 'some-topic'
 
     assign_mock.assert_called_once_with(topic_partitions)
     called_topic_partitions = assign_mock.call_args.args[0]
@@ -830,9 +830,9 @@ def test_ssl_configuration():
                               trust_any_cert=False,
                               use_ssl=True)
 
-    assert type(kafka.ca_path) is str
-    assert type(kafka.client_cert_path) is str
-    assert type(kafka.client_key_path) is str
+    assert type(kafka.ca_path) is str  # foy Pylance
+    assert type(kafka.client_cert_path) is str  # foy Pylance
+    assert type(kafka.client_key_path) is str  # foy Pylance
 
     expected_consumer_conf = {
         'auto.offset.reset': 'earliest',

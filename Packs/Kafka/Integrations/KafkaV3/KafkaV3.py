@@ -20,11 +20,11 @@ SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'la
 
 class KConsumer(Consumer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-
+    pass
 
 class KProducer(Producer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-
+    pass
 
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
@@ -88,7 +88,8 @@ class KafkaCommunicator:
     def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password,
                            use_sasl, plain_username, plain_password, brokers):
         """
-        Updates the `conf_producer` or `conf_consumer` configuration based on the specified authentication method.
+        Updates the conf_producer or conf_consumer configuration based on the specified authentication method.
+        It assumes that all required parameters have been validated by the validate_params function.
 
         Args:
             client_dict (dict): The configuration dictionary to be updated.
@@ -368,19 +369,18 @@ class KafkaCommunicator:
 
 ''' HELPER FUNCTIONS '''
 
-# unit test were modified
 
-
-def validate_params(params: dict):  # TODO add validation that trust any cert isn't with ssl or sasl?
+def validate_params(params: dict):
     """
-        Validates the provided parameters to ensure they meet the requirements for SSL and SASL_SSL authentication methods.
-        If any invalid configurations are detected, an error is raised.
+        The function validates parameters for SSL and SASL_SSL authentication methods and raises an error if any invalid
+        configurations are detected.
 
-        For SSL authentication, the use_ssl parameter must be set to True, and the following certificates must be provided:
-        ca_cert, client_cert, and client_cert_key.
-        For SASL_SSL authentication, both use_ssl and use_sasl must be set to True.
-        and the following certificates must be provided: plain_username, plain_password, and ca_cert parameters.
-        Regardless of the authentication method, the brokers parameter must always be provided.
+        For SSL authentication, it checks if use_ssl is True and requires ca_cert, client_cert, and client_cert_key parameters.
+
+        For SASL_SSL authentication, it checks if use_sasl is True and requires plain_username, plain_password, and ca_cert
+        parameters.
+
+        The brokers parameter is mandatory for both authentication methods.
     """
     use_ssl = params.get('use_ssl')
     use_sasl = params.get('use_sasl')
