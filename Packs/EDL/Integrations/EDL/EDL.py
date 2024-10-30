@@ -9,6 +9,7 @@ import tempfile
 import re
 from base64 import b64decode
 from flask import Flask, Response, request, send_file
+from flask_cors import CORS
 from netaddr import IPSet, IPNetwork
 from typing import IO
 from collections.abc import Iterable, Callable
@@ -29,6 +30,7 @@ INTEGRATION_NAME: str = 'Generic Export Indicators service'
 PAGE_SIZE: int = 2000
 PAN_OS_MAX_URL_LEN = 255
 APP: Flask = Flask('demisto-edl')
+CORS(APP)
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 EDL_CIDR_SIZR_MSG: str = 'Please provide a valid integer for CIDR size'
 EDL_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
