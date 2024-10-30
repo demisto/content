@@ -865,8 +865,8 @@ def test_ssl_configuration():
     os.remove(kafka.ca_path)
     os.remove(kafka.client_cert_path)
     os.remove(kafka.client_key_path)
-    
-    
+
+
 def test_sasl_ssl_configuration():
     """
     Given:
@@ -915,8 +915,8 @@ def test_sasl_ssl_configuration():
     with open(kafka.ca_path) as f:
         assert f.read() == 'ca_cert'
     os.remove(kafka.ca_path)
-    
-    
+
+
 valid_params_cases = [
     # Valid case with SSL only
     {
@@ -945,7 +945,7 @@ def test_validate_params__valid(params):
     from KafkaV3 import validate_params
     # This test should not raise any exceptions
     validate_params(params)
-     
+
 
 invalid_params_cases = [
     # Missing brokers

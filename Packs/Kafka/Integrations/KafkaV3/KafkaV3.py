@@ -910,7 +910,6 @@ def main():  # pragma: no cover
     ssl_password = demisto_params.get('additional_password', None)
     plain_username = demisto_params.get('credentials', {}).get('identifier')
     plain_password = demisto_params.get('credentials', {}).get('password')
-    
 
     kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
                     'use_sasl': use_sasl, 'group_id': group_id,
