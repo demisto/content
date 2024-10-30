@@ -14,7 +14,7 @@ VENDOR = 'ibm'
 PRODUCT = 'maas360 security'
 TOKEN_VALIDITY_DURATION = 3600
 PAGE_SIZE = 250
-MAX_FETCHES = 5  # Maximum number of pages to fetch
+DEFAULT_MAX_FETCH = 1250
 
 
 class AuditEventType(Enum):
@@ -35,13 +35,8 @@ class AuditEventType(Enum):
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
+    """
+    Client class to interact with the IBM MaaS360 Security API
     """
 
     def __init__(self, base_url, username, password, app_id, app_version,
@@ -60,6 +55,10 @@ class Client(BaseClient):
          Get an auth token for the IBM MaaS360 Security API.
          If one exists in the integration context and is not expired, returns it.
          Otherwise, refreshes the token (if possible) or generates a new one.
+
+        Args:
+            use_cached_token (bool): Whether to use the cached access token if it exists and is not expired.
+                                     If set to false, the token will either be refreshed or a new one will be created.
 
         Returns:
             auth_token (str): A valid auth token for the IBM MaaS360 Security API.
@@ -100,7 +99,7 @@ class Client(BaseClient):
 
     def authenticate(self) -> tuple[str, str]:
         """
-        Authenticates with the IBM MaaS360 Security API and returns the auth token and refresh token.
+        Authenticates with the IBM MaaS360 Security API and returns the auth and refresh tokens.
 
         Returns:
             auth_token (str): The auth token.
@@ -131,19 +130,27 @@ class Client(BaseClient):
             url_suffix=f'/auth-apis/auth/2.0/authenticate/customer/{self.billing_id}',
             json_data=json_data,
             headers=headers,
-        )
-        if res['authResponse']['authToken']:
-            demisto.debug('Successfully authenticated with IBM MaaS360 Security API.')
+        ).get('authResponse')
 
-        return res['authResponse']['authToken'], res['authResponse']['refreshToken']
+        if errCode := res.get('errorCode', ''):  # For some reason the API returns status code 200 on errors
+            err = res.get('errorDesc', 'Unknown error')
+            raise DemistoException('Failed to authenticate with IBM MaaS360 Security. Ensure the credentials are valid. '
+                                   f'Got error code {errCode}: {err}')
+
+        add_sensitive_log_strs(res.get('authToken'))
+
+        return res.get('authToken'), res.get('refreshToken')
 
     def refresh_auth_token(self, refresh_token: str) -> tuple[str, str]:
         """
         Refreshes the authentication token using the provided refresh token.
 
+        Args:
+            refresh_token (str): The current refresh token.
+
         Returns:
             auth_token (str): New auth token.
-            refresh_token (str): New refresh.
+            refresh_token (str): New refresh token.
         """
 
         headers = {
@@ -169,9 +176,16 @@ class Client(BaseClient):
             url_suffix=f'/auth-apis/auth/2.0/refreshToken/customer/{self.billing_id}',
             json_data=json_data,
             headers=headers,
-        )
+        ).get('authResponse')
 
-        return res['authResponse']['authToken'], res['authResponse']['refreshToken']
+        if errCode := res.get('errorCode', ''):  # For some reason the API returns status code 200 on errors
+            err = res.get('errorDesc', 'Unknown error')
+            raise DemistoException('Failed to authenticate with IBM MaaS360 Security. Ensure the credentials are valid. '
+                                   f'Got error code {errCode}: {err}')
+
+        add_sensitive_log_strs(res.get('authToken'))
+
+        return res.get('authToken'), res.get('refreshToken')
 
     def http_request(self, method: str, url_suffix: str = '', params: dict = {}):
         """
@@ -198,8 +212,8 @@ class Client(BaseClient):
                 headers=headers,
             )
         except DemistoException as e:
-            if 'Token invalid' in str(e):
-                demisto.debug('Access token is invalid, reauthenticating and retrying the request')
+            if 'Token invalid' in str(e) or 'Token expired.' in str(e):
+                demisto.debug('Access token is invalid, re-authenticating and retrying the request')
                 headers['Authorization'] = f'MaaS token="{self.get_auth_token(use_cached_token=False)}"'
                 response = self._http_request(
                     method=method,
@@ -212,7 +226,8 @@ class Client(BaseClient):
 
         return response
 
-    def fetch_admin_audit_events(self, event_type: AuditEventType, from_date: str, to_date: str, page_offset: int):
+    def fetch_admin_audit_events(self, event_type: AuditEventType, from_date: str,
+                                 to_date: str, page_offset: int, max_fetch_amount: int):
         """
         Fetches the admin audit events of the requested type for the specified time range.
 
@@ -230,8 +245,9 @@ class Client(BaseClient):
         num_fetches = 0
         events = []
         pages_remaining = True
+        max_fetches = max(1, max_fetch_amount // PAGE_SIZE)
 
-        while pages_remaining and num_fetches < MAX_FETCHES:
+        while pages_remaining and num_fetches < max_fetches:
             page_number = 1 + page_offset + num_fetches
             params = {
                 'fromDate': from_date,
@@ -267,7 +283,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: int) -
     Raises exceptions if something goes wrong.
 
     Args:
-        client (Client): HelloWorld client to use.
+        client (Client): client to use.
         params (Dict): Integration parameters.
         first_fetch_time(str): The first fetch time as configured in the integration params.
 
@@ -280,12 +296,15 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: int) -
             client=client,
             last_run={},
             first_fetch_time=first_fetch_time,
-            max_events_per_fetch=1,
+            max_events_per_fetch={
+                AuditEventType.ChangesAudit: 1,
+                AuditEventType.LoginReports: 1,
+            },
         )
 
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if 'Failed to authenticate' in str(e):
+            return 'Authorization Error: make sure credentials are set correctly'
         else:
             raise e
 
@@ -293,23 +312,57 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: int) -
 
 
 def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
-    return [], CommandResults()
+    """
+    Get events from the IBM MaaS360 Security API.
+
+    Args:
+        client (Client): Client to use.
+        args (dict): Command arguments.
+
+    Returns:
+        events (list[dict]): List of fetched events.
+        results (CommandResults): CommandResults object to be returned to the war-room.
+    """
+    limit = arg_to_number(args.get('limit'), required=True)
+    if 'from_date' in args:
+        first_fetch_time = int(date_to_timestamp(arg_to_datetime(args.get('from_date'))))
+    else:
+        first_fetch_time = int(time.time()) - timedelta(hours=3).seconds
+
+    max_events_per_fetch = {
+        AuditEventType.ChangesAudit: limit,
+        AuditEventType.LoginReports: limit,
+    }
+
+    _next_run, events = fetch_events(
+        client=client,
+        last_run={},
+        first_fetch_time=first_fetch_time,
+        max_events_per_fetch=max_events_per_fetch,
+    )
+
+    events_hr = tableToMarkdown(name='Admin audits', t=events)
+
+    return events, CommandResults(readable_output=events_hr)
 
 
 def fetch_events(client: Client, last_run: dict[str, str],
-                 first_fetch_time: int, max_events_per_fetch: int
+                 first_fetch_time: int, max_events_per_fetch: dict = {}
                  ) -> tuple[Dict, List[Dict]]:
     """
+    Fetches events from the IBM MaaS360 Security API.
+
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
+        client (Client): Client to use.
+        last_run (dict): A dict containing the last run information and any previously fetched events that are pending push.
         first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
+        max_events_per_fetch (dict): Dict containing the maximum number of events per fetch for each event type.
+
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        next_run (dict): Next run dictionary containing the last fetched time window and the next page number to fetch,
+                         as well as any previously fetched events that are pending push.
+        events (list): List of events that will be created in XSIAM.
     """
     events = []
     next_run = {}
@@ -320,12 +373,14 @@ def fetch_events(client: Client, last_run: dict[str, str],
 
     for event_type in AuditEventType:
         last_run_params = json.loads(last_run.get(event_type.name, '{}'))
+        max_fetch_amount = max_events_per_fetch.get(event_type, DEFAULT_MAX_FETCH)
         to_date = last_run_params.pop('to_date', int(time.time() * 1000))
 
         audit_events, next_page_offset = client.fetch_admin_audit_events(event_type=event_type,
                                                                          from_date=str(last_run_params.get('from_date')),
                                                                          to_date=str(to_date),
-                                                                         page_offset=last_run_params.get('page_offset'))
+                                                                         page_offset=last_run_params.get('page_offset'),
+                                                                         max_fetch_amount=max_fetch_amount)
         demisto.debug(f'Fetched {len(audit_events)} {event_type.name} events.')
 
         if next_page_offset:
@@ -370,7 +425,13 @@ def main() -> None:  # pragma: no cover
     # How much time before the first fetch to retrieve events
     first_fetch_time = int(time.time() * 1000)
     proxy = params.get('proxy', False)
-    max_events_per_fetch = params.get('max_events_per_fetch', 1000)
+    max_login_reports_per_fetch = params.get('max_login_reports_per_fetch', DEFAULT_MAX_FETCH)
+    max_admin_change_audits_per_fetch = params.get('max_admin_change_audits_per_fetch ', DEFAULT_MAX_FETCH)
+
+    max_events_per_fetch = {
+        AuditEventType.ChangesAudit: max_admin_change_audits_per_fetch,
+        AuditEventType.LoginReports: max_login_reports_per_fetch,
+    }
 
     demisto.debug(f'Command being called is {command}')
     try:

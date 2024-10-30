@@ -45,6 +45,18 @@ configuration:
   displaypassword: Billing ID
   section: Connect
   hiddenusername: true
+- name: max_login_reports_per_fetch
+  description: Maximum number of login reports per fetch. In increments of 250. 
+  required: false
+  type: 0
+  section: Collect
+  defaultValue: 1250
+- name: max_admin_change_audits_per_fetch
+  description: Maximum number of admin change audit events per fetch. In increments of 250. 
+  required: false
+  type: 0
+  section: Collect
+  defaultValue: 1250
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -57,7 +69,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: This is the Hello World event collector integration for Cortex XSIAM.
+description: This is the IBM MaaS360 Security event collector integration for Cortex XSIAM.
 display: IBMMaaS360SecurityEventCollector
 name: IBMMaaS360SecurityEventCollector
 script:
@@ -72,16 +84,6 @@ script:
       - 'true'
       - 'false'
       required: true
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: false
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-      required: false
-      secret: false
     - default: false
       description: Maximum number of results to return.
       isArray: false
@@ -93,7 +95,7 @@ script:
       name: from_date
       required: false
     deprecated: false
-    description: Gets events from Hello World.
+    description: Gets events from IBM MaaS360 Security.
     execution: false
     name: ibm-maas360-security-get-events
   dockerimage: demisto/python3:3.10.13.87159
