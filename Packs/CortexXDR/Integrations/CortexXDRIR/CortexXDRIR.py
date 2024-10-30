@@ -1000,64 +1000,74 @@ def get_remote_data_command(client, args):
 
 
 def update_remote_system_command(client, args):
-    remote_args = UpdateRemoteSystemArgs(args)
-    incident_id = remote_args.remote_incident_id
-    remote_data = remote_args.data
-    demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
-    demisto.debug(f"update_remote_system_command {incident_id=} , {remote_data.get('closeReason')=}, "
-                  f"{remote_data.get('closeNotes')=}")
+    demisto.debug("itamar - in update_remote_system_command") # itamar
+    xdr_args = UpdateRemoteSystemArgs(args)
+    demisto.debug(f"update_remote_system_command {xdr_args.remote_incident_id=} data:{xdr_args.data}, entries: {xdr_args.entries}, incident_changed: {xdr_args.incident_changed}, remote_incident_id: {xdr_args.remote_incident_id}, inc_status: {xdr_args.inc_status}, delta: {xdr_args.delta}")
+    demisto.debug(f"update_remote_system_command {xdr_args.remote_incident_id=} , {xdr_args.data.get('closeReason')=}, "
+                  f"{xdr_args.data.get('closeNotes')=}")
 
-    if remote_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-                      f'incident {remote_args.remote_incident_id}')
+    if xdr_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(xdr_args.delta.keys()))} to update'
+                      f'incident {xdr_args.remote_incident_id}')
     try:
-        if remote_args.incident_changed:
-            demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
-            update_args = get_update_args(remote_args)
-
-            update_args['incident_id'] = remote_args.remote_incident_id
-            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
+        if xdr_args.incident_changed:
+            demisto.debug(f"update_remote_system_command {xdr_args.remote_incident_id=} {xdr_args.incident_changed=}")
+            update_args = get_update_args(xdr_args)  # returned the update_args.delta (in xsoar)
+            demisto.debug(f"itamar - {update_args=}")  # itamar
+            update_args['incident_id'] = xdr_args.remote_incident_id
+            demisto.debug(f'Sending incident with remote ID [{xdr_args.remote_incident_id}]\n')
             demisto.debug(f"Before checking status {update_args=}")
-            current_remote_status = remote_args.data.get('status') if remote_args.data else None
-            is_closed_delta = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
-                               or update_args.get('resolve_comment') or update_args.get('closingUserId'))
-            is_closed_data = (remote_data.get('closeReason') or remote_data.get('close_reason') or remote_data.get('closeNotes'))
-            demisto.debug(f"update_remote_system_command {is_closed_delta=}, {is_closed_data=}")
-            is_closed = is_closed_delta or is_closed_data
-            closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
-            remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
-            demisto.debug(f"{remote_is_already_closed=}")
-            if is_closed and closed_without_status and not remote_is_already_closed:
+            # current_remote_status = xdr_args.data.get('status') if xdr_args.data else None
+            # demisto.debug(f"itamar - {current_remote_status=}")  # itamar
+            # is_closed_delta = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
+            #                    or update_args.get('resolve_comment') or update_args.get('closingUserId'))
+            # is_closed_data = (xdr_args.data.get('closeReason') or xdr_args.data.get('close_reason') or xdr_args.data.get('closeNotes')) # ticket from tal
+            # demisto.debug(f"update_remote_system_command {is_closed_delta=}, {is_closed_data=}")
+            # is_closed = is_closed_delta or is_closed_data  # close in xsoar
+
+            ### THIS LINE I DIDNT HANDLED YET
+            closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason') # the bug that tal showed me about closing without status, maybe check if it closed already and this line not needed
+            demisto.debug(f"itamar - {closed_without_status=}")  # itamar
+            ###
+
+            # remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
+            # demisto.debug(f"update_remote_system_command {remote_is_already_closed=}")
+            if is_closed and closed_without_status and not remote_is_already_closed: # update_remote_system_command trigged twice, if the remote already close we will not update the status
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
+                demisto.debug(f"update_remote_system_command inside if, updating status {update_args['status']=}") # itamar
             demisto.debug(f"After checking status {update_args=}")
 
             close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
-
+            demisto.debug(f"update_remote_system_command {close_xdr_incident=}")  # itamar
             if not close_xdr_incident:
-                demisto.debug(f"Reverting to previous status {remote_args.data.get('status')}")
-                update_args['status'] = remote_args.data.get('status')
+                demisto.debug(f"Reverting to previous status {xdr_args.data.get('status')}")
+                update_args['status'] = xdr_args.data.get('status')
 
-            update_incident_command(client, update_args)
-
+            update_incident_command(client, update_args) # updating xdr with the updated args
+            demisto.debug(f"update_remote_system_command after update_incident_command")  # itamar
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+            demisto.debug(f"update_remote_system_command {close_alerts_in_xdr=}")  # itamar
             # Check all relevant fields for an incident being closed in XSOAR UI
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
             if is_closed and closed_without_status and remote_is_already_closed:
+                demisto.debug(f"update_remote_system_command inside if, updating status {update_args['status']=}")  # itamar
                 update_args['status'] = current_remote_status
             if close_alerts_in_xdr and is_closed:
+                demisto.debug(f"update_remote_system_command calling update_related_alerts")  # itamar
                 update_related_alerts(client, update_args)
 
         else:
-            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+            demisto.debug(f'Skipping updating remote incident fields [{xdr_args.remote_incident_id}] '
                           f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
+        demisto.debug("update_remote_system_command returning regular") # itamar
+        return xdr_args.remote_incident_id
 
     except Exception as e:
-        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
+        demisto.debug(f"Error in outgoing mirror for incident {xdr_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
 
-        return remote_args.remote_incident_id
+        demisto.debug("update_remote_system_command returning from excaption") # itamar
+        return xdr_args.remote_incident_id
 
 
 def update_related_alerts(client: Client, args: dict):
