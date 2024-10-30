@@ -17,7 +17,7 @@ from datetime import datetime
 
 def set_user_slack_email(incident_details, defaultSlackUser):
     """
-    Sets the Slack email of the asset owner in the XSOAR context. 
+    Sets the Slack email of the asset owner in the XSOAR context.
     If the email is not available, it defaults to a pre-configured Slack user.
 
     Args:

@@ -65,7 +65,7 @@ tasks:
       list_name:
         simple: 'slack block of Incident ID : ${incident.id}'
       task:
-        simple: "228"
+        simple: "224"
       user:
         simple: ${userSlackEmail}
     separatecontext: false

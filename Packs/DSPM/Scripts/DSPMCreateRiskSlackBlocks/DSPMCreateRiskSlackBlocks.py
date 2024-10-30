@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from typing import List, Dict, Any
 
 
 def create_slack_block(incident: dict, rule_names_list: list, incidentLink:str) -> dict:
@@ -21,7 +22,7 @@ def create_slack_block(incident: dict, rule_names_list: list, incidentLink:str) 
     rule_name = incident.get('ruleName')
 
     # Slack block structure
-    block = {
+    block: Dict[str, List[Dict[str, Any]]] = {
         "blocks": [
             {
                 "type": "header",
