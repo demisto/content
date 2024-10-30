@@ -64,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: c9268602-de30-4263-857b-df360722525a
+    taskid: dd4851db-4755-4535-8057-c794b7836d2a
     type: regular
     task:
-      id: c9268602-de30-4263-857b-df360722525a
+      id: dd4851db-4755-4535-8057-c794b7836d2a
       version: -1
       name: Create ServiceNow alert
       description: Creates new ServiceNow ticket.
@@ -138,6 +138,10 @@ tasks:
       ticket_type:
         complex:
           root: inputs.NotificationTicketType
+      contact_type:
+        simple: ASM
+      correlation_id:
+        simple: ${alert.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -156,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: ce07ed00-35ca-40bf-8c85-81afbb50dfda
+    taskid: 89c90893-467e-4394-8e3e-46c4e5afc691
     type: regular
     task:
-      id: ce07ed00-35ca-40bf-8c85-81afbb50dfda
+      id: 89c90893-467e-4394-8e3e-46c4e5afc691
       version: -1
       name: Set notification grid field
       description: |-
@@ -193,7 +197,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: alert.do?sysparm_query=number=
+                  simple: nav_to.do?uri=incident.do?sysparm_query=number=
           - operator: concat
             args:
               prefix: {}
@@ -243,6 +247,8 @@ tasks:
 
           Alert ID: ${alert.id}
 
+          Cloud: ${alert.asmprovider}
+
           Severity: ${alert.severity}
 
           IP address: ${alert.remoteip}
@@ -262,13 +268,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 992f1c52-ef69-4a8b-83f7-343690ecbd9a
+      id: 80795fa8-8410-446c-8ce9-0ebe1d09a0b7
       iscommand: false
       name: Set predescription field
       script: Set
       type: regular
       version: -1
-    taskid: 992f1c52-ef69-4a8b-83f7-343690ecbd9a
+    taskid: 80795fa8-8410-446c-8ce9-0ebe1d09a0b7
     timertriggers: []
     type: regular
     view: |-
