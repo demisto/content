@@ -338,7 +338,6 @@ def terminate_port_chrome_instances_file(chrome_port: str = ''):
         write_chrome_instances_file(existing_data)
     else:
         demisto.info(f"Chrome port '{chrome_port}' not found.")
-    pass
 
 
 def add_new_chrome_instance(new_chrome_instance_content: Optional[Dict] = None) -> None:
