@@ -225,6 +225,7 @@ def format_incidents(alerts, hide_cvv_expiry):
     :return: incidents to feed into XSOAR
     """
     events: List[dict[str, Any]] = []
+
     try:
         for alert in alerts:
 
@@ -238,21 +239,24 @@ def format_incidents(alerts, hide_cvv_expiry):
                     keyword = alert['metadata']['entity']['keyword']['tag_name']
 
             alert_details = {
-                "name": "Cyble Vision Alert on {}".format(alert['service']),
-                "event_type": "{}".format(alert['service']),
-                "severity": INCIDENT_SEVERITY.get(alert['severity'].lower()),
-                "alert_group_id": "{}".format(alert['alert_group_id']),
-                "event_id": "{}".format(alert['id']),
-                "data_message": json.dumps(alert['data_message']),
+                "name": "Cyble Vision Alert on {}".format(alert.get('service')),
+                "event_type": "{}".format(alert.get('service')),
+                "severity": INCIDENT_SEVERITY.get(alert.get('severity').lower()),
+                "alert_group_id": "{}".format(alert.get('alert_group_id')),
+                "event_id": "{}".format(alert.get('id')),
+                "data_message": json.dumps(alert.get('data_message')),
                 "keyword": "{}".format(keyword),
-                "created_at": "{}".format(alert['created_at']),
-                "status": "{}".format(alert['status']),
+                "created_at": "{}".format(alert.get('created_at')),
+                "status": "{}".format(alert.get('status')),
                 "mirrorInstance": demisto.integrationInstance()
             }
 
-            if alert['service'] == 'compromised_cards':
+            if alert.get('service') == 'compromised_cards':
 
-                card_details = alert['data_message']['data']['bank']['card']
+                data_message = alert.get('data_message')
+                data_message1 = data_message.get('data')
+                data_message2 = data_message1.get('bank')
+                card_details = data_message2.get('card')
 
                 alert_details.update({
                     "card_brand": card_details.get('brand'),
@@ -263,9 +267,11 @@ def format_incidents(alerts, hide_cvv_expiry):
                     "card_type": card_details.get('type')
                 })
 
-            elif alert['service'] == 'stealer_logs':
+            elif alert.get('service') == 'stealer_logs':
 
-                content = alert['data_message']['data'].get('content')
+                data_message = alert.get('data_message')
+                data_message1 = data_message.get('data')
+                content = data_message1.get('content')
 
                 if content:
                     alert_details.update({
