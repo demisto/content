@@ -12,7 +12,6 @@ from urllib3 import disable_warnings
 
 disable_warnings()  # pylint: disable=no-member
 
-# FIX VERSION 2
 
 """ CONSTANTS """
 
@@ -2824,12 +2823,11 @@ def truncate_asset_size(asset):
             demisto.debug(f'Truncated Asset ID: {host_id}{detection_str} to {results_characters_lim}')
             demisto.debug(json.dumps(asset))
 
-        # For debug
+        # For extra debugging in case other/additional keys has oversize data
         for key, val in asset.items():
             if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
                 demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
                               f'{str(val)[:10000]}...')
-
 
 
 def get_detections_from_hosts(hosts):
@@ -2983,7 +2981,7 @@ def fetch_assets(client, assets_last_run):
 
     total_assets += len(assets)
     stage = 'assets' if next_run_page else 'vulnerabilities'
-    amount_to_report = 1 if next_run_page else total_assets  # We report 0 as long as we have not finished pulling
+    amount_to_report = 1 if next_run_page else total_assets  # We report 1 as long as we have not finished pulling
 
     new_last_run = {'stage': stage, 'next_page': next_run_page, 'total_assets': total_assets,
                     'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
