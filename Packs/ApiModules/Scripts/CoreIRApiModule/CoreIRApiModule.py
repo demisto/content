@@ -3115,6 +3115,12 @@ def handle_outgoing_issue_closure(remote_args):
     demisto.debug(f"handle_outgoing_issue_closure {xdr_delta_closed_reason=}, {xdr_data_closed_reason=}")
     demisto.debug(f'handle_outgoing_issue_closure {current_xdr_status=} {remote_args.data=} {remote_args.inc_status=} {xdr_delta_closed_reason=}')
 
+    if is_xdr_closed and not is_xdr_status_is_closed: # not sure that this if is needed
+        xdr_delta['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
+        # maybe needed xdr_atgs['status'] = ...
+        demisto.debug(f"handle_outgoing_issue_closure inside if, updating status {xdr_delta['status']=}")  # itamar
+
+
     # force closing remote incident only if:
     #   The XSOAR incident is closed
     #   and the remote incident isn't already closed
