@@ -829,11 +829,11 @@ def test_ssl_configuration():
                               offset='earliest',
                               trust_any_cert=False,
                               use_ssl=True)
-    
+
     assert type(kafka.ca_path) is str
     assert type(kafka.client_cert_path) is str
     assert type(kafka.client_key_path) is str
-    
+
     expected_consumer_conf = {
         'auto.offset.reset': 'earliest',
         'bootstrap.servers': 'brokers',
@@ -885,9 +885,9 @@ def test_sasl_ssl_configuration():
                               trust_any_cert=False,
                               use_ssl=True,
                               use_sasl=True)
-    
+
     assert type(kafka.ca_path) is str
-    
+
     expected_consumer_conf = {
         'auto.offset.reset': 'earliest',
         'bootstrap.servers': 'brokers',
@@ -975,15 +975,18 @@ Please provide them.'
     ),
     # SASL_SSL missing username/password/ca_cert
     (
-        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2', 'credentials': { 'password': 'pass'}, 'ca_cert': 'cert'},
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2',
+         'credentials': {'password': 'pass'}, 'ca_cert': 'cert'},
         'When using SASL PLAIN with SSL, the following are required: SASL PLAIN Username. Please provide them.'
     ),
     (
-        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2', 'credentials': {'identifier': 'user'}, 'ca_cert': 'cert'},
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2',
+         'credentials': {'identifier': 'user'}, 'ca_cert': 'cert'},
         'When using SASL PLAIN with SSL, the following are required: SASL PLAIN Password. Please provide them.'
     ),
     (
-        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2', 'credentials': {'identifier': 'user', 'password': 'pass'}},
+        {'use_sasl': True, 'use_ssl': True, 'brokers': 'broker1, broker2',
+         'credentials': {'identifier': 'user', 'password': 'pass'}},
         'When using SASL PLAIN with SSL, the following are required: CA certificate of Kafka server (.cer). Please provide them.'
     ),
 ]
