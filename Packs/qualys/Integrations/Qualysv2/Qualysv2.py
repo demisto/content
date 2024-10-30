@@ -1699,17 +1699,28 @@ class Client(BaseClient):
                                f"to {new_limit} in the next iteration")
         return response
 
-    def get_vulnerabilities(self, since_datetime) -> Union[str, bytes]:
+    def get_vulnerabilities(self, since_datetime=None, qid_list=None) -> Union[str, bytes]:
         """
         Make a http request to Qualys API to get vulnerabilities
         Args:
+            since_datetime: The start fetch date (optional).
+            qid_list: list of qids (optional).
         Returns:
             response from Qualys API
         Raises:
             DemistoException: can be raised by the _http_request function
         """
         self._headers.update({"Content-Type": 'application/json'})
-        params: dict[str, Any] = {"last_modified_after": since_datetime}
+
+        params = {}
+
+        # If qid_list supplied, convert it to a csv.
+        if qid_list:
+            data = [str(item) for item in qid_list]
+            csv_string = ','.join(data)
+            params = {'ids': csv_string}
+        else:
+            params = {"last_modified_after": since_datetime}
 
         response = self._http_request(
             method='POST',
@@ -2915,19 +2926,20 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
     return assets, next_page
 
 
-def get_vulnerabilities(client, since_datetime) -> list:
+def get_vulnerabilities(client, since_datetime, qid_list) -> list:
     """ Get vulnerabilities list from qualys
     Args:
         client: Qualys client
         since_datetime: The start fetch date.
+        qid_list: list of qids (optional).
     Returns:
         list vulnerabilities
     """
     demisto.debug('Starting to fetch vulnerabilities')
-    host_list_detections = client.get_vulnerabilities(since_datetime)
+    host_list_detections = client.get_vulnerabilities(since_datetime=since_datetime, qid_list=qid_list)
     vulnerabilities = handle_vulnerabilities_result(host_list_detections) or []
 
-    demisto.debug(f'Parsed detections from hosts, got {len(vulnerabilities)=} vulnerabilities.')
+    demisto.info(f'Parsed detections from hosts, got {len(vulnerabilities)=} vulnerabilities.')
     return vulnerabilities
 
 
@@ -2979,11 +2991,12 @@ def set_last_run_with_new_limit(limit):
     return new_limit
 
 
-def fetch_vulnerabilities(client, last_run):
+def fetch_vulnerabilities(client, last_run, qid_list=None):
     """ Fetches vulnerabilities
     Args:
         client: command clietnt
         last_run: The last run.
+        qid_list: list of qids (optional).
     Return:
         vulnerabilities: vulnerabilities to push to xsiam
         last_run: The  new last run to save.
@@ -2991,7 +3004,7 @@ def fetch_vulnerabilities(client, last_run):
     demisto.debug('Starting fetch for vulnerabilities')
     since_datetime = last_run.get('since_datetime', '')
 
-    vulnerabilities = get_vulnerabilities(client, since_datetime)
+    vulnerabilities = get_vulnerabilities(client, since_datetime, qid_list)
     new_last_run = {'stage': 'assets', 'next_page': '', 'total_assets': 0,
                     'nextTrigger': None, "type": FETCH_COMMAND.get('assets')}
     return vulnerabilities, new_last_run
@@ -3480,6 +3493,7 @@ def main():  # pragma: no cover
         elif command == 'fetch-assets':
             last_run = demisto.getAssetsLastRun()
             demisto.debug(f'saved lastrun assets: {last_run}')
+
             fetch_stage = last_run.get('stage', 'assets')
 
             if fetch_stage == 'assets':
@@ -3487,7 +3501,18 @@ def main():  # pragma: no cover
                 demisto.debug(f'Starting fetch for assets, {start_time=}')
                 assets, new_last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
                 check_fetch_duration_time(start_time, last_run.get('limit', HOST_LIMIT))
-
+                # If assets, create list of QIDs and deduplicate later.
+                if assets:
+                    qid_list = []
+                    for asset in assets:
+                        if asset.get('DETECTION', {}).get('QID'):
+                            qid_list.append(asset.get('DETECTION', {}).get('QID'))
+                    # Look for QIDs already in last_run and deduplicate.
+                    if qid_list:
+                        if qids_last_run := last_run.get('qids'):
+                            qid_list.extend(qids_last_run)
+                        qid_set = set(qid_list)
+                        new_last_run['qids'] = list(qid_set)
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                                    snapshot_id=snapshot_id, items_count=total_assets, should_update_health_module=False)
@@ -3496,6 +3521,12 @@ def main():  # pragma: no cover
 
             elif fetch_stage == 'vulnerabilities':
                 vulnerabilities, new_last_run = fetch_vulnerabilities(client=client, last_run=last_run)
+                # If QIDs in last_run check against list of vulnerabilities modified in last 90 days.
+                if vulnerabilies_on_assets := last_run.get('qids'):
+                    large_qid_list = [entry['QID'] for entry in vulnerabilities]
+                    new_qid_list = [vuln for vuln in vulnerabilies_on_assets if vuln not in large_qid_list]
+                    new_vulnerabilities, _ = fetch_vulnerabilities(client=client, last_run=last_run, qid_list=new_qid_list)
+                    vulnerabilities.extend(new_vulnerabilities)
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
                 demisto.setAssetsLastRun(new_last_run)
