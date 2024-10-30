@@ -162,6 +162,7 @@ def elasticsearch_builder(proxies):
         # Adding the following params to maintain BC for Elasticsearch version v7 and below or OpenSearch
         connection_args["connection_class"] = RequestsHttpConnection
         connection_args["proxies"] = proxies
+        # TODO: need to understand what could replace the proxies parameter of the client in v8
 
     if API_KEY_ID:
         connection_args["api_key"] = API_KEY
