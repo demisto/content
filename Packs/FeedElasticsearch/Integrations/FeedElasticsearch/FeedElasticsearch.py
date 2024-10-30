@@ -139,7 +139,6 @@ def extract_api_from_username_password(username, password):
 def test_command(client, feed_type, src_val, src_type, default_type, time_method, time_field, fetch_time, query,
                  username, password, api_key, api_id):
     """Test instance was set up correctly"""
-    now = datetime.now()
     if username and not password:
         return_error('Please provide a password when using Username + Password authentication')
     elif password and not username:
@@ -165,9 +164,9 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
             err_msg += 'Please provide a "Query"\n'
         if err_msg:
             return_error(err_msg[:-1])
-        get_scan_generic_format(client, now)
+        get_scan_generic_format(client)
     else:
-        get_scan_insight_format(client, now, feed_type=feed_type)
+        get_scan_insight_format(client, feed_type=feed_type)
     try:
         res = client.send_test_request()
         if res.status_code >= 400:
@@ -192,9 +191,8 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
 
 def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     """Implements es-get-indicators command"""
-    now = datetime.now()
     if FEED_TYPE_GENERIC in feed_type:  # Generic Feed
-        search = get_scan_generic_format(client, now)
+        search = get_scan_generic_format(client)
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
             ioc_lst = get_generic_indicators(search, src_val, src_type, default_type, client.tags, client.tlp_color,
                                              client.enrichment_excluded)
@@ -206,7 +204,7 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
 
     else:  # Demisto Feed types
         # Insight is the name of the indicator object as it's saved into the database
-        search = get_scan_insight_format(client, now, feed_type=feed_type)
+        search = get_scan_insight_format(client, feed_type=feed_type)
 
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
             ioc_lst, ioc_enrch_lst = get_demisto_indicators(search, client.tags, client.tlp_color, client.enrichment_excluded)
@@ -314,7 +312,7 @@ def update_last_fetch(client, ioc_lst):
     return last_calculated_timestamp, last_ids
 
 
-def fetch_indicators_elastic_v7(client, now, last_fetch_timestamp, feed_type, fetch_limit, src_val, src_type, default_type):
+def fetch_indicators_elastic_v7(client, last_fetch_timestamp, feed_type, fetch_limit, src_val, src_type, default_type):
     """fetching indicators from the elasticsearch server.
     This function is used for client versions Elasticsearch (v7 and below) only.
     """
@@ -325,7 +323,7 @@ def fetch_indicators_elastic_v7(client, now, last_fetch_timestamp, feed_type, fe
 
     if FEED_TYPE_GENERIC not in feed_type:  # Demisto Feed types
         # Insight is the name of the indicator object as it's saved into the database
-        search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type, fetch_limit)
+        search = get_scan_insight_format(client, last_fetch_timestamp, feed_type, fetch_limit)
         search_res = client.es.search(index=search._index, body=search.to_dict(), **search._params)
         if search_res:
             res = search_res.get("hits", []).get("hits", [])
@@ -337,7 +335,7 @@ def fetch_indicators_elastic_v7(client, now, last_fetch_timestamp, feed_type, fe
                 indicators_enrch_list.extend(hit_enrch_list)
 
     else:  # Generic Feed type
-        search = get_scan_generic_format(client, now, last_fetch_timestamp, fetch_limit)
+        search = get_scan_generic_format(client, last_fetch_timestamp, fetch_limit)
 
         if client.time_field:  # if time field exist, we will fetch by using this field in the search
             search_res = client.es.search(index=search._index, body=search.to_dict(), **search._params)
@@ -356,7 +354,7 @@ def fetch_indicators_elastic_v7(client, now, last_fetch_timestamp, feed_type, fe
     return indicators_list, indicators_enrch_list
 
 
-def fetch_indicators(client, now, last_fetch_timestamp, feed_type, fetch_limit, src_val, src_type, default_type):
+def fetch_indicators(client, last_fetch_timestamp, feed_type, fetch_limit, src_val, src_type, default_type):
     """fetching indicators from the elasticsearch server.
     This function is used for client versions Elasticsearch_v8 and OpenSearch only.
     We maintain BC for versions <= 7 by using the ES client directly (from the elasticsearch7 library) instead of using the
@@ -367,7 +365,7 @@ def fetch_indicators(client, now, last_fetch_timestamp, feed_type, fetch_limit, 
 
     if FEED_TYPE_GENERIC not in feed_type:  # Demisto Feed types
         # Insight is the name of the indicator object as it's saved into the database
-        search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type, fetch_limit)
+        search = get_scan_insight_format(client, last_fetch_timestamp, feed_type, fetch_limit)
         for hit in search:
             hit_list, hit_enrch_list = extract_indicators_from_insight_hit(hit, tags=client.tags,
                                                                            tlp_color=client.tlp_color,
@@ -376,7 +374,7 @@ def fetch_indicators(client, now, last_fetch_timestamp, feed_type, fetch_limit, 
             indicators_enrch_list.extend(hit_enrch_list)
 
     else:  # Generic Feed type
-        search = get_scan_generic_format(client, now, last_fetch_timestamp, fetch_limit)
+        search = get_scan_generic_format(client, last_fetch_timestamp, fetch_limit)
         for hit in search if client.time_field else search.scan():  # if time field isn't set we have to scan all (in every cycle)
             indicators_list.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, client.tags,
                                                                        client.tlp_color, client.enrichment_excluded))
@@ -389,17 +387,16 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     last_fetch_timestamp = get_last_fetch_timestamp(last_fetch, client.time_method, client.fetch_time)
     demisto.debug(f"FeedElasticSearch: last_fetch_timestamp is: {last_fetch_timestamp}")
     prev_iocs_ids = demisto.getLastRun().get("ids", [])
-    now = datetime.now()
     ioc_lst: list = []
     ioc_enrch_lst: list = []
 
     demisto.debug(f"Starting fetch indicators - Elasticsearch client type is: {ELASTIC_SEARCH_CLIENT}")
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
-        ioc_lst, ioc_enrch_lst = fetch_indicators(client, now, last_fetch_timestamp, feed_type, fetch_limit, src_val,
+        ioc_lst, ioc_enrch_lst = fetch_indicators(client, last_fetch_timestamp, feed_type, fetch_limit, src_val,
                                                   src_type, default_type)
     else:  # Elasticsearch v7 and below (backwards compatibility)
-        ioc_lst, ioc_enrch_lst = fetch_indicators_elastic_v7(client, now, last_fetch_timestamp, feed_type, fetch_limit, src_val,
+        ioc_lst, ioc_enrch_lst = fetch_indicators_elastic_v7(client, last_fetch_timestamp, feed_type, fetch_limit, src_val,
                                                              src_type, default_type)
 
     ioc_lst = list(filter(lambda ioc: ioc.get("id") not in prev_iocs_ids, ioc_lst))
@@ -434,7 +431,7 @@ def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):
     return last_fetch_timestamp
 
 
-def get_scan_generic_format(client, now, last_fetch_timestamp=None, fetch_limit=FETCH_LIMIT):
+def get_scan_generic_format(client, last_fetch_timestamp=None, fetch_limit=FETCH_LIMIT):
     """Gets a scan object in generic format"""
     # if method is simple date - convert the date string to datetime
     es = client.es
@@ -463,7 +460,7 @@ def extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, ta
     return ioc_lst
 
 
-def get_scan_insight_format(client, now, last_fetch_timestamp=None, feed_type=None, fetch_limit=FETCH_LIMIT):
+def get_scan_insight_format(client, last_fetch_timestamp=None, feed_type=None, fetch_limit=FETCH_LIMIT):
     """Gets a scan object in insight format"""
     time_field = client.time_field
     range_field = {
