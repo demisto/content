@@ -2537,14 +2537,14 @@ Generic call to ServiceNow api
 
 >Request for GET method is successful
 
-### servicenow-get-attachments
+### servicenow-get-ticket-attachments
 
 ***
 Retrieve file attachments from tickets.
 
 #### Base Command
 
-`servicenow-get-attachments`
+`servicenow-get-ticket-attachments`
 
 #### Input
 
