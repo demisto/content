@@ -92,10 +92,10 @@ script:
       - "True"
       - "False"
       required: true
-    - description: Maximum audit events to fetch.
+    - description: Maximum audit events to fetch. Default is 1000.
       name: max_fetch_audit
       defaultValue: 1000
-    - description: Maximum syslog transactions events to fetch.
+    - description: Maximum syslog transactions events to fetch. Default is 1000.
       name: max_fetch_syslog_transactions
       defaultValue: 1000
     - name: from_date
