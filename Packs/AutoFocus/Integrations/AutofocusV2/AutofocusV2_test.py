@@ -434,6 +434,7 @@ URLS_LIST = [
     ("www.Müünchen.com", "www.Mxn--tdaanchen.com"),
     ("www.MükÖnchen.com", "www.Mxn--tdakxn--ndanchen.com"),
     ("www.こんにちは.com", 'www.xn--28j2a3ar1p.com'),
+    ("https://paloaltonetworks–test.com", "https://paloaltonetworksxn--7ugtest.com")    # noqa: RUF001
 ]
 
 
@@ -464,6 +465,43 @@ def test_search_url_command(mocker, autofocusv2_client):
 
     assert result[0].indicator.url == "www.こんにちは.com"
     assert result[0].raw_response["indicator"]["indicatorValue"] == mock_response["indicator"]["indicatorValue"]
+
+
+@pytest.mark.parametrize('separator, expected_value', [('|', ["https:firstpart,connectedpart"]),
+                                                       (None, ["https:firstpart", "connectedpart"])])
+def test_search_url_custom_separator(mocker, autofocusv2_client, separator, expected_value):
+    from AutofocusV2 import search_url_command
+    from CommonServerPython import remove_empty_elements
+
+    # Mock response
+    mock_response = {
+        'indicator': {
+        },
+        'tags': []
+    }
+    status_code = 200
+    response = ResMocker(mock_response, status_code)
+    mocker.patch.object(autofocusv2_client, 'http_request', return_value=response)
+
+    # Mock argToList
+    return_value = []
+
+    def side_effect_function(*args, **kwargs):
+        result = argToList(*args, **kwargs)  # Call the original function
+        return_value.append(result)
+        return result
+
+    mocker.patch('AutofocusV2.argToList', side_effect=side_effect_function)
+
+    # Mock args
+    args = {'url': 'https:firstpart,connectedpart',
+            'reliability': 'B - Usually reliable',
+            'create_relationships': False,
+            'separator': separator
+            }
+    args: dict = remove_empty_elements(args)    # type: ignore
+    search_url_command(autofocusv2_client, **args)
+    assert return_value[0] == expected_value
 
 
 def test_search_url_command_args(mocker, autofocusv2_client):

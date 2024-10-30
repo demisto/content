@@ -1,0 +1,3 @@
+[file:playbook-CVE-2022-41040_&_CVE-2022-41082_-_ProxyNotShell.yml]
+ignore=GR107
+

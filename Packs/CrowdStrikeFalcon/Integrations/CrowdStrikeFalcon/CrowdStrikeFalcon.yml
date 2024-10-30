@@ -435,7 +435,7 @@ script:
       name: ids
       required: true
     - auto: PREDEFINED
-      description: The status to transition a detection to.
+      description: "The status to transition a detection to. Note: The following statuses—true_positive, false_positive, and ignored—are only available in the legacy version of the API."
       name: status
       predefined:
       - new

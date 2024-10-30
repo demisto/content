@@ -899,7 +899,7 @@ script:
     - contextPath: Panorama.Services.Protocol
       description: The service protocol.
       type: string
-    - contextPath: Panorama.Services.Descritpion
+    - contextPath: Panorama.Services.Description
       description: The service description.
       type: string
     - contextPath: Panorama.Services.DestinationPort
@@ -4373,7 +4373,7 @@ script:
     - contextPath: Panorama.Services.Protocol
       description: The service protocol.
       type: string
-    - contextPath: Panorama.Services.Descritpion
+    - contextPath: Panorama.Services.Description
       description: The service description.
       type: string
     - contextPath: Panorama.Services.DestinationPort
@@ -5417,6 +5417,9 @@ script:
     - contextPath: Panorama.SecurityRule.Tags
       description: The tags for the rule.
       type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: The profile setting group.
+      type: String
     execution: true
   - arguments:
     - description: The name of the rule to delete.
@@ -5893,6 +5896,27 @@ script:
     - contextPath: Panorama.SecurityRule.SecurityProfile
       description: The security profile settings applied to the security rule.
       type: Unknown
+    - contextPath: Panorama.SecurityRule.SecurityProfile.file-blocking
+      description: The security profile setting for file-blocking in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.data-filtering
+      description: The security profile setting for data filtering in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.wildfire-analysis
+      description: The security profile setting for wildfire-analysis in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.spyware
+      description: The security profile setting for spyware in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.vulnerability
+      description: The security profile setting for vulnerability in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.virus
+      description: The security profile setting for viruses in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.url-filtering
+      description: The security profile setting for url-filtering in the security rule.
+      type: String
     - contextPath: Panorama.SecurityRule.Target.devices
       description: The devices targeted by the security rule.
       type: String
