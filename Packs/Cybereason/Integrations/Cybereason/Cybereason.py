@@ -1493,6 +1493,7 @@ def malop_to_incident(malop: str) -> dict:
         raise ValueError("Cybereason raw response is not valid, malop is not dict")
 
     status = 0
+    malopStatus = ""
     if malop.get('status', ''):
         malopStatus = (malop.get('status', 'UNREAD'))
     elif malop.get('simpleValues', ''):
