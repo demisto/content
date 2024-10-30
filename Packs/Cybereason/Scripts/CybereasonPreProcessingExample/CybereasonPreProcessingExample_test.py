@@ -14,7 +14,10 @@ def test_main(mocker):
     test_data = {
         'labels': [
             {'type': 'x', 'value': 'not found'},
-            {'type': 'guidString', 'value': '12345678'}
+            {'type': 'guidString', 'value': '12345678'},
+            {'type': 'x', 'value': 'nothing'},
+            {'type': 'GUID', 'value': '12345678'},
+            {'type': 'y', 'value': 'nanana'}
         ]
     }
 
