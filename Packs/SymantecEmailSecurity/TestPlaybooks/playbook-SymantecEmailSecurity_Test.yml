@@ -1,7 +1,7 @@
-id: SymantecEmailSecurity
+id: SymantecEmailSecurity_TestPlaybook
 version: 13
 vcShouldKeepItemLegacyProdMachine: false
-name: SymantecEmailSecurity
+name: SymantecEmailSecurity_TestPlaybook
 starttaskid: "0"
 tasks:
   "0":

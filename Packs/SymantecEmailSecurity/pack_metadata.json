@@ -6,9 +6,9 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "08/09/2024",
+    "created": "2024-10-30T00:00:00Z",
     "categories": [
-        "Email Gateway"
+        "Email"
     ],
     "tags": [],
     "useCases": [],
@@ -18,5 +18,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "itemPrefix": [
+        "Symantec ESC"
     ]
 }

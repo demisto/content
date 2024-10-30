@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Email
 commonfields:
   id: Symantec Email Security Cloud
   version: -1
@@ -50,6 +50,9 @@ configuration:
   display: Fetch incidents
   type: 8
   section: Collect
+- name: incidentType
+  display: Incident type
+  type: 13
 - name: max_fetch
   display: Maximum number of incidents per fetch
   additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 200.
@@ -1153,4 +1156,4 @@ script:
   script: ''
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- SymantecEmailSecurity_TestPlaybook
