@@ -7,7 +7,6 @@ from XDR_iocs import *
 import pytest
 from freezegun import freeze_time
 
-
 Client.severity = 'INFO'
 client = Client({'url': 'https://example.com'})
 
@@ -28,7 +27,8 @@ class TestGetHeaders:
         """
         params = {
             "apikey_id": "7",
-            "apikey": "t3PkfrEhaRAD9a3r6Lq5cVPyqdMqtLd8cOJlSWUtbslkbERUgb2BTkSNRtDr3C6CWAgYqxvyzwDFJ83BLBgu1V2cxQY7rsoo2ks2u3W2aBL2BlteF8C8u75lCVUrNbv1"    # noqa: E501
+            "apikey": "t3PkfrEhaRAD9a3r6Lq5cVPyqdMqtLd8cOJlSWUtbslkbERUgb2BTkSNRtDr3C6CWAgYqxvyzwDFJ83BLBgu1V2cxQY7rsoo2ks2u3W2aBL2BlteF8C8u75lCVUrNbv1"
+            # noqa: E501
         }
         headers = {
             'Authorization': 'da94963b561e3c95899d843b1284cecf410606e9e809be528ec1cf03880c6e9e',
@@ -111,6 +111,7 @@ class TestGetRequestsKwargs:
             Then:
                 - Verify output format.
         """
+
         def override_open(open_path, *_other):
             return open_path
 
@@ -130,7 +131,7 @@ class TestGetRequestsKwargs:
         _json = {'test': 'test'}
         output = get_requests_kwargs(_json=_json)
         expected_output = {'data': '{"request_data": {"test": "test"}}'}
-        assert output == expected_output, f'get_requests_kwargs(_json={_json})\n\treturns: {output}\n\t instead: {expected_output}'     # noqa: E501
+        assert output == expected_output, f'get_requests_kwargs(_json={_json})\n\treturns: {output}\n\t instead: {expected_output}'  # noqa: E501
 
 
 class TestPrepareCommands:
@@ -146,7 +147,7 @@ class TestPrepareCommands:
 
         ts = int(datetime.now(timezone.utc).timestamp() * 1000)
         url_suffix, _json = prepare_get_changes(ts)
-        assert url_suffix == 'get_changes', f'prepare_get_changes\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: get_changes'   # noqa: E501
+        assert url_suffix == 'get_changes', f'prepare_get_changes\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: get_changes'  # noqa: E501
         assert _json == {'last_update_ts': ts}
 
     def test_prepare_enable_iocs(self):
@@ -157,7 +158,7 @@ class TestPrepareCommands:
                 - Verify url and json format.
         """
         url_suffix, iocs = prepare_enable_iocs('8.8.8.8,domain.com')
-        assert url_suffix == 'enable_iocs', f'prepare_enable_iocs\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: enable_iocs'   # noqa: E501
+        assert url_suffix == 'enable_iocs', f'prepare_enable_iocs\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: enable_iocs'  # noqa: E501
         assert iocs == ['8.8.8.8', 'domain.com']
 
     def test_prepare_disable_iocs(self):
@@ -168,7 +169,7 @@ class TestPrepareCommands:
                 - Verify url and json format.
         """
         url_suffix, iocs = prepare_disable_iocs('8.8.8.8,domain.com')
-        assert url_suffix == 'disable_iocs', f'prepare_disable_iocs\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: disable_iocs'    # noqa: E501
+        assert url_suffix == 'disable_iocs', f'prepare_disable_iocs\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: disable_iocs'  # noqa: E501
         assert iocs == ['8.8.8.8', 'domain.com']
 
 
@@ -231,7 +232,8 @@ class TestCreateFile:
             Then:
                 - Verify sync file data.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value=json.loads(self.get_file(f'test_data/{in_iocs}.json')))  # noqa: E501
+        mocker.patch.object(demisto, 'searchIndicators',
+                            return_value=json.loads(self.get_file(f'test_data/{in_iocs}.json')))  # noqa: E501
         with tempfile.NamedTemporaryFile(mode='w') as temp_file:
             create_file_sync(temp_file.name)
             data = self.get_file(temp_file.name)
@@ -312,7 +314,7 @@ class TestCreateFile:
             create_file_iocs_to_keep(temp_file.name)
             data = self.get_file(temp_file.name)
         expected_data = self.get_file(f'test_data/{out_iocs}.txt')
-        assert data == expected_data, f'create_file_iocs_to_keep with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'    # noqa: E501
+        assert data == expected_data, f'create_file_iocs_to_keep with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'  # noqa: E501
 
     def test_create_file_iocs_to_keep_all_types(self, mocker):
         """
@@ -332,7 +334,6 @@ class TestCreateFile:
 
 
 class TestDemistoIOCToXDR:
-
     data_test_demisto_expiration_to_xdr = [
         (None, -1),
         ('', -1),
@@ -350,7 +351,7 @@ class TestDemistoIOCToXDR:
         """
 
         output = demisto_expiration_to_xdr(demisto_expiration)
-        assert xdr_expiration == output, f'demisto_expiration_to_xdr({demisto_expiration})\n\treturns: {output}\n\tinstead: {xdr_expiration}'   # noqa: E501
+        assert xdr_expiration == output, f'demisto_expiration_to_xdr({demisto_expiration})\n\treturns: {output}\n\tinstead: {xdr_expiration}'  # noqa: E501
 
     data_test_demisto_reliability_to_xdr = [
         (None, 'F'),
@@ -372,7 +373,7 @@ class TestDemistoIOCToXDR:
         """
 
         output = demisto_reliability_to_xdr(demisto_reliability)
-        assert output == xdr_reliability, f'demisto_reliability_to_xdr({demisto_reliability})\n\treturns: {output}\n\tinstead: {xdr_reliability}'   # noqa: E501
+        assert output == xdr_reliability, f'demisto_reliability_to_xdr({demisto_reliability})\n\treturns: {output}\n\tinstead: {xdr_reliability}'  # noqa: E501
 
     data_test_demisto_types_to_xdr = [
         ('File', 'HASH'),
@@ -433,41 +434,53 @@ class TestDemistoIOCToXDR:
         (
             {'value': '11.11.11.11', 'indicator_type': 100, 'score': 2},
             {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS',
-                'severity': 'INFO', 'type': '100', "comment": [""]}
+             'severity': 'INFO', 'type': '100', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP'},
             {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN',
-                'severity': 'INFO', 'type': 'IP', "comment": [""]}
+             'severity': 'INFO', 'type': 'IP', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'expiration': '2020-06-03T00:00:00Z'},
-            {'expiration_date': 1591142400000, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', "comment": [""]}    # noqa: E501
+            {'expiration_date': 1591142400000, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO',
+             'type': 'IP', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentTimeLine', 'content': 'test'}]},    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP',
+             'comments': [{'type': 'IndicatorCommentTimeLine', 'content': 'test'}]},  # noqa: E501
             {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN',
-                'severity': 'INFO', 'type': 'IP', "comment": [""]}
+             'severity': 'INFO', 'type': 'IP', "comment": [""]}
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['test']}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP',
+             'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},  # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'comment': ['test']}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}, {'type': 'IndicatorCommentRegular', 'content': 'this is the comment'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['this is the comment']}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'},
+                                                                          {'type': 'IndicatorCommentRegular',
+                                                                           'content': 'this is the comment'}]},  # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'comment': ['this is the comment']}  # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'aggregatedReliability': 'A - Completely reliable'},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'reliability': 'A', "comment": [""]}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'reliability': 'A', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'CustomFields': {'threattypes': {'threatcategory': 'Malware'}}},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'class': 'Malware', "comment": [""]}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'CustomFields': {'threattypes': {'threatcategory': 'Malware'}}},
+            # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'class': 'Malware', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'moduleToFeedMap': {'module': {'sourceBrand': 'test', 'score': 2}}},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'vendors': [{'vendor_name': 'test', 'reputation': 'SUSPICIOUS', 'reliability': 'F'}], "comment": [""]}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'moduleToFeedMap': {'module': {'sourceBrand': 'test', 'score': 2}}},
+            # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'vendors': [{'vendor_name': 'test', 'reputation': 'SUSPICIOUS', 'reliability': 'F'}], "comment": [""]}  # noqa: E501
         )
     ]
 
@@ -481,7 +494,7 @@ class TestDemistoIOCToXDR:
         """
 
         output = demisto_ioc_to_xdr(demisto_ioc)
-        assert output == xdr_ioc, f'demisto_ioc_to_xdr({demisto_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(xdr_ioc)}'    # noqa: E501
+        assert output == xdr_ioc, f'demisto_ioc_to_xdr({demisto_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(xdr_ioc)}'  # noqa: E501
 
     def test_empty_demisto_ioc_to_xdr(self, mocker):
         warnings = mocker.patch.object(demisto, 'debug')
@@ -491,7 +504,6 @@ class TestDemistoIOCToXDR:
 
 
 class TestXDRIOCToDemisto:
-
     data_test_xdr_expiration_to_demisto = [
         (-1, 'Never'),
         (1591142400000, '2020-06-03T00:00:00Z'),
@@ -507,7 +519,7 @@ class TestXDRIOCToDemisto:
                 - expiration in demisto format.
         """
         output = xdr_expiration_to_demisto(xdr_expiration)
-        assert output == demisto_expiration, f'xdr_expiration_to_demisto({xdr_expiration})\n\treturns: {output}\n\tinstead: {demisto_expiration}'    # noqa: E501
+        assert output == demisto_expiration, f'xdr_expiration_to_demisto({xdr_expiration})\n\treturns: {output}\n\tinstead: {demisto_expiration}'  # noqa: E501
 
     data_test_xdr_ioc_to_demisto = [
         (
@@ -516,7 +528,8 @@ class TestXDRIOCToDemisto:
                 'RULE_SEVERITY': 'SEV_010_INFO', 'NUMBER_OF_HITS': 0, 'RULE_SOURCE': 'XSOAR TIM', 'RULE_COMMENT': '',
                 'RULE_STATUS': 'DISABLED', 'BS_STATUS': 'DONE', 'BS_TS': 1591165801230, 'BS_RETRIES': 1,
                 'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'HASH',
-                'RULE_INDICATOR': 'fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e', 'REPUTATION': 'GOOD',    # noqa: E501
+                'RULE_INDICATOR': 'fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e', 'REPUTATION': 'GOOD',
+                # noqa: E501
                 'RELIABILITY': None, 'VENDORS': None, 'KLASS': None, 'IS_DEFAULT_TTL': False, 'RULE_TTL': -1,
                 'MARKED_DELETED': 0
             },
@@ -537,7 +550,8 @@ class TestXDRIOCToDemisto:
                 'RULE_ID': 861, 'RULE_INSERT_TIME': 1591165763753, 'RULE_MODIFY_TIME': 1591166095668,
                 'RULE_SEVERITY': 'SEV_010_INFO', 'NUMBER_OF_HITS': 0, 'RULE_SOURCE': 'XSOAR TIM', 'RULE_COMMENT': '',
                 'RULE_STATUS': 'DISABLED', 'BS_STATUS': 'DONE', 'BS_TS': 1591165801784, 'BS_RETRIES': 1,
-                'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'DOMAIN_NAME', 'RULE_INDICATOR': 'test.com', 'REPUTATION': 'GOOD',    # noqa: E501
+                'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'DOMAIN_NAME', 'RULE_INDICATOR': 'test.com', 'REPUTATION': 'GOOD',
+                # noqa: E501
                 'RELIABILITY': None, 'VENDORS': None, 'KLASS': None, 'IS_DEFAULT_TTL': False, 'RULE_TTL': -1,
                 'MARKED_DELETED': 0
             },
@@ -589,7 +603,7 @@ class TestXDRIOCToDemisto:
         mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         output = xdr_ioc_to_demisto(xdr_ioc)
         del output['rawJSON']
-        assert output == demisto_ioc, f'xdr_ioc_to_demisto({xdr_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'    # noqa: E501
+        assert output == demisto_ioc, f'xdr_ioc_to_demisto({xdr_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'  # noqa: E501
 
 
 class TestCommands:
@@ -609,7 +623,7 @@ class TestCommands:
             enable_ioc = mocker.patch('XDR_iocs.prepare_enable_iocs', side_effect=prepare_enable_iocs)
             iocs_command(client)
             output = outputs.call_args.args[0]
-            assert output == "IOCs command: enabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: enabled indicators='11.11.11.11'."    # noqa: E501
+            assert output == "IOCs command: enabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: enabled indicators='11.11.11.11'."  # noqa: E501
             assert enable_ioc.call_count == 1, 'enable command not called'
 
         def test_iocs_command_with_disable(self, mocker):
@@ -627,7 +641,7 @@ class TestCommands:
             disable_ioc = mocker.patch('XDR_iocs.prepare_disable_iocs', side_effect=prepare_disable_iocs)
             iocs_command(client)
             output = outputs.call_args.args[0]
-            assert output == "IOCs command: disabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: disabled indicators='11.11.11.11'."    # noqa: E501
+            assert output == "IOCs command: disabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: disabled indicators='11.11.11.11'."  # noqa: E501
             assert disable_ioc.call_count == 1, 'disable command not called'
 
     def test_sync(self, mocker):
@@ -664,7 +678,8 @@ class TestCommands:
         xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
-        xdr_ioc_to_timeline([str(x[0].get('RULE_INDICATOR')) for x in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto])    # noqa: E501
+        xdr_ioc_to_timeline(
+            [str(x[0].get('RULE_INDICATOR')) for x in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto])  # noqa: E501
 
 
 class TestParams:
@@ -897,7 +912,7 @@ def test_parse_demisto_comments__default_as_tag():
             comment_field_name=Client.xsoar_comments_field,
             comments_as_tags=True
         )
-    assert exc.value.message == "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."\
+    assert exc.value.message == "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)." \
                                 "Set a different value."
 
 
@@ -1139,12 +1154,12 @@ def test_xdr_iocs_sync_command_sync_for_fetch_fails(mock_update_integration_cont
 @patch('XDR_iocs.update_integration_context_override', return_value={})
 @patch('XDR_iocs.demisto.debug')
 def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
-        mock_demisto_debug,
-        mock_update_integration_context_override,
-        mock_set_integration_context,
-        mock_http_request,
-        mock_get_iocs_generator,
-        mock_get_integration_context):
+    mock_demisto_debug,
+    mock_update_integration_context_override,
+    mock_set_integration_context,
+    mock_http_request,
+    mock_get_iocs_generator,
+    mock_get_integration_context):
     """
     Given the xdr_iocs_sync_command function is called with is_first_stage_sync=true, called_from_fetch=true
     When  There are validation errors in the response
@@ -1273,3 +1288,61 @@ def test_get_indicators(mock_IndicatorsSearcher,
         mock_info.assert_called_with(expected_info)
     else:
         mock_info.assert_not_called()
+
+
+@pytest.mark.parametrize('is_xsoar_saas, expected_link', ((True, ['url/indicator/111']), (False, ['url/#/indicator/111'])))
+def test_create_an_indicator_link(mocker, is_xsoar_saas: bool, expected_link: str):
+    """
+    Given:
+        -  indicator id and a bool argument is_xsoar_saas which presents if xsaor is a saas version or not
+    When:
+        -  creating an indicator link
+    Then:
+        - verify the link according to the XSAOR version
+    """
+    import XDR_iocs
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    mocker.patch.object(XDR_iocs, 'is_xsoar_saas', return_value=is_xsoar_saas)
+    assert XDR_iocs.create_an_indicator_link(ioc={'id': '111'}) == expected_link
+
+
+@pytest.mark.parametrize('xsoar_comment_field, expected_result',
+                         ((["indicator_link"], ("comments", True)),
+                          (["comments"], ("comments", False)),
+                          (["comments", "indicator_link"], ("comments", True)),
+                          ))
+def test_parse_xsoar_field_name_and_link(xsoar_comment_field: list[str], expected_result: tuple[str, bool]):
+    """
+    Given:
+        -  xsoar_comment_field and the expected_result
+    When:
+        -  parsing xsoar_comment_field by our logic
+    Then:
+        - verify the function parses the xsoar_comment_field as expected
+    """
+    import XDR_iocs
+    result = XDR_iocs.parse_xsoar_field_name_and_link(xsoar_comment_field)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('xsoar_comment_field, informative_message',
+                         ((["comments", "not_indicator_link"],
+                           "The parameter xsoar_comment_field=['comments', 'not_indicator_link'] cannot "
+                           'contain two fields without indicator_link.If it contains two fields, one of '
+                           'them should be indicator_link.'),
+                          (["a", "b", "c"], ("The parameter xsoar_comment_field=['a', 'b', 'c'] cannot contain more than "
+                                             'two fields'))))
+def test_parse_xsoar_field_name_and_link_exceptions(xsoar_comment_field: list[str], informative_message: str):
+    """
+    Given:
+        -  invalid xsoar_comment_field and the expected_result
+    When:
+        -  parsing xsoar_comment_field by our logic
+    Then:
+        - verify the function throws a DemistoException with informative message
+    """
+    import XDR_iocs
+    try:
+        XDR_iocs.parse_xsoar_field_name_and_link(xsoar_comment_field)
+    except DemistoException as e:
+        assert e.message == informative_message
