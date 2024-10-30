@@ -20,11 +20,11 @@ SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'la
 
 class KConsumer(Consumer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-    pass
+
 
 class KProducer(Producer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-    pass
+
 
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
