@@ -94,7 +94,7 @@ configuration:
 - additionalinfo: Default value is Enterprise
   defaultvalue: Enterprise
   display: ''
-  name: Collection_ID
+  name: collection_id
   options:
   - Enterprise
   - Mobile
