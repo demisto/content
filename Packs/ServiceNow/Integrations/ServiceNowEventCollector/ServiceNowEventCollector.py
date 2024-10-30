@@ -120,7 +120,7 @@ def initialize_from_date(last_run: dict[str, Any], log_type: str) -> str:
         first_fetch_str = first_fetch_time.strftime(LOGS_DATE_FORMAT)
         from_date = first_fetch_str
     else:
-        from_date = last_run.get("last_fetch_time", "")
+        from_date = start_timestamp
 
     return from_date
 
@@ -199,15 +199,9 @@ def get_events_command(client: Client, args: dict, log_types: list) -> tuple[lis
         add_time_field(logs, log_type)  # Add the _time field to the events
 
         demisto.debug(f"Got a total of {len(logs)} events created after {from_date}")
-        hr += tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=logs)
+        hr += tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=logs, removeNull=True,
+                              headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
         all_events.extend(logs)
-
-        # readable_output = tableToMarkdown(
-        #     f"{log_type} Logs List:",
-        #     logs,
-        #     removeNull=True,
-        #     headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)),
-        # )
 
     return all_events, CommandResults(readable_output=hr)
 
