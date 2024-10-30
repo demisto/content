@@ -1,0 +1,90 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "610827cc-e32a-4caf-84b3-8c91fbee7fd0",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 8,
+	"mapping": {
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Additional Email Addresses": {
+					"simple": "indicators.Email"
+				},
+				"CVE List": {
+					"simple": "indicators.CVE"
+				},
+				"Detected IPs": {
+					"simple": "indicators.IP"
+				},
+				"Domain Name": {
+					"simple": "indicators.Domain"
+				},
+				"Event ID": {
+					"simple": "event_id"
+				},
+				"Feedly crawled date": {
+					"simple": "create_time"
+				},
+				"Feedly url": {
+					"simple": "feedly_url"
+				},
+				"File MD5": {
+					"simple": "indicators.File"
+				},
+				"MITRE Technique ID": {
+					"simple": "indicators.TTP"
+				},
+				"MITRE Technique Name": {
+					"simple": "indicators.Attack Pattern"
+				},
+				"Source name": {
+					"simple": "source.name"
+				},
+				"Source url": {
+					"simple": "source.url"
+				},
+				"Tags": {
+					"complex": {
+						"filters": [],
+						"root": "tags",
+						"transformers": []
+					}
+				},
+				"URLs": {
+					"simple": "indicators.URL"
+				},
+				"Use Case Description": {
+					"simple": "content"
+				},
+				"name": {
+					"simple": "name"
+				}
+			}
+		}
+	},
+	"name": "Feedly - Report Mapper",
+	"nameRaw": "Feedly - Report Mapper",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

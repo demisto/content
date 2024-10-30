@@ -1,0 +1,121 @@
+[
+	{
+		"id": "Feedly Report",
+		"version": 6,
+		"cacheVersn": 0,
+		"modified": "2024-10-10T13:51:44.813997902Z",
+		"created": "0001-01-01T00:00:00Z",
+		"sizeInBytes": 0,
+		"packID": "",
+		"packName": "",
+		"itemVersion": "",
+		"fromServerVersion": "",
+		"toServerVersion": "",
+		"definitionId": "",
+		"vcShouldIgnore": false,
+		"vcShouldKeepItemLegacyProdMachine": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "Feedly Report",
+		"prevName": "Feedly Report",
+		"color": "#F8E7A5",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": false,
+		"preProcessingScript": "",
+		"closureScript": "",
+		"disabled": false,
+		"reputationCalc": 0,
+		"onChangeRepAlg": 0,
+		"layout": "e53027fa-56c1-4521-8c38-822af5c0f6de",
+		"detached": false,
+		"extractSettings": {
+			"mode": "Specific",
+			"fieldCliNameToExtractSettings": {
+				"additionalemailaddresses": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"emailRep"
+					]
+				},
+				"cvelist": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"cveRep"
+					]
+				},
+				"detectedips": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"ipRep"
+					]
+				},
+				"domainname": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"domainRepUnified"
+					]
+				},
+				"filemd5": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"unifiedFileRep"
+					]
+				},
+				"filesha1": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"unifiedFileRep"
+					]
+				},
+				"filesha256": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"unifiedFileRep"
+					]
+				},
+				"mitretechniqueid": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"Attack Pattern"
+					]
+				},
+				"mitretechniquename": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"Attack Pattern"
+					]
+				},
+				"selectedindicators": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"urls": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"urlRep"
+					]
+				}
+			}
+		}
+	}
+]

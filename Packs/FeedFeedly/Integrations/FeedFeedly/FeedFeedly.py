@@ -984,7 +984,10 @@ def fetch_indicators_command(client: Client, params: dict[str, str], context: di
         Indicators.
     """
     return client.fetch_indicators_from_stream(
-        params["feedly_stream_id"], newer_than=float(context.get("last_successful_run", time.time() - 7 * 24 * 3600))
+        params["feedly_stream_id"],
+        newer_than=float(
+            context.get("last_successful_run", time.time() - int(params.get("days_to_backfill", 7)) * 24 * 3600)
+        ),
     )
 
 
