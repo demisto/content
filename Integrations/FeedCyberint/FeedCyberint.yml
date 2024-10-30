@@ -7,11 +7,16 @@ display: Cyberint Feed
 category: Data Enrichment & Threat Intelligence
 description: Use the Cyberint Feed integration to get indicators from the feed.
 configuration:
-- display: The Cyberint IOC feed endpoint URL
+- display: Cyberint API URL
+  additionalinfo: Cyberint API URL on which the services run (i.e https://your-company.cyberint.io)
   name: url
-  defaultvalue: https://qmasters-integration.cyberint.io/ioc/api/v1/feed/daily/
-  type: 0
   required: true
+  type: 0
+- display: Company Name
+  additionalinfo: Company (client) name associated with Cyberint instance.
+  name: client_name
+  required: true
+  type: 0
 - display: API Key (Leave empty. Fill in the API Key in the password field.)
   displaypassword: API access token
   name: access_token
@@ -170,6 +175,6 @@ script:
       description: The feed confidence.
       type: String
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.90168
   feed: true
   subtype: python3

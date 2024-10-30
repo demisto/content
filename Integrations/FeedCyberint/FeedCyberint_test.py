@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest import mock
 
 import FeedCyberint
 import pytest
@@ -6,7 +7,10 @@ import pytest
 date_time = str((datetime.now().strftime(FeedCyberint.DATE_FORMAT)))
 
 BASE_URL = "https://feed-example.com/"
-REQUEST_URL = f"{BASE_URL}{date_time}"
+REQUEST_URL1 = f"{BASE_URL}{date_time}?limit=1000&offset=0"
+REQUEST_URL2 = f"{BASE_URL}{date_time}?limit=1000&offset=1000"
+REQUEST_URL3 = f"{BASE_URL}{date_time}?limit=20000&offset=0"
+REQUEST_URL4 = f"{BASE_URL}{date_time}?limit=20000&offset=20000"
 TOKEN = "example_token"
 
 
@@ -17,6 +21,16 @@ def load_mock_response() -> str:
         str: Mock file content.
     """
     with open("test_data/indicators.jsonb", "r") as file:
+        return file.read()
+
+
+def load_mock_empty_response() -> str:
+    """Load mock file that simulates an API response.
+
+    Returns:
+        str: Mock file content.
+    """
+    with open("test_data/empty.jsonb", "r") as file:
         return file.read()
 
 
@@ -36,7 +50,9 @@ def mock_client() -> FeedCyberint.Client:
     )
 
 
+@mock.patch('FeedCyberint.is_execution_time_exceeded')
 def test_build_iterator(
+    is_execution_time_exceeded_mock,
     requests_mock,
     mock_client: FeedCyberint.Client,
 ):
@@ -54,14 +70,19 @@ def test_build_iterator(
     - Ensure that the IP values is correct.
     - Ensure that the URL values is correct.
     """
-    response = load_mock_response()
+    is_execution_time_exceeded_mock.return_value = False
 
-    requests_mock.get(REQUEST_URL, text=response)
+    response1 = load_mock_response()
+    response2 = load_mock_empty_response()
+
+    requests_mock.get(REQUEST_URL1, text=response1)
+    requests_mock.get(REQUEST_URL2, text=response2)
 
     expected_url = "http://www.tal1.com/"
     expected_ip = "1.1.1.1"
 
-    indicators = mock_client.build_iterator()
+    indicators = mock_client.request_daily_feed()
+    print(f'Indicators: {indicators}')
 
     url_indicators = {indicator["value"] for indicator in indicators if indicator["type"] == "URL"}
     ip_indicators = {indicator["value"] for indicator in indicators if indicator["type"] == "IP"}
@@ -70,7 +91,9 @@ def test_build_iterator(
     assert expected_ip in ip_indicators
 
 
+@mock.patch('FeedCyberint.is_execution_time_exceeded')
 def test_get_indicators_command(
+    is_execution_time_exceeded_mock,
     requests_mock,
     mock_client: FeedCyberint.Client,
 ):
@@ -88,9 +111,13 @@ def test_get_indicators_command(
     - Ensure that the IP values is correct.
     - Ensure that the URL values is correct.
     """
-    response = load_mock_response()
+    is_execution_time_exceeded_mock.return_value = False
 
-    requests_mock.get(REQUEST_URL, text=response)
+    response1 = load_mock_response()
+    response2 = load_mock_empty_response()
+
+    requests_mock.get(REQUEST_URL3, text=response1)
+    requests_mock.get(REQUEST_URL4, text=response2)
 
     expected_url = "http://www.tal1.com/"
     expected_ip = "1.1.1.1"
@@ -114,7 +141,9 @@ def test_get_indicators_command(
     assert expected_ip in ip_indicators
 
 
+@mock.patch('FeedCyberint.is_execution_time_exceeded')
 def test_fetch_indicators_command(
+    is_execution_time_exceeded_mock,
     requests_mock,
     mock_client: FeedCyberint.Client,
 ):
@@ -132,9 +161,13 @@ def test_fetch_indicators_command(
     - Ensure that the IP values is correct.
     - Ensure that the URL values is correct.
     """
-    response = load_mock_response()
+    is_execution_time_exceeded_mock.return_value = False
 
-    requests_mock.get(REQUEST_URL, text=response)
+    response1 = load_mock_response()
+    response2 = load_mock_empty_response()
+
+    requests_mock.get(REQUEST_URL3, text=response1)
+    requests_mock.get(REQUEST_URL4, text=response2)
 
     expected_url = "http://www.tal1.com/"
     expected_ip = "1.1.1.1"

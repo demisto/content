@@ -2,7 +2,7 @@
     "id": "incident_cyberinttags",
     "version": -1,
     "modified": "2021-02-22T21:54:24.562891889+02:00",
-    "name": "CyberInt Tags",
+    "name": "Cyberint Tags",
     "ownerOnly": false,
     "cliName": "cyberinttags",
     "type": "shortText",

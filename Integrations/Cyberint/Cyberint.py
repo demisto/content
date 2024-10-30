@@ -45,7 +45,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
         """
-        Client for CyberInt RESTful API.
+        Client for Cyberint RESTful API.
 
         Args:
             base_url (str): URL to access when getting alerts.
@@ -53,10 +53,19 @@ class Client(BaseClient):
             verify_ssl (bool): specifies whether to verify the SSL certificate or not.
             proxy (bool): specifies if to use XSOAR proxy settings.
         """
+        params = demisto.params()
         self._cookies = {"access_token": access_token}
-        self.headers = {"Integration-Source": f"XSOAR-{demisto.integrationInstance()}"}
+        self._headers = {
+            "X-Integration-Type": "XSOAR",
+            "X-Integration-Instance-Name": demisto.integrationInstance(),
+            "X-Integration-Instance-Id": "",
+            "X-Integration-Customer-Name": params.get("client_name", ""),
+            "X-Integration-Version": "1.1.4"
+        }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
+
+    @logger
     def list_alerts(
         self,
         page: Optional[str],
@@ -82,6 +91,8 @@ class Client(BaseClient):
             created_date_to (str): Maximal ISO-Formatted creation date.
             modification_date_from (str): Minimal ISO-Formatted modification date.
             modification_date_to (str): Maximal ISO-Formatted modification date.
+            update_date_from (str): Minimal ISO-Formatted update date.
+            update_date_to (str): Maximal ISO-Formatted update date.
             environments (list(str)): Environments in which the alerts were created.
             statuses (list(str)): Alerts statuses.
             severities (list(str)): Alerts severities.
@@ -122,6 +133,7 @@ class Client(BaseClient):
             alerts (list(str)): Reference IDs for the alert(s)
             status (str): Desired status to update for the alert(s)
             closure_reason (str): Reason for updating the alerts status to closed.
+            closure_reason_description (str): Reason for updating the alerts status to closed.
 
         Returns:
             response (Response): API response from Cyberint.
@@ -183,7 +195,6 @@ class Client(BaseClient):
 
         Args:
             alert_ref_id (str): Reference ID of the alert.
-            attachment_id (str): The ID of the attachment.
 
         Returns:
             Response: API response from Cyberint.
@@ -224,7 +235,7 @@ def test_module(client: Client):
     except DemistoException as exception:
         if "Invalid token or token expired" in str(exception):
             error_message = (
-                "Error verifying access token and / or environment, make sure the "
+                "Error verifying access token and / or URL, make sure the "
                 "configuration parameters are correct."
             )
         else:
@@ -371,9 +382,9 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
             alert["alert_data"]["csv"] = extracted_csv_data
         outputs.append(alert)
     total_alerts = result.get("total")
-    table_headers = ["ref_id", "title", "status", "severity", "created_date", "update_date", "type", "environment"]
+    table_headers = ["id", "ref_id", "title", "status", "severity", "created_date", "update_date", "type", "environment"]
     readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
-    readable_output += tableToMarkdown(name="CyberInt alerts:", t=outputs, headers=table_headers, removeNull=True)
+    readable_output += tableToMarkdown(name="Cyberint alerts:", t=outputs, headers=table_headers, removeNull=True)
     return CommandResults(
         outputs_key_field="ref_id",
         outputs_prefix="Cyberint.Alert",
@@ -424,7 +435,7 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
         )
 
     readable_output = tableToMarkdown(
-        name="CyberInt alerts updated information:", t=outputs, headers=table_headers, removeNull=True
+        name="Cyberint alerts updated information:", t=outputs, headers=table_headers, removeNull=True
     )
     return CommandResults(
         outputs_key_field="ref_id",
@@ -655,13 +666,19 @@ def update_remote_system(
 
             updated_arguments = {}
             if updated_status := update_args.get("status"):
+                closure_reason = update_args.get("closure_reason", "other")
+                closure_reason_description = update_args.get("closure_reason_description", "user wasn't specified closure reason when closed alert")
                 if updated_status != "closed":
                     updated_arguments["status"] = updated_status
                 else:
-                    for key, value in update_args.items():
-                        if key in MIRRORING_FIELDS:
-                            # updated_arguments[MIRRORING_FIELDS_MAPPER[key]] = value
-                            updated_arguments[key] = value
+                    updated_arguments["status"] = updated_status
+                    updated_arguments["closure_reason"] = closure_reason
+                    updated_arguments["closure_reason_description"] = closure_reason_description
+            else:
+                cyberint_response = client.get_alert(alert_ref_id=incident_id)
+                cyberint_alert: Dict[str, Any] = cyberint_response["alert"]
+                cyberint_status = cyberint_alert.get("status")
+                updated_arguments["status"] = cyberint_status
 
             updated_arguments["alerts"] = [incident_id]
 
@@ -703,9 +720,9 @@ def get_remote_data_command(
     mirrored_ticket: Dict[str, Any] = response["alert"]
     ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("update_date")))
 
-    # mirrored_ticket["cyberintstatus"] = mirrored_ticket["status"]
-    # mirrored_ticket["cyberintclosurereason"] = mirrored_ticket["closure_reason"]
-    # mirrored_ticket["cyberintclosurereasondescription"] = mirrored_ticket["closure_reason_description"]
+    mirrored_ticket["cyberintstatus"] =  MIRRORING_FIELDS_MAPPER.get(mirrored_ticket["status"])
+    mirrored_ticket["cyberintclosurereason"] = mirrored_ticket["closure_reason"]
+    mirrored_ticket["cyberintclosurereasondescription"] = mirrored_ticket["closure_reason_description"]
 
     demisto.debug(f"******** Alert {incident_id} - {ticket_last_update=} {last_update=}")
 
@@ -751,6 +768,7 @@ def fetch_incidents(
     max_fetch: Optional[int],
     duplicate_alert: bool,
     mirror_direction: Optional[str],
+    close_alert: bool,
 ) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
@@ -764,6 +782,9 @@ def fetch_incidents(
         fetch_type (list(str)): Types to fetch.
         fetch_environment (list(str)): Environments to fetch.
         max_fetch (int): Max number of alerts to fetch.
+        duplicate_alert (bool): Whether to duplicate alerts.
+        mirror_direction (str): Direction to mirror.
+        close_alert (bool): Whether to close alerts.
     Returns:
         Tuple of next_run (seconds timestamp) and the incidents list
     """
@@ -839,8 +860,7 @@ def fetch_incidents(
         alert_name = f"Cyberint alert {alert_id}: {alert_title}"
         alert.update({"alert_name": alert_name})
 
-        alert["closure_reason_description"] = "None"
-        alert["id"] = alert_id
+        alert["closure_reason_description"] = "none"
         alert["incident_id"] = alert_id
         alert["mirror_direction"] = mirror_direction
         alert["mirror_instance"] = demisto.integrationInstance()
@@ -868,6 +888,14 @@ def fetch_incidents(
         else:
             incidents.append(incident)
 
+        # close Cyberint alert if required
+        if close_alert:
+            client.update_alerts(
+                alerts=argToList(alert_id),
+                status="closed",
+                closure_reason="resolved",
+            )
+
     if incidents:
         #  Update the time for the next fetch so that there won't be duplicates.
         last_incident_time = max(incidents, key=lambda item: item["occurred"])
@@ -884,12 +912,12 @@ def main():
     params = demisto.params()
     command = demisto.command()
     access_token = params.get("access_token")
-    environment = params.get("environment")
+    url = params.get("url")
 
     verify_certificate = not params.get("insecure", False)
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     proxy = params.get("proxy", False)
-    base_url = f"https://{environment}.cyberint.io/alert/"
+    base_url = f"{url}/alert/"
     demisto.info(f"Command being called is {command}")
     try:
         client = Client(
@@ -915,6 +943,7 @@ def main():
                 if params.get("mirror_direction") == "None"
                 else MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
             )
+            close_alert = params.get("close_alert", False)
             next_run, incidents = fetch_incidents(
                 client,
                 demisto.getLastRun(),
@@ -926,6 +955,7 @@ def main():
                 max_fetch,
                 duplicate_alert,
                 mirror_direction,
+                close_alert,
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -952,7 +982,7 @@ def main():
     except Exception as e:
         if "Invalid token or token expired" in str(e):
             error_message = (
-                "Error verifying access token and / or environment, make sure the "
+                "Error verifying access token and / or URL, make sure the "
                 "configuration parameters are correct."
             )
         elif "datetime" in str(e).lower():

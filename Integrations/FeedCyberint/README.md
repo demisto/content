@@ -7,26 +7,18 @@ This integration was integrated and tested with version 1 of Cyberint Feed.
 2. Search for Cyberint Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | The Cyberint IOC feed endpoint URL |  | True |
-    | API Key (Leave empty. Fill in the API Key in the password field.) |  | True |
-    | API access token |  | True |
-    | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    | Indicator Type | Which indicator types to fetch | True |
-    | Feed Name |  | True |
-    | Confidence | Confidence about the indicator details. The value of confidence to fetch indicators from. The value between 0-100. | False |
-    | Severity | Severity about the indicator details. The value of severity to fetch indicators from. The value between 0-100. | False |
-    |  |  | False |
-    |  |  | False |
-    | Feed Fetch Interval |  | False |
-    | Tags | Supports CSV values. | False |
+    | **Parameter** | **Description**                                                                                                                                                                                        | **Required** |
+    | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+    | Cyberint API URL | Example: https://yourcompany.cyberint.io                                                                                                                                                               | True |
+    | API access token |                                                                                                                                                                                                        | True |
+    | Fetch indicators | Should be checked (true)                                                                                                                                                                               | False |
+    | Indicator Type | Which indicator types to fetch                                                                                                                                                                         | True |
+    | Confidence | Confidence about the indicator details. The value of confidence to fetch indicators from. The value between 0-100.                                                                                     | False |
+    | Severity | Severity about the indicator details. The value of severity to fetch indicators from. The value between 0-100.                                                                                         | False |
+    | Tags | Supports CSV values.                                                                                                                                                                                   | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |                                                                                                                                                                                                        | False |
+    | Use system proxy settings |                                                                                                                                                                                                        | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

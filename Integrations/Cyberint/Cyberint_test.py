@@ -115,7 +115,7 @@ def test_fetch_incidents(requests_mock, duplicate_alerts, client) -> None:
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing"
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing", False
     )
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
     assert last_fetch.get("last_fetch") == wanted_time * 1000
@@ -149,7 +149,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock, client):
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing"
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
     )
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
     assert last_fetch.get("last_fetch") == wanted_time * 1000
@@ -176,7 +176,7 @@ def test_fetch_incidents_empty_response(requests_mock, client):
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing"
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
     )
     assert last_fetch.get("last_fetch") == 100001000
     assert len(incidents) == 0

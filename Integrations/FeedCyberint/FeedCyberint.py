@@ -1,13 +1,19 @@
 import http
+from json import JSONDecodeError
 
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
+import json
+from typing import Any, List, Dict
+
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_INTERVAL = 240
+PAGE_SIZE = 20000
+EXECUTION_TIMEOUT_SECONDS = 1200  # 20 minutes
 
 
 class Client(BaseClient):
@@ -22,45 +28,100 @@ class Client(BaseClient):
         verify: bool = False,
         proxy: bool = False,
     ):
+        params = demisto.params()
         self._cookies = {"access_token": access_token}
         self._headers = {
             "X-Integration-Type": "XSOAR",
-            "X-Integration-Instance-Name": f"{demisto.integrationInstance()}",
+            "X-Integration-Instance-Name": demisto.integrationInstance(),
+            "X-Integration-Instance-Id": "",
+            "X-Integration-Customer-Name": params.get("client_name", ""),
+            "X-Integration-Version": "1.1.4"
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-    def build_iterator(self, date_time: str = None) -> list[dict[str, Any]]:
+
+    @logger
+    def request_daily_feed(self, date_time: str = None, limit: int = 1000, execution_start_time: datetime = datetime.now(), test: bool = False) -> List[Dict[str, Any]]:
         """
-        Retrieves all entries from the feed.
+        Retrieves all entries from the feed with pagination support.
+
+        Args:
+            date_time (str): The date-time value to use in the URL. Defaults to None.
+            limit (int): The maximum number of entries to retrieve per request. Defaults to 100.
+            execution_start_time (datetime): The start time of the execution. Defaults to now.
+            test (bool): If true, only return one page for testing connection.
 
         Returns:
             A list of objects, containing the indicators.
         """
+        result = []
+        offset = 0
+        has_more = True
+
+        while has_more:
+            demisto.info(f'Fetching feed offset {offset}')
+
+            # if the execution exceeded the timeout we will break
+            if not test:
+                if is_execution_time_exceeded(start_time=execution_start_time):
+                    print(f'Execution time exceeded: {EXECUTION_TIMEOUT_SECONDS} seconds from: {execution_start_time}')
+                    return result
+
+            start_time = time.time()
+            response = self.retrieve_indicators_from_api(date_time, limit, offset)
+
+            try: # if json invalid (for example, non 200), end the loop
+                feeds = response.strip().split("\n")
+                ioc_feeds = [json.loads(feed) for feed in feeds]
+            except JSONDecodeError as e:
+                demisto.error(f'Failed to decode JSON: {e}')
+                has_more = False
+                continue
+
+            if not ioc_feeds:  # if no data is returned, end the loop
+                demisto.info('No more indicators found')
+                has_more = False
+            else:
+                for indicator in ioc_feeds:
+                    indicator_value = indicator["ioc_value"]
+                    if indicator_type := auto_detect_indicator_type(indicator_value):
+                        result.append(
+                            {
+                                "value": indicator_value,
+                                "type": indicator_type,
+                                "FeedURL": self._base_url,
+                                "rawJSON": indicator,
+                            }
+                        )
+
+                end_time = time.time()
+                demisto.info(f'Duration of offset processing {offset}: {end_time - start_time} seconds')
+                # Update the offset for the next request
+                offset += limit
+                has_more = True
+                demisto.debug(f'has_more = {has_more}')
+
+            if test:  # if test module, end the loop
+                demisto.info('Test execution')
+                has_more = False
+                continue
+
+        return result
+
+
+    @logger
+    def retrieve_indicators_from_api(self, date_time, limit, offset):
+        url_suffix = f"{date_time or get_today_time()}?limit={limit}&offset={offset}"
+        demisto.debug('URL to fetch indicators: {}'.format(url_suffix))
         response = self._http_request(
             method="GET",
-            url_suffix=date_time or get_today_time(),
+            url_suffix=url_suffix,
             cookies=self._cookies,
             resp_type="text",
             timeout=120,
+            retries=3,
         )
-
-        result = []
-        feeds = response.strip().split("\n")
-        ioc_feeds = [json.loads(feed) for feed in feeds]
-
-        for indicator in ioc_feeds:
-            indicator_value = indicator["ioc_value"]
-            if indicator_type := auto_detect_indicator_type(indicator_value):
-                result.append(
-                    {
-                        "value": indicator_value,
-                        "type": indicator_type,
-                        "FeedURL": self._base_url,
-                        "rawJSON": indicator,
-                    }
-                )
-
-        return result
+        return response
 
 
 def test_module(client: Client) -> str:
@@ -74,7 +135,7 @@ def test_module(client: Client) -> str:
         Outputs.
     """
     try:
-        client.build_iterator()
+        client.request_daily_feed(limit=10, test=True)
     except DemistoException as exc:
         if exc.res is not None:
             if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN:
@@ -95,6 +156,7 @@ def fetch_indicators(
     date_time: str = None,
     feed_tags: List = [],
     limit: int = -1,
+    execution_start_time: datetime = datetime.now(),
 ) -> list[dict[str, Any]]:
     """
     Retrieves indicators from the feed.
@@ -109,11 +171,12 @@ def fetch_indicators(
         date_time (str): Date time string to fetch indicators from.
         feed_tags (list): tags to assign fetched indicators.
         limit (int): The maximum number of results to return.
+        execution_start_time (datetime): The start time of the execution. Defaults to now.
 
     Returns:
         Indicators.
     """
-    iterator = client.build_iterator(date_time)
+    iterator = client.request_daily_feed(date_time, limit = PAGE_SIZE, execution_start_time = execution_start_time)
     indicators = []
 
     for item in iterator:
@@ -147,6 +210,7 @@ def fetch_indicators(
             indicators.append(indicator_obj)
 
         if limit > 0 and len(indicators) >= limit:
+            demisto.info(f'Indicators limit reached (total): {len(indicators)}')
             break
 
     return indicators
@@ -289,6 +353,7 @@ def is_x_minutes_ago_yesterday(minutes: int) -> bool:
     return x_minutes_ago.date() == yesterday.date()
 
 
+@logger
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -296,7 +361,8 @@ def main():
     params = demisto.params()
     args = demisto.args()
 
-    base_url = params.get("url")
+    url = params.get("url")
+    base_url = f"{url}/ioc/api/v1/feed/daily/"
     access_token = params.get("access_token").get("password")
     insecure = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -320,14 +386,35 @@ def main():
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)
-            for iter_ in batch(indicators, batch_size=2000):
+            demisto.info(f'Total {len(indicators)} indicators')
+            for iter_ in batch(indicators, batch_size=5000):
+                demisto.info(f'About to push {len(iter_)} indicators to XSOAR')
                 demisto.createIndicators(iter_)
+            demisto.info(f'{command} operation completed')
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+
+
+@logger
+def is_execution_time_exceeded(start_time: datetime) -> bool:
+    """
+    Checks if the execution time so far exceeded the timeout limit.
+
+    Args:
+        start_time (datetime): the time when the execution started.
+
+    Returns:
+        bool: true, if execution passed timeout settings, false otherwise.
+    """
+    end_time = datetime.utcnow()
+    secs_from_beginning = (end_time - start_time).seconds
+    demisto.info(f'Execution duration is {secs_from_beginning} secs so far')
+
+    return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
