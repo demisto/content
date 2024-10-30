@@ -154,7 +154,7 @@ def add_incident_list(args):
     incident_list = json.loads(incident_list)
     incident_time = get_incident_time(incident_list, incident_id)
     if incident_time:
-        status = f"Incident data already exist in the list."
+        status = "Incident data already exist in the list."
     else:
         incident_list.append(incident_data)
         # add_incident = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2", "listData": incident_list})

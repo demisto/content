@@ -19,7 +19,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -28,7 +27,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -52,13 +51,16 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 420
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -70,27 +72,58 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 58a0683c-e5a3-4b0c-8f7d-c704007b0506
+    taskid: 26c45a81-074d-4554-8db6-a397823c1d11
     type: regular
     task:
-      id: 58a0683c-e5a3-4b0c-8f7d-c704007b0506
+      id: 26c45a81-074d-4554-8db6-a397823c1d11
       version: -1
-      name: RerunDSPMIncidents
+      name: Re-run DSPM Incidents
       scriptName: DSPMRerunIncidents
       type: regular
       iscommand: false
       brand: ""
-      description: 'Re-run the incidents'
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      incident_list:
+        simple: ${lists.INCIDENT_LIST2_copy}
+      rerun_time:
+        simple: ${inputs.rerunTime}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 220
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 01fc577a-53b6-455f-8cbe-d64ae342193b
+    type: title
+    task:
+      id: 01fc577a-53b6-455f-8cbe-d64ae342193b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -105,15 +138,28 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 465,
+        "height": 560,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: rerunTime
+  value:
+    simple: "24"
+  required: false
+  description: Incident re-run time (in hours)
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - rerunTime
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
-fromversion: 6.10.0
-tests:
-- No tests (auto formatted)
+dirtyInputs: true

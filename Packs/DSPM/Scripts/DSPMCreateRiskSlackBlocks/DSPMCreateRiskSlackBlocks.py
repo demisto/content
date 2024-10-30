@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def create_slack_block(incident: dict, rule_names_list: list, incidentLink: str) -> dict:
+def create_slack_block(incident: dict, rule_names_list: list, incidentLink:str) -> dict:
     """
     Creates a Slack block message structure for a DSPM incident.
 
@@ -18,7 +18,7 @@ def create_slack_block(incident: dict, rule_names_list: list, incidentLink: str)
     Returns:
         block (dict): A structured Slack block message in JSON format to be sent to Slack.
     """
-    rule_name = incident.get("ruleName")
+    rule_name = incident.get('ruleName')
 
     # Slack block structure
     block = {
@@ -28,8 +28,8 @@ def create_slack_block(incident: dict, rule_names_list: list, incidentLink: str)
                 "text": {
                     "type": "plain_text",
                     "text": "THE FOLLOWING RISK HAS BEEN DETECTED BY THE DSPM :warning:",
-                    "emoji": True,
-                },
+                    "emoji": True
+                }
             },
             {
                 "type": "section",
@@ -37,20 +37,22 @@ def create_slack_block(incident: dict, rule_names_list: list, incidentLink: str)
                 "text": {
                     "type": "mrkdwn",
                     "text": f"*XSOAR Incident ID:* {incident.get('incidentId')}\n"
-                    f"*XSOAR Incident link:* {incidentLink}\n"
-                    f"*DSPM Risk ID:* {incident.get('riskFindingId')}\n"
-                    f"*Rule Name:* {incident.get('ruleName')}\n"
-                    f"*Severity:* {incident.get('severity')}\n"
-                    f"*Asset Name:* {incident.get('assetName')}\n"
-                    f"*Asset ID:* {incident.get('assetId')}\n"
-                    f"*Project ID:* {incident.get('projectId')}\n"
-                    f"*Cloud Provider:* {incident.get('cloudProvider')}\n"
-                    f"*Service Type:* {incident.get('serviceType')}\n"
-                    f"*First Discovered:* {incident.get('firstDetectedOn')}\n"
-                    f"*Remediate Instruction:* {incident.get('remediateInstruction')}\n",
-                },
+                            f"*XSOAR Incident link:* {incidentLink}\n"
+                            f"*DSPM Risk ID:* {incident.get('riskFindingId')}\n"
+                            f"*Rule Name:* {incident.get('ruleName')}\n"
+                            f"*Severity:* {incident.get('severity')}\n"
+                            f"*Asset Name:* {incident.get('assetName')}\n"
+                            f"*Asset ID:* {incident.get('assetId')}\n"
+                            f"*Project ID:* {incident.get('projectId')}\n"
+                            f"*Cloud Provider:* {incident.get('cloudProvider')}\n"
+                            f"*Service Type:* {incident.get('serviceType')}\n"
+                            f"*First Discovered:* {incident.get('firstDetectedOn')}\n"
+                            f"*Remediate Instruction:* {incident.get('remediateInstruction')}\n"
+                }
             },
-            {"type": "divider"},
+            {
+                "type": "divider"
+            },
             {
                 "type": "actions",
                 "elements": [
@@ -58,33 +60,55 @@ def create_slack_block(incident: dict, rule_names_list: list, incidentLink: str)
                         "type": "radio_buttons",
                         "options": [
                             {
-                                "text": {"type": "plain_text", "text": "Create a Jira ticket", "emoji": True},
-                                "value": "Create a Jira ticket",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Create a Jira ticket",
+                                    "emoji": True
+                                },
+                                "value": "Create a Jira ticket"
                             }
                         ],
-                        "action_id": "actionId-0",
+                        "action_id": "actionId-0"
                     }
-                ],
+                ]
             },
             {
                 "type": "input",
                 "element": {
                     "type": "plain_text_input",
-                    "placeholder": {"type": "plain_text", "text": "Please enter a valid Project Name", "emoji": True},
-                    "action_id": "project_name",
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Please enter a valid Project Name",
+                        "emoji": True
+                    },
+                    "action_id": "project_name"
                 },
-                "label": {"type": "plain_text", "text": "Enter Project Name", "emoji": True},
+                "label": {
+                    "type": "plain_text",
+                    "text": "Enter Project Name",
+                    "emoji": True
+                }
             },
             {
                 "type": "input",
                 "element": {
                     "type": "plain_text_input",
-                    "placeholder": {"type": "plain_text", "text": "Please enter a valid Issue type", "emoji": True},
-                    "action_id": "Issue_type",
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Please enter a valid Issue type",
+                        "emoji": True
+                    },
+                    "action_id": "Issue_type"
                 },
-                "label": {"type": "plain_text", "text": "Enter Issue Type", "emoji": True},
+                "label": {
+                    "type": "plain_text",
+                    "text": "Enter Issue Type",
+                    "emoji": True
+                }
             },
-            {"type": "divider"},
+            {
+                "type": "divider"
+            }
         ]
     }
 
@@ -95,22 +119,23 @@ def create_slack_block(incident: dict, rule_names_list: list, incidentLink: str)
     if rule_name in rule_names_list:
         try:
             # Ensure the 'actions' block exists at the correct index
-            if isinstance(block, dict) and "blocks" in block and len(block["blocks"]) > 3:
-                block["blocks"][3].get("elements", [{}])[0].get("options", []).insert(
-                    0,
-                    {
-                        "text": {"type": "plain_text", "text": "Remediate a Risk", "emoji": True},
-                        "value": "Remediate a Risk",
-                    },
-                )
-        except IndexError as e:
+            elements = block["blocks"][3].get("elements", [{}])[0].get("options", [])
+            elements.insert(0, {
+                "text": {
+                    "type": "plain_text",
+                    "text": "Remediate a Risk",
+                    "emoji": True
+                },
+                "value": "Remediate a Risk"
+            })
+        except (AttributeError, IndexError, TypeError)as e:
             demisto.error(f"Error inserting 'Remediate a Risk' option: {str(e)}")
             raise
     res = {"block": block}
     return res
 
 
-""" MAIN FUNCTION """
+''' MAIN FUNCTION '''
 
 
 def main():  # pragma: no cover
@@ -124,7 +149,10 @@ def main():  # pragma: no cover
     Returns:
         None: Results are returned via demisto.results() and CommandResults().
     """
-    rule_names_list = ["Sensitive asset open to world", "Empty storage asset"]
+    rule_names_list = [
+        "Sensitive asset open to world",
+        "Empty storage asset"
+    ]
     try:
         incident = demisto.args().get("dspmIncident")
         incidentLink = demisto.args().get("incidentLink")
@@ -138,10 +166,10 @@ def main():  # pragma: no cover
         )
 
     except Exception as excep:
-        return_error(f"Failed to execute CreateDSPMRiskSlackBlocks. Error: {str(excep)}")
+        return_error(f'Failed to execute CreateDSPMRiskSlackBlocks. Error: {str(excep)}')
 
 
-""" ENTRY POINT """
+''' ENTRY POINT '''
 
-if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

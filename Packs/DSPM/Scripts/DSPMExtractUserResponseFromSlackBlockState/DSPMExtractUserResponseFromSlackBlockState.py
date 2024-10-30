@@ -54,20 +54,12 @@ def parse_slack_block_builder_res(SlackBlockState: Any) -> None:
             raise Exception(f"Sorry!!, this '{action_name}' action type is not supported")
 
     except AttributeError as ae:
-        print("Check for invalid response", str(ae))
         demisto.error(traceback.format_exc())  # log the traceback
-        print(traceback.format_exc())
-        print("Invalid response found.")
         demisto.setContext("User.Action", "invalid_response")
     except TypeError as ex:
-        print("Check for invalid response", str(ex))
         demisto.error(traceback.format_exc())  # log the traceback
-        print(traceback.format_exc())
-        print("Invalid response found.")
         demisto.setContext("User.Action", "invalid_response")
     except Exception as ex:
-        print("Check for invalid response", str(ex))
-        print(traceback.format_exc())  # log the traceback
         demisto.setContext("User.Action", "invalid_response")
         return_error(f"Failed to parse Slack block builder response: {str(ex)}")
 
@@ -93,7 +85,6 @@ def main() -> None:
 
         parse_slack_block_builder_res(SlackBlockState)
     except Exception as excep:
-        print(traceback.format_exc())  # print the traceback
         demisto.setContext("User.Action", "no_response 1")
         return_error(f"Failed to execute DSPMExtractUserResponseFromSlackBlockState. Error: {str(excep)}")
 

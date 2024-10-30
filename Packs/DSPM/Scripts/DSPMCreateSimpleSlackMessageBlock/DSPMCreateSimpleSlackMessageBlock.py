@@ -8,7 +8,9 @@ import traceback
 Script Name: DSPMOverwriteListAndNotify
 
 Description:
-This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
+This automation script overwrites the value of a specified list and sends a Slack notification 
+to inform the user that they failed to respond to an incident notification in a timely manner. 
+The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
 """
 
 

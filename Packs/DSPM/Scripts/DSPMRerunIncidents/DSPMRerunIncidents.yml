@@ -8,8 +8,6 @@ type: python
 tags: []
 enabled: true
 args:
-- name: time_duration
-  description: Time Duration under which we are going to re-run the incident
 - name: incident_list
   required: true
   description: DSPM Incident list data

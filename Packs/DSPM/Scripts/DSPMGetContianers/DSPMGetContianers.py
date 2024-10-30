@@ -22,7 +22,6 @@ def get_containers(args: Dict[str, Any]) -> CommandResults:
         folder_name = path.split("/")[0]
         containers.append(folder_name)
     return CommandResults(
-        readable_output=containers,
         outputs_prefix="containers",
         outputs=containers,
     )

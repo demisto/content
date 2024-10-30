@@ -47,8 +47,11 @@ def reopenIncident(args):
     incident_ids = []
     rerun_time = args.get("rerun_time")
     incident_list = args.get("incident_list")
-    incident_list = "[" + incident_list + "]"
-    incidentList = json.loads(incident_list)
+    if isinstance(incident_list, dict):
+        incidentList = [incident_list]
+    else:
+        incident_list = "[" + incident_list + "]"
+        incidentList = json.loads(incident_list)
     for incident in incidentList:
         differenceInHours = timeDifferenceInHours(incident.get("incident_created"), rerun_time)
         if differenceInHours:

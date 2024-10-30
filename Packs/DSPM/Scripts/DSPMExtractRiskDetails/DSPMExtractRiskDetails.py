@@ -4,8 +4,10 @@ from CommonServerPython import *  # noqa: F401
 """
   Script Name: DSPMExtractRiskDetails
   Description:
-  This script extracts risk details from an incident object, processes asset tags, and sets the user's Slack email for future notifications.
-  It retrieves the incident details, including risk information, asset tags, and configuration details from the DSPM integration. If the asset owner's email is found, it is stored; otherwise, a default email is used.
+  This script extracts risk details from an incident object, processes asset tags, 
+  and sets the user's Slack email for future notifications. It retrieves the incident 
+  details, including risk information, asset tags, and configuration details from the DSPM integration. 
+  If the asset owner's email is found, it is stored; otherwise, a default email is used.
   The extracted data is stored in the XSOAR context and displayed in a readable markdown format.
   """
 
@@ -15,7 +17,8 @@ from datetime import datetime
 
 def set_user_slack_email(incident_details, defaultSlackUser):
     """
-    Sets the Slack email of the asset owner in the XSOAR context. If the email is not available, it defaults to a pre-configured Slack user.
+    Sets the Slack email of the asset owner in the XSOAR context. 
+    If the email is not available, it defaults to a pre-configured Slack user.
 
     Args:
     incident_details (dict): The incident details containing asset tags and risk data.
