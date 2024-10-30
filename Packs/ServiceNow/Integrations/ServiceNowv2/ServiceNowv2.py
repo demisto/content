@@ -1510,7 +1510,7 @@ def get_attachment_command(client: Client, args: dict) -> list | CommandResults:
         args: Usually demisto.args()
 
     Returns:
-        Demisto Outputs.
+        Command results and file results.
     """
     sys_id = str(args.get('sys_id', ''))
 
