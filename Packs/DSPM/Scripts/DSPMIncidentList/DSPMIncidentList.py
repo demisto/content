@@ -9,8 +9,6 @@ For incidents older than the configured time limit (default is 48 hours), the sc
 the incident from the list. Additionally, the script supports adding new incidents to the list if they do not already exist.
 """
 
-from typing import Dict, Any
-import traceback
 from datetime import datetime
 
 """ STANDALONE FUNCTION """

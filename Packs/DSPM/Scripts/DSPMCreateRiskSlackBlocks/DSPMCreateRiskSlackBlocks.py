@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from typing import List, Dict, Any
 
 
-def create_slack_block(incident: dict, rule_names_list: list, incidentLink:str) -> dict:
+def create_slack_block(incident: dict, rule_names_list: list, incidentLink: str) -> dict:
     """
     Creates a Slack block message structure for a DSPM incident.
 
