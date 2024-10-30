@@ -14,6 +14,7 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | Account SAS Token | False |
     | Use Azure Managed Identities | False |
     | Azure Managed Identities Client ID | False |   
+    | Shared Key | False |
     | Use system proxy settings | False |
     | Trust any certificate (not secure) | False |
 
@@ -29,6 +30,8 @@ please make sure your SAS token contains the following permissions:
   2. 'Service', 'Container' and 'Object' resource types.
   3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
   4. 'Blob versioning permissions'
+## Shared Key Permissions
+To set the AllowSharedKeyAccess property for an Azure Storage account, a user needs to have the permissions to create and manage storage accounts.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -612,3 +615,28 @@ Retrieve Blob properties.
 
 #### Command Example
 ```!azure-storage-container-sas-create account_key="TestAccountKey" expiry_time="1" signed_resources="test signed_permissions="test signed_ip="127.0.0.1"```
+
+### azure-storage-container-block-public-access
+***
+Block public access to a container..
+
+
+#### Base Command
+
+`azure-storage-container-block-public-access`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| container_name | The name of the Blob Container. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!azure-storage-container-block-public-access container_name="xsoar"```
+
+#### Human Readable Output
+
+>xsoar.txt Public access to container '{container_name}' has been successfully blocked.

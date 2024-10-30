@@ -36,6 +36,7 @@ SERVER = PARAMS['url'].removesuffix('/')
 USE_SSL = not PARAMS.get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = PARAMS.get('fetch_time', '3 days')
+MAX_FETCH_SIZE = 10000
 PROXY = PARAMS.get('proxy', False)
 BYTE_CREDS = f'{CLIENT_ID}:{SECRET}'.encode()
 # Headers to be sent in requests
@@ -2973,6 +2974,10 @@ def fetch_incidents():
         total_detections = demisto.get(response, "meta.pagination.total")
         detections_offset = calculate_new_offset(detections_offset, len(detections_ids), total_detections)
         if detections_offset:
+            if detections_offset + fetch_limit > MAX_FETCH_SIZE:
+                demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {detections_offset} + limit: {fetch_limit} reached "
+                              f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+                detections_offset = 0
             demisto.debug(f"CrowdStrikeFalconMsg: The new detections offset is {detections_offset}")
         raw_res = get_detections_entities(detections_ids)
 
@@ -3034,6 +3039,10 @@ def fetch_incidents():
         total_incidents = demisto.get(response, "meta.pagination.total")
         incidents_offset = calculate_new_offset(incidents_offset, len(incidents_ids), total_incidents)
         if incidents_offset:
+            if incidents_offset + fetch_limit > MAX_FETCH_SIZE:
+                demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {incidents_offset} + limit: {fetch_limit} reached "
+                              f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+                incidents_offset = 0
             demisto.debug(f"CrowdStrikeFalconMsg: The new incidents offset is {incidents_offset}")
 
         if incidents_ids:
@@ -3206,6 +3215,10 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
     total_detections = demisto.get(response, "meta.pagination.total")
     offset = calculate_new_offset(offset, len(detections_ids), total_detections)
     if offset:
+        if offset + fetch_limit > MAX_FETCH_SIZE:
+            demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {offset} + limit: {fetch_limit} reached "
+                          f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+            offset = 0
         demisto.debug(f"CrowdStrikeFalconMsg: The new {detections_type} offset is {offset}")
 
     if detections_ids:
@@ -5508,12 +5521,13 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
     detection_res = get_detections_by_behaviors(behaviors_id).get('resources', {})
     outputs = []
 
+    # detection_ids are under the alert_ids key in the new (raptor) API, see XSUP-41622
+    detection_ids_key = 'detection_ids' if LEGACY_VERSION else 'alert_ids'
     for detection in detection_res:
         outputs.append({
             'incident_id': detection.get('incident_id'),
             'behavior_id': detection.get('behavior_id'),
-            'detection_ids': detection.get('detection_ids'),
-
+            'detection_ids': detection.get(detection_ids_key),
         })
     return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
                           outputs=outputs,

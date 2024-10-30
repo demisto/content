@@ -133,11 +133,11 @@ Write
 
 ##### Authenticating using custom callback URL
 
-![Custom callback URL](../../doc_files/jira-oauth-custom-callback-url.gif)
+![Custom callback URL](https://github.com/demisto/content-assets/raw/master/Assets/Jira/jira-oauth-custom-callback-url.gif)
 
 ##### Authenticating using the oproxy callback URL
 
-![Oproxy callback URL](../../doc_files/jira-oauth-oproxy-callback-url.gif)
+![Oproxy callback URL](https://github.com/demisto/content-assets/raw/master/Assets/Jira/jira-oauth-oproxy-callback-url.gif)
 
 ## Fetch Incidents
 
@@ -2695,6 +2695,171 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### jira-get-user-info
+
+***
+Retrieves information about a specified Jira user. For on-prem instances, you should use the user's key and username to retrieve their details. For Cloud instances, user's `account_id` is required. If no identifier is supplied, information for the user the API credentials belong to is returned.
+
+#### Base Command
+
+`jira-get-user-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| key | The user's key (On-prem only). | Optional | 
+| username | The user's username (On-prem only). | Optional | 
+| account_id | The user's account ID (Cloud only). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.Users.Key | Unknown | The user's key or ID. | 
+| Jira.Users.Name | Unknown | Name of the user. | 
+| Jira.Users.Email | Unknown | User's email address. | 
+| Jira.Users.Display Name | Unknown | Display name for the user. | 
+| Jira.Users.Active | Unknown | If the user is active or not. | 
+| Jira.Users.Deleted | Unknown | If the user is deleted or not. | 
+| Jira.Users.Timezone | Unknown | Timezone setting for the user. | 
+| Jira.Users.Locale | Unknown | Locale setting for the user. | 
+| Jira.Users.AccountID | Unknown | The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5. Required in requests. | 
+| Jira.Users.AccountType | Unknown | The user account type. Can take the following values: atlassian, app, customer. | 
+
+#### Command example
+
+```!jira-get-user-info key=JIRAUSER10000```
+
+#### Context Example
+
+```json
+{
+    "Active": true,
+    "Deleted": false,
+    "Display Name": "John Doe",
+    "Email": "johndoe@example.com",
+    "Key": "JIRAUSER10000",
+    "Locale": "en_US",
+    "Name": "johndoe",
+    "Timezone": "America/Detroit"
+}
+```
+
+### jira-issue-get-forms
+
+***
+Fetches questions and answers for forms tied to a Jira issue. This command requires Jira Service Desk, the ProForma plugin and an API user with `Service Desk Team` or higher permissions on the Jira project the forms are being pulled from.
+
+#### Base Command
+
+`jira-issue-get-forms`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| JiraForms.ID | Unknown | The ID of the form. | 
+| JiraForms.Issue | Unknown | Issue the form belongs to. | 
+| JiraForms.Questions | Unknown | Questions for the form. | 
+
+#### Command example
+
+```!jira-issue-get-forms issue_id=TES-2```
+
+#### Context Example
+
+```json
+{
+    "ID": 1,
+    "Issue": "TES-2",
+    "Name": "8/9/2024 New Form",
+    "Questions": [
+        {
+            "Answer": {
+                "choices": [
+                    {
+                        "id": "26",
+                        "label": "I have read and agree to the terms and conditions."
+                    }
+                ]
+            },
+            "Description": "",
+            "ID": "8",
+            "Key": "q_terms",
+            "Label": "",
+            "Type": "cm"
+        },
+        {
+            "Answer": {},
+            "Description": "",
+            "ID": "4",
+            "Key": "q_email",
+            "Label": "Email",
+            "Type": "te"
+        },
+        {
+            "Answer": {},
+            "Description": "",
+            "ID": "5",
+            "Key": "q_request_for",
+            "Label": "Name of person needing building access",
+            "Type": "tl"
+        },
+        {
+            "Answer": {},
+            "Description": "",
+            "ID": "6",
+            "Key": "q_description",
+            "Label": "Request description",
+            "Type": "pg"
+        },
+        {
+            "Answer": {
+                "text": "John"
+            },
+            "Description": "",
+            "ID": "1",
+            "Key": "q_name",
+            "Label": "Name",
+            "Type": "ts"
+        },
+        {
+            "Answer": {
+                "text": "555-555-1212"
+            },
+            "Description": "",
+            "ID": "2",
+            "Key": "q_phone",
+            "Label": "Phone",
+            "Type": "ts"
+        },
+        {
+            "Answer": {},
+            "Description": "",
+            "ID": "7",
+            "Key": "q_reason",
+            "Label": "Reason for access",
+            "Type": "pg"
+        },
+        {
+            "Answer": {},
+            "Description": "",
+            "ID": "3",
+            "Key": "q_job_title",
+            "Label": "Job title",
+            "Type": "ts"
+        }
+    ]
+}
+```
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Atlassian Jira V3 corresponding events (available from Cortex XSOAR version 6.0.0).
@@ -2941,3 +3106,91 @@ In the *jira-edit-issue* command:
 In the *jira-get-issue* command:
 
 * *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
+
+
+### jira-create-metadata-issue-types-list
+
+***
+Returns a page of issue type metadata for a specified project.
+
+#### Base Command
+
+`jira-create-metadata-issue-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id_or_key | The ID or key of the project. | Required | 
+| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
+| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.IssueType.AvatarID | Number | The ID of the issue type's avatar. | 
+| Jira.IssueType.Description | String | The description of the issue type. | 
+| Jira.IssueType.EntityID | String | Unique ID for next-gen projects. | 
+| Jira.IssueType.Expand | String | Expand options that include additional issue type metadata details in the response. | 
+| Jira.IssueType.IconURL | String | The URL of the issue type's avatar. | 
+| Jira.IssueType.ID | String | The ID of the issue type. | 
+| Jira.IssueType.Name | String | The name of the issue type. | 
+| Jira.IssueType.Self | String | The URL of these issue type details. | 
+| Jira.IssueType.Subtask | Boolean | Whether this issue type is used to create subtasks. | 
+| Jira.IssueType.Scope | Object | Details of the next-gen projects the issue type is available in. | 
+| Jira.IssueType.Scope.type | String | The type of scope. Valid values: PROJECT, TEMPLATE. | 
+| Jira.IssueType.Scope.project | Object | The project the item has scope in. | 
+| Jira.IssueType.Scope.project.self | String | The URL of the project details. | 
+| Jira.IssueType.Scope.project.id | String | The ID of the project. | 
+| Jira.IssueType.Scope.project.key | String | The key of the project. | 
+| Jira.IssueType.Scope.project.name | String | The name of the project. | 
+| Jira.IssueType.Scope.project.projectTypeKey | String | The project type of the project. Valid values: software, service_desk, business. | 
+| Jira.IssueType.Scope.project.simplified | Boolean | Whether or not the project is simplified. | 
+| Jira.IssueType.Scope.project.avatarUrls | Object | The URLs of the project's avatars. | 
+| Jira.IssueType.Scope.project.projectCategory | Object | The category the project belongs to. | 
+| Jira.IssueType.Scope.project.projectCategory.self | String | The URL of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.id | String | The ID of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.description | String | The name of the project category. | 
+| Jira.IssueType.Scope.project.projectCategory.name | String | The description of the project category. | 
+
+### jira-create-metadata-field-list
+
+***
+Returns a page of field metadata for a specified project and issue type.
+
+#### Base Command
+
+`jira-create-metadata-field-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id_or_key | The ID or key of the project. | Required | 
+| issue_type_id | The issue type ID. | Required | 
+| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
+| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.IssueField.AllowedValues | Array | The list of values allowed in the field. | 
+| Jira.IssueField.AutoCompleteUrl | String | The URL that can be used to automatically complete the field. | 
+| Jira.IssueField.Configuration | Object | The configuration properties. | 
+| Jira.IssueField.DefaultValue | String | The default value of the field. | 
+| Jira.IssueField.FieldID | String | The field ID. | 
+| Jira.IssueField.HasDefaultValue | Boolean | Whether the field has a default value. | 
+| Jira.IssueField.Key | String | The key of the field. | 
+| Jira.IssueField.Name | String | The name of the field. | 
+| Jira.IssueField.Operations | Array | The list of operations that can be performed on the field. | 
+| Jira.IssueField.Required | Boolean | Whether the field is required. | 
+| Jira.IssueField.Schema | Object | The data type for the field. | 
+| Jira.IssueField.Schema.type | String | The data type of the field. | 
+| Jira.IssueField.Schema.items | String | When the data type is an array, the name of the field items within the array. | 
+| Jira.IssueField.Schema.system | String | If the field is a system field, the name of the field. | 
+| Jira.IssueField.Schema.custom | String | If the field is a custom field, the URI of the field. | 
+| Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
+| Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
+

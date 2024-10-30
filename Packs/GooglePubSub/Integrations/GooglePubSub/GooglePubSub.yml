@@ -530,7 +530,7 @@ script:
       required: true
     description: Acknowledge previously pulled message or messages.
     name: gcp-pubsub-topic-ack-messages
-  dockerimage: demisto/googleapi-python3:1.0.0.71902
+  dockerimage: demisto/googleapi-python3:1.0.0.113882
   isfetch: true
   runonce: false
   script: '-'

@@ -350,7 +350,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
 
 
 def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: Optional[bool], limit: int = 0,
-                             create_relationships: bool = False, **kwargs):
+                             create_relationships: bool = False, enrichment_excluded: bool = False, **kwargs):
     iterator = client.build_iterator(**kwargs)
     relationships_of_indicator = []
     indicators = []
@@ -400,6 +400,9 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     if client.tlp_color:
                         indicator['fields']['trafficlightprotocol'] = client.tlp_color
 
+                    if enrichment_excluded:
+                        indicator['enrichmentExcluded'] = enrichment_excluded
+
                     indicators.append(indicator)
                     # exit the loop if we have more indicators than the limit
                     if limit and len(indicators) >= limit:
@@ -418,7 +421,8 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
     relationships = demisto.params().get('create_relationships', False)
-    indicators_list, _ = fetch_indicators_command(client, itype, auto_detect, limit, relationships)
+    enrichment_excluded = demisto.params().get('enrichmentExcluded', False)
+    indicators_list, _ = fetch_indicators_command(client, itype, auto_detect, limit, relationships, enrichment_excluded)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
@@ -446,7 +450,8 @@ def feed_main(feed_name, params=None, prefix=''):   # pragma: no cover
                 params.get('indicator_type'),
                 params.get('auto_detect_type'),
                 params.get('limit'),
-                params.get('create_relationships')
+                params.get('create_relationships'),
+                params.get('enrichmentExcluded', False),
             )
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
