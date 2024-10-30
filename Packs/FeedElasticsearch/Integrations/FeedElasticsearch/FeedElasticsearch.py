@@ -357,8 +357,6 @@ def fetch_indicators_elastic_v7(client, last_fetch_timestamp, feed_type, fetch_l
 def fetch_indicators(client, last_fetch_timestamp, feed_type, fetch_limit, src_val, src_type, default_type):
     """fetching indicators from the elasticsearch server.
     This function is used for client versions Elasticsearch_v8 and OpenSearch only.
-    We maintain BC for versions <= 7 by using the ES client directly (from the elasticsearch7 library) instead of using the
-    elasticsearch_dsl library which is compatible for elasticsearch client versions >=8.
     """
     indicators_list = []
     indicators_enrch_list = []
@@ -510,7 +508,7 @@ def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_typ
     """Convert a single hit to an indicator"""
     ioc_dict: dict = hit
     if ELASTIC_SEARCH_CLIENT not in [ELASTICSEARCH_V8, OPEN_SEARCH] and isinstance(hit, dict):
-        # For client version elastic v7, we get a different hit structure during the fetch indicators (due to BC code changes).
+        # For client version elastic <= v7, we get a different hit structure during the fetch indicators (due to BC code changes).
         ioc_dict = hit.get("_source", {})
     else:
         ioc_dict = hit.to_dict()
