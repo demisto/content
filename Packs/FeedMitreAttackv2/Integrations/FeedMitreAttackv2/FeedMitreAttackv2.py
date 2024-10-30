@@ -517,7 +517,7 @@ def build_command_result(value, score, md, attack_obj):
     )
 
 
-def attack_pattern_reputation_command(client, args, params):
+def attack_pattern_reputation_command(client, args, collection_id):
     command_results: list[CommandResults] = []
 
     filter_by_type = [Filter('type', '=', 'attack-pattern')]
