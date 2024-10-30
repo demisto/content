@@ -174,35 +174,6 @@ def get_page_from_last_run(client: Client, page_link: str, event_type: str):
     demisto.debug(f'This is the response {response}')
     return response
 
-def enrich_event(event, event_type):
-    """
-    Enriches each event with additional information based on its type.
-
-    Args:
-        event (dict): The event dictionary to enrich.
-        event_type (str): The type of event ('alerts' or 'events').
-    """
-    event['source_log_type'] = event_type
-    if event_type == 'alerts':
-        add_entry_status_field(event)
-
-def fetch_next_page(client, links):
-    """
-    Retrieves the next page of events if available.
-
-    Args:
-        client (Client): MongoDB Atlas client instance.
-        links (list): Current page links for pagination.
-
-    Returns:
-        tuple: A list of events from the next page and updated links, or (None, None) if no next page exists.
-    """
-    next_url = get_next_url(links)
-    if next_url:
-        response = client.get_response_from_page_link(next_url)
-        return response.get('results'), response.get('links')
-    return None, None
-
 def update_last_run_with_self_url(links, last_page_events_ids):
     """
     Updates the last_run dictionary with the current page's self URL and event IDs.
@@ -218,6 +189,18 @@ def update_last_run_with_self_url(links, last_page_events_ids):
         'page_link': get_self_url(links),
         'last_page_events_ids': last_page_events_ids
     }
+    
+def enrich_event(event, event_type):
+    """
+    Enriches each event with additional information based on its type.
+
+    Args:
+        event (dict): The event dictionary to enrich.
+        event_type (str): The type of event ('alerts' or 'events').
+    """
+    event['source_log_type'] = event_type
+    if event_type == 'alerts':
+        add_entry_status_field(event)
 
 def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
     """
@@ -258,14 +241,19 @@ def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event
                 demisto.debug(f'This is the output of fetch_events {output}, the limit is reached')
                 return output, last_run_new_dict
             
-        events, links = fetch_next_page(client, links)
-        last_page_events_ids.clear()
-        
-        if not events:
+        next_url = get_next_url(links)
+        if next_url:
+            #change to the next page and start again
+            response = client.get_response_from_page_link(next_url)
+            events = response.get('results')
+            links = response.get('links')
+            last_page_events_ids.clear()
+        else:
             #no more pages left, exit the loop
             demisto.debug(f'This is the output of fetch_events {output}, there is no pages left')
             break
-
+            
+    
     demisto.debug(f'This is the output of fetch_events {output}')
     last_run_new_dict = update_last_run_with_self_url(links, last_page_events_ids)
     return output, last_run_new_dict
