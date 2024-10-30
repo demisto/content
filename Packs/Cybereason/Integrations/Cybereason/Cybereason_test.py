@@ -1154,6 +1154,56 @@ def test_malop_to_incident_6(mocker):
     assert exc_info.match(r"Cybereason raw response is not valid")
 
 
+def test_malop_to_incident_7(mocker):
+    from Cybereason import malop_to_incident
+    args = {
+        "guidString": "12345B",
+        "simpleValues": {
+            "detectionType": {
+                "values": [
+                    "ABCD"
+                ]
+            },
+            "creationTime": {
+                "values": [
+                    "1721"
+                ]
+            },
+            "malopLastUpdateTime": {
+                "values": [
+                    "17280"
+                ]
+            },
+            "managementStatus": {
+                "values": ["REOPEN"]
+            }
+        },
+        "elementValues": {
+            "rootCauseElements": {
+                "elementValues": [
+                    {
+                        "elementType": "ABCD",
+                        "name": "fileName"
+                    }
+                ]
+            }
+        }
+    }
+    command_output = malop_to_incident(args)
+
+    assert all([(command_output['name'] == "Cybereason Malop 12345B"), (command_output['status'] == 0),
+                (command_output['CustomFields']['malopcreationtime'] == "1721"),
+                (command_output['CustomFields']['malopupdatetime'] == "17280"),
+                (command_output['CustomFields']['malopdetectiontype'] == "ABCD"),
+                (command_output['CustomFields']['maloprootcauseelementname'] == "fileName"),
+                (command_output['CustomFields']['maloprootcauseelementtype'] == "ABCD"),
+                (command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345B")])
+
+    with pytest.raises(Exception) as exc_info:
+        command_output = malop_to_incident("args")
+    assert exc_info.match(r"Cybereason raw response is not valid")
+
+
 def test_get_pylum_id(mocker):
     from Cybereason import get_pylum_id, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
