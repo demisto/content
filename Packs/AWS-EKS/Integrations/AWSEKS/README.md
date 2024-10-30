@@ -17,13 +17,34 @@ This integration was integrated and tested with version 1.29 of AWS-EKS.
     | Role Session Duration |  | False |
     | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature. | False |
+    | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EKS commands. A role name for cross-organization account access must be provided to use this feature. | False |
     | Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. | False |
     | Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts to access". | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Run commands in multiple AWS accounts
+
+The EKS integration supports running commands across multiple AWS accounts in an organization.
+To use this feature, configure the parameter `AWS organization accounts` with a comma-separated list of AWS Organization accounts and the `Role name for cross-organization account access` parameter with a role name that grants full access to the EKS API in each account.
+Using the `roleArn`, `roleSessionName` and `roleSessionDuration` arguments in EKS commands will override this feature.
+
+#### Example:
+
+---
+
+**AWS organization accounts**
+> 12345678,98765432
+**Role name for cross-organization account access** 
+> CrossAccountAccessRole
+---
+
+In this case, the user configured with `Access Key` and `Secret Key` must be able to perform ***AssumeRole*** with the ***RoleArn***:
+`arn:aws:iam::12345678:role/CrossAccountAccessRole`
+`arn:aws:iam::98765432:role/CrossAccountAccessRole`
+
 
 ## Commands
 
