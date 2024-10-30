@@ -86,6 +86,7 @@ filter event_type = "authentication"
     mfaresult_lower = lowercase(data -> mfaresult)
 | alter
     xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res),
+    xdm.event.outcome_reason = if(mfaresult_lower = "user_denied", "mfa_failure", cause_lower ~= "the account for the user [^\s]+ is locked" or cause_lower contains "locked_pwd_failures", "account_locked", cause_lower contains "invalid_creds", "bad_credentials", cause_lower ~= "user [^\s]+ is not authorized to access this resource", "auth_login_restrictions", cause_lower contains "user_fraudulent", "risky_signin" ,cause_lower contains "user_denied","user_reject", cause_lower ~= "user [^\s]+ is not an active user", "account_expired_or_disabled", cause_lower ~= "unexpected error - unable to fetch the tenant's state from cache." or cause_lower ~= "unexpected error - [\S]+ an error occurred while mapping the user", "failed_login", to_string(data -> cause)),
     xdm.event.operation = if(lowercase(data.subtype) = "MFA",  XDM_CONST.OPERATION_TYPE_AUTH_MFA, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN),
     xdm.event.operation_sub_type = if(mfamethod = "FIDO2", "hardware_token", mfamethod = "Email OTP", "email", mfamethod = "IBM Verify push", "application", mfamethod = "SMS OTP", "sms", subtype in ("certificate", "social", "socialjwt"), "application", subtype = "user_password", "password", subtype = "federation", "Generic SSO", subtype = "device trust", "trusted_login", subtype),
     xdm.event.description = data -> cause,
