@@ -1631,10 +1631,10 @@ script:
       description: Generic response to servicenow api.
       type: string
   - arguments:
-    - description: sys_id of the ticket containing the file.
+    - description: sys_id of the ticket containing the attachment.
       name: sys_id
       required: true
-    description: Retrieve file attachments from a ticket.
+    description: Retrieve attachments from a ticket.
     name: servicenow-get-ticket-attachments
   dockerimage: demisto/python3:3.11.9.103066
   isfetch: true
