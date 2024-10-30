@@ -1634,7 +1634,7 @@ script:
     - description: sys_id of the ticket containing the attachment.
       name: sys_id
       required: true
-    description: Retrieve attachments from a ticket.
+    description: Retrieves attachments from a ticket.
     name: servicenow-get-ticket-attachments
   dockerimage: demisto/python3:3.11.9.103066
   isfetch: true
