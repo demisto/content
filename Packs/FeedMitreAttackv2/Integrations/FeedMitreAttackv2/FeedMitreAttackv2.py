@@ -5,7 +5,6 @@ import json
 import logging
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = MITRE ATT&CK, pack version = 1.1.42')
 
 
 ''' CONSTANT VARIABLES '''
