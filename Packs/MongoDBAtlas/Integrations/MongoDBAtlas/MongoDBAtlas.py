@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-VENDER = 'MongoDB'
+VENDOR = 'MongoDB'
 PRODUCT = 'Atlas'
 last_run = {}
 
@@ -86,8 +86,10 @@ class Client(BaseClient):
         
     def first_time_fetch_events(self, event_type: str):
         if event_type == 'alerts':
+            demisto.debug('This is event from type alert')
             return self.get_alerts(page_num=1, items_per_page=10)
         elif event_type == 'events':
+            demisto.debug('This is event from type event')
             return self.get_events(page_num=1, items_per_page=10)
         return None
         
@@ -109,6 +111,13 @@ def add_entry_status_field(event: dict):
         event['_ENTRY_STATUS'] = 'updated'
 
 def remove_events_by_ids(events: list, ids: list):
+    """
+    Remove events that apears in the ids list from the events list.
+
+    Args:
+        event (list): The events list.
+        ids (list): The ids list to remove.
+    """
     return [event for event in events if event["id"] not in ids]
 
 def get_next_url(links: list):
@@ -123,11 +132,14 @@ def get_self_url(links):
             return link.get("href")
     return None
 
-def get_page_from_last_run(page_link: str, event_type: str):
+def get_page_from_last_run(client: Client, page_link: str, event_type: str):
     if page_link:
+        demisto.debug('Enter the first if')
         response = client.get_response_from_page_link(page_link)
     else:
+        demisto.debug('Enter the else')
         response = client.first_time_fetch_events(event_type)
+    demisto.debug(f'This is the response {response}')
     return response
 
 def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
@@ -144,7 +156,7 @@ def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event
         A list containing all fetched events or alerts.
     """
     
-    response = get_page_from_last_run(last_run.get('page_link'), event_type) #get the last page or get the first page
+    response = get_page_from_last_run(client, last_run.get('page_link'), event_type) #get the last page or get the first page
     links = response.get('links')
     results = response.get('results')
     
@@ -158,7 +170,10 @@ def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event
         for event in events:
             #running on the current page
             event['source_log_type'] = event_type
+            if event_type == 'alerts':
+                add_entry_status_field(event)
             output.append(event)
+            demisto.debug(f'This is the event that is appended {event}')
             last_page_events_ids.append(event.get('id'))
             current_fetched_events_amount += 1
             
@@ -169,6 +184,7 @@ def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event
                     'page_link': self_url,
                     'last_page_events_ids': last_page_events_ids
                 }
+                demisto.debug(f'This is the output of fetch_events {output}, the limit is reached')
                 return output, last_run_new_dict
             
         next_url = get_next_url(links)
@@ -184,8 +200,10 @@ def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event
                     'page_link': get_self_url(links),
                     'last_page_events_ids': last_page_events_ids
             }
+            demisto.debug(f'This is the output of fetch_events {output}, there is no pages left')
             return output, last_run_new_dict
-        
+    
+    demisto.debug(f'This is the output of fetch_events {output}')
     return output, last_run_new_dict
 
 ''' COMMAND FUNCTIONS '''
@@ -215,21 +233,27 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, fetch_limit: int):
     #run every min and return all the new events from the last run
-    # last_run = demisto.getLastRun()
-    global last_run
+    demisto.debug('Enter the fetch_events function')
+    last_run = demisto.getLastRun()
+    # global last_run
     last_run_alerts = last_run.get('alerts', {})
     last_run_events = last_run.get('events', {})
     
+    demisto.debug('Getting the alerts')
     alerts_output, last_run_alerts = fetch_events_by_type(client, fetch_limit, last_run_alerts, 'alerts')
-    events_output, last_run_events = fetch_events_by_type(client, fetch_limit, last_run_events, 'events')
+    demisto.debug(f'Those are the alerts {alerts_output}')
     
-    # demisto.setLastRun({'alerts': last_run_alerts,
-    #                     'events': last_run_events
-    #                     })
-    last_run = ({'alerts': last_run_alerts,
-                    'events': last_run_events
-                         })
-    return (alerts_output + events_output)
+    events_output, last_run_events = fetch_events_by_type(client, fetch_limit, last_run_events, 'events')
+    demisto.debug(f'Those are the events {alerts_output}')
+    
+    last_run_new_obj = ({'alerts': last_run_alerts,
+                        'events': last_run_events
+                        })
+    # last_run = ({'alerts': last_run_alerts,
+    #                 'events': last_run_events
+    #                  })
+    demisto.debug(f'This is the final output for fetch_events {alerts_output + events_output}')
+    return (alerts_output + events_output), last_run_new_obj
 
 def get_events(client: Client):
     #suppose to run fetch_events with some PageNum
@@ -249,7 +273,7 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'MongoDB Command being called is {demisto.command()}')
     try:
         public_key = params.get('public_key', {}).get('password')
         private_key = params.get('private_key', {}).get('password')
@@ -258,7 +282,7 @@ def main() -> None:
         base_url = params.get('url')
         verify = not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        fetch_limit = int(params.get('number_of_events_per_fetch', 2500))
+        fetch_limit = int(params.get('max_events_per_fetch', 2500))
         
         client = Client (
             base_url=base_url,
@@ -274,10 +298,14 @@ def main() -> None:
         elif command == 'mongo-db-atlas-get-events':
             return_results(get_events(client, demisto.args()))
         elif command == 'fetch-events':
-            while True:
-                events = fetch_events(client,fetch_limit)
-            # if events:
-            #     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            # while True:
+            demisto.debug('fetch_events is starting')
+            events, last_run_new_obj = fetch_events(client,fetch_limit)
+            if events:
+                demisto.debug('Sending events to the send_events_to_xsiam function')
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+                demisto.setLastRun(last_run_new_obj)
+                demisto.debug('fetch-events command is done')
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

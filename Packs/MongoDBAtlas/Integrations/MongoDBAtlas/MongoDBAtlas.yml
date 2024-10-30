@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: MongoDBAtlasEventCollector
   version: -1
@@ -27,16 +30,16 @@ configuration:
   required: true
   type: 0
   section: Connect
-- defaultvalue: 'true'
-  display: Fetch Events
-  name: should_fetch_events
-  type: 8
-  section: Collect
-  required: false
+# - defaultvalue: 'false'
+#   display: Fetch Events
+#   name: isFetchEvents
+#   type: 8
+#   section: Collect
+#   required: false
 - additionalinfo: Defines the maximum number of alerts or events fetched per type in each fetch cycle.
   defaultvalue: 2500
   display: Maximum number of events per fetch
-  name: number_of_events_per_fetch
+  name: max_events_per_fetch
   required: true
   type: 0
   section: Collect
@@ -63,7 +66,10 @@ script:
   script: '-'
   type: python
   subtype: python3
+  isfetchevents: true
   dockerimage: demisto/python3:3.10.14.100715
 fromversion: 5.5.0
+marketplaces:
+- marketplacev2
 tests:
 - No tests (auto formatted)

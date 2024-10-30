@@ -11,9 +11,12 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "event collector"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "defaultDataSource": "MongoDBAtlasCollector"
 }
