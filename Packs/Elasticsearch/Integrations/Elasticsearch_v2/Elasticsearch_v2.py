@@ -327,10 +327,10 @@ def search_command(proxies):
         if sort_field is not None:
             search = search.sort({sort_field: {'order': sort_order}})
 
-        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
 
-        else:  # Elasticsearch v7 and below or OpenSearch
+        else:  # Elasticsearch v7 and below
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
@@ -401,10 +401,10 @@ def test_general_query(es):
         query = QueryString(query='*')
         search = Search(using=es, index='*').query(query)[0:1]
 
-        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
 
-        else:  # Elasticsearch v7 and below or OpenSearch
+        else:  # Elasticsearch v7 and below
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
@@ -430,10 +430,10 @@ def test_time_field_query(es):
     query = QueryString(query=TIME_FIELD + ':*')
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
 
-    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
         response = search.execute().to_dict()
 
-    else:  # Elasticsearch v7 and below or OpenSearch
+    else:  # Elasticsearch v7 and below
         # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
         response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
@@ -462,10 +462,10 @@ def test_fetch_query(es):
     query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
 
-    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
         response = search.execute().to_dict()
 
-    else:  # Elasticsearch v7 and below or OpenSearch
+    else:  # Elasticsearch v7 and below
         # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
         response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
@@ -801,10 +801,10 @@ def fetch_incidents(proxies):
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
 
-        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
 
-        else:  # Elasticsearch v7 and below or OpenSearch
+        else:  # Elasticsearch v7 and below
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
