@@ -1,18 +1,7 @@
 {
     "id": "Symantec Email Security Cloud Incident",
-    "version": 3,
-    "cacheVersn": 0,
-    "modified": "2024-09-29T08:32:55.088301874-04:00",
-    "packID": "",
-    "packName": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
+    "version": -1,
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "Symantec Email Security Cloud Incident",
     "prevName": "Symantec Email Security Cloud Incident",
@@ -27,8 +16,6 @@
     "readonly": false,
     "default": false,
     "autorun": false,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
@@ -37,5 +24,6 @@
     "extractSettings": {
         "mode": "All",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "6.10.0"
 }

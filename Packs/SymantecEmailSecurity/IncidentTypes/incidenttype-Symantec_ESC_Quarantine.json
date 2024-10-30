@@ -1,18 +1,7 @@
 {
     "id": "Symantec Email Security Cloud Quarantine",
-    "version": 2,
-    "cacheVersn": 0,
-    "modified": "2024-10-07T15:45:43.163422878-04:00",
-    "packID": "",
-    "packName": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
+    "version": -1,
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "Symantec Email Security Cloud Quarantine",
     "prevName": "Symantec Email Security Cloud Quarantine",
@@ -27,8 +16,6 @@
     "readonly": false,
     "default": false,
     "autorun": false,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
@@ -45,5 +32,6 @@
                 ]
             }
         }
-    }
+    },
+    "fromVersion": "6.10.0"
 }
