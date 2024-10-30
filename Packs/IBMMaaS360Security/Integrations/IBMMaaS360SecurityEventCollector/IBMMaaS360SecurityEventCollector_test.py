@@ -1,4 +1,4 @@
-from HelloWorldEventCollector import Client, fetch_events, get_events
+from IBMMaaS360SecurityEventCollector import Client, fetch_events, get_events
 
 
 def test_fetch_detection_events_command():
