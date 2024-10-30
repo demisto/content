@@ -667,14 +667,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
     tlp_color = params.get('tlp_color')
-    global COLLECTION_ID
-    collection_type = params.get('Collection_ID')
-    if collection_type == 'Enterprise':
-        COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
-    elif collection_type == 'Mobile':
-        COLLECTION_ID = '2f669986-b40b-4423-b720-4396ca6a462b'
-    elif collection_type == 'ICS':
-        COLLECTION_ID = '02c3ef24-9cd4-48f3-a99f-b74ce24f1d34'
+    collection_type = COLLECTION_ID_MAP.get(params.get('collection_id')) or '95ecc380-afe9-11e4-9b6c-751b66dd541e'  # default is the Enterprise collection type
     create_relationships = argToBoolean(params.get('create_relationships'))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
