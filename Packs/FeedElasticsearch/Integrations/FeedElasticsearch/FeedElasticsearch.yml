@@ -230,7 +230,7 @@ script:
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
     name: es-get-indicators
-  dockerimage: devdemisto/elasticsearch:1.0.0.113198
+  dockerimage: demisto/elasticsearch:1.0.0.114996
   feed: true
   runonce: false
   script: '-'
