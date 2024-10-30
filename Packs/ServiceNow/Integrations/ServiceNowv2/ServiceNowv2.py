@@ -3357,7 +3357,7 @@ def main():
             return_results(get_tasks_for_co_command(client, demisto.args()))
         elif demisto.command() == 'servicenow-get-ticket-notes':
             return_results(get_ticket_notes_command(client, args, params))
-        elif demisto.command() == 'servicenow-get-attachments':
+        elif demisto.command() == 'servicenow-get-ticket-attachments':
             return_results(get_attachment_command(client, args))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
