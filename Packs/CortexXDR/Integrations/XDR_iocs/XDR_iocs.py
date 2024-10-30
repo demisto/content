@@ -332,7 +332,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
     if Client.add_link_as_a_comment:
         comments.extend(create_an_indicator_link(ioc))
 
-    return [', '.join(comments)]
+    return (comments or ['']) if comments_as_tags else [', '.join(comments)]
 
 
 def parse_demisto_single_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
