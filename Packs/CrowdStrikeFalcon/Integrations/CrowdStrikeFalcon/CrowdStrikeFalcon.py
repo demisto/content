@@ -1539,7 +1539,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
             text_to_encode += f"+{filter_arg}"
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
-        return http_request('GET', endpoint_url)
+        return http_request('GET', endpoint_url, {'sort': "timestamp|asc"})
     else:
         endpoint_url = '/detects/queries/detects/v1'
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=} and {params=}")
@@ -1555,8 +1555,9 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
+    sort_key = 'first_behavior.asc' if LEGACY_VERSION else 'timestamp|asc'
     params = {
-        'sort': 'first_behavior.asc',
+        'sort': sort_key,
         'offset': offset,
     }
     if has_limit:
