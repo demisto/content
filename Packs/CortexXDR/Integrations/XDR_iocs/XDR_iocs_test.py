@@ -27,7 +27,8 @@ class TestGetHeaders:
         """
         params = {
             "apikey_id": "7",
-            "apikey": "t3PkfrEhaRAD9a3r6Lq5cVPyqdMqtLd8cOJlSWUtbslkbERUgb2BTkSNRtDr3C6CWAgYqxvyzwDFJ83BLBgu1V2cxQY7rsoo2ks2u3W2aBL2BlteF8C8u75lCVUrNbv1"
+            "apikey": "t3PkfrEhaRAD9a3r6Lq5cVPyqdMqtLd8cOJlSWUtbslkbERUgb2BTkSNRtDr3C6CWAgYqxv"
+                      "yzwDFJ83BLBgu1V2cxQY7rsoo2ks2u3W2aBL2BlteF8C8u75lCVUrNbv1"
             # noqa: E501
         }
         headers = {
