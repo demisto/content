@@ -926,12 +926,12 @@ valid_params_cases = [
     # Valid case with SSL and SASL
     {
         'use_ssl': True, 'use_sasl': True, 'brokers': 'broker1,broker2',
-        'ca_cert': 'cert', 'plain_username': 'user', 'plain_password': 'pass'
+        'ca_cert': 'cert', 'credentials': {'identifier': 'user', 'password': 'pass'}
     },
     # Valid case with SASL
     {
         'use_ssl': False, 'use_sasl': True, 'brokers': 'broker1,broker2',
-        'ca_cert': 'cert', 'plain_username': 'user', 'plain_password': 'pass'
+        'ca_cert': 'cert', 'credentials': {'identifier': 'user', 'password': 'pass'}
     },
     # Valid case trust_any_cert
     {
