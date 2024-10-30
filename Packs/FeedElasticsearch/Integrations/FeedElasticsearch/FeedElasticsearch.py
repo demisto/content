@@ -30,7 +30,7 @@ MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 FEED_TYPE_GENERIC = 'Generic Feed'
 FEED_TYPE_CORTEX = 'Cortex XSOAR Feed'
 FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
-TIME_FORMAT = 'strict_date_optional_time||date_optional_time||epoch_millis||epoch_second||yyyy-MM-dd HH:mm:ss.SSSSSS'
+TIME_FORMAT = 'strict_date_optional_time||date_optional_time||epoch_millis||epoch_second'
 # The time format is added to the fetch query to support all possible time formats the integration allows
 
 ELASTICSEARCH_V8 = 'Elasticsearch_v8'
