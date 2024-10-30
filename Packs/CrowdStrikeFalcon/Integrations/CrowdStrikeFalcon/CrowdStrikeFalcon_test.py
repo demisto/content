@@ -7210,7 +7210,7 @@ def test_error_handler():
 @pytest.mark.parametrize('Legacy_version, url_suffix, expected_len', [
     (False,
      "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
-     2),
+     3),
     (True, '/detects/queries/detects/v1', 3)
 ])
 def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expected_len):
@@ -7269,7 +7269,7 @@ def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
 @pytest.mark.parametrize('Legacy_version, url_suffix, request_params', [
     (False,
      "/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
-     {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3}),
+     {'sort': 'timestamp|asc', 'offset': 5, 'limit': 3}),
     (True, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc',
      'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
 ])
