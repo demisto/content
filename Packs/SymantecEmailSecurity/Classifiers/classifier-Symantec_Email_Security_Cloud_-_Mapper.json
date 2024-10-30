@@ -6,7 +6,7 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "f9d2af84-203a-4ccc-847b-2011c75f7580",
+	"id": "Symantec Email Security Cloud - Mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -55,27 +55,6 @@
 				},
 				"Symantec ESC Detection Method": {
 					"simple": "incidents.[0].detectionMethod"
-				},
-				"Symantec ESC Email Atachment": {
-					"complex": {
-						"accessor": "filesAndLinks",
-						"filters": [],
-						"root": "emailInfo",
-						"transformers": [
-							{
-								"args": {
-									"headers": {},
-									"is_auto_json_transform": {},
-									"json_transform_properties": {},
-									"title": {}
-								},
-								"operator": "JsonToTable"
-							},
-							{
-								"operator": "toUpperCase"
-							}
-						]
-					}
 				},
 				"Symantec ESC Email Attachment": {
 					"complex": {
@@ -152,12 +131,6 @@
 					"simple": "emailInfo.subject"
 				},
 				"Symantec ESC Security Service": {
-					"simple": "incidents.[0].securityService"
-				},
-				"Symantec Email Security Cloud Detection Method": {
-					"simple": "incidents.[0].detectionMethod"
-				},
-				"Symantec Email Security Cloud Security Service": {
 					"simple": "incidents.[0].securityService"
 				},
 				"Verdict": {

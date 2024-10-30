@@ -390,7 +390,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 1,
-								"fieldId": "symantecemailsecuritycloudsecurityservice",
+								"fieldId": "symantecescsecurityservice",
 								"height": 53,
 								"id": "2216f980-7e4c-11ef-9293-81635a7c512c",
 								"index": 6,
@@ -423,7 +423,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "symantecemailsecurityclouddetectionmethod",
+								"fieldId": "symantecescdetectionmethod",
 								"height": 53,
 								"id": "17ab6ee0-7e4c-11ef-9293-81635a7c512c",
 								"index": 4,
@@ -475,15 +475,6 @@
 								"height": 53,
 								"id": "6c373e00-7e5e-11ef-abf6-95d19075d273",
 								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "symantecescemailatachment",
-								"height": 53,
-								"id": "f5adbdf0-7e5c-11ef-b402-6da63453eefe",
-								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -813,7 +804,7 @@
 	"edit": null,
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "0e7dfd99-ddc2-4762-8c4b-2e8c87384575",
+	"id": "Symantec Email Security Cloud - Layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",

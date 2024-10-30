@@ -1,37 +1,19 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "d6248c96-691c-42bb-8a0a-5e2c286b6fe4",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"email_data_feed": "Symantec Email Security Cloud Incident",
-		"email_quarantine": "Symantec Email Security Cloud Quarantine"
-	},
-	"locked": false,
-	"logicalVersion": 5,
-	"mapping": null,
-	"name": "Symantec Email Security Cloud - Classifier",
-	"nameRaw": "Symantec Email Security Cloud - Classifier",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"simple": "incident_type"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Symantec Email Security Cloud - Classifier",
+    "keyTypeMap": {
+        "email_data_feed": "Symantec Email Security Cloud Incident",
+        "email_quarantine": "Symantec Email Security Cloud Quarantine"
+    },
+    "name": "Symantec Email Security Cloud - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "incident_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
 }
