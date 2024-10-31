@@ -3354,6 +3354,11 @@
         },
         {
             "integrations": "Elasticsearch v2",
+            "instance_names": "os_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
+        },
+        {
+            "integrations": "Elasticsearch v2",
             "instance_names": "es_v8",
             "playbookID": "Elasticsearch_v2_test-v8"
         },
@@ -3365,6 +3370,11 @@
         {
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v8",
+            "playbookID": "Elasticsearch_v2_test-v7-v8"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "os_v7",
             "playbookID": "Elasticsearch_v2_test-v7-v8"
         },
         {
