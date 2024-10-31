@@ -148,7 +148,7 @@ tasks:
               complex:
                 root: foundIncidents.CustomFields
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: foundIncidents.CustomFields.cid
@@ -156,8 +156,11 @@ tasks:
                     right:
                       value:
                         simple: alert.cid
+                      iscontext: true
                     ignorecase: true
                 accessor: action
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
