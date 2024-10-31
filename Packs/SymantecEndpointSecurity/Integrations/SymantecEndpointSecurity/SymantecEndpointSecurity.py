@@ -65,12 +65,16 @@ class Client(BaseClient):
             "content-type": "application/x-www-form-urlencoded",
             "Authorization": f"Basic {self.token}",
         }
-        res = self._http_request(
-            "POST",
-            url_suffix="/v1/oauth2/tokens",
-            headers=get_token_headers,
-            data={},
-        )
+        try:
+            res = self._http_request(
+                "POST",
+                url_suffix="/v1/oauth2/tokens",
+                headers=get_token_headers,
+                data={},
+            )
+        except Exception as e:
+            demisto.info(f"Failure in get_token method, Error: {e}")
+            raise e
         try:
             self.headers = {
                 "Authorization": f'Bearer {res["access_token"]}',
@@ -103,7 +107,7 @@ class Client(BaseClient):
             json_data=payload,
             params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
             resp_type="text",
-            stream=True,
+            headers=self.headers,
         )
 
 
@@ -146,8 +150,8 @@ def update_new_integration_context(
         include_last_fetch_events (bool): Flag to include last fetched events in the integration context.
         last_integration_context (dict[str, str]): The previous integration context.
     """
-    events_suspected_duplicates = extract_events_suspected_duplicates(filtered_events)
-    latest_event_time = normalize_date_format(max(filtered_events, key=parse_event_time)["time"])
+    events_suspected_duplicates = extract_events_suspected_duplicates(filtered_events) if filtered_events else []
+    latest_event_time = normalize_date_format(max(filtered_events, key=parse_event_time)["time"]) if filtered_events else last_integration_context.get("latest_event_time", "")
 
     # If the latest event time matches the previous one,
     # extend the suspected duplicates list with events from the previous context,
@@ -172,7 +176,7 @@ def push_events(events: list[dict]):
     Push events to XSIAM.
     """
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-    demisto.debug(f"{len(events)} events were pushed to XSIAM")
+    demisto.info(f"{len(events)} events were pushed to XSIAM")
 
 
 def parse_event_time(event) -> datetime:
@@ -245,8 +249,8 @@ def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]
         integration_context.get("events_suspected_duplicates", [])
     )
     latest_event_time = integration_context.get(
-        "latest_event_time", ""
-    )  # TODO default value
+        "latest_event_time", "2000-01-01T00:00:00.000Z"
+    ) or "2000-01-01T00:00:00.000Z" # TODO default value
     latest_event_time = datetime.strptime(normalize_date_format(latest_event_time), "%Y-%m-%dT%H:%M:%SZ")
 
     return [
@@ -261,35 +265,57 @@ def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]
     ]
 
 
+def prepare_raw_res_and_load_json(raw_res: str) -> dict:
+    raw_res = raw_res.replace("}\n{", ",")
+    if not raw_res.startswith("["):
+        raw_res = f"[{raw_res}]"
+    return json.loads(raw_res)
+
+
 def get_events_command(
     client: Client, integration_context: dict
 ):
-
     events: list[dict] = []
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
-
     try:
-        with client.get_events(payload=next_fetch) as res:
-            # Write the chunks from the response to the tmp file
-            for chunk in res.iter_content(chunk_size=MAX_CHUNK_SIZE_TO_READ):
-                json_res = json.loads(chunk)
-                events.extend(json_res["events"])
-                next_hash = json_res.get("next", "")
-
+        raw_res = client.get_events(payload=next_fetch)
+        json_res = prepare_raw_res_and_load_json(raw_res)
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 401:
-            demisto.debug("Unauthorized access token, trying to obtain a new access token")
+            demisto.info("Unauthorized access token, trying to obtain a new access token")
             raise UnauthorizedToken
         elif e.res is not None and e.res.status_code == 410:
             raise NextPointingNotAvailable
         raise e
 
+    try:
+        demisto.info(f"Number of json in response - len of json res = {len(json_res)}")
+    except Exception as e:
+        demisto.info(f"Number of json in response - Error: {e}")
+
+    for chunk in json_res:
+        events.extend(chunk["events"])
+    next_hash = json_res[0].get("next", "") if json_res else ""
+    demisto.info(f"Next hash - {next_hash=}")
+
     if not events:
+        demisto.info("Not events returned")
         return
 
+    events_debug = []
+    for event in events:
+        events_debug.append({
+            "uuid": event["uuid"], "time": event["time"], "log_time": event["log_time"]
+        })
+    demisto.info(f"uuid time log_time - {events_debug=}")
+
+    demisto.info(f"filtering, len of events {len(events)}")
     filtered_events = filter_duplicate_events(events)
+    demisto.info("filtering passed successfully")
+
     filtered_events.extend(integration_context.get("last_fetch_events", []))
 
+    demisto.info(f"start pushing to XSIAM, len of events {len(filtered_events)}")
     try:
         push_events(filtered_events)
     except Exception as e:
@@ -299,9 +325,12 @@ def get_events_command(
             include_last_fetch_events=True,
             last_integration_context=integration_context,
         )
-        demisto.debug(f"Failed to push events to XSIAM, The integration_context updated. Error: {e}")
+        demisto.info(f"pushing dev - Failed to push events to XSIAM, The integration_context updated. Error: {e}")
         raise e
 
+    demisto.info("pushing dev - pushing passed successfully")
+
+    demisto.info("updating context dev - start updating integration context")
     update_new_integration_context(
         filtered_events=filtered_events,
         next_hash=next_hash,
@@ -316,27 +345,29 @@ def perform_long_running_loop(client: Client):
         start_run = get_current_time_in_seconds()
         try:
             integration_context = get_integration_context()
-            demisto.debug(f"Starting new fetch with {integration_context=}")
-
+            demisto.info(f"Starting new fetch with {integration_context=}")
             get_events_command(client, integration_context=integration_context)
-
+            
         except UnauthorizedToken:
             try:
+                time.sleep(60)
                 client.get_token()
             except Exception as e:
-                demisto.debug("Failed to obtain a new access token")
+                demisto.info("Failed to obtain a new access token")
+                time.sleep(60)
                 raise e
             continue
         except NextPointingNotAvailable:
+            demisto.info("The next hash not available, pop it from integration context")
             integration_context.pop("next_fetch")
+            set_integration_context(integration_context)
             continue
         except Exception as e:
-            demisto.debug(f"Failed to fetch logs from API. Error: {e}")
+            demisto.info(f"Failed to fetch logs from API. Error: {e}")
             raise e
 
         # Used to calculate the duration of the fetch run.
         end_run = get_current_time_in_seconds()
-
         # Calculation of the fetch runtime against `client.fetch_interval`
         # If the runtime is less than the `client.fetch_interval` time
         # then it will go to sleep for the time difference
@@ -355,6 +386,7 @@ def test_module(client: Client) -> str:
                 f"Authorization Error: make sure the Token is correctly set, Error: {e}"
             )
         else:
+            demisto.info(f"Failure in test_module function, Error: {e}")
             raise e
     return "ok"
 
@@ -363,7 +395,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
 
     host = params["host"]
-    token = params["token"]
+    token = params["token"]["password"]
     stream_id = params["stream_id"]
     channel_id = params["channel_id"]
     verify = not argToBoolean(params.get("insecure", False))
@@ -385,7 +417,7 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
         if command == "long-running-execution":
-            demisto.debug("Starting long running execution")
+            demisto.info("Starting long running execution")
             perform_long_running_loop(client)
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
