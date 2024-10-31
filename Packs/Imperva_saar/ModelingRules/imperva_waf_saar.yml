@@ -1,0 +1,6 @@
+fromversion: 8.4.0 #check current version
+id: imperva_securesphere_ModelingRule
+name: imperva securesphere modeling rule
+rules: ''
+schema: ''
+tags: ''
