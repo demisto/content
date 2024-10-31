@@ -317,7 +317,7 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
 inputSections:
-- description: Generic group for inputs
+- description: Generic group for inputs.
   inputs:
   - OwnerNotificationBody
   - NotificationTicketType
