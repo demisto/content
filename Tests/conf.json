@@ -3349,13 +3349,13 @@
         },
         {
             "integrations": "ElasticsearchFeed",
-            "instance_names": "es_demisto_feed-elastic_v8",
+            "instance_names": "es_demisto_feed_elastic_v8",
             "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
             "fromversion": "5.5.0"
         },
         {
             "integrations": "ElasticsearchFeed",
-            "instance_names": "es_generic_feed-elastic_v8",
+            "instance_names": "es_generic_feed_elastic_v8",
             "playbookID": "Elasticsearch_Fetch_Custom_Indicators_Test",
             "fromversion": "5.5.0"
         },
