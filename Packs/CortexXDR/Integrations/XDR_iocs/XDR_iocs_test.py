@@ -27,12 +27,11 @@ class TestGetHeaders:
         """
         params = {
             "apikey_id": "7",
-            "apikey": "t3PkfrEhaRAD9a3r6Lq5cVPyqdMqtLd8cOJlSWUtbslkbERUgb2BTkSNRtDr3C6CWAgYqxv"
-                      "yzwDFJ83BLBgu1V2cxQY7rsoo2ks2u3W2aBL2BlteF8C8u75lCVUrNbv1"
+            "apikey": "aaaaaaa"
             # noqa: E501
         }
         headers = {
-            'Authorization': 'da94963b561e3c95899d843b1284cecf410606e9e809be528ec1cf03880c6e9e',
+            'Authorization': 'e9a63fb06148bd3a73ce93c8b44c083a147cafb0fe607e706abcac25759b3c43',
             'x-iocs-source': 'xsoar',
             'x-xdr-auth-id': '7',
             'x-xdr-nonce': '1111111111111111111111111111111111111111111111111111111111111111',
