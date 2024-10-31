@@ -1,0 +1,465 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Cyberint (mapper)",
+    "mapping": {
+        "Cyberint Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert URL ID": {
+                    "simple": "id"
+                },
+                "Alert ID": {
+                    "simple": "ref_id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Cyberint Alert ID": {
+                    "simple": "ref_id"
+                },
+                "Cyberint Attachments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Closure reason": {
+                    "simple": "closure_reason"
+                },
+                "Cyberint Closure reason Description": {
+                    "simple": "closure_reason_description"
+                },
+                "Cyberint Confidence": {
+                    "simple": "confidence"
+                },
+                "Cyberint Created by": {
+                    "simple": "created_by.email"
+                },
+                "Cyberint Created date": {
+                    "simple": "created_date"
+                },
+                "Cyberint Credentials Exposed CSV": {
+                    "complex": {
+                        "accessor": "content",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Cyberint Expert Analysis": {
+                    "simple": "analysis_report.name"
+                },
+                "Cyberint File Type": {
+                    "simple": "attachments.mimetype"
+                },
+                "Cyberint Impact": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impacts",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "splitAndTrim"
+                            }
+                        ]
+                    }
+                },
+                "Cyberint Payment Card Exposed CSV": {
+                    "simple": "attachments.content"
+                },
+                "Cyberint Recommendation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "recommendation",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Related IOCs": {
+                    "simple": "iocs"
+                },
+                "Cyberint Related entities": {
+                    "simple": "related_entities"
+                },
+                "Cyberint Source": {
+                    "simple": "source"
+                },
+                "Cyberint Source category": {
+                    "simple": "source_category"
+                },
+                "Cyberint Status": {
+                    "simple": "status"
+                },
+                "Cyberint Tags": {
+                    "simple": "tags"
+                },
+                "Cyberint Targeted Brand": {
+                    "complex": {
+                        "filters": [],
+                        "root": "targeted_brands",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Targeted Vector": {
+                    "simple": "targeted_vectors"
+                },
+                "Cyberint Threat Actor": {
+                    "simple": "threat_actor"
+                },
+                "Cyberint Ticket ID": {
+                    "simple": "ticket_id"
+                },
+                "Cyberint Title": {
+                    "simple": "title"
+                },
+                "Cyberint Type": {
+                    "simple": "type"
+                },
+                "Cyberint Category": {
+                    "simple": "category"
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Last Update Time": {
+                    "simple": "update_date"
+                },
+                "Source Username": {
+                    "simple": "attachments.content.username"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "Sub Category": {
+                    "simple": "type"
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Threat Actor": {
+                    "simple": "threat_actor"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": "Z"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "low,medium,high,very_high"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "source": {
+                    "simple": "source"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert URL ID": {
+                    "simple": "id"
+                },
+                "Alert ID": {
+                    "simple": "ref_id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Cyberint Alert ID": {
+                    "simple": "ref_id"
+                },
+                "Cyberint Attachments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Closure reason": {
+                    "simple": "closure_reason"
+                },
+                "Cyberint Confidence": {
+                    "simple": "confidence"
+                },
+                "Cyberint Created by": {
+                    "simple": "created_by.email"
+                },
+                "Cyberint Created date": {
+                    "simple": "created_date"
+                },
+                "Cyberint Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Cyberint Expert Analysis": {
+                    "simple": "analysis_report.name"
+                },
+                "Cyberint Impact": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impacts",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "splitAndTrim"
+                            }
+                        ]
+                    }
+                },
+                "Cyberint Recommendation": {
+                    "simple": "recommendation"
+                },
+                "Cyberint Related IOCs": {
+                    "simple": "iocs"
+                },
+                "Cyberint Related entities": {
+                    "complex": {
+                        "filters": [],
+                        "root": "related_entities",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Source": {
+                    "simple": "source"
+                },
+                "Cyberint Source category": {
+                    "simple": "source_category"
+                },
+                "CyberInt Status": {
+                    "simple": "status"
+                },
+                "Cyberint Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Targeted Brand": {
+                    "complex": {
+                        "filters": [],
+                        "root": "targeted_brands",
+                        "transformers": [
+                            {
+                                "operator": "ConvertToSingleElementArray"
+                            }
+                        ]
+                    }
+                },
+                "Cyberint Targeted Vector": {
+                    "complex": {
+                        "filters": [],
+                        "root": "targeted_vectors",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Threat Actor": {
+                    "simple": "threat_actor"
+                },
+                "Cyberint Ticket ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ticket_id",
+                        "transformers": []
+                    }
+                },
+                "Cyberint Title": {
+                    "simple": "title"
+                },
+                "Cyberint Type": {
+                    "simple": "type"
+                },
+                "Cyberint Vulnerable CName Record": {
+                    "simple": "alert_data.vulnerable_cname_record"
+                },
+                "Cyberint Category": {
+                    "simple": "category"
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Source Username": {
+                    "simple": "attachments.content.username"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "Sub Category": {
+                    "simple": "type"
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Threat Actor": {
+                    "simple": "threat_actor"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "ref_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "simple": "title"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": "Z"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "low,medium,high,very_high"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "source": {
+                    "simple": "source"
+                }
+            }
+        }
+    },
+    "name": "Cyberint (mapper)",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
