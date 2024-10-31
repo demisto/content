@@ -269,23 +269,29 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         file_path = res.Path;
     }
 
-    let upload_url = 'contentpacks/installed/upload?'
+    let upload_url = 'contentpacks/installed/upload'
 
-    // set the skipVerify parameter
-    if(isDemistoVersionGE('6.5.0')){
-        if (skip_verify && skip_verify === 'false') {
-            upload_url+='skipVerify=false'
-        }else{
-            upload_url+='skipVerify=true'
-        }
+    // from version 8.9.0 we will upload as custom content
+    if(isDemistoVersionGE('8.9.0')){
+        upload_url+='/custom'
     }
+    else{
+        // set the skipVerify parameter
+        if(isDemistoVersionGE('6.5.0')){
+            if (skip_verify && skip_verify === 'false') {
+                upload_url+='?skipVerify=false'
+            }else{
+                upload_url+='?skipVerify=true'
+            }
+        }
 
-    // set the skipValidation parameter
-    if(isDemistoVersionGE('6.6.0')){
-        if (skip_validation && skip_validation === 'false') {
-            upload_url+='&skipValidation=false'
-        }else{
-            upload_url+='&skipValidation=true'
+        // set the skipValidation parameter
+        if(isDemistoVersionGE('6.6.0')){
+            if (skip_validation && skip_validation === 'false') {
+                upload_url+='&skipValidation=false'
+            }else{
+                upload_url+='&skipValidation=true'
+            }
         }
     }
     // upload the pack
