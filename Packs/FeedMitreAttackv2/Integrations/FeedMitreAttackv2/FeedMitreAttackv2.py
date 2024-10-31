@@ -118,7 +118,7 @@ class Client:
         elif self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
-        if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json["x_mitre_is_subtechnique"]:
+        if item_type in ("Attack Pattern", "STIX Attack Pattern") and "x_mitre_is_subtechnique" not in mitre_item_json:
             tactics = []
             for tactic in mitre_item_json["kill_chain_phases"]:
                 if tactic.get("kill_chain_name", "") != "mitre-attack":
