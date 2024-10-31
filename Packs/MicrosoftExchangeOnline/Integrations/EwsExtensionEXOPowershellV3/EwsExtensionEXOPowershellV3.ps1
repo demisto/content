@@ -1419,6 +1419,20 @@ class ExchangeOnlinePowershellV3Client
 
 }
 
+function Remove-EmptyItems {
+    param (
+        [PSObject]$inputObject
+    )
+    $newDict = @{}
+    foreach ($property in $inputObject.PSObject.Properties) {
+        $value = $property.Value
+        if (-not [string]::IsNullOrWhiteSpace($value) -and -not ($value -is [System.Collections.IEnumerable] -and $value.Count -eq 0)) {
+            $newDict[$property.Name] = $value
+        }
+    }
+    return $newDict
+}
+
 function GetEXORecipientCommand
 {
     [CmdletBinding()]
@@ -1641,7 +1655,7 @@ function EXOExportQuarantineMessageCommand
     )
 
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.ExportQuarantineMessage(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.ExportQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
@@ -1681,8 +1695,20 @@ function EXOGetQuarantineMessageCommand {
 
     $raw_response = $client.EXOGetQuarantineMessage($params)
 
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Guid === val.Guid)" = $raw_response}
+    $newResults = @()
+
+    if ($raw_response -is [System.Collections.IEnumerable]) {
+    # If raw_response is a list, process each dictionary
+    foreach ($item in $raw_response) {
+        $newResults += Remove-EmptyItems $item
+    }
+    } elseif ($raw_response -Is [Hashtable]) {
+        # If input is a single dictionary, process it directly
+        $newResults = Remove-EmptyItems $raw_response
+    }
+
+    $human_readable = TableToMarkdown $newResults "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
