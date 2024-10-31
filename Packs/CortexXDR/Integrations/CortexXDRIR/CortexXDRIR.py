@@ -891,7 +891,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
 
     if last_update_utc:
         gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
-        lte_modification_time_milliseconds = gte_modification_time_milliseconds + timedelta(minutes=1)
+        lte_modification_time_milliseconds = datetime.now() - timedelta(minutes=xdr_delay)
     demisto.debug(
         f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
         f'{lte_modification_time_milliseconds=}'
