@@ -1,16 +1,14 @@
 {
-    "contextPath": "",
-    "contextValue": "",
-    "defaultMapping": null,
+    "contextPath": "AttackPattern(val.Name \u0026\u0026 val.Name === obj.Name)",
+    "contextValue": "Name",
     "details": "Attack Pattern",
-    "legacyNames": ["STIX Attack Pattern"],
+    "legacyNames": [
+        "STIX Attack Pattern"
+    ],
     "disabled": false,
-    "enhancementScriptNames": [],
-    "excludedBrands": [],
     "expiration": 0,
     "file": false,
-    "fileHashesPriority": null,
-    "formatScript": "ExtractAttackPattern",
+    "formatScript": "MITRENameByID_Formatter",
     "id": "Attack Pattern",
     "locked": false,
     "manualMapping": {
@@ -49,14 +47,9 @@
     },
     "mergeContext": false,
     "regex": "\\bT\\d{4}(?:\\.\\d{3})?\\b",
-    "reputationCommand": "",
-    "reputationScriptName": "",
-    "sortValues": null,
     "system": false,
     "updateAfter": 0,
     "version": -1,
-    "fromVersion": "6.2.0",
-    "toVersion": "6.9.9",
+    "fromVersion": "6.10.0",
     "layout": "STIX Attack Pattern"
-
 }

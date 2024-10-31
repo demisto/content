@@ -54,7 +54,7 @@ def get_mitre_results(items):
 
 
 def is_valid_attack_pattern(items) -> list:
-    mitre_ids = items.upper().split(",")
+    mitre_ids = argToList(items)
     results = []
     techniques = get_mitre_technique_name(mitre_id=" or ".join(mitre_ids))
     for mitre_id in mitre_ids:

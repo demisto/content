@@ -1,7 +1,6 @@
 commonfields:
-  id: 810667c4-2795-4451-863c-c4e4e6fc8b56
-  version: 12
-vcShouldKeepItemLegacyProdMachine: false
+  id: MITRENameByID_Formatter
+  version: -1
 name: MITRENameByID_Formatter
 script: ''
 type: python
@@ -12,13 +11,13 @@ enabled: true
 args:
 - name: input
   required: true
-  description: The MITRE ATT&CK object ID
-  isArray: true
+  description: The MITRE ATT&CK object ID.
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.11.10.113941
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

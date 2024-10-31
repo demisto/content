@@ -130,7 +130,7 @@ class Client:
                             name=EntityRelationship.Relationships.PART_OF,
                             entity_a=indicator_obj["value"],
                             entity_a_type=indicator_obj["type"],
-                            entity_b=tactic["phase_name"].title(),
+                            entity_b=tactic["phase_name"].title().replace("-", " "),
                             entity_b_type="Tactic",
                         ).to_indicator()
                     )

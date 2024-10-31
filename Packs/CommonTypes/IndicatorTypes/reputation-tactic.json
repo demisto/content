@@ -3,10 +3,12 @@
     "version": -1,
     "modified": "2024-10-14T14:58:13.930523378Z",
     "shouldCommit": false,
-    "regex": "TA-?\\d{4}",
+    "regex": "(?i)\\bTA-?\\d{4}\\b",
     "details": "Tactic",
     "prevDetails": "Tactic",
     "formatScript": "MITRENameByID_Formatter",
+    "contextPath": "Tactic(val.Name \u0026\u0026 val.Name === obj.Name)",
+    "contextValue": "Name",
     "system": false,
     "locked": false,
     "disabled": false,
@@ -18,7 +20,10 @@
             "simple": "tactic.description"
         },
         "tags": {
-            "simple": "tatic.id"
+            "simple": "tactic.id"
+        },
+        "mitreid": {
+            "simple": "tactic.id"
         }
     },
     "expiration": 0,
