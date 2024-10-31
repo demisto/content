@@ -6015,7 +6015,8 @@
         "Test_XFE_v2": "CRTX-112127",
         "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
         "Generic Webhook - Test": "CIAC-11234",
-        "Netskope_V2_Test": "No instance - developed by Qmasters"
+        "Netskope_V2_Test": "No instance - developed by Qmasters",
+        "IAMInitOktaUser - Test": "CIAC-12093"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
