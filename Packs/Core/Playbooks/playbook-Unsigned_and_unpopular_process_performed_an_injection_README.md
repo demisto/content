@@ -2,7 +2,7 @@ Overview
 
 This playbook is designed to handle process injection alerts by analyzing preceding events, checking for agent prevention rules, and determining remediation actions. The playbook follows a logical flow to assess the risk, suggest improvements, and remediate potential threats.
 
-### This playbook is designed to handle the following alerts:
+### This playbook handles the following alerts:
  
 - Unsigned and unpopular process performed injection into a commonly abused process
 
@@ -14,19 +14,19 @@ This playbook is designed to handle process injection alerts by analyzing preced
 
 - Unsigned and unpopular process performed injection into svchost.exe
 
-### Steps
+### Logical Flow
 
 #### 1. Retrieve Alerts from Case
 - Retrieve all alerts associated with the case.
 
 #### 2. Check for Agent Prevention Rule
-- Search if an agent prevention rule was triggered during the alert.
+- Check if an agent prevention rule was triggered during the alert.
   
   ##### 2a. Block Mode
   - If the agent rule was triggered and set to **block mode**, proceed directly to endpoint isolation.
 
   ##### 2b. Report Mode
-  - If the agent rule was triggered but set to **report mode**, display a message suggesting the customer change the rule to **prevent mode** for future alerts.
+  - If the agent rule was triggered and set to **report mode**, display a message suggesting the customer change the rule to **prevent mode** for future alerts.
 
   ##### 2c. No Agent Rule Triggered
   - If no agent prevention rule was triggered, continue to the following checks.
