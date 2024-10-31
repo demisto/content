@@ -396,6 +396,11 @@ Retrieves information about a specific endpoint.
 | VisionOne.Endpoint_Info.os_description | string | Description of the Operating System of the endpoint queried. | 
 | VisionOne.Endpoint_Info.product_code | string | Product code of the Trend Micro product running on the endpoint. | 
 | VisionOne.Endpoint_Info.installed_product_codes | string | Product code of the Trend Micro product installed on the endpoint. | 
+| VisionOne.Endpoint_Info.componentUpdatePolicy | string | The update policy for the module/pattern of the agent installed on the endpoint. | 
+| VisionOne.Endpoint_Info.componentUpdateStatus | string | The status of the module/pattern updates of the agent installed on the endpoint. | 
+| VisionOne.Endpoint_Info.componentVersion | string | The agent component version. | 
+| VisionOne.Endpoint_Info.policyName | string | The name of a policy for an event. |
+| VisionOne.Endpoint_Info.protectionManager | string | The name of your protection manager. |
 
 ### trendmicro-visionone-get-endpoint-activity-data
 
@@ -903,6 +908,14 @@ Fetches details for a specific alert.
 | VisionOne.Alert_Details.alert.created_date_time | string | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the created date time of the alert. | 
 | VisionOne.Alert_Details.alert.updated_date_time | string | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the last updated date time of the alert. | 
 | VisionOne.Alert_Details.alert.investigation_status | string | Workbench alert status. | 
+| VisionOne.Alert_Details.alert.first_investigated_date_time | string | The date and time the case status was changed to 'In progress' in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ, UTC). | 
+| VisionOne.Alert_Details.alert.incident_id | string | The unique identifier of an incident. | 
+| VisionOne.Alert_Details.alert.case_id | string | The unique identifier of a case. | 
+| VisionOne.Alert_Details.alert.owner_ids | string | The owners of the Workbench alert. | 
+| VisionOne.Alert_Details.alert.model_id | string | ID of the detection model that triggered the alert. | 
+| VisionOne.Alert_Details.alert.model_type | string | Type of the detection model that triggered the alert. | 
+| VisionOne.Alert_Details.alert.status | string | The status of a case or investigation. | 
+| VisionOne.Alert_Details.alert.investigation_result | string | The findings of a case or investigation. | 
 
 ### trendmicro-visionone-run-sandbox-submission-polling
 
@@ -1013,7 +1026,9 @@ Updates the status of a workbench alert.
 | --- | --- | --- |
 | workbench_id | ID of the workbench you would like to update the status for. e.g. workbench_id="WB-14-20190709-00003". | Required | 
 | if_match | Target resource will be updated only if it matches ETag of the target one. Etag is one of the outputs from get_alert_details. e.g. if_match="d41d8cd98f00b204e9800998ecf8427e". | Required | 
-| status | Status to assign to the workbench alert. e.g. status="true_positive". Possible values are: new, in_progress, true_positive, false_positive, benign_true_positive, closed. | Required | 
+| status | Status to assign to the workbench alert. e.g. status="true_positive". Possible values are: open, in_progress, closed. | Required | 
+| inv_status | The status of an investigation. *NOTE: THIS FIELD IS DEPRECATED!* e.g. inv_status="true_positive". Possible values are: new, in_progress, true_positive, false_positive, benign_true_positive, closed. | Optional | 
+| inv_result | The findings of a case or investigation. e.g. status="noteworthy". Possible values are: noteworthy, in_progress, true_positive, false_positive, benign_true_positive, other_findings, no_findings. | Optional | 
 
 #### Context Output
 
