@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: ServiceNow Event Collector - new1 
+  id: ServiceNow Event Collector
   version: -1
 sectionOrder:
 - Connect
