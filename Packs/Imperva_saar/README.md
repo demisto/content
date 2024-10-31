@@ -38,7 +38,7 @@ For more information <[Link to the official docs](https://docs.imperva.com/bundl
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
  
 ### Broker VM
-Follow the below steps to configure the Broker VM to receive <Vendor> <Product> logs.
+Follow the below steps to configure the Broker VM to receive Imperva Securesphere logs.
  
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
