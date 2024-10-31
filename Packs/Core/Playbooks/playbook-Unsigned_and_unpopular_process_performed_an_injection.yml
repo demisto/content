@@ -75,12 +75,7 @@ tasks:
       id: 28112aa4-5c02-4bd9-8a2a-6f10174c7771
       version: -1
       name: Search for alerts that blocked the causality
-      description: |-
-        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      description: This task searches for Cortex XSIAM alerts related to the current incident.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -90,7 +85,24 @@ tasks:
       - "4"
     scriptarguments:
       query:
-        simple: case_id:${parentIncidentFields.incident_id}
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -173,6 +185,7 @@ tasks:
           right:
             value:
               simple: Reported
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -389,7 +402,18 @@ tasks:
       id: a4e84519-ae9c-4cde-86db-4210bd57a617
       version: -1
       name: Approve the endpoint isolation
-      description: Requires the analyst approval for endpoint isolation.
+      description: |-
+        Endpoint Isolation is recommended since the following verdicts have been confirmed:
+
+         - In addition to the analytics rule, an agent rule has blocked the same causality process.
+
+        OR
+
+         - The case includes additional rules protecting from PowerShell protection module or the 'Unsigned process injecting into a Windows system binary with no command line'.
+
+        OR
+
+         - The case includes at least two additional rules tagged as 'TA0004 - Privilege Escalation' and 'TA0005 - Defense Evasion'
       type: condition
       iscommand: false
       brand: ""
@@ -458,7 +482,7 @@ tasks:
     task:
       id: 5e10c74a-e684-4d52-8131-45f0d93e265e
       version: -1
-      name: Should remediate the threat?
+      name: Should terminate the causality (CGO)?
       description: |-
         Our only verdict is an unsigned causality process, we need the analyst's approval to continue the remediation phase.
 
@@ -568,6 +592,7 @@ tasks:
           right:
             value:
               simple: TA0005 - Defense Evasion
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -790,10 +815,9 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_13_Isolate": 0.65,
-      "12_8_#default#": 0.25,
+      "12_13_Isolate": 0.42,
+      "12_8_#default#": 0.44,
       "14_10_Yes": 0.37,
-      "14_20_#default#": 0.1,
       "17_10_yes": 0.22,
       "17_5_#default#": 0.4,
       "18_19_#error#": 0.65,
