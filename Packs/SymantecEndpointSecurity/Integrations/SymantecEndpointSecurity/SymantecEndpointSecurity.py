@@ -19,6 +19,7 @@ class UnauthorizedToken(Exception):
     """
     Exception raised when the authentication token is unauthorized.
     """
+
     ...
 
 
@@ -26,6 +27,7 @@ class NextPointingNotAvailable(Exception):
     """
     Exception raised when the next pointing is not available.
     """
+
     ...
 
 
@@ -123,14 +125,14 @@ def normalize_date_format(date_str: str) -> str:
     """
     try:
         # Parse the original date string with milliseconds
-        original_date = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+        original_date = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
     except Exception:
         if "." in date_str:
             date_str = f"{date_str.split('.')[0]}Z"
         return date_str
 
     # Convert back to the desired format without milliseconds
-    new_date_str = original_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+    new_date_str = original_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return new_date_str
 
@@ -150,8 +152,14 @@ def update_new_integration_context(
         include_last_fetch_events (bool): Flag to include last fetched events in the integration context.
         last_integration_context (dict[str, str]): The previous integration context.
     """
-    events_suspected_duplicates = extract_events_suspected_duplicates(filtered_events) if filtered_events else []
-    latest_event_time = normalize_date_format(max(filtered_events, key=parse_event_time)["time"]) if filtered_events else last_integration_context.get("latest_event_time", "")
+    events_suspected_duplicates = (
+        extract_events_suspected_duplicates(filtered_events) if filtered_events else []
+    )
+    latest_event_time = (
+        normalize_date_format(max(filtered_events, key=parse_event_time)["time"])
+        if filtered_events
+        else last_integration_context.get("latest_event_time", "")
+    )
 
     # If the latest event time matches the previous one,
     # extend the suspected duplicates list with events from the previous context,
@@ -198,7 +206,9 @@ def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
     latest_event_time = normalize_date_format(max(events, key=parse_event_time)["time"])
 
     # Filter all JSONs with the maximum event time
-    filtered_events = filter(lambda x: normalize_date_format(x["time"]) == latest_event_time, events)
+    filtered_events = filter(
+        lambda x: normalize_date_format(x["time"]) == latest_event_time, events
+    )
 
     # Extract the event_ids from the filtered events
     events_suspected_duplicates = [x["uuid"] for x in filtered_events]
@@ -248,17 +258,22 @@ def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]
     events_suspected_duplicates = set(
         integration_context.get("events_suspected_duplicates", [])
     )
-    latest_event_time = integration_context.get(
-        "latest_event_time", "2000-01-01T00:00:00.000Z"
-    ) or "2000-01-01T00:00:00.000Z" # TODO default value
-    latest_event_time = datetime.strptime(normalize_date_format(latest_event_time), "%Y-%m-%dT%H:%M:%SZ")
+    latest_event_time = (
+        integration_context.get("latest_event_time", "2000-01-01T00:00:00.000Z")
+        or "2000-01-01T00:00:00.000Z"
+    )  # TODO default value
+    latest_event_time = datetime.strptime(
+        normalize_date_format(latest_event_time), "%Y-%m-%dT%H:%M:%SZ"
+    )
 
     return [
         event
         for event in events
         if not is_duplicate(
             event["uuid"],
-            datetime.strptime(normalize_date_format(event["time"]), "%Y-%m-%dT%H:%M:%SZ"),
+            datetime.strptime(
+                normalize_date_format(event["time"]), "%Y-%m-%dT%H:%M:%SZ"
+            ),
             latest_event_time,
             events_suspected_duplicates,
         )
@@ -272,9 +287,7 @@ def prepare_raw_res_and_load_json(raw_res: str) -> dict:
     return json.loads(raw_res)
 
 
-def get_events_command(
-    client: Client, integration_context: dict
-):
+def get_events_command(client: Client, integration_context: dict):
     events: list[dict] = []
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
     try:
@@ -282,7 +295,9 @@ def get_events_command(
         json_res = prepare_raw_res_and_load_json(raw_res)
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 401:
-            demisto.info("Unauthorized access token, trying to obtain a new access token")
+            demisto.info(
+                "Unauthorized access token, trying to obtain a new access token"
+            )
             raise UnauthorizedToken
         elif e.res is not None and e.res.status_code == 410:
             raise NextPointingNotAvailable
@@ -304,9 +319,13 @@ def get_events_command(
 
     events_debug = []
     for event in events:
-        events_debug.append({
-            "uuid": event["uuid"], "time": event["time"], "log_time": event["log_time"]
-        })
+        events_debug.append(
+            {
+                "uuid": event["uuid"],
+                "time": event["time"],
+                "log_time": event["log_time"],
+            }
+        )
     demisto.info(f"uuid time log_time - {events_debug=}")
 
     demisto.info(f"filtering, len of events {len(events)}")
@@ -325,7 +344,9 @@ def get_events_command(
             include_last_fetch_events=True,
             last_integration_context=integration_context,
         )
-        demisto.info(f"pushing dev - Failed to push events to XSIAM, The integration_context updated. Error: {e}")
+        demisto.info(
+            f"pushing dev - Failed to push events to XSIAM, The integration_context updated. Error: {e}"
+        )
         raise e
 
     demisto.info("pushing dev - pushing passed successfully")
@@ -347,7 +368,7 @@ def perform_long_running_loop(client: Client):
             integration_context = get_integration_context()
             demisto.info(f"Starting new fetch with {integration_context=}")
             get_events_command(client, integration_context=integration_context)
-            
+
         except UnauthorizedToken:
             try:
                 time.sleep(60)
