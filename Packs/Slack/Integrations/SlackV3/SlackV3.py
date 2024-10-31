@@ -496,7 +496,7 @@ def validate_slack_request_args(
 
 def send_slack_request_sync(
     client: slack_sdk.WebClient,
-    method: str = '',
+    method: str = '',  # irrelevant when file_upload_params are specified
     http_verb: ALLOWED_HTTP_VERBS = 'POST',
     body: Optional[dict] = None,
     file_upload_params: Optional[FileUploadParams] = None,
@@ -506,7 +506,7 @@ def send_slack_request_sync(
 
     Args:
         client: The Synchronous Slack client.
-        method: The Slack web API method to use (not relevant when file_upload_params are specified).
+        method: The Slack web API method to use (irrelevant when file_upload_params are specified).
         http_verb: The HTTP method to use.
         body: The request body.
         file_upload_params: An instance of FileUploadParams (for uploading using the file-upload APIs).
@@ -550,7 +550,7 @@ def send_slack_request_sync(
 
 async def send_slack_request_async(
     client: AsyncWebClient,
-    method: str = '',
+    method: str = '',    # irrelevant when file_upload_params are specified
     http_verb: ALLOWED_HTTP_VERBS = 'POST',
     body: Optional[dict] = None,
     file_upload_params: Optional[FileUploadParams] = None,
@@ -560,7 +560,7 @@ async def send_slack_request_async(
 
     Args:
         client: The Asynchronous Slack client.
-        method: The Slack web API method to use (not relevant when file_upload_params are specified).
+        method: The Slack web API method to use (irrelevant when file_upload_params are specified).
         http_verb: The HTTP method to use.
         body: The request body.
         file_upload_params: An instance of FileUploadParams (for uploading using the file upload APIs).
