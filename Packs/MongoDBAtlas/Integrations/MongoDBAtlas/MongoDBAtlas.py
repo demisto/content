@@ -86,10 +86,8 @@ class Client(BaseClient):
         
     def first_time_fetch_events(self, event_type: str):
         if event_type == 'alerts':
-            demisto.debug('This is event from type alert')
             return self.get_alerts(page_num=1, items_per_page=10)
         elif event_type == 'events':
-            demisto.debug('This is event from type event')
             return self.get_events(page_num=1, items_per_page=10)
         return None
         
@@ -166,12 +164,11 @@ def get_page_from_last_run(client: Client, page_link: str, event_type: str):
         dict: The API response containing events data.
     """
     if page_link:
-        demisto.debug('Enter the first if')
+        demisto.debug('Getting a respond from the saved page')
         response = client.get_response_from_page_link(page_link)
     else:
-        demisto.debug('Enter the else')
+        demisto.debug('Initialize the first page')
         response = client.first_time_fetch_events(event_type)
-    demisto.debug(f'This is the response {response}')
     return response
 
 def update_last_run_with_self_url(links, last_page_events_ids):
@@ -231,14 +228,14 @@ def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event
             #running on the current page
             enrich_event(event, event_type)
             output.append(event)
-            demisto.debug(f'This is the event that is appended {event}')
+            demisto.debug(f'Appending event with id {event['id']} from type {event_type}')
             last_page_events_ids.append(event.get('id'))
             current_fetched_events_amount += 1
             
             if current_fetched_events_amount == fetch_limit:
                 #the limit is reached, save the current page and the ids.
                 last_run_new_dict = update_last_run_with_self_url(links, last_page_events_ids)
-                demisto.debug(f'This is the output of fetch_events {output}, the limit is reached')
+                demisto.debug(f'The limit is reached. Amount of fetched events from type {event_type} is {len(output)}')
                 return output, last_run_new_dict
             
         next_url = get_next_url(links)
@@ -250,11 +247,9 @@ def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event
             last_page_events_ids.clear()
         else:
             #no more pages left, exit the loop
-            demisto.debug(f'This is the output of fetch_events {output}, there is no pages left')
             break
             
-    
-    demisto.debug(f'This is the output of fetch_events {output}')
+    demisto.debug(f'No more events are left to fetch. Amount of fetched events from type {event_type} is {len(output)}')
     last_run_new_dict = update_last_run_with_self_url(links, last_page_events_ids)
     return output, last_run_new_dict
 
@@ -285,25 +280,18 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, fetch_limit: int):
     #run every min and return all the new events from the last run
-    demisto.debug('Enter the fetch_events function')
     last_run = demisto.getLastRun()
-    # global last_run
     last_run_alerts = last_run.get('alerts', {})
     last_run_events = last_run.get('events', {})
+    demisto.debug(f'This is the amount of alerts from the last run {len(last_run_alerts)}')
+    demisto.debug(f'This is the amount of events from the last run {len(last_run_events)}')
     
-    demisto.debug('Getting the alerts')
     alerts_output, last_run_alerts = fetch_events_by_type(client, fetch_limit, last_run_alerts, 'alerts')
-    demisto.debug(f'Those are the alerts {alerts_output}')
-    
     events_output, last_run_events = fetch_events_by_type(client, fetch_limit, last_run_events, 'events')
-    demisto.debug(f'Those are the events {alerts_output}')
     
     last_run_new_obj = ({'alerts': last_run_alerts,
                         'events': last_run_events
                         })
-    # last_run = ({'alerts': last_run_alerts,
-    #                 'events': last_run_events
-    #                  })
     demisto.debug(f'This is the final output for fetch_events {alerts_output + events_output}')
     return (alerts_output + events_output), last_run_new_obj
 
@@ -351,13 +339,11 @@ def main() -> None:
             return_results(get_events(client, demisto.args()))
         elif command == 'fetch-events':
             # while True:
-            demisto.debug('fetch_events is starting')
             events, last_run_new_obj = fetch_events(client,fetch_limit)
             if events:
-                demisto.debug('Sending events to the send_events_to_xsiam function')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(last_run_new_obj)
-                demisto.debug('fetch-events command is done')
+                demisto.debug('fetch-events command is finished')
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
