@@ -1551,7 +1551,7 @@ def parsed_whois_command():
     results = CommandResults(
         indicator=domain_indicator,
         readable_output=human_readable,
-        outputs=parsed,
+        raw_response=parsed,
         ignore_auto_extract=True
     )
 
