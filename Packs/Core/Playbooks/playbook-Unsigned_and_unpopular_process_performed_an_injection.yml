@@ -240,7 +240,7 @@ tasks:
     task:
       id: 3e3d733d-1317-44cf-8178-e0015cc3b874
       version: -1
-      name: Check for known preceding alerts
+      name: Were known preceding alerts detected?
       description: Search for commonly triggered alert names preceding the injection alert.
       type: condition
       iscommand: false
@@ -312,7 +312,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": 2610
+          "y": 2580
         }
       }
     note: false
@@ -340,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 2780
+          "y": 2750
         }
       }
     note: false
@@ -404,7 +404,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 2240
+          "y": 2210
         }
       }
     note: false
@@ -441,7 +441,7 @@ tasks:
       {
         "position": {
           "x": -300,
-          "y": 2430
+          "y": 2400
         }
       }
     note: false
@@ -473,7 +473,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "20"
       "Yes":
       - "10"
     separatecontext: false
@@ -537,7 +537,7 @@ tasks:
     task:
       id: cd3ec521-6d66-44e7-8fef-c27e3a4edf94
       version: -1
-      name: Check for known preceding MITRE tactics
+      name: Were known preceding MITRE tactics alerts detected?
       description: Search for commonly triggered MITRE tactics preceding the injection alert.
       type: condition
       iscommand: false
@@ -684,7 +684,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 2610
+          "y": 2580
         }
       }
     note: false
@@ -724,7 +724,7 @@ tasks:
             value:
               simple: Powershell Activity
           ignorecase: true
-      - - operator: isNotEqualNumber
+      - - operator: isNotEqualString
           left:
             value:
               simple: foundIncidents.name
@@ -739,7 +739,7 @@ tasks:
               complex:
                 root: foundIncidents.CustomFields
                 filters:
-                - - operator: isNotEqualNumber
+                - - operator: isNotEqualString
                     left:
                       value:
                         simple: foundIncidents.CustomFields.cid
@@ -776,7 +776,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 300,
           "y": 2030
         }
       }
@@ -793,7 +793,7 @@ view: |-
       "12_13_Isolate": 0.65,
       "12_8_#default#": 0.25,
       "14_10_Yes": 0.37,
-      "14_8_#default#": 0.11,
+      "14_20_#default#": 0.1,
       "17_10_yes": 0.22,
       "17_5_#default#": 0.4,
       "18_19_#error#": 0.65,
@@ -809,7 +809,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2815,
+        "height": 2785,
         "width": 1660,
         "x": -300,
         "y": 30
