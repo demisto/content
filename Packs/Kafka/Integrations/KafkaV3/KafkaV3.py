@@ -593,8 +593,8 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     except Exception as e:
         if 'Topic authorization failed' in str(e):
             raise DemistoException(f"Error: {str(e)}\n"
-                                   "Check if you have permission to produce messages.\
-                                   Your access might be restricted to consumer-only.")
+                                   "Check if you have permission to produce messages."
+                                   "Your access might be restricted to consumer-only.")
         else:
             raise DemistoException(e)
 
