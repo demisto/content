@@ -231,7 +231,7 @@ class Client:
         if status_type == "general_error":
             execution_metrics.general_error += 1
         elif status_type == "connection_error":
-            execution_metrics.ssl_error += 1
+            execution_metrics.connection_error += 1
         elif status_type == "success":
             execution_metrics.success += 1
         else:
