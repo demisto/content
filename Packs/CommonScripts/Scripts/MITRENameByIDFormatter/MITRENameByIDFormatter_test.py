@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
 import pytest
-import MITRENameByID_Formatter
-from MITRENameByID_Formatter import *
+import MITRENameByIDFormatter
+from MITRENameByIDFormatter import main
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -17,8 +17,8 @@ from CommonServerPython import *  # noqa: F401
                  id="Valid MITRE technique ID with sub-technique")
 ])
 @patch.object(demisto, "args")
-@patch.object(MITRENameByID_Formatter, "return_results")
-@patch.object(MITRENameByID_Formatter, "execute_command")
+@patch.object(MITRENameByIDFormatter, "return_results")
+@patch.object(MITRENameByIDFormatter, "execute_command")
 def test_mitre_name_by_id_formatter(mock_execute_command, mock_return_results, mock_args, input, expected_response):
     mock_args.return_value = {'input': input}
     mock_execute_command.return_value = expected_response
@@ -29,8 +29,8 @@ def test_mitre_name_by_id_formatter(mock_execute_command, mock_return_results, m
 
 
 @patch.object(demisto, "args")
-@patch.object(MITRENameByID_Formatter, "return_results")
-@patch.object(MITRENameByID_Formatter, "execute_command")
+@patch.object(MITRENameByIDFormatter, "return_results")
+@patch.object(MITRENameByIDFormatter, "execute_command")
 def test_invalid_mitre_id(mock_execute_command, mock_return_results, mock_args):
     input = 'T9999'
     expected_response = (True, [''])
