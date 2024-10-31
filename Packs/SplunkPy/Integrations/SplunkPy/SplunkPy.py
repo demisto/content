@@ -2619,6 +2619,14 @@ def validate_indexes(indexes, service):
     indexes_set = set(indexes)
     return indexes_set.issubset(real_indexes_names_set)
 
+
+def get_events_from_file(entry_id):
+    get_file_path_res = demisto.getFilePath(entry_id)
+    file_path = get_file_path_res["path"]
+    file_data = {'file': open(file_path, 'rb')}
+    return file_data
+
+
 def splunk_submit_event_hec(
     hec_token: str | None,
     baseurl: str,
@@ -2630,7 +2638,7 @@ def splunk_submit_event_hec(
     source: str | None,
     time_: str | None,
     request_channel: str | None,
-    batched_events: str | None,
+    batch_event_data: str | None,
     entry_id: int | None,
     service
 ):
@@ -2638,10 +2646,10 @@ def splunk_submit_event_hec(
         raise Exception('The HEC Token was not provided')
 
     if entry_id:
-        # events = get_events_from_file(entry_id)
+        events = get_events_from_file(entry_id)
         
-    elif batched_events:
-        events = batched_events
+    elif batch_event_data:
+        events = batch_event_data
             
     else:
         parsed_fields = None
@@ -2670,7 +2678,7 @@ def splunk_submit_event_hec(
         'Authorization': f'Splunk {hec_token}',
         'Content-Type': 'application/json',
     }
-    if request_channel:
+    if request_channel:  # Check this
         headers['X-Splunk-Request-Channel'] = request_channel
 
     return requests.post(
@@ -2695,11 +2703,11 @@ def splunk_submit_event_hec_command(params: dict, service, args: dict):
     source = args.get('source')
     time_ = args.get('time')
     request_channel = args.get('request_channel')
-    batched_events = args.get('batched_events')
+    batch_event_data = args.get('batch_event_data')
     entry_id = arg_to_number(args.get('entry_id'))
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
-                                            request_channel, batched_events, entry_id, service)
+                                            request_channel, batch_event_data, entry_id, service)
 
     if 'Success' not in response_info.text:
         return_error(f"Could not send event to Splunk {response_info.text}")
