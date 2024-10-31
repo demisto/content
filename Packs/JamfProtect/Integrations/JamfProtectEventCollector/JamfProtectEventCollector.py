@@ -158,8 +158,9 @@ class Client(BaseClient):
             DemistoException: If the response contains any errors.
         """
         if "errors" in res:
+            demisto.debug(f"Errorneous response: {res}")
             errors = "\n".join([error.get("message") for error in res.get("errors", [])])
-            raise DemistoException(errors)
+            raise DemistoException(errors, res=res)
 
     def graphql(self, query: str, variables: dict) -> dict:
         """
