@@ -244,7 +244,7 @@ class CoreClient(BaseClient):
         try:
             decoder = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
-            return decoder(response['data'])   # type: ignore[operator]
+            return decoder(response['data'])  # type: ignore[operator]
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
@@ -1897,11 +1897,11 @@ def validate_args_scan_commands(args):
               'To scan/abort scan some of the endpoints, please use the filter arguments.'
     if all_:
         if (endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen
-                or ip_list or group_name or platform or alias or hostname):
+            or ip_list or group_name or platform or alias or hostname):
             raise Exception(err_msg)
     elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-            and not alias and not hostname:
+        and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+        and not alias and not hostname:
         raise Exception(err_msg)
 
 
@@ -3724,6 +3724,14 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    for alert_id in alert_id_list:
+        if re.match("^[^\d]+$|^\s*$|.*[^\d].*", alert_id):
+            raise DemistoException(
+                f"Alert ID: {alert_id} is not a valid alert ID.\nIf this error was encountered in playbook debug - "
+                f"this task "
+                f"cannot run with a default fake "
+                "alert_id in debug mode. To debug, please select the specific alert you wish to investigate "
+                "and update the alert_id field in the context to the correct alert_id number.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
@@ -4596,6 +4604,6 @@ def terminate_causality_command(client, args) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)':
-                 replies},
+                     replies},
         raw_response=replies
     )
