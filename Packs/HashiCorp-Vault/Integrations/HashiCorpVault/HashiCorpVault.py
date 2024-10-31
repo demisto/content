@@ -153,10 +153,10 @@ def get_role_id_command():
     response = send_request(path=path, method='get', body={'role_name': role_name})
     if response:
         role_id = response.get('data', {}).get('role_id', '')
-        
+
     if not role_id:
         raise DemistoException(f"Role ID not found for AppRole '{role_name}'. Please check the role name and try again.")
-    
+
     return_results(CommandResults(outputs_prefix='HashiCorp.AppRole', outputs={"Id": role_id, "Name": role_name}))
 
 
