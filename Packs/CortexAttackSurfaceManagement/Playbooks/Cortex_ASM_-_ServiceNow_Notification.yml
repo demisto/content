@@ -324,6 +324,6 @@ inputSections:
   - RemediationGuidance
   name: General (Inputs group)
 outputSections:
-- description: Generic group for outputs
+- description: Generic group for outputs.
   name: General (Outputs group)
   outputs: []
