@@ -49,10 +49,6 @@ def get_mitre_technique_name(mitre_id: str) -> dict[str, str]:
         return {}
 
 
-def get_mitre_results(items):
-    return execute_command('mitre-get-indicator-name', {'attack_ids': items})
-
-
 def is_valid_attack_pattern(items) -> list:
     mitre_ids = argToList(items)
     results = []
