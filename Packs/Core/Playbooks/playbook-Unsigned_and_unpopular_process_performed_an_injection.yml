@@ -631,6 +631,8 @@ tasks:
         simple: ${alert.agentid}
       causality_id:
         simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
