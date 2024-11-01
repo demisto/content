@@ -2,7 +2,7 @@
     "id": "incident_cyberinttitle",
     "version": -1,
     "modified": "2021-02-22T21:55:35.77661741+02:00",
-    "name": "CyberInt Title",
+    "name": "Cyberint Title",
     "ownerOnly": false,
     "cliName": "cyberinttitle",
     "type": "shortText",

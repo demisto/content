@@ -1,9 +1,8 @@
 import json
 from datetime import datetime, timedelta
-from unittest.mock import patch
 
 import pytest
-from CommonServerPython import *
+from CommonServerPython import EntryType
 
 BASE_URL = "https://test.cyberint.io/alert"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -15,7 +14,7 @@ def load_mock_response(file_name: str) -> str:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f"test_data/{file_name}", encoding="utf-8") as mock_file:
+    with open(f"test_data/{file_name}", mode="r", encoding="utf-8") as mock_file:
         return mock_file.read()
 
 
@@ -116,7 +115,7 @@ def test_fetch_incidents(requests_mock, duplicate_alerts, client) -> None:
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing"
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing", False
     )
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
     assert last_fetch.get("last_fetch") == wanted_time * 1000
@@ -150,7 +149,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock, client):
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing"
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
     )
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
     assert last_fetch.get("last_fetch") == wanted_time * 1000
@@ -177,7 +176,7 @@ def test_fetch_incidents_empty_response(requests_mock, client):
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
-        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing"
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
     )
     assert last_fetch.get("last_fetch") == 100001000
     assert len(incidents) == 0
@@ -317,202 +316,3 @@ def test_test_module(requests_mock, client):
     result = test_module(client)
 
     assert result == "ok"
-
-
-def test_date_to_epoch_for_fetch():
-    """
-    Scenario: Verify date conversion to epoch timestamp.
-    Given:
-     - A valid datetime object.
-    When:
-     - Converting the datetime to an epoch timestamp for fetch command.
-    Then:
-     - Ensure that the returned timestamp is in the expected format.
-    """
-    from Cyberint import date_to_epoch_for_fetch
-
-    input_date = datetime(2023, 2, 14, 0, 0, 57)
-
-    expected_timestamp = int(input_date.timestamp())
-
-    result = date_to_epoch_for_fetch(input_date)
-
-    assert result == expected_timestamp
-
-
-def test_convert_date_time_args():
-    """
-    Scenario: Verify conversion of date_time string to datetime.
-    Given:
-     - A valid date_time string.
-    When:
-     - Converting the date_time string to a datetime and formatting it.
-    Then:
-     - Ensure that the returned datetime string matches the expected format.
-    """
-    from Cyberint import convert_date_time_args
-
-    date_time_str = "2023-02-14 12:30:45"
-
-    expected_result = "2023-02-14T12:30:45Z"
-
-    result = convert_date_time_args(date_time_str)
-
-    assert result == expected_result
-
-
-def test_get_modified_remote_data(client):
-    """
-    Scenario: Verify getting modified remote data.
-    Given:
-     - A valid Cyberint API client.
-     - Valid command arguments.
-     - Mocked response from the client.
-    When:
-     - Calling the function to get modified remote data.
-    Then:
-     - Ensure that the returned response matches the expected format.
-    """
-    from Cyberint import get_modified_remote_data
-
-    mock_response = {"alerts": [{"ref_id": "incident1"}, {"ref_id": "incident2"}]}
-
-    with patch("Cyberint.Client") as MockClient:
-        client_instance = MockClient.return_value
-        client_instance.list_alerts.return_value = mock_response
-
-        args = {
-            "lastUpdate": "2023-02-14 12:30:45",
-        }
-
-        with patch("Cyberint.convert_date_time_args") as mock_convert_date_time_args:
-            mock_convert_date_time_args.return_value = "2023-02-14 12:30:45"
-
-            result = get_modified_remote_data(client_instance, args)
-
-            expected_response = GetModifiedRemoteDataResponse(["incident1", "incident2"])
-            assert result.modified_incident_ids == expected_response.modified_incident_ids
-
-
-def test_get_mapping_fields_command():
-    """
-    Scenario: Verify fetching mapping fields.
-    Given:
-     - No specific input required for this function.
-    When:
-     - Calling the function to fetch mapping fields.
-    Then:
-     - Ensure that the returned response matches the expected format.
-    """
-    from Cyberint import MIRRORING_FIELDS, get_mapping_fields_command
-
-    result = get_mapping_fields_command()
-
-    expected_response = GetMappingFieldsResponse()
-    incident_type_scheme = SchemeTypeMapping(type_name="Cyberint Incident")
-
-    for field in MIRRORING_FIELDS:
-        incident_type_scheme.add_field(field)
-
-    expected_response.add_scheme_type(incident_type_scheme)
-
-    assert result.scheme_types_mappings[0].type_name == expected_response.scheme_types_mappings[0].type_name
-    assert result.scheme_types_mappings[0].fields == expected_response.scheme_types_mappings[0].fields
-
-
-def test_get_remote_data_command():
-    """
-    Scenario: Verify fetching remote data.
-    Given:
-     - A valid Cyberint API client.
-     - Valid command arguments.
-     - Mocked response from the client.
-    When:
-     - Calling the function to fetch remote data.
-    Then:
-     - Ensure that the returned response matches the expected format.
-    """
-    from Cyberint import get_remote_data_command
-
-    mock_response = {
-        "alert": {
-            "alert_ref_id": "incident123",
-            "status": "closed",
-            "update_date": "2023-02-14 12:30:45",
-        }
-    }
-
-    with patch("Cyberint.Client") as MockClient:
-        client_instance = MockClient.return_value
-        client_instance.get_alert.return_value = mock_response
-
-        args = {
-            "id": "incident123",
-            "lastUpdate": "2023-02-14 12:30:45",
-        }
-
-        with patch("Cyberint.arg_to_datetime") as mock_arg_to_datetime:  # noqa: SIM117
-            with patch("Cyberint.date_to_epoch_for_fetch") as mock_date_to_epoch_for_fetch:
-                mock_arg_to_datetime.return_value = datetime(2023, 2, 14, 12, 30, 45)
-                mock_date_to_epoch_for_fetch.return_value = 123456789
-
-                result = get_remote_data_command(client_instance, args, {})
-
-                expected_response = GetRemoteDataResponse(
-                    {
-                        "alert_ref_id": "incident123",
-                        "status": "closed",
-                        "update_date": "2023-02-14 12:30:45",
-                    },
-                    [
-                        {
-                            "Type": "note",
-                            "Contents": {"dbotIncidentClose": True, "closeReason": "Closed from Cyberint."},
-                            "ContentsFormat": "json",
-                        }
-                    ],
-                )
-
-                assert result.mirrored_object == expected_response.mirrored_object
-
-
-def test_update_remote_system():
-    """
-    Scenario: Verify updating the remote system.
-    Given:
-     - A valid Cyberint API client.
-     - Valid command arguments.
-     - Mocked response from the client.
-    When:
-     - Calling the function to update the remote system.
-    Then:
-     - Ensure that the remote incident ID is returned.
-    """
-    from Cyberint import update_remote_system
-
-    mock_response = {
-        "result": "success",
-    }
-
-    with patch("Cyberint.Client") as MockClient:
-        client_instance = MockClient.return_value
-        client_instance.update_alerts.return_value = mock_response
-
-        args = {
-            "data": {
-                "incident_key": "incident123",
-                "status": "closed",
-            },
-            "entries": [],
-            "incidentChanged": True,
-            "remoteId": "incident123",
-            "status": "new_status",
-            "delta": {},
-        }
-
-        with patch("Cyberint.UpdateRemoteSystemArgs") as mock_UpdateRemoteSystemArgs:
-            mock_UpdateRemoteSystemArgs.return_value = UpdateRemoteSystemArgs(args)
-
-            result = update_remote_system(client_instance, args)
-
-            assert result == "incident123"

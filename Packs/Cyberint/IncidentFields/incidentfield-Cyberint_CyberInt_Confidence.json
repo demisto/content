@@ -2,7 +2,7 @@
     "id": "incident_cyberintconfidence",
     "version": -1,
     "modified": "2021-02-22T21:51:24.438436947+02:00",
-    "name": "CyberInt Confidence",
+    "name": "Cyberint Confidence",
     "ownerOnly": false,
     "cliName": "cyberintconfidence",
     "type": "shortText",

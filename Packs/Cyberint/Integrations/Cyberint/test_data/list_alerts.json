@@ -1,6 +1,7 @@
 {
     "alerts": [
         {
+            "id": 1234567,
             "acknowledged_by": null,
             "acknowledged_date": null,
             "alert_data": {
@@ -29,7 +30,7 @@
                 "email": "email@cyberint.com"
             },
             "created_date": "2020-12-30T00:00:56",
-            "description": "CyberInt detected breached credentials of several Barclays customers, which were uploaded to an anti-virus repository. The credentials seem to have been obtained through malware, sending user inputs to the operator, and the various credentials were logged in the uploaded .txt files. As such, the file contains users’ credentials not only for barclaycardus.com but for other websites as well. \nBreached customers credentials may be used by Threat Actors to carry out fraudulent transactions on their behalf, exposing Barclays to both financial impact and legal claims.\n\n\n\n",
+            "description": "Cyberint detected breached credentials of several Barclays customers, which were uploaded to an anti-virus repository. The credentials seem to have been obtained through malware, sending user inputs to the operator, and the various credentials were logged in the uploaded .txt files. As such, the file contains users’ credentials not only for barclaycardus.com but for other websites as well. \nBreached customers credentials may be used by Threat Actors to carry out fraudulent transactions on their behalf, exposing Barclays to both financial impact and legal claims.\n\n\n\n",
             "environment": "Argos Demo",
             "impacts": [
                 "data_compromise",
@@ -43,7 +44,7 @@
             "iocs": [],
             "modification_date": "2020-12-30T00:00:56",
             "publish_date": "2020-11-28T12:45:36",
-            "recommendation": "1. CyberInt recommends enforcing password reset on the compromised accounts. \n2. In addition, CyberInt advises Barclays to investigate internally whether any of the accounts have been involved in fraudulent transactions, at least up to the time of detection. In case the accounts were involved in any fraudulent activity, it is recommended to identify and extract relevant IOC’s where possible and monitor them within the bank's systems.\n3. To reduce the chance of customer account takeovers by TAs, Cyberint recommends Barclays implement MFA and CAPTCHA mechanisms. The former will help set another obstacle for a TA trying to abuse the account, and the latter can help blocking credentials-stuffing tools.",
+            "recommendation": "1. Cyberint recommends enforcing password reset on the compromised accounts. \n2. In addition, CyberInt advises Barclays to investigate internally whether any of the accounts have been involved in fraudulent transactions, at least up to the time of detection. In case the accounts were involved in any fraudulent activity, it is recommended to identify and extract relevant IOC’s where possible and monitor them within the bank's systems.\n3. To reduce the chance of customer account takeovers by TAs, Cyberint recommends Barclays implement MFA and CAPTCHA mechanisms. The former will help set another obstacle for a TA trying to abuse the account, and the latter can help blocking credentials-stuffing tools.",
             "ref_id": "ARG-3",
             "related_entities": [],
             "severity": "high",
@@ -58,9 +59,11 @@
             "threat_actor": "",
             "ticket_id": null,
             "title": "Company Customer Credentials Exposed",
-            "type": "compromised_customer_credentials"
+            "type": "compromised_customer_credentials",
+            "update_date": "2022-01-24T13:23:45"
         },
         {
+            "id": 1234568,
             "acknowledged_by": null,
             "acknowledged_date": null,
             "alert_data": {
@@ -109,7 +112,7 @@
                 "email": "avital@cyberint.com"
             },
             "created_date": "2020-12-30T00:00:56",
-            "description": "CyberInt detected an active phishing website impersonating Barclays login page while abusing the brand’s name, logo and photos.\nThe website contains login, registration and checkout forms, where unsuspecting victims could be lured to fill in their PII, credentials and payment details.\nPhishing websites such as the above are often used by attackers to obtain users' credentials and PII. This information can be utilized to take over customers' accounts, causing customer churn and damage to the brand's reputation.",
+            "description": "Cyberint detected an active phishing website impersonating Barclays login page while abusing the brand’s name, logo and photos.\nThe website contains login, registration and checkout forms, where unsuspecting victims could be lured to fill in their PII, credentials and payment details.\nPhishing websites such as the above are often used by attackers to obtain users' credentials and PII. This information can be utilized to take over customers' accounts, causing customer churn and damage to the brand's reputation.",
             "environment": "Argos Demo",
             "impacts": [
                 "brand_degradation",
@@ -134,7 +137,7 @@
             ],
             "modification_date": "2020-12-30T00:00:56",
             "publish_date": "2020-09-02T00:06:49",
-            "recommendation": "CyberInt recommends Barclays take down the site; upon request, CyberInt can submit the take down request on behalf of Barclays. ",
+            "recommendation": "Cyberint recommends Barclays take down the site; upon request, CyberInt can submit the take down request on behalf of Barclays. ",
             "ref_id": "ARG-4",
             "related_entities": [],
             "severity": "very_high",
@@ -149,9 +152,11 @@
             "threat_actor": "",
             "ticket_id": null,
             "title": "Active Phishing Website Targeting Company",
-            "type": "phishing_website"
+            "type": "phishing_website",
+            "update_date": "2023-01-24T13:23:45"
         },
         {
+            "id": 1234569,
             "acknowledged_by": null,
             "acknowledged_date": null,
             "alert_data": {
@@ -170,7 +175,7 @@
                 "email": "avital@cyberint.com"
             },
             "created_date": "2020-12-30T00:00:56",
-            "description": "CyberInt discovered a misconfiguration on an HSBC subdomain which exposes it to takeover.\nCurrently, the domain names refer to the CNAME records listed above. However, those CNAME records are no longer owned by Target, and they may have expired. This situation allows others to obtain the record, and practically get access to the HSBC subdomain.\n\nTaking over HSBC subdomains could be used to conduct complex phishing attack on the organization's employees and customers, as well potentially hijack sessions of logged-in users in any service using the vulnerable domains.",
+            "description": "Cyberint discovered a misconfiguration on an HSBC subdomain which exposes it to takeover.\nCurrently, the domain names refer to the CNAME records listed above. However, those CNAME records are no longer owned by Target, and they may have expired. This situation allows others to obtain the record, and practically get access to the HSBC subdomain.\n\nTaking over HSBC subdomains could be used to conduct complex phishing attack on the organization's employees and customers, as well potentially hijack sessions of logged-in users in any service using the vulnerable domains.",
             "environment": "Argos Demo",
             "impacts": [
                 "data_compromise",
@@ -180,7 +185,7 @@
             "iocs": [],
             "modification_date": "2020-12-30T00:00:56",
             "publish_date": "2020-11-24T20:28:00",
-            "recommendation": "CyberInt advises HSBC to choose either of the following courses of action:\n1. Update the CNAME record of the subdomains so that they no longer redirect traffic to the vulnerable subdomains.\n2. Re-purchase the record and thus avoid contradiction between the CNAME record and the Fastly interface.",
+            "recommendation": "Cyberint advises HSBC to choose either of the following courses of action:\n1. Update the CNAME record of the subdomains so that they no longer redirect traffic to the vulnerable subdomains.\n2. Re-purchase the record and thus avoid contradiction between the CNAME record and the Fastly interface.",
             "ref_id": "ARG-8",
             "related_entities": [],
             "severity": "very_high",
@@ -197,7 +202,8 @@
             "threat_actor": "",
             "ticket_id": null,
             "title": "Company Subdomain Vulnerable to Hijacking",
-            "type": "hijackable_subdomains"
+            "type": "hijackable_subdomains",
+            "update_date": "2024-01-24T13:23:45"
         }
     ],
     "total": 3

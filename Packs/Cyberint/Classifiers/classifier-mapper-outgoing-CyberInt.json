@@ -1,34 +1,56 @@
 {
-    "description": "",
-    "feed": false,
-    "id": "CyberInt Outgoing (mapper)",
-    "mapping": {
-        "Cyberint Incident": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "closure_reason": {
-                    "simple": "cyberintclosurereason"
-                },
-                "closure_reason_description": {
-                    "simple": "cyberintclosurereasondescription"
-                },
-                "mirror_direction": {
-                    "simple": "dbotMirrorDirection"
-                },
-                "mirror_instance": {
-                    "simple": "dbotMirrorInstance"
-                },
-                "ref_id": {
-                    "simple": "dbotMirrorId"
-                },
-                "status": {
-                    "simple": "cyberintstatus"
-                }
-            }
-        }
-    },
-    "name": "CyberInt Outgoing (mapper)",
-    "type": "mapping-outgoing",
-    "version": -1,
-    "fromVersion": "6.0.0"
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "46139b6e-d1e4-4f17-88bb-cf3b4bb5b6df",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 5,
+	"mapping": {
+		"Cyberint Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"closure_reason": {
+					"simple": "cyberintclosurereason"
+				},
+				"closure_reason_description": {
+					"simple": "cyberintclosurereasondescription"
+				},
+				"mirror_direction": {
+					"simple": "dbotMirrorDirection"
+				},
+				"mirror_instance": {
+					"simple": "dbotMirrorInstance"
+				},
+				"ref_id": {
+					"simple": "dbotMirrorId"
+				},
+				"status": {
+					"simple": "cyberintstatus"
+				}
+			}
+		}
+	},
+	"name": "Cyberint Outgoing (mapper)",
+	"nameRaw": "Cyberint Outgoing (mapper)",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-outgoing",
+	"unclassifiedCases": null,
+	"version": -1
 }
