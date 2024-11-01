@@ -1,7 +1,6 @@
 commonfields:
-  id: e956980e-8759-4493-846d-e753629b12b9
-  version: 17
-vcShouldKeepItemLegacyProdMachine: false
+  id: DSPMCreateSimpleSlackMessageBlock
+  version: -1
 name: DSPMCreateSimpleSlackMessageBlock
 script: ''
 type: python
@@ -16,9 +15,10 @@ outputs:
 scripttarget: 0
 subtype: python3
 timeout: 100800h0m0s
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.11.9.105369
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

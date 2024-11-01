@@ -1,7 +1,6 @@
 commonfields:
-  id: b73ae0bc-71fc-4f57-8230-c98050d78ef5
-  version: 45
-vcShouldKeepItemLegacyProdMachine: false
+  id: DSPMCreateRiskSlackBlocks
+  version: -1
 name: DSPMCreateRiskSlackBlocks
 script: ''
 type: python
@@ -16,9 +15,10 @@ outputs:
 scripttarget: 0
 subtype: python3
 timeout: 100800h0m0s
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.11.9.104957
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

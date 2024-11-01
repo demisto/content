@@ -1,7 +1,6 @@
 commonfields:
-  id: 6e45ecb6-e3d1-4459-8c2b-eb1a8ef8fca6
-  version: 13
-vcShouldKeepItemLegacyProdMachine: false
+  id: DSPMCheckAndSetErrorEntries
+  version: -1
 name: DSPMCheckAndSetErrorEntries
 script: ''
 type: python
@@ -11,18 +10,19 @@ enabled: true
 args:
 - name: entry_id
   required: true
-  description: Entry to check
+  description: Entry to check.
   isArray: true
 outputs:
 - contextPath: yes
-  description: If one or more entries is an error
+  description: If one or more entries is an error.
 - contextPath: no
-  description: If none of the entries is not an error
+  description: If none of the entries is not an error.
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.11.10.111526
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

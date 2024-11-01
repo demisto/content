@@ -15,14 +15,14 @@ This playbook does not use any integrations.
 ### Scripts
 
 * DSPMCreateSimpleSlackMessageBlock
-* DeleteContext
 * DSPMCheckAndSetErrorEntries
+* DeleteContext
 
 ### Commands
 
-* jira-create-issue
-* setList
 * setIncident
+* setList
+* jira-create-issue
 
 ## Playbook Inputs
 

@@ -1,7 +1,6 @@
 commonfields:
-  id: 0b39d0d8-2c04-4a9c-8def-c7a0ccbe585d
-  version: 51
-vcShouldKeepItemLegacyProdMachine: false
+  id: DSPMExtractRiskDetails
+  version: -1
 name: DSPMExtractRiskDetails
 script: ''
 type: python
@@ -17,9 +16,10 @@ outputs:
 - contextPath: incident_object
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.11.9.107902
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

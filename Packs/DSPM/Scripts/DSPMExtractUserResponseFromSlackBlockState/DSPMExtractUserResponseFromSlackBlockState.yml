@@ -1,7 +1,6 @@
 commonfields:
-  id: 85fb8c1f-6064-4c35-8183-9b32d110325e
-  version: 26
-vcShouldKeepItemLegacyProdMachine: false
+  id: DSPMExtractUserResponseFromSlackBlockState
+  version: -1
 name: DSPMExtractUserResponseFromSlackBlockState
 script: ''
 type: python
@@ -19,9 +18,10 @@ outputs:
 - contextPath: User.JiraTicketType
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.11.9.104657
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

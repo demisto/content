@@ -1,25 +1,24 @@
 commonfields:
-  id: dfd69a0b-d627-4017-8bb9-da9ef0c999d0
-  version: 27
-vcShouldKeepItemLegacyProdMachine: false
+  id: DSPMGetContianers
+  version: -1
 name: DSPMGetContianers
 script: ''
 type: python
 tags: []
-comment: This automation script takes asset file data as input, retrieves the container
-  names from this data, and returns a list of all containers.
+comment: This automation script takes asset file data as input, retrieves the container names from this data, and returns a list of all containers.
 enabled: true
 args:
 - name: asset_files
-  description: Asset files data
+  description: Asset files data.
 outputs:
 - contextPath: containers
-  description: List of containers
+  description: List of containers.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.11.10.113941
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

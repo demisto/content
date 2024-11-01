@@ -1,7 +1,6 @@
 commonfields:
-  id: 74e2f486-22da-4b9b-8a8d-18c51d79d43c
-  version: 137
-vcShouldKeepItemLegacyProdMachine: false
+  id: DSPMIncidentList
+  version: -1
 name: DSPMIncidentList
 script: ''
 type: python
@@ -20,19 +19,20 @@ args:
   defaultValue: add
 - name: incident_list
   required: true
-  description: DSPM Incident list data
+  description: DSPM Incident list data.
 - name: rerun_time
   required: true
-  description: Re-run time to be checked of an incident to delete or not
+  description: Re-run time to be checked of an incident to delete or not.
 outputs:
 - contextPath: listStatus
-  description: Updated incident list status
+  description: Updated incident list status.
 scripttarget: 0
 subtype: python3
 timeout: 100800h0m0s
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.11.9.107902
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
