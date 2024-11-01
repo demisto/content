@@ -722,7 +722,7 @@ def test_create_api_metrics(mocker, response, result):
     """
     mocker.patch.object(Client, '_create_engine_and_connect', return_value=ConnectionMock())
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
-    
+
     mocker.patch.object(demisto, 'results')
     mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Generic SQL'}]}})
