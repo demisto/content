@@ -158,6 +158,7 @@ def test_rasterize_url_long_load(mocker: MockerFixture, http_wait_server, capfd)
     time.sleep(1)  # give time to the server to start
     with capfd.disabled():
         mocker.patch.object(rasterize, 'support_multithreading')
+        write_chrome_instances_file.side_effect = None
         perform_rasterize('http://localhost:10888', width=250, height=250,
                           rasterize_type=RasterizeType.PNG, navigation_timeout=5)
         assert return_error_mock.call_count == 1

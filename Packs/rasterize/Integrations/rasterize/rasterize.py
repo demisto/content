@@ -269,7 +269,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             browser = pychrome.Browser(url=browser_url)
 
             # Use list_tab to ping the browser and make sure it's available
-            tabs_count = len(browser.list_tab())
+            tabs_count = len(browser.list_tab(timeout=10))
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
@@ -556,7 +556,7 @@ def generate_chrome_port() -> str | None:
 
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
-            demisto.debug(f"No Chrome found on port {chrome_port}, using this port.")
+            demisto.debug(f"No Chrome found on port {chrome_port}, using this port!")
             return str(chrome_port)
 
         # There's already a Chrome listening on that port, Don't use it
