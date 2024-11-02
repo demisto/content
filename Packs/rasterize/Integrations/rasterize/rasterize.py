@@ -556,14 +556,14 @@ def generate_chrome_port() -> str | None:
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
     random.shuffle(ports_list)
-    demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
+    demisto.debug(f"! Searching for Chrome on these ports: {ports_list}")
     for chrome_port in ports_list:
         len_running_chromes = count_running_chromes(chrome_port)
         demisto.debug(f"Found {len_running_chromes=} on port {chrome_port}")
 
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
-            demisto.debug(f"No Chrome found on port {chrome_port}, using it.")
+            demisto.debug(f"No Chrome found on port {chrome_port}, using the port")
             return str(chrome_port)
 
         # There's already a Chrome listening on that port, Don't use it
