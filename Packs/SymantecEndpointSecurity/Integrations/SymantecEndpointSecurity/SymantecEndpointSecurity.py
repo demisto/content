@@ -85,7 +85,8 @@ class Client(BaseClient):
             }
         except KeyError:
             raise DemistoException(
-                f"The key 'access_token' does not exist in response, Response from API: {res}"
+                f"The key 'access_token' does not exist in response, Response from API: {res}",
+                res=res,
             )
 
     def get_events(self, payload: dict[str, str]) -> str:
@@ -102,7 +103,7 @@ class Client(BaseClient):
         )
 
 
-def sleep_if_necessary(client, start_run: int, end_run: int) -> None:
+def sleep_if_necessary(client, start_run: float, end_run: float) -> None:
     """
     Manages the fetch interval by sleeping if necessary.
 
@@ -162,13 +163,13 @@ def update_new_integration_context(
     """
 
     if filtered_events:
-        events_suspected_duplicates = (
-            extract_events_suspected_duplicates(filtered_events)
+        events_suspected_duplicates = extract_events_suspected_duplicates(
+            filtered_events
         )
 
         # Determine the latest event time: Extract the last time of the filtered event,
-        latest_event_time = (
-            normalize_date_format(max(filtered_events, key=parse_event_time)["log_time"])
+        latest_event_time = normalize_date_format(
+            max(filtered_events, key=parse_event_time)["log_time"]
         )
     else:
         events_suspected_duplicates = []
@@ -197,8 +198,9 @@ def push_events(events: list[dict]):
     """
     Push events to XSIAM.
     """
+    demisto.debug(f"Pushing {len(events)} to XSIAM")
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-    demisto.info(f"{len(events)} events were pushed to XSIAM")
+    demisto.debug(f"Pushed {len(events)} to XSIAM successfully")
 
 
 def parse_event_time(event) -> datetime:
@@ -225,19 +227,19 @@ def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
 
     # Filter all JSONs with the maximum event time
     filtered_events = filter(
-        lambda x: normalize_date_format(x["log_time"]) == latest_event_time, events
+        lambda event: normalize_date_format(event["log_time"]) == latest_event_time,
+        events,
     )
 
     # Extract the event_ids from the filtered events
-    events_suspected_duplicates = [x["uuid"] for x in filtered_events]
-    return events_suspected_duplicates
+    return [event["uuid"] for event in filtered_events]
 
 
 def is_duplicate(
     event_id: str,
     event_time: datetime,
     latest_event_time: datetime,
-    events_suspected_duplicates: set,
+    events_suspected_duplicates: set[str],
 ) -> bool:
     """
     Determine if an event is a duplicate based on its time and ID.
@@ -253,7 +255,9 @@ def is_duplicate(
         events_suspected_duplicates (set): A set of event IDs suspected to be duplicates.
 
     Returns:
-        bool: True if the event is a duplicate, False otherwise.
+        bool: whether the event's time is earlier than the latest, OR
+              (its time is identical to the latest AND
+              its id is in the list of suspected duplicates)
     """
     if event_time < latest_event_time:
         return True
@@ -303,7 +307,7 @@ def filter_duplicate_events(
     return filtered_events
 
 
-def prepare_raw_res_and_load_json(raw_res: str) -> dict:
+def parse_raw_event_response(raw_res: str) -> dict:
     raw_res = raw_res.replace("}\n{", ",")
     if not raw_res.startswith("["):
         raw_res = f"[{raw_res}]"
@@ -316,7 +320,7 @@ def get_events_command(client: Client, integration_context: dict):
 
     try:
         raw_res = client.get_events(payload=next_fetch)
-        json_res = prepare_raw_res_and_load_json(raw_res)
+        json_res = parse_raw_event_response(raw_res)
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 401:
             demisto.info(
@@ -325,25 +329,29 @@ def get_events_command(client: Client, integration_context: dict):
             raise UnauthorizedToken
         elif e.res is not None and e.res.status_code == 410:
             raise NextPointingNotAvailable
-        raise e
+        raise
 
     for chunk in json_res:
         events.extend(chunk["events"])
     next_hash = json_res[0].get("next", "") if json_res else ""
 
     if not events:
-        demisto.info("Not events returned")
+        demisto.info("No events received")
         return
 
-    demisto.info(f"Starting event filtering. Initial number of events: {len(events)}")
+    demisto.debug(f"Starting event filtering. Initial number of events: {len(events)}")
     filtered_events = filter_duplicate_events(events, integration_context)
-    demisto.info(f"Filtering completed. Total number of events: {len(filtered_events)}")
+    demisto.debug(
+        f"Filtering completed. Total number of events: {len(filtered_events)}"
+    )
 
     filtered_events.extend(integration_context.get("last_fetch_events", []))
+    demisto.debug(
+        f"Total number of events after merging with last fetch events: {len(filtered_events)}"
+    )
 
     try:
         push_events(filtered_events)
-        demisto.info("pushing passed successfully")
     except Exception as e:
         update_new_integration_context(
             filtered_events=filtered_events,
@@ -354,7 +362,9 @@ def get_events_command(client: Client, integration_context: dict):
         demisto.info(
             f"Failed to push events to XSIAM, The integration_context updated. Error: {e}"
         )
-        raise e
+        raise DemistoException(
+            "Failed to push events to XSIAM, The integration_context updated"
+        ) from e
 
     update_new_integration_context(
         filtered_events=filtered_events,
@@ -367,7 +377,7 @@ def get_events_command(client: Client, integration_context: dict):
 def perform_long_running_loop(client: Client):
     while True:
         # Used to calculate the duration of the fetch run.
-        start_run = get_current_time_in_seconds()
+        start_timestamp = get_current_time_in_seconds()
         try:
             integration_context = get_integration_context()
             demisto.info(f"Starting new fetch with {integration_context=}")
@@ -376,13 +386,12 @@ def perform_long_running_loop(client: Client):
         except UnauthorizedToken:
             try:
                 # Used to calculate the duration of the fetch run.
-                end_run = get_current_time_in_seconds()
-                sleep_if_necessary(client, start_run, end_run)
+                end_timestamp = get_current_time_in_seconds()
+                sleep_if_necessary(client, start_timestamp, end_timestamp)
                 # Trying to obtain a new access token
                 client._update_access_token()
             except Exception as e:
-                demisto.info("Failed to obtain a new access token")
-                raise e
+                raise DemistoException("Failed obtaining a new access token") from e
             continue
         except NextPointingNotAvailable:
             demisto.info("The next hash not available, pop it from integration context")
@@ -390,17 +399,16 @@ def perform_long_running_loop(client: Client):
             set_integration_context(integration_context)
 
             # Used to calculate the duration of the fetch run.
-            end_run = get_current_time_in_seconds()
-            sleep_if_necessary(client, start_run, end_run)
+            end_timestamp = get_current_time_in_seconds()
+            sleep_if_necessary(client, start_timestamp, end_timestamp)
             continue
         except Exception as e:
-            demisto.info(f"Failed to fetch logs from API. Error: {e}")
-            raise e
+            raise DemistoException("Failed to fetch logs from API") from e
 
         # Used to calculate the duration of the fetch run.
-        end_run = get_current_time_in_seconds()
+        end_timestamp = get_current_time_in_seconds()
 
-        sleep_if_necessary(client, start_run, end_run)
+        sleep_if_necessary(client, start_timestamp, end_timestamp)
 
 
 def test_module(client: Client) -> str:
@@ -409,11 +417,11 @@ def test_module(client: Client) -> str:
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 403:
             raise DemistoException(
-                f"Authorization Error: make sure the Token is correctly set, Error: {e}"
-            )
+                "Authorization Error: make sure the Token is correctly set"
+            ) from e
         else:
-            demisto.info(f"Failure in test_module function, Error: {e}")
-            raise e
+            raise DemistoException("Failure in test_module function") from e
+
     return "ok"
 
 
