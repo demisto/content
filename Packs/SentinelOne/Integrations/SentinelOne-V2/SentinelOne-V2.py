@@ -3355,12 +3355,11 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
         return final_command_results
     else:
         scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
-        command_results = CommandResults(scheduled_command=scheduled_command)
-        return command_results
+        return CommandResults(scheduled_command=scheduled_command)
 
 
 def remote_script_automate_results(client: Client, args: dict):
-    return_results(run_polling_command(client=client, cmd="sentinelone-remote-script-automate-results", args=args))
+    return run_polling_command(client=client, cmd="sentinelone-remote-script-automate-results", args=args)
 
 
 def get_columns_from_result(columns: list):
@@ -3375,18 +3374,21 @@ def get_power_query_output(cmd: str, interval: int, timeout: int, args: dict, qu
     if query_response.get("status") == "FINISHED" and query_response.get("progress") == 100:
         headers = get_columns_from_result(query_response.get("columns", []))
         context_entries = [dict(zip(headers, row)) for row in query_response.get("data", [])]
-        readable_text = f"SentinelOne - Get Power Query Results - for ID {query_response.get('queryId', '')}"
+        readable_text = f"SentinelOne - Get Power Query Results for ID {query_response.get('queryId', '')}"
         recommendations = query_response.get("recommendations", [])
         if recommendations and len(recommendations) >= 1:
             recommendation = recommendations[0]
             readable_text += f"\nRecommendation: {str(recommendation)}"
         return CommandResults(
-            readable_output=tableToMarkdown(readable_text, context_entries, headers=headers, removeNull=True),
-        )
+            readable_output=tableToMarkdown(readable_text, context_entries, removeNull=True,
+                                            metadata='\nSummary information and details about the power query',
+                                            headerTransform=pascalToSpace),
+            outputs_prefix='SentinelOne.PowerQuery',
+            outputs=context_entries,
+            raw_response=query_response)
     else:
         scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
-        command_results = CommandResults(scheduled_command=scheduled_command)
-        return command_results
+        return CommandResults(scheduled_command=scheduled_command)
 
 
 def poll_power_query_results(client: Client, cmd: str, args: dict) -> CommandResults:
@@ -3425,7 +3427,7 @@ def poll_power_query_results(client: Client, cmd: str, args: dict) -> CommandRes
 
 
 def get_power_query_results(client: Client, args: dict):
-    return_results(poll_power_query_results(client=client, cmd="sentinelone-get-power-query-results", args=args))
+    return poll_power_query_results(client=client, cmd="sentinelone-get-power-query-results", args=args)
 
 
 def get_mapping_fields_command():

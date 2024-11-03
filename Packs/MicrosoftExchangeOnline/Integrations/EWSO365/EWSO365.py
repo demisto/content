@@ -8,6 +8,7 @@ import sys
 import traceback
 import uuid
 import warnings
+from email import _header_value_parser as parser
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
 from multiprocessing import Process
@@ -1978,7 +1979,7 @@ def add_additional_headers(additional_headers):
     return headers
 
 
-def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
+def send_email(client: EWSClient, to=None, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
                additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
@@ -2124,6 +2125,35 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
                 # the header will be ignored completely to prevent crashing the fetch command.
                 demisto.debug(f"Invalid {message_id=}, Error: {e}")
                 break
+            break
+    return attached_email
+
+
+def handle_attached_email_with_incorrect_from_header(attached_email: Message):
+    """This function handles a malformed From value which can be returned in the header of certain email objects.
+    This issue happens due to a current bug in "email" library.
+    Public issue link: https://github.com/python/cpython/issues/114906
+
+    The function will run on every attached email if exists, check its From header value and fix it if possible.
+    Args:
+        attached_email (Message): attached email object.
+
+    Returns:
+        Message: attached email object.
+    """
+    for i, (header_name, header_value) in enumerate(attached_email._headers):
+        if header_name.lower() == "from":
+            demisto.debug(f'Handling From header, value={header_value}.')
+            try:
+                new_value = parser.get_address_list(header_value)[0].value
+                new_value = new_value.replace("\n", " ").replace("\r", " ").strip()
+                if header_value != new_value:
+                    # Update the 'From' header with the corrected value
+                    attached_email._headers[i] = (header_name, new_value)
+                    demisto.debug(f'From header fixed, new value: {new_value}')
+
+            except Exception as e:
+                demisto.debug(f"Error processing From header: {e}")
             break
     return attached_email
 
@@ -2288,6 +2318,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         # compare header keys case-insensitive
                         attached_email_headers = []
                         attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
+                        attached_email = handle_attached_email_with_incorrect_from_header(attached_email)
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
                                 try:
