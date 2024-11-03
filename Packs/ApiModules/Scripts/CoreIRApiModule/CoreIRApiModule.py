@@ -3045,28 +3045,28 @@ def reformat_sublist_fields(sublist):
 
 
 def handle_outgoing_incident_owner_sync(update_args):
-    demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync {update_args=}, sync_owner: {demisto.params().get('sync_owners')}")  # itamar
+    # demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync {update_args=}, sync_owner: {demisto.params().get('sync_owners')}")  # itamar
     if 'owner' in update_args and demisto.params().get('sync_owners'):
         if update_args.get('owner'):
             user_info = demisto.findUser(username=update_args.get('owner'))
-            demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync {user_info=}")  # itamar
+      #      demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync {user_info=}")  # itamar
             if user_info:
                 update_args['assigned_user_mail'] = user_info.get('email')
         else:
-            demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync assigned_user_mail = None")  # itamar
+       #      demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync assigned_user_mail = None")  # itamar
             # handle synced unassignment
             update_args['assigned_user_mail'] = None
 
 
 def handle_user_unassignment(update_args):
-    demisto.debug(f"itamar - in handle_user_unassignment {update_args=}")  # itamar
+    # demisto.debug(f"itamar - in handle_user_unassignment {update_args=}")  # itamar
     if ('assigned_user_mail' in update_args and update_args.get('assigned_user_mail') in ['None', 'null', '', None]) \
         or ('assigned_user_pretty_name' in update_args
             and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
         update_args['unassign_user'] = 'true'
         update_args['assigned_user_mail'] = None
         update_args['assigned_user_pretty_name'] = None
-        demisto.debug(f"itamar - in handle_user_unassignment inside if{update_args=}")  # itamar
+      #   demisto.debug(f"itamar - in handle_user_unassignment inside if{update_args=}")  # itamar
 
 
 def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
@@ -3135,11 +3135,8 @@ def handle_outgoing_issue_closure(command_args):
 def get_update_args(command_args):
     """Change the updated field names to fit the update command"""
     handle_outgoing_issue_closure(command_args)
-    demisto.debug(f"itamar - in get_update_args calling handle_outgoing_incident_owner_sync with {command_args.delta=}")  # itamar
     handle_outgoing_incident_owner_sync(command_args.delta)
-    demisto.debug(f"itamar - in get_update_args calling handle_user_unassignment with {command_args.delta=}")  # itamar
     handle_user_unassignment(command_args.delta)
-    demisto.debug(f"itamar - in get_update_args returning delta {command_args.delta=}")  # itamar
     return command_args.delta
 
 
