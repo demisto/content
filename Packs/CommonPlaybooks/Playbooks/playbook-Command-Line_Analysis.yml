@@ -1802,7 +1802,17 @@ tasks:
       contextKey:
         simple: SuspiciousCmdPath
       data:
-        simple: ${inputs.Commandline}
+        complex:
+          root: commandline
+          accessor: original
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: commandline.decoded
+                iscontext: true
+              raw: {}
       regex:
         simple: (?i)(\\temp\\)
     separatecontext: false
@@ -1895,7 +1905,17 @@ tasks:
       contextKey:
         simple: SuspiciousCmdPathAndArguments
       data:
-        simple: ${inputs.Commandline}
+        complex:
+          root: commandline
+          accessor: original
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: commandline.decoded
+                iscontext: true
+              raw: {}
       regex:
         simple: (?i)(rundll32|tasklist|lsass|shadow|wmic)
     separatecontext: false
