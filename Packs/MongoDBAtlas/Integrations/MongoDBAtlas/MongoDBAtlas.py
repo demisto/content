@@ -302,10 +302,34 @@ def fetch_events(client: Client, fetch_limit: int):
     demisto.debug(f'This is the final output for fetch_events {alerts_output + events_output}')
     return (alerts_output + events_output), last_run_new_obj
 
-def get_events(client: Client):
-    #suppose to run fetch_events with some PageNum
-    pass
-
+def get_events(client: Client, args):
+    fetch_limit = args.get('limit')
+    
+    last_run = demisto.getLastRun()
+    last_run_alerts = last_run.get('alerts', {})
+    last_run_events = last_run.get('events', {})
+    
+    alerts_output, _ = fetch_events_by_type(client, fetch_limit, last_run_alerts, 'alerts')
+    events_output, _ = fetch_events_by_type(client, fetch_limit, last_run_events, 'events')
+    
+    output = alerts_output + events_output
+    filtered_events = []
+    for event in output:
+        filtered_event['ID'] = event.get('id')
+        filtered_event['Event Type'] = event.get('source_log_type')
+        filtered_event['Time'] = event.get('_time')
+        filtered_event['Created'] = event.get('created')
+        filtered_events.append(filtered_event)
+        
+    human_readable = tableToMarkdown(name='MongoDB Atlas Events', t=filtered_events, removeNull=True)
+    command_results = CommandResults(
+        readable_output=human_readable,
+        raw_response=output
+    )
+    #fix the output for hr
+    #create the command results object
+    #return the command results object and the output
+    return output, command_results
     
 ''' MAIN FUNCTION '''
 
@@ -343,7 +367,10 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif command == 'mongo-db-atlas-get-events':
-            return_results(get_events(client, demisto.args()))
+            events, command_results = get_events(client, args)
+            if events and argToBoolean(args.get('should_push_events')):
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
         elif command == 'fetch-events':
             # while True:
             events, last_run_new_obj = fetch_events(client,fetch_limit)
