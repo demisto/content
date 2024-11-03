@@ -65,8 +65,8 @@ To access the Office 365 Native Collector on your Cortex XSIAM tenant:
 2.  At the top-right corner, click **Add Data Source**
 3.  Search for **Office 365** and click **Connect**.
 4.  Input the mandatory and required credentials for **Azure AD** and **Azure AD Audit**:
-    * Mark the checkboxes **Azure AD Authentication Logs** &rarr; **Collect all sign-in event types**.
-    * Mark the checkboxes **Azure AD Audit Logs**.
+    * Mark the **Azure AD Authentication Logs** &rarr; **Collect all sign-in event types** checkbox.
+    * Mark the **Azure AD Audit Logs** checkbox.
 
 </~XSIAM>
 
