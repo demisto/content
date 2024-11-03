@@ -835,7 +835,7 @@ def expire_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
     hide_password = argToBoolean(args.get('hide_password', False))
     revoke_session = argToBoolean(args.get('revoke_session', False))
-    
+
     if not (args.get('username') or user_id):
         raise Exception("You must supply either 'Username' or 'userId")
     if revoke_session is True:
