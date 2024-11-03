@@ -655,10 +655,10 @@ def main():     # pragma: no cover
                                                       delete_processed=delete_processed, limit=limit,
                                                       save_file=save_file)
                 demisto.debug(f"{next_run=}")
+                demisto.incidents(incidents)
                 # if next_run is None, we will not update last_run
                 if next_run:
                     demisto.setLastRun(next_run)
-                demisto.incidents(incidents)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
