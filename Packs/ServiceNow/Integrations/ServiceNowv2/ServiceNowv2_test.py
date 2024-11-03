@@ -2522,10 +2522,10 @@ def test_incident_id_in_last_fetched_updates_correctly(mocker):
     is_new_incident("XYZ789")
 
     # Setup verification context with wrapper to cover the whole integration context if necessary
-    full_expected_context = {"access_token": "token", "last_fetched_incident_ids": ['ABC123']}
+    expected_context = {"access_token": "token", "last_fetched_incident_ids": ['ABC123']}
 
     # Verifying that set_integration_context was called with the correct new context
-    res.assert_called_once_with(full_expected_context)
+    res.assert_called_once_with(expected_context)
 
 
 def test_incident_id_not_in_last_fetched(mocker):
