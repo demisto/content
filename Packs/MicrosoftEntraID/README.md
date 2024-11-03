@@ -58,7 +58,7 @@ More information can be found [here](https://docs-cortex.paloaltonetworks.com/r/
 #### Native O365 Collector
 
 To collect logs for the **msft_azure_ad_raw** and **msft_azure_ad_audit_raw** datasets, you will need to create or configure the Office 365 collector.
-Use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Ingest-Logs-from-Microsoft-Office-365).
+Use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Ingest-logs-from-Microsoft-Office-365).
 
 To access the Office 365 Native Collector on your Cortex XSIAM tenant:
 1.  On the left panel, click **Settings** &rarr; **Data Sources**
