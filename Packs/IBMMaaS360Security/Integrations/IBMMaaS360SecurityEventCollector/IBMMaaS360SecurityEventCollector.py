@@ -24,7 +24,7 @@ class AuditEventType(Enum):
                     '/account-provisioning/administrator/1.0/getAdminLoginReports/customer/{billingId}')
 
     def __init__(self, resp_dict_key: str, events_key: str, ts_field: str, source_log_type: str, url_suffix: str):
-        self.resp_dict_key = resp_dict_key  # API response main key
+        self.resp_dict_key = resp_dict_key  # API responds with a dict containing a single key
         self.events_key = events_key  # key to events list in API response
         self.ts_field = ts_field
         self.source_log_type = source_log_type
@@ -132,12 +132,13 @@ class Client(BaseClient):
             headers=headers,
         ).get('authResponse')
 
-        if errCode := res.get('errorCode', ''):  # For some reason the API returns status code 200 on errors
+        # Manually check for errors since for some reason the API returns status code 200 on errors too
+        if errCode := res.get('errorCode', ''):
             err = res.get('errorDesc', 'Unknown error')
             raise DemistoException('Failed to authenticate with IBM MaaS360 Security. Ensure the credentials are valid. '
                                    f'Got error code {errCode}: {err}')
 
-        add_sensitive_log_strs(res.get('authToken'))
+        add_sensitive_log_strs(res.get('authToken'))  # Ensure the token gets redacted from any logs
 
         return res.get('authToken'), res.get('refreshToken')
 
@@ -178,12 +179,13 @@ class Client(BaseClient):
             headers=headers,
         ).get('authResponse')
 
-        if errCode := res.get('errorCode', ''):  # For some reason the API returns status code 200 on errors
+        # Manually check for errors since for some reason the API returns status code 200 on errors too
+        if errCode := res.get('errorCode', ''):
             err = res.get('errorDesc', 'Unknown error')
             raise DemistoException('Failed to authenticate with IBM MaaS360 Security. Ensure the credentials are valid. '
                                    f'Got error code {errCode}: {err}')
 
-        add_sensitive_log_strs(res.get('authToken'))
+        add_sensitive_log_strs(res.get('authToken'))  # Ensure the token gets redacted from any logs
 
         return res.get('authToken'), res.get('refreshToken')
 
@@ -199,6 +201,7 @@ class Client(BaseClient):
         Returns:
             Response from the IBM MaaS360 Security API
         """
+
         headers = {
             'Authorization': f'MaaS token="{self.get_auth_token()}"',
             'Accept': 'application/json',
@@ -227,52 +230,53 @@ class Client(BaseClient):
         return response
 
     def fetch_admin_audit_events(self, event_type: AuditEventType, from_date: str,
-                                 to_date: str, page_offset: int, max_fetch_amount: int):
+                                 to_date: str, page_offset: int, max_fetch_amount: int) -> tuple[list, int, bool]:
         """
         Fetches the admin audit events of the requested type for the specified time range.
 
         Args:
-            events_type (EventType): The type of events to fetch.
+            event_type (EventType): The type of events to fetch.
             from_date (str): The start time to fetch from in epoch milliseconds.
             to_date (str): The end time to fetch to in epoch milliseconds.
-            page_offset (int): The page number to start fetching from.
+            page_offset (int): Number of pages already fetched from the given timeframe.
 
         Returns:
             events (list[dict]): List of admin audit events.
-            page_offset (int): The next page number to fetch for the given event type. (0 if no more pages to fetch in time range)
+            page_offset (int): New total number of pages already fetched from the given timeframe.
+            pages_remaining (bool): Whether there might be more pages to fetch from the given timeframe.
         """
         url_suffix = event_type.url_suffix.format(billingId=self.billing_id)
-        num_fetches = 0
         events = []
         pages_remaining = True
-        max_fetches = max(1, max_fetch_amount // PAGE_SIZE)
+        fetches_left = max(1, max_fetch_amount // PAGE_SIZE)
 
-        while pages_remaining and num_fetches < max_fetches:
-            page_number = 1 + page_offset + num_fetches
+        while pages_remaining and fetches_left:
+            page_number = 1 + page_offset
             params = {
                 'fromDate': from_date,
                 'toDate': to_date,
                 'pageSize': PAGE_SIZE,
                 'pageNumber': page_number,
             }
+
             demisto.debug(f'Fetching events of type {event_type.name} from {from_date} to {to_date} (page {page_number})')
             response = self.http_request('GET', url_suffix, params).get(event_type.resp_dict_key, {})
             response_events = response.get(event_type.events_key, [])
-            if not isinstance(response_events, list):
+            if not isinstance(response_events, list):  # Single event is returned as a dict instead of a list
                 response_events = [response_events]
 
             for event in response_events:
-                ts = arg_to_datetime(event[event_type.ts_field])
+                ts = arg_to_datetime(event.get(event_type.ts_field))
                 event['_time'] = ts.strftime(DATE_FORMAT) if ts else None
                 event['source_log_type'] = event_type.source_log_type
                 events.append(event)
 
-            num_fetches += 1
-            if response['count'] < PAGE_SIZE:
+            fetches_left -= 1
+            page_offset += 1
+            if len(response_events) < PAGE_SIZE:
                 pages_remaining = False
 
-        next_page = page_offset + num_fetches if pages_remaining else 0
-        return events, next_page
+        return events, page_offset, pages_remaining
 
 
 def test_module(client: Client, params: dict[str, Any], first_fetch_time: int) -> str:
@@ -304,7 +308,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: int) -
 
     except Exception as e:
         if 'Failed to authenticate' in str(e):
-            return 'Authorization Error: make sure credentials are set correctly'
+            return 'Authorization Error: Ensure credentials are set correctly'
         else:
             raise e
 
@@ -341,63 +345,68 @@ def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
         max_events_per_fetch=max_events_per_fetch,
     )
 
-    events_hr = tableToMarkdown(name='Admin audits', t=events)
+    # Create a table with time and log type as the first headers, followed by the rest
+    headers = ['_time', 'source_log_type']
+    headers.extend([header for event in events for header in event])
+    events_hr = tableToMarkdown(name='Admin audits', t=events,
+                                headers=list(dict.fromkeys(headers)))  # dict.fromkeys instead of set to maintain order
 
     return events, CommandResults(readable_output=events_hr)
 
 
-def fetch_events(client: Client, last_run: dict[str, str],
-                 first_fetch_time: int, max_events_per_fetch: dict = {}
+def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: int, max_events_per_fetch: dict = {}
                  ) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from the IBM MaaS360 Security API.
 
     Args:
         client (Client): Client to use.
-        last_run (dict): A dict containing the last run information and any previously fetched events that are pending push.
+        last_run (dict): A dict containing the next fetch time window and page offset for every event type.
         first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
+            milliseconds of when to start fetching events.
         max_events_per_fetch (dict): Dict containing the maximum number of events per fetch for each event type.
 
     Returns:
-        next_run (dict): Next run dictionary containing the last fetched time window and the next page number to fetch,
-                         as well as any previously fetched events that are pending push.
-        events (list): List of events that will be created in XSIAM.
+        next_run (dict): Next run dictionary containing the next fetch time window and page offset for every event type.
+        events (list): List of events to be pushed to XSIAM.
     """
     events = []
     next_run = {}
-    if not last_run:  # First fetch
-        last_run = {}
-        for event_type in AuditEventType:
-            last_run[event_type.name] = json.dumps({'from_date': first_fetch_time, 'page_offset': 0})
 
     for event_type in AuditEventType:
-        last_run_params = json.loads(last_run.get(event_type.name, '{}'))
+        last_run_params = json.loads(last_run.get(event_type.name, '{}')) or {}
         max_fetch_amount = max_events_per_fetch.get(event_type, DEFAULT_MAX_FETCH)
-        to_date = last_run_params.pop('to_date', int(time.time() * 1000))
+        from_date = last_run_params.get('from_date', first_fetch_time)
+        to_date = last_run_params.get('to_date', int(time.time() * 1000))
+        page_offset = last_run_params.get('page_offset', 0)
 
-        audit_events, next_page_offset = client.fetch_admin_audit_events(event_type=event_type,
-                                                                         from_date=str(last_run_params.get('from_date')),
-                                                                         to_date=str(to_date),
-                                                                         page_offset=last_run_params.get('page_offset'),
-                                                                         max_fetch_amount=max_fetch_amount)
+        audit_events, next_page_offset, pages_remaining = client.fetch_admin_audit_events(event_type=event_type,
+                                                                                          from_date=str(from_date),
+                                                                                          to_date=str(to_date),
+                                                                                          page_offset=page_offset,
+                                                                                          max_fetch_amount=max_fetch_amount)
+
         demisto.debug(f'Fetched {len(audit_events)} {event_type.name} events.')
-
-        if next_page_offset:
-            # There are earlier entries left to fetch, keep fetched events for next interval
-            demisto.debug('More pages left for timeframe, delaying push until all events are fetched')
-            last_run_params['unpushed_events'] = last_run_params.get('unpushed_events', []).extend(audit_events)
-            last_run_params['to_date'] = to_date  # ensure we keep fetching the earlier events we missed
-        else:
-            # Got the earliest events in the timeframe, push events from timeframe
-            events.extend(last_run_params.pop('unpushed_events', []))
-            events.extend(audit_events)
-            last_run_params['from_date'] = to_date + 1
+        events.extend(audit_events)
 
         # Update next run
-        last_run_params['page_offset'] = next_page_offset
-        next_run[event_type.name] = json.dumps(last_run_params)
+        if pages_remaining:
+            # Ensure we continue fetching from the same spot next time.
+            next_run_params = {
+                'from_date': from_date,
+                'to_date': to_date,
+                'page_offset': next_page_offset,
+            }
+        else:
+            # Got all the events in the current timeframe, move starting point to the end of the current window.
+            next_run_params = {
+                'from_date': to_date + 1,
+                'page_offset': 0,
+            }
 
+        next_run[event_type.name] = json.dumps(next_run_params)  # Next run only accepts strings
+
+    demisto.debug(f'Returning {next_run=}.')
     return next_run, events
 
 
@@ -422,7 +431,6 @@ def main() -> None:  # pragma: no cover
     access_key = params.get('app_access_key', {}).get('password')
     billing_id = params.get('billing_id', {}).get('password')
 
-    # How much time before the first fetch to retrieve events
     first_fetch_time = int(time.time() * 1000)
     proxy = params.get('proxy', False)
     max_login_reports_per_fetch = params.get('max_login_reports_per_fetch', DEFAULT_MAX_FETCH)

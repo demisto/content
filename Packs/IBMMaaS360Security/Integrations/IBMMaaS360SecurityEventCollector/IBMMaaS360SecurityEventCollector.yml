@@ -45,14 +45,16 @@ configuration:
   displaypassword: Billing ID
   section: Connect
   hiddenusername: true
-- name: max_login_reports_per_fetch
-  description: Maximum number of login reports per fetch. In increments of 250. 
+- display: Maximum number of Admin Login Reports events per fetch
+  name: max_login_reports_per_fetch
+  additionalinfo: Rounds down to the nearest page size increment. (250) 
   required: false
   type: 0
   section: Collect
   defaultValue: 1250
-- name: max_admin_change_audits_per_fetch
-  description: Maximum number of admin change audit events per fetch. In increments of 250. 
+- display: Maximum number of Admin Changes Audit events per fetch
+  name: max_admin_change_audits_per_fetch
+  additionalinfo: Rounds down to the nearest page size increment. (250) 
   required: false
   type: 0
   section: Collect
