@@ -46,7 +46,7 @@ configuration:
 - additionalinfo: Maximum number of audit events per fetch. Recommended 1000. ### DEMO - 1000 was before. design says 10000. whats right?
   defaultvalue: '1000'
   display: Maximum audit events to fetch
-  name: limit ### max_fetch_audit
+  name: max_fetch
   type: 0
   required: false
   section: Collect
@@ -108,7 +108,7 @@ script:
       required: false
       isArray: false
       defaultValue: ""
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.113941
   isfetchevents: true
   runonce: false
   script: ''

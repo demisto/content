@@ -275,7 +275,7 @@ def main() -> None:  # pragma: no cover
     credentials = params.get("credentials", {})
     user_name = credentials.get("identifier")
     password = credentials.get("password")
-    limit = arg_to_number(params.get("limit")) or 1000
+    max_fetch_audit = arg_to_number(params.get("max_fetch")) or 1000
     max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 1000
     event_types_to_fetch = argToList(params.get('event_types_to_fetch', ['Audit']))
     log_types = handle_log_types(event_types_to_fetch)
@@ -300,7 +300,7 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             api_server_url=api_server_url,
-            fetch_limit_audit=limit,
+            fetch_limit_audit=max_fetch_audit,
             fetch_limit_syslog=max_fetch_syslog
         )
 
