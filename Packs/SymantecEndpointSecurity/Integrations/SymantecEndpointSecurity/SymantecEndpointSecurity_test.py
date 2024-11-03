@@ -51,9 +51,9 @@ def test_normalize_date_format(date_str: str, expected_result: str):
     [
         (
             [
-                {"uuid": "123", "time": "2024-10-09T12:34:56Z"},
-                {"uuid": "456", "time": "2024-10-09T12:34:56.789Z"},
-                {"uuid": "789", "time": "2024-10-09T12:34:55.789Z"},
+                {"uuid": "123", "log_time": "2024-10-09T12:34:56Z"},
+                {"uuid": "456", "log_time": "2024-10-09T12:34:56.789Z"},
+                {"uuid": "789", "log_time": "2024-10-09T12:34:55.789Z"},
             ],
             ["123", "456"],
         )
@@ -82,9 +82,21 @@ def test_extract_events_suspected_duplicates(
                 "latest_event_time": "2024-10-09T12:34:56Z",
             },
             [
-                {"uuid": "123", "time": "2024-10-09T12:34:56Z"},
-                {"uuid": "456", "time": "2024-10-09T12:34:56.789Z"},
-                {"uuid": "789", "time": "2024-10-09T12:34:55.789Z"},
+                {
+                    "uuid": "123",
+                    "log_time": "2024-10-09T12:34:56Z",
+                    "time": "2024-10-09T12:34:56Z",
+                },
+                {
+                    "uuid": "456",
+                    "log_time": "2024-10-09T12:34:56.789Z",
+                    "time": "2024-10-09T12:34:56.789Z",
+                },
+                {
+                    "uuid": "789",
+                    "log_time": "2024-10-09T12:34:55.789Z",
+                    "time": "2024-10-09T12:34:55.789Z",
+                },
             ],
             [],
             id="Event time is equal to or less than last_event_time",
@@ -95,10 +107,25 @@ def test_extract_events_suspected_duplicates(
                 "latest_event_time": "2024-10-09T12:34:56Z",
             },
             [
-                {"uuid": "123", "time": "2024-10-09T12:34:56Z"},
-                {"uuid": "456", "time": "2024-10-09T12:34:56.789Z"},
+                {
+                    "uuid": "123",
+                    "log_time": "2024-10-09T12:34:56Z",
+                    "time": "2024-10-09T12:34:56Z",
+                },
+                {
+                    "uuid": "456",
+                    "log_time": "2024-10-09T12:34:56.789Z",
+                    "time": "2024-10-09T12:34:56.789Z",
+                },
             ],
-            [{"uuid": "456", "time": "2024-10-09T12:34:56.789Z"}],
+            [
+                {
+                    "uuid": "456",
+                    "log_time": "2024-10-09T12:34:56.789Z",
+                    "time": "2024-10-09T12:34:56.789Z",
+                    "_time": "2024-10-09T12:34:56.789Z",
+                }
+            ],
             id="Events time is equal to last_event_time but one of them not include in suspected duplicates",
         ),
         pytest.param(
@@ -107,9 +134,20 @@ def test_extract_events_suspected_duplicates(
                 "latest_event_time": "2024-10-09T12:34:56Z",
             },
             [
-                {"uuid": "456", "time": "2024-10-09T12:35:56.789Z"},
+                {
+                    "uuid": "456",
+                    "log_time": "2024-10-09T12:35:56.789Z",
+                    "time": "2024-10-09T12:35:56.789Z",
+                },
             ],
-            [{"uuid": "456", "time": "2024-10-09T12:35:56.789Z"}],
+            [
+                {
+                    "uuid": "456",
+                    "log_time": "2024-10-09T12:35:56.789Z",
+                    "time": "2024-10-09T12:35:56.789Z",
+                    "_time": "2024-10-09T12:35:56.789Z",
+                }
+            ],
             id="Events time is greater than last_event_time",
         ),
     ],
@@ -141,9 +179,9 @@ def test_filter_duplicate_events(
     [
         (
             [
-                {"uuid": "12", "time": "2024-10-09T12:34:56Z"},
-                {"uuid": "34", "time": "2024-10-09T12:34:56Z"},
-                {"uuid": "56", "time": "2024-10-09T12:34:56Z"},
+                {"uuid": "12", "log_time": "2024-10-09T12:34:56Z"},
+                {"uuid": "34", "log_time": "2024-10-09T12:34:56Z"},
+                {"uuid": "56", "log_time": "2024-10-09T12:34:56Z"},
             ],
             "hash_test_1",
             False,

@@ -156,7 +156,7 @@ def update_new_integration_context(
         extract_events_suspected_duplicates(filtered_events) if filtered_events else []
     )
     latest_event_time = (
-        normalize_date_format(max(filtered_events, key=parse_event_time)["time"])
+        normalize_date_format(max(filtered_events, key=parse_event_time)["log_time"])
         if filtered_events
         else last_integration_context.get("latest_event_time", "")
     )
@@ -176,6 +176,7 @@ def update_new_integration_context(
         "last_fetch_events": filtered_events if include_last_fetch_events else [],
     }
 
+    demisto.info(f"integration_context that will set - {integration_context=}")
     set_integration_context(integration_context)
 
 
@@ -191,7 +192,7 @@ def parse_event_time(event) -> datetime:
     """
     Parse the event time from the given event dict to datetime object.
     """
-    return datetime.strptime(normalize_date_format(event["time"]), "%Y-%m-%dT%H:%M:%SZ")
+    return datetime.strptime(normalize_date_format(event["log_time"]), "%Y-%m-%dT%H:%M:%SZ")
 
 
 def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
@@ -203,11 +204,11 @@ def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
     """
 
     # Find the maximum event time
-    latest_event_time = normalize_date_format(max(events, key=parse_event_time)["time"])
+    latest_event_time = normalize_date_format(max(events, key=parse_event_time)["log_time"])
 
     # Filter all JSONs with the maximum event time
     filtered_events = filter(
-        lambda x: normalize_date_format(x["time"]) == latest_event_time, events
+        lambda x: normalize_date_format(x["log_time"]) == latest_event_time, events
     )
 
     # Extract the event_ids from the filtered events
@@ -266,18 +267,21 @@ def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]
         normalize_date_format(latest_event_time), "%Y-%m-%dT%H:%M:%SZ"
     )
 
-    return [
-        event
-        for event in events
+    filtered_events: list[dict[str, str]] = []
+
+    for event in events:
         if not is_duplicate(
             event["uuid"],
             datetime.strptime(
-                normalize_date_format(event["time"]), "%Y-%m-%dT%H:%M:%SZ"
+                normalize_date_format(event["log_time"]), "%Y-%m-%dT%H:%M:%SZ"
             ),
             latest_event_time,
             events_suspected_duplicates,
-        )
-    ]
+        ):
+            event["_time"] = event["time"]
+            filtered_events.append(event)
+
+    return filtered_events
 
 
 def prepare_raw_res_and_load_json(raw_res: str) -> dict:
