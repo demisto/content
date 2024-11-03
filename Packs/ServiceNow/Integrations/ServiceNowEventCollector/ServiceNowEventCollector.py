@@ -97,7 +97,7 @@ def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: st
     Returns:
         Dict[str, Any]: Updated dictionary containing the last run details.
     """
-    last_run[LAST_FETCH_TIME[log_type]] = last_event_time,
+    last_run[LAST_FETCH_TIME[log_type]] = last_event_time
     last_run[PREVIOUS_RUN_IDS[log_type]] = previous_run_ids
     return last_run
 

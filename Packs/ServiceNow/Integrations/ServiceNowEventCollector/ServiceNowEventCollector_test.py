@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 import pytest
 from ServiceNowEventCollector import (
     Client, LOGS_DATE_FORMAT, get_events_command, fetch_events_command, process_and_filter_events, get_limit,
-    SYSLOG_TRANSACTIONS, AUDIT, add_time_field, DATE_FORMAT, initialize_from_date, update_last_run, handle_log_types)
+    SYSLOG_TRANSACTIONS, AUDIT, add_time_field, DATE_FORMAT, initialize_from_date, update_last_run, handle_log_types,
+    LAST_FETCH_TIME, PREVIOUS_RUN_IDS)
 from CommonServerPython import DemistoException
 
 
@@ -209,8 +210,8 @@ class TestFetchActivity:
         """
         log_types = ["audit", "syslog"]
         last_run = {
-            "audit": {"previous_run_ids": []},
-            "syslog": {"previous_run_ids": []},
+            "previous_run_ids": [],
+            "previous_run_ids_syslog": [],
         }
         mock_audit_events = [{"event_id": 1, "sys_created_on": "2023-01-01 01:00:00"}]
         mock_syslog_events = [{"event_id": 2, "sys_created_on": "2023-01-01T02:00:00Z"}]
@@ -224,8 +225,8 @@ class TestFetchActivity:
         collected_events, updated_last_run = fetch_events_command(self.client, last_run, log_types)
 
         assert collected_events == mock_audit_events + mock_syslog_events
-        assert updated_last_run["audit"]["last_fetch_time"] == "2023-01-01 01:00:00"
-        assert updated_last_run["syslog"]["last_fetch_time"] == "2023-01-01T02:00:00Z"
+        assert updated_last_run[LAST_FETCH_TIME[AUDIT]] == "2023-01-01 01:00:00"
+        assert updated_last_run[LAST_FETCH_TIME[SYSLOG_TRANSACTIONS]] == "2023-01-01T02:00:00Z"
 
     def test_fetch_events_command_empty_log_types(self):
         """
@@ -807,7 +808,7 @@ def test_update_existing_log_type():
         - Updates the existing log type entry with new last fetch time and previous run IDs.
     """
     last_run = {
-        "audit": {"last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]}
+        "last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]
     }
     log_type = "audit"
     last_event_time = "2023-01-02T00:00:00Z"
@@ -815,8 +816,8 @@ def test_update_existing_log_type():
 
     updated_last_run = update_last_run(last_run, log_type, last_event_time, previous_run_ids)
 
-    assert updated_last_run["audit"]["last_fetch_time"] == last_event_time
-    assert updated_last_run["audit"]["previous_run_ids"] == previous_run_ids
+    assert updated_last_run[LAST_FETCH_TIME[AUDIT]] == last_event_time
+    assert updated_last_run[PREVIOUS_RUN_IDS[AUDIT]] == previous_run_ids
 
 
 def test_update_new_log_type():
@@ -831,7 +832,7 @@ def test_update_new_log_type():
         - Adds the new log type entry with the specified last fetch time and previous run IDs.
     """
     last_run = {
-        "audit": {"last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]}
+        "last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]
     }
     log_type = "syslog transactions"
     last_event_time = "2023-01-02T00:00:00Z"
@@ -839,9 +840,8 @@ def test_update_new_log_type():
 
     updated_last_run = update_last_run(last_run, log_type, last_event_time, previous_run_ids)
 
-    assert "syslog transactions" in updated_last_run
-    assert updated_last_run["syslog transactions"]["last_fetch_time"] == last_event_time
-    assert updated_last_run["syslog transactions"]["previous_run_ids"] == previous_run_ids
+    assert updated_last_run[LAST_FETCH_TIME[SYSLOG_TRANSACTIONS]] == last_event_time
+    assert updated_last_run[PREVIOUS_RUN_IDS[SYSLOG_TRANSACTIONS]] == previous_run_ids
 
 
 def test_update_empty_previous_run_ids():
@@ -857,7 +857,7 @@ def test_update_empty_previous_run_ids():
         - Updates the log type entry in last_run with an empty previous_run_ids list.
     """
     last_run = {
-        "audit": {"last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]}
+        "last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]
     }
     log_type = "audit"
     last_event_time = "2023-01-02T00:00:00Z"
@@ -865,8 +865,8 @@ def test_update_empty_previous_run_ids():
 
     updated_last_run = update_last_run(last_run, log_type, last_event_time, previous_run_ids)
 
-    assert updated_last_run["audit"]["last_fetch_time"] == last_event_time
-    assert updated_last_run["audit"]["previous_run_ids"] == []
+    assert updated_last_run[LAST_FETCH_TIME[AUDIT]] == last_event_time
+    assert updated_last_run[PREVIOUS_RUN_IDS[AUDIT]] == []
 
 
 def test_update_no_existing_data():
@@ -880,15 +880,15 @@ def test_update_no_existing_data():
     Then:
         - Creates a new entry for the log type with specified last fetch time and previous run IDs.
     """
-    last_run = {}  # Empty last_run
+    last_run = {}
     log_type = "audit"
     last_event_time = "2023-01-01T00:00:00Z"
     previous_run_ids = ["id1"]
 
     updated_last_run = update_last_run(last_run, log_type, last_event_time, previous_run_ids)
 
-    assert updated_last_run["audit"]["last_fetch_time"] == last_event_time
-    assert updated_last_run["audit"]["previous_run_ids"] == previous_run_ids
+    assert updated_last_run[LAST_FETCH_TIME[AUDIT]] == last_event_time
+    assert updated_last_run[PREVIOUS_RUN_IDS[AUDIT]] == previous_run_ids
 
 
 def test_update_multiple_log_types():
@@ -903,19 +903,19 @@ def test_update_multiple_log_types():
         - Correctly updates each log type entry with its respective last fetch time and previous run IDs.
     """
     last_run = {
-        "audit": {"last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"]},
-        "syslog transactions": {"last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id3", "id4"]}
+        "last_fetch_time": "2023-01-01T00:00:00Z", "previous_run_ids": ["id1", "id2"],
+        "last_fetch_time_syslog": "2023-01-01T00:00:00Z", "previous_run_ids_syslog": ["id3", "id4"]
     }
 
     # Update audit logs
     updated_last_run = update_last_run(last_run, "audit", "2023-01-02T00:00:00Z", ["id5", "id6"])
-    assert updated_last_run["audit"]["last_fetch_time"] == "2023-01-02T00:00:00Z"
-    assert updated_last_run["audit"]["previous_run_ids"] == ["id5", "id6"]
+    assert updated_last_run[LAST_FETCH_TIME[AUDIT]] == "2023-01-02T00:00:00Z"
+    assert updated_last_run[PREVIOUS_RUN_IDS[AUDIT]] == ["id5", "id6"]
 
     # Update syslog transactions
     updated_last_run = update_last_run(last_run, "syslog transactions", "2023-01-03T00:00:00Z", ["id7", "id8"])
-    assert updated_last_run["syslog transactions"]["last_fetch_time"] == "2023-01-03T00:00:00Z"
-    assert updated_last_run["syslog transactions"]["previous_run_ids"] == ["id7", "id8"]
+    assert updated_last_run[LAST_FETCH_TIME[SYSLOG_TRANSACTIONS]] == "2023-01-03T00:00:00Z"
+    assert updated_last_run[PREVIOUS_RUN_IDS[SYSLOG_TRANSACTIONS]] == ["id7", "id8"]
 
 
 def test_handle_log_types_valid_titles():
