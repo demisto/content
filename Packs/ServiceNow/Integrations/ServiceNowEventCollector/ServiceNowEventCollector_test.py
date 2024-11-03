@@ -208,7 +208,7 @@ class TestFetchActivity:
         Then:
             - Validates that the function processes both log types and updates last_run accordingly.
         """
-        log_types = ["audit", "syslog"]
+        log_types = [AUDIT, SYSLOG_TRANSACTIONS]
         last_run = {
             "previous_run_ids": [],
             "previous_run_ids_syslog": [],
@@ -428,7 +428,7 @@ def test_get_limit_audit_with_args():
     Then:
         - Validates that 'max_fetch_audit' from args is used as the limit.
     """
-    args = {"max_fetch_audit": "200"}
+    args = {"limit": "200"}
     client = Client(
         use_oauth=True,
         credentials={"username": "test", "password": "test"},
@@ -720,8 +720,8 @@ def test_initialize_from_date_with_existing_timestamp():
         - Returns the existing last_fetch_time for the log_type.
     """
     last_run = {
-        "audit": {"last_fetch_time": "2023-01-01T00:00:00Z"},
-        "syslog transactions": {"last_fetch_time": "2023-01-02T00:00:00Z"}
+        "last_fetch_time": "2023-01-01T00:00:00Z",
+        "last_fetch_time_syslog": "2023-01-02T00:00:00Z"
     }
     log_type = "audit"
 
