@@ -1449,6 +1449,7 @@ def main():
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get('private_key'),
             jwt_algorithm=JWTAlgorithm(params['jwt_algorithm']) if params.get('jwt_algorithm') else None,
+            key_id=params.get('key_id', None),
         )
 
         if command in commands:
