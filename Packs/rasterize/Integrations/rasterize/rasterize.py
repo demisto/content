@@ -176,22 +176,27 @@ class TabLifecycleManager:
             threading.excepthook = excepthook_recv_loop
 
             try:
+                demisto.debug(f'{tab_id=} before diasabling')
                 time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
                 self.tab.Page.disable()
                 time.sleep(0.5)
+                demisto.debug(f'{tab_id=} after diasabling')
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to disable page due to {ex}')
 
             try:
-                
+                demisto.debug(f'{tab_id=} before stopping')
                 self.tab.stop()
                 time.sleep(0.5)
+                demisto.debug(f'{tab_id=} after stopping')
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}')
 
             try:
+                demisto.debug(f'{tab_id=} before closing')
                 self.browser.close_tab(tab_id)
                 time.sleep(0.5)
+                demisto.debug(f'{tab_id=} after closing')
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to close tab {tab_id} due to {ex}')
             time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
@@ -273,7 +278,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             browser = pychrome.Browser(url=browser_url)
 
             # Use list_tab to ping the browser and make sure it's available
-            tabs_count = len(browser.list_tab())
+            tabs_count = len(browser.list_tab(timeout=10))
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs!")
@@ -784,6 +789,7 @@ def rasterize_thread(browser, chrome_port, path: str,
                                     full_screen=full_screen, include_url=include_url, include_source=True)
         else:
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
+    demisto.debug(f'{chrome_port=} after with TabLifecycleManager')
 
 
 def perform_rasterize(path: str | list[str],
@@ -944,7 +950,7 @@ def rasterize_email_command():  # pragma: no cover
                                                    full_screen=full_screen) or []
     if not rasterize_output:
         demisto.debug('[test] rasterize_email_command: rasterize_output empty')
-    
+
     res = fileResult(filename=file_name, data=rasterize_output[0][0])
 
     if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
@@ -1009,7 +1015,7 @@ def rasterize_pdf_command():  # pragma: no cover
             demisto.results(results)
     except Exception as e:
         raise DemistoException(f"Failed to open PDF {e=}")
-        
+
 
 
 def rasterize_html_command():
