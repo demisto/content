@@ -3385,11 +3385,11 @@ def get_machine_data(machine):
     return machine_data
 
 
-def get_file_statistics_command(client: MsClient, args: dict):
+def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves the statistics on the given file.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+        CommandResults.
     """
     file_sha1 = args.get('file_hash')
     response = client.get_file_statistics(file_sha1)
@@ -3402,16 +3402,26 @@ def get_file_statistics_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.FileStatistics(val.Sha1 === obj.Sha1)': context_output
     }
-    return human_readable, entry_context, response
+    file_indicator = get_file_statistics_indicator(response)
+
+    return CommandResults(
+        indicator=file_indicator,
+        readable_output=human_readable,
+        outputs=entry_context,
+        raw_response=response,
+    )
 
 
-def get_file_statistics_context(file_stat_response):
+def get_file_statistics_context(file_stat_response: dict) -> dict:
     """Gets the file statistics response and returns it in context format.
+
+    Args:
+        file_stat_response (dict): File statistics response body
 
     Returns:
         (dict). File statistics context
     """
-    file_stat = assign_params(
+    return assign_params(
         OrgPrevalence=file_stat_response.get('orgPrevalence'),
         OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
         OrgLastSeen=file_stat_response.get('orgLastSeen'),
@@ -3420,7 +3430,28 @@ def get_file_statistics_context(file_stat_response):
         GlobalLastObserved=file_stat_response.get('globalLastObserved'),
         TopFileNames=file_stat_response.get('topFileNames'),
     )
-    return file_stat
+
+
+def get_file_statistics_indicator(file_stat_response: dict) -> Common.File:
+    """Creates File indicator from the file statistics response
+
+    Args:
+        file_stat_response (dict): File statistics response body
+
+    Returns:
+        Common.File: File indicator
+    """
+    return Common.File(
+        Common.DBotScore.NONE,
+        sha1=file_stat_response.get('sha1'),
+        path="dummy/path/",  # will remove before merge
+        organization_prevalence=file_stat_response.get('orgPrevalence'),
+        global_prevalence=file_stat_response.get('globalPrevalence'),
+        # organization_first_seen=file_stat_response.get('orgFirstSeen'),
+        # organization_last_seen=file_stat_response.get('orgLastSeen'),
+        # global_first_seen=file_stat_response.get('globalFirstObserved'),
+        # global_last_seen=file_stat_response.get('globalLastObserved'),
+    )
 
 
 def get_file_alerts_command(client: MsClient, args: dict):
@@ -5699,7 +5730,7 @@ def main():  # pragma: no cover
             return_outputs(*get_domain_machine_command(client, args))
 
         elif command == 'microsoft-atp-get-file-statistics':
-            return_outputs(*get_file_statistics_command(client, args))
+            return_results(get_file_statistics_command(client, args))
 
         elif command == 'microsoft-atp-get-file-alerts':
             return_outputs(*get_file_alerts_command(client, args))

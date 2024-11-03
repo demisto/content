@@ -3872,6 +3872,12 @@ class Common(object):
         :type stix_id: ``str``
         :param stix_id: File assigned STIX ID.
 
+        :type organization_prevalence: ``int``
+        :param organization_prevalence: The frequency of detection within a particular organization.
+
+        :type global_prevalence: ``int``
+        :param global_prevalence: The frequency of detection across all organizations.
+
         :rtype: ``None``
         :return: None
         """
@@ -3886,7 +3892,8 @@ class Common(object):
                      feed_related_indicators=None, malware_family=None, imphash=None, quarantined=None, campaign=None,
                      associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
                      publications=None, threat_types=None, behaviors=None, relationships=None,
-                     creation_date=None, description=None, hashes=None, stix_id=None):
+                     creation_date=None, description=None, hashes=None, stix_id=None, organization_prevalence=None,
+                     global_prevalence=None):
 
             # Main value of a file (Hashes)
             self.md5 = md5
@@ -3927,6 +3934,8 @@ class Common(object):
             self.publications = publications
             self.threat_types = threat_types
             self.behaviors = behaviors
+            self.organization_prevalence = organization_prevalence
+            self.global_prevalence = global_prevalence
 
             # XSOAR Fields
             self.relationships = relationships
@@ -4041,6 +4050,12 @@ class Common(object):
 
             if self.behaviors:
                 file_context['Behavior'] = self.create_context_table(self.behaviors)
+
+            if self.organization_prevalence:
+                file_context['OrganizationPrevalence'] = self.organization_prevalence
+
+            if self.global_prevalence:
+                file_context['GlobalPrevalence'] = self.global_prevalence
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {

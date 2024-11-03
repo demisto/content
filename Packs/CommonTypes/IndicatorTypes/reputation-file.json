@@ -463,6 +463,34 @@
               ]
           }
       },
+      "organizationprevalence": {
+        "simple": "",
+        "complex": {
+            "root": "File",
+            "filters": [],
+            "accessor": "OrganizationPrevalence",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
+      },
+      "globalprevalence": {
+        "simple": "",
+        "complex": {
+            "root": "File",
+            "filters": [],
+            "accessor": "GlobalPrevalence",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
+      },
       "tags": {
         "simple": "",
         "complex": {
