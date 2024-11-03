@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from datetime import datetime
 from operator import itemgetter
 import re
 
@@ -51,8 +50,7 @@ def FormatSize(size):
 
 def format_time(time):
     dateOnly = time.split("T")[0]
-    newTimeFormat = datetime.strptime(dateOnly, "%Y-%m-%d")
-    return newTimeFormat
+    return dateOnly
 
 
 def FormatTableAndSet(data, dataSource):

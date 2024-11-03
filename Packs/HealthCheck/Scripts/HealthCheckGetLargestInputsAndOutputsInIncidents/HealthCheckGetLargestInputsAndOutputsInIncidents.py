@@ -34,9 +34,7 @@ def find_largest_input_or_output(all_args_list) -> dict:
 def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, incident_id) -> None:
     inputs = []
     outputs = []
-    urls = demisto.demistoUrls()
-    server_url = urls.get("server", "")
-    incident_url = os.path.join(server_url, "#", "incident", incident_id)
+
     if inputs_and_outputs:
         # In case no inputs and outputs are found a getInvPlaybookMetaData will return a string.
         # in that case we ignore the results and move on.
@@ -45,31 +43,27 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
 
         for task in inputs_and_outputs:
             task_id = task.get("id")
+            taskName = task.get("name")
             if "outputs" in task:
                 for output in task.get("outputs"):
-                    task_url = os.path.join(server_url, "#", "WorkPlan", incident_id, task_id)
+                    size = float(output.get("size", 0))
                     outputs.append(
                         {
-                            "IncidentID": f"[{incident_id}]({incident_url})",
-                            "TaskID": f"[{task_id}]({task_url})",
-                            "TaskName": task.get("name"),
-                            "Name": output.get("name"),
-                            "Size(MB)": float(output.get("size", 0)) / 1024,
-                            "inputoroutput": "Output",
+                            "IncidentID": f"{incident_id}",
+                            "Size(MB)": size,
+                            "Details": f"TaskName:{taskName},\nTaskID:{task_id},\nDirection: Output",
                         }
                     )
 
             else:
                 for arg in task.get("args"):
-                    task_url = os.path.join(server_url, "#", "WorkPlan", incident_id, task_id)
+                    argName = arg.get("name")
+                    size = float(arg.get("size", 0))
                     inputs.append(
                         {
-                            "IncidentID": f"[{incident_id}]({incident_url})",
-                            "TaskID": f"[{task_id}]({task_url})",
-                            "TaskName": task.get("name"),
-                            "Name": arg.get("name"),
-                            "Size(MB)": float(arg.get("size", 0)) / 1024,
-                            "InputOrOutput": "Input",
+                            "IncidentID": f"{incident_id}",
+                            "Size(MB)": size,
+                            "Details": f"TaskName: {taskName},\nTaskID:{task_id}, Argument Name: {argName},\nDirection: Input",
                         }
                     )
 
@@ -86,18 +80,39 @@ def get_extra_data_from_investigations(investigations: dict) -> list:
         incident_id = inv.split("investigations-")[1]
         raw_output = execute_command(
             "getInvPlaybookMetaData",
-            args={"incidentId": incident_id},
+            args={"incidentId": incident_id, "minSize": "200"},
         )
         inputs_and_outputs = raw_output.get("tasks")
         get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, incident_id)
     return largest_inputs_and_outputs
 
 
+def FormatTableAndSet(data):
+    newFormat = []
+    for entry in data:
+        newEntry = {}
+        newEntry["incidentid"] = entry["IncidentID"]
+        newEntry["size"] = FormatSize(entry["Size(MB)"])
+        newEntry["details"] = entry["Details"]
+        newFormat.append(newEntry)
+    return newFormat
+
+
+def FormatSize(size):
+    power = 1000
+    n = 0
+    power_labels = {0: "KB", 1: "MB", 2: "GB"}
+    while size > power:
+        size /= power
+        n += 1
+    return f"{size:.2f} {power_labels[n]}"
+
+
 def main():
     try:
         args = demisto.args()
         incident_thresholds = args.get("Thresholds", THRESHOLDS)
-
+        incident = demisto.incidents()[0]
         investigations: Dict = {}
         now = datetime.now()
         current_year = now.year
@@ -121,6 +136,12 @@ def main():
             get_investigations(raw_output[0].get("Contents", {}), investigations)
 
         data = get_extra_data_from_investigations(investigations)
+        tableFormat = FormatTableAndSet(data)
+
+        if incident.get("CustomFields").get("healthcheckinvestigationswithlargeinputoutput"):
+            tableFormat.extend(incident.get("CustomFields").get("healthcheckinvestigationswithlargeinputoutput"))
+        demisto.executeCommand("setIncident", {"healthcheckinvestigationswithlargeinputoutput": tableFormat})
+
         actionableItems = []
         incidentsList = []
         incidentsListBiggerThan10 = []
