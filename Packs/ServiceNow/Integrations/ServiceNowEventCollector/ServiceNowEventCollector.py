@@ -279,13 +279,13 @@ def main() -> None:  # pragma: no cover
     max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 1000
     event_types_to_fetch = argToList(params.get('event_types_to_fetch', ['Audit']))
     log_types = handle_log_types(event_types_to_fetch)
-   
+
     version = params.get("api_version")
     if version:
         api = f"/api/now/{version}/"
     else:
         api = "/api/now/"
-        
+
     api_server_url = f"{server_url}{api}"
 
     demisto.debug(f"Command being called is {command}")
@@ -310,7 +310,7 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(module_of_testing(client, log_types))
 
-        elif command == "service-now-get-events":
+        elif command == "service-now-get-audit-logs":
             audit_logs, results = get_events_command(client=client, args=args, log_types=log_types)
             return_results(results)
 

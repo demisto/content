@@ -81,7 +81,7 @@ display: ServiceNow Event Collector
 name: ServiceNow Event Collector
 script:
   commands:
-  - name: service-now-get-events
+  - name: service-now-get-audit-logs
     description: Returns events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
     arguments:
     - auto: PREDEFINED
