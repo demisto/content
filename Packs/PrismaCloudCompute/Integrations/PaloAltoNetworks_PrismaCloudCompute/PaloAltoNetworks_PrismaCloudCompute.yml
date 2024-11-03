@@ -754,6 +754,15 @@ script:
       isArray: true
       defaultValue: ""
     outputs: []
+  - name: prisma-cloud-compute-custom-feeds-ip-remove
+    description: Remove a list of IPs from the system's block list.
+    arguments:
+    - name: ip
+      description: A comma-separated list of custom IP addresses to remove from the banned IPs list. For example ip=1.1.1.1,2.2.2.2.
+      required: true
+      isArray: true
+      defaultValue: ""
+    outputs: []
   - name: prisma-cloud-compute-custom-feeds-malware-list
     description: List all custom uploaded md5 malwares.
     arguments:
