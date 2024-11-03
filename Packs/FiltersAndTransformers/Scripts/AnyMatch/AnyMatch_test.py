@@ -26,6 +26,7 @@ from AnyMatch import main
     ("{'a': 1}, {'b': 2}", "{a:1}", 2, [False, False]),  # {a:1} is not a part of {'a': 1} or {'b': 2}
     # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in  'c': 2}
     ("{'a':1,'c':2}", "'', '", 2, [True, True]),
+    (None, "A", 1, [False])
 ])
 def test_main(mocker, left, right, call_count, expected_result):
     """

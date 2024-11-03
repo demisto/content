@@ -36,6 +36,7 @@ SERVER = PARAMS['url'].removesuffix('/')
 USE_SSL = not PARAMS.get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = PARAMS.get('fetch_time', '3 days')
+MAX_FETCH_SIZE = 10000
 PROXY = PARAMS.get('proxy', False)
 BYTE_CREDS = f'{CLIENT_ID}:{SECRET}'.encode()
 # Headers to be sent in requests
@@ -1538,7 +1539,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
             text_to_encode += f"+{filter_arg}"
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
-        return http_request('GET', endpoint_url)
+        return http_request('GET', endpoint_url, {'sort': 'created_timestamp.asc'})
     else:
         endpoint_url = '/detects/queries/detects/v1'
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=} and {params=}")
@@ -1554,8 +1555,9 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
+    sort_key = 'first_behavior.asc' if LEGACY_VERSION else 'created_timestamp.asc'
     params = {
-        'sort': 'first_behavior.asc',
+        'sort': sort_key,
         'offset': offset,
     }
     if has_limit:
@@ -2973,6 +2975,10 @@ def fetch_incidents():
         total_detections = demisto.get(response, "meta.pagination.total")
         detections_offset = calculate_new_offset(detections_offset, len(detections_ids), total_detections)
         if detections_offset:
+            if detections_offset + fetch_limit > MAX_FETCH_SIZE:
+                demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {detections_offset} + limit: {fetch_limit} reached "
+                              f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+                detections_offset = 0
             demisto.debug(f"CrowdStrikeFalconMsg: The new detections offset is {detections_offset}")
         raw_res = get_detections_entities(detections_ids)
 
@@ -3034,6 +3040,10 @@ def fetch_incidents():
         total_incidents = demisto.get(response, "meta.pagination.total")
         incidents_offset = calculate_new_offset(incidents_offset, len(incidents_ids), total_incidents)
         if incidents_offset:
+            if incidents_offset + fetch_limit > MAX_FETCH_SIZE:
+                demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {incidents_offset} + limit: {fetch_limit} reached "
+                              f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+                incidents_offset = 0
             demisto.debug(f"CrowdStrikeFalconMsg: The new incidents offset is {incidents_offset}")
 
         if incidents_ids:
@@ -3206,6 +3216,10 @@ def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, p
     total_detections = demisto.get(response, "meta.pagination.total")
     offset = calculate_new_offset(offset, len(detections_ids), total_detections)
     if offset:
+        if offset + fetch_limit > MAX_FETCH_SIZE:
+            demisto.debug(f"CrowdStrikeFalconMsg: The new offset: {offset} + limit: {fetch_limit} reached "
+                          f"{MAX_FETCH_SIZE}, resetting the offset to 0")
+            offset = 0
         demisto.debug(f"CrowdStrikeFalconMsg: The new {detections_type} offset is {offset}")
 
     if detections_ids:
