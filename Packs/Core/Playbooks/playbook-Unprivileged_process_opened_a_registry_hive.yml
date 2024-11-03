@@ -3,14 +3,16 @@ version: -1
 name: Unprivileged process opened a registry hive
 description: |-
   This playbook is designed to handle the 'Unprivileged process opened a registry hive' alert.
-  
+
   Playbook Stages:
-  
+
   Investigation:
-  The playbook is designed to investigate and respond to unprivileged processes opening registry hives. It examines the unprivileged process that triggered the alert, the command line, and searches for additional suspicious Cortex XSIAM alerts within the same incident in order to determine whether a remediation measure is required.
-  
+
+  - The playbook examines the unprivileged process that triggered the alert, the command line, and searches for additional suspicious Cortex XSIAM alerts within the same incident in order to determine whether a remediation measure is required.
+
   Remediation:
-  To prevent malicious activity from continuing, the playbook terminates the causality processes that triggered the alert.
+
+  - To prevent malicious activity from continuing, the playbook terminates the causality processes that triggered the alert.
 tags:
 - TA0006 - Credential Access
 - T1552 - Unsecured Credentials
@@ -111,7 +113,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 670
+          "y": 850
         }
       }
     note: false
@@ -171,7 +173,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 840
+          "y": 1020
         }
       }
     note: false
@@ -195,6 +197,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "62"
       '#none#':
       - "22"
     scriptarguments:
@@ -447,7 +451,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 670
+          "y": 510
         }
       }
     note: false
@@ -551,17 +555,49 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 2647e32a-15b8-4b10-8724-3cdeaf72552f
+    type: regular
+    task:
+      id: 2647e32a-15b8-4b10-8724-3cdeaf72552f
+      version: -1
+      name: Terminate Process Manually
+      description: "Dear Analyst,\n\nDuring the remediation process, the playbook couldn't terminate the process ${alert.cgoname} \n\nPlease terminate the process manually if possible. \nNote that the next remediation step, if possible, will be endpoint isolation."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
+      "44_62_#error#": 0.55,
       "53_11_Yes": 0.17,
       "61_11_Unsigned and not prevalent": 0.27
     },
     "paper": {
       "dimensions": {
-        "height": 1485,
-        "width": 1060,
-        "x": 230,
+        "height": 1665,
+        "width": 1110,
+        "x": 180,
         "y": -580
       }
     }
