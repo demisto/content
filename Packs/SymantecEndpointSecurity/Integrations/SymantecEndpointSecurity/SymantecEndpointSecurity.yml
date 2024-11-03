@@ -56,7 +56,7 @@ script:
   script: ""
   type: python
   commands: []
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.113941
   longRunning: true
   subtype: python3
 marketplaces:

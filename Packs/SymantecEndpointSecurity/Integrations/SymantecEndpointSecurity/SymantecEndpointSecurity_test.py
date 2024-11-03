@@ -12,6 +12,7 @@ from SymantecEndpointSecurity import (
     Client,
     test_module as _test_module,
     get_events_command,
+    manage_fetch_interval,
 )
 
 
@@ -344,3 +345,26 @@ def test_get_events_command_with_raises(
 
     with pytest.raises(exception_type):
         get_events_command(mock_client(), {"next_fetch": {"next": "test"}})
+
+
+@pytest.mark.parametrize(
+    "start_run, end_run, call_count",
+    [
+        pytest.param(10, 20, 1, id="The sleep function should be called once"),
+        pytest.param(10, 70, 0, id="The sleep function should not be called"),
+    ]
+)
+def test_manage_fetch_interval(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
+    """
+    Given:
+        - The `manage_fetch_interval` function is called
+    When:
+        - The function is called
+    Then:
+        - Ensure that the sleep function is called with the appropriate interval value or not called at all if unnecessary.
+    """
+    mocker.patch.object(Client, "get_token")
+    mock_sleep = mocker.patch("SymantecEndpointSecurity.time.sleep")
+    client = mock_client()
+    manage_fetch_interval(client, start_run, end_run)
+    assert mock_sleep.call_count == call_count
