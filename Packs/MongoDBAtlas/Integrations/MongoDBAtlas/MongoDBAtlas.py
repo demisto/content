@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'MongoDB'
 PRODUCT = 'Atlas'
-last_run = {}
+# last_run = {}
 
 ''' CLIENT CLASS '''
 
@@ -96,7 +96,7 @@ class Client(BaseClient):
 
 def add_entry_status_field(event: dict):
     """
-    Adds a _ENTRY_STATUS field to an event by checking the event status.
+    Adds a _entry_status field to an event by checking the event status.
 
     Args:
         event (dict): The event.
@@ -104,9 +104,9 @@ def add_entry_status_field(event: dict):
     updated = datetime.strptime(event.get('updated'), DATE_FORMAT)
     created = datetime.strptime(event.get('created'), DATE_FORMAT)
     if updated == created:
-        event['_ENTRY_STATUS'] = 'new'
+        event['_entry_status'] = 'new'
     elif updated > created:
-        event['_ENTRY_STATUS'] = 'updated'
+        event['_entry_status'] = 'updated'
 
 def remove_events_by_ids(events: list, ids: list):
     """
@@ -186,7 +186,12 @@ def update_last_run_with_self_url(links, last_page_events_ids):
         'page_link': get_self_url(links),
         'last_page_events_ids': last_page_events_ids
     }
-    
+def add_time_field(event):
+    if event.get('updated'):
+        event['_time'] = event.get('updated')
+    else:
+        event['_time'] = event.get('created')
+
 def enrich_event(event, event_type):
     """
     Enriches each event with additional information based on its type.
@@ -196,8 +201,10 @@ def enrich_event(event, event_type):
         event_type (str): The type of event ('alerts' or 'events').
     """
     event['source_log_type'] = event_type
+    add_time_field(event)
     if event_type == 'alerts':
         add_entry_status_field(event)
+    
 
 def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
     """
@@ -228,7 +235,7 @@ def fetch_events_by_type(client: Client, fetch_limit: int, last_run: dict, event
             #running on the current page
             enrich_event(event, event_type)
             output.append(event)
-            demisto.debug(f'Appending event with id {event['id']} from type {event_type}')
+            demisto.debug(f'Appending event with id {event.get("id")} from type {event_type}')
             last_page_events_ids.append(event.get('id'))
             current_fetched_events_amount += 1
             
@@ -269,7 +276,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.get_alerts(page_num=1, items_per_page=1)
+        client.get_alerts(page_num=1, items_per_page=10)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -288,7 +295,7 @@ def fetch_events(client: Client, fetch_limit: int):
     
     alerts_output, last_run_alerts = fetch_events_by_type(client, fetch_limit, last_run_alerts, 'alerts')
     events_output, last_run_events = fetch_events_by_type(client, fetch_limit, last_run_events, 'events')
-    
+
     last_run_new_obj = ({'alerts': last_run_alerts,
                         'events': last_run_events
                         })
