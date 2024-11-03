@@ -1,6 +1,6 @@
-fromversion: 8.4.0 #check current version
+fromversion: 8.4.0 #check current version of xsoar
 id: imperva_securesphere_ModelingRule
-name: imperva securesphere modeling rule
+name: imperva securesphere Modeling Rule
 rules: ''
 schema: ''
 tags: ''
