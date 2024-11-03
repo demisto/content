@@ -1,5 +1,5 @@
 {
-    "imperva_inc__securesphere_raw": {
+    "imperva_inc_securesphere_raw": {
       "dpt": {
         "type": "int",
         "is_array": false
