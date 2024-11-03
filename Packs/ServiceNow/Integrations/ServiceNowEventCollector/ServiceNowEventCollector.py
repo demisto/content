@@ -14,6 +14,8 @@ AUDIT = "audit"
 SYSLOG_TRANSACTIONS = "syslog transactions"
 URL = {AUDIT: "table/sys_audit", SYSLOG_TRANSACTIONS: "table/syslog_transaction"}
 VALID_EVENT_TITLES = ['Audit', 'Syslog Transactions']
+LAST_FETCH_TIME = {AUDIT: "last_fetch_time", SYSLOG_TRANSACTIONS: "last_fetch_time_syslog"}
+PREVIOUS_RUN_IDS = {AUDIT: "previous_run_ids", SYSLOG_TRANSACTIONS: "previous_run_ids_syslog"}
 """ CLIENT CLASS """
 
 
@@ -95,10 +97,8 @@ def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: st
     Returns:
         Dict[str, Any]: Updated dictionary containing the last run details.
     """
-    last_run[log_type] = {
-        "last_fetch_time": last_event_time,
-        "previous_run_ids": previous_run_ids
-    }
+    last_run[LAST_FETCH_TIME[log_type]] = last_event_time,
+    last_run[PREVIOUS_RUN_IDS[log_type]] = previous_run_ids
     return last_run
 
 
@@ -113,7 +113,7 @@ def initialize_from_date(last_run: dict[str, Any], log_type: str) -> str:
     Returns:
         str: The start timestamp for fetching logs.
     """
-    start_timestamp = last_run.get(log_type, {}).get("last_fetch_time")
+    start_timestamp = last_run.get(LAST_FETCH_TIME[log_type])
     if not start_timestamp:
         current_time = datetime.utcnow()
         first_fetch_time = current_time - timedelta(minutes=1)
@@ -139,7 +139,7 @@ def add_time_field(events: List[Dict[str, Any]], log_type) -> List[Dict[str, Any
 
 def get_limit(args: dict, client: Client, log_type: str):
     if log_type == AUDIT:
-        limit = arg_to_number(args.get("max_fetch_audit")) or client.fetch_limit_audit or 1000
+        limit = arg_to_number(args.get("limit")) or client.fetch_limit_audit or 1000
     else:
         limit = arg_to_number(args.get("max_fetch_syslog_transactions")) or client.fetch_limit_syslog or 1000
 
@@ -191,10 +191,10 @@ def get_events_command(client: Client, args: dict, log_types: list) -> tuple[lis
     types_to_titles = {AUDIT: 'Audit', SYSLOG_TRANSACTIONS: 'Syslog Transactions'}
     all_events = []
     hr = ""
+    from_date = args.get("from_date", "")
+    offset = args.get("offset", 0)
     for log_type in log_types:
         limit = get_limit(args, client, log_type)
-        offset = args.get("offset", 0)
-        from_date = args.get("from_date", "")
         logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
         add_time_field(logs, log_type)  # Add the _time field to the events
 
@@ -220,7 +220,7 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
     """
     collected_events = []
     for log_type in log_types:
-        previous_run_ids = set(last_run.get(log_type, {}).get("previous_run_ids", set()))
+        previous_run_ids = set(last_run.get(PREVIOUS_RUN_IDS[log_type], set()))
         from_date = initialize_from_date(last_run, log_type)
         demisto.debug(f"Getting Audit Logs {from_date=}.")
         new_events = client.search_events(from_date, log_type)
@@ -275,19 +275,17 @@ def main() -> None:  # pragma: no cover
     credentials = params.get("credentials", {})
     user_name = credentials.get("identifier")
     password = credentials.get("password")
-    max_fetch_audit = arg_to_number(params.get("max_fetch_audit")) or 10000
-    max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 10000
-    event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
+    limit = arg_to_number(params.get("limit")) or 1000
+    max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 1000
+    event_types_to_fetch = argToList(params.get('event_types_to_fetch', ['Audit']))
     log_types = handle_log_types(event_types_to_fetch)
-    isFetch = params.get('isFetchEvents')
-    if isFetch and not log_types:
-        raise DemistoException("At least one event type must be specified for fetching.")
-
+   
     version = params.get("api_version")
     if version:
         api = f"/api/now/{version}/"
     else:
         api = "/api/now/"
+        
     api_server_url = f"{server_url}{api}"
 
     demisto.debug(f"Command being called is {command}")
@@ -302,7 +300,7 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             api_server_url=api_server_url,
-            fetch_limit_audit=max_fetch_audit,
+            fetch_limit_audit=limit,
             fetch_limit_syslog=max_fetch_syslog
         )
 
