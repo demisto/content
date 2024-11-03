@@ -26,6 +26,12 @@ CUSTOM_HIT = {
     CUSTOM_TYPE_KEY: 'IP'
 }
 
+CUSTOM_HIT_ELASTIC_V7 = {
+    "_source": {
+    CUSTOM_VAL_KEY: '5.5.5.5',
+    CUSTOM_TYPE_KEY: 'IP'
+    }}
+
 PARSED_CUSTOM_HIT = {
     'indicatorValue': '5.5.5.5',
     'indicatorType': 'IP',
@@ -181,6 +187,11 @@ def test_hit_to_indicator():
 
     ioc = esf.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, '', 'URL', ['tag1', 'tag2'], 'AMBER')
     assert ioc['type'] == 'URL'
+    
+def test_hit_to_indicator_insight_hit():
+    import FeedElasticsearch as esf
+    ioc = esf.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None, ['tag1', 'tag2'], 'AMBER')
+    assert ioc == PARSED_CUSTOM_HIT
 
 
 def test_hit_to_indicator_enrichment_excluded():
@@ -197,6 +208,31 @@ def test_hit_to_indicator_enrichment_excluded():
                                enrichment_excluded=True)
     assert ioc.pop('enrichmentExcluded')
     assert ioc == PARSED_CUSTOM_HIT
+    
+def test_hit_to_indicator_elastic_v7(mocker):
+    """
+    Background:
+    To maintain backwards compatibility for elastic server v7 and below, we have changed several places in the code where instead
+    of using the elasticsearch_dsl library (which is compatible to versions >= 8 we use the elasticsearch library directly).
+    In some cases those code changes caused slight differences in API responses structure.
+    
+    In this test we check that the 'hit_to_indicator' function handles the hit object structure we get when searching for
+    indicators hits in Elsticsearch server v7.
+    
+    Given:
+        - Elasticsearch client from type 'Elasticsearch' (v7 client), and a mock response of a hit object we get by querying
+          elasticsearch v7 server.
+    When:
+        - Running the 'hit_to_indicator' function.
+    Then:
+        - Make sure that the parsed hit is as expected.
+    """
+    params: dict = {'client_type': 'ElasticSearch'}
+    mocker.patch.object(demisto, 'params', return_value=params)
+    import FeedElasticsearch as esf
+    ioc = esf.hit_to_indicator(CUSTOM_HIT_ELASTIC_V7, CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None, ['tag1', 'tag2'], 'AMBER')
+    assert ioc == PARSED_CUSTOM_HIT
+    
 
 
 def test_extract_indicators_from_insight_hit2(mocker):
