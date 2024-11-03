@@ -303,7 +303,7 @@ def fetch_events(client: Client, fetch_limit: int):
     return (alerts_output + events_output), last_run_new_obj
 
 def get_events(client: Client, args):
-    fetch_limit = args.get('limit')
+    fetch_limit = int(args.get('limit'))
     
     last_run = demisto.getLastRun()
     last_run_alerts = last_run.get('alerts', {})
@@ -315,6 +315,7 @@ def get_events(client: Client, args):
     output = alerts_output + events_output
     filtered_events = []
     for event in output:
+        filtered_event = {}
         filtered_event['ID'] = event.get('id')
         filtered_event['Event Type'] = event.get('source_log_type')
         filtered_event['Time'] = event.get('_time')
@@ -326,13 +327,9 @@ def get_events(client: Client, args):
         readable_output=human_readable,
         raw_response=output
     )
-    #fix the output for hr
-    #create the command results object
-    #return the command results object and the output
     return output, command_results
     
 ''' MAIN FUNCTION '''
-
 
 def main() -> None:
     """main function, parses params and runs command functions
