@@ -3399,15 +3399,14 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
         'Sha1': file_sha1,
         'Statistics': file_stat
     }
-    entry_context = {
-        'MicrosoftATP.FileStatistics(val.Sha1 === obj.Sha1)': context_output
-    }
     file_indicator = get_file_statistics_indicator(response)
 
     return CommandResults(
+        outputs_prefix='MicrosoftATP.FileStatistics',
+        outputs_key_field='Sha1',
         indicator=file_indicator,
         readable_output=human_readable,
-        outputs=entry_context,
+        outputs=context_output,
         raw_response=response,
     )
 
@@ -3422,10 +3421,10 @@ def get_file_statistics_context(file_stat_response: dict) -> dict:
         (dict). File statistics context
     """
     return assign_params(
-        OrgPrevalence=file_stat_response.get('orgPrevalence'),
+        OrgPrevalence=file_stat_response.get('organizationPrevalence'),
         OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
         OrgLastSeen=file_stat_response.get('orgLastSeen'),
-        GlobalPrevalence=file_stat_response.get('globalPrevalence'),
+        GlobalPrevalence=file_stat_response.get('globallyPrevalence'),
         GlobalFirstObserved=file_stat_response.get('globalFirstObserved'),
         GlobalLastObserved=file_stat_response.get('globalLastObserved'),
         TopFileNames=file_stat_response.get('topFileNames'),
@@ -3445,8 +3444,8 @@ def get_file_statistics_indicator(file_stat_response: dict) -> Common.File:
         Common.DBotScore.NONE,
         sha1=file_stat_response.get('sha1'),
         path="dummy/path/",  # will remove before merge
-        organization_prevalence=file_stat_response.get('orgPrevalence'),
-        global_prevalence=file_stat_response.get('globalPrevalence'),
+        organization_prevalence=file_stat_response.get('organizationPrevalence'),
+        global_prevalence=file_stat_response.get('globallyPrevalence'),
         # organization_first_seen=file_stat_response.get('orgFirstSeen'),
         # organization_last_seen=file_stat_response.get('orgLastSeen'),
         # global_first_seen=file_stat_response.get('globalFirstObserved'),

@@ -4051,10 +4051,10 @@ class Common(object):
             if self.behaviors:
                 file_context['Behavior'] = self.create_context_table(self.behaviors)
 
-            if self.organization_prevalence:
+            if self.organization_prevalence is not None:  # cases where value is 0 should be written to file_context
                 file_context['OrganizationPrevalence'] = self.organization_prevalence
 
-            if self.global_prevalence:
+            if self.global_prevalence is not None:  # cases where value is 0 should be written to file_context
                 file_context['GlobalPrevalence'] = self.global_prevalence
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
