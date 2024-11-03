@@ -19,7 +19,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
-    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, delete_attachment_command
+    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, delete_attachment_command, \
+    is_new_incident
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -2471,6 +2472,51 @@ def test_is_time_field(input_string, expected):
     When:
         is_time_field is called on those strings
     Then:
-        It should return True if string contains valid datetime, False otherwise
+        It should return True if string contains valid datetime, Fal se otherwise
     """
     assert is_time_field(input_string) is expected
+
+
+def test_incident_id_in_last_fetched_updates_correctly(mocker):
+    """
+    Given:
+        Ticket ID to remove
+    When:
+        is_new_incident is called
+    Then:
+        It should remove the id without modifying the existing integration context keys
+    """
+    mocker.patch.object(ServiceNowv2, 'get_integration_context',
+                        return_value={"access_token": "token", "last_fetched_incident_ids": ['ABC123', 'XYZ789']})
+    res = mocker.patch.object(ServiceNowv2, 'set_integration_context')
+
+    # Executing the function with the incident id to be checked
+    is_new_incident("XYZ789")
+
+    # Setup verification context with wrapper to cover the whole integration context if necessary
+    full_expected_context = {"access_token": "token", "last_fetched_incident_ids": ['ABC123']}
+
+    # Verifying that set_integration_context was called with the correct new context
+    res.assert_called_once_with(full_expected_context)
+
+
+def test_incident_id_not_in_last_fetched(mocker):
+    """
+    Given:
+        Ticket ID that should not be removed
+    When:
+        is_new_incident is called
+    Then:
+        It should not modify the integration context
+    """
+    # Mock the get_integration_context to return some incident IDs which does not include the tested ID
+    mocker.patch.object(ServiceNowv2, 'get_integration_context',
+                        return_value={"access_token": "token", "last_fetched_incident_ids": ['ABC123', 'XYZ789']})
+    # Mock the set_integration_context to check it is not called
+    res = mocker.patch.object(ServiceNowv2, 'set_integration_context')
+
+    # Executing the function with an incident id that is not in the context's list
+    is_new_incident("DEF456")
+
+    # Assert that set_integration_context was never called because no incident ID was removed
+    res.assert_not_called()
