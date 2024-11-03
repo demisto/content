@@ -3725,7 +3725,7 @@ def filter_vendor_fields(alert: dict):
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
     for alert_id in alert_id_list:
-        if not alert_id.isdigit():
+        if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
             raise DemistoException(f"Alert ID: {alert_id} is not a valid alert ID.\nIf this error was encountered in playbook "
                                    f"debug - this playbook currently does not run in debug mode as is. In order to run this "
                                    f"playbook in debug mode,"
