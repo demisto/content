@@ -2,8 +2,8 @@
     "data": [
         {
             "test_data_event_id": "c966a570-b355-491c-b17f-18eee7f83db3",
-            "vendor": "imperva",
-            "product": "inc_securesphere_avi",
+            "vendor": "imperva_inc",
+            "product": "securesphere_avi",
             "dataset": "imperva_inc_securesphere_avi_raw",
             "tenant_timezone": "UTC",
             "event_data": {
@@ -32,10 +32,9 @@
                 "cefDeviceVendor": "Imperva Inc.",
                 "cefDeviceProduct": "SecureSphere",
                 "cefDeviceVersion": "14.6.0.30_0",
-                "cefDeviceEventClassId": "Signature"
+                "cefDeviceEventClassId": "Signature",
             },
             "expected_values": {
-                "_time": null,
                 "xdm.alert.description": "suspicious-pattern",
                 "xdm.alert.severity": "High",
                 "xdm.event.description": "suspicious-pattern",
@@ -53,9 +52,9 @@
                 "xdm.target.ipv4": "54.211.74.7",
                 "xdm.target.port": 80,
                 "xdm.observer.version": "14.6.0.30_0",
-                "xdm.target.user.username": "${Alert.username}"
-            }
+                "xdm.target.user.username": "${Alert.username}",
+            },
         }
     ],
-    "ignored_validations": []
+    "ignored_validations": [],
 }
