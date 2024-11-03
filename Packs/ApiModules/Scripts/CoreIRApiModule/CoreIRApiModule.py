@@ -3726,12 +3726,11 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     alert_id_list = argToList(args.get('alert_ids', []))
     for alert_id in alert_id_list:
         if not alert_id.isdigit():
-            raise DemistoException(
-                f"Alert ID: {alert_id} is not a valid alert ID.\nIf this error was encountered in playbook debug - "
-                f"this task "
-                f"cannot run with a default fake "
-                "alert_id in debug mode. To debug, please select the specific alert you wish to investigate "
-                "and update the alert_id field in the context to the correct alert_id number.")
+            raise DemistoException(f"Alert ID: {alert_id} is not a valid alert ID.\nIf this error was encountered in playbook "
+                                   f"debug - this playbook currently does not run in debug mode as is. In order to run this "
+                                   f"playbook in debug mode,"
+                                   f"Please modify the 'alert_ids' input of the task 'Get User Identity Details' to "
+                                   f"corresponding real alert ID.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
