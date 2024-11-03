@@ -56,9 +56,9 @@ class Client(BaseClient):
             timeout=180,
         )
 
-        self.get_token()
+        self._update_access_token()
 
-    def get_token(self):
+    def _update_access_token(self):
         """
         Retrieves an access token using the `token` provided in the params.
         """
@@ -75,8 +75,7 @@ class Client(BaseClient):
                 data={},
             )
         except Exception as e:
-            demisto.info(f"Failure in get_token method, Error: {e}")
-            raise e
+            raise DemistoException("Failed getting an access token") from e
         try:
             self.headers = {
                 "Authorization": f'Bearer {res["access_token"]}',
@@ -89,7 +88,7 @@ class Client(BaseClient):
                 f"The key 'access_token' does not exist in response, Response from API: {res}"
             )
 
-    def get_events(self, payload: dict[str, str]):
+    def get_events(self, payload: dict[str, str]) -> str:
         """
         API call in streaming to fetch events
         """
@@ -103,7 +102,7 @@ class Client(BaseClient):
         )
 
 
-def manage_fetch_interval(client, start_run, end_run):
+def sleep_if_necessary(client, start_run: int, end_run: int) -> None:
     """
     Manages the fetch interval by sleeping if necessary.
 
@@ -161,22 +160,24 @@ def update_new_integration_context(
         include_last_fetch_events (bool): Flag to include last fetched events in the integration context.
         last_integration_context (dict[str, str]): The previous integration context.
     """
-    events_suspected_duplicates = (
-        extract_events_suspected_duplicates(filtered_events) if filtered_events else []
-    )
 
-    # Determine the latest event time: Extract the last time of the filtered event,
-    # or use the last known time from integration context if no filtered events exist
-    latest_event_time = (
-        normalize_date_format(max(filtered_events, key=parse_event_time)["log_time"])
-        if filtered_events
-        else last_integration_context.get("latest_event_time", "")
-    )
+    if filtered_events:
+        events_suspected_duplicates = (
+            extract_events_suspected_duplicates(filtered_events)
+        )
 
-    # If the latest event time matches the previous one,
-    # extend the suspected duplicates list with events from the previous context,
-    # to control deduplication across multiple fetches.
+        # Determine the latest event time: Extract the last time of the filtered event,
+        latest_event_time = (
+            normalize_date_format(max(filtered_events, key=parse_event_time)["log_time"])
+        )
+    else:
+        events_suspected_duplicates = []
+        latest_event_time = last_integration_context.get("latest_event_time", "")
+
     if latest_event_time == last_integration_context.get("latest_event_time", ""):
+        # If the latest event time matches the previous one,
+        # extend the suspected duplicates list with events from the previous context,
+        # to control deduplication across multiple fetches.
         events_suspected_duplicates.extend(
             last_integration_context.get("events_suspected_duplicates", [])
         )
@@ -188,7 +189,7 @@ def update_new_integration_context(
         "last_fetch_events": filtered_events if include_last_fetch_events else [],
     }
 
-    demisto.info(f"Updating integration context with new data: {integration_context=}")
+    demisto.info(f"Updating integration context with new data: {integration_context}")
     set_integration_context(integration_context)
 
 
@@ -376,9 +377,9 @@ def perform_long_running_loop(client: Client):
             try:
                 # Used to calculate the duration of the fetch run.
                 end_run = get_current_time_in_seconds()
-                manage_fetch_interval(client, start_run, end_run)
+                sleep_if_necessary(client, start_run, end_run)
                 # Trying to obtain a new access token
-                client.get_token()
+                client._update_access_token()
             except Exception as e:
                 demisto.info("Failed to obtain a new access token")
                 raise e
@@ -390,7 +391,7 @@ def perform_long_running_loop(client: Client):
 
             # Used to calculate the duration of the fetch run.
             end_run = get_current_time_in_seconds()
-            manage_fetch_interval(client, start_run, end_run)
+            sleep_if_necessary(client, start_run, end_run)
             continue
         except Exception as e:
             demisto.info(f"Failed to fetch logs from API. Error: {e}")
@@ -399,7 +400,7 @@ def perform_long_running_loop(client: Client):
         # Used to calculate the duration of the fetch run.
         end_run = get_current_time_in_seconds()
 
-        manage_fetch_interval(client, start_run, end_run)
+        sleep_if_necessary(client, start_run, end_run)
 
 
 def test_module(client: Client) -> str:

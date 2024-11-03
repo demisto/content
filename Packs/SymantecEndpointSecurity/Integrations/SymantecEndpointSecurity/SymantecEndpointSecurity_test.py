@@ -235,7 +235,7 @@ def test_perform_long_running_loop_unauthorized_token(mocker: MockerFixture):
         "SymantecEndpointSecurity.get_events_command",
         side_effect=[UnauthorizedToken, Exception("Stop")],
     )
-    mock_get_token = mocker.patch.object(Client, "get_token")
+    mock_get_token = mocker.patch.object(Client, "_update_access_token")
     mocker.patch("SymantecEndpointSecurity.manage_fetch_interval")
     with pytest.raises(Exception, match="Stop"):
         perform_long_running_loop(mock_client())
@@ -256,7 +256,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
         "SymantecEndpointSecurity.get_events_command",
         side_effect=[NextPointingNotAvailable, Exception("Stop")],
     )
-    mocker.patch.object(Client, "get_token")
+    mocker.patch.object(Client, "_update_access_token")
     mocker.patch(
         "SymantecEndpointSecurity.get_integration_context",
         return_value=mock_integration_context,
@@ -276,7 +276,7 @@ def test_test_module(mocker: MockerFixture):
     Then:
         - Ensure that the function returns 'ok' when the API call is successful
     """
-    mocker.patch.object(Client, "get_token")
+    mocker.patch.object(Client, "_update_access_token")
     client = mock_client()
     mocker.patch.object(Client, "get_events")
     assert _test_module(client) == "ok"
@@ -304,7 +304,7 @@ def test_test_module_with_raises(
     class MockException:
         status_code = mock_status_code
 
-    mocker.patch.object(Client, "get_token")
+    mocker.patch.object(Client, "_update_access_token")
     client = mock_client()
     mocker.patch.object(
         Client, "get_events", side_effect=DemistoException("Test", res=MockException())
@@ -338,7 +338,7 @@ def test_get_events_command_with_raises(
     class MockException:
         status_code = mock_status_code
 
-    mocker.patch.object(Client, "get_token")
+    mocker.patch.object(Client, "_update_access_token")
     mocker.patch.object(
         Client, "get_events", side_effect=DemistoException("Test", res=MockException())
     )
@@ -363,7 +363,7 @@ def test_manage_fetch_interval(mocker: MockerFixture, start_run: int, end_run: i
     Then:
         - Ensure that the sleep function is called with the appropriate interval value or not called at all if unnecessary.
     """
-    mocker.patch.object(Client, "get_token")
+    mocker.patch.object(Client, "_update_access_token")
     mock_sleep = mocker.patch("SymantecEndpointSecurity.time.sleep")
     client = mock_client()
     manage_fetch_interval(client, start_run, end_run)
