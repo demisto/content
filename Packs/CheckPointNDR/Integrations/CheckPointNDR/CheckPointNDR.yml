@@ -51,6 +51,7 @@ configuration:
   required: false
 - section: Collect
   display: Minimum probability level
+  additionalinfo: Filter out NDR insights with probability lower than this value
   name: min_probability
   defaultvalue: "0"
   type: 0
