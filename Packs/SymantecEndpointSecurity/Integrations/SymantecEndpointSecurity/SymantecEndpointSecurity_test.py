@@ -12,7 +12,7 @@ from SymantecEndpointSecurity import (
     Client,
     test_module as _test_module,
     get_events_command,
-    manage_fetch_interval,
+    sleep_if_necessary,
 )
 
 
@@ -236,8 +236,8 @@ def test_perform_long_running_loop_unauthorized_token(mocker: MockerFixture):
         side_effect=[UnauthorizedToken, Exception("Stop")],
     )
     mock_get_token = mocker.patch.object(Client, "_update_access_token")
-    mocker.patch("SymantecEndpointSecurity.manage_fetch_interval")
-    with pytest.raises(Exception, match="Stop"):
+    mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
+    with pytest.raises(Exception, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
     assert mock_get_token.call_count == 2
 
@@ -261,8 +261,8 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
         "SymantecEndpointSecurity.get_integration_context",
         return_value=mock_integration_context,
     )
-    mocker.patch("SymantecEndpointSecurity.manage_fetch_interval")
-    with pytest.raises(Exception, match="Stop"):
+    mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
+    with pytest.raises(Exception, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
     assert mock_integration_context == {}
 
@@ -285,8 +285,8 @@ def test_test_module(mocker: MockerFixture):
 @pytest.mark.parametrize(
     "mock_status_code, expected_msg",
     [
-        (403, "Authorization Error: make sure the Token is correctly set, Error: Test"),
-        (500, "Test"),
+        (403, "Authorization Error: make sure the Token is correctly set"),
+        (500, "Failure in test_module function"),
     ],
 )
 def test_test_module_with_raises(
@@ -354,10 +354,10 @@ def test_get_events_command_with_raises(
         pytest.param(10, 70, 0, id="The sleep function should not be called"),
     ]
 )
-def test_manage_fetch_interval(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
+def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
     """
     Given:
-        - The `manage_fetch_interval` function is called
+        - The `sleep_if_necessary` function is called
     When:
         - The function is called
     Then:
@@ -366,5 +366,5 @@ def test_manage_fetch_interval(mocker: MockerFixture, start_run: int, end_run: i
     mocker.patch.object(Client, "_update_access_token")
     mock_sleep = mocker.patch("SymantecEndpointSecurity.time.sleep")
     client = mock_client()
-    manage_fetch_interval(client, start_run, end_run)
+    sleep_if_necessary(client, start_run, end_run)
     assert mock_sleep.call_count == call_count
