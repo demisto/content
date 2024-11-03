@@ -37,7 +37,7 @@ class KafkaCommunicator:
 
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
-    POLL_TIMEOUT: float = 1.0
+    POLL_TIMEOUT: float = 5.0
     MAX_POLLS_FOR_LOG: int = 100
 
     def __init__(self, brokers: str, use_ssl: bool, plain_password: Optional[str] = None, plain_username: Optional[str] = None,
