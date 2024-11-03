@@ -153,7 +153,6 @@ def test_extract_events_suspected_duplicates(
     ],
 )
 def test_filter_duplicate_events(
-    mocker: MockerFixture,
     integration_context: dict[str, str],
     events: list[dict[str, str]],
     expected_filtered_events: list[dict[str, str]],
@@ -166,11 +165,7 @@ def test_filter_duplicate_events(
     Then:
         - Ensure that a list of the events that are not duplicates is returned
     """
-    mocker.patch(
-        "SymantecEndpointSecurity.get_integration_context",
-        return_value=integration_context,
-    )
-    filtered_events = filter_duplicate_events(events)
+    filtered_events = filter_duplicate_events(events, integration_context)
     assert filtered_events == expected_filtered_events
 
 
@@ -240,7 +235,7 @@ def test_perform_long_running_loop_unauthorized_token(mocker: MockerFixture):
         side_effect=[UnauthorizedToken, Exception("Stop")],
     )
     mock_get_token = mocker.patch.object(Client, "get_token")
-
+    mocker.patch("SymantecEndpointSecurity.manage_fetch_interval")
     with pytest.raises(Exception, match="Stop"):
         perform_long_running_loop(mock_client())
     assert mock_get_token.call_count == 2
@@ -265,6 +260,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
         "SymantecEndpointSecurity.get_integration_context",
         return_value=mock_integration_context,
     )
+    mocker.patch("SymantecEndpointSecurity.manage_fetch_interval")
     with pytest.raises(Exception, match="Stop"):
         perform_long_running_loop(mock_client())
     assert mock_integration_context == {}
@@ -281,7 +277,7 @@ def test_test_module(mocker: MockerFixture):
     """
     mocker.patch.object(Client, "get_token")
     client = mock_client()
-    mocker.patch.object(Client, "test_module")
+    mocker.patch.object(Client, "get_events")
     assert _test_module(client) == "ok"
 
 
@@ -310,7 +306,7 @@ def test_test_module_with_raises(
     mocker.patch.object(Client, "get_token")
     client = mock_client()
     mocker.patch.object(
-        Client, "test_module", side_effect=DemistoException("Test", res=MockException())
+        Client, "get_events", side_effect=DemistoException("Test", res=MockException())
     )
     with pytest.raises(DemistoException, match=expected_msg):
         _test_module(client)

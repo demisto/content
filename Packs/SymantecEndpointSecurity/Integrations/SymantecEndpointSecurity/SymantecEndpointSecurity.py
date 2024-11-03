@@ -89,16 +89,6 @@ class Client(BaseClient):
                 f"The key 'access_token' does not exist in response, Response from API: {res}"
             )
 
-    def test_module(self):
-        self._http_request(
-            "POST",
-            url_suffix=f"/v1/event-export/stream/{self.stream_id}/{self.channel_id}",
-            headers=self.headers,
-            params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
-            json_data={},
-            stream=True,
-        )
-
     def get_events(self, payload: dict[str, str]):
         """
         API call in streaming to fetch events
@@ -414,7 +404,7 @@ def perform_long_running_loop(client: Client):
 
 def test_module(client: Client) -> str:
     try:
-        client.test_module()
+        client.get_events(payload={})
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 403:
             raise DemistoException(
