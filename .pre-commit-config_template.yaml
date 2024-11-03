@@ -34,7 +34,7 @@ repos:
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.272
+  rev: v0.7.2
   hooks:
   - id: ruff
     parallel: false
@@ -112,7 +112,7 @@ repos:
   - id: mypy-in-docker
     name: mypy-in-docker
     copy_files:
-    - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py 
+    - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
     - Tests/demistomock/demistomock.py
     description: Run mypy on the code in content packs
     docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
