@@ -235,6 +235,14 @@ class PychromeEventHandler:
         '''Triggered when a request is sent by the browser, catches mailto URLs.'''
         demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}')
         self.is_mailto = documentURL.lower().startswith('mailto:')
+
+        request_url = kwargs.get('request', {}).get('url', '')
+        request_id = kwargs.get('requestId', '')
+        if "cloudflare" in request_url:
+            self.tab.Fetch.enable()
+            print(f'block request to {request_url}')
+            demisto.info(f'block request to {request_url}')
+            self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
 # endregion
 
 
@@ -576,7 +584,7 @@ def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[Pychr
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
-    tab.call_method("Network.setBlockedURLs", urls=['*cloudflare.com*'])
+
     return tab_event_handler, tab_ready_event
 
 
@@ -798,14 +806,32 @@ def perform_rasterize(path: str | list[str],
     :param width: window width
     :param height: window height
     """
-    demisto.debug(f"perform_rasterize, {path=}, {rasterize_type=}")
+
+    # convert the path param to list in case we have only one string
+    paths = argToList(path)
+
+    # create a list with all the paths that start with "mailto:"
+    mailto_paths = [path_value for path_value in paths if path_value.startswith('mailto:')]
+
+    if mailto_paths:
+        # remove the mailto from the paths to rasterize
+        paths = list(set(paths) - set(mailto_paths))
+        demisto.error(f'Not rasterizing the following invalid paths: {mailto_paths}')
+        return_results(CommandResults(
+            readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_paths}'))
+
+    if not paths:
+        message = 'There are no valid paths to rasterize'
+        demisto.error(message)
+        return_error(message)
+        return None
+
+    demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
 
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            demisto.debug(f'path type is: {type(path)}')
-            paths = [path] if isinstance(path, str) else path
             demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
