@@ -51,7 +51,7 @@ def get_domain_report_from_threat_miner(domain_name, threat_miner_url, verify_ce
 
 
 def get_domain_whois_rawdata(domain_name, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 1)
+    threat_miner_domain_url_postfix = f'domain.php?q={domain_name}&rt={1}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
     domain_whois = response.get('results', [])
@@ -62,7 +62,7 @@ def get_domain_whois_rawdata(domain_name, threat_miner_url, verify_certificates)
 
 
 def get_domain_passive_dns_rawdata(domain_name, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 2)
+    threat_miner_domain_url_postfix = f'domain.php?q={domain_name}&rt={2}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
     threatminer_results_as_array = response.get('results', [])
@@ -79,7 +79,7 @@ def get_domain_passive_dns(passive_dns, max_returned_array_size):
 
 
 def get_domain_subdomains_rawdata(domain_name, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 5)
+    threat_miner_domain_url_postfix = f'domain.php?q={domain_name}&rt={5}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
     sub_domains_array = response.get('results', [])
@@ -87,7 +87,7 @@ def get_domain_subdomains_rawdata(domain_name, threat_miner_url, verify_certific
 
 
 def get_domain_URI_rawdata(domain_name, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 3)
+    threat_miner_domain_url_postfix = f'domain.php?q={domain_name}&rt={3}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
     uris_full_result = response.get('results', [])
@@ -111,7 +111,7 @@ def get_domain_URI(uris_raw_data, max_returned_array_size):
 
 
 def get_domain_MD5_rawdata(domain_name, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 4)
+    threat_miner_domain_url_postfix = f'domain.php?q={domain_name}&rt={4}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
     md5s = response.get('results', [])
@@ -119,27 +119,27 @@ def get_domain_MD5_rawdata(domain_name, threat_miner_url, verify_certificates):
 
 
 def create_domain_command_markdown(domain, context):
-    md = '## Threat_miner Domain report for: {}\n'.format(domain)
+    md = f'## Threat_miner Domain report for: {domain}\n'
     threat_miner_found_results = False
 
     if len(context.get('Whois', '')) != 0:
-        md += tableToMarkdown("Whois for {} domain".format(domain), context['Whois'],
+        md += tableToMarkdown(f"Whois for {domain} domain", context['Whois'],
                               ['Domain', 'Server', 'CreateDate', 'UpdateDate', 'Expiration', 'NameServers'])
         threat_miner_found_results = True
     if len(context.get('PassiveDNS', '')) != 0:
-        md += tableToMarkdown("PassiveDNS for {} domain".format(domain),
+        md += tableToMarkdown(f"PassiveDNS for {domain} domain",
                               context['PassiveDNS'], ['IP', 'FirstSeen', 'LastSeen'])
         threat_miner_found_results = True
     if len(context.get('Subdomains', '')) != 0:
-        md += tableToMarkdown("{} Subdomains".format(domain), context['Subdomains'],
+        md += tableToMarkdown(f"{domain} Subdomains", context['Subdomains'],
                               ['Subdomains'])
         threat_miner_found_results = True
     if len(context.get('URI', '')) != 0:
-        md += tableToMarkdown("{} URIs".format(domain), context['URI'],
+        md += tableToMarkdown(f"{domain} URIs", context['URI'],
                               ['Address', 'LastSeen'])
         threat_miner_found_results = True
     if len(context.get('MD5', '')) != 0:
-        md += tableToMarkdown("{} Related Samples(hash only)".format(domain),
+        md += tableToMarkdown(f"{domain} Related Samples(hash only)",
                               context['MD5'], ['hashes'])
         threat_miner_found_results = True
 
@@ -234,7 +234,7 @@ def domain_command(**kwargs):
 
 
 def get_ip_whois_rawdata(ip_address, threat_miner_url, verify_certificates):
-    threat_miner_ip_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 1)
+    threat_miner_ip_url_postfix = f'host.php?q={ip_address}&rt={1}'
     response = http_request('GET', threat_miner_url + threat_miner_ip_url_postfix,
                             verify_certificates, DEFAULT_HEADERS)
     whois_rawdata = response.get('results', [])
@@ -256,7 +256,7 @@ def get_ip_whois(whois_rawdata, ip_address):
 
 
 def get_ip_passiveDNS_rawdata(ip_address, threat_miner_url, verify_certificates):
-    threat_miner_ip_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 2)
+    threat_miner_ip_url_postfix = f'host.php?q={ip_address}&rt={2}'
     response = http_request('GET', threat_miner_url + threat_miner_ip_url_postfix, verify_certificates, DEFAULT_HEADERS)
     passiveDNSArray = response.get('results', [])
 
@@ -264,7 +264,7 @@ def get_ip_passiveDNS_rawdata(ip_address, threat_miner_url, verify_certificates)
 
 
 def get_ip_URI_rawdata(ip_address, threat_miner_url, verify_certificates):
-    threat_miner_ip_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 3)
+    threat_miner_ip_url_postfix = f'host.php?q={ip_address}&rt={3}'
     response = http_request('GET', threat_miner_url + threat_miner_ip_url_postfix, verify_certificates, DEFAULT_HEADERS)
     uris_rawdata = response.get('results', [])
     return uris_rawdata
@@ -288,7 +288,7 @@ def get_ip_URI(threatminer_results_as_array, max_returned_array_size):
 
 
 def get_ip_MD5_rawdata(ip_address, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 4)
+    threat_miner_domain_url_postfix = f'host.php?q={ip_address}&rt={4}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
 
@@ -300,7 +300,7 @@ def get_ip_MD5_rawdata(ip_address, threat_miner_url, verify_certificates):
 
 
 def get_ip_SSL_rawdata(ip_address, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 5)
+    threat_miner_domain_url_postfix = f'host.php?q={ip_address}&rt={5}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
 
@@ -309,26 +309,26 @@ def get_ip_SSL_rawdata(ip_address, threat_miner_url, verify_certificates):
 
 
 def create_ip_command_markdown(ip_address, context):
-    md = '## Threat_miner IP report for: {}\n'.format(ip_address)
+    md = f'## Threat_miner IP report for: {ip_address}\n'
     threat_miner_found_results = False
 
     if len(context['Whois']) != 0:
-        md += tableToMarkdown("Whois for {}".format(ip_address), context['Whois'],
+        md += tableToMarkdown(f"Whois for {ip_address}", context['Whois'],
                               ['Address', 'Country', 'Org', 'Bgp', 'Reverse', 'ASN'])
         threat_miner_found_results = True
     if len(context['PassiveDNS']) != 0:
-        md += tableToMarkdown("PassiveDNS for {}".format(ip_address), context['PassiveDNS'],
+        md += tableToMarkdown(f"PassiveDNS for {ip_address}", context['PassiveDNS'],
                               ['Domain', 'FirstSeen', 'LastSeen'])
         threat_miner_found_results = True
     if len(context['URI']) != 0:
-        md += tableToMarkdown("{} URIs".format(ip_address), context['URI'],
+        md += tableToMarkdown(f"{ip_address} URIs", context['URI'],
                               ['Address', 'LastSeen'])
         threat_miner_found_results = True
     if len(context['MD5']) != 0:
-        md += tableToMarkdown("{} MD5s".format(ip_address), context['MD5'], ['MD5'])
+        md += tableToMarkdown(f"{ip_address} MD5s", context['MD5'], ['MD5'])
         threat_miner_found_results = True
     if len(context['SSL']) != 0:
-        md += tableToMarkdown("{} SSLs".format(ip_address), context['SSL'], ['SSL'])
+        md += tableToMarkdown(f"{ip_address} SSLs", context['SSL'], ['SSL'])
         threat_miner_found_results = True
 
     if not threat_miner_found_results:
@@ -366,7 +366,7 @@ def validate_ips(ips):
             invalid_ips.append(ip)
 
     if invalid_ips:
-        return_error('An invalid IP(s) was specified: {}'.format(invalid_ips))
+        return_error(f'An invalid IP(s) was specified: {invalid_ips}')
 
 
 def ip_command(**kwargs):
@@ -434,7 +434,7 @@ def ip_command(**kwargs):
 
 
 def get_file_whois_rawdata(hashed_file, threat_miner_url, verify_certificates):
-    threat_miner_ip_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 1)
+    threat_miner_ip_url_postfix = f'sample.php?q={hashed_file}&rt={1}'
     response = http_request('GET', threat_miner_url + threat_miner_ip_url_postfix, verify_certificates, DEFAULT_HEADERS)
     threatminer_results_as_array = response.get('results', [])
 
@@ -445,7 +445,7 @@ def get_file_whois_rawdata(hashed_file, threat_miner_url, verify_certificates):
 
 
 def get_file_http_rawdata(hashed_file, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 2)
+    threat_miner_domain_url_postfix = f'sample.php?q={hashed_file}&rt={2}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
     file_http_raw_data = response.get('results', [])
@@ -476,7 +476,7 @@ def get_file_http(file_http_raw_data, max_returned_array_size):
 
 
 def get_file_domains_and_ip_rawdata(hashed_file, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 3)
+    threat_miner_domain_url_postfix = f'sample.php?q={hashed_file}&rt={3}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
     domain_and_ip_raw_data = response.get('results', [])
@@ -501,7 +501,7 @@ def get_file_domains_and_ip(domain_and_ip_raw_data, max_returned_array_size):
 
 
 def get_file_mutants_rawdata(hashed_file, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 4)
+    threat_miner_domain_url_postfix = f'sample.php?q={hashed_file}&rt={4}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
     mutants_rawdata = response.get('results', [])
@@ -519,7 +519,7 @@ def get_file_mutants(mutants_rawdata, max_returned_array_size):
 
 
 def get_file_registry_keys_rawdata(hashed_file, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 5)
+    threat_miner_domain_url_postfix = f'sample.php?q={hashed_file}&rt={5}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
 
@@ -539,7 +539,7 @@ def get_file_registry_keys(file_registry_keys, max_returned_array_size):
 
 
 def get_file_AV_detection_rawdata(hashed_file, threat_miner_url, verify_certificates):
-    threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 6)
+    threat_miner_domain_url_postfix = f'sample.php?q={hashed_file}&rt={6}'
     response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
                             DEFAULT_HEADERS)
 
@@ -660,11 +660,11 @@ def get_dbot_score(amount_of_detections):
 
 
 def create_file_command_markdown(hashed_file, File_context):
-    md = '## Threat_miner file report for hashed file: {}\n'.format(hashed_file)
+    md = f'## Threat_miner file report for hashed file: {hashed_file}\n'
     threat_miner_found_results = False
 
     md += '\n'
-    md += '**File MD5:** {}'.format(hashed_file)
+    md += f'**File MD5:** {hashed_file}'
     md += '\n'
     md += '**File Architecture:** {}'.format(File_context.get('Architecture', 'Unkown'))
     md += '\n'
@@ -681,23 +681,23 @@ def create_file_command_markdown(hashed_file, File_context):
     md += '**File Analyzed:** {}'.format(File_context.get('Analyzed', 'Unkown'))
 
     if len(File_context.get('HTTP', '')) != 0:
-        md += tableToMarkdown("HTTP for hashed file {}".format(hashed_file),
+        md += tableToMarkdown(f"HTTP for hashed file {hashed_file}",
                               File_context['HTTP'], ['Domain', 'URL', 'Useragent'])
         threat_miner_found_results = True
     if len(File_context.get('Domains', '')) != 0:
-        md += tableToMarkdown("Hashed file: {} Domains".format(hashed_file),
+        md += tableToMarkdown(f"Hashed file: {hashed_file} Domains",
                               File_context['Domains'], ['Domain', 'IP'])
         threat_miner_found_results = True
     if len(File_context.get('Mutants', '')) != 0:
-        md += tableToMarkdown("Hashed file: {} Mutants".format(hashed_file),
+        md += tableToMarkdown(f"Hashed file: {hashed_file} Mutants",
                               File_context['Mutants'], ['Mutants'])
         threat_miner_found_results = True
     if len(File_context.get('Registry', '')) != 0:
-        md += tableToMarkdown("Hashed file: {} Registry keys".format(hashed_file),
+        md += tableToMarkdown(f"Hashed file: {hashed_file} Registry keys",
                               File_context['Registry'], ['Registry'])
         threat_miner_found_results = True
     if len(File_context.get('AV', '')) != 0:
-        md += tableToMarkdown("Hashed file: {} Anti Virus detections".format(hashed_file),
+        md += tableToMarkdown(f"Hashed file: {hashed_file} Anti Virus detections",
                               File_context['AV'], ['Name', 'Detection'])
         threat_miner_found_results = True
 

@@ -22,7 +22,7 @@ VERSION = "1.5.0"
 
 def _load_file(file_name):
     full_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "test_data", file_name)
-    with open(full_path, "r") as f:
+    with open(full_path) as f:
         return f.read()
 
 
@@ -72,9 +72,9 @@ def _expected_headers():
 
 def _create_instance(requests_mock, feed, feed_data, offset_data, offset=0, count=2):
     expected_headers = _expected_headers()
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId={}_v2&offset={}&count={}".format(feed, offset, count),
+    requests_mock.get(BASE_URL + f"/data?format=jsonl&feedId={feed}_v2&offset={offset}&count={count}",
                       text=feed_data, request_headers=expected_headers)
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+    requests_mock.get(BASE_URL + f"/info?format=jsonl&feedId={feed}_v2",
                       json=offset_data, request_headers=expected_headers)
     client = _create_client(feed)
 
@@ -921,7 +921,7 @@ def test_test_module_ok(requests_mock, ip_reputation):
                       request_headers=_expected_headers())
     client = _create_client("ip_reputation")
 
-    assert "ok" == _test_module_command(client)
+    assert _test_module_command(client) == "ok"
 
 
 @pytest.mark.parametrize("offset_data, context_data, offset, expected_text, expected_offset", [
@@ -994,7 +994,7 @@ def test_reset_offset_command(requests_mock, offset_data, context_data, offset, 
 
     set_integration_context(context_data)
     feed = "ip_reputation"
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+    requests_mock.get(BASE_URL + f"/info?format=jsonl&feedId={feed}_v2",
                       json=offset_data, request_headers=_expected_headers())
     client = _create_client(feed)
 
@@ -1039,7 +1039,7 @@ def test_get_offset_command(requests_mock, offset_data, context_data, expected_t
 
     set_integration_context(context_data)
     feed = "ip_reputation"
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+    requests_mock.get(BASE_URL + f"/info?format=jsonl&feedId={feed}_v2",
                       json=offset_data, request_headers=_expected_headers())
     client = _create_client(feed)
 

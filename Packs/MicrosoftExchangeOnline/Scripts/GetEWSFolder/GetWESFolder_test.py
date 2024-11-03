@@ -6,7 +6,7 @@ import demistomock as demisto
 
 
 def create_mail(subject, body):
-    return {'subject': subject, 'textBody': body, 'body': '<body>{}<\\body>'.format(body)}
+    return {'subject': subject, 'textBody': body, 'body': f'<body>{body}<\\body>'}
 
 
 mails_folder_1 = [create_mail(subject='subject 1', body='body 1'), create_mail(subject='subject 2', body='body 2')]

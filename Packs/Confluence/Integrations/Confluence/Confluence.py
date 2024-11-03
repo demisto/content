@@ -41,16 +41,14 @@ def http_request(method, full_url, data=None, params=None, is_test=False):  # pr
             params=params
         )
     except requests.exceptions.RequestException:  # This is the correct syntax
-        return_error('Failed to connect to - {} - Please check the URL'.format(full_url))
+        return_error(f'Failed to connect to - {full_url} - Please check the URL')
 
     # Handle error responses gracefully
     if res.status_code < 200 or res.status_code >= 400:
         if is_test:
             return res
 
-        return_error('Failed to execute command.\nURL: {}, Status Code: {}\nResponse: {}'.format(full_url,
-                                                                                                 res.status_code,
-                                                                                                 res.text))
+        return_error(f'Failed to execute command.\nURL: {full_url}, Status Code: {res.status_code}\nResponse: {res.text}')
 
     if is_test:
         return res
@@ -58,7 +56,7 @@ def http_request(method, full_url, data=None, params=None, is_test=False):  # pr
         return res.json()
 
     except ValueError as err:
-        return_error('Failed to parse response from service, received the following error:\n{}'.format(str(err)))
+        return_error(f'Failed to parse response from service, received the following error:\n{str(err)}')
 
 
 """

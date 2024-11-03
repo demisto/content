@@ -28,13 +28,13 @@ def http_request(url_suffix, commands=None):
     session_token = state.get('session_token')
 
     if url_suffix != '/login':
-        demisto.info('running request with url={} with commands={}'.format(BASE_URL + url_suffix, commands))
+        demisto.info(f'running request with url={BASE_URL + url_suffix} with commands={commands}')
         data = {
             'token': session_token,
             'customer_name': CUSTOMER_NAME
         }
     else:
-        demisto.info('running request with url={}'.format(BASE_URL + url_suffix))
+        demisto.info(f'running request with url={BASE_URL + url_suffix}')
         data = {}
 
     if commands is not None:
@@ -51,22 +51,22 @@ def http_request(url_suffix, commands=None):
             demisto.setIntegrationContext({'session_token': None,
                                            'token_expires': None
                                            })
-            demisto.info('{} from server during login. Clearing session token cache.'.format(res.status_code))
+            demisto.info(f'{res.status_code} from server during login. Clearing session token cache.')
 
-        raise DemistoException('HTTP {} Error in API call to ThreatX service - {}'.format(res.status_code, res.text))
+        raise DemistoException(f'HTTP {res.status_code} Error in API call to ThreatX service - {res.text}')
 
     resp_json = {}  # type:dict
     try:
         resp_json = res.json()
     except ValueError:
-        raise DemistoException('Could not parse the response from ThreatX: {}'.format(res.text))
+        raise DemistoException(f'Could not parse the response from ThreatX: {res.text}')
 
     if 'Ok' not in resp_json:
         if url_suffix == '/login':
             demisto.setIntegrationContext({'session_token': None,
                                            'token_expires': None
                                            })
-            raise DemistoException('Login response error - {}.'.format(res.text))
+            raise DemistoException(f'Login response error - {res.text}.')
 
         raise DemistoException(res.text)
 
@@ -164,8 +164,8 @@ def block_ip_command(args):
         try:
             ip_result = block_ip(ip, description)
         except Exception as error:
-            demisto.error('failed block ip: {}\n{}'.format(ip, traceback.format_exc()))
-            errors.append('Failed to block ip: {} error: {}'.format(ip, error))
+            demisto.error(f'failed block ip: {ip}\n{traceback.format_exc()}')
+            errors.append(f'Failed to block ip: {ip} error: {error}')
         else:
             results.append(ip_result)
     if results:
@@ -235,8 +235,8 @@ def blacklist_ip_command(args):
         try:
             ip_result = blacklist_ip(ip, description)
         except Exception as error:
-            demisto.error('failed adding ip: {} to balcklist\n{}'.format(ip, traceback.format_exc()))
-            errors.append('Failed to add ip: {} to blacklist error: {}'.format(ip, error))
+            demisto.error(f'failed adding ip: {ip} to balcklist\n{traceback.format_exc()}')
+            errors.append(f'Failed to add ip: {ip} to blacklist error: {error}')
         else:
             results.append(ip_result)
 
@@ -582,7 +582,7 @@ def main():
     USE_SSL = not params.get('insecure')
 
     command = demisto.command()
-    demisto.info('command is {}'.format(command))
+    demisto.info(f'command is {command}')
     args = demisto.args()
     try:
         handle_proxy()

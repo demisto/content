@@ -46,5 +46,5 @@ def test_get_source_hr_success(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=INCIDENT_DETAILS)
     source_details = ChronicleDomainIntelligenceSourcesWidgetScript.get_source_hr(INCIDENT_DETAILS[0].get('details', {})
                                                                                   .get('Sources', [])[0])
-    assert {'Category/Description': 'Observed served execute', 'Confidence': 0, 'Normalized Confidence': 'Low',
-            'Severity': 'Low'} == source_details
+    assert source_details == {'Category/Description': 'Observed served execute', 'Confidence': 0, 'Normalized Confidence': 'Low',
+            'Severity': 'Low'}

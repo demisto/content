@@ -1,12 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, List
 
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
 
-def check_if_found_incident(res: List):
+def check_if_found_incident(res: list):
     if res and isinstance(res, list) and isinstance(res[0].get('Contents'), dict):
         if 'data' not in res[0]['Contents']:
             raise DemistoException(res[0].get('Contents'))
@@ -17,9 +16,9 @@ def check_if_found_incident(res: List):
         raise DemistoException(f'failed to get incidents from xsoar.\nGot: {res}')
 
 
-def is_valid_args(args: Dict):
-    array_args: List[str] = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'owner', 'type', 'query']
-    error_msg: List[str] = []
+def is_valid_args(args: dict):
+    array_args: list[str] = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'owner', 'type', 'query']
+    error_msg: list[str] = []
     for _key, value in args.items():
         if _key in array_args:
             try:
@@ -42,7 +41,7 @@ def is_valid_args(args: Dict):
     return True
 
 
-def apply_filters(incidents: List, args: Dict):
+def apply_filters(incidents: list, args: dict):
     names_to_filter = set(argToList(args.get('name')))
     types_to_filter = set(argToList(args.get('type')))
     filtered_incidents = []
@@ -64,7 +63,7 @@ def apply_filters(incidents: List, args: Dict):
     return filtered_incidents
 
 
-def add_incidents_link(data: List):
+def add_incidents_link(data: list):
     server_url = demisto.demistoUrls().get('server')
     for incident in data:
         incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
@@ -72,9 +71,9 @@ def add_incidents_link(data: List):
     return data
 
 
-def search_incidents(args: Dict):   # pragma: no cover
+def search_incidents(args: dict):   # pragma: no cover
     if not is_valid_args(args):
-        return
+        return None
 
     if fromdate := arg_to_datetime(args.get('fromdate')):
         from_date = fromdate.isoformat()
@@ -90,23 +89,23 @@ def search_incidents(args: Dict):   # pragma: no cover
     if args.get('id'):
         args['id'] = ','.join(argToList(args.get('id'), transform=str))
 
-    res: List = execute_command('getIncidents', args, extract_contents=False)
+    res: list = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
     if incident_found is False:
         return 'Incidents not found.', {}, {}
 
     data = apply_filters(res[0]['Contents']['data'], args)
     data = add_incidents_link(data)
-    headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
+    headers: list[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
     if args.get("add_fields_to_context"):
-        add_headers: List[str] = args.get("add_fields_to_context", '').split(",")
+        add_headers: list[str] = args.get("add_fields_to_context", '').split(",")
         headers = headers + add_headers
     md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
     return md, data, res
 
 
 def main():  # pragma: no cover
-    args: Dict = demisto.args()
+    args: dict = demisto.args()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
         if search_results_label := args.get('searchresultslabel'):

@@ -7,7 +7,7 @@ SCHEDULED_TASK_ID_CTXKEY = "ScheduledTaskID"
 
 dArgs = demisto.args()
 ssh_server = dArgs.pop("SSHValidationServer")
-dArgs['command'] = '!IncapWhitelistCompliance SSHValidationServer={}'.format(ssh_server)
+dArgs['command'] = f'!IncapWhitelistCompliance SSHValidationServer={ssh_server}'
 
 res = demisto.executeCommand('scheduleEntry', dArgs)
 if isError(res[0]):

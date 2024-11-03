@@ -1,6 +1,7 @@
 import json
 import os
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 import CommonServerPython
 import FortiGate
@@ -21,7 +22,7 @@ def load_mock_response(file_name: str) -> dict[str, Any]:
     """
     file_path = os.path.join(TEST_DATA, file_name)
 
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -187,11 +188,11 @@ def test_get_service_type_success(args: dict[str, Any], expected_result: str):
         (
             {},
             (
-                (
+                
                     "No protocol type arguments were fully set."
                     " Please provide arguments from one of the following protocol types:"
                     " ['TCP/UDP/SCTP', 'IP', 'ICMP/ICMP6']"
-                )
+                
             ),
         ),
         (

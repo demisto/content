@@ -254,7 +254,7 @@ def test_fetch_partitions(mocker, demisto_args, cluster_tree, topic):
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
     result = fetch_partitions(KAFKA, demisto_args)
-    assert {'Name': topic, 'Partition': cluster_tree[topic]} == result.outputs
+    assert result.outputs == {'Name': topic, 'Partition': cluster_tree[topic]}
 
 
 @pytest.mark.parametrize('demisto_args', [{'topic': 'some-topic'}, {'topic': None}])
@@ -274,7 +274,7 @@ def test_fetch_partitions_no_topics(mocker, demisto_args):
     assert f'Topic {demisto_args["topic"]} was not found in Kafka' in str(exception_info.value)
 
 
-class MessageMock(object):
+class MessageMock:
     """Mocked message class for easier mocking"""
     message = None
     offset_value = None
@@ -842,11 +842,11 @@ def test_ssl_configuration():
     }
     assert kafka.conf_consumer == expected_consumer_conf
     assert kafka.conf_producer == expected_producer_conf
-    with open(kafka.ca_path, 'r') as f:
+    with open(kafka.ca_path) as f:
         assert f.read() == 'ca_cert'
-    with open(kafka.client_cert_path, 'r') as f:
+    with open(kafka.client_cert_path) as f:
         assert f.read() == 'client_cert'
-    with open(kafka.client_key_path, 'r') as f:
+    with open(kafka.client_key_path) as f:
         assert f.read() == 'client_cert_key'
     os.remove(kafka.ca_path)
     os.remove(kafka.client_cert_path)

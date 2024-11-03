@@ -175,7 +175,7 @@ def get_serialized_headers(x_headers):
 
     for k, v in x_headers.items():
 
-        if not k.strip().lower() in res:
+        if k.strip().lower() not in res:
 
             res[k.lower()] = []
 
@@ -901,7 +901,7 @@ def main():
             fetch_incidents_command()
     except Exception as e:
         return_error(
-            "Unable to perform command : {}, Reason: {}".format(demisto.command(), e)
+            f"Unable to perform command : {demisto.command()}, Reason: {e}"
         )
 
 

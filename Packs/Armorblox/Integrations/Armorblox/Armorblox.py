@@ -128,7 +128,7 @@ def fetch_incidents_command(client):
     last_run = demisto.getLastRun()
     start_time: Any
     # pageToken fetched from demisto lastRun
-    pageToken = int()
+    pageToken = 0
     incidents = []
     if 'start_time' not in last_run.keys():
         pageToken = -1

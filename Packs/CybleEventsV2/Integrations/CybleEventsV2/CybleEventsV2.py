@@ -244,7 +244,7 @@ def format_incidents(alerts, hide_cvv_expiry):
                 "alert_group_id": "{}".format(alert['alert_group_id']),
                 "event_id": "{}".format(alert['id']),
                 "data_message": json.dumps(alert['data_message']),
-                "keyword": "{}".format(keyword),
+                "keyword": f"{keyword}",
                 "created_at": "{}".format(alert['created_at']),
                 "status": "{}".format(alert['status']),
                 "mirrorInstance": demisto.integrationInstance()

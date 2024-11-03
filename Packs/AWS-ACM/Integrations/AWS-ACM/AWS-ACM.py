@@ -94,7 +94,7 @@ def describe_certificate(args, aws_client):
     try:
         raw = json.loads(json.dumps(response['Certificate'], cls=DatetimeEncoder))
     except ValueError as e:
-        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+        return_error(f'Could not decode/encode the raw response - {e}')
 
     if raw:
         raw.update({'Region': obj['_user_provided_options']['region_name']})
@@ -264,8 +264,7 @@ def main():
 
     except Exception as e:
         LOG(str(e))
-        return_error('Error has occurred in the AWS ACM Integration: {code}\n {message}'.format(
-            code=type(e), message=str(e)))
+        return_error(f'Error has occurred in the AWS ACM Integration: {type(e)}\n {str(e)}')
 
 
 from AWSApiModule import *  # noqa: E402

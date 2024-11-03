@@ -17,7 +17,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import traceback
 import urllib3
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1004,7 +1003,7 @@ def kmsat_user_events_list_command(
     """
     response = client.user_events(args)
 
-    data: List[Dict] = response.get("data") or []
+    data: List[dict] = response.get("data") or []
     return CommandResults(
         outputs_prefix="KMSAT.UserEvents",
         outputs_key_field="id",
@@ -1031,7 +1030,7 @@ def kmsat_user_event_types_list_command(
     """
     response = client.user_event_types(args)
 
-    data: List[Dict] = response.get("data") or []
+    data: List[dict] = response.get("data") or []
     return CommandResults(
         outputs_prefix="KMSAT.UserEventTypes",
         outputs_key_field="id",
@@ -1058,7 +1057,7 @@ def kmsat_user_event_create_command(
     """
     response = client.create_user_event(args)
 
-    data: List[Dict] = response.get("data") or []
+    data: List[dict] = response.get("data") or []
     return CommandResults(
         outputs_prefix="KMSAT.UserEventCreate",
         outputs_key_field="id",
@@ -1104,7 +1103,7 @@ def kmsat_user_event_list_command(
     event_id: str = str(args.get("id"))
     response = client.user_event(event_id)
 
-    data: List[Dict] = response.get("data") or []
+    data: List[dict] = response.get("data") or []
     return CommandResults(
         outputs_prefix="KMSAT.UserEvent",
         outputs_key_field="id",
@@ -1129,7 +1128,7 @@ def kmsat_user_event_status_list_command(
 
     request_id: str = str(args.get("id"))
     response = client.user_event_status(request_id)
-    data: List[Dict] = response.get("data") or []
+    data: List[dict] = response.get("data") or []
     markdown = tableToMarkdown(
         "KMSAT User Event Status",
         data,
@@ -1166,7 +1165,7 @@ def kmsat_user_event_statuses_list_command(
     params = remove_empty_elements(params)
 
     response = client.user_event_statuses(params)
-    data: List[Dict] = response.get("data") or []
+    data: List[dict] = response.get("data") or []
     markdown = tableToMarkdown(
         "KMSAT User Event Statuses",
         data,
@@ -1204,7 +1203,7 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
     """
 
     message: str = ""
-    params: Dict = {}
+    params: dict = {}
     try:
         client.kmsat_account_info()
         message = "ok"

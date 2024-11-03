@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import requests
 
-from typing import Callable
+from collections.abc import Callable
 
 # change the below to your default playground id while testing from your local machine
 default_playground_id = "122c7bff-feae-4177-867e-37e2096cd7d9"

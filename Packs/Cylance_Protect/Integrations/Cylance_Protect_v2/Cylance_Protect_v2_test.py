@@ -364,7 +364,7 @@ def test_get_device_by_hostname(mocker):
 
     contents = demisto_results.call_args[0][0]
     assert sorted(list(EXPECTED_HOSTNAME.items())) == sorted(
-        list(contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === ' 'obj.ID)').items()))
+        list(contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === obj.ID)').items()))
 
 
 def test_update_device(mocker):
@@ -410,8 +410,8 @@ def test_get_device_threats(mocker):
     get_device_threats()
 
     contents = demisto_results.call_args[0][0]
-    assert '0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09' == \
-           contents.get('EntryContext').get('File')[0].get('SHA256')
+    assert contents.get('EntryContext').get('File')[0].get('SHA256') == \
+           '0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09'
 
 
 def test_get_policies(mocker):
@@ -546,8 +546,8 @@ def test_get_threat(mocker):
     get_threat()
 
     contents = demisto_results.call_args[0][0]
-    assert '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE' == \
-           contents.get('EntryContext').get('File')[0].get('SHA256')
+    assert contents.get('EntryContext').get('File')[0].get('SHA256') == \
+           '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE'
 
 
 def test_get_threats(mocker):
@@ -567,8 +567,8 @@ def test_get_threats(mocker):
     get_threats()
 
     contents = demisto_results.call_args[0][0]
-    assert '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE' == contents.get('EntryContext').get(
-        'File')[0].get('SHA256')
+    assert contents.get('EntryContext').get(
+        'File')[0].get('SHA256') == '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE'
 
 
 def test_get_threat_devices(mocker):
@@ -616,7 +616,7 @@ def test_get_list(mocker):
     get_list()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_LIST == contents.get('EntryContext').get('File')[0]
+    assert contents.get('EntryContext').get('File')[0] == EXPECTED_LIST
 
 
 def test_get_list_entry_by_hash(mocker):

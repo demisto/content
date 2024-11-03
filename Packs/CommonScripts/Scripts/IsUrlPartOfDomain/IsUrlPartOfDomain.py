@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import List, Dict
 
 from CommonServerUserPython import *
 
@@ -18,7 +17,7 @@ def main(domains: str, urls: str) -> CommandResults:
     urls = argToList(urls)
     domains = set(argToList(domains))
 
-    outputs: List[Dict] = list()
+    outputs: list[dict] = list()
     for url in urls:
         results = demisto.executeCommand('ExtractDomainFromUrlAndEmail', {'input': url.lower()})
         if is_error(results):

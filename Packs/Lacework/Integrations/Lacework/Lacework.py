@@ -34,8 +34,8 @@ try:
                                    api_key=LACEWORK_API_KEY,
                                    api_secret=LACEWORK_API_SECRET)
 except Exception as e:
-    demisto.results("Lacework API authentication failed. Please validate Account, \
-                    Sub-Account, API Key, and API Secret. Error: {}".format(e))
+    demisto.results(f"Lacework API authentication failed. Please validate Account, \
+                    Sub-Account, API Key, and API Secret. Error: {e}")
 
 ''' HELPER FUNCTIONS '''
 
@@ -287,7 +287,7 @@ def get_container_vulnerabilities():
                 break
     except ApiError as e:
         raise Exception(
-            'Error: {}'.format(e),
+            f'Error: {e}',
             'The vulnerability search parameters must follow the '
             'structure outlined in the Lacework API documentation: '
             'https://yourlacework.lacework.net/api/v2/docs#tag/Vulnerabilities'
@@ -338,7 +338,7 @@ def get_host_vulnerabilities():
                 break
     except ApiError as e:
         raise Exception(
-            'Error: {}'.format(e),
+            f'Error: {e}',
             'The vulnerability search parameters must follow the '
             'structure outlined in the Lacework API documentation: '
             'https://yourlacework.lacework.net/api/v2/docs#tag/Vulnerabilities'

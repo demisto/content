@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -113,7 +113,7 @@ class Client(BaseClient):
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client, args: Dict[str, Any]) -> str:
+def test_module(client: Client, args: dict[str, Any]) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -131,7 +131,7 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
     return 'ok'
 
 
-def get_lists_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_lists_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     get lists command: Returns available lists for matching pattern
 
@@ -171,7 +171,7 @@ def get_lists_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+def get_list_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     get list command: Returns list details and content
 
@@ -231,7 +231,7 @@ def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | s
     )
 
 
-def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+def get_list_entry_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     get list entry command: Returns a single entry form a list
 
@@ -279,7 +279,7 @@ def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+def modify_list_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     modify list command: Modify the list content
 
@@ -347,7 +347,7 @@ def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
     )
 
 
-def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+def insert_entry_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     insert entry command: Insert an entry to the list
 
@@ -401,7 +401,7 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+def delete_entry_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     delete entry command: Delete the list entry
 
@@ -447,7 +447,7 @@ def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def create_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+def create_list_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     create list command: Create an empty list
 
@@ -495,7 +495,7 @@ def create_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
     )
 
 
-def delete_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+def delete_list_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """
     create list command: Create an empty list
 

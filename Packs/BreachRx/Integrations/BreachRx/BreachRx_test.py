@@ -12,7 +12,6 @@ from BreachRx import (
     get_actions_for_incident
 )
 
-import io
 from CommonServerPython import json
 import requests_mock
 from graphql.language import print_ast
@@ -20,7 +19,7 @@ import pytest
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -137,10 +136,10 @@ def test_create_incident_command_no_description():
 
         create_incident_request = m.request_history[-1]
         assert incident_name == create_incident_request.json()['variables']['name']
-        assert """An Incident copied from the Palo Alto Networks XSOAR platform.
+        assert create_incident_request.json()['variables']['description'] == """An Incident copied from the Palo Alto Networks XSOAR platform.
             <br>
             <br>
-            XSOAR Incident Name: 1""" == create_incident_request.json()['variables']['description']
+            XSOAR Incident Name: 1"""
 
     assert results.outputs_prefix == "BreachRx.Incident"
     assert results.outputs_key_field == "id"
@@ -165,7 +164,7 @@ def test_create_incident_command_no_incident_name():
         )
 
         create_incident_request = m.request_history[-1]
-        assert "1" == create_incident_request.json()['variables']['name']
+        assert create_incident_request.json()['variables']['name'] == "1"
         assert incident_description == create_incident_request.json()['variables']['description']
 
     assert results.outputs_prefix == "BreachRx.Incident"

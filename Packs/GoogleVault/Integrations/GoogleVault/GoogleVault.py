@@ -55,7 +55,7 @@ def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
     except Exception as e:
         LOG('An error occurred in the \'get_credentials\' function.')
         err_msg = 'An error occurred while trying to construct an OAuth2 ' \
-                  'ServiceAccountCredentials object - {}'.format(str(e))
+                  f'ServiceAccountCredentials object - {str(e)}'
         return_error(err_msg)
     return delegated_creds
 
@@ -460,7 +460,7 @@ def get_storage_credentials():
     except Exception as e:
         LOG('An error occurred in the \'get_storage_credentials\' function.')
         err_msg = 'An error occurred while trying to construct an OAuth2 ' \
-                  'Storage Credentials object - {}'.format(str(e))
+                  f'Storage Credentials object - {str(e)}'
         return_error(err_msg)
     return crads
 
@@ -879,8 +879,7 @@ def remove_account_from_hold_command():
         account_id = demisto.getArg('accountID')
         _ = remove_held_account(service, matter_id, hold_id, account_id)
 
-        msg_to_usr = 'Account {} was successfully removed from hold {} in matter {}'.format(account_id, hold_id,
-                                                                                            matter_id)
+        msg_to_usr = f'Account {account_id} was successfully removed from hold {hold_id} in matter {matter_id}'
         context_output = []
         context_output.append({
             'matterID': matter_id,

@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Any, Dict, List
+from typing import Any
 
 import urllib3
 
@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
+    def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         params = demisto.params()
         if params.get('https'):
             return self._http_request(
@@ -42,14 +42,14 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     # ip command: Returns IP details for a list of IPs
 
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     ip_data = []
     for ip in ips:

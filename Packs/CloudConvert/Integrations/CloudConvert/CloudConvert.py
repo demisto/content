@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 import urllib3
 
-from typing import Any, Dict
+from typing import Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -16,7 +16,7 @@ class Client(BaseClient):
         super().__init__(url, headers=headers, verify=verify, proxy=proxy)
 
     @logger
-    def upload_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def upload_url(self, arguments: dict[str, Any]) -> dict[str, Any]:
         """
         Upload the file given as url to the API's server, for later conversion.
         Note - this operation is called 'import' by the API.
@@ -36,7 +36,7 @@ class Client(BaseClient):
         )
 
     @logger
-    def upload_entry_id(self, file_path: str, file_name: str) -> Dict[str, Any]:
+    def upload_entry_id(self, file_path: str, file_name: str) -> dict[str, Any]:
         """
         Upload the file given as a war room entry id to the API's server, for later conversion
         Note - this operation is called 'import' by the API.
@@ -85,7 +85,7 @@ class Client(BaseClient):
         return response_get_form
 
     @logger
-    def convert(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def convert(self, arguments: dict[str, Any]) -> dict[str, Any]:
         """
         Convert a file to desired format, given the file was priorly uploaded to the API's server
         Args:
@@ -104,7 +104,7 @@ class Client(BaseClient):
             ok_codes=(200, 201, 422),
         )
 
-    def check_status(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def check_status(self, arguments: dict[str, Any]) -> dict[str, Any]:
         """
         Check the status of a request sent to the API's server
         Args:
@@ -123,7 +123,7 @@ class Client(BaseClient):
         )
 
     @logger
-    def download_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def download_url(self, arguments: dict[str, Any]) -> dict[str, Any]:
         """
         Download a converted file to a url
         Note - this operation is called 'export' by the API.
@@ -177,7 +177,7 @@ class Client(BaseClient):
 
 
 @logger
-def raise_error_if_no_data(results: Dict[str, Any]):
+def raise_error_if_no_data(results: dict[str, Any]):
     """
     This function checks if No 'data' field was returned from the request, meaning the input was invalid
     Args:
@@ -196,7 +196,7 @@ def raise_error_if_no_data(results: Dict[str, Any]):
 
 
 @logger
-def upload_command(client: Client, arguments: Dict[str, Any]):
+def upload_command(client: Client, arguments: dict[str, Any]):
     """
     Upload a file to the API for later conversion
     Args:
@@ -245,7 +245,7 @@ def upload_command(client: Client, arguments: Dict[str, Any]):
 
 
 @logger
-def convert_command(client: Client, arguments: Dict[str, Any]):
+def convert_command(client: Client, arguments: dict[str, Any]):
     """
     Convert a file that was priorly uploaded
     Args:
@@ -277,7 +277,7 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
 
 
 @logger
-def check_status_command(client: Client, arguments: Dict[str, Any]):
+def check_status_command(client: Client, arguments: dict[str, Any]):
     """
     Check status of an existing operation using it's task id
     Args:
@@ -348,7 +348,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         )
 
 
-def modify_results_dict(results_data: Dict[str, Any]):
+def modify_results_dict(results_data: dict[str, Any]):
     """
     The results of the specific file converted/uploaded/downloaded are sub-values of some keys,
     so parse the results field to the outer scope of the dict
@@ -365,7 +365,7 @@ def modify_results_dict(results_data: Dict[str, Any]):
 
 
 @logger
-def download_command(client: Client, arguments: Dict[str, Any]):
+def download_command(client: Client, arguments: dict[str, Any]):
     """
     Download a converted file back to the user, either as a url or directly as a war room entry
     Note: in order to get the resulted url/entry of the file you need to use a check-status command as well,
@@ -432,7 +432,7 @@ def test_module(client: Client):
                'many requests. Please try again later.'
 
 
-def format_operation_title(results: Dict[str, Any]):
+def format_operation_title(results: dict[str, Any]):
     """
     This function is being used in order to change the titles of the operations that are done by the API and are
     returned in the response to titles that makes more sense for the users actions, and matches the API's use in
@@ -449,7 +449,7 @@ def format_operation_title(results: Dict[str, Any]):
 
     operation = results['data']['operation']
 
-    results['data']['operation'] = title_exchange_dict[operation] if operation in title_exchange_dict.keys() \
+    results['data']['operation'] = title_exchange_dict[operation] if operation in title_exchange_dict \
         else operation
 
 

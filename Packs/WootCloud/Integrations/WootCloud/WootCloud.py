@@ -92,7 +92,7 @@ class Client(BaseClient):
             url = 'anomalies'
             prefix = 'WootCloud.AnomalyAlert'
         else:
-            raise ValueError('Type error: {} is not one of the types'.format(type))
+            raise ValueError(f'Type error: {type} is not one of the types')
 
         payload = {
             "starttime": str(start),
@@ -144,7 +144,7 @@ def test_module(client):
         client._http_request('GET', 'wootassets')
         return 'ok'
     except Exception as e:
-        return 'Test failed: {}'.format(e)
+        return f'Test failed: {e}'
 
 
 def fetch_single_alert(client, alert_id, type):
@@ -159,7 +159,7 @@ def fetch_single_alert(client, alert_id, type):
         url = 'anomalies'
         prefix = 'WootCloud.AnomalyAlert'
     else:
-        raise ValueError('{} is not one of the types'.format(type))
+        raise ValueError(f'{type} is not one of the types')
     result = client._http_request('GET', f'events/{url}/{alert_id}')
     return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
 

@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 
 import pytz
 import urllib3
@@ -275,7 +274,7 @@ def get_time_parameter(arg: Optional[str]):
 
 
 def get_page_and_limit_args(args: Dict, minimum_page_size: int = MINIMUM_POSITIVE_VALUE,
-                            maximum_page_size: int = MAX_PAGE_SIZE_VALUE) -> Tuple[int, int]:
+                            maximum_page_size: int = MAX_PAGE_SIZE_VALUE) -> tuple[int, int]:
     """
     Receives demisto argument, and extract the relevant arguments for limits and paging:
     'page', 'page_size', 'limit'.

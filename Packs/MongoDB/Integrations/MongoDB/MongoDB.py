@@ -442,7 +442,7 @@ def format_sort(sort_str: str) -> list:
         if ':' not in field:
             raise ValueError("`sort` is not in the correct format.")
         field, type = field.split(':', 1)
-        if type not in SORT_TYPE_DICT.keys():
+        if type not in SORT_TYPE_DICT:
             raise ValueError("`sort` is not in the correct format. Please make sure it's either 'asc' or 'desc'")
         sort_list.append((field, SORT_TYPE_DICT[type]))
     return sort_list

@@ -8,7 +8,8 @@ This integration based on:
 """
 
 
-from typing import Any, Callable, Dict, List
+from typing import Any
+from collections.abc import Callable
 
 from ansible_runner import Runner, run
 from paramiko import (AuthenticationException, AutoAddPolicy, SSHClient,
@@ -20,7 +21,7 @@ disable_warnings()
 
 ''' CONSTANTS '''
 
-DemistoResult = Dict[str, Any]
+DemistoResult = dict[str, Any]
 IMAGE_PLAYBOOKS_PATH = '/home/demisto/ansible'
 
 
@@ -105,7 +106,7 @@ class TidyClient:
         """
         return self._execute(playbook_name="osx-command-line-tools")
 
-    def install_environments(self, env: str, versions: List[str], global_versions: List[str]) -> Runner:
+    def install_environments(self, env: str, versions: list[str], global_versions: list[str]) -> Runner:
         """ Execute install-environments playbook, Available envs defined by Envs object.
 
         Args:
@@ -123,7 +124,7 @@ class TidyClient:
                                  "global_versions": global_versions
                              })
 
-    def homebrew(self, apps: List[str], cask_apps: List[str], homebrew_taps: List[str]) -> Runner:
+    def homebrew(self, apps: list[str], cask_apps: list[str], homebrew_taps: list[str]) -> Runner:
         """ Execute homebrew playbook.
 
         Args:
@@ -636,7 +637,7 @@ def tidy_python_env_command(client: TidyClient, **kwargs) -> DemistoResult:
 def main() -> None:
     # Commands definition
     command = demisto.command()
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         "test-module": test_module,
         "tidy-pyenv": tidy_pyenv_command,
         "tidy-goenv": tidy_goenv_command,

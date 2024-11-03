@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 """IMPORTS"""
 
 
-from typing import Dict, Optional, Union
 
 import urllib3
 from requests import Response
@@ -27,12 +26,12 @@ class Client(BaseClient):
         self,
         method: str,
         url_suffix: str,
-        params: Optional[Dict] = None,
-        data: Optional[Dict] = None,
-        json_data: Optional[Dict] = None,
+        params: dict | None = None,
+        data: dict | None = None,
+        json_data: dict | None = None,
         timeout: float = 10,
         resp_type: str = "json",
-    ) -> Union[Response, Dict]:
+    ) -> Response | dict:
         """
             Performs API request to the specified endpoint and reutrns the full Response object
 
@@ -84,7 +83,7 @@ def test_module_command(client: Client, *_) -> str:
     url_suffix: str = "/admin/health"
 
     try:
-        response: Union[Response, Dict] = client.make_request(method=method, url_suffix=url_suffix, resp_type="response")
+        response: Response | dict = client.make_request(method=method, url_suffix=url_suffix, resp_type="response")
         if isinstance(response, Response) and response.status_code == 200:
             return "ok"
         raise DemistoException(f"Test module failed, {response}")
@@ -388,7 +387,7 @@ def stop_scan_command(client: Client, id: str) -> CommandResults:
     method = "POST"
     endpoint = f"/v4/integration/scan/{id}/stop"
     try:
-        response: Union[Response, Dict] = client.make_request(method=method, url_suffix=endpoint, resp_type="response")
+        response: Response | dict = client.make_request(method=method, url_suffix=endpoint, resp_type="response")
         if isinstance(response, Response) and response.status_code == 202:
             command_results = CommandResults(readable_output='Scan Stop successfully.')
             return command_results

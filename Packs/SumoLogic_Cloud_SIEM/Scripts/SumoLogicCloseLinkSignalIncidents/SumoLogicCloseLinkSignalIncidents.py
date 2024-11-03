@@ -9,7 +9,7 @@ Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
 """
 
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
@@ -18,8 +18,8 @@ import traceback
 ''' COMMAND FUNCTION '''
 
 
-def close_linked_signal_incidents_command(args: Dict[str, Any]) -> CommandResults:
-    if not ('id' in args):
+def close_linked_signal_incidents_command(args: dict[str, Any]) -> CommandResults:
+    if 'id' not in args:
         cur_incident = demisto.incident()
         # print(f"Get current incident {cur_incident}")
     else:

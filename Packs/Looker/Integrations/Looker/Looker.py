@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict
 import requests
 import traceback
 import json
@@ -33,7 +32,7 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
 BASE_URL = SERVER + '/api/3.0'
 # Request headers (preparation)
-HEADERS: Dict[str, str] = {}
+HEADERS: dict[str, str] = {}
 
 
 ''' HELPER FUNCTIONS '''
@@ -170,7 +169,7 @@ def parse_filters_arg(filters_arg_value):
     filters_list = argToList(filters_arg_value, ';')
     filters_list = [elem for elem in [x.strip() for x in filters_list] if elem]  # Remove empty elems
     if not filters_list:
-        return
+        return None
 
     filters = {}
     filters_and_indices_list = zip(range(len(filters_list)), filters_list)  # Track element index for error messages

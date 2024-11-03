@@ -527,21 +527,21 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
     else:
         target = '\n'.join([f'<ComputerID>{computer_id}</ComputerID>' for computer_id in computer_ids])
 
-    request_body = """<?xml version="1.0" encoding="UTF-8"?>
+    request_body = f"""<?xml version="1.0" encoding="UTF-8"?>
     <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
      <SourcedFixletAction>
        <SourceFixlet>
-         <Sitename>{}</Sitename>
-         <FixletID>{}</FixletID>
-         <Action>{}</Action>
+         <Sitename>{site_name}</Sitename>
+         <FixletID>{fixlet_id}</FixletID>
+         <Action>{action_id}</Action>
        </SourceFixlet>
        <Target>
-         {}
+         {target}
        </Target>
       <Parameter Name="_BESClient_EMsg_Detail">1000</Parameter>
      </SourcedFixletAction>
     </BES>
-    """.format(site_name, fixlet_id, action_id, target)
+    """
     LOG(f'deploy_patch - request: {request_body}')
 
     fullurl = BASE_URL + '/api/actions'

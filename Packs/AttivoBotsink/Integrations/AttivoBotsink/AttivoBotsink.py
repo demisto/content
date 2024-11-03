@@ -263,9 +263,8 @@ if demisto.command() == 'attivo-get-events':
     severity_start = attivo_api.convert_severity_string(severity_string)
     attacker_ips = [attacker_ip]
 
-    demisto.info("Pulling events for {src_ip} and severity {severity} from {start_date} "
-                 "to {end_date}".format(src_ip=attacker_ip, severity=severity_start,
-                                        start_date=timestampStart, end_date=timestampEnd))
+    demisto.info(f"Pulling events for {attacker_ip} and severity {severity_start} from {timestampStart} "
+                 f"to {timestampEnd}")
 
     events = attivo_api.get_events(severity_start=severity_start, severity_end=severity_end,
                                    timestamp_start=timestampStart, timestamp_end=timestampEnd,
@@ -320,8 +319,7 @@ if demisto.command() == 'fetch-incidents':
     if last_run_time is None or last_run_time == 0:
         last_run_time = first_fetch_seconds
 
-    demisto.info("Attivo fetch-incidents: Last run time {}, severity {}:{}".format(last_run_time, FETCH_SEVERITY,
-                                                                                   severity_start))
+    demisto.info(f"Attivo fetch-incidents: Last run time {last_run_time}, severity {FETCH_SEVERITY}:{severity_start}")
 
     new_last_run = 0.0
     incidents = []
@@ -462,8 +460,8 @@ if demisto.command() == 'attivo-run-playbook':
             status_text = playbook_status['status']
             if status_text == 'submitted':
                 status = True
-                status_message = "Attivo playbook '{}' (ID={}) has been run with attacker " \
-                                 "IP {}".format(playbook_name, playbook_id, attacker_ip)
+                status_message = f"Attivo playbook '{playbook_name}' (ID={playbook_id}) has been run with attacker " \
+                                 f"IP {attacker_ip}"
             else:
                 status = False
                 status_message = f"Attivo playbook has not been run.  Status = '{status_text}'"
@@ -596,8 +594,7 @@ if demisto.command() == 'attivo-check-user':
     }
 
     demisto.info(
-        "User {user}, deceptive = {is_deceptive}, group(s) = {groups}".format(user=user, is_deceptive=is_deceptive,
-                                                                              groups=in_groups))
+        f"User {user}, deceptive = {is_deceptive}, group(s) = {in_groups}")
     demisto.results(entry)
     logout_status = attivo_api.logout()
 
@@ -718,8 +715,7 @@ if demisto.command() == 'attivo-check-host':
                 this_rule = rule
                 is_deceptive = True
                 demisto.info(
-                    "Attivo BOTSink IP/Host match ({ip}) ({name}) ({user_defined}) ({mac}) ({dhcp}) ({vlan})".format(
-                        ip=this_ip, name=this_host_name, user_defined=user_defined, mac=mac, dhcp=dhcp, vlan=vlan))
+                    f"Attivo BOTSink IP/Host match ({this_ip}) ({this_host_name}) ({user_defined}) ({mac}) ({dhcp}) ({vlan})")
                 host_info = {'ip': this_ip, 'name': this_host_name, 'user_defined': user_defined, 'mac': mac,
                              'dhcp': dhcp, 'vlan': vlan}
                 break
@@ -749,9 +745,7 @@ if demisto.command() == 'attivo-check-host':
                     this_rule = rule
                     is_deceptive = True
                     demisto.info(
-                        "Attivo ThreatDirect IP match ({ip}) ({name}) ({mac}) ({dhcp}) ({vlan}) ({td_name}) ({td_type})".format(
-                            ip=this_ip, name=this_host_name, mac=mac, dhcp=dhcp, vlan=vlan, td_name=td_name,
-                            td_type=td_type))
+                        f"Attivo ThreatDirect IP match ({this_ip}) ({this_host_name}) ({mac}) ({dhcp}) ({vlan}) ({td_name}) ({td_type})")
                     host_info = {'ip': this_ip, 'name': this_host_name, 'mac': mac, 'dhcp': dhcp, 'vlan': vlan,
                                  'td_name': td_name, 'td_type': td_type}
                     break

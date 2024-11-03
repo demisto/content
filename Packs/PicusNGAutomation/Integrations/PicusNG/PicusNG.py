@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -39,9 +39,9 @@ class Client(BaseClient):
 
         return picus_accessToken
 
-    def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None,
-                     json_data: Optional[Dict] = None, additional_headers: Optional[Dict] = None,
-                     timeout: Optional[int] = None, data: Optional[Dict] = None):
+    def http_request(self, method: str, url_suffix: str, params: Optional[dict] = None,
+                     json_data: Optional[dict] = None, additional_headers: Optional[dict] = None,
+                     timeout: Optional[int] = None, data: Optional[dict] = None):
         headers = {**additional_headers, **self._headers} if additional_headers else self._headers
         return self._http_request(
             method=method,
@@ -66,7 +66,7 @@ class Client(BaseClient):
     def get_template_list(self, query_parameters: str):
         return self.http_request(method="GET", url_suffix="/v1/templates" + query_parameters)
 
-    def create_simulation(self, picus_post_data_simulation: Dict):
+    def create_simulation(self, picus_post_data_simulation: dict):
         return self.http_request(method="POST", url_suffix="/v1/simulations", json_data=picus_post_data_simulation)
 
     def get_simulation_list(self, query_parameters: str):
@@ -149,7 +149,7 @@ def get_agent_list_command(client: Client) -> CommandResults:
 
 def get_agent_detail_command(client: Client) -> CommandResults:
     agent_id = demisto.args().get('id')
-    tmp_attack_modules: Dict = {}
+    tmp_attack_modules: dict = {}
 
     picus_endpoint_response = client.get_agent_detail(agent_id)
     picus_agent_detail = picus_endpoint_response
@@ -211,7 +211,7 @@ def get_template_list_command(client: Client) -> CommandResults:
 
 
 def create_simulation_command(client: Client) -> CommandResults:
-    picus_simulation_creation_results: Dict = {}
+    picus_simulation_creation_results: dict = {}
 
     agent_id = int(demisto.args().get('agent_id'))
     simulation_description = demisto.args().get('description')
@@ -426,7 +426,7 @@ def get_simulation_actions_command(client: Client) -> CommandResults:
     threat_ids = demisto.args().get('threat_ids')
     threat_ids = list(threat_ids.split(","))
     picus_action_raw_results = ""
-    picus_action_results: Dict[str, Any] = {"results": []}
+    picus_action_results: dict[str, Any] = {"results": []}
 
     offset = demisto.args().get('offset')
     limit = demisto.args().get('limit')
@@ -478,8 +478,8 @@ def get_mitigation_devices_command(client: Client) -> CommandResults:
 def get_signature_list_command(client: Client) -> CommandResults:
     device_id = demisto.args().get('device_id')
     action_ids = demisto.args().get('action_ids')
-    picus_signature_raw_results: Dict[str, Any] = {"results": []}
-    picus_signature_all_results: Dict[str, Any] = {"results": []}
+    picus_signature_raw_results: dict[str, Any] = {"results": []}
+    picus_signature_all_results: dict[str, Any] = {"results": []}
 
     action_ids = action_ids.split(",")
     for action in action_ids:

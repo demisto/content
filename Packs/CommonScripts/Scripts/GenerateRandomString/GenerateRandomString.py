@@ -9,7 +9,7 @@ MAX_LENGTH = 10000
 
 def set_length(length):
     if length <= 0:
-        return_error("Length must be greater than 0. Maximum value is {}.".format(MAX_LENGTH))
+        return_error(f"Length must be greater than 0. Maximum value is {MAX_LENGTH}.")
 
     return min(length, MAX_LENGTH)
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import urllib3
 
@@ -22,7 +22,7 @@ class MobileIronCloudClient(BaseClient):
         MobileIronCloudClient class to interact with the MobileIron Cloud Service API
     """
 
-    def get_device_by_id(self, device_id: str, partition_id: str = None) -> Dict[str, Any]:
+    def get_device_by_id(self, device_id: str, partition_id: str = None) -> dict[str, Any]:
         """
             Gets a single device by id
         """
@@ -36,7 +36,7 @@ class MobileIronCloudClient(BaseClient):
         return response['result']
 
     def get_device_data_page(self, start: int = 0, rows: int = 50, query: str = None,
-                             partition_id: str = None) -> Dict:
+                             partition_id: str = None) -> dict:
         """
             Gets all the pages of device data from MobileIron Cloud
         """
@@ -51,7 +51,7 @@ class MobileIronCloudClient(BaseClient):
             }
         )
 
-    def get_devices_data(self, partition_id: str, query: str = None, max_fetch: int = None) -> List[Any]:
+    def get_devices_data(self, partition_id: str, query: str = None, max_fetch: int = None) -> list[Any]:
         """
             Gets the Devices Data from MobileIron Cloud
 
@@ -86,7 +86,7 @@ class MobileIronCloudClient(BaseClient):
 
         return results
 
-    def execute_device_action(self, action: str, device_id: str) -> Dict[str, Any]:
+    def execute_device_action(self, action: str, device_id: str) -> dict[str, Any]:
         """Execute actions to MobileIron Cloud based on the conditions.
 
         :type action: ``str``
@@ -108,7 +108,7 @@ class MobileIronCloudClient(BaseClient):
         )
 
     def send_message(self, device_id: str, partition_id: str, message: str,
-                     message_type: str = None, subject: str = None) -> Dict[str, Any]:
+                     message_type: str = None, subject: str = None) -> dict[str, Any]:
         """Send an email or/and a push message to the user of the specific device
 
         :type message_type: ``str``
@@ -203,7 +203,7 @@ def get_partition_id(client) -> str:
     return api_partition_id
 
 
-def resolve_device_incident_severity(device: Dict[str, Any]) -> Tuple[str, int]:
+def resolve_device_incident_severity(device: dict[str, Any]) -> tuple[str, int]:
     """
     Function to find the device severity based on device properties
 
@@ -374,7 +374,7 @@ def execute_get_device_by_field_command(client: MobileIronCloudClient,
 
 
 def fetch_incidents(client: MobileIronCloudClient, partition_id: str,
-                    incident_type: str, max_fetch: int) -> List[Dict[str, Any]]:
+                    incident_type: str, max_fetch: int) -> list[dict[str, Any]]:
     """This function returns incidents after analyzing the response data
 
     This function has to implement the logic of making sure that incidents are

@@ -13,11 +13,7 @@ class TestClient:
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, apikey)
 
         requests_mock.get(
-            '{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}'.format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ),
+            f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/rate_limit?swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
             json={},
             request_headers={
                 'Accept': 'application/x-ndjson',
@@ -1286,11 +1282,7 @@ class TestRateLimitCommand:
     def _run_test(requests_mock, input: dict, expected_readable: str):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(
-            '{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}'.format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ), json=input)
+            f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/rate_limit?swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}', json=input)
 
         # The context is tested in TestBuildLimitsContext
         res = DNSDB.dnsdb_rate_limit(client, None)

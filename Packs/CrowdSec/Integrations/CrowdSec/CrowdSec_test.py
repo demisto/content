@@ -2,7 +2,6 @@
     Cortex XSOAR CrowdSec Integration Unit Tests
 """
 
-import io
 import json
 import pytest
 from unittest.mock import MagicMock
@@ -19,7 +18,7 @@ RELIABILITY = "B - Usually reliable"
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 

@@ -51,7 +51,7 @@ class Client(BaseClient):
     def fetch_job_matches(self, job_id: str, limit: int = 40, cursor: str = None) -> dict:
         return self._http_request(
             'GET',
-            'intelligence/retrohunt_jobs/{}/matching_files'.format(job_id),
+            f'intelligence/retrohunt_jobs/{job_id}/matching_files',
             params=assign_params(limit=min(limit, 40), cursor=cursor)
         )
 

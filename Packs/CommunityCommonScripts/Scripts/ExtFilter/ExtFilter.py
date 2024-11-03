@@ -7,7 +7,8 @@ import hashlib
 import json
 import re
 from email.header import decode_header
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any
+from collections.abc import Callable
 
 
 PATALG_BINARY: int = 0
@@ -26,8 +27,8 @@ class Value:
 
 class Ddict:
     @staticmethod
-    def __search(val: Union[Dict[str, Any], List[Dict[str, Any]]],
-                 comps: List[str]) -> Optional[Tuple[str, Any, List[str]]]:
+    def __search(val: dict[str, Any] | list[dict[str, Any]],
+                 comps: list[str]) -> tuple[str, Any, list[str]] | None:
         for i in range(len(comps), 0, -1):
             key = '.'.join(comps[:i])
 
@@ -44,8 +45,8 @@ class Ddict:
         return None
 
     @staticmethod
-    def search(node: Union[Dict[str, Any]],
-               path: str) -> Optional[Tuple[str, Any, str]]:
+    def search(node: dict[str, Any],
+               path: str) -> tuple[str, Any, str] | None:
         """ Get a child node
 
         :param node: A root node.
@@ -58,7 +59,7 @@ class Ddict:
         return (res[0], res[1], '.'.join(res[2]))
 
     @staticmethod
-    def set(node: Dict[str, Any], path: str, value: Any):
+    def set(node: dict[str, Any], path: str, value: Any):
         comps = path.split('.')
         while comps:
             parent = node
@@ -74,7 +75,7 @@ class Ddict:
         parent[name] = value
 
     @staticmethod
-    def get_value(node: Dict[str, Any], path: str) -> Optional[Value]:
+    def get_value(node: dict[str, Any], path: str) -> Value | None:
         val = None
         key = None
         comps = path.split('.')
@@ -87,17 +88,17 @@ class Ddict:
         return None if key is None else Value(val)
 
     @staticmethod
-    def get(node: Dict[str, Any], path: str) -> Any:
+    def get(node: dict[str, Any], path: str) -> Any:
         val = Ddict.get_value(node, path)
         return val.value if val else None
 
 
 class ContextData:
     def __init__(self,
-                 demisto: Optional[Dict[str, Any]] = None,
-                 inputs: Optional[Dict[str, Any]] = None,
-                 lists: Optional[Dict[str, Any]] = None,
-                 incident: Optional[Dict[str, Any]] = None,
+                 demisto: dict[str, Any] | None = None,
+                 inputs: dict[str, Any] | None = None,
+                 lists: dict[str, Any] | None = None,
+                 incident: dict[str, Any] | None = None,
                  local: Any = None):
 
         self.__demisto = demisto
@@ -108,8 +109,8 @@ class ContextData:
             'local': delistize(local)
         }
 
-    def get(self, key: Optional[str] = None,
-            node: Optional[Any] = None) -> Any:
+    def get(self, key: str | None = None,
+            node: Any | None = None) -> Any:
         """ Get the context value given the key
 
         :param key: The dt expressions (string within ${}).
@@ -134,7 +135,7 @@ class ContextData:
 
 
 class CondIterator:
-    def __init__(self, conds: Any, dx: Optional[ContextData], node: Any):
+    def __init__(self, conds: Any, dx: ContextData | None, node: Any):
         self.__iter = conds.__iter__()
         self.__dx = dx
         self.__node = node
@@ -151,7 +152,7 @@ class CondIterator:
 
 
 class CondItemIterator:
-    def __init__(self, conds: Any, dx: Optional[ContextData], node: dict):
+    def __init__(self, conds: Any, dx: ContextData | None, node: dict):
         self.__iter = conds.items().__iter__()
         self.__dx = dx
         self.__node = node
@@ -202,7 +203,7 @@ def lower(value: Any, recursive: bool = False, dict_value: bool = False, dict_ke
         return value
 
 
-def listize(value: Any) -> List[Any]:
+def listize(value: Any) -> list[Any]:
     return value if isinstance(value, list) else [value]
 
 
@@ -360,14 +361,11 @@ class Formatter:
 
     def __extract(self,
                   source: str,
-                  extractor: Optional[Callable[[str,
-                                                Optional[ContextData],
-                                                Optional[Dict[str, Any]]],
-                                               Any]],
-                  dx: Optional[ContextData],
-                  node: Optional[Dict[str, Any]],
+                  extractor: Callable[[str, ContextData | None, dict[str, Any] | None], Any] | None,
+                  dx: ContextData | None,
+                  node: dict[str, Any] | None,
                   si: int,
-                  markers: Optional[Tuple[str, str]]) -> Tuple[Any, Optional[int]]:
+                  markers: tuple[str, str] | None) -> tuple[Any, int | None]:
         """ Extract a template text, or an enclosed value within starting and ending marks
 
         :param source: The template text, or the enclosed value starts with the next charactor of a start marker
@@ -431,12 +429,9 @@ class Formatter:
 
     def build(self,
               template: Any,
-              extractor: Optional[Callable[[str,
-                                            Optional[ContextData],
-                                            Optional[Dict[str, Any]]],
-                                           Any]],
-              dx: Optional[ContextData],
-              node: Optional[Dict[str, Any]]) -> Any:
+              extractor: Callable[[str, ContextData | None, dict[str, Any] | None], Any] | None,
+              dx: ContextData | None,
+              node: dict[str, Any] | None) -> Any:
         """ Format a text from a template including DT expressions
 
         :param template: The template.
@@ -458,8 +453,8 @@ class Formatter:
 
 
 def extract_dt(dtstr: str,
-               dx: Optional[ContextData],
-               node: Optional[Dict[str, Any]] = None) -> Any:
+               dx: ContextData | None,
+               node: dict[str, Any] | None = None) -> Any:
     """ Extract dt expression
 
     :param dtstr: The dt expressions (string within ${}).
@@ -475,8 +470,8 @@ def extract_dt(dtstr: str,
 
 
 def extract_value(source: Any,
-                  dx: Optional[ContextData],
-                  node: Optional[Dict[str, Any]] = None) -> Any:
+                  dx: ContextData | None,
+                  node: dict[str, Any] | None = None) -> Any:
     """ Extract value including dt expression
 
     :param source: The value to be extracted that may include dt expressions.
@@ -488,12 +483,7 @@ def extract_value(source: Any,
 
 
 def get_parent_child(root: dict,
-                     path: str) -> Union[Tuple[Tuple[None, None],
-                                               Tuple[None, None]],
-                                         Tuple[Tuple[dict, None],
-                                               Tuple[Any, str]],
-                                         Tuple[Tuple[Any, str],
-                                               Tuple[Any, str]]]:
+                     path: str) -> tuple[tuple[None, None], tuple[None, None]] | tuple[tuple[dict, None], tuple[Any, str]] | tuple[tuple[Any, str], tuple[Any, str]]:
     """ Get first and second level node
 
     :param root: The root node.
@@ -536,7 +526,7 @@ class ExtFilter:
         return CondItemIterator(conds, self.__dx, node)
 
     def __conds_extract_keys(
-            self, conds: Dict[str, Any], node: Any) -> Dict[str, Any]:
+            self, conds: dict[str, Any], node: Any) -> dict[str, Any]:
         return {
             extract_value(k, self.__dx, node): v for k, v in conds.items()}
 
@@ -891,9 +881,9 @@ class ExtFilter:
 
     def filter_with_expressions(self,
                                 root: Any,
-                                conds: Union[dict, list],
-                                path: Optional[str] = None,
-                                inlist: bool = False) -> Optional[Value]:
+                                conds: dict | list,
+                                path: str | None = None,
+                                inlist: bool = False) -> Value | None:
         """ Filter the value with the conditions
 
         *** NOTE ***
@@ -1003,7 +993,7 @@ class ExtFilter:
         return None
 
     def filter_with_conditions(
-            self, root: Any, conds: Union[dict, list]) -> Optional[Value]:
+            self, root: Any, conds: dict | list) -> Value | None:
         """ Filter the value with the conditions
 
         *** NOTE ***
@@ -1082,10 +1072,10 @@ class ExtFilter:
 
     def filter_values(
             self,
-            root: List[Any],
+            root: list[Any],
             optype: str,
             conds: Any,
-            path: Optional[str] = None) -> Optional[Value]:
+            path: str | None = None) -> Value | None:
         """ Filter values of a list with the conditions
 
         :param self: This instance.
@@ -1103,8 +1093,8 @@ class ExtFilter:
             root: Any,
             optype: str,
             conds: Any,
-            path: Optional[str] = None,
-            inlist: bool = False) -> Optional[Value]:
+            path: str | None = None,
+            inlist: bool = False) -> Value | None:
         """ Filter the value with the conditions
 
         :param self: This instance.

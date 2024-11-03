@@ -42,4 +42,4 @@ def test_file_reputation_ignore_offset_error(mocker):
     results_mock = mocker.patch.object(demisto, 'results')
     file_reputation()
     assert execute_mock.call_count == 1
-    assert [] == results_mock.call_args[0][0]
+    assert results_mock.call_args[0][0] == []

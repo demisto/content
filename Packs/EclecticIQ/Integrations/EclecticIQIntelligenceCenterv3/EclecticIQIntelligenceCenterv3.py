@@ -297,9 +297,7 @@ class EclecticIQ_api:
                 raise Exception
         except Exception as e:
             self.eiq_logging.exception(
-                "Could not perform request to EclecticIQ VA: {}: {}. Exception: {}".format(
-                    method, url, e
-                )
+                f"Could not perform request to EclecticIQ VA: {method}: {url}. Exception: {e}"
             )
 
         if r and r.status_code in [100, 200, 201, 202, 204]:
@@ -321,13 +319,11 @@ class EclecticIQ_api:
             try:
                 err = r.json()
                 detail = err["errors"][0]["detail"]
-                msg = "EclecticIQ VA returned an error, code:{}, reason:[{}], URL: [{}], details:[{}]".format(
-                    r.status_code, r.reason, r.url, detail
-                )
+                msg = f"EclecticIQ VA returned an error, code:{r.status_code}, reason:[{r.reason}], URL: [{r.url}], details:[{detail}]"
             except Exception:
                 msg = (
-                    "EclecticIQ VA returned an error, code:{}, reason:[{}], URL: [{}]"
-                ).format(r.status_code, r.reason, r.url)
+                    f"EclecticIQ VA returned an error, code:{r.status_code}, reason:[{r.reason}], URL: [{r.url}]"
+                )
             raise Exception(msg)
 
     def get_source_group_uid(self, group_name):
@@ -1308,9 +1304,7 @@ class EclecticIQ_api:
 
         """
         self.eiq_logging.info(
-            "Searching Entity:{} with extracted observable:{}, type:{}".format(
-                entity_value, observable_value, entity_type
-            )
+            f"Searching Entity:{entity_value} with extracted observable:{observable_value}, type:{entity_type}"
         )
 
         params = {}
@@ -1409,9 +1403,7 @@ class EclecticIQ_api:
 
         """
         self.eiq_logging.info(
-            "Creating Entity in EclecticIQ Platform. Type:{}, title:{}".format(
-                entity_type, entity_title
-            )
+            f"Creating Entity in EclecticIQ Platform. Type:{entity_type}, title:{entity_title}"
         )
 
         group_id = self.get_source_group_uid(source_group_name)

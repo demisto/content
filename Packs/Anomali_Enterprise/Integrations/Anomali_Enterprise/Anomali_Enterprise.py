@@ -1,4 +1,3 @@
-from typing import Dict, List
 
 import urllib3
 from CommonServerPython import *
@@ -25,7 +24,7 @@ class Client(BaseClient):
         self._username = username
         self._password = password
 
-    def start_search_job_request(self, from_: str, to_: str, indicators: List[str]) -> dict:
+    def start_search_job_request(self, from_: str, to_: str, indicators: list[str]) -> dict:
         """Initiate a search job.
         Args:
             from_: from which time to initiate the search
@@ -50,7 +49,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='/api/v1/mars/forensic', headers=self._headers,
                                   params=params)
 
-    def domain_request(self, domain: List[str]) -> dict:
+    def domain_request(self, domain: list[str]) -> dict:
         """Retrieve information regarding a domain.
         Args:
             domain: the domain name to search
@@ -113,7 +112,7 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_search_job_result(client: Client, args: Dict) -> List[CommandResults]:
+def get_search_job_result(client: Client, args: dict) -> list[CommandResults]:
     """Get the search job result.
 
     Args:
@@ -123,7 +122,7 @@ def get_search_job_result(client: Client, args: Dict) -> List[CommandResults]:
     Returns:
         CommandResults.
     """
-    job_ids = argToList((args.get('job_id')))
+    job_ids = argToList(args.get('job_id'))
     limit = int(args.get('limit', '20'))
     verbose = args.get('verbose', 'true') == 'true'
 
@@ -195,7 +194,7 @@ def dga_domain_status(client: Client, args: dict) -> CommandResults:
     )
 
 
-def domain_command(client: Client, args: dict) -> List[CommandResults]:
+def domain_command(client: Client, args: dict) -> list[CommandResults]:
     """Search domain DGA status.
 
     Args:

@@ -1,5 +1,4 @@
 import json
-import io
 import pytest
 import demistomock as demisto
 from WithSecureEventCollector import Client, get_events_command, fetch_events_command
@@ -11,7 +10,7 @@ def mock_client():
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

@@ -1,7 +1,6 @@
 import requests
 import pytest
 import json
-import io
 
 import demistomock as demisto
 
@@ -10,11 +9,11 @@ mocked_get_token_response = """{"access_token": "fababfafbh"}"""
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return f.read()
 
 
-class MockedResponse(object):
+class MockedResponse:
     def __init__(self, status_code, text, reason=None, url=None, method=None, headers=None):
         self.status_code = status_code
         self.text = text

@@ -19,7 +19,7 @@ def get_duration_html():
         first_date = demisto.get(context[0]['Contents']['context'], "EmailCampaign.firstIncidentDate")
 
         if not first_date:
-            raise FieldNotFound()
+            raise FieldNotFound
         if isinstance(first_date, list):
             first_date = first_date[-1]
 

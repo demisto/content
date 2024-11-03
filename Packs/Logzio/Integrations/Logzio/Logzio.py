@@ -85,7 +85,7 @@ class Client(BaseClient):
                     orig_time = from_time
                     from_time = dateparser.parse(from_time, settings={'TIMEZONE': 'UTC'})
                     if from_time is None:
-                        raise Exception("Counld not parse from_time parameter: {}".format(orig_time))
+                        raise Exception(f"Counld not parse from_time parameter: {orig_time}")
                     from_time = int(time.mktime(from_time.timetuple())) * 1000
                 time_filter["from"] = from_time
                 time_filter["include_lower"] = True
@@ -94,7 +94,7 @@ class Client(BaseClient):
                     orig_time = from_time
                     to_time = dateparser.parse(to_time, settings={'TIMEZONE': 'UTC'})
                     if to_time is None:
-                        raise Exception("Counld not parse from_time parameter: {}".format(orig_time))
+                        raise Exception(f"Counld not parse from_time parameter: {orig_time}")
                     to_time = int(time.mktime(to_time.timetuple())) * 1000
                 time_filter["to"] = to_time
                 time_filter["include_upper"] = True
@@ -127,11 +127,11 @@ class Client(BaseClient):
         return results
 
     def get_base_api_url(self):
-        return BASE_URL.replace("api.", "api{}.".format(self.get_region_code()))
+        return BASE_URL.replace("api.", f"api{self.get_region_code()}.")
 
     def get_region_code(self):
         if self.region != "us" and self.region != "":
-            return "-{}".format(self.region)
+            return f"-{self.region}"
         return ""
 
     def execute_api(self, url_suffix, payload, api_token, timeout=None):
@@ -154,7 +154,7 @@ def test_module(client):
         client.search_logs('*', 10, None, None)
         return 'ok'
     except Exception as e:
-        return 'Test failed: {}'.format(e)
+        return f'Test failed: {e}'
 
 
 def get_formatted_logs(response):
@@ -275,7 +275,7 @@ def main():
             demisto.incidents(incidents)
 
     except Exception as e:
-        return_error('Failed to execute command. Error: {}'.format(str(e)))
+        return_error(f'Failed to execute command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

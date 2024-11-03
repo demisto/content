@@ -1,10 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
-from typing import List
 
 
-def concat_values(item1: Any, item2: Any) -> List[Any]:
+def concat_values(item1: Any, item2: Any) -> list[Any]:
     """
     Concatinate item1 and item2 into a list
 
@@ -72,7 +71,7 @@ def main():
         if search_limit < 0:
             raise ValueError(f'Bad search limit: {search_limit}')
 
-        results: List[Any] = []
+        results: list[Any] = []
         value_takes = args.get('value_takes') or 'text'
         if value_takes == 'text':
             # Pattern matching for each text in the input order

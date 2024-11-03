@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from enum import Enum
-from typing import Dict, List, Callable, Tuple
+from collections.abc import Callable
 import traceback
 import requests
 import json
@@ -60,7 +60,7 @@ class FeedSource(str, Enum):
     RELATED = "related"
 
 
-def get_relationship_value_type(relationship: Dict) -> Tuple[RelationshipIndicatorType, str, str]:
+def get_relationship_value_type(relationship: dict) -> tuple[RelationshipIndicatorType, str, str]:
     related_entity_type = relationship.get("related_entity_type", "")
     relationship_value = relationship.get("related_entity_identifier", "")
     if related_entity_type == "file":
@@ -71,8 +71,8 @@ def get_relationship_value_type(relationship: Dict) -> Tuple[RelationshipIndicat
     return RelationshipIndicatorType.UNKNOWN, "", ""
 
 
-class FeedEntryBase(object):
-    def __init__(self, entry: Dict, feed_name: str):
+class FeedEntryBase:
+    def __init__(self, entry: dict, feed_name: str):
         self.entry = entry
         self.feed_name = feed_name
         self.payload = self.entry.get("payload", dict())
@@ -82,7 +82,7 @@ class FeedEntryBase(object):
         self.action = FeedAction(self.payload.get("action"))
         self.relationships = self.payload.get("relationships", [])
 
-    def to_indicator_objects(self) -> List[Dict]:
+    def to_indicator_objects(self) -> list[dict]:
         fields = self.get_fields()
         if any(self.relationships):
             relationship_indicators = []
@@ -110,7 +110,7 @@ class FeedEntryBase(object):
         indicators.append(primary)
         return indicators
 
-    def get_indicators_from_relationships(self, primary_indicator: Dict) -> List[Dict]:
+    def get_indicators_from_relationships(self, primary_indicator: dict) -> list[dict]:
         indicators = []
         for relationship in self.relationships:
             relationship_type, relationship_value, indicator_type = get_relationship_value_type(relationship)
@@ -144,14 +144,14 @@ class FeedEntryBase(object):
 
         return Common.DBotScore.BAD
 
-    def get_relationship_score(self, primary_indicator: Dict, relationship: Dict) -> int:
+    def get_relationship_score(self, primary_indicator: dict, relationship: dict) -> int:
         return Common.DBotScore.NONE
 
-    def get_tags(self) -> List:
+    def get_tags(self) -> list:
         detection_methods = self.payload.get("detection_methods", [])
         return self.categories + detection_methods
 
-    def get_fields(self) -> Dict:
+    def get_fields(self) -> dict:
         timestamp = self.entry.get("timestamp")
         fields = dict(updateddate=timestamp,
                       indicatoridentification=self.payload.get("identifier"))
@@ -187,7 +187,7 @@ class UrlFeedEntry(FeedEntryBase):
         value = value.rstrip("\n").rstrip("/")
         return value
 
-    def get_tags(self) -> List:
+    def get_tags(self) -> list:
         industries = self.detection.get("industry", [])
         brands = self.detection.get("brand", [])
         return super().get_tags() + industries + brands
@@ -197,8 +197,8 @@ class UrlFeedEntry(FeedEntryBase):
 
 
 class MalwareUrlFeedEntry(UrlFeedEntry):
-    def get_relationship_score(self, primary_indicator: Dict, relationship: Dict) -> int:
-        if primary_indicator["score"] < 2 or not relationship.get("related_entity_type") == "file":
+    def get_relationship_score(self, primary_indicator: dict, relationship: dict) -> int:
+        if primary_indicator["score"] < 2 or relationship.get("related_entity_type") != "file":
             return super().get_relationship_score(primary_indicator, relationship)
 
         return primary_indicator["score"]
@@ -239,7 +239,7 @@ class MalwareFileFeedEntry(FeedEntryBase):
     def get_value(self) -> str:
         return self.payload.get("identifier")
 
-    def get_tags(self) -> List:
+    def get_tags(self) -> list:
         family_names = self.detection.get("family_name", [])
         return super().get_tags() + family_names
 
@@ -247,7 +247,7 @@ class MalwareFileFeedEntry(FeedEntryBase):
         return RelationshipIndicatorType.SHA256
 
 
-FEED_TO_ENTRY_CLASS: Dict[str, Callable] = {
+FEED_TO_ENTRY_CLASS: dict[str, Callable] = {
     FeedName.IP_REPUTATION: IpReputationFeedEntry,
     FeedName.PHISHING_URLS: UrlFeedEntry,
     FeedName.MALWARE_URLS: MalwareUrlFeedEntry,
@@ -255,7 +255,7 @@ FEED_TO_ENTRY_CLASS: Dict[str, Callable] = {
 }
 
 
-FEED_TO_VERSION: Dict[str, str] = {
+FEED_TO_VERSION: dict[str, str] = {
     FeedName.IP_REPUTATION: "_v2",
     FeedName.PHISHING_URLS: "_v2",
     FeedName.MALWARE_URLS: "_v2",
@@ -263,7 +263,7 @@ FEED_TO_VERSION: Dict[str, str] = {
 }
 
 
-FEED_OPTION_TO_FEED: Dict[str, str] = {
+FEED_OPTION_TO_FEED: dict[str, str] = {
     "IP Reputation": FeedName.IP_REPUTATION,
     "Phishing URLs": FeedName.PHISHING_URLS,
     "Malware URLs": FeedName.MALWARE_URLS,
@@ -329,16 +329,16 @@ class Client(BaseClient):
             raise requests.ConnectionError(f"Failed to establish a new connection: {str(e)}")
 
         if self._is_invalid_token(response):
-            raise InvalidAPITokenException()
+            raise InvalidAPITokenException
 
         if response.status_code == 404:
-            raise InvalidAPIUrlException()
+            raise InvalidAPIUrlException
 
         response.raise_for_status()
 
         return response
 
-    def fetch_entries(self, offset: int, count: int) -> List[Dict]:
+    def fetch_entries(self, offset: int, count: int) -> list[dict]:
         result = []
         response = self._do_request(path=FeedPath.DATA, offset=offset, count=count)
 
@@ -351,7 +351,7 @@ class Client(BaseClient):
 
         return result
 
-    def get_offsets(self) -> Dict[str, int]:
+    def get_offsets(self) -> dict[str, int]:
         response = self._do_request(path=FeedPath.INFO)
         try:
             return json.loads(response.content)
@@ -387,7 +387,7 @@ def test_module_command(client: Client) -> str:
     return "ok"
 
 
-def get_indicators_command(client: Client, args: Dict) -> CommandResults:
+def get_indicators_command(client: Client, args: dict) -> CommandResults:
     max_indicators = int(args.get("max_indicators", 50))
 
     count = max_indicators
@@ -406,7 +406,7 @@ def get_indicators_command(client: Client, args: Dict) -> CommandResults:
                           raw_response=indicators)
 
 
-def reset_offset_command(client: Client, args: Dict) -> CommandResults:
+def reset_offset_command(client: Client, args: dict) -> CommandResults:
     offset = int(args.get("offset", -1))
     offset_stored = get_offset_from_context()
     offset_api = int(client.get_offsets().get("endOffset", -1))
@@ -423,7 +423,7 @@ def reset_offset_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output=readable_output, raw_response=offset)
 
 
-def get_offset_command(client: Client, args: Dict) -> CommandResults:
+def get_offset_command(client: Client, args: dict) -> CommandResults:
     offset_stored = get_offset_from_context()
     offset_api = int(client.get_offsets().get("endOffset", -1))
     offset_api_text = f"(API provided max offset of {offset_api})"
@@ -440,8 +440,8 @@ def get_offset_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output=readable_output, raw_response=offset_stored)
 
 
-def feed_entries_to_indicator(entries: List[Dict], feed_name: str) -> Tuple[List[Dict], int]:
-    indicators: List[Dict] = []
+def feed_entries_to_indicator(entries: list[dict], feed_name: str) -> tuple[list[dict], int]:
+    indicators: list[dict] = []
     max_offset: int = -1
     for entry in entries:
         entry_obj = FEED_TO_ENTRY_CLASS[feed_name](entry, feed_name)
@@ -451,7 +451,7 @@ def feed_entries_to_indicator(entries: List[Dict], feed_name: str) -> Tuple[List
     return indicators, max_offset
 
 
-def fetch_indicators_command(client: Client, initial_count: int, max_indicators: int, update_context: bool) -> List[Dict]:
+def fetch_indicators_command(client: Client, initial_count: int, max_indicators: int, update_context: bool) -> list[dict]:
     offset = get_offset_from_context()
     count = max_indicators
     if not offset:
@@ -489,7 +489,7 @@ def main():
     verify_certificate = not params.get("insecure", False)
 
     demisto.info(f"using feed {feed_name}, max {max_indicators}")
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         "cyren-threat-indepth-get-indicators": get_indicators_command,
         "cyren-threat-indepth-reset-client-offset": reset_offset_command,
         "cyren-threat-indepth-get-client-offset": get_offset_command,

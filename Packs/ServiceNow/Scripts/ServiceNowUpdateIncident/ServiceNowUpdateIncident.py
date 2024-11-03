@@ -90,7 +90,7 @@ def get_user(query):
 
 def get_user_id(user_name):
     user_name = user_name.split(' ')
-    query = 'first_name={}^last_name={}'.format(user_name[0], user_name[1])
+    query = f'first_name={user_name[0]}^last_name={user_name[1]}'
 
     user = get_user(query)
 

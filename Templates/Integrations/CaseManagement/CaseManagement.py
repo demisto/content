@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, AnyStr, Optional, Union
+from typing import AnyStr
 import urllib3
 
 # Disable insecure warnings
@@ -29,7 +29,7 @@ DEFAULT_FETCH_TIME = '3 days'
 """Helper function"""
 
 
-def build_raw_tickets_to_context(tickets: Union[dict, list]):
+def build_raw_tickets_to_context(tickets: dict | list):
     if isinstance(tickets, list):
         return [build_raw_tickets_to_context(ticket) for ticket in tickets]
     return {
@@ -48,7 +48,7 @@ def build_raw_tickets_to_context(tickets: Union[dict, list]):
     }
 
 
-def build_raw_users_to_context(users: Union[list, dict]):
+def build_raw_users_to_context(users: list | dict):
     if isinstance(users, list):
         return [build_raw_users_to_context(user) for user in users]
     return {
@@ -63,7 +63,7 @@ class Client(BaseClient):
         self._limit = limit
         super().__init__(base_url, *args, **kwargs)
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic get request to get item samples
 
         Returns:
@@ -71,8 +71,8 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'version')
 
-    def list_tickets(self, ticket_id: Optional[AnyStr] = None,
-                     limit: Optional[AnyStr] = None, from_time: Optional[datetime] = None
+    def list_tickets(self, ticket_id: AnyStr | None = None,
+                     limit: AnyStr | None = None, from_time: datetime | None = None
                      ) -> dict:
         """Gets all credentials from API.
 
@@ -145,7 +145,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def assign_ticket(self, ticket_id: str, users: List[str]) -> dict:
+    def assign_ticket(self, ticket_id: str, users: list[str]) -> dict:
         """Locks vault
 
         Args:
@@ -194,7 +194,7 @@ def test_module_command(client: Client, *_) -> str:
 
 
 @logger
-def get_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+def get_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Gets details about a raw_response using IDs or some other filters.
 
     Args:
@@ -226,7 +226,7 @@ def get_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 
 
 @logger
-def create_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Gets details about a raw_response using IDs or some other filters.
 
     Args:
@@ -266,7 +266,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 
 
 @logger
-def assign_users_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+def assign_users_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
 
     Args:
@@ -296,7 +296,7 @@ def assign_users_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 
 
 @logger
-def list_users_command(client: Client, *_) -> Tuple[str, dict, dict]:
+def list_users_command(client: Client, *_) -> tuple[str, dict, dict]:
     raw_response = client.list_users()
     if raw_response:
         title = f'{INTEGRATION_NAME} - Users list:'
@@ -311,7 +311,7 @@ def list_users_command(client: Client, *_) -> Tuple[str, dict, dict]:
 
 
 @logger
-def close_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+def close_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """
     Gets details about a raw_response using IDs or some other filters
     """
@@ -341,7 +341,7 @@ def close_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 
 
 @logger
-def list_tickets_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+def list_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     limit = args.get('limit')
     raw_response = client.list_tickets(limit=limit)
     tickets = raw_response.get('ticket')
@@ -361,7 +361,7 @@ def list_tickets_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 
 
 @logger
-def fetch_incidents_command(client: Client, last_fetch: dict, fetch_time: str) -> Tuple[list, dict]:
+def fetch_incidents_command(client: Client, last_fetch: dict, fetch_time: str) -> tuple[list, dict]:
     if last_fetch:
         last_fetch_datetime = datetime.strptime(last_fetch.get('timestamp', ''), TIME_FORMAT)
     else:

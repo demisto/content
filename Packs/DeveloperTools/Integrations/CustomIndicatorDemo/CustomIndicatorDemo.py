@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -22,7 +21,7 @@ class Client(BaseClient):
     For this implementation, no special attributes are defined.
     """
 
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
+    def baseintegration_dummy(self, dummy: str) -> dict[str, str]:
         """Returns a simple python dict with the information provided
         in the input (dummy).
 
@@ -106,7 +105,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers: Dict = {}
+        headers: dict = {}
 
         client = Client(
             base_url='',

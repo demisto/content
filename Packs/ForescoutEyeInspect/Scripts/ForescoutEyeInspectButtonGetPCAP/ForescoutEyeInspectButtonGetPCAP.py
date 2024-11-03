@@ -1,9 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Dict
+from typing import Any
 
 
-def get_pcap() -> Dict[str, Any]:
+def get_pcap() -> dict[str, Any]:
     alert_id = demisto.incident()['CustomFields'].get('alertid')
     if not alert_id:
         return_error('Forescout EyeInspect alert ID is missing inside the incident.')

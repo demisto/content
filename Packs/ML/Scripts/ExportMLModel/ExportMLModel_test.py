@@ -19,7 +19,7 @@ def test_main(mocker):
 
     def results(result):
         file_id = result['FileID']
-        with open(demisto.investigation()['id'] + '_' + file_id, 'r') as f:
+        with open(demisto.investigation()['id'] + '_' + file_id) as f:
             file_data_str = f.read()
         file_data = json.loads(file_data_str)
         assert (all(x in file_data for x in dummy_data) and all(x in dummy_data for x in file_data))

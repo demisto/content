@@ -103,8 +103,7 @@ class PolyswarmConnector():
                     positives += 1
                 total_scans += 1
 
-            demisto.debug('Positives: {positives} - Total Scans: {total_scans}'.
-                          format(positives=positives, total_scans=total_scans))
+            demisto.debug(f'Positives: {positives} - Total Scans: {total_scans}')
 
             md5 = result.md5
             sha256 = result.sha256
@@ -142,9 +141,7 @@ class PolyswarmConnector():
                 results = self.polyswarm_api.search(artifact)
 
             except Exception as err:
-                return_error('{ERROR_ENDPOINT}{err}'.
-                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                    err=err))
+                return_error(f'{ERROR_ENDPOINT}{err}')
 
             error_msg = 'Error fetching results. Please try again.'
 
@@ -170,9 +167,7 @@ class PolyswarmConnector():
             result = self.polyswarm_api.wait_for(instance)
 
         except Exception as err:
-            return_error('{ERROR_ENDPOINT}{err}'.
-                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                err=err))
+            return_error(f'{ERROR_ENDPOINT}{err}')
 
         error_msg = 'Error submitting File.'
 
@@ -196,9 +191,7 @@ class PolyswarmConnector():
                 result = self.polyswarm_api.wait_for(instance)
 
             except Exception as err:
-                return_error('{ERROR_ENDPOINT}{err}'.
-                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                    err=err))
+                return_error(f'{ERROR_ENDPOINT}{err}')
 
             error_msg = 'Error rescaning File.'
 
@@ -217,9 +210,7 @@ class PolyswarmConnector():
                                                   handle_file)
             return fileResult(hash_file, handle_file.getvalue())
         except Exception as err:
-            return_error('{ERROR_ENDPOINT}{err}'.
-                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                err=err))
+            return_error(f'{ERROR_ENDPOINT}{err}')
 
     def url_reputation(self,
                        param: dict,
@@ -230,8 +221,7 @@ class PolyswarmConnector():
         artifacts = argToList(param[artifact_type])
 
         for artifact in artifacts:
-            title = 'PolySwarm {} Reputation for: {}'.format(artifact_type.upper(),
-                                                             artifact)
+            title = f'PolySwarm {artifact_type.upper()} Reputation for: {artifact}'
 
             demisto.debug(f'[url_reputation] {title}')
 
@@ -245,8 +235,7 @@ class PolyswarmConnector():
                 try:
                     socket.inet_aton(artifact)
                 except OSError:
-                    return_error('Invalid IP Address: {ip}'.
-                                 format(ip=artifact))
+                    return_error(f'Invalid IP Address: {artifact}')
 
             try:
                 # PolySwarm API: URL, IP and Domain are artifact_type='url'
@@ -266,9 +255,7 @@ class PolyswarmConnector():
                 polyscore = result.polyscore
 
             except Exception as err:
-                return_error('{ERROR_ENDPOINT}{err}'.
-                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                    err=err))
+                return_error(f'{ERROR_ENDPOINT}{err}')
 
             if artifact_type == 'ip':
                 object_name = 'IP'

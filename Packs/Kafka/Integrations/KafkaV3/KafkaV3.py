@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE, Message
-from typing import Tuple, Union, Dict, Callable
+from collections.abc import Callable
 from io import StringIO
 
 ''' IMPORTS '''
@@ -20,18 +20,16 @@ SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'la
 
 class KConsumer(Consumer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-    pass
 
 
 class KProducer(Producer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-    pass
 
 
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
-    conf_producer: Optional[Dict[str, Any]] = None
-    conf_consumer: Optional[Dict[str, Any]] = None
+    conf_producer: Optional[dict[str, Any]] = None
+    conf_consumer: Optional[dict[str, Any]] = None
     ca_path: Optional[str] = None
     client_cert_path: Optional[str] = None
     client_key_path: Optional[str] = None
@@ -213,7 +211,7 @@ class KafkaCommunicator:
         cluster_metadata = client.list_topics(timeout=self.REQUESTS_TIMEOUT)
         return cluster_metadata.topics
 
-    def get_partition_offsets(self, topic: str, partition: int) -> Tuple[int, int]:
+    def get_partition_offsets(self, topic: str, partition: int) -> tuple[int, int]:
         """Get earliest and latest offsets for the specified partition in the specified topic.
 
         Return (earliest offset, latest offset)
@@ -258,7 +256,7 @@ class KafkaCommunicator:
         kafka_consumer.close()
         return polled_msg
 
-    def get_offset_for_partition(self, topic: str, partition: int, offset: Union[int, str]) -> int:
+    def get_offset_for_partition(self, topic: str, partition: int, offset: int | str) -> int:
         """Get the numerical offset from a partition of a topic
 
         Args:
@@ -282,8 +280,8 @@ class KafkaCommunicator:
             return number_offset
 
     @logger
-    def get_topic_partitions(self, topic: str, partition: Union[int, list],
-                             offset: Union[str, int], consumer: bool = False) -> list:
+    def get_topic_partitions(self, topic: str, partition: int | list,
+                             offset: str | int, consumer: bool = False) -> list:
         """Get relevant TopicPartiton structures to specify for the consumer.
 
         Args:
@@ -395,7 +393,7 @@ def create_incident(message: Message, topic: str) -> dict:
         'Message': message_value.decode('utf-8')
     }
     incident = {
-        'name': 'Kafka {} partition:{} offset:{}'.format(topic, message.partition(), message.offset()),
+        'name': f'Kafka {topic} partition:{message.partition()} offset:{message.offset()}',
         'details': message_value.decode('utf-8'),
         'rawJSON': json.dumps(raw)
     }
@@ -425,13 +423,13 @@ def command_test_module(kafka: KafkaCommunicator, demisto_params: dict, log_stre
     kafka.test_connection(log_stream=log_stream)
     if demisto_params.get('isFetch', False):
         check_params(kafka=kafka,
-                     topic=demisto_params.get('topic', None),
-                     partitions=handle_empty(argToList(demisto_params.get('partition', None)), None),
+                     topic=demisto_params.get('topic'),
+                     partitions=handle_empty(argToList(demisto_params.get('partition')), None),
                      offset=handle_empty(demisto_params.get('offset', 'earliest'), 'earliest'))
     return 'ok'
 
 
-def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandResults, str]:
+def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> CommandResults | str:
     """Print available topics in Broker
 
     Args:
@@ -503,7 +501,7 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     )
 
 
-def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandResults, str]:
+def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> CommandResults | str:
     """Consume one message from topic
 
     Args:
@@ -556,7 +554,7 @@ def fetch_partitions(kafka: KafkaCommunicator, demisto_args: dict) -> CommandRes
         partitions = [partition.id for partition in partition_objects]
 
         readable_output = tableToMarkdown(
-            name='Available partitions for topic \'{}\''.format(topic),
+            name=f'Available partitions for topic \'{topic}\'',
             t=partitions,
             headers='Partitions'
         )
@@ -620,7 +618,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
 
 
 def get_topic_partition_if_relevant(kafka: KafkaCommunicator, topic: str, partition: str,
-                                    specific_offset: Union[str, int]) -> list:
+                                    specific_offset: str | int) -> list:
     """Return the TopicPartition if topic, partition and specific_offset are valid otherwise return []
 
     Args:
@@ -646,7 +644,7 @@ def get_topic_partition_if_relevant(kafka: KafkaCommunicator, topic: str, partit
     return []
 
 
-def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Union[str, int],
+def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: str | int,
                                last_fetched_offsets: dict) -> List[TopicPartition]:
     """Get topic partitions for fetching incidents without a specified partitions.
 
@@ -669,7 +667,7 @@ def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Uni
     topic_partitions_in_system = []
 
     demisto.debug("Going over last fetched offsets")
-    for partition in last_fetched_offsets.keys():
+    for partition in last_fetched_offsets:
         specific_offset = last_fetched_offsets.get(partition, offset)
         topic_partitions_in_system += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
 

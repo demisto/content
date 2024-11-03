@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 # 3-rd party imports
 from datetime import datetime
-from typing import Dict, List, Tuple
 
 import urllib3
 
@@ -39,7 +38,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """
             Performs basic GET request to check if the API is reachable and authentication is successful.
         Returns:
@@ -137,7 +136,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_enrollment_csr_context_template_ec(raw_response: dict) -> Tuple[list, list]:
+def get_enrollment_csr_context_template_ec(raw_response: dict) -> tuple[list, list]:
     """
         Get raw response of Enrollment csr templates and parse to ec
     Args:
@@ -161,7 +160,7 @@ def get_enrollment_csr_context_template_ec(raw_response: dict) -> Tuple[list, li
     return entry_context, human_readable
 
 
-def post_enrollment_csr_command_ec(raw_response: dict) -> Tuple[list, list]:
+def post_enrollment_csr_command_ec(raw_response: dict) -> tuple[list, list]:
     """
         Parse the post enrollment CSR
         > Parse the Certificate received from keyFactor
@@ -175,11 +174,11 @@ def post_enrollment_csr_command_ec(raw_response: dict) -> Tuple[list, list]:
     entry_context = []
     human_readable = []
     if raw_response:
-        certificateinfo: Dict = raw_response["CertificateInformation"]
+        certificateinfo: dict = raw_response["CertificateInformation"]
         regex = r"-----BEGIN CERTIFICATE-----[\w\W]*END CERTIFICATE-----"
-        formated_certs: List = []
+        formated_certs: list = []
 
-        certificates: List = certificateinfo['Certificates']
+        certificates: list = certificateinfo['Certificates']
 
         for certs in certificates:
             matches = re.findall(regex, certs)
@@ -233,7 +232,7 @@ def post_enrollment_csr_command(client: Client,
                                 metadata: str,
                                 keyAlgorithm: str,
                                 sans_ip4: str = ''
-                                ) -> Tuple[object, dict, Union[List, Dict]]:
+                                ) -> tuple[object, dict, Union[list, dict]]:
     """
         Post Enrollment CSR
         Send the certifcate CSR and return the certificate created
@@ -259,7 +258,7 @@ def post_enrollment_csr_command(client: Client,
                 csr_base64_changed = csr['csr']
     now_iso8601 = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f%z')
 
-    raw_response: Dict = client.post_enrollment_csr(csr_base64=csr_base64_changed,
+    raw_response: dict = client.post_enrollment_csr(csr_base64=csr_base64_changed,
                                                     cert_authority=cert_authority,
                                                     include_chain=include_chain,
                                                     time_stamp=now_iso8601,
@@ -272,7 +271,7 @@ def post_enrollment_csr_command(client: Client,
         title = f'{INTEGRATION_NAME} - Post Enrollment CSR'
         entry_context, human_readable_ec = post_enrollment_csr_command_ec(raw_response)
 
-        context_entry: Dict = {
+        context_entry: dict = {
             f"{INTEGRATION_CONTEXT_NAME}.CertInfo.Lists(val.UniqueID && val.UniqueID == obj.UniqueID &&"
             f" val.UpdateDate && val.UpdateDate == obj.UpdateDate)": entry_context
         }
@@ -285,7 +284,7 @@ def post_enrollment_csr_command(client: Client,
 
 
 @logger
-def get_enrollment_csr_context_template_command(client: Client, *_) -> Tuple[object, dict, Union[List, Dict]]:
+def get_enrollment_csr_context_template_command(client: Client, *_) -> tuple[object, dict, Union[list, dict]]:
     """Get all Enrollment CSR Context My (templates)
 
     Args:
@@ -300,7 +299,7 @@ def get_enrollment_csr_context_template_command(client: Client, *_) -> Tuple[obj
     if raw_response:
         title = f'{INTEGRATION_NAME} - Get enrollment csr context my'
         entry_context, human_readable_ec = get_enrollment_csr_context_template_ec(raw_response)
-        context_entry: Dict = {
+        context_entry: dict = {
             f"{INTEGRATION_CONTEXT_NAME}.CSRTemplate.Lists(val.UniqueID && val.UniqueID == obj.UniqueID &&"
             f" val.UpdateDate && val.UpdateDate == obj.UpdateDate)": entry_context
         }
@@ -313,7 +312,7 @@ def get_enrollment_csr_context_template_command(client: Client, *_) -> Tuple[obj
 
 
 @logger
-def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
+def test_module_command(client: Client, *_) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:

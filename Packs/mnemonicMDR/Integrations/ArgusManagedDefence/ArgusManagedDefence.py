@@ -9,7 +9,7 @@ import mimetypes
 
 import dateparser
 import traceback
-from typing import Any, Dict, List, Union
+from typing import Any
 
 import logging
 
@@ -102,7 +102,7 @@ def argus_status_to_demisto_status(status: str) -> int:
     return ARGUS_STATUS_MAPPING.get(status, 0)
 
 
-def build_argus_priority_from_min_severity(min_severity: str) -> List[str]:
+def build_argus_priority_from_min_severity(min_severity: str) -> list[str]:
     severities = ["low", "medium", "high", "critical"]
     min_severity_list = []
     for severity in severities:
@@ -120,7 +120,7 @@ def parse_first_fetch(first_fetch: Any) -> Any:
     return first_fetch
 
 
-def build_tags_from_list(lst: list) -> List[Dict]:
+def build_tags_from_list(lst: list) -> list[dict]:
     if not lst:
         return []
     if len(lst) % 2 != 0:
@@ -140,7 +140,7 @@ def str_to_dict(string: str) -> dict:
     return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
 
-def date_time_to_epoch_milliseconds(date_time: Union[datetime, str] = None) -> int:
+def date_time_to_epoch_milliseconds(date_time: datetime | str = None) -> int:
     if isinstance(date_time, datetime):
         return int(date_time.timestamp() * 1000)
     if isinstance(date_time, str):
@@ -148,7 +148,7 @@ def date_time_to_epoch_milliseconds(date_time: Union[datetime, str] = None) -> i
     return int(datetime.now().timestamp() * 1000)
 
 
-def pretty_print_date(date_time: Union[datetime, str] = None) -> str:
+def pretty_print_date(date_time: datetime | str = None) -> str:
     if isinstance(date_time, datetime):
         return date_time.strftime(PRETTY_DATE_FORMAT)
     if isinstance(date_time, str):
@@ -338,7 +338,7 @@ def fetch_incidents(
 
 
 def get_remote_data_command(
-    args: Dict[str, Any],
+    args: dict[str, Any],
     integration_instance: str = "",
     mirror_direction: str = "None",
     mirror_tags: str = "argus_mirror",
@@ -446,7 +446,7 @@ def get_remote_data_command(
     return GetRemoteDataResponse(case, entries)
 
 
-def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
+def update_remote_system_command(args: dict[str, Any]) -> CommandResults:
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
         demisto.debug(
@@ -462,7 +462,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
         for key, value in parsed_args.delta.items():
             # Allow changing status of case from XSOAR layout
             if key == "arguscasestatus":
-                if value in ARGUS_STATUS_MAPPING.keys():
+                if value in ARGUS_STATUS_MAPPING:
                     to_update["status"] = value
             # Allow changing argus priority based upon XSOAR severity
             elif key == "severity":
@@ -514,7 +514,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
     return parsed_args.remote_incident_id
 
 
-def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> None:
+def append_demisto_entry_to_argus_case(case_id: int, entry: dict[str, Any]) -> None:
     demisto.debug(f"Appending entry to case {case_id}: {str(entry)}")
     if entry.get("type") == 1:  # type note / chat
         comment = "<h3>Note mirrored from XSOAR</h3>"
@@ -528,7 +528,7 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
         add_attachment_helper(case_id, str(entry.get("id")))
 
 
-def add_attachment_command(args: Dict[str, Any]) -> CommandResults:
+def add_attachment_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     file_id = args.get("file_id")
     if not case_id:
@@ -552,7 +552,7 @@ def add_attachment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
+def add_case_tag_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     key = args.get("key")
     value = args.get("value")
@@ -577,7 +577,7 @@ def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def add_comment_command(args: Dict[str, Any]) -> CommandResults:
+def add_comment_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     comment = args.get("comment")
     if not case_id:
@@ -604,7 +604,7 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
+def advanced_case_search_command(args: dict[str, Any]) -> CommandResults:
     # noinspection PyTypeChecker
     result = advanced_case_search(
         startTimestamp=args.get("start_timestamp"),
@@ -656,7 +656,7 @@ def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def close_case_command(args: Dict[str, Any]) -> CommandResults:
+def close_case_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case_id not specified")
@@ -677,7 +677,7 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def create_case_command(args: Dict[str, Any]) -> CommandResults:
+def create_case_command(args: dict[str, Any]) -> CommandResults:
     subject = args.get("subject")
     description = args.get("description")
     service = args.get("service")
@@ -722,7 +722,7 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_case_command(args: Dict[str, Any]) -> CommandResults:
+def delete_case_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
@@ -737,7 +737,7 @@ def delete_case_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
+def delete_comment_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     comment_id = args.get("comment_id")
     if not case_id:
@@ -757,7 +757,7 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def download_attachment_by_filename_command(args: Dict[str, Any]) -> dict:
+def download_attachment_by_filename_command(args: dict[str, Any]) -> dict:
     case_id = args.get("case_id")
     file_name = args.get("file_name")
     if case_id is None:
@@ -779,7 +779,7 @@ def download_attachment_by_filename_command(args: Dict[str, Any]) -> dict:
     return fileResult(file_name, result.content)
 
 
-def download_attachment_command(args: Dict[str, Any]) -> dict:
+def download_attachment_command(args: dict[str, Any]) -> dict:
     case_id = args.get("case_id")
     attachment_id = args.get("attachment_id")
     file_name = args.get("file_name", attachment_id)
@@ -793,7 +793,7 @@ def download_attachment_command(args: Dict[str, Any]) -> dict:
     return fileResult(file_name, result.content)
 
 
-def download_case_attachments_command(args: Dict[str, Any]) -> List[Dict]:
+def download_case_attachments_command(args: dict[str, Any]) -> list[dict]:
     case_id = args.get("case_id")
     if case_id is None:
         raise ValueError("case id not specified")
@@ -811,7 +811,7 @@ def download_case_attachments_command(args: Dict[str, Any]) -> List[Dict]:
     return incident_files
 
 
-def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
+def edit_comment_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     comment_id = args.get("comment_id")
     comment = args.get("comment")
@@ -834,7 +834,7 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
+def get_attachment_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     attachment_id = args.get("attachment_id")
     if not case_id:
@@ -854,7 +854,7 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
+def get_case_metadata_by_id_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
@@ -869,7 +869,7 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def print_case_metadata_by_id_command(args: Dict[str, Any]) -> Dict:
+def print_case_metadata_by_id_command(args: dict[str, Any]) -> dict:
     case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
@@ -884,7 +884,7 @@ def print_case_metadata_by_id_command(args: Dict[str, Any]) -> Dict:
     }
 
 
-def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
+def list_case_attachments_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case_id not specified")
@@ -907,7 +907,7 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
+def list_case_tags_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case_id not specified")
@@ -928,7 +928,7 @@ def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
+def print_case_comments_command(args: dict[str, Any]) -> list[dict]:
     case_id = args.get("case_id")
     sort_by = args.get("sort_by")
     if not case_id:
@@ -957,7 +957,7 @@ def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
     return notes
 
 
-def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
+def list_case_comments_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     sort_by = args.get("sort_by")
     if not case_id:
@@ -984,7 +984,7 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
+def remove_case_tag_by_id_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     tag_id = args.get("tag_id")
     if not case_id:
@@ -1006,7 +1006,7 @@ def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults:
+def remove_case_tag_by_key_value_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     key = args.get("key")
     value = args.get("value")
@@ -1031,7 +1031,7 @@ def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults
     )
 
 
-def update_case_command(args: Dict[str, Any]) -> CommandResults:
+def update_case_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
@@ -1061,7 +1061,7 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_event_command(args: Dict[str, Any]) -> CommandResults:
+def get_event_command(args: dict[str, Any]) -> CommandResults:
     event_type = args.get("type")
     timestamp = args.get("timestamp")
     customer_id = args.get("customer_id")
@@ -1087,7 +1087,7 @@ def get_event_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
+def get_events_for_case_command(args: dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
@@ -1106,7 +1106,7 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
+def find_aggregated_events_command(args: dict[str, Any]) -> CommandResults:
     # noinspection PyTypeChecker
     result = find_aggregated_events(
         skipFutureEvents=args.get("skip_future_events"),
@@ -1156,7 +1156,7 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
+def list_aggregated_events_command(args: dict[str, Any]) -> CommandResults:
     result = list_aggregated_events(
         customerID=args.get("customer_id"),
         signature=args.get("signature"),
@@ -1175,7 +1175,7 @@ def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_payload_command(args: Dict[str, Any]) -> CommandResults:
+def get_payload_command(args: dict[str, Any]) -> CommandResults:
     event_type = args.get("type")
     timestamp = args.get("timestamp")
     customer_id = args.get("customer_id")
@@ -1203,7 +1203,7 @@ def get_payload_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_pcap_command(args: Dict[str, Any]) -> Any:
+def get_pcap_command(args: dict[str, Any]) -> Any:
     event_type = args.get("type")
     timestamp = args.get("timestamp")
     customer_id = args.get("customer_id")
@@ -1223,7 +1223,7 @@ def get_pcap_command(args: Dict[str, Any]) -> Any:
     return fileResult(f"{event_id}_pcap", result.content)
 
 
-def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
+def find_nids_events_command(args: dict[str, Any]) -> CommandResults:
     # noinspection PyTypeChecker
     result = find_n_i_d_s_events(
         skipFutureEvents=args.get("skip_future_events"),
@@ -1271,7 +1271,7 @@ def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
+def list_nids_events_command(args: dict[str, Any]) -> CommandResults:
     result = list_n_i_d_s_events(
         customerID=args.get("customer_id"),
         signature=args.get("signature"),
@@ -1290,7 +1290,7 @@ def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def search_records_command(args: Dict[str, Any]) -> CommandResults:
+def search_records_command(args: dict[str, Any]) -> CommandResults:
     query = args.get("query")
     if not query:
         raise ValueError("query not specified")
@@ -1302,7 +1302,7 @@ def search_records_command(args: Dict[str, Any]) -> CommandResults:
         rrClass=argToList(args.get("rr_class")),
         rrType=argToList(args.get("rr_type")),
         customerID=argToList(args.get("customer_id")),
-        tlp=argToList((args.get("tlp"))),
+        tlp=argToList(args.get("tlp")),
         limit=args.get("limit", 25),
         offset=args.get("offset"),
     )
@@ -1314,7 +1314,7 @@ def search_records_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def fetch_observations_for_domain_command(args: Dict[str, Any]) -> CommandResults:
+def fetch_observations_for_domain_command(args: dict[str, Any]) -> CommandResults:
     fqdn = args.get("fqdn")
     if not fqdn:
         raise ValueError("fqdn not specified")
@@ -1330,7 +1330,7 @@ def fetch_observations_for_domain_command(args: Dict[str, Any]) -> CommandResult
     )
 
 
-def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
+def fetch_observations_for_i_p_command(args: dict[str, Any]) -> CommandResults:
     ip = args.get("ip")
     if not ip:
         raise ValueError("ip not specified")

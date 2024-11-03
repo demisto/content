@@ -10,7 +10,7 @@ def load_json_file(filename):
     :param filename:
     :return:
     """
-    with open("test_data/{0}".format(filename), 'r') as f:
+    with open(f"test_data/{filename}") as f:
         return json.load(f)
 
 
@@ -276,7 +276,7 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
 
     mock_response_1 = load_json_file("dummy_fetch_detail.json")
 
-    requests_mock.post('https://test.com/api/v2/events/{}/{}'.format(eType, eID), json=mock_response_1)
+    requests_mock.post(f'https://test.com/api/v2/events/{eType}/{eID}', json=mock_response_1)
 
     client = Client(
         base_url='https://test.com',
@@ -296,11 +296,11 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
 
     for i, el in enumerate(response['events']):
         assert el['id'] == i + 1
-        assert el['eventtitle'] == 'some_event_title_{0}'.format(i + 1)
+        assert el['eventtitle'] == f'some_event_title_{i + 1}'
         assert el['createdat'] == '2020-06-15T07:34:20.062000'
         assert el['modified'] == 'Mar 01 2022'
-        assert el['type'] == 'some_type_{0}'.format(i + 1)
-        assert el['indicator'] == 'some_indicator_{0}'.format(i + 1)
+        assert el['type'] == f'some_type_{i + 1}'
+        assert el['indicator'] == f'some_indicator_{i + 1}'
         assert el['references'] == ''
         assert el['lastseenon'] == '2022-03-02'
 

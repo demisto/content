@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 import requests
 import urllib3
-from typing import Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -14,7 +13,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
-    def __init__(self, insecure: bool = False, proxy: bool = False, tlp_color: Optional[str] = None):
+    def __init__(self, insecure: bool = False, proxy: bool = False, tlp_color: str | None = None):
         super().__init__(base_url='https://check.torproject.org/exit-addresses', verify=not insecure, proxy=proxy)
         self.url = 'https://check.torproject.org/exit-addresses'
         self.tlp_color = tlp_color

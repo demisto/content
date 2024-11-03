@@ -1,12 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Dict
+from typing import Any
 
 
 HOURS_AGO = 24
 
 
-def get_hosts_changelog() -> Dict[str, Any]:
+def get_hosts_changelog() -> dict[str, Any]:
     incident_datetime = datetime.fromisoformat(demisto.incident()['occurred'])
     start_timestamp = (incident_datetime - timedelta(hours=HOURS_AGO)).isoformat()
 

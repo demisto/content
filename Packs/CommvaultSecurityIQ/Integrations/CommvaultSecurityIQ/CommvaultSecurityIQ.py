@@ -697,16 +697,12 @@ class Client(BaseClient):
             event_time = extract_from_regex(
                 message,
                 "",
-                "#011 {}: (.*?)#011".format(
-                    field_mapper(Constants.event_time, Constants.source_syslog)
-                ),
+                f"#011 {field_mapper(Constants.event_time, Constants.source_syslog)}: (.*?)#011",
             )
             event_id = extract_from_regex(
                 message,
                 "",
-                "#011 {}: (.*?)#011".format(
-                    field_mapper(Constants.event_id, Constants.source_syslog)
-                ),
+                f"#011 {field_mapper(Constants.event_id, Constants.source_syslog)}: (.*?)#011",
             )
             incident = {
                 "facility": Constants.facility,
@@ -793,45 +789,35 @@ class Client(BaseClient):
                 extract_from_regex(
                     message,
                     None,
-                    r"{}:\[(.*?)\]".format(
-                        field_mapper(Constants.affected_files_count)
-                    ),
+                    rf"{field_mapper(Constants.affected_files_count)}:\[(.*?)\]",
                 )
             ),
             "modified_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(
-                        field_mapper(Constants.modified_files_count)
-                    ),
+                    rf"{field_mapper(Constants.modified_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "deleted_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(
-                        field_mapper(Constants.deleted_files_count)
-                    ),
+                    rf"{field_mapper(Constants.deleted_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "renamed_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(
-                        field_mapper(Constants.renamed_files_count)
-                    ),
+                    rf"{field_mapper(Constants.renamed_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "created_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(
-                        field_mapper(Constants.created_files_count)
-                    ),
+                    rf"{field_mapper(Constants.created_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "job_start_time": datetime.utcfromtimestamp(job_start_time).strftime(
@@ -1159,9 +1145,7 @@ class Client(BaseClient):
                 if current_group_name == recovery_group_name.lower():
                     recovery_group_id = group["id"]
                     demisto.info(
-                        "Found recovery group {} with id [{}]".format(
-                            recovery_group_name, recovery_group_id
-                        )
+                        f"Found recovery group {recovery_group_name} with id [{recovery_group_id}]"
                     )
         return recovery_group_id
 

@@ -2,7 +2,6 @@ import demistomock as demisto
 from hashlib import sha256
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-from typing import Union
 
 DIGITS58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -14,7 +13,7 @@ def decode_base58(address, length) -> bytes:
     return n.to_bytes(length, 'big')
 
 
-def verify_is_bitcoin(address) -> Union[bytes, bool]:
+def verify_is_bitcoin(address) -> bytes | bool:
     try:
         bitcoin_bytes = decode_base58(address, 25)
         '''Check if the last four bytes are equal to the

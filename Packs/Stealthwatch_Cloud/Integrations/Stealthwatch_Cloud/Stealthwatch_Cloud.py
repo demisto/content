@@ -104,7 +104,7 @@ def show_alert_command():
 
     alert_data = show_alert(alert_id)
 
-    if not demisto.args().get('addComments', False) == 'true':
+    if demisto.args().get('addComments', False) != 'true':
         alert_data.pop('comments')
         alert_data.pop('new_comment')
 
@@ -213,7 +213,7 @@ def list_alerts_command():
     md_dicts_list = []
 
     for alert in alerts_data:
-        if not demisto.args().get('addComments', False) == 'true':
+        if demisto.args().get('addComments', False) != 'true':
             alert.pop('comments')
             alert.pop('new_comment')
         alert.pop('observations')
@@ -565,7 +565,7 @@ def main():
         elif demisto.command() == 'fetch-incidents':
             demisto.results(fetch_incidents())
     except Exception as e:
-        return_error('error has occurred: {}'.format(str(e)))
+        return_error(f'error has occurred: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

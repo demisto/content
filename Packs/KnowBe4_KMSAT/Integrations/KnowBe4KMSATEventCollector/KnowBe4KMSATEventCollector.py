@@ -5,7 +5,6 @@ from datetime import date
 import urllib3
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -101,12 +100,12 @@ def check_if_last_run_reached(last_run: dict[str, date], earliest_fetched_event:
 
 
 def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime.now(),
-                 last_run: dict[str, date] = {}) -> tuple[List[Dict], dict[str, date]]:
+                 last_run: dict[str, date] = {}) -> tuple[List[dict], dict[str, date]]:
     """
     Fetches events from the KnowBe4_KMSAT queue.
     """
     query_params = {'page': 1, 'per_page': 100}
-    events: List[Dict] = []
+    events: List[dict] = []
     if not last_run and first_fetch_time:
         last_run['latest_event_time'] = first_fetch_time
     elif type(last_run.get('latest_event_time')) == str:
@@ -122,9 +121,8 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
         if not response.get('meta', {}).get('next_page') or is_last_run_reached:
             events.extend(eliminate_duplicated_events(fetched_events, last_run))
             break
-        else:
-            events.extend(fetched_events)
-            query_params['page'] = response.get('meta', {}).get('next_page', 1)
+        events.extend(fetched_events)
+        query_params['page'] = response.get('meta', {}).get('next_page', 1)
     new_last_run_obj: dict = {'latest_event_time': events[0].get('occurred_date') if events else datetime.now()}
     demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run_obj}.')
     return events, new_last_run_obj
@@ -147,7 +145,7 @@ def test_module(client: Client) -> str:
             raise DemistoException(str(e))
 
 
-def get_events_command(client: Client, args: Dict, vendor: str, product: str) -> Union[str, CommandResults]:
+def get_events_command(client: Client, args: dict, vendor: str, product: str) -> Union[str, CommandResults]:
     """
     Fetches events from the KnowBe4-KMSAT queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
@@ -157,7 +155,7 @@ def get_events_command(client: Client, args: Dict, vendor: str, product: str) ->
     args.pop('should_push_events')
     params.update(args)
     response = client.get_events_request(params)
-    events: List[Dict] = response.json().get('data') or []
+    events: List[dict] = response.json().get('data') or []
     if events:
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=vendor, product=product)

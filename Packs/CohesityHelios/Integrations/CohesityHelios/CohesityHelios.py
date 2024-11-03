@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 from datetime import datetime, timedelta
 from dateparser import parse
-from typing import Dict, Any
+from typing import Any
 import json
 import urllib3
 import traceback
@@ -174,7 +174,7 @@ def convert_to_demisto_severity_int(severity: str):
     }.get(severity, IncidentSeverity.UNKNOWN)
 
 
-def create_ransomware_incident(alert) -> Dict[str, Any]:
+def create_ransomware_incident(alert) -> dict[str, Any]:
     """Helper method to create ransomware incident from alert.
     """
     property_dict = _get_property_dict(alert['propertyList'])
@@ -199,7 +199,7 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
     }
 
 
-def get_ransomware_alert_details(alert) -> Dict[str, Any]:
+def get_ransomware_alert_details(alert) -> dict[str, Any]:
     """Helper method to parse ransomware alert for details.
     """
     # Get alert properties.
@@ -222,7 +222,7 @@ def get_ransomware_alert_details(alert) -> Dict[str, Any]:
 ''' COMMAND FUNCTIONS '''
 
 
-def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_ransomware_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets ransomware alerts detected by Cohesity Helios.
 
@@ -273,7 +273,7 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> str:
+def ignore_ransomware_anomaly_command(client: Client, args: dict[str, Any]) -> str:
     """Ignore detected anomalous object on Helios.
 
         :type client: ``Client``
@@ -305,7 +305,7 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
     return f"Ignored object {object_name}."
 
 
-def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
+def restore_latest_clean_snapshot(client: Client, args: dict[str, Any]) -> str:
     """Restore latest clean snapshot of given object.
 
         :type client: ``Client``
@@ -466,7 +466,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         # Prepare client and set authentication headers.
-        headers: Dict = {
+        headers: dict = {
             'apikey': api_key,
             'Content-Type': 'application/json',
         }

@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import urllib.parse
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 def exists_indicator(indicator: str) -> bool:
@@ -12,7 +12,7 @@ def exists_indicator(indicator: str) -> bool:
     return False
 
 
-def decode_indicator(indicator: str, encoding: Optional[str]) -> str:
+def decode_indicator(indicator: str, encoding: str | None) -> str:
     if not encoding or encoding == 'none':
         return indicator
     elif encoding == 'base64':
@@ -23,7 +23,7 @@ def decode_indicator(indicator: str, encoding: Optional[str]) -> str:
         raise DemistoException(f'Unknown encoding mode: {encoding}')
 
 
-def check_indicators(indicators: List[str], encoding: str) -> List[Dict[str, Any]]:
+def check_indicators(indicators: List[str], encoding: str) -> List[dict[str, Any]]:
     # Decode and dedup indicators
     pairs = {decode_indicator(encoded_indicator, encoding): encoded_indicator for encoded_indicator in indicators}
 

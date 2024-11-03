@@ -1,10 +1,10 @@
 from CommonServerPython import *
 import traceback
 import json
-from typing import Dict, Any
+from typing import Any
 
 
-def get_entry_context(json_res) -> Dict[str, Any]:
+def get_entry_context(json_res) -> dict[str, Any]:
     return {outputPaths["domain"]: {"Name": json_res['Artifact']},
             "ChronicleIOCDomainMatches": {"Domain": json_res['Artifact'], "IOCIngestTime": json_res["IocIngestTime"],
                                           "FirstSeen": json_res["FirstAccessedTime"],

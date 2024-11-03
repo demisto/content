@@ -108,7 +108,7 @@ def test_module(client: Client) -> str:
         )
         message = "ok"
     except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str():  # TODO: make sure you capture authentication errors
+        if "Forbidden" in str(e) or "Authorization" in "":  # TODO: make sure you capture authentication errors
             message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
@@ -116,7 +116,7 @@ def test_module(client: Client) -> str:
 
 
 def enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    ip = args.get("ip", None)
+    ip = args.get("ip")
     if not ip:
         raise ValueError("IP not specified")
 

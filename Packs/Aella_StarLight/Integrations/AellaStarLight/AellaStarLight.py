@@ -4,7 +4,7 @@ import requests
 import json
 import time
 import os
-from typing import Any, Dict
+from typing import Any
 
 import urllib3
 
@@ -37,7 +37,7 @@ def make_rest_call(end_point, username, password, action_result,
     resp_json = None
     request_func = getattr(requests, method)
     if (not request_func):
-        action_result['status'] = 'Unsupported method {}'.format(method)
+        action_result['status'] = f'Unsupported method {method}'
         return
     try:
         r = request_func(end_point, auth=(username, password),
@@ -45,7 +45,7 @@ def make_rest_call(end_point, username, password, action_result,
                          headers=headers,
                          verify=VALIDATE_CERT, params=params)
     except Exception as e:
-        action_result['status'] = 'Server REST API exception {}'.format(e)
+        action_result['status'] = f'Server REST API exception {e}'
         return
 
     if r is not None:
@@ -110,7 +110,7 @@ def fetch_incidents_command():
 
     index_str = 'aella-ser*'
 
-    query_str = 'event_name:{}  AND severity:>{}'.format(event, score)
+    query_str = f'event_name:{event}  AND severity:>{score}'
 
     ts_str = str(int(checkTime * 1000))
 
@@ -138,7 +138,7 @@ def fetch_incidents_command():
 
     end_point = URL + '/{0}/{1}/_search'.format(index_str, 'amsg')
 
-    action_result: Dict[Any, Any] = {}
+    action_result: dict[Any, Any] = {}
     make_rest_call(end_point,
                    USERNAME, PASSWORD, action_result, data=query_json
                    )
@@ -147,7 +147,7 @@ def fetch_incidents_command():
         demisto.info('Poll incidents ok')
         data = action_result.get('data')
         if not isinstance(data, dict):
-            demisto.error('Data returned in wrong format {}'.format(data))
+            demisto.error(f'Data returned in wrong format {data}')
             demisto.incidents([])
             return
         hits = data.get('hits', {}).get('hits', [])
@@ -156,7 +156,7 @@ def fetch_incidents_command():
         try:
             cached_event = demisto.getLastRun().get("cached_event", {})
         except Exception as e:
-            demisto.debug('Error while accessing the last run data: {}'.format(e))
+            demisto.debug(f'Error while accessing the last run data: {e}')
             cached_event = {}
 
         new_cached_event = {}
@@ -175,7 +175,7 @@ def fetch_incidents_command():
                 else:
                     severity = 1
             except ValueError as e:
-                demisto.debug('Error while converting the severity value to int: {}'.format(e))
+                demisto.debug(f'Error while converting the severity value to int: {e}')
                 severity = 0
 
             if not event_name:
@@ -186,7 +186,7 @@ def fetch_incidents_command():
             if cached_event.get(eid, False):
                 continue
 
-            sdi = '{}_{}'.format(event_name, eid)
+            sdi = f'{event_name}_{eid}'
             incident = {
                 'name': sdi,
                 'severity': severity,
@@ -198,12 +198,12 @@ def fetch_incidents_command():
                                        })
             }
             incidents.append(incident)
-        demisto.info('Incidents is {}'.format(incidents))
+        demisto.info(f'Incidents is {incidents}')
         demisto.setLastRun({'cached_event': new_cached_event})
         demisto.incidents(incidents)
 
     else:
-        demisto.info('Poll incidents failed {}'.format(action_result))
+        demisto.info(f'Poll incidents failed {action_result}')
         demisto.incidents([])
 
 
@@ -213,7 +213,7 @@ def aella_get_event_command():
     query_json = {'query': {'match': {'_id': event_id}}}
     end_point = URL + '/{0}/{1}/_search'.format('aella-ser*', 'amsg')
 
-    action_result: Dict[Any, Any] = {}
+    action_result: dict[Any, Any] = {}
 
     make_rest_call(end_point,
                    USERNAME, PASSWORD, action_result, data=query_json
@@ -233,7 +233,7 @@ def aella_get_event_command():
             if index:
                 source['_index'] = index
                 source['timed_out'] = timed_out
-                demisto.debug('This is my run_query result aellaEvent {}'.format(source))
+                demisto.debug(f'This is my run_query result aellaEvent {source}')
 
                 # Check url reputation
                 url_str = source.get('url', '')
@@ -247,7 +247,7 @@ def aella_get_event_command():
                             'Score': 3,
                             'Malicious': {
                                 'Vendor': 'Aella Data',
-                                'Detections': 'URL reputation {0}'.format(url_reputation),
+                                'Detections': f'URL reputation {url_reputation}',
                                 'URL': url_str
                             }
                         }
@@ -278,7 +278,7 @@ def aella_get_event_command():
                             'Score': 3,
                             'Malicious': {
                                 'Vendor': 'Aella Data',
-                                'Detections': 'Source IP reputation {0}'.format(srcip_reputation),
+                                'Detections': f'Source IP reputation {srcip_reputation}',
                                 'IP': srcip_str
                             }
                         }
@@ -309,7 +309,7 @@ def aella_get_event_command():
                             'Score': 3,
                             'Malicious': {
                                 'Vendor': 'Aella Data',
-                                'Detections': 'Destination IP reputation {0}'.format(dstip_reputation),
+                                'Detections': f'Destination IP reputation {dstip_reputation}',
                                 'IP': dstip_str
                             }
                         }
@@ -333,23 +333,23 @@ def aella_get_event_command():
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': source,
-            'HumanReadable': tableToMarkdown('Aella Star Light Event <{0}>'.format(event_id), source),
+            'HumanReadable': tableToMarkdown(f'Aella Star Light Event <{event_id}>', source),
             'EntryContext': {
                 'Aella.Event(val._id==obj._id)': source,
                 'DBotScore': createContext(dbot_scores, removeNull=True),
             }
         })
     else:
-        demisto.info('Get event failed {}'.format(action_result))
+        demisto.info(f'Get event failed {action_result}')
         demisto.results(return_error('Failed to get event'))
 
 
 ''' EXECUTION CODE '''
-demisto.info('Command is {}'.format(demisto.command()))
+demisto.info(f'Command is {demisto.command()}')
 
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration test button.
-    action_result: Dict[Any, Any] = {}
+    action_result: dict[Any, Any] = {}
 
     make_rest_call(URL + '/_cluster/health',
                    USERNAME, PASSWORD, action_result

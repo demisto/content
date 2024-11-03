@@ -8,7 +8,7 @@ try:
 except Exception as err:
     return_error(err)
 
-returned_data = str()
+returned_data = ''
 
 if value:
     for v in value:

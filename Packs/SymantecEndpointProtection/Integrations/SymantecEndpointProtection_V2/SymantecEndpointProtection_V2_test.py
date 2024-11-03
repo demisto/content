@@ -8,14 +8,14 @@ def mock_demisto(mocker):
 
 def _get_api_response():
     response = "test-data/SEPM-endpoint-api-response.json"
-    with open(response, 'r') as f:
+    with open(response) as f:
         api_response = json.loads(f.read())
     return api_response
 
 
 def _get_expected_output():
     response = "test-data/SEPM-expected-endpoint-extract.json"
-    with open(response, 'r') as f:
+    with open(response) as f:
         api_response = json.loads(f.read())
     return api_response
 
@@ -24,8 +24,8 @@ def test_endpoint_ip_extract(mocker):
     mock_demisto(mocker)
     from SymantecEndpointProtection_V2 import endpoint_ip_extract
     raw_json = _get_api_response()
-    assert [{'Address': '192.168.1.12', 'Mac': 'demisto-PC'},
-            {'Address': '192.168.1.125', 'Mac': 'DESKTOP-TF35B9B'}] == endpoint_ip_extract(raw_json)
+    assert endpoint_ip_extract(raw_json) == [{'Address': '192.168.1.12', 'Mac': 'demisto-PC'},
+            {'Address': '192.168.1.125', 'Mac': 'DESKTOP-TF35B9B'}]
 
 
 def test_endpoint_endpoint_extract(mocker):

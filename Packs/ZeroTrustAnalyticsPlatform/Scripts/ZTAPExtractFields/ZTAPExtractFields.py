@@ -1,12 +1,12 @@
 from CommonServerPython import *
 
-from typing import Dict, Any, List
+from typing import Any
 import traceback
 
 """ STANDALONE FUNCTION """
 
 
-def extract_fields(value) -> List:
+def extract_fields(value) -> list:
     """
     Extracts ordered ZTAP fields for use in analytics
     """
@@ -26,7 +26,7 @@ def extract_fields(value) -> List:
 """ COMMAND FUNCTION """
 
 
-def extract_fields_command(args: Dict[str, Any]) -> CommandResults:
+def extract_fields_command(args: dict[str, Any]) -> CommandResults:
 
     value = args.get("value", [])
 

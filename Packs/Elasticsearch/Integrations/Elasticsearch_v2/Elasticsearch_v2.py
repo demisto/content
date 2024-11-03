@@ -944,9 +944,9 @@ def main():
             return_results(integration_health_check(proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
-            return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
+            return_error(f'Failed executing {demisto.command()}. Seems that the client does not support the server\'s distribution, '
                          'Please try using the Open Search client in the instance configuration.'
-                         '\nError message: {}'.format(demisto.command(), str(e)), error=e)
+                         f'\nError message: {str(e)}', error=e)
         if 'failed to parse date field' in str(e):
             return_error(f'Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.',
                          error=e)

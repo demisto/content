@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
-from typing import Dict, Any, List
+from typing import Any
 from requests import Response  # Used to typing Response as a return from functions
 
 # Disable insecure warnings
@@ -31,7 +31,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def list_remediation_rule_request(self, request_data: Dict) -> Dict[str, Any]:
+    def list_remediation_rule_request(self, request_data: dict) -> dict[str, Any]:
         """Get a list of all your remediation rules using the 'xpanse_remediation_rules/rules/' endpoint.
 
         Args:
@@ -50,7 +50,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_external_service_request(self, search_params: List[Dict]) -> Dict[str, Any]:
+    def list_external_service_request(self, search_params: list[dict]) -> dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
 
         Args:
@@ -72,7 +72,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_external_service_request(self, service_id_list: List[str]) -> Dict[str, Any]:
+    def get_external_service_request(self, service_id_list: list[str]) -> dict[str, Any]:
         """Get service details using the '/assets/get_external_service/' endpoint.
 
         Args:
@@ -92,7 +92,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_external_ip_address_range_request(self) -> Dict[str, Any]:
+    def list_external_ip_address_range_request(self) -> dict[str, Any]:
         """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
 
         Returns:
@@ -110,8 +110,8 @@ class Client(BaseClient):
         return response
 
     def get_external_ip_address_range_request(
-        self, range_id_list: List[str]
-    ) -> Dict[str, Any]:
+        self, range_id_list: list[str]
+    ) -> dict[str, Any]:
         """Get external IP address range details using the '/assets/get_external_ip_address_range/' endpoint.
 
         Args:
@@ -132,8 +132,8 @@ class Client(BaseClient):
         return response
 
     def get_attack_surface_rule_request(
-        self, search_params: List[dict]
-    ) -> Dict[str, Any]:
+        self, search_params: list[dict]
+    ) -> dict[str, Any]:
         """Get Attack Surface Rule details for an attack surface rule id using the '/get_attack_surface_rules/' endpoint.
 
         Args:
@@ -152,8 +152,8 @@ class Client(BaseClient):
         return response
 
     def list_asset_internet_exposure_request(
-        self, search_params: List[dict]
-    ) -> Dict[str, Any]:
+        self, search_params: list[dict]
+    ) -> dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -176,8 +176,8 @@ class Client(BaseClient):
         return response
 
     def get_asset_internet_exposure_request(
-        self, asm_id_list: List[str]
-    ) -> Dict[str, Any]:
+        self, asm_id_list: list[str]
+    ) -> dict[str, Any]:
         """Get internet exposure asset details using the '/assets/get_asset_internet_exposure/' endpoint.
 
         Args:
@@ -293,7 +293,7 @@ def append_search_param(search_params, field, operator, value):
     )
 
 
-def format_asm_id(formatted_response: List[dict]) -> List[dict]:
+def format_asm_id(formatted_response: list[dict]) -> list[dict]:
     """
     Takes the response from the asm-list-asset-internet-exposure command and converts `asm_id` key from list to str
 
@@ -343,7 +343,7 @@ def get_api_error(response: Response):
 """ COMMAND FUNCTIONS """
 
 
-def list_remediation_rule_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def list_remediation_rule_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-remediation-rule command: Returns list of remediation path rules.
 
@@ -404,7 +404,7 @@ def list_remediation_rule_command(args: Dict[str, Any], client: Client) -> Comma
     return command_results
 
 
-def list_external_service_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def list_external_service_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-external-service command: Returns list of external services.
 
@@ -460,7 +460,7 @@ def list_external_service_command(args: Dict[str, Any], client: Client) -> Comma
     return command_results
 
 
-def get_external_service_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def get_external_service_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-get-external-service command: Returns details of single external service.
     Returns error if more than one service_id was provided in comma separated format.
@@ -500,7 +500,7 @@ def get_external_service_command(args: Dict[str, Any], client: Client) -> Comman
 
 
 def list_external_ip_address_range_command(
-    args: Dict[str, Any], client: Client
+    args: dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-list-external-ip-address-range command: Returns list of external ip ranges.
@@ -533,7 +533,7 @@ def list_external_ip_address_range_command(
 
 
 def get_external_ip_address_range_command(
-    args: Dict[str, Any], client: Client
+    args: dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-get-external-ip-address-range command: Returns details of single external ip range.
@@ -574,7 +574,7 @@ def get_external_ip_address_range_command(
 
 
 def get_attack_surface_rule_command(
-    args: Dict[str, Any], client: Client
+    args: dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-get-attack-surface-rule command: Returns attack surface rule details.
@@ -631,7 +631,7 @@ def get_attack_surface_rule_command(
 
 
 def list_asset_internet_exposure_command(
-    args: Dict[str, Any], client: Client
+    args: dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-list-asset-internet-exposure command: Returns list of external internet exposures.
@@ -664,7 +664,7 @@ def list_asset_internet_exposure_command(
     has_bu_overrides = args.get("has_bu_overrides")
     mac_addresses = args.get("mac_addresses")
     # create list of search parameters or pass empty list.
-    search_params: List[Dict[str, Any]] = []
+    search_params: list[dict[str, Any]] = []
 
     if ip_address:
         append_search_param(search_params, "ip_address", "eq", ip_address)
@@ -732,7 +732,7 @@ def list_asset_internet_exposure_command(
 
 
 def get_asset_internet_exposure_command(
-    args: Dict[str, Any], client: Client
+    args: dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-get-asset-internet-exposure command: Returns details of single external internet exposure.
@@ -773,7 +773,7 @@ def get_asset_internet_exposure_command(
 
 
 def start_remediation_confirmation_scan_command(
-    args: Dict[str, Any], client: Client
+    args: dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-start-remediation-confirmation-scan command: Starts a new scan or gets an existing scan ID.
@@ -831,7 +831,7 @@ def start_remediation_confirmation_scan_command(
                   timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 11000)),
                   requires_polling_arg=False  # This means it will always be default to poll, poll=true
                   )
-def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], client: Client):
+def get_remediation_confirmation_scan_status_command(args: dict[str, Any], client: Client):
     """
     asm-get-remediation-confirmation-scan-status command: Polls for status of an existing remediation confirmation scan.
 
@@ -926,8 +926,8 @@ def main() -> None:
     """
     main function
     """
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")

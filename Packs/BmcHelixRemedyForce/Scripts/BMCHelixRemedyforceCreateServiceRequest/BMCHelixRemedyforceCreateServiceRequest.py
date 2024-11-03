@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import json
-from typing import Dict, Any
+from typing import Any
 
 DEFAULT_ARGS = [
     "category_id",
@@ -17,7 +17,7 @@ DEFAULT_ARGS = [
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-GET_COMMANDS: Dict[str, str] = {
+GET_COMMANDS: dict[str, str] = {
     'category_id': 'bmc-remedy-category-details-get',
     'client_id': 'bmc-remedy-user-details-get',
     'queue_id': 'bmc-remedy-queue-details-get',
@@ -46,7 +46,7 @@ def remove_null_fields_and_convert_additional_fields_in_string(additional_fields
     additional_fields = remove_empty_elements(additional_fields)
     field_list = list()
     for each_field in additional_fields:
-        field_list.append("{}={}".format(each_field, additional_fields[each_field]))
+        field_list.append(f"{each_field}={additional_fields[each_field]}")
     return ";".join(field_list)
 
 
@@ -60,8 +60,8 @@ def generate_command_args_with_additional_fields(additional_fields):
     :return: JSON of command arguments.
     :rtype: ``dict``
     """
-    command_args: Dict[str, str] = {}
-    actual_additional_fields: Dict[str, str] = {}
+    command_args: dict[str, str] = {}
+    actual_additional_fields: dict[str, str] = {}
     for each_field in additional_fields:
         if each_field in DEFAULT_ARGS:
             command_args[each_field] = additional_fields[each_field]
@@ -240,7 +240,7 @@ def main():
     """
     args = remove_extra_space_from_args(demisto.args())
     using_argument = args.get("using")
-    additional_fields: Dict[str, Any] = {
+    additional_fields: dict[str, Any] = {
         'client_id': get_field_id(
             args.get('client_id'),
             args.get('client_user_name'),

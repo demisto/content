@@ -1,5 +1,4 @@
 import json
-import io
 import urllib.parse
 
 import pytest
@@ -8,7 +7,7 @@ from ResecurityMonitoring import PAGINATION_HEADER_NAME, MODULE_NAME_BREACHES, D
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -128,5 +127,5 @@ def test_get_task_monitor_results_command(requests_mock):
     requests_mock.get(url,
                       json=mock_response)
     with pytest.raises((DemistoException),
-                       match="Something is wrong, header {0} is empty for API request".format(PAGINATION_HEADER_NAME)):
+                       match=f"Something is wrong, header {PAGINATION_HEADER_NAME} is empty for API request"):
         command_function(client, args)

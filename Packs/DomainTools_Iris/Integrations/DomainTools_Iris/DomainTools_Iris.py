@@ -543,7 +543,7 @@ def format_enrich_output(result):
     }
 
     demisto_title = f'DomainTools Iris Enrich for {domain}.'
-    iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
+    iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
     human_readable = tableToMarkdown(
         f'{demisto_title} {iris_title}', human_readable_data, headers=PROFILE_HEADERS
     )

@@ -3,7 +3,6 @@ from requests import Response
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict
 import urllib3
 
 # Disable insecure warnings
@@ -25,7 +24,7 @@ class Client(BaseClient):
         self.server_url = server_url
         super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify)
 
-    def get_full_url(self, full_url: str) -> Dict:
+    def get_full_url(self, full_url: str) -> dict:
         """ Makes a general GET request according to the given full_url.
         Args:
             full_url: str - The full url for the GET method.
@@ -34,7 +33,7 @@ class Client(BaseClient):
         """
         return self._http_request(method='GET', full_url=full_url)
 
-    def get_project_list_request(self, page: int, page_size: int, project_key: str = None) -> Dict:
+    def get_project_list_request(self, page: int, page_size: int, project_key: str = None) -> dict:
         """ Gets a list of all the project in Bitbucket.
             If a specific project_key is given, it will return the information about this project.
         Args:
@@ -55,7 +54,7 @@ class Client(BaseClient):
             full_url = f'{self.server_url}/workspaces/{self.workspace}/projects/{project_key}'
         return self._http_request(method='GET', full_url=full_url, params=params)
 
-    def get_open_branch_list_request(self, repo: str, page: int, page_size: int) -> Dict:
+    def get_open_branch_list_request(self, repo: str, page: int, page_size: int) -> dict:
         """ Gets a list of all the open branches in Bitbucket.
         Args:
             repo: str - The repository the user entered if he did.
@@ -69,7 +68,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def get_branch_request(self, branch_name: str, repo: str) -> Dict:
+    def get_branch_request(self, branch_name: str, repo: str) -> dict:
         """ Gets the information of a specific branch in Bitbucket.
         Args:
             repo: str - The repository the user entered if he did.
@@ -80,7 +79,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def branch_create_request(self, name: str, target_branch: str, repo: str) -> Dict:
+    def branch_create_request(self, name: str, target_branch: str, repo: str) -> dict:
         """ Creates a branch in Bitbucket.
         Args:
             repo: str - The repository the user entered if he did.
@@ -109,7 +108,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/refs/branches/{branch_name}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
-    def commit_create_request(self, body: Dict, repo: str) -> Response:
+    def commit_create_request(self, body: dict, repo: str) -> Response:
         """ Creates a commit in Bitbucket.
         Args:
             repo: str - The repository the user entered if he did.
@@ -124,7 +123,7 @@ class Client(BaseClient):
                                   resp_type='response')
 
     def commit_list_request(self, repo: str, file_path: str, page: int, page_size: int, included_list: list,
-                            excluded_list: list = []) -> Dict:
+                            excluded_list: list = []) -> dict:
         """ Gets a list of commits from Bitbucket.
         Args:
             repo: str - The repository the user entered if he did.
@@ -152,7 +151,7 @@ class Client(BaseClient):
             url_suffix = f'{url_suffix}?{param_list[:-1]}'
         return self._http_request(method='POST', url_suffix=url_suffix, params=params)
 
-    def file_delete_request(self, body: Dict, repo: str) -> Response:
+    def file_delete_request(self, body: dict, repo: str) -> Response:
         """ Deletes a file in Bitbucket.
         Args:
             repo: str - The repository the user entered if he did.
@@ -178,7 +177,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/src/{commit_hash}/{file_path}'
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
-    def issue_create_request(self, repo: str, body: dict) -> Dict:
+    def issue_create_request(self, repo: str, body: dict) -> dict:
         """ Creates an issue in Bitbucket.
         Args:
             repo: str - The repository the user entered if he did.
@@ -189,7 +188,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def issue_list_request(self, repo: str, page: int, page_size: int, issue_id: str) -> Dict:
+    def issue_list_request(self, repo: str, page: int, page_size: int, issue_id: str) -> dict:
         """ Gets a list of all the issues, or in case that issue_id has been given,
             it will return the information of the specific issue.
         Args:
@@ -209,7 +208,7 @@ class Client(BaseClient):
             url_suffix = f'{url_suffix}{issue_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def issue_update_request(self, repo: str, body: dict, issue_id: str) -> Dict:
+    def issue_update_request(self, repo: str, body: dict, issue_id: str) -> dict:
         """ Updates an issue.
         Args:
             repo: str - The repository the user entered if he did.
@@ -221,7 +220,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
-    def pull_request_create_request(self, repo: str, body: Dict) -> Dict:
+    def pull_request_create_request(self, repo: str, body: dict) -> dict:
         """ Creates a pull request.
         Args:
             repo: str - The repository the user entered if he did.
@@ -232,7 +231,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def pull_request_update_request(self, repo: str, body: Dict, pr_id: str) -> Dict:
+    def pull_request_update_request(self, repo: str, body: dict, pr_id: str) -> dict:
         """ Updates a pull request.
         Args:
             repo: str - The repository the user entered if he did.
@@ -244,7 +243,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
-    def pull_request_list_request(self, repo: str, pr_id: str, page: int, page_size: int, state: str) -> Dict:
+    def pull_request_list_request(self, repo: str, pr_id: str, page: int, page_size: int, state: str) -> dict:
         """ Gets information about a specific pull request. If there isn't a pull request id,
             gets a list of pull requests.
         Args:
@@ -256,7 +255,7 @@ class Client(BaseClient):
         Returns:
             A response object in a form of a dictionary.
         """
-        params: Dict = {
+        params: dict = {
             'page': page,
             'pagelen': page_size
         }
@@ -267,7 +266,7 @@ class Client(BaseClient):
             url_suffix = f'{url_suffix}/{pr_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def issue_comment_create_request(self, repo: str, issue_id: str, body: Dict) -> Dict:
+    def issue_comment_create_request(self, repo: str, issue_id: str, body: dict) -> dict:
         """ Creates a comment on an issue.
         Args:
             repo: str - The repository the user entered if he did.
@@ -291,7 +290,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments/{comment_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
-    def issue_comment_update_request(self, repo: str, issue_id: str, comment_id: str, body: Dict) -> Dict:
+    def issue_comment_update_request(self, repo: str, issue_id: str, comment_id: str, body: dict) -> dict:
         """ Updates a comment in an issue.
         Args:
             repo: str - The repository the user entered, if he did.
@@ -304,7 +303,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/issues/{issue_id}/comments/{comment_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
-    def issue_comment_list_request(self, repo: str, issue_id: str, comment_id: str, page: int, page_size: int) -> Dict:
+    def issue_comment_list_request(self, repo: str, issue_id: str, comment_id: str, page: int, page_size: int) -> dict:
         """ Gets information about a specific comment in an issue.
             if there is no comment_id, then gets all the comments on a specific issue.
         Args:
@@ -325,7 +324,7 @@ class Client(BaseClient):
             url_suffix = f'{url_suffix}{comment_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def pull_request_comment_create_request(self, repo: str, pr_id: str, body: Dict) -> Dict:
+    def pull_request_comment_create_request(self, repo: str, pr_id: str, body: dict) -> dict:
         """ Creates a new pull request.
         Args:
             repo: str - The repository the user entered, if he did.
@@ -338,7 +337,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
     def pull_request_comment_list_request(self, repo: str, pr_id: str, page: int, page_size: int,
-                                          comment_id: str) -> Dict:
+                                          comment_id: str) -> dict:
         """ Gets information about a specific comment of a pull request.
             If there isn't a comment_id than gets all the comments on a specific pull request.
         Args:
@@ -360,7 +359,7 @@ class Client(BaseClient):
             url_suffix = f'{url_suffix}/{comment_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def pull_request_comment_update_request(self, repo: str, pr_id: str, body: Dict, comment_id: str) -> Dict:
+    def pull_request_comment_update_request(self, repo: str, pr_id: str, body: dict, comment_id: str) -> dict:
         """ Updates a specific comment in a pull request.
         Args:
             repo: str - The repository the user entered, if he did.
@@ -385,7 +384,7 @@ class Client(BaseClient):
         url_suffix = f'/repositories/{self.workspace}/{repo}/pullrequests/{pr_id}/comments/{comment_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix, resp_type='response')
 
-    def workspace_member_list_request(self, page: int, page_size: int) -> Dict:
+    def workspace_member_list_request(self, page: int, page_size: int) -> dict:
         """ Gets a list of the members in the workspace.
             Args:
                 page: int - The specific result's page.
@@ -401,7 +400,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
-def get_exception_message(e: DemistoException) -> Dict:
+def get_exception_message(e: DemistoException) -> dict:
     """ extract the dictionary with the message about the exception.
         Args:
             e: DemistoException - the exception string.
@@ -414,7 +413,7 @@ def get_exception_message(e: DemistoException) -> Dict:
     return m_json
 
 
-def check_pagination(client: Client, response: Dict, limit: int) -> List:
+def check_pagination(client: Client, response: dict, limit: int) -> List:
     """ Check if pagination is needed.
     Args:
         client: A Bitbucket client.
@@ -423,8 +422,8 @@ def check_pagination(client: Client, response: Dict, limit: int) -> List:
     Returns:
         An array of all the relevant results.
     """
-    arr: List[Dict] = response.get('values', [])
-    is_next = response.get('next', None)
+    arr: List[dict] = response.get('values', [])
+    is_next = response.get('next')
     pagelen = response.get('pagelen', 50)
     if is_next and limit > int(pagelen):
         return get_paged_results(client, response, limit)
@@ -432,7 +431,7 @@ def check_pagination(client: Client, response: Dict, limit: int) -> List:
         return arr
 
 
-def get_paged_results(client: Client, response: Dict, limit: int) -> List:
+def get_paged_results(client: Client, response: dict, limit: int) -> List:
     """ Uses pagination and returns a list of results.
     Args:
         client: A Bitbucket client.
@@ -442,8 +441,8 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
         Returns a list of results through pagination..
     """
     results = []
-    arr: List[Dict] = response.get('values', [])
-    is_next = response.get('next', None)
+    arr: List[dict] = response.get('values', [])
+    is_next = response.get('next')
     while response:
         results += arr
         limit = limit - len(arr)
@@ -459,7 +458,7 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
 
 
 def create_pull_request_body(title: str, source_branch: str, destination_branch: str, reviewer_id: str,
-                             description: str, close_source_branch: str) -> Dict:
+                             description: str, close_source_branch: str) -> dict:
     """ Creates a body for the pull request commands.
     Args:
         title: the title of the pull request.
@@ -471,7 +470,7 @@ def create_pull_request_body(title: str, source_branch: str, destination_branch:
     Returns:
         A dictionary - a body to the pull request commands.
     """
-    body: Dict = {}
+    body: dict = {}
     if title:
         body["title"] = title
     if source_branch:
@@ -502,7 +501,7 @@ def create_pull_request_body(title: str, source_branch: str, destination_branch:
     return body
 
 
-def branch_partial_result(response: Dict) -> Dict:
+def branch_partial_result(response: dict) -> dict:
     """ Creates a limited result for the branch commands.
         Args:
             response: the response from the Bitbucket API.
@@ -524,7 +523,7 @@ def branch_partial_result(response: Dict) -> Dict:
     }
 
 
-def issue_partial_result(response: Dict) -> Dict:
+def issue_partial_result(response: dict) -> dict:
     """ Creates a limited result for the issue commands.
         Args:
             response: the response from the Bitbucket API.
@@ -553,7 +552,7 @@ def issue_partial_result(response: Dict) -> Dict:
     }
 
 
-def pull_request_partial_result(response: Dict) -> Dict:
+def pull_request_partial_result(response: dict) -> dict:
     """ Creates a limited result for the PR commands.
         Args:
             response: the response from the Bitbucket API.
@@ -584,7 +583,7 @@ def pull_request_partial_result(response: Dict) -> Dict:
     }
 
 
-def comment_partial_result(response: Dict, pr_or_issue: str) -> Dict:
+def comment_partial_result(response: dict, pr_or_issue: str) -> dict:
     """ Creates a limited result for the comment commands.
         Args:
             response: the response from the Bitbucket API.
@@ -633,7 +632,7 @@ def test_module(client: Client) -> str:
         raise Exception(e.message)
 
 
-def project_list_command(client: Client, args: Dict) -> CommandResults:
+def project_list_command(client: Client, args: dict) -> CommandResults:
     """ Returns a list of all the projects in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -703,7 +702,7 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
+def open_branch_list_command(client: Client, args: dict) -> CommandResults:
     """ Returns a list of all the open branches in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -753,7 +752,7 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def branch_get_command(client: Client, args: Dict) -> CommandResults:
+def branch_get_command(client: Client, args: dict) -> CommandResults:
     """ Returns the information on a given branch in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -764,7 +763,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', client.repository)
     branch_name = args.get('branch_name', '')
     partial_response = argToBoolean(args.get('partial_response', True))
-    response: Dict = client.get_branch_request(branch_name, repo)
+    response: dict = client.get_branch_request(branch_name, repo)
     human_readable = {'Name': response.get('name'),
                       'LastCommitHash': response.get('target', {}).get('hash'),
                       'LastCommitCreatedBy': response.get('target', {}).get('author', {}).get('user', {})
@@ -789,7 +788,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def branch_create_command(client: Client, args: Dict) -> CommandResults:
+def branch_create_command(client: Client, args: dict) -> CommandResults:
     """ creates a branch in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -814,7 +813,7 @@ def branch_create_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def branch_delete_command(client: Client, args: Dict) -> CommandResults:
+def branch_delete_command(client: Client, args: dict) -> CommandResults:
     """ Deletes a branch in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -832,7 +831,7 @@ def branch_delete_command(client: Client, args: Dict) -> CommandResults:
         raise Exception(f'{m_json.get("message_arr")} , branch "{m_json.get("error", {}).get("message")}"')
 
 
-def commit_create_command(client: Client, args: Dict) -> CommandResults:
+def commit_create_command(client: Client, args: dict) -> CommandResults:
     """ creates a commit in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -843,11 +842,11 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
     repo = args.get('repo', client.repository)
     message = args.get('message', '')
     branch = args.get('branch', '')
-    file_name = args.get('file_name', None)
-    file_content = args.get('file_content', None)
-    entry_id = args.get('entry_id', None)
-    author_name = args.get('author_name', None)
-    author_email = args.get('author_email', None)
+    file_name = args.get('file_name')
+    file_content = args.get('file_content')
+    entry_id = args.get('entry_id')
+    author_name = args.get('author_name')
+    author_email = args.get('author_email')
 
     if not file_name and not entry_id:
         raise Exception('You must specify either the "file_name" and "file_content" or the "entry_id" of the file.')
@@ -871,7 +870,7 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output='The commit was created successfully.')
 
 
-def commit_list_command(client: Client, args: Dict) -> CommandResults:
+def commit_list_command(client: Client, args: dict) -> CommandResults:
     """ Returns a list of all the commits according to the given params.
     Args:
         client: A Bitbucket client.
@@ -880,9 +879,9 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with the list of commits.
     """
     repo = args.get('repo', client.repository)
-    file_path = args.get('file_path', None)
-    excluded_branches = argToList(args.get('excluded_branches', None))
-    included_branches = argToList(args.get('included_branches', None))
+    file_path = args.get('file_path')
+    excluded_branches = argToList(args.get('excluded_branches'))
+    included_branches = argToList(args.get('included_branches'))
     limit = arg_to_number(args.get('limit')) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     partial_response = argToBoolean(args.get('partial_response'))
@@ -930,7 +929,7 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def file_delete_command(client: Client, args: Dict) -> CommandResults:
+def file_delete_command(client: Client, args: dict) -> CommandResults:
     """ Deletes a file in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -942,8 +941,8 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
     message = args.get('message', '')
     branch = args.get('branch', '')
     file_name = args.get('file_name', '')
-    author_name = args.get('author_name', None)
-    author_email = args.get('author_email', None)
+    author_name = args.get('author_name')
+    author_email = args.get('author_email')
     body = {
         'message': message,
         'branch': branch,
@@ -957,7 +956,7 @@ def file_delete_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output='The file was deleted successfully.')
 
 
-def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
+def raw_file_get_command(client: Client, args: dict) -> List[CommandResults]:
     """ Returns the content of a given file.
     Args:
         client: A Bitbucket client.
@@ -967,7 +966,7 @@ def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
     """
     repo = args.get('repo', client.repository)
     file_path = args.get('file_path', '')
-    branch = args.get('branch', None)
+    branch = args.get('branch')
     including_list = []
     if branch:
         including_list = [branch]
@@ -993,7 +992,7 @@ def raw_file_get_command(client: Client, args: Dict) -> List[CommandResults]:
                            outputs=output), file_]
 
 
-def issue_create_command(client: Client, args: Dict) -> CommandResults:
+def issue_create_command(client: Client, args: dict) -> CommandResults:
     """ creates an issue in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -1006,9 +1005,9 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
     state = args.get('state', 'new')
     issue_type = args.get('type', 'bug')
     priority = args.get('priority', 'major')
-    content = args.get('content', None)
-    assignee_id = args.get('assignee_id', None)
-    assignee_user_name = args.get('assignee_user_name', None)
+    content = args.get('content')
+    assignee_id = args.get('assignee_id')
+    assignee_user_name = args.get('assignee_user_name')
     partial_response = argToBoolean(args.get('partial_response', True))
     body = {
         "title": title,
@@ -1036,7 +1035,7 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
                           outputs_key_field='id')
 
 
-def issue_list_command(client: Client, args: Dict) -> CommandResults:
+def issue_list_command(client: Client, args: dict) -> CommandResults:
     """ Retrieves issues from Bitbucket.
         Args:
             client: A Bitbucket client.
@@ -1045,7 +1044,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with the array of issues as output.
     """
     repo = args.get('repo', client.repository)
-    issue_id = args.get('issue_id', None)
+    issue_id = args.get('issue_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 100)
@@ -1093,7 +1092,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def issue_update_command(client: Client, args: Dict) -> CommandResults:
+def issue_update_command(client: Client, args: dict) -> CommandResults:
     """ Updates an issue from Bitbucket. If a certain argument isn't given, don't update it on the issue.
     Args:
         client: A Bitbucket client.
@@ -1107,9 +1106,9 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
     state = args.get('state')
     issue_type = args.get('type')
     priority = args.get('priority')
-    content = args.get('content', None)
-    assignee_id = args.get('assignee_id', None)
-    assignee_user_name = args.get('assignee_user_name', None)
+    content = args.get('content')
+    assignee_id = args.get('assignee_id')
+    assignee_user_name = args.get('assignee_user_name')
     partial_response = argToBoolean(args.get('partial_response', True))
     body = {
         "title": title
@@ -1140,7 +1139,7 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
                           outputs_key_field='id')
 
 
-def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
+def pull_request_create_command(client: Client, args: dict) -> CommandResults:
     """ Creates a pull request in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -1152,9 +1151,9 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     title = args.get('title', '')
     source_branch = args.get('source_branch', '')
     destination_branch = args.get('destination_branch', '')
-    reviewer_id = args.get('reviewer_id', None)
-    description = args.get('description', None)
-    close_source_branch = args.get('close_source_branch', None)
+    reviewer_id = args.get('reviewer_id')
+    description = args.get('description')
+    close_source_branch = args.get('close_source_branch')
     partial_response = argToBoolean(args.get('partial_response', True))
     body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description,
                                     close_source_branch)
@@ -1169,7 +1168,7 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
                           outputs_key_field='id')
 
 
-def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
+def pull_request_update_command(client: Client, args: dict) -> CommandResults:
     """ Updates a pull request from Bitbucket. If a certain argument isn't given, don't update it on the issue.
     Args:
         client: A Bitbucket client.
@@ -1179,12 +1178,12 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
     """
     repo = args.get('repo', client.repository)
     pull_request_id = args.get('pull_request_id', '')
-    title = args.get('title', None)
-    source_branch = args.get('source_branch', None)
-    destination_branch = args.get('destination_branch', None)
-    reviewer_id = args.get('reviewer_id', None)
-    description = args.get('description', None)
-    close_source_branch = args.get('close_source_branch', None)
+    title = args.get('title')
+    source_branch = args.get('source_branch')
+    destination_branch = args.get('destination_branch')
+    reviewer_id = args.get('reviewer_id')
+    description = args.get('description')
+    close_source_branch = args.get('close_source_branch')
     partial_response = argToBoolean(args.get('partial_response', True))
     body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description,
                                     close_source_branch)
@@ -1199,7 +1198,7 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
                           outputs_key_field='id')
 
 
-def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
+def pull_request_list_command(client: Client, args: dict) -> CommandResults:
     """ Returns a list of pull requests.
     Args:
         client: A Bitbucket client.
@@ -1210,8 +1209,8 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         If a state is not provided, by default a list of the open pull requests will return.
     """
     repo = args.get('repo', client.repository)
-    pull_request_id = args.get('pull_request_id', None)
-    state = args.get('state', None)
+    pull_request_id = args.get('pull_request_id')
+    state = args.get('state')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 50)
@@ -1260,7 +1259,7 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
+def issue_comment_create_command(client: Client, args: dict) -> CommandResults:
     """ Creates a comment on a specific issue in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -1288,7 +1287,7 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
                           outputs_key_field='id')
 
 
-def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
+def issue_comment_delete_command(client: Client, args: dict) -> CommandResults:
     """ Deletes a comment on a specific issue in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -1303,7 +1302,7 @@ def issue_comment_delete_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output='The comment was deleted successfully')
 
 
-def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
+def issue_comment_update_command(client: Client, args: dict) -> CommandResults:
     """ Updates a comment on a specific issue in Bitbucket.
     Args:
         client: A Bitbucket client.
@@ -1332,7 +1331,7 @@ def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
                           outputs_key_field='id')
 
 
-def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
+def issue_comment_list_command(client: Client, args: dict) -> CommandResults:
     """ Returns a list of comments, or a single comment if a commit_id is given, on a
         specific issue.
     Args:
@@ -1344,7 +1343,7 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
     """
     repo = args.get('repo', client.repository)
     issue_id = args.get('issue_id', '')
-    comment_id = args.get('comment_id', None)
+    comment_id = args.get('comment_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 100)
@@ -1389,7 +1388,7 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def pull_request_comment_create_command(client: Client, args: Dict) -> CommandResults:
+def pull_request_comment_create_command(client: Client, args: dict) -> CommandResults:
     """ Creates a comment in a pull request.
     Args:
         client: A Bitbucket client.
@@ -1417,7 +1416,7 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
                           outputs_key_field='id')
 
 
-def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResults:
+def pull_request_comment_list_command(client: Client, args: dict) -> CommandResults:
     """ Returns a list of comments of a specific pull request, or a single comment on a specific pull
         request, if a comment_id is given.
     Args:
@@ -1429,7 +1428,7 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
     """
     repo = args.get('repo', client.repository)
     pr_id = args.get('pull_request_id', '')
-    comment_id = args.get('comment_id', None)
+    comment_id = args.get('comment_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 100)
@@ -1484,7 +1483,7 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
     )
 
 
-def pull_request_comment_update_command(client: Client, args: Dict) -> CommandResults:
+def pull_request_comment_update_command(client: Client, args: dict) -> CommandResults:
     """ Updates a comment in a pull request.
         Args:
             client: A Bitbucket client.
@@ -1514,7 +1513,7 @@ def pull_request_comment_update_command(client: Client, args: Dict) -> CommandRe
         outputs_key_field='id')
 
 
-def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandResults:
+def pull_request_comment_delete_command(client: Client, args: dict) -> CommandResults:
     """ Deletes a comment in a pull request.
         Args:
             client: A Bitbucket client.
@@ -1532,7 +1531,7 @@ def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandRe
         raise Exception(f'Could not delete the comment in the pull request - {e.message}')
 
 
-def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
+def workspace_member_list_command(client: Client, args: dict) -> CommandResults:
     """ Returns a list of all the members in the requested workspace.
         Args:
             client: A Bitbucket client.

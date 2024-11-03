@@ -1,12 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any, List
+from typing import Any
 import traceback
 
 
 # HELPER FUNCTIONS
 
-def handle_error(command_results: List[Dict[str, Any]]) -> Union[None, str]:  # type: ignore
+def handle_error(command_results: list[dict[str, Any]]) -> Union[None, str]:  # type: ignore
     """
     Handle errors in the command results after executing the commands.
 
@@ -20,7 +20,7 @@ def handle_error(command_results: List[Dict[str, Any]]) -> Union[None, str]:  # 
         return return_error(command_results[0]["Contents"])
 
 
-def map_and_update_entity_detections(data: Dict[str, Any], mapper: str, mapper_type: str) -> CommandResults:
+def map_and_update_entity_detections(data: dict[str, Any], mapper: str, mapper_type: str) -> CommandResults:
     """
     Convert a dictionary of data using pre-configured mappers and update the threat accordingly.
 

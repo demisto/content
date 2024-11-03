@@ -14,7 +14,6 @@ import dateutil.parser
 from bs4 import BeautifulSoup
 from netaddr import IPAddress, iprange_to_cidrs, IPNetwork
 from six import string_types  # type: ignore
-from typing import Dict, List, Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -31,7 +30,7 @@ EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
 
 def package_extract_properties(package):
     """Extracts properties from the STIX package"""
-    result: Dict[str, str] = {}
+    result: dict[str, str] = {}
 
     header = package.find_all('STIX_Header')
     if len(header) == 0:
@@ -75,7 +74,7 @@ def package_extract_properties(package):
     if information_source is not None:
         identity = next((c for c in information_source if c.name == 'Identity'), None)
         if identity is not None:
-            name = next((c for c in identity if c.name == 'Name'))
+            name = next(c for c in identity if c.name == 'Name')
             if name is not None:
                 result['stix_package_information_source'] = name.text
 
@@ -102,7 +101,7 @@ def observable_extract_properties(observable):
 """ TAXII STIX DECODE """
 
 
-class AddressObject(object):
+class AddressObject:
     """
     Implements address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/AddressObj/AddressObjectType/
@@ -128,7 +127,7 @@ class AddressObject(object):
                     elif cidr.version == 6:
                         type_ = 'IPv6CIDR'
                     else:
-                        LOG('Unknown ip version: {!r}'.format(cidr.version))
+                        LOG(f'Unknown ip version: {cidr.version!r}')
                         return []
 
                 else:
@@ -138,7 +137,7 @@ class AddressObject(object):
                     elif ip.version == 6:
                         type_ = 'IPv6'
                     else:
-                        LOG('Unknown ip version: {!r}'.format(ip.version))
+                        LOG(f'Unknown ip version: {ip.version!r}')
                         return []
 
             except Exception:
@@ -169,7 +168,7 @@ class AddressObject(object):
             type_ = 'Email'
 
         else:
-            LOG('Unknown AddressObjectType category: {!r}'.format(acategory))
+            LOG(f'Unknown AddressObjectType category: {acategory!r}')
             return []
 
         return [{
@@ -178,7 +177,7 @@ class AddressObject(object):
         }]
 
 
-class DomainNameObject(object):
+class DomainNameObject:
     """
     Implements domain object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/DomainNameObj/DomainNameObjectType/
@@ -199,7 +198,7 @@ class DomainNameObject(object):
         }]
 
 
-class FileObject(object):
+class FileObject:
     """
     Implements file object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/FileObj/FileObjectType/
@@ -260,7 +259,7 @@ class FileObject(object):
         return result
 
 
-class URIObject(object):
+class URIObject:
     """
     Implements URI object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/URIObj/URIObjectType/
@@ -285,7 +284,7 @@ class URIObject(object):
         }]
 
 
-class SocketAddressObject(object):
+class SocketAddressObject:
     """
     Implements socket address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/SocketAddressObj/SocketAddressObjectType/
@@ -298,7 +297,7 @@ class SocketAddressObject(object):
         return []
 
 
-class LinkObject(object):
+class LinkObject:
     """
     Implements link object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/LinkObj/LinkObjectType/
@@ -307,7 +306,7 @@ class LinkObject(object):
     def decode(props, **kwargs):
         ltype = props.get('type', 'URL')
         if ltype != 'URL':
-            LOG('Unhandled LinkObjectType type: {}'.format(ltype))
+            LOG(f'Unhandled LinkObjectType type: {ltype}')
             return []
         value = props.get('value', None)
         if value is None:
@@ -324,7 +323,7 @@ class LinkObject(object):
         }]
 
 
-class HTTPSessionObject(object):
+class HTTPSessionObject:
     """
     Implements http session object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/HTTPSessionObj/HTTPSessionObjectType/
@@ -352,7 +351,7 @@ class HTTPSessionObject(object):
         return []
 
 
-class StixDecode(object):
+class StixDecode:
     """
     Decode STIX strings formatted as xml, and extract indicators from them
     """
@@ -372,7 +371,7 @@ class StixDecode(object):
         type_ = props.get('xsi:type').rsplit(':')[-1]
 
         if type_ not in StixDecode.DECODERS:
-            LOG('Unhandled cybox Object type: {!r} - {!r}'.format(type_, props))
+            LOG(f'Unhandled cybox Object type: {type_!r} - {props!r}')
             return []
 
         return StixDecode.DECODERS[type_](props, **kwargs)
@@ -467,7 +466,7 @@ class Client:
         """
 
     def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False,
-                 all_collections: bool = False, tags: list = [], tlp_color: Optional[str] = None):
+                 all_collections: bool = False, tags: list = [], tlp_color: str | None = None):
 
         taxii_client = cabby.create_client(discovery_path="https://otx.alienvault.com/taxii/discovery")
         taxii_client.set_auth(username=str(api_key), password="foo", verify_ssl=not insecure)
@@ -532,7 +531,7 @@ class Client:
         return StixDecode.decode(response)
 
 
-def module_test_command(client: Client, args: Dict):
+def module_test_command(client: Client, args: dict):
     """Test module for the integration
     will run on all the collections given and check for a response.
     if all_collections is checked will return an error only in case no collection returned a response.
@@ -570,7 +569,7 @@ def module_test_command(client: Client, args: Dict):
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, args: Dict):
+def get_indicators_command(client: Client, args: dict):
     """Runs fetch indicators and return the indicators.
 
     Args:

@@ -2,7 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, Tuple
+from typing import Any
+from collections.abc import Callable
 import dateparser
 import urllib3
 
@@ -18,7 +19,7 @@ urllib3.disable_warnings()  # pylint:disable=no-member
 
 
 class Client(BaseClient):
-    def whoami(self) -> Dict[str, Any]:
+    def whoami(self) -> dict[str, Any]:
         """Test that API works."""
         return self._http_request(
             method="get",
@@ -37,7 +38,7 @@ class Client(BaseClient):
         )
 
 
-def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
+def get_report(client: Client, args: dict[str, Any]) -> dict[str, Any]:
     serial = args.get('serial')
     if serial is None:
         api_query = ''
@@ -49,7 +50,7 @@ def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     return file_entry
 
 
-def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
+def get_csv(client: Client, args: dict[str, Any]) -> dict[str, Any]:
     serial = args.get('serial')
     if serial is None:
         api_query = ''
@@ -62,7 +63,7 @@ def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     return file_entry
 
 
-def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
+def get_stix(client: Client, args: dict[str, Any]) -> dict[str, Any]:
     serial = args.get('serial')
     if serial is None:
         api_query = ''
@@ -75,7 +76,7 @@ def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     return file_entry
 
 
-def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_indicators(client: Client, args: dict[str, Any]) -> CommandResults:
     exclude_suspect_domain = argToBoolean(args.get('exclude_suspect_domain', False))
     page = args.get('page')
     page_size = args.get('page_size')
@@ -150,7 +151,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     return results
 
 
-def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[list, dict]:
+def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> tuple[list, dict]:
     if last_run == {}:
         last_fetch = dateparser.parse(first_fetch)
     else:
@@ -210,7 +211,7 @@ def main() -> None:
         client = Client(
             base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy
         )
-        commands: Dict[str, Callable] = {
+        commands: dict[str, Callable] = {
             'dragos-get-indicators': get_indicators,
             'dragos-get-full-report': get_report,
             'dragos-get-ioc-csv': get_csv,

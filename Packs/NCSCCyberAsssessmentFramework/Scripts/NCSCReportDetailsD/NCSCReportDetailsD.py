@@ -40,7 +40,7 @@ def main():
         assessment_answers = json.loads(custom_fields.get(answers_field))
         assessment_details = json.loads(custom_fields.get(result_field))
         assessment_result = calculate_overall(assessment_details)
-        answered_questions = str()
+        answered_questions = ""
         for x in range(0, len(assessment_questions)):
             table = list()
             original_answers = [a.get('answers') for a in original_question_data if a['question']

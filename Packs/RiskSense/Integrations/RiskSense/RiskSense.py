@@ -104,8 +104,7 @@ class Client(BaseClient):
             if status_code == 400:
                 error_msg = str(resp.json().get('errors', ''))
                 demisto.debug(
-                    'RiskSense API call failed: Bad Request. One or more argument(s) are invalid. Error: {}'.format(
-                        error_msg))
+                    f'RiskSense API call failed: Bad Request. One or more argument(s) are invalid. Error: {error_msg}')
                 raise ValueError('RiskSense API call failed: Bad Request. One or more argument(s) are invalid.')
             elif status_code == 401:
                 raise ValueError('Unauthenticated. Check the API key configured.')
@@ -2390,7 +2389,7 @@ def main():
             return_outputs(*commands[command](client, demisto.args()))
 
     except Exception as e:
-        return_error('Failed to execute {} command.\nError: {}'.format(demisto.command(), str(e)))
+        return_error(f'Failed to execute {demisto.command()} command.\nError: {str(e)}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

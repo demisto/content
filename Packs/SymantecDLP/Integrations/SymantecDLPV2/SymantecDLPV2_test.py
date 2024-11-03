@@ -2,12 +2,11 @@ import pytest
 from freezegun import freeze_time
 from pytest import raises
 from CommonServerPython import *
-import io
 import copy
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -114,7 +113,7 @@ def test_parse_custom_attribute():
                                          'name': 'Predefined'}]
     assert custom_attribute_all_list_output == parse_custom_attribute(custom_attribute_group_list, args_all)
     args_none = {'custom_attributes': 'none'}
-    assert [] == parse_custom_attribute(custom_attribute_group_list, args_none)
+    assert parse_custom_attribute(custom_attribute_group_list, args_none) == []
     args_custom = {'custom_attributes': 'specific attributes'}
     with raises(DemistoException, match='When choosing the custom value for custom_attributes argument -'
                                         ' the custom_data list must be filled with custom attribute names.'
@@ -127,7 +126,7 @@ def test_parse_custom_attribute():
                                             'name': 'Predefined'}]
     assert custom_attribute_custom_list_output == parse_custom_attribute(custom_attribute_group_list, args_custom)
     args_custom['custom_data'] = 'aaa'
-    assert [] == parse_custom_attribute(custom_attribute_group_list, args_custom)
+    assert parse_custom_attribute(custom_attribute_group_list, args_custom) == []
     args_group = {'custom_attributes': 'custom attribute group name'}
     with raises(DemistoException, match='When choosing the group value for custom_attributes argument -'
                                         ' the custom_data list must be filled with group names.'
@@ -549,7 +548,7 @@ def test_get_incident_original_message_command(requests_mock):
 
     requests_mock.get(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/1234/originalMessage',
-        content='123'.encode()
+        content=b'123'
     )
 
     client = Client(

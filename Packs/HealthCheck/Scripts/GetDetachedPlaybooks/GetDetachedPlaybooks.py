@@ -10,7 +10,7 @@ if not res['playbooks']:
 playbooksList = []
 for item in res["playbooks"]:
     playbook = {}
-    if not (item.get('detached') is None):
+    if item.get('detached') is not None:
         if item['detached'] is True:
             playbook['name'] = item['name']
             playbooksList.append(playbook)

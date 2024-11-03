@@ -16,7 +16,7 @@ def read_context_from_threat_vault_incident():
     incident = demisto.incident().get('CustomFields', {})
 
     data: dict = {}
-    for key in KEYS_INCIDENT_FIELDS.keys():
+    for key in KEYS_INCIDENT_FIELDS:
         if (field_content := incident.get(key)):
             data.update({KEYS_INCIDENT_FIELDS[key]: field_content})
 

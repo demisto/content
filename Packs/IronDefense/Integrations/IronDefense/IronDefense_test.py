@@ -139,7 +139,7 @@ class IronDefenseTest(TestCase):
                       auth=(self.credentials['identifier'], self.credentials['password']), verify=False)
         ])
         # check to see if the jwt was stored
-        assert {'JWT': mock_jwt_value} == demisto.getIntegrationContext()
+        assert demisto.getIntegrationContext() == {'JWT': mock_jwt_value}
         assert test_response.status_code == 200, 'Unexpected status code'
         assert self.mock_session.request.call_count == 2, '_http_request should have made 2 calls'
 

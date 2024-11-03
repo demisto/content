@@ -255,7 +255,7 @@ def create_ticket_context(data: dict, additional_fields: list | None = None) -> 
     }
     if additional_fields:
         for additional_field in additional_fields:
-            if camelize_string(additional_field) not in context.keys():
+            if camelize_string(additional_field) not in context:
                 # in case of a nested additional field (in the form of field1.field2)
                 nested_additional_field_list = additional_field.split('.')
                 if value := dict_safe_get(data, nested_additional_field_list):
@@ -1843,9 +1843,9 @@ def query_computers_command(client: Client, args: dict) -> tuple[Any, dict[Any, 
         Demisto Outputs.
     """
     table_name = 'cmdb_ci_computer'
-    computer_id = args.get('computer_id', None)
-    computer_name = args.get('computer_name', None)
-    asset_tag = args.get('asset_tag', None)
+    computer_id = args.get('computer_id')
+    computer_name = args.get('computer_name')
+    asset_tag = args.get('asset_tag')
     computer_query = args.get('query', {})
     offset = args.get('offset', client.sys_param_offset)
     limit = args.get('limit', client.sys_param_limit)
@@ -2779,7 +2779,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     closure_case = get_closure_case(params)
     demisto.debug(f"closure case= {closure_case}")
     is_custom_close = False
-    close_custom_state = params.get('close_custom_state', None)
+    close_custom_state = params.get('close_custom_state')
     demisto.debug(f"state will change to= {parsed_args.data.get('state')}")
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')

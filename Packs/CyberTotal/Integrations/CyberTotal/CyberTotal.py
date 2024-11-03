@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Any, Dict, List
+from typing import Any
 from urllib.parse import urlparse
 from datetime import timezone
 
@@ -20,7 +20,7 @@ UTC = timezone.utc  # noqa: UP017
 
 class Client(BaseClient):
 
-    def parse_reputation(self, cybertotal_result: dict, resource: str) -> Dict[str, Any]:
+    def parse_reputation(self, cybertotal_result: dict, resource: str) -> dict[str, Any]:
         scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], UTC).isoformat()
         permalink = cybertotal_result['url']
         url_path = urlparse(permalink).path
@@ -57,7 +57,7 @@ class Client(BaseClient):
             result['threat'] = cybertotal_result['basic']['score'].get('threat', '')
         return result
 
-    def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
+    def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """Gets the IP reputation using the '/_api/search/ip/basic' API endpoint
 
         :type ip: ``str``
@@ -88,7 +88,7 @@ class Client(BaseClient):
 
         return self.parse_reputation(cybertotal_result, ip)
 
-    def get_url_reputation(self, url: str) -> Dict[str, Any]:   # pragma: nocover
+    def get_url_reputation(self, url: str) -> dict[str, Any]:   # pragma: nocover
         """Gets the URL reputation using the '/_api/search/url/basic' API endpoint
 
         :type url: ``str``
@@ -119,7 +119,7 @@ class Client(BaseClient):
 
         return self.parse_reputation(cybertotal_result, url)
 
-    def get_file_reputation(self, _hash: str) -> Dict[str, Any]:
+    def get_file_reputation(self, _hash: str) -> dict[str, Any]:
         """Gets the File reputation using the '/_api/search/hash/basic' API endpoint
 
         :type file: ``str``
@@ -153,7 +153,7 @@ class Client(BaseClient):
             result['name'] = ', '.join(result['name'])
         return result
 
-    def get_domain_reputation(self, domain: str) -> Dict[str, Any]:
+    def get_domain_reputation(self, domain: str) -> dict[str, Any]:
         """Gets the Domain reputation using the '/_api/search/domain/basic' API endpoint
 
         :type domain: ``str``
@@ -172,7 +172,7 @@ class Client(BaseClient):
 
         return self.parse_reputation(cybertotal_result, domain)
 
-    def parse_whois(self, cybertotal_result: dict, resource: str) -> Dict[str, Any]:
+    def parse_whois(self, cybertotal_result: dict, resource: str) -> dict[str, Any]:
         scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], UTC).isoformat()
         permalink = cybertotal_result['url']
         url_path = urlparse(permalink).path
@@ -207,7 +207,7 @@ class Client(BaseClient):
             result.pop('rawResponse')
         return result
 
-    def get_ip_whois(self, ip: str) -> Dict[str, Any]:
+    def get_ip_whois(self, ip: str) -> dict[str, Any]:
         """Gets the IP-whois information using the '/_api/search/ip/whois' API endpoint
 
         :type ip: ``str``
@@ -226,7 +226,7 @@ class Client(BaseClient):
 
         return self.parse_whois(cybertotal_result, ip)
 
-    def get_url_whois(self, url: str) -> Dict[str, Any]:
+    def get_url_whois(self, url: str) -> dict[str, Any]:
         """Gets the URL-whois information using the '/_api/search/url/whois' API endpoint
 
         :type url: ``str``
@@ -245,7 +245,7 @@ class Client(BaseClient):
 
         return self.parse_whois(cybertotal_result, url)
 
-    def get_domain_whois(self, domain: str) -> Dict[str, Any]:
+    def get_domain_whois(self, domain: str) -> dict[str, Any]:
         """Gets the Domain-whois information using the '/_api/search/domain/whois' API endpoint
 
         :type domain: ``str``
@@ -265,7 +265,7 @@ class Client(BaseClient):
         return self.parse_whois(cybertotal_result, domain)
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: dict[str, Any], default_threshold: int) -> list[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
@@ -295,9 +295,9 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
     threshold = int(args.get('threshold', default_threshold))
 
-    command_results: List[CommandResults] = []
-    ip_message_list: List[Dict[str, Any]] = []
-    non_field_errors: List[str] = []
+    command_results: list[CommandResults] = []
+    ip_message_list: list[dict[str, Any]] = []
+    non_field_errors: list[str] = []
 
     for ip in ips:
         ip_data = client.get_ip_reputation(ip)
@@ -370,7 +370,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     return command_results
 
 
-def url_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def url_reputation_command(client: Client, args: dict[str, Any], default_threshold: int) -> list[CommandResults]:
     """url command: Returns URL reputation for a list of URLs
 
     :type client: ``Client``
@@ -400,8 +400,8 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
 
     threshold = int(args.get('threshold', default_threshold))
 
-    url_message_list: List[Dict[str, Any]] = []
-    command_results: List[CommandResults] = []
+    url_message_list: list[dict[str, Any]] = []
+    command_results: list[CommandResults] = []
 
     for url in urls:
         url_raw_response = client.get_url_reputation(url)
@@ -460,7 +460,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
     return command_results
 
 
-def file_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def file_reputation_command(client: Client, args: dict[str, Any], default_threshold: int) -> list[CommandResults]:
     """file command: Returns File reputation for a list of Files
 
     :type client: ``Client``
@@ -490,8 +490,8 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
 
     threshold = int(args.get('threshold', default_threshold))
 
-    hash_message_list: List[Dict[str, Any]] = []
-    command_results: List[CommandResults] = []
+    hash_message_list: list[dict[str, Any]] = []
+    command_results: list[CommandResults] = []
 
     for _hash in hashs:
         hash_reputation_response = client.get_file_reputation(_hash)
@@ -553,7 +553,7 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def domain_reputation_command(client: Client, args: dict[str, Any], default_threshold: int) -> list[CommandResults]:
     """domain command: Returns Domain reputation for a list of Domains
 
     :type client: ``Client``
@@ -584,8 +584,8 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     threshold = int(args.get('threshold', default_threshold))
 
     # Context standard for Domain class
-    domain_message_list: List[Dict[str, Any]] = []
-    command_results: List[CommandResults] = []
+    domain_message_list: list[dict[str, Any]] = []
+    command_results: list[CommandResults] = []
 
     for domain in domains:
         domain_data = client.get_domain_reputation(domain)
@@ -643,7 +643,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     return command_results
 
 
-def ip_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def ip_whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """cybertotal-ip-whois command: Returns IP whois information for a list of IPs
 
     :type client: ``Client``
@@ -665,7 +665,7 @@ def ip_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
 
-    ip_data_list: List[Dict[str, Any]] = []
+    ip_data_list: list[dict[str, Any]] = []
 
     for ip in ips:
         ip_data = client.get_ip_whois(ip)
@@ -678,7 +678,7 @@ def ip_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def url_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def url_whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """cybertotal-url-whois command: Returns URL whois information for a list of URLs
 
     :type client: ``Client``
@@ -700,7 +700,7 @@ def url_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(urls) == 0:
         raise ValueError('URL(s) not specified')
 
-    url_data_list: List[Dict[str, Any]] = []
+    url_data_list: list[dict[str, Any]] = []
 
     for url in urls:
         url_data = client.get_url_whois(url)
@@ -713,7 +713,7 @@ def url_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def domain_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def domain_whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """cybertotal-domain-whois command: Returns Domain whois information for a list of Domains
 
     :type client: ``Client``
@@ -735,7 +735,7 @@ def domain_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if len(domains) == 0:
         raise ValueError('Domain(s) not specified')
 
-    domain_data_list: List[Dict[str, Any]] = []
+    domain_data_list: list[dict[str, Any]] = []
 
     for domain in domains:
         domain_data = client.get_domain_whois(domain)

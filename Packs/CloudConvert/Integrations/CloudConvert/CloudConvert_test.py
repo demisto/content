@@ -2,7 +2,6 @@ from CloudConvert import upload_command, Client, convert_command, check_status_c
 from CommonServerPython import remove_empty_elements, tableToMarkdown, string_to_table_header
 import demistomock as demisto
 import json
-import io
 import pytest
 
 
@@ -19,7 +18,7 @@ def create_client():
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

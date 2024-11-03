@@ -90,7 +90,7 @@ def generate_canvas(current_incident_id, incident_ids, indicators):
 
 def main():
     if not is_demisto_version_ge(MINIMUM_SERVER_VERSION):
-        return_error('This script is supported only from version {}.'.format(MINIMUM_SERVER_VERSION))
+        return_error(f'This script is supported only from version {MINIMUM_SERVER_VERSION}.')
     current_incident_id = demisto.args().get('incidentID')
     if current_incident_id is None:
         incident = demisto.incident()
@@ -114,7 +114,7 @@ def main():
     elif is_error(res):
         return_error(get_error(res))
     else:
-        hr = "### Check the incidents and indicators layout on the [canvas](#/Canvas/{0})".format(current_incident_id)
+        hr = f"### Check the incidents and indicators layout on the [canvas](#/Canvas/{current_incident_id})"
         return_outputs(hr)
 
 

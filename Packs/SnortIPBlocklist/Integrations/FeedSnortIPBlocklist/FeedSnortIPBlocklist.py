@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, List, Optional
 
 import urllib3
 
@@ -18,7 +17,7 @@ class Client(BaseClient):
     The _http_request() has to allow redirects to support the snort IP blocklist
     """
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -66,7 +65,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1,) -> List[Dict]:
+def fetch_indicators(client: Client, tlp_color: str | None = None, feed_tags: list = [], limit: int = -1,) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -122,8 +121,8 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
 
 
 def get_indicators_command(client: Client,
-                           params: Dict[str, str],
-                           args: Dict[str, str]
+                           params: dict[str, str],
+                           args: dict[str, str]
                            ) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
@@ -148,7 +147,7 @@ def get_indicators_command(client: Client,
     )
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: dict[str, str]) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request

@@ -248,7 +248,7 @@ def test_raw_to_dict():
 
     assert response == EXPECTED
     assert response_with_message == EXPECTED_WITH_MESSAGE_ID
-    assert {} == list_response
+    assert list_response == {}
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
     assert isinstance(raw_message, dict)
@@ -557,8 +557,7 @@ data_test_build_kv_store_query_with_key_val = [
 def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
     mocker.patch('SplunkPy.get_key_type', return_value=_type)
     output = splunk.build_kv_store_query(None, args)
-    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
-                                                                                                     expected_query)
+    assert output == expected_query, f'build_kv_store_query({args})\n\treturns: {output}\n\tinstead: {expected_query}'
 
     test_test_get_key_type = [
         ({'field.key': 'number'}, float),
@@ -574,8 +573,7 @@ def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
         mocker.patch('SplunkPy.get_keys_and_types', return_value=keys_and_types)
 
         output = splunk.get_key_type(None, 'key')
-        assert output == expected_type, 'get_key_type(kv_store, key)\n\treturns: {}\n\tinstead: {}'.format(output,
-                                                                                                           expected_type)
+        assert output == expected_type, f'get_key_type(kv_store, key)\n\treturns: {output}\n\tinstead: {expected_type}'
 
 
 EMPTY_CASE = {}

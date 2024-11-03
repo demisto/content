@@ -393,9 +393,7 @@ class Code42OrgNotFoundError(Exception):
 
 class Code42InvalidWatchlistTypeError(Exception):
     def __init__(self, watchlist):
-        msg = "Invalid Watchlist type: {}, run !code42-watchlists-list to get a list of available Watchlists.".format(
-            watchlist
-        )
+        msg = f"Invalid Watchlist type: {watchlist}, run !code42-watchlists-list to get a list of available Watchlists."
         super().__init__(msg)
 
 
@@ -430,9 +428,7 @@ class Code42LegalHoldMatterNotFoundError(Exception):
 class Code42InvalidLegalHoldMembershipError(Exception):
     def __init__(self, username, matter_name):
         super().__init__(
-            "User '{}' is not an active member of legal hold matter '{}'".format(
-                username, matter_name
-            )
+            f"User '{username}' is not an active member of legal hold matter '{matter_name}'"
         )
 
 

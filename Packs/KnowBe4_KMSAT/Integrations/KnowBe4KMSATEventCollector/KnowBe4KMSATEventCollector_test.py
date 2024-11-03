@@ -1,13 +1,12 @@
 import datetime
 import pytest
 import json
-import io
 from CommonServerPython import parse_date_string
 from KnowBe4KMSATEventCollector import Client
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

@@ -1636,7 +1636,7 @@ class Client(BaseClient):
             params=args_values,
             resp_type=command_api_data["resp_type"],
             timeout=60,
-            data=command_api_data.get("request_body", None),
+            data=command_api_data.get("request_body"),
             error_handler=self.error_handler,
         )
 

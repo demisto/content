@@ -6,7 +6,8 @@ import dataclasses
 import http
 import inspect
 from enum import Enum
-from typing import Any, Callable, Type, TypeVar
+from typing import Any, TypeVar
+from collections.abc import Callable
 
 """ Global Variables """
 
@@ -298,7 +299,7 @@ T = TypeVar("T", bound="FirewallRuleBase")
 @dataclasses.dataclass
 class FirewallRuleBase:
     @classmethod
-    def from_dict(cls: Type[T], env: dict) -> T:
+    def from_dict(cls: type[T], env: dict) -> T:
         return cls(**{k: v for k, v in env.items() if k in inspect.signature(cls).parameters})
 
 
@@ -2254,7 +2255,7 @@ def get_valid_arg(args: dict[str, Any], key: str) -> str:
     return value
 
 
-def create_firewall_rules(entry_id: str, rule_type: Type[RuleType]) -> list[RuleType]:
+def create_firewall_rules(entry_id: str, rule_type: type[RuleType]) -> list[RuleType]:
     """Create a list of rules from a file.
 
     Args:

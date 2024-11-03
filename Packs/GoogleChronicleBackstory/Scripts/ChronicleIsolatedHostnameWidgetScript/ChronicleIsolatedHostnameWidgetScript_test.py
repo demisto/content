@@ -41,8 +41,8 @@ def test_get_html_representation_when_no_hostname_is_attached():
     """
 
     html_representation = ChronicleIsolatedHostnameWidgetScript.get_html_representation("", 'No')
-    assert "<div style='color:grey; text-align:center;'><h1>No Hostname associated with the ChronicleAsset</h1></div>" \
-           == html_representation
+    assert html_representation \
+           == "<div style='color:grey; text-align:center;'><h1>No Hostname associated with the ChronicleAsset</h1></div>"
 
 
 def test_get_html_representation_when_hostname_is_not_isolated():
@@ -51,8 +51,8 @@ def test_get_html_representation_when_hostname_is_not_isolated():
     """
 
     html_representation = ChronicleIsolatedHostnameWidgetScript.get_html_representation(DUMMY_HOSTNAME, 'No')
-    assert "<div style='color:green; text-align:center;'><h1>dummyhost.com<br/>Hostname Not Isolated</h1>" \
-           "</div>" == html_representation
+    assert html_representation == "<div style='color:green; text-align:center;'><h1>dummyhost.com<br/>Hostname Not Isolated</h1>" \
+           "</div>"
 
 
 def test_get_html_representation_when_hostname_is_potentially_isolated():
@@ -62,5 +62,5 @@ def test_get_html_representation_when_hostname_is_potentially_isolated():
 
     html_representation = ChronicleIsolatedHostnameWidgetScript \
         .get_html_representation(DUMMY_HOSTNAME, 'Yes')
-    assert "<div style='color:red; text-align:center;'><h1>dummyhost.com<br/>Hostname Isolated</h1>" \
-           "</div>" == html_representation
+    assert html_representation == "<div style='color:red; text-align:center;'><h1>dummyhost.com<br/>Hostname Isolated</h1>" \
+           "</div>"

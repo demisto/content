@@ -1,9 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Union, List
 
 
-def pentera_operation_to_incident(full_action_report: list, custom_fields_output: Union[str, bool], context_key: str):
+def pentera_operation_to_incident(full_action_report: list, custom_fields_output: str | bool, context_key: str):
     def _init_missing_keys_in_operation_details(operation_details: dict, missing_keys_to_init: set):
         for missing_key_to_init in missing_keys_to_init:
             operation_details[missing_key_to_init] = None
@@ -27,7 +26,7 @@ def pentera_operation_to_incident(full_action_report: list, custom_fields_output
 
     for incident in incidents_dict.values():
         # Collect all 'Parameters' distinct keys
-        params_list: List[dict] = incident['penteraoperationdetails']
+        params_list: list[dict] = incident['penteraoperationdetails']
         keys = set()
         for params_dict in params_list:
             for params_key in params_dict:

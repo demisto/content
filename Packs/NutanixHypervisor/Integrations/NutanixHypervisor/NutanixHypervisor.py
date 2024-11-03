@@ -1,5 +1,4 @@
 import copy
-from typing import Dict
 
 import pytz
 import urllib3
@@ -99,7 +98,7 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, auth):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth, headers=self.CONTENT_JSON)
 
-    def http_request(self, method: str, url_suffix: str, params: Dict = None, json_data: Dict = None):
+    def http_request(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None):
         """
         Wrapper function for BaseClient http request function to catch errors from http requests,
         and send a human readable exception.
@@ -135,7 +134,7 @@ class Client(BaseClient):
                     'argument description.')
             raise e
 
-    def fetch_incidents(self, params: Dict, last_run: Dict):
+    def fetch_incidents(self, params: dict, last_run: dict):
         alert_status_filters = params.get('alert_status_filters')
         auto_resolved = get_alert_status_filter('Auto Resolved', 'Not Auto Resolved', alert_status_filters)
         resolved = get_alert_status_filter('Resolved', 'Unresolved', alert_status_filters)
@@ -164,7 +163,7 @@ class Client(BaseClient):
 
         alerts = sanitize_outputs(response.get('entities'))
 
-        incidents: List[Dict[str, Any]] = []
+        incidents: List[dict[str, Any]] = []
 
         for alert in alerts:
             alert_created_time = alert.get('created_time_stamp_in_usecs')
@@ -334,7 +333,7 @@ def get_optional_time_parameter_as_epoch(arg: Optional[str]) -> Optional[int]:
     return int(aware_time_date.timestamp() * 1000000)
 
 
-def get_optional_boolean_arg(args: Dict, argument_name: str) -> Optional[bool]:
+def get_optional_boolean_arg(args: dict, argument_name: str) -> Optional[bool]:
     """
     Extracts the argument from Demisto arguments, and in case argument exists,
     returns the boolean value of the argument.
@@ -407,7 +406,7 @@ def get_alert_status_filter(true_value: str, false_value: str, alert_status_filt
     return result_value
 
 
-def add_iso_entries_to_dict(outputs: List[Dict]) -> None:
+def add_iso_entries_to_dict(outputs: List[dict]) -> None:
     """
     Takes list of outputs, for each output:
     For each field in the output that is contained in 'USECS_ENTRIES_MAPPING' keys,
@@ -425,7 +424,7 @@ def add_iso_entries_to_dict(outputs: List[Dict]) -> None:
                 output[new_entry_name] = convert_epoch_time_to_datetime(output.get(old_entry_name))
 
 
-def get_human_readable_headers(outputs: List[Dict]) -> List[Any]:
+def get_human_readable_headers(outputs: List[dict]) -> List[Any]:
     """
     Retrieves all of the keys that their value is not dict recursively
     Args:
@@ -471,7 +470,7 @@ def task_exists(client: Client, task_id: str) -> bool:
         raise e
 
 
-def sanitize_outputs(outputs: List[Dict]) -> List[Dict]:
+def sanitize_outputs(outputs: List[dict]) -> List[dict]:
     """
     Sanitizes outputs, adds ISO entries to outputs if needed, and
     removes empty elements.
@@ -489,7 +488,7 @@ def sanitize_outputs(outputs: List[Dict]) -> List[Dict]:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module_command(client: Client, params: Dict) -> str:
+def test_module_command(client: Client, params: dict) -> str:
     """
     Tests API connectivity, authentication, and ability to fetch incidents.
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -514,7 +513,7 @@ def test_module_command(client: Client, params: Dict) -> str:
         raise e
 
 
-def fetch_incidents_command(client: Client, params: Dict):
+def fetch_incidents_command(client: Client, params: dict):
     """
     Wrapper function that calls client fetch_incidents function with last run and demisto params.
     Updates the new run, and uploads incidents to Demisto.
@@ -531,7 +530,7 @@ def fetch_incidents_command(client: Client, params: Dict):
     demisto.incidents(incidents)
 
 
-def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
+def nutanix_hypervisor_hosts_list_command(client: Client, args: dict):
     """
     Gets a list all physical hosts configured in the cluster by Nutanix service.
     Possible filters:
@@ -584,7 +583,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     )
 
 
-def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
+def nutanix_hypervisor_vms_list_command(client: Client, args: dict):
     """
     Gets a list all virtual machines by Nutanix service.
     Possible filters:
@@ -623,7 +622,7 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
     )
 
 
-def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict):
+def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: dict):
     """
     Set power state of the virtual machine matching vm_uuid argument to power state given in transition argument.
     If the virtual machine is being powered on and no host is specified, the scheduler will pick the one with
@@ -657,7 +656,7 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
     )
 
 
-def nutanix_hypervisor_task_results_get_command(client: Client, args: Dict):
+def nutanix_hypervisor_task_results_get_command(client: Client, args: dict):
     """
     Poll tasks given by task_ids to check if they are ready.
     Returns all the tasks from 'task_ids' list that are ready at the moment
@@ -700,7 +699,7 @@ def nutanix_hypervisor_task_results_get_command(client: Client, args: Dict):
     )
 
 
-def nutanix_hpyervisor_alerts_list_command(client: Client, args: Dict):
+def nutanix_hpyervisor_alerts_list_command(client: Client, args: dict):
     """
     Get the list of Alerts generated in the cluster which matches the filters if given.
     Possible filters:
@@ -783,7 +782,7 @@ def nutanix_hpyervisor_alerts_list_command(client: Client, args: Dict):
     )
 
 
-def nutanix_hypervisor_alert_acknowledge_command(client: Client, args: Dict):
+def nutanix_hypervisor_alert_acknowledge_command(client: Client, args: dict):
     """
     Acknowledge alert with the specified alert_id.
 
@@ -811,7 +810,7 @@ def nutanix_hypervisor_alert_acknowledge_command(client: Client, args: Dict):
     )
 
 
-def nutanix_hypervisor_alert_resolve_command(client: Client, args: Dict):
+def nutanix_hypervisor_alert_resolve_command(client: Client, args: dict):
     """
     Resolve alert with the specified alert_id.
 
@@ -839,7 +838,7 @@ def nutanix_hypervisor_alert_resolve_command(client: Client, args: Dict):
     )
 
 
-def nutanix_hypervisor_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
+def nutanix_hypervisor_alerts_acknowledge_by_filter_command(client: Client, args: dict):
     """
     Acknowledges all of the Alerts which matches the filters if given.
     - start_time: Acknowledge alerts that their creation time have been after 'start_time'.
@@ -891,7 +890,7 @@ def nutanix_hypervisor_alerts_acknowledge_by_filter_command(client: Client, args
     )
 
 
-def nutanix_hypervisor_alerts_resolve_by_filter_command(client: Client, args: Dict):
+def nutanix_hypervisor_alerts_resolve_by_filter_command(client: Client, args: dict):
     """
     Resolves all of the Alerts which matches the filters if given.
     Possible filters:

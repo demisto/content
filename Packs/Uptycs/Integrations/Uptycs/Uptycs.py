@@ -66,7 +66,7 @@ def restcall(method, api, **kwargs):
     try:
         request_func = getattr(requests, method)
     except AttributeError:
-        return_error("Invalid method: {0}".format(method))
+        return_error(f"Invalid method: {method}")
 
     try:
         response = request_func(
@@ -75,7 +75,7 @@ def restcall(method, api, **kwargs):
             verify=VERIFY_CERT,
             **kwargs)
     except Exception as e:
-        return_error("Error Connecting to server. Details: {0}".format(str(e)))
+        return_error(f"Error Connecting to server. Details: {str(e)}")
 
     return response.json()
 
@@ -441,8 +441,7 @@ def uptycs_get_alerts_command():
                 if metadata.get(key):
                     context[index]['pid'] = metadata.get(key)
                     break
-                else:
-                    context[index]['pid'] = 'Not applicable or unknown'
+                context[index]['pid'] = 'Not applicable or unknown'
             if bool(json.loads(
                     context[index].get('metadata')).get('indicatorId')):
                 context[index]['threat_indicator_id'] =\
@@ -1368,8 +1367,8 @@ def uptycs_get_parent_event_information():
 AND upt_rid = '{1}'".format(uptday, ancestors[0].get("upt_rid", None))
 
     if query == "":
-        query = "SELECT * FROM process_events WHERE upt_day <= {0} AND pid={1} \
-AND upt_time<=CAST('{2}' AS TIMESTAMP)".format(uptday, parent, child_add_time)
+        query = f"SELECT * FROM process_events WHERE upt_day <= {uptday} AND pid={parent} \
+AND upt_time<=CAST('{child_add_time}' AS TIMESTAMP)"
 
     equal_cuts = {
         "upt_asset_id": demisto.args().get('asset_id'),

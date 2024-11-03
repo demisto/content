@@ -3,13 +3,13 @@ from CommonServerPython import *  # noqa: F401
 
 
 import urllib3
-from typing import Any, Dict, List
+from typing import Any
 
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def get_ip_geolocation(self, ip: str, api_key: str) -> Dict[str, Any]:
+    def get_ip_geolocation(self, ip: str, api_key: str) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/',
@@ -38,13 +38,13 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def ip_geolocation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability,
-                           api_key: str) -> List[CommandResults]:
+def ip_geolocation_command(client: Client, args: dict[str, Any], reliability: DBotScoreReliability,
+                           api_key: str) -> list[CommandResults]:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for ip in ips:
         if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity

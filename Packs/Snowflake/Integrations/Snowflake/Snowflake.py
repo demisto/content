@@ -95,9 +95,9 @@ def error_message_from_snowflake_error(e):
     returns:
         Formatted error message
     """
-    err_msg = 'Snowflake DB error code: {}\n'.format(e.errno)
-    err_msg += 'ANSI-compliant SQL State code: {}\n'.format(e.sqlstate)
-    err_msg += 'Snowflake query ID: {}\n'.format(e.sfqid)
+    err_msg = f'Snowflake DB error code: {e.errno}\n'
+    err_msg += f'ANSI-compliant SQL State code: {e.sqlstate}\n'
+    err_msg += f'Snowflake query ID: {e.sfqid}\n'
     err_msg += 'Error message: {}'
     if e.errno == 606:
         first_sentence = e.raw_msg[:e.raw_msg.find('.') + 1]
@@ -403,7 +403,7 @@ commands = {
 
 try:
     handle_proxy()
-    if demisto.command() in commands.keys():
+    if demisto.command() in commands:
         commands[demisto.command()]()
 except snowflake.connector.errors.Error as e:
     return_error(error_message_from_snowflake_error(e))

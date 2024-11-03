@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from typing import Dict, Any
+from typing import Any
 import urllib.parse
 import urllib3
 
@@ -32,7 +32,7 @@ def test_module(client: BaseClient):
         raise DemistoException(err)
 
 
-def lookup_mac_command(client: BaseClient, args: Dict[str, Any]):
+def lookup_mac_command(client: BaseClient, args: dict[str, Any]):
     mac_address = args.get('mac')
     res = client._http_request(
         'GET',

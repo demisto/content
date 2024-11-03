@@ -31,7 +31,7 @@ FETCH_BEHAVIORS = demisto.params().get('fetch_behviors')
 # Should we use SSL
 USE_SSL = not demisto.params().get('unsecure', False)
 # Service base URL
-BASE_PATH = '{}/api/v2/'.format(SERVER_URL)
+BASE_PATH = f'{SERVER_URL}/api/v2/'
 # Headers to be sent in requests
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json'
@@ -56,7 +56,7 @@ def http_request(method, suffix_url, headers=DEFAULT_HEADERS, body=None):
     # handle request failure
     if response.status_code not in {200}:
         message = parse_error_response(response)
-        return_error('Error in API call to CounterTack with status code {}\n{}'.format(response.status_code, message))
+        return_error(f'Error in API call to CounterTack with status code {response.status_code}\n{message}')
 
     try:
         response = response.json()
@@ -1359,7 +1359,7 @@ EXECUTION
 """
 
 command = demisto.command()
-LOG('Running command "{}"'.format(command))
+LOG(f'Running command "{command}"')
 try:
     if command == 'test-module':
         get_endpoints_request()

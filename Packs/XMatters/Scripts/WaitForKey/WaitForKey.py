@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
-def wait_for_key(args: Dict[str, Any]):
+def wait_for_key(args: dict[str, Any]):
     context_key = args.get('context_key', 'None')
 
     max_iterations = 10

@@ -2,7 +2,6 @@ import datetime
 import json
 from pathlib import Path
 from packaging.version import Version
-from typing import Optional, List
 from unittest.mock import MagicMock
 import pytest
 from github_workflow_scripts.autobump_release_notes.autobump_rn import (
@@ -34,8 +33,8 @@ class PullRequest:
     def __init__(
         self,
         updated_at=None,
-        labels: Optional[List[Label]] = None,
-        files: Optional[List[File]] = None,
+        labels: list[Label] | None = None,
+        files: list[File] | None = None,
         branch_name: str = "branch",
     ):
         self.number = 1
@@ -58,7 +57,7 @@ class PullRequest:
 
 
 class Repository:
-    def __init__(self, pulls: Optional[List[PullRequest]] = None):
+    def __init__(self, pulls: list[PullRequest] | None = None):
         self.pulls = pulls or []
 
     def get_pulls(self, *args, **kwargs):

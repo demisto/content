@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from requests import HTTPError
-from typing import Dict, Any
+from typing import Any
 from json.decoder import JSONDecodeError
 
 import json
@@ -181,7 +181,7 @@ def build_transformed_dict(src, trans_dict):
     """
     if isinstance(src, list):
         return [build_transformed_dict(x, trans_dict) for x in src]
-    res: Dict[str, Any] = {}
+    res: dict[str, Any] = {}
     for key, val in trans_dict.items():
         if isinstance(val, dict):
             # handle nested list

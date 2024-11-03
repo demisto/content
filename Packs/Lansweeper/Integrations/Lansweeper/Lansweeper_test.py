@@ -1,4 +1,3 @@
-import io
 import json
 import os
 import time
@@ -12,7 +11,7 @@ from Lansweeper import MESSAGES
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -104,7 +103,7 @@ def test_lansweeper_site_list_command_when_valid_response_is_returned(mocker):
         os.path.join("test_data", "site_list_command_response.json"))
     context = util_load_json(
         os.path.join("test_data", "site_list_command_context.json"))
-    with open(os.path.join("test_data", "site_list_command_hr.md"), 'r') as f:
+    with open(os.path.join("test_data", "site_list_command_hr.md")) as f:
         readable_output = f.read()
 
     mocked_client = mocker.Mock()
@@ -165,7 +164,7 @@ def test_lansweeper_ip_hunt_command_when_valid_response_is_returned(mocker_get_c
         os.path.join("test_data", "ip_hunt_command_response.json"))
     context = util_load_json(
         os.path.join("test_data", "ip_hunt_command_context.json"))
-    with open(os.path.join("test_data", "ip_hunt_command_hr.md"), 'r') as f:
+    with open(os.path.join("test_data", "ip_hunt_command_hr.md")) as f:
         readable_output = f.read()
 
     mocked_client = mocker.Mock()
@@ -267,7 +266,7 @@ def test_lansweeper_mac_hunt_command_when_valid_response_is_returned(mocker_get_
         os.path.join("test_data", "ip_hunt_command_response.json"))
     context = util_load_json(
         os.path.join("test_data", "mac_hunt_command_context.json"))
-    with open(os.path.join("test_data", "ip_hunt_command_hr.md"), 'r') as f:
+    with open(os.path.join("test_data", "ip_hunt_command_hr.md")) as f:
         readable_output = f.read()
 
     mocked_client = mocker.Mock()

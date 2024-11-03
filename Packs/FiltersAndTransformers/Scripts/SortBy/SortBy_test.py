@@ -5,14 +5,14 @@ import random
 import math
 import itertools
 import unittest
-from typing import List, Union, Any, Optional
+from typing import Any
 
 
 def run_test(mocker: unittest.mock,
-             value: Optional[List[Any]],
-             keys: Optional[Union[str, List[str]]],
-             descending_keys: Optional[Union[str, List[str]]],
-             result: List[Any]):
+             value: list[Any] | None,
+             keys: str | list[str] | None,
+             descending_keys: str | list[str] | None,
+             result: list[Any]):
 
     mocker.patch.object(demisto, 'args', return_value={
         'value': value,
@@ -27,7 +27,7 @@ def run_test(mocker: unittest.mock,
 
 
 def test_shuffleable(mocker):
-    with open('./test_data/test-shuffleable.json', 'r') as f:
+    with open('./test_data/test-shuffleable.json') as f:
         test_list = json.load(f)
 
     for case in test_list:

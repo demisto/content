@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 
 from CommonServerUserPython import *
 
@@ -171,7 +170,7 @@ def create_indicators(args: dict):
                       f' {json.dumps(errors, indent=4)}')
 
 
-def create_relationships(args: dict) -> Tuple[List[EntityRelationship], str]:
+def create_relationships(args: dict) -> tuple[List[EntityRelationship], str]:
     """
     Create relationships from given arguments.
 

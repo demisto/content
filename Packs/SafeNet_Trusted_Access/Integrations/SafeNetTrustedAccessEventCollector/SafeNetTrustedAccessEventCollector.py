@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from typing import Dict, Any, Tuple
+from typing import Any
 
 # Disable insecure warnings
 import urllib3
@@ -87,7 +87,7 @@ def test_module(client: Client, limit=1000, first_fetch=None) -> str:
     return 'ok'
 
 
-def fetch_events_command(client: Client, first_fetch, last_run: dict, limit=1000) -> Tuple[list, dict]:
+def fetch_events_command(client: Client, first_fetch, last_run: dict, limit=1000) -> tuple[list, dict]:
     if (limit % 1000 != 0) or (limit > 10000):
         raise Exception('Limit parameter should be multiple of 1000 and not greater than 10,000.')
 
@@ -95,7 +95,7 @@ def fetch_events_command(client: Client, first_fetch, last_run: dict, limit=1000
     return events, new_last_run
 
 
-def get_events_command(client: Client, args: Dict[str, Any]) -> Tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list, CommandResults]:
     marker = args.get('marker')
     since = arg_to_datetime(args.get('since'))
     until = arg_to_datetime(args.get('until'))

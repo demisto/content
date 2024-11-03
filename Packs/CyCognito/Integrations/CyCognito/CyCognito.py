@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """Main Integration file for CyCognito."""
-from typing import Tuple
 import pycountry
 import urllib3
 from requests import Response
@@ -922,7 +921,7 @@ def test_module(client: CyCognitoClient) -> str:
 
 
 def fetch_incidents(client: CyCognitoClient, last_run: Dict[str, Any], params: Dict[str, Any], is_test: bool = False) -> \
-        Tuple[Dict, List]:
+        tuple[Dict, List]:
     """Fetch issues list incidents.
 
     :type client: ``CyCognitoClient``

@@ -1,13 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
 ''' COMMAND FUNCTION '''
 
 
-def close_task_set_context(args: Dict[str, Any]) -> CommandResults:
+def close_task_set_context(args: dict[str, Any]) -> CommandResults:
     entry_id_or_tag = args.get('entry_id')
     context_key = args.get('context_key')
     comments = args.get('comments')

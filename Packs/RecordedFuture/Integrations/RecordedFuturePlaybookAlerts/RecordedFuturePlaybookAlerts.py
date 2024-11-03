@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import json
 import platform
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # flake8: noqa: F402,F405 lgtm
 
@@ -28,7 +28,7 @@ TIMEOUT_120 = 120
 
 
 class Client(BaseClient):
-    def whoami(self) -> Dict[str, Any]:
+    def whoami(self) -> dict[str, Any]:
 
         return self._http_request(
             method="get",
@@ -101,21 +101,21 @@ class Client(BaseClient):
     ################## Playbook alerts ####################
     #######################################################
 
-    def fetch_incidents(self) -> Dict[str, Any]:
+    def fetch_incidents(self) -> dict[str, Any]:
         """Fetch incidents."""
         return self._call(
             url_suffix="/v2/playbook_alert/fetch",
             timeout=TIMEOUT_120,
         )
 
-    def search_playbook_alerts(self) -> Dict[str, Any]:
+    def search_playbook_alerts(self) -> dict[str, Any]:
         return self._call(url_suffix="/v2/playbook_alert/search")
 
-    def details_playbook_alerts(self) -> Dict[str, Any]:
+    def details_playbook_alerts(self) -> dict[str, Any]:
         """Get details of a playbook alert"""
         return self._call(url_suffix="/v2/playbook_alert/lookup")
 
-    def update_playbook_alerts(self) -> Dict[str, Any]:
+    def update_playbook_alerts(self) -> dict[str, Any]:
         return self._call(url_suffix="/v2/playbook_alert/update")
 
 
@@ -130,7 +130,7 @@ class Actions:
 
     def _process_result_actions(
         self, response: Union[dict, CommandResults]
-    ) -> List[CommandResults]:
+    ) -> list[CommandResults]:
 
         if isinstance(response, CommandResults):
             # Case when we got 404 on response, and it was processed in self.client._call() method.
@@ -139,12 +139,12 @@ class Actions:
             # In case API returned a str - we don't want to call "response.get()" on a str object.
             return None  # type: ignore
 
-        result_actions: Union[List[dict], None] = response.get("result_actions")
+        result_actions: Union[list[dict], None] = response.get("result_actions")
 
         if not result_actions:
             return None  # type: ignore
 
-        command_results: List[CommandResults] = list()
+        command_results: list[CommandResults] = list()
         for action in result_actions:
             if "CommandResults" in action:
                 command_results.append(CommandResults(**action["CommandResults"]))
@@ -174,15 +174,15 @@ class Actions:
         ################## Playbook alerts ####################
         #######################################################
 
-    def playbook_alert_search_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_search_command(self) -> list[CommandResults] | None:
         response = self.client.search_playbook_alerts()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_details_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_details_command(self) -> list[CommandResults] | None:
         response = self.client.details_playbook_alerts()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_update_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_update_command(self) -> list[CommandResults] | None:
         response = self.client.update_playbook_alerts()
         return self._process_result_actions(response=response)
 

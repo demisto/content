@@ -5,7 +5,7 @@ import math
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, Optional, Any, Union
+from typing import Any
 import urllib3
 
 # Disable insecure warnings
@@ -255,7 +255,7 @@ class Client(BaseClient):
         suffix = '/api/v3/alerts'
         self._http_request('GET', suffix, params={'limit': 1})
 
-    def list_alerts(self, limit: int = None, offset: int = None, created_at__gte: str = None) -> Dict:
+    def list_alerts(self, limit: int = None, offset: int = None, created_at__gte: str = None) -> dict:
         """Returns all alerts by sending a GET request.
 
         Args:
@@ -276,7 +276,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
-    def get_alert_by_id(self, _id: Optional[Any]) -> Dict:
+    def get_alert_by_id(self, _id: Any | None) -> dict:
         """Return a single alert by sending a GET request.
 
         Args:
@@ -314,7 +314,7 @@ class Client(BaseClient):
         params = assign_params(query=query)
         return self._http_request('GET', suffix, params=params)
 
-    def archive_search(self, query: str = None) -> Dict:
+    def archive_search(self, query: str = None) -> dict:
         """Searches for events using archive search
 
         Args:
@@ -327,7 +327,7 @@ class Client(BaseClient):
         params = assign_params(query=query)
         return self._http_request('GET', suffix, params=params)
 
-    def get_archive_search(self, search_id: int = None) -> Dict:
+    def get_archive_search(self, search_id: int = None) -> dict:
         """Gets archive search
 
         Args:
@@ -351,7 +351,7 @@ class Client(BaseClient):
         suffix = f'/api/v1/search/archive/{search_id}/results'
         return self._http_request('GET', suffix, timeout=DEFAULT_PAGE_SIZE)
 
-    def update_alert_by_id(self, body: Dict) -> Dict:
+    def update_alert_by_id(self, body: dict) -> dict:
         """Updates a single alert by sending a POST request.
 
         Args:
@@ -375,7 +375,7 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/notes'
         return self._http_request('GET', suffix)
 
-    def create_alert_note(self, alert_id: Optional[Any], note: Optional[Any]) -> Dict:
+    def create_alert_note(self, alert_id: Any | None, note: Any | None) -> dict:
         """Creates a single note for an alert by sending a POST request.
 
         Args:
@@ -389,7 +389,7 @@ class Client(BaseClient):
         body = assign_params(note=note)
         return self._http_request('POST', suffix, json_data=body)
 
-    def delete_alert_note(self, alert_id: Optional[Any], note_id: Optional[Any]) -> Dict:
+    def delete_alert_note(self, alert_id: Any | None, note_id: Any | None) -> dict:
         """Deletes a single note for an alert by sending a DELETE request.
 
         Args:
@@ -402,7 +402,7 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/notes/{note_id}'
         return self._http_request('DELETE', suffix, resp_type='')
 
-    def get_events_by_alert(self, alert_id: Optional[Any]) -> Dict:
+    def get_events_by_alert(self, alert_id: Any | None) -> dict:
         """Fetches events for an alert by sending a GET request.
 
         Args:
@@ -414,7 +414,7 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/events'
         return self._http_request('GET', suffix)
 
-    def get_endpoints_by_alert(self, alert_id: Optional[Any], offset: Optional[Any] = None) -> Dict:
+    def get_endpoints_by_alert(self, alert_id: Any | None, offset: Any | None = None) -> dict:
         """Fetches endpoints for an alert by sending a GET request.
 
         Args:
@@ -430,8 +430,8 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def get_cases_by_alert(self, alert_id: Optional[Any], limit: Optional[Any] = None, offset: Optional[Any] = None,
-                           order_by: Optional[Any] = None) -> Dict:
+    def get_cases_by_alert(self, alert_id: Any | None, limit: Any | None = None, offset: Any | None = None,
+                           order_by: Any | None = None) -> dict:
         """Fetches cases for an alert by sending a GET request.
 
         Args:
@@ -452,7 +452,7 @@ class Client(BaseClient):
         body = body if body else None
         return self._http_request('GET', suffix, json_data=body)
 
-    def get_event_by_id(self, event_id: Optional[Any]) -> Dict:
+    def get_event_by_id(self, event_id: Any | None) -> dict:
         """Fetches an event by id via a GET request.
 
         Args:
@@ -467,7 +467,7 @@ class Client(BaseClient):
     def get_lists(self, limit: int = None, offset: int = None, created_at: str = None, description: str = None,
                   is_active: bool = None, is_internal: bool = None, is_protected: bool = None, name: str = None,
                   short_name: str = None, type: str = None, updated_at: str = None, usage: str = None,
-                  order_by: str = None) -> Dict:
+                  order_by: str = None) -> dict:
         """Fetches lists by a GET request
 
         Args:
@@ -506,7 +506,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def get_list_by_id(self, list_id: Optional[Any]) -> Dict:
+    def get_list_by_id(self, list_id: Any | None) -> dict:
         """Get a list by id via a GET request
 
         Args:
@@ -518,9 +518,9 @@ class Client(BaseClient):
         suffix = f'/api/v3/lists/{list_id}'
         return self._http_request('GET', suffix)
 
-    def create_list(self, name: Optional[str], usage: str = None, short_name: str = None, is_internal: bool = None,
+    def create_list(self, name: str | None, usage: str = None, short_name: str = None, is_internal: bool = None,
                     is_active: bool = None, is_protected: bool = None, is_hidden: bool = None, type: str = None,
-                    description: str = None) -> Dict:
+                    description: str = None) -> dict:
         """Creates a list using a POST request
 
         Args:
@@ -553,7 +553,7 @@ class Client(BaseClient):
 
     def update_list(self, list_id: int, name: str = None, usage: str = None, short_name: str = None,
                     is_internal: bool = None, is_active: bool = None, is_protected: bool = None, is_hidden: bool = None,
-                    type: str = None, description: str = None) -> Dict:
+                    type: str = None, description: str = None) -> dict:
         """Creates a list using a POST request
 
         Args:
@@ -585,7 +585,7 @@ class Client(BaseClient):
         body['usage'] = argToList(usage)
         return self._http_request('PATCH', suffix, json_data=body)
 
-    def delete_list(self, list_id: Optional[Any]) -> Dict:
+    def delete_list(self, list_id: Any | None) -> dict:
         """Deletes a list using DELETE request
 
         Args:
@@ -597,7 +597,7 @@ class Client(BaseClient):
         suffix = f'/api/v3/lists/{list_id}'
         return self._http_request('DELETE', suffix, resp_type='content')
 
-    def list_sensors(self, limit: int = None, offset: int = None, hostname: str = None, status: str = None) -> Dict:
+    def list_sensors(self, limit: int = None, offset: int = None, hostname: str = None, status: str = None) -> dict:
         """Fetches sensors using GET request
 
         Args:
@@ -618,7 +618,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def list_rules(self, limit: int = None, offset: int = None, sort: str = None) -> Dict:
+    def list_rules(self, limit: int = None, offset: int = None, sort: str = None) -> dict:
         """Fetches rules using GET request
 
         Args:
@@ -637,7 +637,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def edit_rule(self, rule_id: str, enabled: bool = None) -> Dict:
+    def edit_rule(self, rule_id: str, enabled: bool = None) -> dict:
         """Edit a single rule using PATCH request
 
         Args:
@@ -651,7 +651,7 @@ class Client(BaseClient):
         body = assign_params(enabled=enabled)
         return self._http_request('PATCH', suffix, json_data=body)
 
-    def add_list_item(self, list_id: Optional[int], type: str, value: str, risk: str = None, notes: str = None) -> Dict:
+    def add_list_item(self, list_id: int | None, type: str, value: str, risk: str = None, notes: str = None) -> dict:
         """Adds a single item list to a list
 
         Args:
@@ -674,7 +674,7 @@ class Client(BaseClient):
         return self._http_request('POST', suffix, json_data=body)
 
     def update_list_item(self, list_id: int, item_id: int, type: str = None, value: str = None, risk: str = None,
-                         notes: str = None) -> Dict:
+                         notes: str = None) -> dict:
         """Updates a single item list
 
         Args:
@@ -697,7 +697,7 @@ class Client(BaseClient):
         )
         return self._http_request('PATCH', suffix, json_data=body)
 
-    def get_list_items(self, list_id: Optional[Any], offset: Optional[Any]) -> Dict:
+    def get_list_items(self, list_id: Any | None, offset: Any | None) -> dict:
         """Gets items of a list
 
         Args:
@@ -711,7 +711,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset)
         return self._http_request('GET', suffix, params=params)
 
-    def remove_list_item(self, list_id: Optional[Any], item_id: Optional[Any]) -> Dict:
+    def remove_list_item(self, list_id: Any | None, item_id: Any | None) -> dict:
         suffix = f'/api/v3/lists/{list_id}/items/{item_id}'
         return self._http_request('DELETE', suffix, resp_type='content')
 
@@ -719,7 +719,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def create_context_result(src: Union[Dict, List], trans_dict: Dict) -> Union[Dict, List]:
+def create_context_result(src: dict | list, trans_dict: dict) -> dict | list:
     """Builds a dictionary according to a transformation map
 
     Args:
@@ -730,7 +730,7 @@ def create_context_result(src: Union[Dict, List], trans_dict: Dict) -> Union[Dic
     """
     if isinstance(src, list):
         return [create_context_result(x, trans_dict) for x in src]
-    res: Dict[str, Any] = {}
+    res: dict[str, Any] = {}
     for key, val in trans_dict.items():
         if isinstance(val, dict):
             # handle nested list
@@ -750,7 +750,7 @@ def create_context_result(src: Union[Dict, List], trans_dict: Dict) -> Union[Dic
     return res
 
 
-def update_nested_value(src_dict: Dict[str, Any], to_key: str, to_val: Any) -> None:
+def update_nested_value(src_dict: dict[str, Any], to_key: str, to_val: Any) -> None:
     """
     Updates nested value according to transformation dict structure where 'a.b' key will create {'a': {'b': val}}
     Args:
@@ -790,8 +790,8 @@ def alert_severity_to_dbot_score(severity_str):
     return 0
 
 
-def build_mql_query(query: str, start: str = None, end: str = None, page_size: Union[int, str] = None,
-                    limit: Union[str, int] = None, offset: Union[int, str] = None, groupby: str = None,
+def build_mql_query(query: str, start: str = None, end: str = None, page_size: int | str = None,
+                    limit: str | int = None, offset: int | str = None, groupby: str = None,
                     sort_by: str = None, sort_order: str = None) -> str:
     """Builds MQL query from given arguments
 
@@ -832,7 +832,7 @@ def build_mql_query(query: str, start: str = None, end: str = None, page_size: U
     return query
 
 
-def build_search_groupby_result(aggregations: Dict, separator: str) -> List:
+def build_search_groupby_result(aggregations: dict, separator: str) -> list:
     """Builds groupby result from search aggregations
 
     Args:
@@ -857,7 +857,7 @@ def build_search_groupby_result(aggregations: Dict, separator: str) -> List:
     return res
 
 
-def build_search_result(raw_response: dict, search_id: Union[str, int] = None, headers: List = None):
+def build_search_result(raw_response: dict, search_id: str | int = None, headers: list = None):
     """Builds search result from search raw_response
 
     Args:
@@ -952,9 +952,9 @@ def build_single_list_result(raw_response):
 ''' COMMANDS '''
 
 
-def test_module(client: Client, test_fetch: bool = False, fetch_time: Optional[str] = None, last_run: Dict = None,
+def test_module(client: Client, test_fetch: bool = False, fetch_time: str | None = None, last_run: dict = None,
                 *_) -> \
-        Tuple[str, Dict, Dict]:
+        tuple[str, dict, dict]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -976,7 +976,7 @@ def test_module(client: Client, test_fetch: bool = False, fetch_time: Optional[s
     return 'ok', {}, {}
 
 
-def fetch_incidents(client: Client, fetch_time: Optional[str], last_run: Dict) -> Tuple[List, Dict]:
+def fetch_incidents(client: Client, fetch_time: str | None, last_run: dict) -> tuple[list, dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -994,7 +994,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], last_run: Dict) -
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
         new_last_run = last_run
-    incidents: List = list()
+    incidents: list = list()
     raw_response = client.list_alerts(created_at__gte=new_last_run.get('time'))
     alerts = raw_response.get('results')
     if alerts:
@@ -1015,7 +1015,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], last_run: Dict) -
     return incidents, new_last_run
 
 
-def list_alerts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_alerts_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Lists all alerts and return outputs in Demisto's format
 
     Args:
@@ -1055,7 +1055,7 @@ def list_alerts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
 
 
-def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_alert_by_id_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get alert by id and return outputs in Demisto's format
 
     Args:
@@ -1080,7 +1080,7 @@ def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
 
 
-def get_alert_notes_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_alert_notes_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get all notes related to alert
 
     Args:
@@ -1115,7 +1115,7 @@ def get_alert_notes_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         return f'{INTEGRATION_NAME} - No notes were found for alert {alert_id}.', {}, {}
 
 
-def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_alert_note_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Create a note for an alert
 
     Args:
@@ -1145,7 +1145,7 @@ def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
         return f'{INTEGRATION_NAME} - Could not create a note.', {}, {}
 
 
-def delete_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_alert_note_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Delete a note for an alert
 
     Args:
@@ -1161,7 +1161,7 @@ def delete_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     return f'{INTEGRATION_NAME} - Deleted note {note_id} for Alert {alert_id} successfully.', {}, {}
 
 
-def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_events_by_alert_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get events for a specific alert
 
     Args:
@@ -1194,7 +1194,7 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
         return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
-def get_endpoints_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_endpoints_by_alert_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Fetch endpoints of a specific alert
 
     Args:
@@ -1225,7 +1225,7 @@ def get_endpoints_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dic
         return f'{INTEGRATION_NAME} - Could not find any endpoints.', {}, {}
 
 
-def get_cases_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_cases_by_alert_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Fetch cases of a specific alert
 
     Args:
@@ -1255,7 +1255,7 @@ def get_cases_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, D
         return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
 
 
-def get_lists_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_lists_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get lists return outputs in Demisto's format
 
     Args:
@@ -1301,7 +1301,7 @@ def get_lists_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any lists.', {}, {}
 
 
-def get_list_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_list_by_id_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get a list by ID return outputs in Demisto's format
 
     Args:
@@ -1319,7 +1319,7 @@ def get_list_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         return f'{INTEGRATION_NAME} - Could not find the list.', {}, raw_response
 
 
-def create_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_list_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Create a list. return outputs in Demisto's format
 
     Args:
@@ -1349,7 +1349,7 @@ def create_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Created list successfully.', {}, raw_response
 
 
-def update_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def update_list_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Update a list. return outputs in Demisto's format
 
     Args:
@@ -1380,7 +1380,7 @@ def update_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Updated list successfully.', {}, raw_response
 
 
-def delete_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_list_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Update a list. return outputs in Demisto's format
 
     Args:
@@ -1395,7 +1395,7 @@ def delete_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'{INTEGRATION_NAME} - Deleted list successfully.', {}, raw_response
 
 
-def add_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def add_list_item_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Adds a list item. return outputs in Demisto's format
 
     Args:
@@ -1427,7 +1427,7 @@ def add_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not create list item.', {}, raw_response
 
 
-def update_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def update_list_item_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Updates a list item. return outputs in Demisto's format
 
     Args:
@@ -1460,7 +1460,7 @@ def update_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
         return f'{INTEGRATION_NAME} - Could not update list item.', {}, raw_response
 
 
-def remove_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def remove_list_item_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Updates a list item. return outputs in Demisto's format
 
     Args:
@@ -1476,7 +1476,7 @@ def remove_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
     return f'{INTEGRATION_NAME} - Removed item {item_id} from list {list_id} successfully', {}, raw_response
 
 
-def get_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_list_items_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Fetches list items
 
     Args:
@@ -1504,7 +1504,7 @@ def get_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         return f'{INTEGRATION_NAME} - No items were found for list {list_id}.', {}, raw_response
 
 
-def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_sensors_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Lists all sensors and return outputs in Demisto's format
 
     Args:
@@ -1534,7 +1534,7 @@ def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any sensors.', {}, {}
 
 
-def list_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_rules_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Lists all rules and return outputs in Demisto's format
 
     Args:
@@ -1575,7 +1575,7 @@ def list_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any rules.', {}, {}
 
 
-def edit_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def edit_rule_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Edit a single rule and return outputs in Demisto's format
 
     Args:
@@ -1604,7 +1604,7 @@ def edit_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find matching rule.', {}, {}
 
 
-def search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Searches FireEye Helix database using MQL
 
     Args:
@@ -1624,7 +1624,7 @@ def search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return build_search_result(raw_response, headers=headers)
 
 
-def archive_search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def archive_search_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Searches FireEye Helix database using MQL
 
     Args:
@@ -1649,7 +1649,7 @@ def archive_search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         return f'{INTEGRATION_NAME} - Failed to create archive search', {}, raw_response
 
 
-def archive_search_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def archive_search_status_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Fetches the status of an archive search
 
     Args:
@@ -1681,7 +1681,7 @@ def archive_search_status_command(client: Client, args: Dict) -> Tuple[str, Dict
         return f'{INTEGRATION_NAME} - Failed to get archive search details', {}, {}
 
 
-def archive_search_results_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def archive_search_results_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Fetches an archive search result
 
     Args:

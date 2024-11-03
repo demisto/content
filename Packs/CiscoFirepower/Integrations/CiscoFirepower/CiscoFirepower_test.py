@@ -4,7 +4,7 @@ Unit testing for Cisco Firepower Management Center.
 import json
 import io
 import os
-from typing import Any, Union
+from typing import Any
 from http import HTTPStatus
 from unittest import mock
 import pytest
@@ -348,7 +348,7 @@ def test_raw_response_to_context_ruls(list_input, list_output):
 ''' Helper Functions '''  # pylint: disable=pointless-string-statement
 
 
-def assert_output_has_no_links(outputs: Union[list[dict[str, Any]], dict[str, Any]]):
+def assert_output_has_no_links(outputs: list[dict[str, Any]] | dict[str, Any]):
     """
     Check that there are no 'links' keys in the outputs.
     Args:
@@ -400,7 +400,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     """
     path = os.path.join('test_data', file_name)
 
-    with io.open(path, mode='r', encoding='utf-8') as mock_file:
+    with open(path, encoding='utf-8') as mock_file:
         if os.path.splitext(file_name)[1] == '.json':
             return json.loads(mock_file.read())
 

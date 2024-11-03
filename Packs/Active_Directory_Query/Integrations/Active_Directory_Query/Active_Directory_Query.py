@@ -670,8 +670,7 @@ def search_users(default_base_dn, page_size):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
         field_type = escape_filter_chars(args['custom-field-type'])
         field_data = escape_filter_chars(args['custom-field-data'])
-        query = "(&(objectClass=User)(objectCategory=person)({}={}))".format(
-            field_type, field_data)
+        query = f"(&(objectClass=User)(objectCategory=person)({field_type}={field_data}))"
 
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
@@ -880,11 +879,10 @@ def search_group_members(default_base_dn, page_size):
     attributes = list(set(custom_attributes + default_attributes))
 
     if member_type == 'group':
-        query = "(&(objectCategory={})(memberOf{}={})(sAMAccountName={}))".format(member_type, nested_search, group_dn,
-                                                                                  account_name)
+        query = f"(&(objectCategory={member_type})(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"
     else:
-        query = "(&(objectCategory={})(objectClass=user)(memberOf{}={})(sAMAccountName={}))"\
-            .format(member_type, nested_search, group_dn, account_name)
+        query = f"(&(objectCategory={member_type})(objectClass=user)(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"\
+            
 
     size_limit = int(args.get('limit', '0'))
     page_cookie = args.get('page-cookie')
@@ -1266,8 +1264,7 @@ def modify_object(dn, modification):
     assert connection is not None
     success = connection.modify(dn, modification)
     if not success:
-        raise Exception("Failed to update object {} with the following modification: {}".format(
-            dn, json.dumps(modification)))
+        raise Exception(f"Failed to update object {dn} with the following modification: {json.dumps(modification)}")
 
 
 def update_user(default_base_dn):

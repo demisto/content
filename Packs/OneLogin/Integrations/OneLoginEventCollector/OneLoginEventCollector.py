@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Tuple
 
 
 ''' CONSTANTS '''
@@ -76,7 +75,7 @@ class Client(BaseClient):
         demisto.info('Succesfully got access token.')
         return raw_response.get('access_token')
 
-    def get_events_request(self, access_token: str, query_params: dict) -> Tuple:
+    def get_events_request(self, access_token: str, query_params: dict) -> tuple:
         """
         Send request to get events from OneLogin.
         """
@@ -140,7 +139,7 @@ class Client(BaseClient):
                      f"in the event types from OneLogin, returning an empty value")
         return ''
 
-    def handle_pagination_first_batch(self, access_token: str, query_params: dict, last_run: dict) -> Tuple:
+    def handle_pagination_first_batch(self, access_token: str, query_params: dict, last_run: dict) -> tuple:
         """
         Makes the first events API call in the current fetch run.
         If `first_id` or `last_event_ids` exists in the lastRun obj, finds it in the response and
@@ -250,7 +249,7 @@ def test_module_command(client: Client, params: dict) -> str:
     return 'ok'
 
 
-def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
     Gets log events from OneLogin.
     Args:
@@ -277,7 +276,7 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
     return events, results
 
 
-def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[list, dict]:
+def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[list, dict]:
     """
     Collects log events from OneLogin using pagination.
     Args:

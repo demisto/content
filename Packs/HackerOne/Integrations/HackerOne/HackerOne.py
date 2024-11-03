@@ -2,7 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import traceback
-from typing import Callable, Dict, Tuple, Any
+from typing import Any
+from collections.abc import Callable
 import urllib3
 
 # Disable insecure warnings
@@ -68,7 +69,7 @@ class Client(BaseClient):
         self.filters = filters
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
 
-    def report_list(self, params: Dict) -> Dict:
+    def report_list(self, params: dict) -> dict:
         """
         Returns response
         :type params: ``Dict``
@@ -81,7 +82,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=URL_SUFFIX["REPORTS"],
                                   params=params, error_handler=self.exception_handler)
 
-    def program_list(self, params: Dict) -> Dict:
+    def program_list(self, params: dict) -> dict:
         """
         Returns response
         :type params: ``Dict``
@@ -160,7 +161,7 @@ def remove_duplicates(data) -> List:
     return cleaned_list
 
 
-def prepare_filter_by_arguments(program_handle, severity, state, filters) -> Dict[str, Any]:
+def prepare_filter_by_arguments(program_handle, severity, state, filters) -> dict[str, Any]:
     """
     Prepares params for the filters provided by user
 
@@ -227,7 +228,7 @@ def validate_fetch_incidents_parameters(max_fetch: Optional[int], program_handle
 
 
 def prepare_fetch_incidents_parameters(max_fetch, time_to_fetch, program_handle, severity, state, filters, page) -> \
-        Dict[str, Any]:
+        dict[str, Any]:
     """
     Prepare fetch incidents params
     :type max_fetch: ``int``
@@ -253,7 +254,7 @@ def prepare_fetch_incidents_parameters(max_fetch, time_to_fetch, program_handle,
 
     """
 
-    fetch_params: Dict[str, Any] = {"page[size]": max_fetch, "sort": "reports.created_at",
+    fetch_params: dict[str, Any] = {"page[size]": max_fetch, "sort": "reports.created_at",
                                     "page[number]": page}
 
     fetch_params.update(
@@ -280,7 +281,7 @@ def validate_report_list_args(args):
             raise ValueError(MESSAGES["FILTER"])
 
 
-def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_report_list_args(args: dict[str, Any]) -> dict[str, Any]:
     """
     Preapare params for hackerone-report-list command.
 
@@ -291,7 +292,7 @@ def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
     :rtype: ``Dict[str, Any]``
     """
 
-    params: Dict[str, Any] = {
+    params: dict[str, Any] = {
 
         "filter[keyword]": args.get("filter_by_keyword")
     }
@@ -312,7 +313,7 @@ def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
     return assign_params(**params)
 
 
-def prepare_hr_for_programs(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_programs(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the programs in response into human-readable markdown string.
 
@@ -334,7 +335,7 @@ def prepare_hr_for_programs(results: List[Dict[str, Any]]) -> str:
                            headers=["Program ID", "Handle", "Created At", "Updated At"], removeNull=True)
 
 
-def prepare_hr_for_reports(results: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_reports(results: List[dict[str, Any]]) -> str:
     """
     Parse and convert the reports in response into human-readable markdown string.
 
@@ -366,7 +367,7 @@ def prepare_hr_for_reports(results: List[Dict[str, Any]]) -> str:
                                     "Vulnerability Information"], removeNull=True)
 
 
-def get_and_validate_positive_int_argument(args: Dict, argument_name: str, lower_bound: int = 1,
+def get_and_validate_positive_int_argument(args: dict, argument_name: str, lower_bound: int = 1,
                                            upper_bound: Optional[int] = None) -> Optional[int]:
     """
     Extracts int argument from Demisto arguments.
@@ -393,7 +394,7 @@ def get_and_validate_positive_int_argument(args: Dict, argument_name: str, lower
     return argument_value
 
 
-def get_page_and_limit_args(args: Dict):
+def get_page_and_limit_args(args: dict):
     """
        Receives demisto argument, and extract the relevant arguments for limits and paging:
        'page_number', 'page_size', 'limit'.
@@ -450,7 +451,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
+def fetch_incidents(client: Client, last_run: dict, ) -> tuple[dict, list]:
     """Fetches incidents from HackerOne.
 
     :type client: ``Client``
@@ -507,7 +508,7 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     return next_run, incidents
 
 
-def hackerone_program_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def hackerone_program_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves detailed information of all the programs that the user is a member of.
 
@@ -526,7 +527,7 @@ def hackerone_program_list_command(client: Client, args: Dict[str, str]) -> Comm
     count = limit
     while limit > 0:
         page_size = 100 if limit > 100 else limit
-        params: Dict[str, Any] = {"page[size]": page_size, "page[number]": page}
+        params: dict[str, Any] = {"page[size]": page_size, "page[number]": page}
         raw_response = client.program_list(params=params)
         program_list = raw_response.get('data', [])
         if not program_list:
@@ -557,7 +558,7 @@ def hackerone_program_list_command(client: Client, args: Dict[str, str]) -> Comm
                           )
 
 
-def hackerone_report_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def hackerone_report_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves list with detailed information of all the reports.
 
@@ -613,7 +614,7 @@ def main():
     """main function, parses params and runs command functions"""
 
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'hackerone-report-list': hackerone_report_list_command,
         'hackerone-program-list': hackerone_program_list_command
     }

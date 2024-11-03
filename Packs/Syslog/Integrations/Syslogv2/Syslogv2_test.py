@@ -1,6 +1,4 @@
-import io
 import json
-from typing import List
 
 import pytest
 from freezegun import freeze_time
@@ -15,7 +13,7 @@ from datetime import datetime
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -107,7 +105,7 @@ def test_parse_rfc_not_valid(test_case: dict, func: Callable[[bytes], SyslogMess
                                        'sd': {'exampleSDID@32473': {'eventID': '1011', 'eventSource': 'Application',
                                                                     'iut': '3'}}, 'severity': 'notice',
                                        'timestamp': '2003-10-11T22:14:15.003Z', 'version': 1}]])
-def test_fetch_samples(samples: List[dict], mocker):
+def test_fetch_samples(samples: list[dict], mocker):
     """
     Given:
 
@@ -401,7 +399,7 @@ def test_prepare_globals_and_create_server(message_regex, certificate, private_k
     from Syslogv2 import prepare_globals_and_create_server, StreamServer
     import Syslogv2
     server: StreamServer = prepare_globals_and_create_server(33333, message_regex, certificate, private_key)
-    assert Syslogv2.MESSAGE_REGEX == message_regex
+    assert message_regex == Syslogv2.MESSAGE_REGEX
     if certificate and private_key:
         assert 'keyfile' in server.ssl_args and 'certfile' in server.ssl_args
     else:

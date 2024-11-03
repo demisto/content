@@ -2,12 +2,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import operator
 from functools import reduce
-from typing import Dict, List
 
 from CommonServerUserPython import *
 
 
-def count_hours_in_shift(shift: Dict) -> int:
+def count_hours_in_shift(shift: dict) -> int:
     from_day = shift.get('fromDay', 0)
     to_day = shift.get('toDay', 0)
     from_hour = shift.get('fromHour', 0)
@@ -27,12 +26,12 @@ def count_hours_in_shift(shift: Dict) -> int:
 
 
 def main():
-    get_roles_response: List = demisto.executeCommand('getRoles', {})
+    get_roles_response: list = demisto.executeCommand('getRoles', {})
     if is_error(get_roles_response):
         demisto.error(f'Failed to get roles: {str(get_error(get_roles_response))}')
     else:
-        hours_per_user: Dict[str, int] = {}
-        get_users_response: List = demisto.executeCommand('getUsers', {})
+        hours_per_user: dict[str, int] = {}
+        get_users_response: list = demisto.executeCommand('getUsers', {})
         if is_error(get_users_response):
             demisto.error(f'Failed to get users: {str(get_error(get_users_response))}')
         else:

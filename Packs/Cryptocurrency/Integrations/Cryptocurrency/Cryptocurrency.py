@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import urllib3
-from typing import Dict, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -20,8 +19,8 @@ SCORE = {
 }
 
 
-def get_bitcoin_reputation(addresses, reliability, reputation, score) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_bitcoin_reputation(addresses, reliability, reputation, score) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     for address in addresses:
         dbot_score = Common.DBotScore(
             indicator=address,
@@ -52,7 +51,7 @@ def get_bitcoin_reputation(addresses, reliability, reputation, score) -> List[Co
     return command_results
 
 
-def crypto_reputation_command(args: Dict[str, str], reliability: str, reputation: str):
+def crypto_reputation_command(args: dict[str, str], reliability: str, reputation: str):
     crypto_addresses = argToList(args.get('crypto', ''))
 
     # For cases the command was executed by a playbook/user and the addresses received are verified

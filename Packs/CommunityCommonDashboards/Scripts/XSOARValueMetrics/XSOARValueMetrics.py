@@ -7,7 +7,6 @@ import pandas as pd
 from datetime import datetime
 from calendar import monthrange
 from collections import defaultdict
-from typing import Tuple
 
 MAXINC = 2000
 XDEBUG = True
@@ -233,7 +232,7 @@ def BuildCsv(key: str, data: dict) -> str:
     return csv_data_string
 
 
-def SplitRecords(records: list) -> Tuple[list, list]:
+def SplitRecords(records: list) -> tuple[list, list]:
     curyear = ""
     thisyear: list = []
     lastyear: list = []
@@ -250,7 +249,7 @@ def SplitRecords(records: list) -> Tuple[list, list]:
     return lastyear, thisyear
 
 
-def GenerateTables(startday: str, endday: str, records: list, slatimers: list) -> Tuple[str, dict, str, dict]:
+def GenerateTables(startday: str, endday: str, records: list, slatimers: list) -> tuple[str, dict, str, dict]:
     json_met: dict = {}
     json_met2: dict = {}
     json_met['YEAR'] = startday.split("-")[0]
@@ -410,7 +409,6 @@ def RollYearList(thisyearlist: str, lastyearlist: str, curmetrics: dict):
             SaveJsonList(lastyearlist, existing_metrics)
             existing_metrics = {}
     SaveJsonList(thisyearlist, existing_metrics)
-    return
 
 
 def UpdateMetricsList(listname: str, curmetrics: dict, mode: str):
@@ -426,7 +424,6 @@ def UpdateMetricsList(listname: str, curmetrics: dict, mode: str):
             existing_metrics[key] = val
 
     SaveJsonList(listname, existing_metrics)
-    return
 
 
 def UpdateDict(existing_dict: dict, new_dict: dict, mode: str) -> dict:
@@ -468,7 +465,6 @@ def SaveJsonList(list_name: str, json_data: dict):
             'listName': list_name,
             'listData': json.dumps(json_data)
         })
-    return
 
 
 def NormalDate(date_str: str, first_day=True) -> str:
@@ -556,8 +552,7 @@ def main():
                                     curday = 0
                                     break
                                 # On the first day of the 2 day window, step to the second day
-                                else:
-                                    curday = 1
+                                curday = 1
 
         XLOG += LogMessage(f"Total Found Incident Count {inccount}")
         # Limit the results to the top twenty incident types

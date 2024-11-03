@@ -138,7 +138,7 @@ def fetch_incidents(client: Client,
         incidents: Incidents that will be created in Cortex XSOAR
     """
     # Get the last fetch time, if exists
-    last_fetch = last_run.get("last_fetch", None)
+    last_fetch = last_run.get("last_fetch")
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:

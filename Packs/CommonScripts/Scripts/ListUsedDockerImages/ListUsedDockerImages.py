@@ -7,7 +7,6 @@ This is a script that list all the dockers images that are in ues in the integra
 """
 
 import json
-from typing import Dict
 
 '''REST API HTTP COMMANDS'''
 POST_COMMAND = "POST"
@@ -41,7 +40,7 @@ IS_INTEGRATION_SCRIPT = 'isIntegrationScript'
 ''' HELPER FUNCTION '''
 
 
-def get_docker_from_conf(conf: Dict) -> str:
+def get_docker_from_conf(conf: dict) -> str:
     """
     :type conf: ``json object``
     :param conf: json represents integration configuration
@@ -60,7 +59,7 @@ def get_docker_from_conf(conf: Dict) -> str:
     return docker_image
 
 
-def get_integration_conf(integration_search_json: Dict, instance_brand: str,
+def get_integration_conf(integration_search_json: dict, instance_brand: str,
                          ignore_deprecated: bool = False) -> Any:
     """ returns the corresponding integration_configuration json object for the given instance_brand
     Args:
@@ -206,7 +205,7 @@ def list_used_docker_images(export_to_context: bool = True,
     active_docker_list_automation = {}
 
     ''' Examples for output: { 'demisto/python3:3.9.7.24076' : ['ListUsedDockerImage', 'VirusTotal',...]}'''
-    result_dict: Dict[str, List[str]] = {}
+    result_dict: dict[str, List[str]] = {}
 
     active_integration_instances = demisto.internalHttpRequest(POST_COMMAND, '/settings/integration/search',
                                                                '{\"size\":500}')

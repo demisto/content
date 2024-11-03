@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 ''' IMPORTS '''
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 from datetime import datetime
 from dateutil.parser import parse as parse_dt
 import traceback
@@ -34,7 +34,7 @@ class Client(BaseClient):
             'Cf-Access-Client-Secret': kwargs.get('client_secret')
         }
 
-    def search(self, endpoint: str, params: dict) -> Dict[str, Any]:
+    def search(self, endpoint: str, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=endpoint,
@@ -43,7 +43,7 @@ class Client(BaseClient):
             retries=5
         )
 
-    def ping(self) -> Dict[str, Any]:
+    def ping(self) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/users/me',
@@ -55,14 +55,14 @@ def test_module(client) -> str:
     try:
         client.ping()
     except Exception as e:
-        return 'Test failed: {}'.format(e)
+        return f'Test failed: {e}'
 
     return 'ok'
 
 
 def _make_timestamp(ts):
     if not ts:
-        return
+        return None
 
     if isinstance(ts, int):
         return datetime.fromtimestamp(ts)

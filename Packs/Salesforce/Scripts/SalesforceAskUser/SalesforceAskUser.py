@@ -7,7 +7,7 @@ def salesforce_ask_user():
     persistent = True if demisto.args().get('persistent') == 'true' else False
     for i in range(retries):
         res = demisto.executeCommand('addEntitlement', {'persistent': persistent})
-        if isError((res[0])):
+        if isError(res[0]):
             if '[investigations] [investigation] (15)' in res[0]['Contents']:
                 time.sleep(1)
                 continue
@@ -18,7 +18,7 @@ def salesforce_ask_user():
     comment_suffix = ' - #{0} {1}'.format(demisto.incidents()[0]['id'], entitlement)
     task = demisto.args().get('task')
     if task:
-        comment_suffix += ' #{}'.format(task)
+        comment_suffix += f' #{task}'
 
     text = demisto.args().get('text', '')
     if not text:

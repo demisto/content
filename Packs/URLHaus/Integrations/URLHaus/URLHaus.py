@@ -1,4 +1,3 @@
-from typing import Tuple
 
 import urllib3
 from CommonServerPython import *
@@ -88,7 +87,7 @@ def test_module(**kwargs):
     http_request('POST', 'url', kwargs.get('api_url'), kwargs.get('use_ssl'))
 
 
-def url_calculate_score(status: str) -> Tuple[int, str]:
+def url_calculate_score(status: str) -> tuple[int, str]:
     """
          Calculate DBot Score for the url command using url status.
 
@@ -107,7 +106,7 @@ def url_calculate_score(status: str) -> Tuple[int, str]:
     raise Exception("Got bad url status")
 
 
-def domain_calculate_score(blacklist: dict) -> Tuple[int, str]:
+def domain_calculate_score(blacklist: dict) -> tuple[int, str]:
     """
          Calculate DBot Score for the domain command using blacklist.
 
@@ -139,7 +138,7 @@ def domain_calculate_score(blacklist: dict) -> Tuple[int, str]:
     return Common.DBotScore.GOOD, "There is no information about Domain in the blacklist"
 
 
-def file_calculate_score() -> Tuple[int, str]:
+def file_calculate_score() -> tuple[int, str]:
     """
          Calculate DBot Score for the file command (always malicious).
 

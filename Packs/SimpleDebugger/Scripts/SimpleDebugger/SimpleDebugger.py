@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 # Append this to CommonServerUserPython
 
 from types import FrameType
-from typing import List
 from collections import OrderedDict
 from datetime import datetime
 
@@ -144,15 +143,15 @@ class SimpleDebugger:
             else:
                 self.funcbreak.append(b.strip())
 
-    def SdbgSetPrint(self, functions: List[str]):
+    def SdbgSetPrint(self, functions: list[str]):
         for f in functions:
             self.printfunc.append(f.strip())
 
-    def SdbgSetSilent(self, functions: List[str]):
+    def SdbgSetSilent(self, functions: list[str]):
         for f in functions:
             self.silent.append(f.strip())
 
-    def SdbgSetExclude(self, functions: List[str]):
+    def SdbgSetExclude(self, functions: list[str]):
         for f in functions:
             self.exclude.append(f.strip())
 

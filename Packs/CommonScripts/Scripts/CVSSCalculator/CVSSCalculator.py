@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import math
-from typing import Dict, Any
+from typing import Any
 
 
 def round_up(n):
@@ -20,7 +20,7 @@ def main():
     version = args.get('version', '3.1')
     vector_string = f"CVSS:{version}/"
 
-    values_map_options: Dict[str, Dict[str, Dict[str, Any]]] = {
+    values_map_options: dict[str, dict[str, dict[str, Any]]] = {
         "3.0": {
             "AV": {
                 "X": None,

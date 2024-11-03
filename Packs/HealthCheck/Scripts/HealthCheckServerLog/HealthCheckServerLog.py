@@ -143,7 +143,7 @@ if path[0]['Type'] == entryTypes['error']:
     demisto.results('File not found')
 else:
     try:
-        with open(path[0]['Contents']['path'], 'r') as f:
+        with open(path[0]['Contents']['path']) as f:
             data_line = f.readlines()
             # find Since and find knownErrors
             for line in data_line:

@@ -24,7 +24,7 @@ def main():
     min_severity = int(demisto.args().get("minSeverity", 1))
 
     file_entry = demisto.getFilePath(demisto.args().get("entryID"))
-    with open(file_entry['path'], 'r') as f:
+    with open(file_entry['path']) as f:
         data = f.read(max_file_size)
 
     if data:
@@ -63,7 +63,7 @@ def main():
                 demisto.results({
                     "Type": entryTypes["error"],
                     "ContentsFormat": formats["text"],
-                    "Contents": 'No IP was found for asset {0}'.format(str(asset))
+                    "Contents": f'No IP was found for asset {str(asset)}'
                 })
                 sys.exit(0)
 
@@ -72,7 +72,7 @@ def main():
                 demisto.results({
                     "Type": entryTypes["error"],
                     "ContentsFormat": formats["text"],
-                    "Contents": 'No ID was found for asset {0}'.format(str(asset))
+                    "Contents": f'No ID was found for asset {str(asset)}'
                 })
                 sys.exit(0)
 
@@ -91,7 +91,7 @@ def main():
                 # Will open a new incident only if such an incident not exists.
                 resp = demisto.executeCommand(
                     "getIncidents",
-                    {"query": "vendorid: {0} and assetid: {1} and --status:Closed".format(qid, asset_id)})
+                    {"query": f"vendorid: {qid} and assetid: {asset_id} and --status:Closed"})
                 if isError(resp[0]):
                     demisto.results(resp)
                     sys.exit(0)
@@ -111,7 +111,7 @@ def main():
                 if incident_number == 0:
                     # Create incident
                     demisto.executeCommand("createNewIncident", {
-                        "name": "Vulnerability - Asset {0} QID {1} - {2}".format(asset_id, qid, generation_date),
+                        "name": f"Vulnerability - Asset {asset_id} QID {qid} - {generation_date}",
                         "vendorid": str(qid),
                         "type": incident_type,
                         "assetid": str(asset_id)

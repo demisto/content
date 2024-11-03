@@ -1,6 +1,5 @@
 import json
-import io
-from typing import Callable
+from collections.abc import Callable
 
 import pytest
 from requests.auth import HTTPDigestAuth
@@ -11,12 +10,12 @@ from CommonServerPython import *
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_csv(path):
-    with open(path, 'r') as f:
+    with open(path) as f:
         lines = f.read()
     the_response = Response()
     the_response._content = str.encode(lines)

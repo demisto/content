@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 from dateutil import parser
-from typing import Callable
+from collections.abc import Callable
 
 ''' CONSTANTS '''
 

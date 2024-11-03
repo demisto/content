@@ -1,6 +1,5 @@
 import dataclasses
 import http
-from typing import Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -2456,7 +2455,7 @@ def prepare_computer_list_output_and_readable_output(
 def prepare_push_operation_output_and_readable_output(
     command_data: list[dict[str, Any]],
     job_id: str,
-) -> Tuple[list | dict[str, Any], list | dict[str, Any]]:
+) -> tuple[list | dict[str, Any], list | dict[str, Any]]:
     """Update the API response data for the readable output in case the API response is push operation data.
 
     Args:

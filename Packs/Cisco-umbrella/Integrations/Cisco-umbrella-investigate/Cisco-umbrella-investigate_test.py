@@ -151,7 +151,7 @@ def test_list_domain_co_occurens_command(
     assert "CoOccurrences" in result.outputs
     assert isinstance(result.outputs["CoOccurrences"], list)
     assert len(result.outputs["CoOccurrences"]) == 2
-    assert ["Name", "Score"] == list(result.outputs["CoOccurrences"][0])
+    assert list(result.outputs["CoOccurrences"][0]) == ["Name", "Score"]
 
 
 def test_list_related_domain_command(
@@ -187,7 +187,7 @@ def test_list_related_domain_command(
     assert "Related" in result.outputs
     assert isinstance(result.outputs["Related"], list)
     assert len(result.outputs["Related"]) == 2
-    assert ["Name", "Score"] == list(result.outputs["Related"][0])
+    assert list(result.outputs["Related"][0]) == ["Name", "Score"]
 
 
 def test_get_domain_security_score_command(

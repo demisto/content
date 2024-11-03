@@ -2023,8 +2023,7 @@ def search_device(filter_operator='AND'):
                                                                    arg_filter=arg_filter)
             else:
                 # All args should be a list. this is a fallback
-                url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
-                                                                                  inp_arg=k, arg_val=arg)
+                url_filter = f"{url_filter}{op}{k}:'{arg}'"
     raw_res = http_request('GET', '/devices/queries/devices/v1',
                            params={'filter': url_filter, 'limit': limit, 'offset': offset, 'sort': sort})
     device_ids = raw_res.get('resources')

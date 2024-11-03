@@ -1,7 +1,8 @@
 import json
 import os
 import unittest.mock
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 import CiscoMerakiv2
 import pytest
@@ -22,7 +23,7 @@ def load_json_file(file_name: str) -> list[dict[str, Any]] | dict[str, Any]:
     """
     file_path = os.path.join(TEST_DATA, file_name)
 
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -533,7 +534,7 @@ def test_list_commands_next_link(
     assert len(command_results) == 2
     assert command_results[1].outputs_prefix.endswith(f"{outputs_prefix}LinkTokens")
     assert command_results[1].readable_output == (
-        f"{outputs_prefix} Link Tokens for" f" next_token='{expected_outputs['Next']}'."
+        f"{outputs_prefix} Link Tokens for next_token='{expected_outputs['Next']}'."
     )
     assert command_results[1].outputs == expected_outputs
 

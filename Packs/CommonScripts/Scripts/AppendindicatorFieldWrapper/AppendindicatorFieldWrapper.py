@@ -7,12 +7,11 @@ Note: You can use this script as a layout button that allows adding tags to indi
 
 from CommonServerUserPython import *
 
-from typing import List
 
 ''' COMMAND FUNCTION '''
 
 
-def run_append_indicator_field_script(indicators_values: List, tags: List) -> CommandResults:
+def run_append_indicator_field_script(indicators_values: list, tags: list) -> CommandResults:
     """
     Run the 'appendIndicatorField' script in order to add the given tags to the given indicators.
     Args:

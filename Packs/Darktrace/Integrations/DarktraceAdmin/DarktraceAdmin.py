@@ -516,7 +516,7 @@ def get_similar_devices_command(client: Client, args: dict[str, Any]) -> Command
     :rtype: ``CommandResults``
     """
     check_required_fields(args, 'deviceId')
-    did = str(args.get('deviceId', None))
+    did = str(args.get('deviceId'))
     max_results = str(args.get('maxResults', 5))
 
     similar_devices = client.get_similar_devices(did=did, max_results=max_results)

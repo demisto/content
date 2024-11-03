@@ -3,7 +3,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import urllib3
 import traceback
-from typing import List, Dict, Any, Tuple, Union
+from typing import Any
 from requests.exceptions import MissingSchema, InvalidSchema
 
 # Disable insecure warnings
@@ -131,7 +131,7 @@ class Client(BaseClient):
     Handle some exceptions externally.
     """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, auth: Tuple[str, str], request_timeout: int):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, auth: tuple[str, str], request_timeout: int):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
         self.request_timeout = request_timeout
 
@@ -226,7 +226,7 @@ def remove_empty_entities(d):
                                               for key, value in d.items()) if not empty(value)}
 
 
-def get_timeout_and_size(size) -> Tuple[int, int]:
+def get_timeout_and_size(size) -> tuple[int, int]:
     """
     Validate and return the request_timeout and size parameters.
     The parameters must be a positive integer.
@@ -250,7 +250,7 @@ def get_timeout_and_size(size) -> Tuple[int, int]:
     return request_timeout, size
 
 
-def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
+def nested_to_flat(src: dict[str, Any], key: str) -> dict[str, Any]:
     """
     Convert nested dictionary to flat by contact the keys. Also converts keys in pascal string format.
 
@@ -259,7 +259,7 @@ def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
     :return: flat dictionary with pascal formatted keys (e.g. {"FooBar": "some-value"})
     """
 
-    flat_dict: Dict[str, str] = {}
+    flat_dict: dict[str, str] = {}
     for sub_key, sub_value in src.items():
         parent_key = key
         if ' ' in sub_key:
@@ -272,9 +272,9 @@ def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
     return flat_dict
 
 
-def prepare_context_dict(response_dict: Dict[str, Any],
-                         keys_with_hierarchy: Union[tuple, str] = (),
-                         exclude_keys: Union[tuple, str] = ()) -> Dict[str, str]:
+def prepare_context_dict(response_dict: dict[str, Any],
+                         keys_with_hierarchy: tuple | str = (),
+                         exclude_keys: tuple | str = ()) -> dict[str, str]:
     """
     Prepare the context dictionary as per the standards.
 
@@ -283,7 +283,7 @@ def prepare_context_dict(response_dict: Dict[str, Any],
     :param exclude_keys: keys need to exclude.
     :return: single level dictionary
     """
-    simple_dict: Dict[str, str] = {}
+    simple_dict: dict[str, str] = {}
     for key, value in response_dict.items():
         if key in keys_with_hierarchy:
             simple_dict.update(nested_to_flat(response_dict.get(key, {}), key))
@@ -292,7 +292,7 @@ def prepare_context_dict(response_dict: Dict[str, Any],
     return simple_dict
 
 
-def validate_asset_connections_args_and_get_params(args: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
+def validate_asset_connections_args_and_get_params(args: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     """
     Validate the arguments passed by the user and prepare params
 
@@ -306,7 +306,7 @@ def validate_asset_connections_args_and_get_params(args: Dict[str, Any]) -> Tupl
         type_arg = 'AS'
 
     # prepare params
-    params: Dict[str, Any] = {'name': args.get('name')}
+    params: dict[str, Any] = {'name': args.get('name')}
     global_arg = args.get('global', '').lower()
     if global_arg:
         try:
@@ -331,7 +331,7 @@ def validate_asset_connections_args_and_get_params(args: Dict[str, Any]) -> Tupl
     return type_arg, params
 
 
-def convert_list_to_comma_separated_string(values: List[Dict[str, Any]], key: str) -> str:
+def convert_list_to_comma_separated_string(values: list[dict[str, Any]], key: str) -> str:
     """
     Retrieve values of an attribute in comma separated manner from response to populate human readable output
 
@@ -345,7 +345,7 @@ def convert_list_to_comma_separated_string(values: List[Dict[str, Any]], key: st
     return ', '.join(value_list)
 
 
-def get_comma_separated_values_only_current(values: List[Dict[str, Any]], key: str) -> str:
+def get_comma_separated_values_only_current(values: list[dict[str, Any]], key: str) -> str:
     """
     Retrieve values of an attribute in comma separated manner from response to populate human readable output
 
@@ -360,7 +360,7 @@ def get_comma_separated_values_only_current(values: List[Dict[str, Any]], key: s
     return ', '.join(value_list)
 
 
-def get_attribute_details_hr(attributes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def get_attribute_details_hr(attributes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Retrieve nested properties from list of a specific attribute fetched in response to populate human readable
 
@@ -376,7 +376,7 @@ def get_attribute_details_hr(attributes: List[Dict[str, Any]]) -> List[Dict[str,
     } for attribute in attributes]
 
 
-def get_asset_connections_hr(asset_details: Dict[str, Any]) -> Dict[str, Any]:
+def get_asset_connections_hr(asset_details: dict[str, Any]) -> dict[str, Any]:
     """
     Retrieve attributes from response to populate human readable output
 
@@ -394,8 +394,8 @@ def get_asset_connections_hr(asset_details: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def get_asset_connections_outputs(resp: Dict[str, Any],
-                                  total_elements: Dict[str, Any]) -> Tuple[str, List[CommandResults]]:
+def get_asset_connections_outputs(resp: dict[str, Any],
+                                  total_elements: dict[str, Any]) -> tuple[str, list[CommandResults]]:
     """
     Generates all outputs for asset_connections_command
 
@@ -409,7 +409,7 @@ def get_asset_connections_outputs(resp: Dict[str, Any],
         'IP_ADDRESS': get_standard_context_ip,
         'PAGE': get_standard_context_url
     }
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     hr += '### CONNECTED ASSETS\n'
     for asset_type in total_elements:
@@ -438,7 +438,7 @@ def get_asset_connections_outputs(resp: Dict[str, Any],
     return hr, command_results
 
 
-def validate_asset_changes_summary_args(date_arg: str, range_arg: str) -> Tuple[str, Any]:
+def validate_asset_changes_summary_args(date_arg: str, range_arg: str) -> tuple[str, Any]:
     """
     Validate the arguments passed by the user
 
@@ -457,7 +457,7 @@ def validate_asset_changes_summary_args(date_arg: str, range_arg: str) -> Tuple[
     return date_arg, range_arg
 
 
-def prepare_hr_cell_for_changes_summary(attribute: List[Dict[str, Any]], order: int) -> str:
+def prepare_hr_cell_for_changes_summary(attribute: list[dict[str, Any]], order: int) -> str:
     """
     Prepare cell information for each range respectively
 
@@ -486,7 +486,7 @@ def prepare_hr_cell_for_changes_summary(attribute: List[Dict[str, Any]], order: 
     return '\n'.join(hr_cell_info)
 
 
-def get_asset_changes_summary_hr(summary: Dict[str, Any]) -> List[Dict[str, Any]]:
+def get_asset_changes_summary_hr(summary: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Retrieves all attributes of summary and populates human_readable for asset_changes_summary
 
@@ -513,7 +513,7 @@ def get_asset_changes_summary_hr(summary: Dict[str, Any]) -> List[Dict[str, Any]
     return human_readable
 
 
-def prepare_deep_link_for_asset_changes_summary(resp: List[Dict[str, Any]], date_arg: str, range_arg: str) -> str:
+def prepare_deep_link_for_asset_changes_summary(resp: list[dict[str, Any]], date_arg: str, range_arg: str) -> str:
     """
     Generates deep link for asset-changes-summary command to redirect to RiskIQ Platform.
 
@@ -533,8 +533,8 @@ def prepare_deep_link_for_asset_changes_summary(resp: List[Dict[str, Any]], date
     return deep_link
 
 
-def get_asset_changes_summary_outputs(resp: List[Dict[str, Any]], date_arg: str, range_arg: str) \
-        -> Tuple[str, List[Dict[str, Any]]]:
+def get_asset_changes_summary_outputs(resp: list[dict[str, Any]], date_arg: str, range_arg: str) \
+        -> tuple[str, list[dict[str, Any]]]:
     """
     Generates all outputs for asset_changes_summary_command
 
@@ -544,7 +544,7 @@ def get_asset_changes_summary_outputs(resp: List[Dict[str, Any]], date_arg: str,
     :return: hr, custom_ec: Human readable and Custom Context outputs
     """
     hr = ''
-    custom_ec: List[Dict[str, Any]] = []
+    custom_ec: list[dict[str, Any]] = []
     if resp:
         deep_link = encode_string_results(prepare_deep_link_for_asset_changes_summary(resp, date_arg, range_arg))
         hr += f'### [INVENTORY CHANGES]({deep_link})\n#### Note: If the range argument is specified, a list of' \
@@ -561,7 +561,7 @@ def get_asset_changes_summary_outputs(resp: List[Dict[str, Any]], date_arg: str,
     return hr, custom_ec
 
 
-def get_standard_context_domain(record: Dict[str, Any]) -> Common.Domain:
+def get_standard_context_domain(record: dict[str, Any]) -> Common.Domain:
     """
     Prepare standard context for Domain
     :param record: The record for which context is to be prepared
@@ -580,7 +580,7 @@ def get_standard_context_domain(record: Dict[str, Any]) -> Common.Domain:
     )
 
 
-def get_standard_context_domain_for_get_asset(record: Dict[str, Any]) -> list:
+def get_standard_context_domain_for_get_asset(record: dict[str, Any]) -> list:
     """
     Prepare standard context for domain for get asset command
     :param record: The record for which context is to be prepared
@@ -613,7 +613,7 @@ def get_standard_context_domain_for_get_asset(record: Dict[str, Any]) -> list:
     )]
 
 
-def get_standard_context_host_for_get_asset(record: Dict[str, Any]) -> list:
+def get_standard_context_host_for_get_asset(record: dict[str, Any]) -> list:
     """
     Prepare standard context for host for get asset command
     :param record: The record for which context is to be prepared
@@ -634,7 +634,7 @@ def get_standard_context_host_for_get_asset(record: Dict[str, Any]) -> list:
     return standard_context_host
 
 
-def get_standard_context_ip(record: Dict[str, Any]) -> Common.IP:
+def get_standard_context_ip(record: dict[str, Any]) -> Common.IP:
     """
     Prepare standard context for ip
     :param record: The record for which context is to be prepared
@@ -651,13 +651,13 @@ def get_standard_context_ip(record: Dict[str, Any]) -> Common.IP:
     )
 
 
-def get_standard_context_ip_for_get_asset(record: Dict[str, Any]) -> list:
+def get_standard_context_ip_for_get_asset(record: dict[str, Any]) -> list:
     """
     Prepare standard context for ip for get asset command
     :param record: The record for which context is to be prepared
     :return: List[Union[Common.IP, Common.CVE]]
     """
-    standard_context_ip: List[Union[Common.IP, Common.CVE]] = [Common.IP(
+    standard_context_ip: list[Common.IP | Common.CVE] = [Common.IP(
         ip=record.get('name'),
         asn=convert_list_to_comma_separated_string(record.get('asset', {}).get('asns', []), 'name'),
         dbot_score=Common.DBotScore(
@@ -683,7 +683,7 @@ def get_standard_context_ip_for_get_asset(record: Dict[str, Any]) -> list:
     return standard_context_ip
 
 
-def get_standard_context_url(record: Dict[str, Any]) -> Common.URL:
+def get_standard_context_url(record: dict[str, Any]) -> Common.URL:
     """
     Prepare standard context for url
     :param record: The record for which context is to be prepared
@@ -700,13 +700,13 @@ def get_standard_context_url(record: Dict[str, Any]) -> Common.URL:
     )
 
 
-def get_standard_context_url_for_get_asset(record: Dict[str, Any]) -> list:
+def get_standard_context_url_for_get_asset(record: dict[str, Any]) -> list:
     """
     Prepare standard context for url for get asset command
     :param record: The record for which context is to be prepared
     :return: List[Union[Common.URL, Common.CVE]]
     """
-    standard_context_url: List[Union[Common.URL, Common.CVE]] = [Common.URL(
+    standard_context_url: list[Common.URL | Common.CVE] = [Common.URL(
         url=record.get('name'),
         dbot_score=Common.DBotScore(
             indicator=record.get('name', ''),
@@ -731,7 +731,7 @@ def get_standard_context_url_for_get_asset(record: Dict[str, Any]) -> list:
     return standard_context_url
 
 
-def get_standard_context_file(record: Dict[str, Any]) -> Common.File:
+def get_standard_context_file(record: dict[str, Any]) -> Common.File:
     """
     Prepare standard context for file
     :param record: The record for which context is to be prepared
@@ -752,15 +752,15 @@ def get_standard_context_file(record: Dict[str, Any]) -> Common.File:
     )
 
 
-def get_asset_changes_context_data(asset_changes_records: List[Dict[str, Any]], asset_type: str) \
-        -> Tuple[List[CommandResults], List[Dict[str, Any]]]:
+def get_asset_changes_context_data(asset_changes_records: list[dict[str, Any]], asset_type: str) \
+        -> tuple[list[CommandResults], list[dict[str, Any]]]:
     """
     Prepare context data for asset changes command
     :param asset_changes_records: Asset changes response
     :param asset_type: The type of asset for which changes are fetched
     :return: Standard entry context and Custom entry context
     """
-    ioc_command_results: List[CommandResults] = []
+    ioc_command_results: list[CommandResults] = []
     asset_type_standard_context_map = {
         'DOMAIN': get_standard_context_domain,
         'IP_ADDRESS': get_standard_context_ip,
@@ -810,7 +810,7 @@ def prepare_deep_link_for_asset_changes(last_run_date: str, asset_type: str, mea
     return deep_link
 
 
-def get_asset_changes_hr(asset_changes_records: List[Dict[str, Any]], asset_type: str, measure: str) -> str:
+def get_asset_changes_hr(asset_changes_records: list[dict[str, Any]], asset_type: str, measure: str) -> str:
     """
     Prepares human readable text for asset changes command
     :param asset_changes_records: Asset changes response
@@ -916,13 +916,13 @@ def validate_page_for_asset_changes(page: str) -> int:
         raise ValueError(MESSAGES['PAGE_VALIDATION'])
 
 
-def get_asset_changes_params(args: Dict[str, Any]) -> Dict[str, Any]:
+def get_asset_changes_params(args: dict[str, Any]) -> dict[str, Any]:
     """
     Validates the command arguments and creates parameter dictionary
     :param args: The command arguments
     :return: parameters for API call or message describing error that occurred in parameter validation
     """
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
 
     asset_type = args.get('type', '').replace(' ', '_').upper()
     if asset_type not in VALID_ASSET_DETAIL_TYPES and asset_type not in VALID_ASSET_TYPES:
@@ -953,13 +953,13 @@ def get_asset_changes_params(args: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
-def validate_and_fetch_get_asset_arguments(args: Dict[str, Any]) -> Tuple[str, str]:
+def validate_and_fetch_get_asset_arguments(args: dict[str, Any]) -> tuple[str, str]:
     """
     Validates the command arguments and returns asset_type
     :param args: The command arguments
     :return asset_type: asset_type fetched from the arguments
     """
-    if 'uuid' in args.keys() and args.keys() - {'uuid', 'global', 'recent'} != set():
+    if 'uuid' in args and args.keys() - {'uuid', 'global', 'recent'} != set():
         raise ValueError(MESSAGES['INVALID_ARGUMENTS_GET_ASSET'])
 
     uuid = args.get('uuid', '')
@@ -977,13 +977,13 @@ def validate_and_fetch_get_asset_arguments(args: Dict[str, Any]) -> Tuple[str, s
     return uuid, asset_type
 
 
-def get_asset_params(args: Dict[str, Any]) -> Dict[str, Any]:
+def get_asset_params(args: dict[str, Any]) -> dict[str, Any]:
     """
     Validates the command arguments and creates parameter dictionary
     :param args: The command arguments
     :return: parameters for API call or message describing error that occurred in parameter validation
     """
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
     name = args.get('name', '')
     global_arg = args.get('global', '')
     recent = args.get('recent', '')
@@ -1012,7 +1012,7 @@ def get_asset_params(args: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
-def get_attribute_details_from_given_lists(source_dict: Dict[str, Any], key: str, lists: List[str]) -> str:
+def get_attribute_details_from_given_lists(source_dict: dict[str, Any], key: str, lists: list[str]) -> str:
     """
     Retrieve attribute details from given lists of various properties
 
@@ -1028,7 +1028,7 @@ def get_attribute_details_from_given_lists(source_dict: Dict[str, Any], key: str
     return value
 
 
-def get_whois_hr(whois_details: Dict[str, Any]) -> str:
+def get_whois_hr(whois_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for whois details of the asset
 
@@ -1063,7 +1063,7 @@ def get_whois_hr(whois_details: Dict[str, Any]) -> str:
                                                        'Country', 'Phone', 'Name Servers'], removeNull=True)
 
 
-def get_name_and_mail_server_hr(asset_details: Dict[str, Any]) -> str:
+def get_name_and_mail_server_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for name and mail server details of the asset
 
@@ -1082,7 +1082,7 @@ def get_name_and_mail_server_hr(asset_details: Dict[str, Any]) -> str:
     return name_and_mail_server_hr
 
 
-def get_asset_domain_hr(asset_details: Dict[str, Any]) -> str:
+def get_asset_domain_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for Domain
 
@@ -1112,7 +1112,7 @@ def get_asset_domain_hr(asset_details: Dict[str, Any]) -> str:
     return asset_specific_hr
 
 
-def get_ip_hr(ip_details: List[Dict[str, Any]]) -> str:
+def get_ip_hr(ip_details: list[dict[str, Any]]) -> str:
     """
     Retrieve nested properties from list of ipAddresses fetched in response to populate human readable
 
@@ -1130,7 +1130,7 @@ def get_ip_hr(ip_details: List[Dict[str, Any]]) -> str:
                            removeNull=True)
 
 
-def get_trackers_hr(trackers: List[Dict[str, Any]]) -> str:
+def get_trackers_hr(trackers: list[dict[str, Any]]) -> str:
     """
     Retrieve nested properties from list of attributes/trackers fetched in response to populate human readable
 
@@ -1148,7 +1148,7 @@ def get_trackers_hr(trackers: List[Dict[str, Any]]) -> str:
                            removeNull=True)
 
 
-def get_web_components_hr(web_components: List[Dict[str, Any]]) -> str:
+def get_web_components_hr(web_components: list[dict[str, Any]]) -> str:
     """
     Retrieve nested properties from list of web components fetched in response to populate human readable
 
@@ -1172,7 +1172,7 @@ def get_web_components_hr(web_components: List[Dict[str, Any]]) -> str:
                             'Last Seen (GMT)', 'Recent'], removeNull=True)
 
 
-def get_resources_hr(resources: List[Dict[str, Any]]) -> str:
+def get_resources_hr(resources: list[dict[str, Any]]) -> str:
     """
     Retrieve nested properties from list of resources fetched in response to populate human readable
 
@@ -1198,7 +1198,7 @@ def get_resources_hr(resources: List[Dict[str, Any]]) -> str:
                             'Size (in bytes)', 'Observed', 'Recent'], removeNull=True)
 
 
-def get_ssl_certs_associated_with_other_asset_hr(ssl_certs: List[Dict[str, Any]]) -> str:
+def get_ssl_certs_associated_with_other_asset_hr(ssl_certs: list[dict[str, Any]]) -> str:
     """
     Retrieve nested properties from list of ssl certs fetched in response to populate human readable
 
@@ -1219,7 +1219,7 @@ def get_ssl_certs_associated_with_other_asset_hr(ssl_certs: List[Dict[str, Any]]
                            removeNull=True)
 
 
-def get_asset_host_hr(asset_details: Dict[str, Any]) -> str:
+def get_asset_host_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for Host
 
@@ -1265,7 +1265,7 @@ def get_asset_host_hr(asset_details: Dict[str, Any]) -> str:
     return asset_specific_hr
 
 
-def get_ip_reputation_hr(ip_reputations: List[Dict[str, Any]]) -> str:
+def get_ip_reputation_hr(ip_reputations: list[dict[str, Any]]) -> str:
     """
     Retrieve nested properties from list of ip reputations fetched in response to populate human readable
 
@@ -1289,7 +1289,7 @@ def get_ip_reputation_hr(ip_reputations: List[Dict[str, Any]]) -> str:
                             'Last Seen (GMT)', 'Recent'], removeNull=True)
 
 
-def get_ports_hr(ports: List[Dict[str, Any]]) -> str:
+def get_ports_hr(ports: list[dict[str, Any]]) -> str:
     """
     Retrieve nested properties from list of ports fetched in response to populate human readable
 
@@ -1311,7 +1311,7 @@ def get_ports_hr(ports: List[Dict[str, Any]]) -> str:
                             'Recent', 'Banner'], removeNull=True)
 
 
-def get_asset_ip_address_hr(asset_details: Dict[str, Any]) -> str:
+def get_asset_ip_address_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for IP Address
 
@@ -1354,7 +1354,7 @@ def get_asset_ip_address_hr(asset_details: Dict[str, Any]) -> str:
     return asset_specific_hr
 
 
-def get_asset_ip_block_hr(asset_details: Dict[str, Any]) -> str:
+def get_asset_ip_block_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for IP Block
 
@@ -1386,7 +1386,7 @@ def get_asset_ip_block_hr(asset_details: Dict[str, Any]) -> str:
     return asset_specific_hr
 
 
-def get_asset_as_hr(asset_details: Dict[str, Any]) -> str:
+def get_asset_as_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for AS
 
@@ -1419,7 +1419,7 @@ def get_asset_as_hr(asset_details: Dict[str, Any]) -> str:
     return asset_specific_hr
 
 
-def check_first_element_and_populate_current(attribute_details: Dict[str, Any], key: str) -> str:
+def check_first_element_and_populate_current(attribute_details: dict[str, Any], key: str) -> str:
     """
     Retrieve the value of requested key from the first element of the list
 
@@ -1433,7 +1433,7 @@ def check_first_element_and_populate_current(attribute_details: Dict[str, Any], 
     return attribute_value
 
 
-def get_security_policies_hr(security_policies: List[Dict[str, Any]]) -> str:
+def get_security_policies_hr(security_policies: list[dict[str, Any]]) -> str:
     """
     Retrieve nested properties from list of security policies fetched in response to populate human readable
 
@@ -1454,7 +1454,7 @@ def get_security_policies_hr(security_policies: List[Dict[str, Any]]) -> str:
                            ['Policy', 'Description', 'First Seen (GMT)', 'Last Seen (GMT)', 'Recent'], removeNull=True)
 
 
-def get_asset_page_hr(asset_details: Dict[str, Any]) -> str:
+def get_asset_page_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for Page
 
@@ -1513,7 +1513,7 @@ def get_asset_page_hr(asset_details: Dict[str, Any]) -> str:
     return asset_specific_hr
 
 
-def prepare_issuer_subject_cell(asset_details: Dict[str, Any], key: str) -> str:
+def prepare_issuer_subject_cell(asset_details: dict[str, Any], key: str) -> str:
     """
     Retrieve nested properties of a key from asset details fetched in response to populate human readable
 
@@ -1548,7 +1548,7 @@ def prepare_issuer_subject_cell(asset_details: Dict[str, Any], key: str) -> str:
     return '\n'.join(hr_cell_info)
 
 
-def get_asset_ssl_hr(asset_details: Dict[str, Any]) -> str:
+def get_asset_ssl_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for SSL Cert
 
@@ -1585,7 +1585,7 @@ def get_asset_ssl_hr(asset_details: Dict[str, Any]) -> str:
     return asset_specific_hr
 
 
-def get_asset_contact_hr(asset_details: Dict[str, Any]) -> str:
+def get_asset_contact_hr(asset_details: dict[str, Any]) -> str:
     """
     Retrieves the human readable for Contact
 
@@ -1600,8 +1600,8 @@ def get_asset_contact_hr(asset_details: Dict[str, Any]) -> str:
     return asset_specific_hr
 
 
-def get_asset_custom_context_for_services_and_web_components(resp: Dict[str, Any], key: str,
-                                                             exclude_keys: Union[tuple, str]) -> List[Dict[str, Any]]:
+def get_asset_custom_context_for_services_and_web_components(resp: dict[str, Any], key: str,
+                                                             exclude_keys: tuple | str) -> list[dict[str, Any]]:
     """
     Fetching the custom context for specific keys and excluding unnecessary sub keys from it.
 
@@ -1619,8 +1619,8 @@ def get_asset_custom_context_for_services_and_web_components(resp: Dict[str, Any
     return attribute_content
 
 
-def get_asset_custom_context_for_ssl_cert(resp: Dict[str, Any], simple_context: Dict[str, Any],
-                                          keys_with_hierarchy: List[str]) -> Tuple[Dict[str, Any], List[str]]:
+def get_asset_custom_context_for_ssl_cert(resp: dict[str, Any], simple_context: dict[str, Any],
+                                          keys_with_hierarchy: list[str]) -> tuple[dict[str, Any], list[str]]:
     """
     Modifying the lists and reducing the levels of keys for SSL Cert asset type from the fetched response.
 
@@ -1650,7 +1650,7 @@ def get_asset_custom_context_for_ssl_cert(resp: Dict[str, Any], simple_context: 
     return simple_context, keys_with_hierarchy
 
 
-def get_asset_custom_context_for_whois(resp: Dict[str, Any], whois_content: Dict[str, Any]) -> Dict[str, Any]:
+def get_asset_custom_context_for_whois(resp: dict[str, Any], whois_content: dict[str, Any]) -> dict[str, Any]:
     """
     Modifying the lists fetched from whois details of response to comma separated strings.
 
@@ -1683,7 +1683,7 @@ def get_asset_custom_context_for_whois(resp: Dict[str, Any], whois_content: Dict
     return whois_content
 
 
-def get_asset_custom_context_for_data(resp: Dict[str, Any]) -> Dict[str, Any]:
+def get_asset_custom_context_for_data(resp: dict[str, Any]) -> dict[str, Any]:
     """
     Fetching all the details inside data key fetched from the response.
 
@@ -1691,7 +1691,7 @@ def get_asset_custom_context_for_data(resp: Dict[str, Any]) -> Dict[str, Any]:
     :return: data_content: Custom context prepared for the data details for the fetched response
     """
     data = resp.get('data', {})
-    data_content: Dict[str, Any] = {}
+    data_content: dict[str, Any] = {}
 
     if data.get('hostPairs', {}).get('content', []):
         data_content['hostPairs'] = data.get('hostPairs', {}).get('content', [])
@@ -1721,7 +1721,7 @@ def get_asset_custom_context_for_data(resp: Dict[str, Any]) -> Dict[str, Any]:
     return data_content
 
 
-def get_asset_custom_context(resp: Dict[str, Any]) -> Dict[str, Any]:
+def get_asset_custom_context(resp: dict[str, Any]) -> dict[str, Any]:
     """
     Prepare the custom context from fetched response by reducing
     the context heirarchy levels and removing unnecessary keys
@@ -1730,7 +1730,7 @@ def get_asset_custom_context(resp: Dict[str, Any]) -> Dict[str, Any]:
     :return: final_context: Custom context prepared from the fetched response
     """
     # Removing unnecessary keys or keys which can be reduced from the response
-    simple_context: Dict[str, Any] = prepare_context_dict(resp, exclude_keys=('asset', 'data', 'discoveryRun', '_meta'))
+    simple_context: dict[str, Any] = prepare_context_dict(resp, exclude_keys=('asset', 'data', 'discoveryRun', '_meta'))
 
     # Removing unnecessary keys or keys which can be reduced from the asset key of response
     assets_content = prepare_context_dict(resp.get('asset', {}), exclude_keys=('whois', 'services', 'issuer', 'subject',
@@ -1791,7 +1791,7 @@ def get_asset_custom_context(resp: Dict[str, Any]) -> Dict[str, Any]:
     return remove_empty_entities(final_context)
 
 
-def get_asset_basic_hr(resp: Dict[str, Any]) -> Dict[str, Any]:
+def get_asset_basic_hr(resp: dict[str, Any]) -> dict[str, Any]:
     """
     Retrieve attributes from response to populate human readable output
 
@@ -1816,7 +1816,7 @@ def get_asset_basic_hr(resp: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def get_asset_outputs(resp: Dict[str, Any]) -> List[CommandResults]:
+def get_asset_outputs(resp: dict[str, Any]) -> list[CommandResults]:
     """
     Generates all outputs for df-get-asset command
 
@@ -1826,7 +1826,7 @@ def get_asset_outputs(resp: Dict[str, Any]) -> List[CommandResults]:
     hr = ''
     custom_ec = {}
     standard_ec: list = []
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     asset_type_hr_map = {
         'DOMAIN': get_asset_domain_hr,
@@ -1880,7 +1880,7 @@ def get_asset_outputs(resp: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def get_add_and_update_assets_params(args: Dict[str, Any]) -> Dict[str, Any]:
+def get_add_and_update_assets_params(args: dict[str, Any]) -> dict[str, Any]:
     """
     Fetch and validate parameters to be passed for df-add-assets or df-update-assets command
     and prepare params dictionary.
@@ -1888,7 +1888,7 @@ def get_add_and_update_assets_params(args: Dict[str, Any]) -> Dict[str, Any]:
     :param args: args passed by the user
     :return: params dictionary
     """
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
 
     if args.get('fail_on_error'):
         try:
@@ -1899,7 +1899,7 @@ def get_add_and_update_assets_params(args: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
-def prepare_add_and_update_asset_hr(task_resp: Dict[str, Any], operation_bool: bool) -> str:
+def prepare_add_and_update_asset_hr(task_resp: dict[str, Any], operation_bool: bool) -> str:
     """
     Prepare human readable for df-add-assets and df-update-assets commands.
 
@@ -1925,7 +1925,7 @@ def prepare_add_and_update_asset_hr(task_resp: Dict[str, Any], operation_bool: b
     return state_hr_map.get(task_state, '')
 
 
-def prepare_add_and_update_asset_context(task_resp: Dict[str, Any]) -> List[Dict[str, Any]]:
+def prepare_add_and_update_asset_context(task_resp: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Prepare custom context for df-add-assets and df-update-assets commands.
 
@@ -1942,8 +1942,8 @@ def prepare_add_and_update_asset_context(task_resp: Dict[str, Any]) -> List[Dict
     return createContext(data=custom_ec, removeNull=True)
 
 
-def validate_properties_and_prepare_payload(args: Dict[str, Any], operation: str,
-                                            valid_json: Dict[str, Any]) -> Dict[str, Any]:
+def validate_properties_and_prepare_payload(args: dict[str, Any], operation: str,
+                                            valid_json: dict[str, Any]) -> dict[str, Any]:
     """
     Prepare payload for post data in case user wants to add or update single asset.
 
@@ -1997,7 +1997,7 @@ def validate_properties_and_prepare_payload(args: Dict[str, Any], operation: str
     return valid_json
 
 
-def prepare_single_asset_payload(args: Dict[str, Any], operation: str) -> Dict[str, Any]:
+def prepare_single_asset_payload(args: dict[str, Any], operation: str) -> dict[str, Any]:
     """
     Prepare payload for post data in case user wants to add or update single asset. Throws error if valid values
     are not provided in arguments.
@@ -2006,7 +2006,7 @@ def prepare_single_asset_payload(args: Dict[str, Any], operation: str) -> Dict[s
     :param operation: operation being performed i.e. add or update
     :return: payload to be passed as request body for adding or updating the requested asset.
     """
-    valid_json: Dict[str, Any] = {}
+    valid_json: dict[str, Any] = {}
 
     # Throw error if for updating a workload none of the property arguments are mentioned
     if operation == 'update' and args.keys() - {'name', 'type', 'action', 'target_asset_types'} == set():
@@ -2047,7 +2047,7 @@ def prepare_single_asset_payload(args: Dict[str, Any], operation: str) -> Dict[s
     return valid_json
 
 
-def check_task_status(client: Client, resp: Dict[str, Any]) -> Dict[str, Any]:
+def check_task_status(client: Client, resp: dict[str, Any]) -> dict[str, Any]:
     """
     Check if the task of adding or updating asset(s) has been completed or not and return the response obtained.
     This function will return the last status of task if it is not completed after 3 retries.
@@ -2064,15 +2064,14 @@ def check_task_status(client: Client, resp: Dict[str, Any]) -> Dict[str, Any]:
         task_resp = client.http_request(method='GET', url_suffix=url_suffix)
         if task_resp.get('state', '') in COMPLETE_TASK_STATES:
             break
-        else:
-            demisto.debug(f'Fetching the task status. Retry number: {retries}')
-            wait = retries * 30
-            time.sleep(wait)  # pylint: disable=sleep-exists
-            retries += 1
+        demisto.debug(f'Fetching the task status. Retry number: {retries}')
+        wait = retries * 30
+        time.sleep(wait)  # pylint: disable=sleep-exists
+        retries += 1
     return task_resp
 
 
-def validate_required_keys_for_add_asset(valid_json: Dict[str, Any], required_keys: List[str]) -> bool:
+def validate_required_keys_for_add_asset(valid_json: dict[str, Any], required_keys: list[str]) -> bool:
     """
     Check if the required keys for adding an asset are present or not
 
@@ -2080,11 +2079,11 @@ def validate_required_keys_for_add_asset(valid_json: Dict[str, Any], required_ke
     :param required_keys: The required keys for creating an asset
     :return: True if the required values are present else false
     """
-    return all(key in valid_json.keys() for key in required_keys)
+    return all(key in valid_json for key in required_keys)
 
 
-def validate_required_keys_for_update_asset(valid_json: Dict[str, Any], required_keys: List[str],
-                                            required_keys_for_bulk_update: List[str]) -> bool:
+def validate_required_keys_for_update_asset(valid_json: dict[str, Any], required_keys: list[str],
+                                            required_keys_for_bulk_update: list[str]) -> bool:
     """
     Check if the required keys for updating an asset or required keys for bulk updating assets are present or not
 
@@ -2093,11 +2092,11 @@ def validate_required_keys_for_update_asset(valid_json: Dict[str, Any], required
     :param required_keys_for_bulk_update: The required keys for bulk updating assets
     :return: True if the required values are present else false
     """
-    return (all(key in valid_json.keys() for key in required_keys) or all(key in valid_json.keys()
+    return (all(key in valid_json for key in required_keys) or all(key in valid_json
                                                                           for key in required_keys_for_bulk_update))
 
 
-def validate_required_keys_for_assets_key(assets: List[Dict[str, Any]], asset_required_keys: set) -> bool:
+def validate_required_keys_for_assets_key(assets: list[dict[str, Any]], asset_required_keys: set) -> bool:
     """
     Check if the required keys in list of assets to be added or updated are present or not
 
@@ -2108,7 +2107,7 @@ def validate_required_keys_for_assets_key(assets: List[Dict[str, Any]], asset_re
     return all(asset.keys() >= asset_required_keys for asset in assets)
 
 
-def validate_asset_json(args: Dict[str, Any], operation: str) -> Dict[str, Any]:
+def validate_asset_json(args: dict[str, Any], operation: str) -> dict[str, Any]:
     """
         Validates the value in asset_json argument in add and update asset command.
     :param args: The input arguments
@@ -2142,7 +2141,7 @@ def validate_asset_json(args: Dict[str, Any], operation: str) -> Dict[str, Any]:
     return valid_json
 
 
-def validate_asset_payload(args: Dict[str, Any], operation: str) -> Dict[str, Any]:
+def validate_asset_payload(args: dict[str, Any], operation: str) -> dict[str, Any]:
     """
     Validates the arguments and creates an asset payload. Throws error if the required arguments for
     adding/updating a payload are not present.
@@ -2152,7 +2151,7 @@ def validate_asset_payload(args: Dict[str, Any], operation: str) -> Dict[str, An
     :return: payload to be passed as request body for adding or updating the requested asset(s).
     """
     # Throw error if both asset_json and other arguments for creating asset manually are specified
-    if 'asset_json' in args.keys() and args.keys() - {'asset_json', 'fail_on_error'} != set():
+    if 'asset_json' in args and args.keys() - {'asset_json', 'fail_on_error'} != set():
         raise ValueError(MESSAGES['INVALID_ARGUMENTS_ADD_ASSET'])
 
     asset_json = args.get('asset_json')
@@ -2180,7 +2179,7 @@ def test_function(client: Client) -> str:
 
 
 @logger
-def asset_connections_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
+def asset_connections_command(client: Client, args: dict[str, Any]) -> str | list[CommandResults]:
     """
     Retrieve the set of assets that are connected to the requested asset.
 
@@ -2211,7 +2210,7 @@ def asset_connections_command(client: Client, args: Dict[str, Any]) -> Union[str
 
 
 @logger
-def asset_changes_summary_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def asset_changes_summary_command(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve summary information describing counts of confirmed assets that have been added, removed or changed in
     inventory over the given time period.
@@ -2225,7 +2224,7 @@ def asset_changes_summary_command(client: Client, args: Dict[str, Any]) -> Union
     date_arg, range_arg = validate_asset_changes_summary_args(args.get('date', ''), args.get('range', ''))
 
     # prepare params
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
     if date_arg:
         params['date'] = date_arg
     if range_arg:
@@ -2249,7 +2248,7 @@ def asset_changes_summary_command(client: Client, args: Dict[str, Any]) -> Union
 
 
 @logger
-def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
+def asset_changes_command(client: Client, args: dict[str, Any]) -> str | list[CommandResults]:
     """
     Retrieve the list of confirmed assets that have been added,
     removed or changes in asset properties in the inventory over the given time period.
@@ -2259,7 +2258,7 @@ def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, Li
     :return: CommandResults
     """
 
-    params: Dict[str, Any] = get_asset_changes_params(args)
+    params: dict[str, Any] = get_asset_changes_params(args)
 
     resp = client.http_request(method='GET', url_suffix=COMMAND_URL_SUFFIX['ASSET_CHANGES'], params=params)
 
@@ -2305,7 +2304,7 @@ def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, Li
 
 
 @logger
-def get_asset_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
+def get_asset_command(client: Client, args: dict[str, Any]) -> str | list[CommandResults]:
     """
     Retrieve the asset of the specified UUID from Global Inventory.
 
@@ -2330,7 +2329,7 @@ def get_asset_command(client: Client, args: Dict[str, Any]) -> Union[str, List[C
 
 
 @logger
-def add_assets_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def add_assets_command(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Adds one or more assets to Global Inventory with a provided set of properties to apply to all assets.
 
@@ -2341,7 +2340,7 @@ def add_assets_command(client: Client, args: Dict[str, Any]) -> Union[str, Comma
 
     # Validate arguments
     valid_json = validate_asset_payload(args, 'add')
-    params: Dict[str, Any] = get_add_and_update_assets_params(args)
+    params: dict[str, Any] = get_add_and_update_assets_params(args)
 
     # API call
     resp = client.http_request(method='POST', url_suffix=COMMAND_URL_SUFFIX['ADD_ASSET'], json_data=valid_json,
@@ -2364,7 +2363,7 @@ def add_assets_command(client: Client, args: Dict[str, Any]) -> Union[str, Comma
 
 
 @logger
-def update_assets_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def update_assets_command(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Updates one or more assets in Global Inventory with provided set of properties
 
@@ -2375,7 +2374,7 @@ def update_assets_command(client: Client, args: Dict[str, Any]) -> Union[str, Co
 
     # Validate arguments
     valid_json = validate_asset_payload(args, 'update')
-    params: Dict[str, Any] = get_add_and_update_assets_params(args)
+    params: dict[str, Any] = get_add_and_update_assets_params(args)
 
     # API call
     resp = client.http_request(method='POST', url_suffix=COMMAND_URL_SUFFIX['UPDATE_ASSET'], json_data=valid_json,

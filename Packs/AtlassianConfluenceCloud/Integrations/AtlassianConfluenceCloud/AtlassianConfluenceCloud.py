@@ -594,7 +594,7 @@ def validate_delete_content_args(args: dict[str, str]):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("content_id"))
 
     status = args.get("deletion_type", "").lower()
-    if status and status not in LEGAL_DELETION_TYPES.keys():
+    if status and status not in LEGAL_DELETION_TYPES:
         raise ValueError(MESSAGES["INVALID_DELETION_TYPE"])
 
 

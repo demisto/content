@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple, Dict, Union, Optional
 
 from CommonServerUserPython import *
 
@@ -32,7 +31,7 @@ ROWS_LIMIT = 50
 
 
 class Client(BaseClient):
-    def query(self, query_string: str) -> Union[Dict, list]:
+    def query(self, query_string: str) -> dict | list:
         """Send query as is to server. note it's unsecured (can drop tables etc.).
 
         Args:
@@ -47,9 +46,9 @@ class Client(BaseClient):
         return self._http_request('POST', url_suffix='', params=params)
 
 
-def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first_fetch_time: str,
+def fetch_incidents_command(client: Client, last_run_dict: dict | None, first_fetch_time: str,
                             table_name: str, columns: str, date_name: str
-                            ) -> Tuple[dict, list]:
+                            ) -> tuple[dict, list]:
     date_format = "%Y-%m-%dT%H:%M:%SZ"
     if not last_run_dict:
         last_fetch, _ = parse_date_range(first_fetch_time, date_format=date_format, utc=True)
@@ -75,7 +74,7 @@ def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first
     return {'last_run': last_fetch}, incidents
 
 
-def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
+def query_command(client: Client, args: dict) -> tuple[str, dict, list]:
     query = args.get('query', '')
     columns = argToList(args.get('columns', ''))
     limit = args.get('limit') if args.get('limit') else ROWS_LIMIT  # type: ignore # [assignment]

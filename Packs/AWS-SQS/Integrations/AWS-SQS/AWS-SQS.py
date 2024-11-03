@@ -167,8 +167,7 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
         # The 'receipt_handles' of the messages that were received from the last call.
         last_receipt_handles = demisto.getLastRun().get('lastReceiptHandles')
         if last_receipt_handles:
-            demisto.debug('last_receipt_handles before fetch occurred" -> {} {}'.format(len(last_receipt_handles),
-                          last_receipt_handles))
+            demisto.debug(f'last_receipt_handles before fetch occurred" -> {len(last_receipt_handles)} {last_receipt_handles}')
             last_receipt_handles = set(last_receipt_handles)
         incidents_created = 0  # type: int
         max_number_of_messages = min(max_fetch, 10)
@@ -204,7 +203,7 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
         demisto.incidents(incidents)
         # The "receipt_handles" of converted messages to the incidents are saved for next fetch
         demisto.setLastRun({"lastReceiptHandles": receipt_handles})
-        demisto.debug('last_receipt_handles after fetch occurred" -> {} {}'.format(len(receipt_handles), receipt_handles))
+        demisto.debug(f'last_receipt_handles after fetch occurred" -> {len(receipt_handles)} {receipt_handles}')
 
         # try to delete all messages (if not successful, will continue next run)
         for receipt_handle in receipt_handles:
@@ -258,7 +257,7 @@ def main():
                                retries)
         command = demisto.command()
         args = demisto.args()
-        demisto.debug('Command being called is {}'.format(command))
+        demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
             return_results(test_function(aws_client))
         elif demisto.command() == 'fetch-incidents':
@@ -273,10 +272,10 @@ def main():
                 role_session_duration=args.get('roleSessionDuration'))
             return_results(commands[command](args, client))
         else:
-            raise NotImplementedError('{} is not an existing AWS-SQS command'.format(command))
+            raise NotImplementedError(f'{command} is not an existing AWS-SQS command')
 
     except Exception as e:
-        return_error("Failed to execute {} command.\nError:\n{}".format(demisto.command(), str(e)))
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 from AWSApiModule import *  # noqa: E402

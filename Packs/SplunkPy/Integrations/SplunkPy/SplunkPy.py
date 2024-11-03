@@ -122,9 +122,8 @@ class UserMappingObject:
         if not record:
 
             demisto.error(
-                "Could not find xsoar user matching splunk's {splunk_user}. "
-                "Consider adding it to the {table_name} lookup.".format(
-                    splunk_user=splunk_user, table_name=self.table_name))
+                f"Could not find xsoar user matching splunk's {splunk_user}. "
+                f"Consider adding it to the {self.table_name} lookup.")
             return ''
 
         # assuming username is unique, so only one record is returned.
@@ -132,8 +131,7 @@ class UserMappingObject:
 
         if not xsoar_user:
             demisto.error(
-                "Xsoar user matching splunk's {splunk_user} is empty. Fix the record in {table_name} lookup.".format(
-                    splunk_user=splunk_user, table_name=self.table_name))
+                f"Xsoar user matching splunk's {splunk_user} is empty. Fix the record in {self.table_name} lookup.")
             return ''
 
         return xsoar_user
@@ -1721,8 +1719,8 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
                         demisto.debug('update-remote-system for notable {}: {}'
                                       .format(notable_id, response_info.get('message')))
                 except Exception as e:
-                    demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
-                                  'Error message: {}'.format(notable_id, str(e)))
+                    demisto.error(f'Error in Splunk outgoing mirror for incident corresponding to notable {notable_id}. '
+                                  f'Error message: {str(e)}')
     return notable_id
 
 

@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 from functools import wraps
 from copy import deepcopy
 from http import HTTPStatus
@@ -244,7 +245,7 @@ class Client(BaseClient):
             # if failed to logoof just write to log. no need to raise error
             demisto.debug(f'Logoff error: {str(e)}')
 
-    def get_all_rules(self, specific_interface: Optional[str] = None, rule_type: str = 'All') -> list:
+    def get_all_rules(self, specific_interface: str | None = None, rule_type: str = 'All') -> list:
         """
         Gets a list all rules for the supplied interface.
 
@@ -842,7 +843,7 @@ def extract_data_from_dict(dict_obj: dict[str, Any], keys_mapping: dict[str, Any
     return extracted
 
 
-def arg_to_optional_bool(arg: Optional[Any]) -> Optional[bool]:
+def arg_to_optional_bool(arg: Any | None) -> bool | None:
     """
     Wrapper to argToBoolean function that will allow Optional arguments.
 
@@ -1471,7 +1472,7 @@ def create_object_command(client: Client, args: dict[str, Any]) -> CommandResult
     obj_type = args.get('object_type')
     obj_name = args.get('object_name')
     obj_value = args.get('object_value')
-    if obj_type not in OBJECT_TYPES_DICT.keys():
+    if obj_type not in OBJECT_TYPES_DICT:
         raise ValueError("Please enter an object type from the given dropdown list.")
     client.create_object(obj_name, obj_type, obj_value)
     return list_objects_command(client, {'object_name': obj_name})

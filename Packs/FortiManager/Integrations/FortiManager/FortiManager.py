@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -17,7 +16,7 @@ GLOBAL_VAR = 'global'
 
 class Client(BaseClient):
 
-    def __init__(self, url: str, credentials: Dict, verify: bool, proxy: bool, adom: str):
+    def __init__(self, url: str, credentials: dict, verify: bool, proxy: bool, adom: str):
         super().__init__(base_url=url.rstrip('/'), verify=verify, proxy=proxy, ok_codes=(200, 204))
         handle_proxy()
         self.username = credentials["identifier"]
@@ -42,9 +41,9 @@ class Client(BaseClient):
             current_token = demisto.getIntegrationContext().get('session')
             return current_token if current_token else self.get_session_token(get_new_token=True)
 
-    def fortimanager_http_request(self, method: str, url: str, data_in_list: Dict = None, json_data: Dict = None,
-                                  range_info: List = None, other_params: Dict = None, add_session_token: bool = True):
-        body: Dict = {
+    def fortimanager_http_request(self, method: str, url: str, data_in_list: dict = None, json_data: dict = None,
+                                  range_info: List = None, other_params: dict = None, add_session_token: bool = True):
+        body: dict = {
             "id": 1,
             "method": method,
             "verbose": 1,
@@ -77,8 +76,8 @@ class Client(BaseClient):
         )
         return response
 
-    def fortimanager_api_call(self, method: str, url: str, data_in_list: Dict = None, json_data: Dict = None,
-                              range_info: List = None, other_params: Dict = None):
+    def fortimanager_api_call(self, method: str, url: str, data_in_list: dict = None, json_data: dict = None,
+                              range_info: List = None, other_params: dict = None):
         response = self.fortimanager_http_request(method, url, data_in_list=data_in_list, range_info=range_info,
                                                   other_params=other_params, json_data=json_data)
 
@@ -94,7 +93,7 @@ class Client(BaseClient):
         return response.get('result')[0].get('data')
 
 
-def get_global_or_adom(client: Client, args: Dict):
+def get_global_or_adom(client: Client, args: dict):
     """Get the ADOM scope on which the command should run.
     If 'adom' command argument is entered use it, otherwise use the default client ADOM parameter.
 
@@ -108,7 +107,7 @@ def get_global_or_adom(client: Client, args: Dict):
         return f"adom/{adom}"
 
 
-def setup_request_data(args: Dict, excluded_args: List):
+def setup_request_data(args: dict, excluded_args: List):
     return {key.replace('_', '-'): args.get(key) for key in args if key not in excluded_args}
 
 
@@ -119,7 +118,7 @@ def get_specific_entity(entity_name: str):
         return ""
 
 
-def get_range_for_list_command(args: Dict):
+def get_range_for_list_command(args: dict):
     first_index = args.get('offset', 0)
     last_index = int(args.get('limit', 50)) - 1
     list_range = []

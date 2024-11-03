@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any, Optional
+from typing import Any
 
 import urllib3
 
@@ -15,7 +15,7 @@ class Client(BaseClient):
             url_suffix='/api/public/endpoints?filter[organizationIds]=0'
         )
 
-    def get_profile_id(self, profile: str, organization_id: Optional[int]) -> str:
+    def get_profile_id(self, profile: str, organization_id: int | None) -> str:
         '''Gets the profile ID based on the profile name and organization ID by making a GET request to the
         '/api/public/acquisitions/profiles' endpoint.
         Args:
@@ -46,7 +46,7 @@ class Client(BaseClient):
                              f'profile name.')
             return ""
 
-    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: Optional[int]) -> Dict[str, Any]:
+    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: int | None) -> dict[str, Any]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
 
         :param hostname str: endpoint hostname to start acquisition.
@@ -60,7 +60,7 @@ class Client(BaseClient):
         :rtype Dict[str, Any]
         '''
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "caseId": case_id,
             "droneConfig": {
                 "autoPilot": False,
@@ -81,7 +81,7 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def air_isolate(self, hostname: str, organization_id: Optional[int], isolation: str) -> Dict[str, Any]:
+    def air_isolate(self, hostname: str, organization_id: int | None, isolation: str) -> dict[str, Any]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
         :param hostname str: endpoint hostname to start acquisition.
         :param isolation str: To isolate enable, to disable isolate use disable
@@ -92,7 +92,7 @@ class Client(BaseClient):
         :rtype Dict[str, Any]
         '''
 
-        payload: Dict[Any, Any] = {
+        payload: dict[Any, Any] = {
             "enabled": True,
             "filter": {
                 "name": hostname,
@@ -125,14 +125,14 @@ def test_connection(client: Client) -> str:
     return demisto.results('ok')
 
 
-def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def air_acquire_command(client: Client, args: dict[str, Any]) -> CommandResults:
     '''Command handler for acquire command'''
     hostname = args.get('hostname', '')
     profile = args.get('profile', '')
     case_id = args.get('case_id', '')
     organization_id = args.get('organization_id', '')
 
-    result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, arg_to_number(organization_id))
+    result: dict[str, Any] = client.air_acquire(hostname, profile, case_id, arg_to_number(organization_id))
     readable_output = tableToMarkdown('Binalyze AIR Acquisition Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
                                       headerTransform=string_to_table_header)
@@ -151,14 +151,14 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def air_isolate_command(client: Client, args: dict[str, Any]) -> CommandResults:
     ''' Command handler isolate '''
 
     hostname = args.get('hostname', '')
     organization_id = args.get('organization_id', '')
     isolation = args.get('isolation', '')
 
-    result: Dict[Any, Any] = client.air_isolate(hostname, arg_to_number(organization_id), isolation)
+    result: dict[Any, Any] = client.air_isolate(hostname, arg_to_number(organization_id), isolation)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
                                       headerTransform=string_to_table_header)
@@ -185,8 +185,8 @@ def main() -> None:  # pragma: no cover
     verify_certificate: bool = not demisto.params().get('insecure', False)
     proxy: bool = demisto.params().get('proxy', False)
     command: str = demisto.command()
-    args: Dict[str, Any] = demisto.args()
-    headers: Dict[str, Any] = {
+    args: dict[str, Any] = demisto.args()
+    headers: dict[str, Any] = {
         'Authorization': f'Bearer {api_key}',
         'User-Agent': 'Binalyze AIR',
         'Content-type': 'application/json',

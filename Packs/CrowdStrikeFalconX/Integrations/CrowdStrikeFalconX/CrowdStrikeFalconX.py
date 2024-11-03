@@ -216,10 +216,10 @@ class Client:
             # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+            err_msg = f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n' \
                       'Verify that the server URL parameter' \
                       ' is correct and that you have access to the server from your host.' \
-                .format(err_type, exception.errno, exception.strerror)
+                
             raise DemistoException(err_msg, exception)
 
     def _get_access_token(self) -> str:

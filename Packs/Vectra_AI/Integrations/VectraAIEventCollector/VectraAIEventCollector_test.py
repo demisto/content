@@ -20,7 +20,7 @@ from VectraAIEventCollector import (
     add_parsing_rules,
     get_most_recent_detection,
 )
-from typing import Dict, Any
+from typing import Any
 import json
 from datetime import datetime
 from pathlib import Path
@@ -35,12 +35,12 @@ client = VectraClient(url=BASE_URL, api_key=PASSWORD)
 
 
 def load_json(path: Path):
-    with open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-AUDITS: Dict[str, Any] = load_json(Path("./test_data/audits.json"))
-DETECTIONS: Dict[str, Any] = load_json(Path("./test_data/search_detections.json"))
+AUDITS: dict[str, Any] = load_json(Path("./test_data/audits.json"))
+DETECTIONS: dict[str, Any] = load_json(Path("./test_data/search_detections.json"))
 
 """ VectraClient Tests """
 
@@ -114,7 +114,7 @@ def test_get_detections(mocker: MockerFixture):
     """
 
     mocker.patch.object(client, "_http_request", return_value=DETECTIONS)
-    response: Dict[str, Any] = client.get_detections(1)
+    response: dict[str, Any] = client.get_detections(1)
 
     assert isinstance(response, dict)
 
@@ -127,7 +127,7 @@ def test_get_audits(mocker: MockerFixture):
     start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
     mocker.patch.object(client, "_http_request", return_value=AUDITS)
-    response: Dict[str, Any] = client.get_audits(start)
+    response: dict[str, Any] = client.get_audits(start)
 
     assert isinstance(response, dict)
     assert not client.max_fetch < len(response.get("audits"))
@@ -142,7 +142,7 @@ def test_get_audits(mocker: MockerFixture):
 )
 class TestCommands:
     def test_get_detections_cmd(
-        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
+        self, mocker: MockerFixture, detections: dict[str, Any], audits: dict[str, Any]
     ):
         """
         Test `vectra-get-events` method detections part.
@@ -157,7 +157,7 @@ class TestCommands:
             assert "No detections found" in cmd_res.readable_output
 
     def test_get_audits_cmd(
-        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
+        self, mocker: MockerFixture, detections: dict[str, Any], audits: dict[str, Any]
     ):
         """
         Test `vectra-get-events` method audits part.
@@ -172,7 +172,7 @@ class TestCommands:
             assert "No audits found" in cmd_res.readable_output
 
     def test_get_events(
-        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
+        self, mocker: MockerFixture, detections: dict[str, Any], audits: dict[str, Any]
     ):
         """
         Test the `vectra-get-events` command.
@@ -201,8 +201,8 @@ class TestCommands:
     def test_first_fetch(
         self,
         mocker: MockerFixture,
-        detections: Dict[str, Any],
-        audits: Dict[str, Any],
+        detections: dict[str, Any],
+        audits: dict[str, Any],
     ):
         """
         Given:
@@ -241,7 +241,7 @@ class TestCommands:
 
     @freeze_time("2023-02-19 00:00:13")
     def test_not_first_fetch(
-        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
+        self, mocker: MockerFixture, detections: dict[str, Any], audits: dict[str, Any]
     ):
         """
         Given:
@@ -292,7 +292,7 @@ class TestCommands:
     "audits",
     [(AUDITS.get("audits")), ([])],
 )
-def test_get_audits_to_send_first_fetch(audits: List[Dict[str, Any]]):
+def test_get_audits_to_send_first_fetch(audits: List[dict[str, Any]]):
     """
     Given: audits returned from the endpoint.
 
@@ -321,7 +321,7 @@ def test_get_audits_to_send_first_fetch(audits: List[Dict[str, Any]]):
     ],
 )
 def test_get_audits_to_send_not_first_fetch(
-    audits: List[Dict[str, Any]], prev_fetch_ts_str: str, expected: List[Dict[str, Any]]
+    audits: List[dict[str, Any]], prev_fetch_ts_str: str, expected: List[dict[str, Any]]
 ):
     """
     Given: audits returned from the endpoint and it's not a first fetch.
@@ -348,7 +348,7 @@ def test_get_audits_to_send_not_first_fetch(
         (AUDITS.get("audits")[0], "2023-02-19T00:00:03.000Z", XSIAM_TIME_FORMAT),
     ],
 )
-def test_add_parsing_rules(event: Dict[str, Any], expected_time: str, format: str):
+def test_add_parsing_rules(event: dict[str, Any], expected_time: str, format: str):
     """
     Given: An Event.
 
@@ -381,7 +381,7 @@ def test_add_parsing_rules(event: Dict[str, Any], expected_time: str, format: st
         (DETECTIONS.get("results"), "2022-09-14T01:04:43Z"),
     ],
 )
-def test_get_most_recent_detection(detections: List[Dict[str, Any]], expected: str):
+def test_get_most_recent_detection(detections: List[dict[str, Any]], expected: str):
     """
     Given: A list of detections
 
@@ -392,5 +392,5 @@ def test_get_most_recent_detection(detections: List[Dict[str, Any]], expected: s
     """
 
     actual = get_most_recent_detection(detections=detections)
-    assert isinstance(actual, Dict)
+    assert isinstance(actual, dict)
     assert actual.get(DETECTION_TIMESTAMP_KEY) == expected

@@ -45,4 +45,4 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'args', return_value=ARGS)
     mocker.patch.object(demisto, 'results')
     main()
-    assert EXPECTED_RESULTS == demisto.results.call_args[0][0]
+    assert demisto.results.call_args[0][0] == EXPECTED_RESULTS

@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Dict, Any
+from typing import Any
 import urllib.parse
 
 # Disable insecure warnings
@@ -674,7 +674,7 @@ def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
 
-        headers: Dict = {
+        headers: dict = {
             "Authorization": f"Bearer {api_key}",
         }
 

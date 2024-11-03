@@ -1,10 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
-from typing import Any, Generator, List, Optional, Tuple
+from typing import Any
+from collections.abc import Generator
 
 
-def convert_pcap(pcap_type: str, pcap_bytes: bytes) -> Optional[bytes]:
+def convert_pcap(pcap_type: str, pcap_bytes: bytes) -> bytes | None:
     """
     Convert a CDL pcap to a standard PCAP.
 
@@ -52,7 +53,7 @@ def convert_pcap(pcap_type: str, pcap_bytes: bytes) -> Optional[bytes]:
     return None
 
 
-def split_context_path(path: str) -> Tuple[List[str], str]:
+def split_context_path(path: str) -> tuple[list[str], str]:
     """
     Split a context path separated by a dot with a replacement name
     following a comma into the key tree the replacement name.
@@ -123,7 +124,7 @@ class MainProcess:
                 else:
                     raise ValueError(f'Invalid error action: {self.__error_action}')
 
-    def convert_and_replace(self, node: Any, key_tree: List[str], repl_name: str) -> None:
+    def convert_and_replace(self, node: Any, key_tree: list[str], repl_name: str) -> None:
         """
         Convert from pcaps specified with 'node' and 'key_tree',
         and set them into the node specified with 'repl_name'

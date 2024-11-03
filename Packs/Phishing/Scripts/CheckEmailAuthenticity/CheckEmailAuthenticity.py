@@ -91,12 +91,12 @@ def auth_check(spf_data, dkim_data, dmarc_data, override_dict):
     dmarc = dmarc_data.get('Validation-Result')
     dkim = dkim_data.get('Validation-Result')
 
-    if 'spf-{}'.format(spf) in override_dict:
-        return override_dict.get('spf-{}'.format(spf))
-    if 'dkim-{}'.format(dkim) in override_dict:
-        return override_dict.get('dkim-{}'.format(dkim))
-    if 'dmarc-{}'.format(dmarc) in override_dict:
-        return override_dict.get('dmarc-{}'.format(dmarc))
+    if f'spf-{spf}' in override_dict:
+        return override_dict.get(f'spf-{spf}')
+    if f'dkim-{dkim}' in override_dict:
+        return override_dict.get(f'dkim-{dkim}')
+    if f'dmarc-{dmarc}' in override_dict:
+        return override_dict.get(f'dmarc-{dmarc}')
 
     if 'fail' in [spf, dkim, dmarc]:
         return 'Fail'
@@ -179,11 +179,7 @@ def main():
                 override_dict[value] = override.lower()
             else:
                 if override is not None:
-                    return_error('Invalid override input for argument {}: got {}, expected one of {}.'.format(
-                        field,
-                        override,
-                        override_options
-                    ))
+                    return_error(f'Invalid override input for argument {field}: got {override}, expected one of {override_options}.')
 
         for header in headers:
             if isinstance(header, dict):
@@ -192,12 +188,12 @@ def main():
                 if str(header.get('name')).lower() == 'message-id':
                     message_id = header.get('value')  # type: ignore
 
-        email_key = "Email(val.Headers.filter(function(header) {{ return header && header.name === 'Message-ID' && " \
-                    "header.value === '{}';}}))".format(message_id)
+        email_key = "Email(val.Headers.filter(function(header) { return header && header.name === 'Message-ID' && " \
+                    f"header.value === '{message_id}';}}))"
 
         if not auth and not spf:
             context = {
-                '{}.AuthenticityCheck'.format(email_key): 'undetermined'
+                f'{email_key}.AuthenticityCheck': 'undetermined'
             }
             return_outputs('No header information was found.', context)
             sys.exit(0)
@@ -207,16 +203,16 @@ def main():
 
         authenticity = auth_check(spf_data, dkim_data, dmarc_data, override_dict)
 
-        md = "Email's authenticity is: **{}**\n".format(authenticity)
+        md = f"Email's authenticity is: **{authenticity}**\n"
         md += tableToMarkdown('SPF', spf_data, ['Validation-Result', 'Reason', 'Sender-IP'])
         md += tableToMarkdown('DKIM', dkim_data, ['Validation-Result', 'Reason', 'Signing-Domain'])
         md += tableToMarkdown('DMARC', dmarc_data, ['Validation-Result', 'Tags', 'Signing-Domain'])
 
         ec = {
-            '{}.SPF'.format(email_key): spf_data,
-            '{}.DMARC'.format(email_key): dmarc_data,
-            '{}.DKIM'.format(email_key): dkim_data,
-            '{}.AuthenticityCheck'.format(email_key): authenticity
+            f'{email_key}.SPF': spf_data,
+            f'{email_key}.DMARC': dmarc_data,
+            f'{email_key}.DKIM': dkim_data,
+            f'{email_key}.AuthenticityCheck': authenticity
         }
         return_outputs(md, ec)
 

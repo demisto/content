@@ -1,6 +1,5 @@
 
 import json
-import io
 from SkyhighSecureWebGatewayOnPrem import Client
 
 client = Client(username="user",
@@ -12,7 +11,7 @@ client = Client(username="user",
 
 
 def util_load_file(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return f.read()
 
 

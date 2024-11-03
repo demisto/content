@@ -99,12 +99,11 @@ ATTACHMENT_TYPE = 'attachmentType'
 TOIS_PATH = '/root/Top of Information Store/'
 
 ENTRY_CONTEXT = "EntryContext"
-CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(ITEM_ID,
-                                                                                                               MESSAGE_ID)
+CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items(val.{ITEM_ID} == obj.{ITEM_ID} || (val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} == obj.{MESSAGE_ID}))"
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
-CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
-CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
-CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
+CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FILE_ATTACHMENT = f".FileAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
+CONTEXT_UPDATE_FOLDER = f"EWS.Folders(val.{FOLDER_ID} == obj.{FOLDER_ID})"
 
 LAST_RUN_TIME = "lastRunTime"
 LAST_RUN_IDS = "ids"
@@ -901,8 +900,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
 
     for item in qs:
         try:
-            demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
-                item.subject, item.message_id, item.datetime_created, item.datetime_received))
+            demisto.debug(f'Looking on subject={item.subject}, message_id={item.message_id}, created={item.datetime_created}, received={item.datetime_received}')
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
                 demisto.debug(f'Appending {item.subject}, {item.message_id}.')
@@ -1259,7 +1257,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                     demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
                                   "cutting the subject.")
                     sub_subject = "Length of subject greater than 255 characters. " \
-                                  "Partial subject: {}".format(item.subject[:180])
+                                  f"Partial subject: {item.subject[:180]}"
                     item.subject = sub_subject
                     item.save()
                 else:
@@ -2273,7 +2271,7 @@ def sub_main():  # pragma: no cover
         if isinstance(e, ConnectionError):
             error_message_simple = "Could not connect to the server.\n" \
                                    "Verify that the Hostname or IP address is correct.\n\n" \
-                                   "Additional information: {}".format(str(e))
+                                   f"Additional information: {str(e)}"
         if isinstance(e, ErrorInvalidPropertyRequest):
             error_message_simple = "Verify that the Exchange version is correct."
         else:

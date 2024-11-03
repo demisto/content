@@ -168,14 +168,14 @@ def get_scan_results(domain, component):
             'Contents': call.json(),
             'HumanReadable': md,
             'EntryContext': {
-                "C2sec.Domain.{}(val.Domain && val.Domain == obj.Domain)".format(component): resp
+                f"C2sec.Domain.{component}(val.Domain && val.Domain == obj.Domain)": resp
             }
         }
     else:
-        return_error('Error getting the scan results [{}] - reason: {}'.format(call.status_code, call.text))
+        return_error(f'Error getting the scan results [{call.status_code}] - reason: {call.text}')
 
 
-LOG('Command being called is {}'.format(demisto.command()))
+LOG(f'Command being called is {demisto.command()}')
 try:
     handle_proxy()
     # The command demisto.command() holds the command sent from the user.

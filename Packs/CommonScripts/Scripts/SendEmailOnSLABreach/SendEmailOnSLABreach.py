@@ -18,11 +18,11 @@ def get_owner_email():
             demisto.results({
                 "Type": entryTypes["error"],
                 "ContentsFormat": formats["text"],
-                "Contents": "Could not retrieve user email. Maybe the user has no associated email to it.\
-            Error: {}".format(ex)
+                "Contents": f"Could not retrieve user email. Maybe the user has no associated email to it.\
+            Error: {ex}"
 
             })
-            return
+            return None
     else:
         demisto.results({
             "Type": entryTypes["error"],
@@ -34,7 +34,7 @@ def get_owner_email():
 def get_subject():
     incident_name = demisto.incidents()[0].get("name")
     incident_id = demisto.incidents()[0].get("id")
-    subject = "SLA Breached in incident \"{}\" #{}".format(incident_name, incident_id)
+    subject = f"SLA Breached in incident \"{incident_name}\" #{incident_id}"
     return subject
 
 

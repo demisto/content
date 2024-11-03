@@ -249,12 +249,12 @@ def credentials_list(client: Client, args: dict) -> CommandResults:
 
 def job_template_launch(client: Client, args: dict) -> CommandResults:
 
-    job_template_id = args.get('job_template_id', None)
+    job_template_id = args.get('job_template_id')
     url_suffix = f'job_templates/{job_template_id}/launch/'
 
-    extra_vars = json.loads(args.get('extra_variables', None)) if args.get('extra_variables', None) else None
-    data = {"inventory": args.get("inventory_id", None),
-            "credential": int(args.get("credentials_id", 0)) if args.get("credentials_id", None) else None,
+    extra_vars = json.loads(args.get('extra_variables')) if args.get('extra_variables') else None
+    data = {"inventory": args.get("inventory_id"),
+            "credential": int(args.get("credentials_id", 0)) if args.get("credentials_id") else None,
             "extra_vars": extra_vars}
     body = {key: data[key] for key in data if data[key]}
     demisto.debug(f"Request body is: {str(body)}")
@@ -274,11 +274,11 @@ def job_template_launch(client: Client, args: dict) -> CommandResults:
 
 
 def job_relaunch(client: Client, args: dict):
-    job_id = args.get('job_id', None)
+    job_id = args.get('job_id')
     url_suffix = f'jobs/{job_id}/relaunch/'
 
     data = {"hosts": args.get("relaunch_hosts", "all"),
-            "credential": args.get("credentials_id", None)}
+            "credential": args.get("credentials_id")}
     body = {key: data[key] for key in data if data[key]}
     demisto.debug(f"Request body is: {str(body)}")
     response = client.api_request(method='POST', url_suffix=url_suffix, json_data=body, ok_codes=[201])
@@ -297,7 +297,7 @@ def job_relaunch(client: Client, args: dict):
 
 
 def cancel_job(client: Client, args: dict) -> CommandResults:
-    job_id = args.get('job_id', None)
+    job_id = args.get('job_id')
     url_suffix = f'jobs/{job_id}/cancel/'
     client.api_request(method='POST', url_suffix=url_suffix, empty_valid_codes=[202], return_empty_response=True)
     return job_status(client, args)
@@ -442,7 +442,7 @@ def cancel_ad_hoc_command(client: Client, args: dict) -> CommandResults:
 def ad_hoc_command_stdout(client: Client, args: dict) -> CommandResults:
     print_output = argToBoolean(args.get('print_output', 'True'))
     text_filter = args.get('text_filter', '')
-    command_id = args.get('command_id', None)
+    command_id = args.get('command_id')
     url_suffix = f'ad_hoc_commands/{command_id}/stdout/'
     request_params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=request_params)

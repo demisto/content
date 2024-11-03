@@ -1,5 +1,4 @@
 import json
-import io
 
 from NetBoxEventCollector import LOG_TYPES
 
@@ -8,7 +7,7 @@ BASE_URL = 'https://www.example.com/api/extras'
 
 # helper function to load json file
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

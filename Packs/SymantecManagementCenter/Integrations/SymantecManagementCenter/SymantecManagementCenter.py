@@ -69,8 +69,8 @@ def http_request(method, path, params=None, data=None):
             details = error_json.get('message')
         except Exception:
             pass
-        return_error('Error in API call to Symantec MC, status code: {}, reason: {}, details: {}'
-                     .format(status, message, details))
+        return_error(f'Error in API call to Symantec MC, status code: {status}, reason: {message}, details: {details}'
+                     )
 
     try:
         return res.json()

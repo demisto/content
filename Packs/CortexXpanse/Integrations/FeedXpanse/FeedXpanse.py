@@ -289,7 +289,7 @@ def get_indicators(client: Client, args: dict[str, Any]) -> CommandResults:
     if argToBoolean(args.get('certificate', 'yes')):
         asset_type += 'certificate'
 
-    limit = arg_to_number(args.get('limit', None))
+    limit = arg_to_number(args.get('limit'))
 
     if limit and limit <= 0:
         raise ValueError('Limit must be a positive number.')

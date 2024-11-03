@@ -1,4 +1,4 @@
-from typing import Tuple, cast
+from typing import cast
 
 import urllib3
 from requests import Response
@@ -226,7 +226,7 @@ def fetch_incidents(
         alert_status: Optional[str] = None,
         severities: Optional[List[str]] = None,
         alert_type: Optional[List[str]] = None,
-) -> Tuple[Dict[str, int], List[dict]]:
+) -> tuple[Dict[str, int], List[dict]]:
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get("last_fetch", None)

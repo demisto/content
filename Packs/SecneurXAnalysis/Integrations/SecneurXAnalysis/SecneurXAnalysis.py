@@ -34,7 +34,7 @@ SNX_VERDICT_TO_DBOTSCORE = {
 class Client(BaseClient):
     """Implement class for SecneurX Analysis sandbox"""
 
-    def get_response(self, urlSuffix: str, paramsDict: Dict[str, str]):
+    def get_response(self, urlSuffix: str, paramsDict: dict[str, str]):
         try:
             if urlSuffix == '/get_report':
                 respType = 'text'
@@ -51,7 +51,7 @@ class Client(BaseClient):
         except Exception as e:
             return None, e
 
-    def submit_file(self, urlSuffix: str, fileData: Dict[str, Any], paramsDict: Dict[str, str]):
+    def submit_file(self, urlSuffix: str, fileData: dict[str, Any], paramsDict: dict[str, str]):
         try:
             return self._http_request(
                 method="POST",
@@ -64,7 +64,7 @@ class Client(BaseClient):
         except Exception as e:
             return None, e
 
-    def submit_url(self, urlSuffix: str, paramsDict: Dict[str, str], urlParams: Dict[str, str]):
+    def submit_url(self, urlSuffix: str, paramsDict: dict[str, str], urlParams: dict[str, str]):
         try:
             return self._http_request(
                 method="POST",
@@ -184,36 +184,36 @@ def test_module(client: Client) -> Any:
     return SNXErrorMsg.SUCCESS_MSG
 
 
-def create_request_json(argsDict: Dict[str, str]) -> Dict:
+def create_request_json(argsDict: dict[str, str]) -> dict:
     params = {}
     try:
-        if SNXResponse.SNX_TASK_UUID_KEY in argsDict.keys():
+        if SNXResponse.SNX_TASK_UUID_KEY in argsDict:
             params[SNXResponse.SNX_TASK_UUID_KEY] = argsDict.get(SNXResponse.SNX_TASK_UUID_KEY)
-        if SNXResponse.SNX_LAST_COUNT_KEY in argsDict.keys():
+        if SNXResponse.SNX_LAST_COUNT_KEY in argsDict:
             params[SNXResponse.SNX_LAST_COUNT_KEY] = argsDict.get(SNXResponse.SNX_LAST_COUNT_KEY)
-        if SNXResponse.SNX_LAST_HOURS_KEY in argsDict.keys():
+        if SNXResponse.SNX_LAST_HOURS_KEY in argsDict:
             params[SNXResponse.SNX_LAST_HOURS_KEY] = argsDict.get(SNXResponse.SNX_LAST_HOURS_KEY)
-        if "Platform" in argsDict.keys():
+        if "Platform" in argsDict:
             platformValue = argsDict.get("Platform")
             params[SNXResponse.SNX_PLATFORM_KEY] = str(platformValue)
-        if "Priority" in argsDict.keys():
+        if "Priority" in argsDict:
             priorityValue = argsDict.get("Priority")
             params[SNXResponse.SNX_PRIORITY_KEY] = str(priorityValue)
-        if "Extension" in argsDict.keys():
+        if "Extension" in argsDict:
             extnValue = argsDict.get("Extension")
             if extnValue is not None and len(extnValue) != 0:
                 params[SNXResponse.SNX_EXTENSTION_KEY] = argsDict.get("Extension")
-        if "Duration" in argsDict.keys():
+        if "Duration" in argsDict:
             durationValue = argsDict.get("Duration")
             if durationValue is not None and len(durationValue) != 0:
                 params[SNXResponse.SNX_DURATION_KEY] = argsDict.get("Duration")
-        if "File Password" in argsDict.keys():
+        if "File Password" in argsDict:
             pwdValue = argsDict.get("File Password")
             if pwdValue is not None and len(pwdValue) != 0:
                 params[SNXResponse.SNX_FILE_PWD_KEY] = pwdValue
-        if "Reboot" in argsDict.keys():
+        if "Reboot" in argsDict:
             params[SNXResponse.SNX_REBOOT_KEY] = argsDict.get("Reboot")
-        if SNXResponse.SNX_REPORT_FORMAT_KEY in argsDict.keys():
+        if SNXResponse.SNX_REPORT_FORMAT_KEY in argsDict:
             params[SNXResponse.SNX_REPORT_FORMAT_KEY] = argsDict.get(SNXResponse.SNX_REPORT_FORMAT_KEY)
 
     except Exception as e:
@@ -353,7 +353,7 @@ def parse_report_iocs(ioc_json):
                     patternData = patternData.replace('[', '').replace(']', '')
                     patternKey = patternData.split(":")[0]
                     patternValue = patternData.split(" = ")[1].replace("'", '')
-                    if patternKey.lower() in SNX_IOC_TYPES_TO_DEMISTO_TYPES.keys():
+                    if patternKey.lower() in SNX_IOC_TYPES_TO_DEMISTO_TYPES:
                         patternKey = SNX_IOC_TYPES_TO_DEMISTO_TYPES[patternKey]
                     parsed_ioc_list.append(patternKey + " : " + str(patternValue))
 
@@ -393,7 +393,7 @@ def parse_dbot_score(reportJson):
             submissionType = reportJson.get(SNXReportParser.SNX_SUBMISSION_TYPE_KEY, None)
             verdictValue = reportJson.get(SNXReportParser.JSON_VERDICTS, None)
             verdictScore = 0
-            if verdictValue is not None and verdictValue in SNX_VERDICT_TO_DBOTSCORE.keys():
+            if verdictValue is not None and verdictValue in SNX_VERDICT_TO_DBOTSCORE:
                 verdictScore = SNX_VERDICT_TO_DBOTSCORE[verdictValue]
             if submissionType == SNXResponse.SNX_FILE_KEY:
                 indicatorValue = reportJson.get(SNXReportParser.JSON_SHA256, None)
@@ -451,7 +451,7 @@ def parse_report_entity(reportJson):
     return indicator
 
 
-def post_submit_file(client: Client, args: Dict[str, str]) -> CommandResults:
+def post_submit_file(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/submit_file"
     entryId = args.get('EntryID') or None
     if entryId is None:
@@ -488,7 +488,7 @@ def post_submit_file(client: Client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitFile", outputs=outputJson)
 
 
-def post_submit_url(client: Client, args: Dict[str, str]) -> CommandResults:
+def post_submit_url(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/analyze_url"
     urlValue = args.get("URL") or None
     if urlValue is None or len(urlValue) == 0:
@@ -519,7 +519,7 @@ def post_submit_url(client: Client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitURL", outputs=outputJson)
 
 
-def get_verdict_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_verdict_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     taskUuid = args.get(SNXResponse.SNX_TASK_UUID_KEY) or None
     if taskUuid is None:
         raise DemistoException("Task UUID Parameter value is not found")
@@ -559,7 +559,7 @@ def get_verdict_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
             )
 
 
-def get_completed_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_completed_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/get_completed"
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
@@ -596,7 +596,7 @@ def get_completed_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
         raise DemistoException(msg)
 
 
-def get_pending_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_pending_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/get_processing"
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
@@ -639,7 +639,7 @@ def get_pending_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
         raise DemistoException(msg)
 
 
-def get_status_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_status_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/get_status"
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
@@ -683,7 +683,7 @@ def get_status_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
         raise DemistoException(msg)
 
 
-def get_report_cmd(client: Client, args: Dict[str, str]):
+def get_report_cmd(client: Client, args: dict[str, str]):
     urlSuffix = "/get_report"
     taskUuid = args.get(SNXResponse.SNX_TASK_UUID_KEY) or None
     reportFormat = args.get(SNXResponse.SNX_REPORT_FORMAT_KEY) or "json"

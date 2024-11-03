@@ -56,7 +56,7 @@ def parse_datetime(datetime_str):
 
 def build_query_for_incidents_search(base_query, from_date):
     if from_date:
-        return '{} created:>="{}"'.format(base_query, parse_datetime(from_date))
+        return f'{base_query} created:>="{parse_datetime(from_date)}"'
     else:
         return base_query
 

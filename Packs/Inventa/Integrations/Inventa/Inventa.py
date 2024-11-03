@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 import traceback
-from typing import Any, Dict
+from typing import Any
 import urllib3
 
 # Disable insecure warnings
@@ -25,21 +25,21 @@ empty_file = {
     "url": "",
     "entityTypes": ""
 }
-empty_transaction: Dict = {
+empty_transaction: dict = {
 }
-empty_dataasset: Dict = {
+empty_dataasset: dict = {
     "id": "",
     "name": "",
     "piis": "",
     "reasonsOfProcessing": ""
 }
-empty_database: Dict = {
+empty_database: dict = {
     "id": "",
     "name": "",
     "database": "",
     "entityTypes": ""
 }
-empty_pii: Dict = {
+empty_pii: dict = {
     "entities": []
 }
 
@@ -109,7 +109,7 @@ class Client(BaseClient):
         else:
             return None
 
-    def create_ticket(self, datasubject_id: Any, reason: str) -> Dict[str, Any]:
+    def create_ticket(self, datasubject_id: Any, reason: str) -> dict[str, Any]:
         # new payload for ticket creation
         payload = {
             "askToErasure": None,
@@ -136,7 +136,7 @@ class Client(BaseClient):
             )
         return ticket_id
 
-    def get_ticket(self, ticket_id: Any) -> Dict:
+    def get_ticket(self, ticket_id: Any) -> dict:
         result = self._http_request(
             method="GET",
             url_suffix=f"/dsr/api/dsar-management/tickets/{ticket_id}",
@@ -145,7 +145,7 @@ class Client(BaseClient):
         )
         return result
 
-    def get_dsar(self, ticket_id: Any) -> Dict:
+    def get_dsar(self, ticket_id: Any) -> dict:
         ticket_details = self.get_ticket(ticket_id)
         demisto.debug(f"{ticket_details}")
         datasubject_id = ticket_details.get("piiId", "")
@@ -159,7 +159,7 @@ class Client(BaseClient):
             retries=5
         )
 
-    def get_sources(self, datasubject_id: Any) -> Dict:
+    def get_sources(self, datasubject_id: Any) -> dict:
         return self._http_request(
             method="GET",
             url_suffix=f"/pii/api/piis/{datasubject_id}/sources/details",
@@ -565,7 +565,7 @@ def main() -> None:
 
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        headers: Dict = {
+        headers: dict = {
             'Authorization': f"Bearer {api_key}"
         }
 

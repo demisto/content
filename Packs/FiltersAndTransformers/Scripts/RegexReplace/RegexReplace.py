@@ -1,11 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
-from typing import Optional
 
 
 class Main:
-    def __init__(self, input_text: str, output_format: str, regex: str, action_dt: Optional[str], regex_flags: int):
+    def __init__(self, input_text: str, output_format: str, regex: str, action_dt: str | None, regex_flags: int):
         self.__input_text = input_text
         self.__output_format = output_format.replace(r'\0', r'\g<0>')
         self.__pattern = re.compile(regex, flags=regex_flags)

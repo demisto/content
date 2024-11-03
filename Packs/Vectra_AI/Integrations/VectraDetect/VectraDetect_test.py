@@ -3170,7 +3170,7 @@ def test_vectra_assign_account_group_invalid_group_name(requests_mock, mocker, c
     return_warning = mocker.patch.object(VectraDetect, "return_warning")
     vectra_group_assign_command(client, args)
 
-    assert "The following account names were invalid: account_5" == return_warning.call_args[0][0]
+    assert return_warning.call_args[0][0] == "The following account names were invalid: account_5"
 
 
 def test_vectra_unassign_domain_group_valid_arguments(requests_mock, client):

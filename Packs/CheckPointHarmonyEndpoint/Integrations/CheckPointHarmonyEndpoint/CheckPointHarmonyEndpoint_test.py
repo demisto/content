@@ -1,7 +1,8 @@
 import json
 import os
 import unittest.mock
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 import CommonServerPython
 import pytest
@@ -25,7 +26,7 @@ def load_mock_response(file_name: str) -> dict[str, Any] | list[dict[str, Any]]:
     """
     file_path = os.path.join(TEST_DATA, file_name)
 
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 

@@ -148,7 +148,7 @@ def update_empty_fields():
     incident = demisto.incidents()[0]
     custom_fields = incident.get('customFields', {})
 
-    for field in DEFAULT_CUSTOM_FIELDS.keys():
+    for field in DEFAULT_CUSTOM_FIELDS:
         if not custom_fields.get(field):
             custom_fields[field] = DEFAULT_CUSTOM_FIELDS[field]
     demisto.executeCommand('setIncident', {'id': incident['id'], 'customFields': custom_fields})

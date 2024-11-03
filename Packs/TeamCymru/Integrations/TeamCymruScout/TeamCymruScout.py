@@ -105,7 +105,7 @@ class Client(BaseClient):
     This Client implements API calls, and does not contain any XSOAR logic.
     '''
 
-    def __init__(self, server_url: str, verify: bool, proxy: bool, headers: Dict, auth: Optional[Tuple]):
+    def __init__(self, server_url: str, verify: bool, proxy: bool, headers: dict, auth: tuple | None):
         '''
         Initializes the Client class with the provided parameters.
 
@@ -143,7 +143,7 @@ class Client(BaseClient):
                                   backoff_factor=BACKOFF_FACTOR, raise_on_redirect=False, ok_codes=OK_CODES,
                                   raise_on_status=True, *args, **kwargs)  # type: ignore
 
-    def scout_api_usage_request(self) -> Dict:
+    def scout_api_usage_request(self) -> dict:
         '''
         A function to request the information for the API usage.
 
@@ -154,8 +154,8 @@ class Client(BaseClient):
 
         return response
 
-    def ip_request(self, ip: str, start_date: Optional[str], end_date: Optional[str], days: Optional[int],
-                   size: Optional[int]) -> Dict:
+    def ip_request(self, ip: str, start_date: str | None, end_date: str | None, days: int | None,
+                   size: int | None) -> dict:
         '''
         A function to request the information for the given IP.
 
@@ -183,8 +183,8 @@ class Client(BaseClient):
 
         return response
 
-    def scout_indicator_search_request(self, query: str, start_date: Optional[str], end_date: Optional[str],
-                                       days: Optional[int], size: Optional[int]) -> Dict:
+    def scout_indicator_search_request(self, query: str, start_date: str | None, end_date: str | None,
+                                       days: int | None, size: int | None) -> dict:
         '''
         A function to search the indicators based on specified parameters.
 
@@ -212,7 +212,7 @@ class Client(BaseClient):
 
         return response
 
-    def scout_ip_list(self, params) -> Dict:
+    def scout_ip_list(self, params) -> dict:
         '''
         A function to request the information for the IPs.
 
@@ -230,15 +230,15 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def trim_spaces_from_args(args: Dict):
+def trim_spaces_from_args(args: dict):
     '''Remove space from args.'''
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
     return args
 
 
-def validate_params(params: Dict):
+def validate_params(params: dict):
     '''
     Validate the parameters.
 
@@ -318,8 +318,8 @@ def remove_empty_elements_for_hr(d):
         return {k: v for k, v in ((k, remove_empty_elements_for_hr(v)) for k, v in d.items()) if not empty(v)}
 
 
-def validate_common_search_command_args(args: Dict[str, str], required_arg: str,
-                                        maximum_page_size: int = MAXIMUM_DETAIL_IP_SIZE) -> Tuple:
+def validate_common_search_command_args(args: dict[str, str], required_arg: str,
+                                        maximum_page_size: int = MAXIMUM_DETAIL_IP_SIZE) -> tuple:
     '''
     To validate common arguments of all command.
 
@@ -378,7 +378,7 @@ def validate_common_search_command_args(args: Dict[str, str], required_arg: str,
     return required_arg_val, start_date, end_date, days, size
 
 
-def validate_ip_addresses(ips_list: List[str]) -> Tuple[List[str], List[str]]:
+def validate_ip_addresses(ips_list: list[str]) -> tuple[list[str], list[str]]:
     '''
     Given a list of IP addresses, returns the invalid and valid ips.
 
@@ -400,7 +400,7 @@ def validate_ip_addresses(ips_list: List[str]) -> Tuple[List[str], List[str]]:
     return invalid_ip_addresses, valid_ip_addresses
 
 
-def validate_ip_list_args(args: Dict) -> Dict:
+def validate_ip_list_args(args: dict) -> dict:
     '''
     Validate the ip list arguments.
 
@@ -427,7 +427,7 @@ def validate_ip_list_args(args: Dict) -> Dict:
     return {'ips': ','.join(valid_ips)}
 
 
-def remove_key_from_ip_and_add_to_usage(ip_response: dict, usage_response: dict) -> Tuple[Dict, Dict]:
+def remove_key_from_ip_and_add_to_usage(ip_response: dict, usage_response: dict) -> tuple[dict, dict]:
     '''
     Prepare context ip command.
 
@@ -567,7 +567,7 @@ def prepare_hr_for_ip(response: dict) -> str:
     return human_readable
 
 
-def create_relationship_for_indicator_search(response: dict) -> List:
+def create_relationship_for_indicator_search(response: dict) -> list:
     '''
     Create a list of relationships objects from the response.
 
@@ -607,7 +607,7 @@ def create_relationship_for_indicator_search(response: dict) -> List:
     return relationships
 
 
-def prepare_hr_and_context_for_indicator_search(response: Dict) -> Tuple[str, Dict, Common.IP, List]:
+def prepare_hr_and_context_for_indicator_search(response: dict) -> tuple[str, dict, Common.IP, list]:
     '''
     A function to prepare the human readable and context output for the indicator search.
 
@@ -705,7 +705,7 @@ def prepare_hr_and_context_for_indicator_search(response: Dict) -> Tuple[str, Di
     return human_readable, scout_ip_data, ip_indicator, relationships
 
 
-def prepare_hr_and_context_for_ip_list(response: dict) -> Tuple[str, Dict, Common.IP]:
+def prepare_hr_and_context_for_ip_list(response: dict) -> tuple[str, dict, Common.IP]:
     '''
     A function to prepare the human readable and context output for the ip list command.
 
@@ -772,7 +772,7 @@ def prepare_hr_and_context_for_ip_list(response: dict) -> Tuple[str, Dict, Commo
     return hr, scout_ip_data, ip_ioc
 
 
-def prepare_hr_and_context_for_api_usage(response: dict, command_name: str) -> Tuple[str, Dict]:
+def prepare_hr_and_context_for_api_usage(response: dict, command_name: str) -> tuple[str, dict]:
     '''
     A function to prepare the human readable and context output for the api usage.
 
@@ -804,7 +804,7 @@ def prepare_hr_and_context_for_api_usage(response: dict, command_name: str) -> T
     return hr, context
 
 
-def create_relationship(response: dict) -> List:
+def create_relationship(response: dict) -> list:
     '''
     Create a list of relationships objects from the response.
 
@@ -844,7 +844,7 @@ def create_relationship(response: dict) -> List:
 """ COMMAND FUNCTIONS """
 
 
-def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     '''
     Retrieve the detail information of ip that meet the specified filter criteria.
 
@@ -955,7 +955,7 @@ def scout_api_usage_command(client: Client, *_) -> CommandResults:
     return command_results
 
 
-def scout_indicator_search_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def scout_indicator_search_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     '''
     The command function to request the information for the API usage.
 
@@ -1012,7 +1012,7 @@ def scout_indicator_search_command(client: Client, args: Dict[str, Any]) -> List
     return [*ip_command_results, usage_command_result]
 
 
-def scout_ip_list_command(client: Client, args: Dict) -> List[CommandResults]:
+def scout_ip_list_command(client: Client, args: dict) -> list[CommandResults]:
     '''
     A function to get the ip list from the Team Cymru Scout server.
 
@@ -1110,7 +1110,7 @@ def main() -> None:
 
         client: Client = Client(BASE_URL, verify_certificate, proxy, headers=headers, auth=auth_tuple)
 
-        commands: Dict[str, Callable] = {
+        commands: dict[str, Callable] = {
             'ip': ip_command,
             'scout-api-usage': scout_api_usage_command,
             'scout-indicator-search': scout_indicator_search_command,

@@ -1,13 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any
+from collections.abc import Callable
 
 
 class ContextData:
     def __init__(self,
-                 context: Optional[Dict[str, Any]] = None,
-                 inputs: Optional[Dict[str, Any]] = None,
-                 incident: Optional[Dict[str, Any]] = None):
+                 context: dict[str, Any] | None = None,
+                 inputs: dict[str, Any] | None = None,
+                 incident: dict[str, Any] | None = None):
 
         self.__context = context
         self.__specials = {
@@ -15,7 +16,7 @@ class ContextData:
             'incident': incident if isinstance(incident, dict) else {}
         }
 
-    def get(self, key: Optional[str] = None) -> Any:
+    def get(self, key: str | None = None) -> Any:
         """ Get the context value
 
         :param key: The dt expressions (string within ${}).
@@ -57,12 +58,10 @@ class Formatter:
 
     def __extract(self,
                   source: str,
-                  extractor: Optional[Callable[[str,
-                                                Optional[ContextData]],
-                                               Any]],
-                  dx: Optional[ContextData],
+                  extractor: Callable[[str, ContextData | None], Any] | None,
+                  dx: ContextData | None,
                   si: int,
-                  markers: Optional[Tuple[str, str]]) -> Tuple[Any, Optional[int]]:
+                  markers: tuple[str, str] | None) -> tuple[Any, int | None]:
         """ Extract a template text, or an enclosed value within starting and ending marks
 
         :param source: The template text, or the enclosed value starts with the next charactor of a start marker
@@ -125,10 +124,8 @@ class Formatter:
 
     def build(self,
               template: str,
-              extractor: Optional[Callable[[str,
-                                            Optional[ContextData]],
-                                           Any]],
-              dx: Optional[ContextData]) -> Any:
+              extractor: Callable[[str, ContextData | None], Any] | None,
+              dx: ContextData | None) -> Any:
         """ Format a text from a template including DT expressions
 
         :param template: The template.
@@ -139,7 +136,7 @@ class Formatter:
         return self.__extract(template, extractor, dx, 0, None)[0] if template else ''
 
 
-def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
+def extract_dt(dtstr: str, dx: ContextData | None) -> Any:
     """ Extract dt expression
 
     :param dtstr: The dt expressions (string within ${}).

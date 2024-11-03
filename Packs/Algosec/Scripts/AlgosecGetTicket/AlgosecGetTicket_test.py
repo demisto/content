@@ -15,4 +15,4 @@ def test_algosec_get_ticket(mocker):
     mocker.patch.object(demisto, 'executeCommand', return_value=ticket)
     res = main()
     content = res.raw_response
-    assert {'some_info': 'info: test'} == content
+    assert content == {'some_info': 'info: test'}

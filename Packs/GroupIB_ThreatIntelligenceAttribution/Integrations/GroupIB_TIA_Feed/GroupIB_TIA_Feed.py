@@ -820,7 +820,7 @@ def get_indicators_command(client: Client, args: dict[str, str]):
     except ValueError:
         raise Exception('A limit should be a number, not a string.')
 
-    if collection_name not in MAPPING.keys():
+    if collection_name not in MAPPING:
         raise Exception('Incorrect collection name. Please, choose one of the displayed options.')
 
     if not id_:

@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 from datetime import datetime
 import urllib3
-from typing import Any, Dict, Tuple, List, Optional
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -42,8 +42,8 @@ class Client(BaseClient):
 
 
 def search_events(client: Client, limit: int,
-                  body: Optional[Dict[str, Any]] = None
-                  ) -> Tuple[List[Dict[str, Any]], CommandResults]:
+                  body: dict[str, Any] | None = None
+                  ) -> tuple[list[dict[str, Any]], CommandResults]:
     """
     Searches for T alerts.
     Args:
@@ -53,7 +53,7 @@ def search_events(client: Client, limit: int,
     Returns:
         list: A list containing the events
     """
-    results: List[Dict] = []
+    results: list[dict] = []
     token_next_page = None
     next_page = True
     if limit <= 0:
@@ -70,7 +70,7 @@ def search_events(client: Client, limit: int,
         else:
             next_page = False
             demisto.debug('finished fetching http response')
-    events: List[Dict[str, Any]] = sorted(results, key=lambda x: x['Timestamp'])
+    events: list[dict[str, Any]] = sorted(results, key=lambda x: x['Timestamp'])
     if limit < len(events):
         events = events[-limit:]
     hr = tableToMarkdown(name='Events', t=events) if events else 'No events found.'
@@ -105,8 +105,8 @@ def test_module(client: Client, first_fetch_time: datetime) -> str:
 
 
 def fetch_events_command(
-    client: Client, max_fetch: int, last_run: Dict[str, Any], first_fetch_time: datetime
-) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    client: Client, max_fetch: int, last_run: dict[str, Any], first_fetch_time: datetime
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """
     Args:
         client (Client): TeamViewer client to use.
@@ -131,7 +131,7 @@ def fetch_events_command(
     return next_run, events
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Adds the _time key to the events.
     Args:

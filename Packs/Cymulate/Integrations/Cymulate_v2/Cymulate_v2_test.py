@@ -6,7 +6,7 @@ BASE_URL = 'https://api.cymulate.com/v1'
 
 def util_load_json(file_name):
     current_dir = os.path.dirname(os.path.realpath(__file__))
-    with open(f'{current_dir}/test_data/{file_name}', mode='r', encoding='utf-8') as file:
+    with open(f'{current_dir}/test_data/{file_name}', encoding='utf-8') as file:
         return json.loads(file.read())
 
 

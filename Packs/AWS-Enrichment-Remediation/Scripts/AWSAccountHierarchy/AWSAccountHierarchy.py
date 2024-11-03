@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
@@ -21,7 +21,7 @@ def lookup(parent_obj: str, level: int, instance_to_use: str) -> tuple[str, dict
         dict: dictionary of id, name and level of the lookup object.
 
     """
-    temp: Dict[str, str] = {}
+    temp: dict[str, str] = {}
     try:
         if "ou-" in parent_obj:
             ou_info = execute_command(
@@ -64,7 +64,7 @@ def lookup(parent_obj: str, level: int, instance_to_use: str) -> tuple[str, dict
 """ COMMAND FUNCTION """
 
 
-def aws_account_heirarchy(args: Dict[str, Any]) -> CommandResults:
+def aws_account_heirarchy(args: dict[str, Any]) -> CommandResults:
     """
     Determine AWS account hierarchy by looking up parent objects until the root level is reached.
     Args:

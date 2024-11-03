@@ -53,9 +53,7 @@ class InvalidValueError(Exception):
 
     def __init__(self, arg_name="", arg_value="", arg_list=[], message=""):
         if not message:
-            message = "{} is an invalid value for {}. Possible values are: {}".format(
-                arg_value, arg_name, arg_list
-            )
+            message = f"{arg_value} is an invalid value for {arg_name}. Possible values are: {arg_list}"
         super().__init__(message)
 
 
@@ -140,9 +138,7 @@ def validate_traffic_analysis_arguments(
     """
     if port < TRAFFIC_MIN_PORT or port > MAX_PORT:  # type: ignore
         raise InvalidValueError(
-            message="{} invalid value for port. Value must be in 1 to 65535.".format(
-                port
-            )
+            message=f"{port} invalid value for port. Value must be in 1 to 65535."
         )
 
     for decision in policy_decisions:
@@ -164,9 +160,7 @@ def validate_virtual_service_arguments(port: Optional[int], protocol: str) -> No
     """
     if port != -1 and (port > MAX_PORT or port < MIN_PORT):  # type: ignore
         raise InvalidValueError(
-            message="{} is an invalid value for port. Value must be in 0 to 65535 or -1.".format(
-                port
-            )
+            message=f"{port} is an invalid value for port. Value must be in 0 to 65535 or -1."
         )
 
     if protocol not in VALID_PROTOCOLS:
@@ -191,9 +185,7 @@ def validate_workloads_list_arguments(
     """
     if isinstance(max_results, int) and (max_results < 1):  # type: ignore
         raise InvalidValueError(
-            message="{} is an invalid value for max_results. Max results must be positive integer.".format(
-                max_results
-            )
+            message=f"{max_results} is an invalid value for max_results. Max results must be positive integer."
         )
 
     if online:
@@ -224,9 +216,7 @@ def validate_enforcement_boundary_create_arguments(
     """
     if port > MAX_PORT or port < MIN_PORT:  # type: ignore
         raise InvalidValueError(
-            message="{} is an invalid value for port. Value must be in 0 to 65535.".format(
-                port
-            )
+            message=f"{port} is an invalid value for port. Value must be in 0 to 65535."
         )
 
     if protocol not in VALID_PROTOCOLS:
@@ -242,9 +232,7 @@ def validate_ip_lists_get_arguments(max_results: Optional[int], ip_address: Opti
     """
     if isinstance(max_results, int) and (max_results < 1):  # type: ignore
         raise InvalidValueError(
-            message="{} is an invalid value for max_results. Max results must be positive integer.".format(
-                max_results
-            )
+            message=f"{max_results} is an invalid value for max_results. Max results must be positive integer."
         )
 
     if ip_address and not is_ipv6_valid(ip_address):
@@ -484,7 +472,7 @@ def prepare_update_enforcement_mode_output(response: list):
             hr_outputs.append({"Workload HREF": resp.get("href"), "Status": "Updated"})
 
     title = "Workload Enforcement Update:\n#### Successfully updated enforcement " \
-            "mode for {} workloads, {} workloads failed to update".format(successful_update_count, failed_update_count)
+            f"mode for {successful_update_count} workloads, {failed_update_count} workloads failed to update"
 
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
 

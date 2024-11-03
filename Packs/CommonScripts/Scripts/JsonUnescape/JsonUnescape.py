@@ -2,10 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import traceback
-from typing import Dict, List, Union
 
 
-def hook(obj: Dict) -> Dict:
+def hook(obj: dict) -> dict:
     """ Hook to convert string to json if possible """
     new_obj = {}
     for k, v in obj.items():
@@ -16,7 +15,7 @@ def hook(obj: Dict) -> Dict:
     return new_obj
 
 
-def unescape(args: Dict) -> Union[Dict, List]:
+def unescape(args: dict) -> dict | list:
     """ Unescape json string """
     json_str = json.dumps(args.get("value"))
     return json.loads(json_str, object_hook=hook)

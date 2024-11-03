@@ -16,21 +16,21 @@ LOWEST_TRUST_LEVEL_KEY = 'lowest_trust_level_key'
 LOWEST_SCORE_KEY = 'lowest_score_key'
 MAX_QUERY_LIMIT = 500
 
-DXLConfigFiles = NamedTuple('DXLConfigFiles', [('broker_ca_bundle_file', str),
-                                               ('client_cert_file', str),
-                                               ('private_key_file', str),
-                                               ('broker_urls', list[str]),
-                                               ])
+class DXLConfigFiles(NamedTuple):
+    broker_ca_bundle_file: str
+    client_cert_file: str
+    private_key_file: str
+    broker_urls: list[str]
 
-InstanceCertificates = NamedTuple('InstanceCertificates', [('broker_ca_bundle', str),
-                                                           ('client_cert', str),
-                                                           ('private_key', str),
-                                                           ('broker_urls', list[str]),
-                                                           ])
+class InstanceCertificates(NamedTuple):
+    broker_ca_bundle: str
+    client_cert: str
+    private_key: str
+    broker_urls: list[str]
 
-ProviderInfo = NamedTuple('ProviderInfo', [('name', str),
-                                           ('abbreviation', str)
-                                           ])
+class ProviderInfo(NamedTuple):
+    name: str
+    abbreviation: str
 
 
 PROVIDER_INFO = {
@@ -97,7 +97,6 @@ class GeneralFileReputationParser(abc.ABC):
         from the API (which are in numeric form) to humand readable data in order for the user to understand the
         returned results.
         """
-        pass
 
     def parse_reputation_key(self, reputation_key: str, val: Union[str, int]):
         """
@@ -249,7 +248,7 @@ def get_client_config(dxl_config_files: DXLConfigFiles) -> DxlClientConfig:
 
 def get_provider_name(provider_id: Union[int, str]) -> str:
     provider_id_int = arg_to_number(provider_id)
-    provider_info = PROVIDER_INFO.get(provider_id_int, None)
+    provider_info = PROVIDER_INFO.get(provider_id_int)
     if provider_info:
         return provider_info.name
     else:
@@ -258,7 +257,7 @@ def get_provider_name(provider_id: Union[int, str]) -> str:
 
 def get_provider_abbr(provider_id: Union[int, str]) -> str:
     provider_id_int = arg_to_number(provider_id)
-    provider_info = PROVIDER_INFO.get(provider_id_int, None)
+    provider_info = PROVIDER_INFO.get(provider_id_int)
     if provider_info:
         return provider_info.abbreviation
     else:
@@ -348,7 +347,7 @@ def safe_get_file_reputation(tie_client: TieClient, api_input: Dict[str, str]):
 
 def get_hash_type_key(file_hash: str):
     hash_type = get_hash_type(file_hash)
-    hash_type_key = HASH_TYPE_KEYS.get(hash_type, None)
+    hash_type_key = HASH_TYPE_KEYS.get(hash_type)
     if not hash_type_key:
         raise DemistoException(f'Invalid value, {file_hash} is not a valid SHA1, SHA256 or MD5 value.')
     return hash_type_key

@@ -5,7 +5,7 @@ URL = 'https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-con
 
 
 def test_build_iterator(requests_mock):
-    with open('test_data/Microsoft_endpoint_mock.html', 'r') as file:
+    with open('test_data/Microsoft_endpoint_mock.html') as file:
         response = file.read()
     requests_mock.get(URL, text=response)
     expected_url = 'https://login.microsoftonline.com'

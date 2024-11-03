@@ -209,7 +209,7 @@ def generate_ip_groups_entries(args):
         try:
             json_entries = json.loads(json_entries)
         except Exception:
-            raise Exception(f'Failed to parse json-entries as JSON data, 'f' received object:\n{json_entries}')
+            raise Exception(f'Failed to parse json-entries as JSON data,  received object:\n{json_entries}')
         body = {'entries': json_entries}
     return body
 

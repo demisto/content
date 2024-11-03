@@ -942,7 +942,7 @@ class TestJiraGetIDOffsetCommand:
         run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
         command_result = get_id_offset_command(client=client, args={})
         assert run_query_mocker.call_args[1].get('query_params', {}).get('jql') == 'ORDER BY created ASC'
-        assert {'Ticket': {'idOffSet': '10161'}} == command_result.to_context()['EntryContext']
+        assert command_result.to_context()['EntryContext'] == {'Ticket': {'idOffSet': '10161'}}
 
     def test_get_id_offset_command_with_custom_query_argument(self, mocker):
         """

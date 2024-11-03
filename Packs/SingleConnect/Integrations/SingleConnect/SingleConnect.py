@@ -1,7 +1,6 @@
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict
 import urllib3
 
 # Disable insecure warnings
@@ -64,7 +63,7 @@ class Client(BaseClient):
         }
         return self._http_request("POST", "/aioc-rest-web/rest/sc/sapm/showPassword", json_data=body)
 
-    def get_sapm_user_info(self, device_ip: str) -> Dict[str, str]:
+    def get_sapm_user_info(self, device_ip: str) -> dict[str, str]:
         body = {
             "deviceIp4Search": device_ip
         }
@@ -175,8 +174,8 @@ def main() -> None:  # pragma: no cover
     :return:
     :rtype:
     """
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     command = demisto.command()
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')

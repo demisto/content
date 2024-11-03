@@ -1,5 +1,4 @@
 import json
-import io
 
 BASE_URL = 'https://gateway.qg2.apps.qualys.eu/'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -11,17 +10,17 @@ def load_mock_response(file_name: str) -> dict:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f'{file_name}', mode='r', encoding='utf-8') as json_file:
+    with open(f'{file_name}', encoding='utf-8') as json_file:
         return json.loads(json_file.read())
 
 
 def util_load_json(path) -> dict:
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 
 def util_load_file(path) -> str:
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return file.read()
 
 

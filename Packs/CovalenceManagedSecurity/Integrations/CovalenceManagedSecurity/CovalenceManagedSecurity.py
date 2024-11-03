@@ -121,7 +121,7 @@ class Portal():
             auth = '{} {}'.format(self.scheme, self.auth['token'])
             all_headers.update({'Authorization': auth})
 
-        url = '{}/{}'.format(self.portal_url, uri if len(kwargs) == 0 else uri.format(**kwargs))
+        url = f'{self.portal_url}/{uri if len(kwargs) == 0 else uri.format(**kwargs)}'
         if remove_subdomain:
             url = url.replace('services.', '')
 

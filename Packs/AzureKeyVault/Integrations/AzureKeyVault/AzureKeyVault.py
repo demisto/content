@@ -1427,14 +1427,11 @@ def main() -> None:     # pragma: no cover
             raise DemistoException('Client Secret or Certificate Thumbprint and Private Key must be provided. For further information see https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
 
         urllib3.disable_warnings()
-        client: KeyVaultClient = KeyVaultClient(tenant_id=params.get('tenant_id', None),
-                                                client_id=params.get(
-                                                    'client_id', None),
+        client: KeyVaultClient = KeyVaultClient(tenant_id=params.get('tenant_id'),
+                                                client_id=params.get('client_id'),
                                                 client_secret=client_secret,
-                                                subscription_id=params.get(
-                                                    'subscription_id', None),
-                                                resource_group_name=params.get(
-                                                    'resource_group_name', None),
+                                                subscription_id=params.get('subscription_id'),
+                                                resource_group_name=params.get('resource_group_name'),
                                                 verify=verify_certificate,
                                                 proxy=proxy,
                                                 certificate_thumbprint=certificate_thumbprint,

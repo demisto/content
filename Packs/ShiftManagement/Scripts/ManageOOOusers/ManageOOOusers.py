@@ -5,7 +5,7 @@ def _get_current_user():
     current_username = demisto.executeCommand("getUsers", {"current": True})
     if isError(current_username):
         demisto.debug(f"failed to get current username - {get_error(current_username)}")
-        return
+        return None
     else:
         return current_username[0]["Contents"][0]['username']
 
@@ -60,13 +60,13 @@ def main():
         list_data = json.loads(ooo_list)
     if option == "add":
         # check if user is already in the list, and remove, to allow updating
-        list_data = [i for i in list_data if not (i['user'] == username)]
+        list_data = [i for i in list_data if i["user"] != username]
         list_data.append({"user": username,
                           "offuntil": off_until,
                           "addedby": current_user if current_user else 'DBot'})
     else:
         # remove the user from the list.
-        list_data = [i for i in list_data if not (i['user'] == username)]
+        list_data = [i for i in list_data if i["user"] != username]
 
     set_list_res = demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(list_data)})
     if isError(set_list_res):

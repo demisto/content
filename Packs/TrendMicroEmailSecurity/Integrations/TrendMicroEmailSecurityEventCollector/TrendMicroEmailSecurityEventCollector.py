@@ -67,7 +67,6 @@ class NoContentException(Exception):
     see `handle_error_no_content` method
     """
 
-    ...
 
 
 class Client(BaseClient):
@@ -244,7 +243,7 @@ def remove_sensitive_from_events(event: dict) -> dict:
     """
     removes file names and subject that could be sensitive data
     """
-    if event.get("subject", None):
+    if event.get("subject"):
         event["subject"] = "hidden data"
 
     if (attachments := event.get("attachments")) and isinstance(attachments, list):
@@ -380,7 +379,6 @@ def test_module(client: Client):
         # This type of error is raised when events are not returned, but the API call was successful,
         # therefore `ok` will be returned
         demisto.debug("test module: got no logs, but connection is successful")
-        pass
 
     return "ok"
 

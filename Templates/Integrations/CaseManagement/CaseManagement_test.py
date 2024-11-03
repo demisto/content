@@ -18,7 +18,7 @@ class TestModule:
     def test_module_positive(self, requests_mock):
         from CaseManagement import test_module_command
         requests_mock.get(urljoin(url, self.suffix), json=self.response)
-        assert 'ok' == test_module_command(client)
+        assert test_module_command(client) == 'ok'
 
     def test_module_negative(self, requests_mock):
         from CaseManagement import test_module_command

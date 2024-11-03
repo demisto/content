@@ -13,7 +13,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
-from typing import Tuple
 import tldextract
 import pytz
 
@@ -215,10 +214,10 @@ def is_number_of_unique_recipients_is_too_low(incidents):
         msg += f'* Those incidents have {len(unique_recipients)} unique recipients'
         msg += ' ({}).\n'.format(', '.join(unique_recipients))
         msg += '* The minimum number of unique recipients for similar emails as campaign: ' \
-               '{}\n'.format(MIN_UNIQUE_RECIPIENTS)
+               f'{MIN_UNIQUE_RECIPIENTS}\n'
         if missing_recipients > 0:
-            msg += '* Could not find email recipient for {}/{} incidents ' \
-                   '(*Email To* field is empty)'.format(missing_recipients, len(incidents))
+            msg += f'* Could not find email recipient for {missing_recipients}/{len(incidents)} incidents ' \
+                   '(*Email To* field is empty)'
 
         return_outputs_custom(msg, create_empty_context())
         return True
@@ -254,10 +253,10 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     contents.append(f'Found possible campaign of {n_incidents} similar emails')
     if max_similarity > min_similarity + 10 ** -3:
         headers.append('Similarity range')
-        contents.append("{:.1f}%-{:.1f}%".format(min_similarity * 100, max_similarity * 100))
+        contents.append(f"{min_similarity * 100:.1f}%-{max_similarity * 100:.1f}%")
     else:
         headers.append('Similarity')
-        contents.append("{:.1f}%".format(max_similarity * 100))
+        contents.append(f"{max_similarity * 100:.1f}%")
     incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     datetimes = incidents_df['created_dt'].dropna()  # type: ignore
     min_datetime, max_datetime = min(datetimes), max(datetimes)
@@ -492,7 +491,7 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
     incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     incidents_df['Created'] = incidents_df['created_dt'].apply(lambda x: x.strftime("%B %d, %Y"))
     incidents_df['similarity'] = incidents_df['similarity'].fillna(1)
-    incidents_df['similarity'] = incidents_df['similarity'].apply(lambda x: '{:.1f}%'.format(x * 100))
+    incidents_df['similarity'] = incidents_df['similarity'].apply(lambda x: f'{x * 100:.1f}%')
     current_incident_id = demisto.incident()['id']
     incidents_df['DBot Score'] = incidents_df['id'].apply(lambda id_: get_reputation(id_, indicators_df))
     # add a mark at current incident, at its similarity cell
@@ -552,7 +551,7 @@ def analyze_incidents_campaign(incidents, fields_to_display):
         draw_canvas(incidents, indicators_df.head(MAX_INDICATORS_FOR_CANVAS_PLOTTING).to_dict(orient='records'))
 
 
-def split_non_content_entries(response: list) -> Tuple[dict, list]:
+def split_non_content_entries(response: list) -> tuple[dict, list]:
     """
     Args:
         response: A response list from executeCommand.

@@ -162,7 +162,7 @@ class myglpi(GLPI):
                 self.delete('Document', {'id': doc_id}, force_purge=True)
             except DemistoException as err:
                 demisto.error(WARN_DEL_ERR.format(doc_id + ' ' + str(err)), UserWarning)
-            raise DemistoException('(ERROR_GLPI_INVALID_DOCUMENT) {:s}'.format(error))
+            raise DemistoException(f'(ERROR_GLPI_INVALID_DOCUMENT) {error:s}')
 
         return response.json()
 

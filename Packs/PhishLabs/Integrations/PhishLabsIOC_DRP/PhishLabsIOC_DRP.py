@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
+from typing import Any, AnyStr
 import urllib3
 
 # Local imports
@@ -33,7 +33,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -41,8 +41,8 @@ class Client(BaseClient):
         """
         return self.get_cases(max_records=2)
 
-    def travel_to_end_date(self, cases_temp: List, params: Dict, end_date: Optional[str], date_field: str, suffix: str) \
-            -> Tuple[List[Any], Dict[Any, Any], int, Optional[datetime]]:
+    def travel_to_end_date(self, cases_temp: list, params: dict, end_date: str | None, date_field: str, suffix: str) \
+            -> tuple[list[Any], dict[Any, Any], int, datetime | None]:
         """Moving index to starting point, if neccery chage cases_temp (more get request)
 
         Args:
@@ -56,7 +56,7 @@ class Client(BaseClient):
             Tuple of (list of cases temp, modified params, index in cases, datetime object of last run in traveling)
         """
         format_time = "%Y-%m-%dT%H:%M:%SZ"
-        last_time: Optional[datetime] = None if not cases_temp else datetime.strptime(cases_temp[0].get(date_field),
+        last_time: datetime | None = None if not cases_temp else datetime.strptime(cases_temp[0].get(date_field),
                                                                                       format_time)
         end_date_obj: datetime = datetime.strptime(end_date, format_time) if end_date else datetime.now()
 
@@ -80,9 +80,9 @@ class Client(BaseClient):
 
         return cases_temp, params, index, last_time
 
-    def travel_to_begin_date(self, cases_temp: List, index: int, params: Dict, begin_date: Optional[str],
-                             last_time: Optional[datetime], date_field: str, max_records: Union[str, int], suffix: str) \
-            -> List[Dict[Any, Any]]:
+    def travel_to_begin_date(self, cases_temp: list, index: int, params: dict, begin_date: str | None,
+                             last_time: datetime | None, date_field: str, max_records: str | int, suffix: str) \
+            -> list[dict[Any, Any]]:
         """
 
         Args:
@@ -100,8 +100,8 @@ class Client(BaseClient):
             List of cases filtered by date
         """
         format_time = "%Y-%m-%dT%H:%M:%SZ"
-        begin_date_obj: Optional[datetime] = datetime.strptime(begin_date, format_time) if begin_date else None
-        cases: List = []
+        begin_date_obj: datetime | None = datetime.strptime(begin_date, format_time) if begin_date else None
+        cases: list = []
 
         while cases_temp and len(cases) < int(max_records) and last_time:
             if begin_date_obj:
@@ -114,7 +114,7 @@ class Client(BaseClient):
 
             if len(cases) == max_records:
                 break
-            elif len(cases_temp) == index + 1:
+            if len(cases_temp) == index + 1:
                 params['offset'] += len(cases_temp)
                 cases_temp = self._http_request('GET',
                                                 url_suffix=suffix,
@@ -128,10 +128,10 @@ class Client(BaseClient):
             last_time = datetime.strptime(cases_temp[index].get(date_field), format_time)
         return cases
 
-    def get_cases(self, status: Optional[str] = None, case_type: Optional[str] = None,
-                  max_records: Union[str, int] = 20, offset: Union[str, int] = 0,
-                  date_field: str = 'dateModified', begin_date: Optional[str] = None,
-                  end_date: Optional[str] = None, query_type: str = '', period: Optional[str] = None) -> Dict:
+    def get_cases(self, status: str | None = None, case_type: str | None = None,
+                  max_records: str | int = 20, offset: str | int = 0,
+                  date_field: str = 'dateModified', begin_date: str | None = None,
+                  end_date: str | None = None, query_type: str = '', period: str | None = None) -> dict:
         """
         Query the specified kwargs with default parameters if not defined
 
@@ -153,17 +153,17 @@ class Client(BaseClient):
             begin_date, end_date = parse_date_range(date_range=period,
                                                     date_format='%Y-%m-%dT%H:%M:%SZ')
         suffix: str = f'/cases/{query_type}' if query_type else '/cases'
-        params: Dict = {
+        params: dict = {
             'status': status,
             'type': case_type,
             'offset': int(offset),
             'maxRecords': int(max_records)
         }
-        raw_response: Dict = self._http_request('GET',
+        raw_response: dict = self._http_request('GET',
                                                 url_suffix=suffix,
                                                 params=assign_params(**params),
                                                 timeout=20)
-        cases_temp: List = raw_response.get('data', [])
+        cases_temp: list = raw_response.get('data', [])
         # About the drop some mean regex right now disable-secrets-detection-start
         cases_temp, params, index, last_time = self.travel_to_end_date(cases_temp, params, end_date, date_field, suffix)
         cases = self.travel_to_begin_date(cases_temp, index, params, begin_date, last_time, date_field, max_records,
@@ -176,7 +176,7 @@ class Client(BaseClient):
 
         return raw_response
 
-    def get_case_by_id(self, case_id: str) -> Dict:
+    def get_case_by_id(self, case_id: str) -> dict:
         """Query incident by ID
 
         Args:
@@ -194,7 +194,7 @@ class Client(BaseClient):
 
 
 @logger
-def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
+def indicator_ec(indicator: dict, type_ec: AnyStr) -> dict:
     """indicator convert to ec format
     Get an indicator from raw response and concert to demisto entry context format
 
@@ -205,7 +205,7 @@ def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
     Returns:
          indicator entry context
     """
-    ec: Dict = {}
+    ec: dict = {}
     if type_ec == 'AttackSources':
         ec = {
             'URL': indicator.get('url'),
@@ -258,7 +258,7 @@ def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
 
 
 @logger
-def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List, List], List]:
+def indicators_to_list_ec(indicators: list, type_ec: AnyStr) -> tuple[list, list] | list:
     """Unpack list of incidents to demisto ec format
     Convert list of incidents from raw response to demisto entry context format lists
 
@@ -268,7 +268,7 @@ def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List
     Returns:
          List of indicators entry context
     """
-    ecs: List = []
+    ecs: list = []
     for indicator in indicators:
         ec = indicator_ec(indicator, type_ec)
         ecs.append(ec)
@@ -276,7 +276,7 @@ def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List
 
 
 @logger
-def raw_response_to_context(cases: Union[List, Any]) -> List:
+def raw_response_to_context(cases: list | Any) -> list:
     """
     Convert incidents list from raw response to demisto entry context list format
     Args:
@@ -285,10 +285,10 @@ def raw_response_to_context(cases: Union[List, Any]) -> List:
     Returns:
         Entry contexts of phishLabs, emails, files, urls, dbotScores
     """
-    phishlabs_ec: List = []
+    phishlabs_ec: list = []
     for case in cases:
         # PhishLabs entry context
-        phishlabs: Dict = {
+        phishlabs: dict = {
             'CaseID': case.get('caseId'),
             'Title': case.get('title'),
             'Description': case.get('description'),
@@ -330,7 +330,7 @@ def raw_response_to_context(cases: Union[List, Any]) -> List:
 
 
 @logger
-def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
+def test_module_command(client: Client, *_) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -353,9 +353,9 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
 def fetch_incidents_command(
         client: Client,
         fetch_time: str,
-        max_records: Union[str, int],
+        max_records: str | int,
         date_field: str = 'dateModified',
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+        last_run: str | None = None) -> tuple[list[dict[str, Any]], dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -378,7 +378,7 @@ def fetch_incidents_command(
     raw_response = client.get_cases(begin_date=datetime_new_last_run,
                                     date_field=date_field,
                                     max_records=max_records)
-    cases_raw: List = raw_response.get('data', [])
+    cases_raw: list = raw_response.get('data', [])
     cases_report = []
     if cases_raw:
         datetime_new_last_run = cases_raw[0].get(date_field)
@@ -393,7 +393,7 @@ def fetch_incidents_command(
 
 
 @logger
-def get_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all case by filters and return outputs in Demisto's context entry
 
     Args:
@@ -403,11 +403,11 @@ def get_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Uni
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: Dict = client.get_cases(**kwargs)  # type: ignore
+    raw_response: dict = client.get_cases(**kwargs)  # type: ignore
     if raw_response:
         title = f'{INTEGRATION_NAME} - cases'
         phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
-        context_entry: Dict = {
+        context_entry: dict = {
             f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
             f'val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)': {
                 'DRP': phishlabs_ec
@@ -425,7 +425,7 @@ def get_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Uni
 
 
 @logger
-def get_case_by_id_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_case_by_id_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get case by ID and return outputs in Demisto's context entry
 
     Args:
@@ -435,11 +435,11 @@ def get_case_by_id_command(client: Client, **kwargs: Dict) -> Tuple[object, dict
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: Dict = client.get_case_by_id(**kwargs)  # type: ignore
+    raw_response: dict = client.get_case_by_id(**kwargs)  # type: ignore
     if raw_response:
         title = f'{INTEGRATION_NAME} - case ID {kwargs.get("caseid")}'
         phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
-        context_entry: Dict = {
+        context_entry: dict = {
             f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
             f'val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)': {
                 'DRP': phishlabs_ec
@@ -457,7 +457,7 @@ def get_case_by_id_command(client: Client, **kwargs: Dict) -> Tuple[object, dict
 
 
 @logger
-def get_open_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_open_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all open case by filters and return outputs in Demisto's context entry
 
       Args:
@@ -467,11 +467,11 @@ def get_open_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict
       Returns:
           human readable (markdown format), entry context and raw response
       """
-    raw_response: Dict = client.get_cases(**kwargs, query_type='open')  # type: ignore
+    raw_response: dict = client.get_cases(**kwargs, query_type='open')  # type: ignore
     if raw_response:
         title = f'{INTEGRATION_NAME} - open cases'
         phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
-        context_entry: Dict = {
+        context_entry: dict = {
             f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
             f'val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)': {
                 'DRP': phishlabs_ec
@@ -489,7 +489,7 @@ def get_open_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict
 
 
 @logger
-def get_closed_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_closed_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all closed case by filters and return outputs in Demisto's context entry
 
       Args:
@@ -499,11 +499,11 @@ def get_closed_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, di
       Returns:
           human readable (markdown format), entry context and raw response
       """
-    raw_response: Dict = client.get_cases(**kwargs, query_type='closed')  # type: ignore
+    raw_response: dict = client.get_cases(**kwargs, query_type='closed')  # type: ignore
     if raw_response:
         title = f'{INTEGRATION_NAME} - Closed cases'
         phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
-        context_entry: Dict = {
+        context_entry: dict = {
             f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
             f'val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)': {
                 'DRP': phishlabs_ec

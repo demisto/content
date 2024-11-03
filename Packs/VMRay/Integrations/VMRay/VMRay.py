@@ -790,8 +790,8 @@ def get_job_command():
     data = raw_response.get('data')
     if not data or raw_response.get('result') == 'error':
         entry = build_finished_job(job_id=job_id, sample_id=sample_id)
-        human_readable = '#### Couldn\'t find a job for the {}: {}. Either the job completed, or does not exist.' \
-            .format(title, vmray_id)
+        human_readable = f'#### Couldn\'t find a job for the {title}: {vmray_id}. Either the job completed, or does not exist.' \
+            
     else:
         entry = build_job_data(data)
         sample = entry[0] if isinstance(entry, list) else entry
@@ -840,9 +840,7 @@ def get_threat_indicators_command():
             entry_context_list.append(entry)
 
         human_readable = tableToMarkdown(
-            'Threat indicators for sample ID: {}:'.format(
-                sample_id
-            ),
+            f'Threat indicators for sample ID: {sample_id}:',
             entry_context_list,
             headers=['ID', 'AnalysisID', 'Category', 'Classification', 'Operation'],
         )

@@ -23,8 +23,7 @@ client = BaseClient(base_url=BASE_URL, verify=USE_SSL)
 
 
 def http_request(method, url_suffix, cookies=COOKIES, data=None, headers=None):
-    LOG('running request with url={}\tdata={}\theaders={}'.format(BASE_URL + url_suffix,
-                                                                  data, headers))
+    LOG(f'running request with url={BASE_URL + url_suffix}\tdata={data}\theaders={headers}')
     try:
         res = client._session.request(
             method,

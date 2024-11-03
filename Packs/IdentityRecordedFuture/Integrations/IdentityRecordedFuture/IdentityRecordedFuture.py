@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import json
 import platform
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import requests
 
@@ -25,7 +25,7 @@ TIMEOUT_120 = 120
 
 
 class Client(BaseClient):
-    def whoami(self) -> Dict[str, Any]:
+    def whoami(self) -> dict[str, Any]:
         """Entity lookup."""
         return self._http_request(
             method="get",
@@ -98,15 +98,15 @@ class Client(BaseClient):
     ################## Identity API ####################
     #######################################################
 
-    def credentials_search(self) -> Dict[str, Any]:
+    def credentials_search(self) -> dict[str, Any]:
         """Identity search."""
         return self._call(url_suffix="/v2/identity/credentials/search")
 
-    def credentials_lookup(self) -> Dict[str, Any]:
+    def credentials_lookup(self) -> dict[str, Any]:
         """Identity Lookup."""
         return self._call(url_suffix="/v2/identity/credentials/lookup")
 
-    def password_lookup(self) -> Dict[str, Any]:
+    def password_lookup(self) -> dict[str, Any]:
         """Password Lookup."""
         return self._call(url_suffix="/v2/identity/password/lookup")
 
@@ -114,21 +114,21 @@ class Client(BaseClient):
     ################## Playbook alerts ####################
     #######################################################
 
-    def fetch_incidents(self) -> Dict[str, Any]:
+    def fetch_incidents(self) -> dict[str, Any]:
         """Fetch incidents."""
         return self._call(
             url_suffix="/playbook_alert/fetch",
             timeout=TIMEOUT_120,
         )
 
-    def search_playbook_alerts(self) -> Dict[str, Any]:
+    def search_playbook_alerts(self) -> dict[str, Any]:
         return self._call(url_suffix="/playbook_alert/search")
 
-    def details_playbook_alerts(self) -> Dict[str, Any]:
+    def details_playbook_alerts(self) -> dict[str, Any]:
         """Get details of a playbook alert"""
         return self._call(url_suffix="/playbook_alert/lookup")
 
-    def update_playbook_alerts(self) -> Dict[str, Any]:
+    def update_playbook_alerts(self) -> dict[str, Any]:
         return self._call(url_suffix="/playbook_alert/update")
 
 
@@ -143,7 +143,7 @@ class Actions:
 
     def _process_result_actions(
         self, response: Union[dict, CommandResults]
-    ) -> Optional[List[CommandResults]]:
+    ) -> list[CommandResults] | None:
 
         if isinstance(response, CommandResults):
             # Case when we got 404 on response, and it was processed in self.client._call() method.
@@ -152,9 +152,9 @@ class Actions:
             # In case API returned a str - we don't want to call "response.get()" on a str object.
             return None
 
-        action_result: Optional[dict] = response.get("action_result")
+        action_result: dict | None = response.get("action_result")
 
-        result_actions: Optional[List[dict]] = response.get("result_actions")
+        result_actions: list[dict] | None = response.get("result_actions")
 
         if not any([action_result, result_actions]):
             return None
@@ -162,7 +162,7 @@ class Actions:
         if action_result:
             command_results = [CommandResults(**action_result)]
         elif result_actions:
-            command_results: List[CommandResults] = []  # type: ignore[no-redef]
+            command_results: list[CommandResults] = []  # type: ignore[no-redef]
             for action in result_actions:
                 if "CommandResults" in action:
                     command_results.append(CommandResults(**action["CommandResults"]))
@@ -205,15 +205,15 @@ class Actions:
                 self._transform_incidents_attachments(_val)
                 demisto.incidents(_val)
 
-    def playbook_alert_search_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_search_command(self) -> list[CommandResults] | None:
         response = self.client.search_playbook_alerts()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_details_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_details_command(self) -> list[CommandResults] | None:
         response = self.client.details_playbook_alerts()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_update_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_update_command(self) -> list[CommandResults] | None:
         response = self.client.update_playbook_alerts()
         return self._process_result_actions(response=response)
 

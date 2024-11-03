@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 import urllib3
 from CommonServerUserPython import *  # noqa

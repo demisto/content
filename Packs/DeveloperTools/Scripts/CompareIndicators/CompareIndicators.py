@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple, Iterable
+from collections.abc import Iterable
 
 from netaddr import IPSet, IPRange
 import re
@@ -42,7 +42,7 @@ def ip_groups_to_ranges(ip_range_groups: Iterable) -> set:
     return ip_ranges
 
 
-def collect_ips(ioc_list: List[str]) -> Tuple[IPSet, set]:
+def collect_ips(ioc_list: List[str]) -> tuple[IPSet, set]:
     ip_set = IPSet()
     non_ip_group = set()
     for ioc in ioc_list:
@@ -60,7 +60,7 @@ def collect_ips(ioc_list: List[str]) -> Tuple[IPSet, set]:
     return ip_set, non_ip_group
 
 
-def collect_unique_indicators_from_lists(ioc_list_1: List[str], ioc_list_2: List[str]) -> Tuple[list, list]:
+def collect_unique_indicators_from_lists(ioc_list_1: List[str], ioc_list_2: List[str]) -> tuple[list, list]:
     ip_set_1, non_ip_set_1 = collect_ips(ioc_list_1)
     ip_set_2, non_ip_set_2 = collect_ips(ioc_list_2)
     ip_diff1 = ip_set_1.difference(ip_set_2)

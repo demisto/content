@@ -15,7 +15,7 @@ def site_lookup(params):
 
     if r.status_code < 200 or r.status_code >= 300:
         return_error(
-            'Failed to update Content.\nURL: {}, Status Code: {}, Response: {}'.format(api_url, r.status_code, r.text)
+            f'Failed to update Content.\nURL: {api_url}, Status Code: {r.status_code}, Response: {r.text}'
         )
 
     return r

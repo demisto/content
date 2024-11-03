@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any, Tuple
+from typing import Any
 import base64
 import json
 from dateparser import parse
@@ -222,9 +222,9 @@ def test_module(client: Client, is_fetch: bool = False) -> str:
     return message
 
 
-def get_incidents(client: Client, args: Dict[str, Any]):
-    from_time = args.get('from_time', None)
-    to_time = args.get('to_time', None)
+def get_incidents(client: Client, args: dict[str, Any]):
+    from_time = args.get('from_time')
+    to_time = args.get('to_time')
 
     if not from_time or not to_time:
         raise DemistoException(
@@ -248,10 +248,10 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))
     severity = args.get('severity', [])
-    source = args.get('source', None)
-    destination = args.get('destination', None)
-    tag = args.get('tag', None)
-    incident_type = args.get('incident_type', None)
+    source = args.get('source')
+    destination = args.get('destination')
+    tag = args.get('tag')
+    incident_type = args.get('incident_type')
 
     if incident_type == 'false' or incident_type == 'All':
         incident_type = None
@@ -272,7 +272,7 @@ def get_incidents(client: Client, args: Dict[str, Any]):
 
     raw_results = result.get("objects")
 
-    results: List[Dict[str, Any]] = []
+    results: List[dict[str, Any]] = []
     for res in raw_results:
         row = filter_human_readable(res, human_columns=INCIDENT_COLUMNS)
 
@@ -294,12 +294,12 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     )
 
 
-def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
-        Tuple[List[Dict], int, List[str]]:
+def fetch_incidents(client: Client, args: dict[str, Any]) -> \
+        tuple[List[dict], int, List[str]]:
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
     last_ids = last_run.get("last_ids", [])
-    first_fetch = args.get('first_fetch', None)
+    first_fetch = args.get('first_fetch')
     demisto.debug(
         f'{INTEGRATION_NAME} - Fetch incidents last fetch: {last_fetch}, first fetch: {first_fetch}')
 
@@ -359,8 +359,8 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
     return incidents, next_fetch_start_time, last_ids
 
 
-def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
-    incident_id = args.get('id', None)
+def get_indicent(client: Client, args: dict[str, Any]) -> CommandResults:
+    incident_id = args.get('id')
     if not incident_id:
         raise DemistoException(
             f"{INTEGRATION_NAME} - get incident needs an id parameter.")
@@ -386,10 +386,10 @@ def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    ip_address = args.get('ip_address', None)
-    name = args.get('name', None)
-    asset_id = args.get('asset_id', None)
+def get_assets(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+    ip_address = args.get('ip_address')
+    name = args.get('name')
+    asset_id = args.get('asset_id')
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))
 
@@ -429,11 +429,11 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return endpoints
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> \
+def endpoint_command(client: Client, args: dict[str, Any]) -> \
         List[CommandResults]:
-    id = args.get("id", None)
-    ip_address = args.get("ip", None)
-    hostname = args.get("hostname", None)
+    id = args.get("id")
+    ip_address = args.get("ip")
+    hostname = args.get("hostname")
     if not id and not ip_address and not hostname:
         raise DemistoException(
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')

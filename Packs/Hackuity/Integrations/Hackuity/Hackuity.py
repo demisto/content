@@ -2,7 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
 from functools import partial
-from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
+from typing import Any, TypeVar
+from collections.abc import Callable
 
 import dateutil.parser
 import requests
@@ -54,10 +55,10 @@ class Client(BaseClient):
                 err_msg += f"\n{reason}\ncorrelationId={correlationId}"
             else:
                 # other error messages
-                err_msg += "\n{}".format(json.dumps(error_entry))
+                err_msg += f"\n{json.dumps(error_entry)}"
         except ValueError:
             # non-json responses
-            err_msg += "\n{}".format(res.text)
+            err_msg += f"\n{res.text}"
         raise DemistoException(err_msg, res=res)
 
     def http_request(
@@ -65,7 +66,7 @@ class Client(BaseClient):
         *,
         method: str = "GET",
         url_suffix: str = "",
-        json_data: Dict[str, Any] = None,
+        json_data: dict[str, Any] = None,
         resp_type: str = "json",
     ):  # pragma: no cover
         headers = {
@@ -95,7 +96,7 @@ class Client(BaseClient):
 
         return user_id
 
-    def get_vulnerability_name(self, vuln_id: str) -> Optional[str]:
+    def get_vulnerability_name(self, vuln_id: str) -> str | None:
         """Get the name of a vulnerability from its id"""
         # read from cache
         integration_context = get_integration_context()
@@ -118,8 +119,8 @@ class Client(BaseClient):
         set_integration_context(integration_context)
         return name
 
-    def compute_asset_id(self, asset_name: str, asset_type: Optional[str]) -> str:
-        request: Dict[str, Any] = {"assetAbsoluteNames": [asset_name]}
+    def compute_asset_id(self, asset_name: str, asset_type: str | None) -> str:
+        request: dict[str, Any] = {"assetAbsoluteNames": [asset_name]}
         if asset_type:
             request["assetTypes"] = [asset_type.upper()]
         response = self.http_request(
@@ -132,7 +133,7 @@ class Client(BaseClient):
                 return asset["assetId"]
         raise ValueError("Asset not found")
 
-    def fetch_dashboard_widgets(self) -> List[Dict[str, Any]]:
+    def fetch_dashboard_widgets(self) -> list[dict[str, Any]]:
         response = self.http_request(
             method="GET",
             url_suffix=(
@@ -141,7 +142,7 @@ class Client(BaseClient):
         )
         return response.get("widgets", [])
 
-    def fetch_dashboard_widget_data(self, *, widget_id: str) -> Dict:
+    def fetch_dashboard_widget_data(self, *, widget_id: str) -> dict:
         try:
             response = self.http_request(
                 method="GET",
@@ -157,24 +158,24 @@ class Client(BaseClient):
             raise
         return response.get("payload", {})
 
-    def fetch_user(self) -> Dict[str, Any]:
+    def fetch_user(self) -> dict[str, Any]:
         """Fetch current user. Can be used for testing access token."""
         return self.http_request(url_suffix="/echo/user")
 
     def fetch_findings(
         self,
         *,
-        asset_name: Optional[str],
-        asset_type: Optional[str],
-        attribute: Optional[str],
-        cvss_min: Optional[float],
-        cvss_max: Optional[float],
+        asset_name: str | None,
+        asset_type: str | None,
+        attribute: str | None,
+        cvss_min: float | None,
+        cvss_max: float | None,
         limit: int,
-        trs_min: Optional[int],
-        trs_max: Optional[int],
-        vuln_type: Optional[str],
-    ) -> List[Dict[str, Any]]:
-        request: Dict[str, Any] = {
+        trs_min: int | None,
+        trs_max: int | None,
+        vuln_type: str | None,
+    ) -> list[dict[str, Any]]:
+        request: dict[str, Any] = {
             "findingStatusScoreEnvironmentalMin": cvss_min,
             "findingStatusScoreEnvironmentalMax": cvss_max,
             "findingStatusScoreHyScoreMin": trs_min,
@@ -208,18 +209,18 @@ class Client(BaseClient):
     def fetch_aggfindings(
         self,
         *,
-        asset_name: Optional[str],
-        asset_type: Optional[str],
-        attribute: Optional[str],
-        cvss_min: Optional[float],
-        cvss_max: Optional[float],
+        asset_name: str | None,
+        asset_type: str | None,
+        attribute: str | None,
+        cvss_min: float | None,
+        cvss_max: float | None,
         hy_global_only: bool,
         limit: int,
-        trs_min: Optional[int],
-        trs_max: Optional[int],
-        vuln_type: Optional[str],
-    ) -> List[Dict[str, Any]]:
-        request: Dict[str, Any] = {
+        trs_min: int | None,
+        trs_max: int | None,
+        vuln_type: str | None,
+    ) -> list[dict[str, Any]]:
+        request: dict[str, Any] = {
             "aggFindingNodeStatusUnignoredOpenEnvironmentalMaxMin": cvss_min,
             "aggFindingNodeStatusUnignoredOpenEnvironmentalMaxMax": cvss_max,
             "aggFindingNodeStatusUnignoredOpenHyScoreMaxMin": trs_min,
@@ -266,21 +267,12 @@ class Client(BaseClient):
 
 
 def remap_item(
-    item: Dict[str, Any],
-    mappings: List[
-        Union[
-            # tuple items:
-            #  1. source path
-            #  2. destination path
-            #  3. default value (optional)
-            #  4. formatter (optional)
-            Tuple[List[str], List[str]],
-            Tuple[List[str], List[str], Any],
-            Tuple[List[str], List[str], Any, Callable[[Any], Any]],
-        ]
+    item: dict[str, Any],
+    mappings: list[
+        tuple[list[str], list[str]] | tuple[list[str], list[str], Any] | tuple[list[str], list[str], Any, Callable[[Any], Any]]
     ],
-) -> Dict[str, Any]:
-    output: Dict[str, Any] = {}
+) -> dict[str, Any]:
+    output: dict[str, Any] = {}
     for mapping in mappings:
         default = None
         formatter = identity
@@ -296,20 +288,20 @@ def remap_item(
     return output
 
 
-def get_first_value(item: Optional[Dict[str, T]]) -> Optional[T]:
+def get_first_value(item: dict[str, T] | None) -> T | None:
     if item:
         return next(iter(item.values()))
     return None
 
 
-def format_date(date_str: Optional[str]) -> Optional[str]:
+def format_date(date_str: str | None) -> str | None:
     """Format a date from API"""
     if date_str:
         return datetime.strftime(dateutil.parser.parse(date_str), DATE_FORMAT)
     return None
 
 
-def none_or_apply(item: Optional[str], apply: Callable[[str], T]) -> Optional[T]:
+def none_or_apply(item: str | None, apply: Callable[[str], T]) -> T | None:
     if item is None:
         return None
     return apply(item)
@@ -328,7 +320,7 @@ def test_module(client: Client) -> str:
 
 
 def hackuity_search_findings_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     asset_name = args.get("asset_name")
     asset_type = args.get("asset_type")
@@ -427,7 +419,7 @@ def hackuity_search_findings_command(
 
 
 def hackuity_search_vulnerabilities_command(
-    client: Client, args: Dict[str, Any], hy_global_only: bool
+    client: Client, args: dict[str, Any], hy_global_only: bool
 ) -> CommandResults:
     asset_name = args.get("asset_name")
     asset_type = args.get("asset_type")
@@ -543,7 +535,7 @@ def hackuity_search_vulnerabilities_command(
 
 
 def hackuity_dashboard_widgets_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     raw_response = client.fetch_dashboard_widgets()
     outputs = [
@@ -580,7 +572,7 @@ def hackuity_dashboard_widgets_command(
 
 
 def hackuity_dashboard_data_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     widget_id = args["widget_id"]
     try:
@@ -614,7 +606,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
 
-    commands: Dict[str, Callable[[Client, Dict[str, str]], CommandResults]] = {
+    commands: dict[str, Callable[[Client, dict[str, str]], CommandResults]] = {
         "hackuity-dashboard-data": hackuity_dashboard_data_command,
         "hackuity-dashboard-widgets": hackuity_dashboard_widgets_command,
         "hackuity-search-findings": hackuity_search_findings_command,

@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 import io
 from datetime import datetime
 from itertools import takewhile
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
+from collections.abc import Callable
 import json
 from dateutil.parser import parse
 
@@ -44,7 +45,7 @@ COMMENT_ACTION = 'COMMENTS_ADDED'
 # command.
 ATTACHMENT_ACTION = 'ATTACHED_FILE'
 # This will store the state mapping of XSOAR states with Securonix states.
-XSOAR_TO_SECURONIX_STATE_MAPPING: Dict = {}
+XSOAR_TO_SECURONIX_STATE_MAPPING: dict = {}
 # Policy types for which retry should have end time to the current time.
 POLICY_TYPES_TO_RETRY = ['DIRECTIVE', 'LAND SPEED', 'TIER2', 'BEACONING']
 
@@ -188,7 +189,7 @@ def incident_priority_to_dbot_score(priority_str: str, default_severity: str):
     return 0
 
 
-def validate_configuration_parameters(params: Dict[str, Any]):
+def validate_configuration_parameters(params: dict[str, Any]):
     """
     Check whether entered configuration parameters are valid or not.
 
@@ -254,7 +255,7 @@ class RetryFixed(Retry):
         return min(self.DEFAULT_BACKOFF_MAX, int(self.backoff_factor))
 
 
-def validate_mirroring_parameters(params: Dict[str, Any]) -> None:
+def validate_mirroring_parameters(params: dict[str, Any]) -> None:
     """Validate mirroring specific configuration parameters.
 
     Args:
@@ -344,7 +345,7 @@ def validate_delete_whitelist_parameters(whitelist_type: str, entity_id: str, at
         raise ValueError("tenant_name is a required parameter.")
 
 
-def get_mirroring() -> Dict:
+def get_mirroring() -> dict:
     """Add mirroring related keys in an incident.
 
     Returns:
@@ -362,7 +363,7 @@ def get_mirroring() -> Dict:
     }
 
 
-def filter_activity_entries_by_time(activity_data: List[Dict[str, Any]], timestamp: int) -> List[Dict[str, Any]]:
+def filter_activity_entries_by_time(activity_data: list[dict[str, Any]], timestamp: int) -> list[dict[str, Any]]:
     """Filter the incident activity entries by the given timestamp.
 
     Args:
@@ -388,7 +389,7 @@ def filter_activity_entries_by_time(activity_data: List[Dict[str, Any]], timesta
     return filtered_activities
 
 
-def filter_comment_activity_entries(activity_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def filter_comment_activity_entries(activity_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Filter the comment entries from the given incident activity entries.
 
     Args:
@@ -408,7 +409,7 @@ def filter_comment_activity_entries(activity_data: List[Dict[str, Any]]) -> List
     return comment_entries
 
 
-def filter_attachment_activity_entries(activity_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def filter_attachment_activity_entries(activity_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Filter the attachment entries from the given incident activity entries.
 
     Args:
@@ -428,7 +429,7 @@ def filter_attachment_activity_entries(activity_data: List[Dict[str, Any]]) -> L
     return attachment_entries
 
 
-def extract_names_of_attachments_from_entries(attachment_entries: List[Dict[str, Any]]) -> List[str]:
+def extract_names_of_attachments_from_entries(attachment_entries: list[dict[str, Any]]) -> list[str]:
     """Return names of the attachments for a list of attachment entries.
 
     Args:
@@ -443,7 +444,7 @@ def extract_names_of_attachments_from_entries(attachment_entries: List[Dict[str,
     return list(filter(None, attachment_names))
 
 
-def is_incident_closed_on_securonix(activity_data: List[Dict[str, Any]], close_states_of_securonix: List[str]) -> bool:
+def is_incident_closed_on_securonix(activity_data: list[dict[str, Any]], close_states_of_securonix: list[str]) -> bool:
     """Check whether the incident is closed on the Securonix.
 
     Args:
@@ -467,7 +468,7 @@ def is_incident_closed_on_securonix(activity_data: List[Dict[str, Any]], close_s
     return any(incident_closed)
 
 
-def extract_closing_comments(activity_data: List[Dict[str, Any]], close_states_of_securonix: List[str]) -> str:
+def extract_closing_comments(activity_data: list[dict[str, Any]], close_states_of_securonix: list[str]) -> str:
     """Extract the contents of the closing comments from activity data provided from Securonix.
 
     Args:
@@ -748,7 +749,7 @@ class Client(BaseClient):
         set_integration_context({'token': token})
         return token
 
-    def list_workflows_request(self) -> Dict:
+    def list_workflows_request(self) -> dict:
         """List workflows.
 
         Returns:
@@ -758,7 +759,7 @@ class Client(BaseClient):
                                       params={'type': 'workflows'})
         return workflows.get('result').get('workflows')
 
-    def get_default_assignee_for_workflow_request(self, workflow: str) -> Dict:
+    def get_default_assignee_for_workflow_request(self, workflow: str) -> dict:
         """Get default assignee for a workflow..
 
         Args:
@@ -774,7 +775,7 @@ class Client(BaseClient):
         default_assignee = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return default_assignee.get('result')
 
-    def list_possible_threat_actions_request(self) -> Dict:
+    def list_possible_threat_actions_request(self) -> dict:
         """List possible threat actions.
 
         Returns:
@@ -785,7 +786,7 @@ class Client(BaseClient):
                                            params={'type': 'threatActions'})
         return threat_actions.get('result')
 
-    def list_policies_request(self) -> Dict:
+    def list_policies_request(self) -> dict:
         """List policies.
 
         Returns:
@@ -796,7 +797,7 @@ class Client(BaseClient):
                                      response_type='xml')
         return policies
 
-    def list_resource_groups_request(self) -> Dict:
+    def list_resource_groups_request(self) -> dict:
         """List resource groups.
 
         Returns:
@@ -807,7 +808,7 @@ class Client(BaseClient):
                                             response_type='xml')
         return resource_groups
 
-    def list_users_request(self) -> Dict:
+    def list_users_request(self) -> dict:
         """List users.
 
         Returns:
@@ -818,7 +819,7 @@ class Client(BaseClient):
                                   response_type='xml')
         return users
 
-    def list_activity_data_request(self, from_: str, to_: str, query: str = None) -> Dict:
+    def list_activity_data_request(self, from_: str, to_: str, query: str = None) -> dict:
         """List activity data.
 
         Args:
@@ -845,7 +846,7 @@ class Client(BaseClient):
                                           params=params)
         return activity_data
 
-    def list_violation_data_request(self, from_: str, to_: str, query: str = None, query_id: str = None) -> Dict:
+    def list_violation_data_request(self, from_: str, to_: str, query: str = None, query_id: str = None) -> dict:
         """List violation data.
 
         Args:
@@ -876,7 +877,7 @@ class Client(BaseClient):
         return violation_data
 
     def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str, max_incidents: str = '200',
-                               offset: str = '0') -> Dict:
+                               offset: str = '0') -> dict:
         """List all incidents by sending a GET request.
 
         Args:
@@ -905,7 +906,7 @@ class Client(BaseClient):
         incidents = self.http_request('GET', '/incident/get', headers=headers, params=params)
         return incidents.get('result').get('data')
 
-    def get_incident_request(self, incident_id: str) -> Dict:
+    def get_incident_request(self, incident_id: str) -> dict:
         """get incident meta data by sending a GET request.
 
         Args:
@@ -925,7 +926,7 @@ class Client(BaseClient):
         incident = self.http_request('GET', '/incident/get', headers=headers, params=params)
         return incident.get('result').get('data')
 
-    def get_incident_status_request(self, incident_id: str) -> Dict:
+    def get_incident_status_request(self, incident_id: str) -> dict:
         """get incident meta data by sending a GET request.
 
         Args:
@@ -941,7 +942,7 @@ class Client(BaseClient):
         incident = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incident.get('result')
 
-    def get_incident_workflow_request(self, incident_id: str) -> Dict:
+    def get_incident_workflow_request(self, incident_id: str) -> dict:
         """get incident workflow by sending a GET request.
 
         Args:
@@ -957,7 +958,7 @@ class Client(BaseClient):
         incident = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incident.get('result')
 
-    def get_incident_available_actions_request(self, incident_id: str) -> Dict:
+    def get_incident_available_actions_request(self, incident_id: str) -> dict:
         """get incident available actions by sending a GET request.
 
         Args:
@@ -999,7 +1000,7 @@ class Client(BaseClient):
                                            params=params)
         return attachment_res
 
-    def perform_action_on_incident_request(self, incident_id, action: str, action_parameters: str) -> Dict:
+    def perform_action_on_incident_request(self, incident_id, action: str, action_parameters: str) -> dict:
         """get incident available actions by sending a GET request.
 
         Args:
@@ -1032,7 +1033,7 @@ class Client(BaseClient):
         incident = self.http_request('POST', '/incident/actions', headers={'token': self._token}, params=params)
         return incident.get('result')
 
-    def add_comment_to_incident_request(self, incident_id: str, comment: str) -> Dict:
+    def add_comment_to_incident_request(self, incident_id: str, comment: str) -> dict:
         """add comment to an incident by sending a POST request.
 
         Args:
@@ -1052,7 +1053,7 @@ class Client(BaseClient):
 
     def create_incident_request(self, violation_name: str, resource_group: str, resource_name: str,
                                 entity_type: str, entity_name: str, action_name: str, workflow: str = None,
-                                comment: str = None, criticality: str = None) -> Dict:
+                                comment: str = None, criticality: str = None) -> dict:
         """create an incident by sending a POST request.
 
         Args:
@@ -1096,7 +1097,7 @@ class Client(BaseClient):
         watchlists = self.http_request('GET', '/incident/listWatchlist', headers={'token': self._token})
         return watchlists.get('result')
 
-    def get_watchlist_request(self, watchlist_name: str) -> Dict:
+    def get_watchlist_request(self, watchlist_name: str) -> dict:
         """Get a watchlist by sending a GET request.
 
         Args:
@@ -1111,7 +1112,7 @@ class Client(BaseClient):
         watchlist = self.http_request('GET', '/spotter/index/search', headers={'token': self._token}, params=params)
         return watchlist
 
-    def create_watchlist_request(self, watchlist_name: str, tenant_name: str) -> Dict:
+    def create_watchlist_request(self, watchlist_name: str, tenant_name: str) -> dict:
         """Create a watchlist by sending a POST request.
 
         Args:
@@ -1130,7 +1131,7 @@ class Client(BaseClient):
                                       headers={'token': self._token}, params=params, response_type='text')
         return watchlist
 
-    def check_entity_in_watchlist_request(self, entity_name: str, watchlist_name: str) -> Dict:
+    def check_entity_in_watchlist_request(self, entity_name: str, watchlist_name: str) -> dict:
         """Check if an entity is whitelisted by sending a GET request.
 
         Args:
@@ -1149,7 +1150,7 @@ class Client(BaseClient):
         return response
 
     def add_entity_to_watchlist_request(self, watchlist_name: str, entity_type: str, entity_name: str,
-                                        expiry_days: str) -> Dict:
+                                        expiry_days: str) -> dict:
         """Check if an entity is whitelisted by sending a GET request.
 
         Args:
@@ -1172,7 +1173,7 @@ class Client(BaseClient):
         return watchlist
 
     def list_threats_request(self, from_epoch: int, to_epoch: int, tenant_name: str, offset: int = 0,
-                             max_incidents: int = 10) -> Dict:
+                             max_incidents: int = 10) -> dict:
         """List all threats by sending a GET request.
 
         Args:
@@ -1202,7 +1203,7 @@ class Client(BaseClient):
                                      params=params)
         return response.get('Response', {}).get('threats', {})
 
-    def get_incident_activity_history_request(self, incident_id: str) -> List:
+    def get_incident_activity_history_request(self, incident_id: str) -> list:
         """Get incident activity history by sending a GET request.
 
         Args:
@@ -1218,7 +1219,7 @@ class Client(BaseClient):
         incident = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incident.get('result', {}).get('activityStreamData', [])
 
-    def list_whitelists_request(self, tenant_name: str) -> List:
+    def list_whitelists_request(self, tenant_name: str) -> list:
         """Get a whitelist information by sending a GET request.
 
         Args:
@@ -1235,7 +1236,7 @@ class Client(BaseClient):
                                       params=params)
         return whitelist.get('result', [])
 
-    def get_whitelist_entry_request(self, tenant_name: str, whitelist_name: str) -> Dict:
+    def get_whitelist_entry_request(self, tenant_name: str, whitelist_name: str) -> dict:
         """Get a whitelist information by sending a GET request.
 
         Args:
@@ -1296,7 +1297,7 @@ class Client(BaseClient):
                                      params=params)
         return response
 
-    def create_whitelist_request(self, tenant_name: str, whitelist_name: str, entity_type: str) -> Dict:
+    def create_whitelist_request(self, tenant_name: str, whitelist_name: str, entity_type: str) -> dict:
         """Create a whitelist by sending a POST request.
 
         Args:
@@ -1318,7 +1319,7 @@ class Client(BaseClient):
         return whitelist
 
     def delete_whitelist_entry_request(self, tenant_name: str, whitelist_name: str, whitelist_type: str, entity_id: str,
-                                       attribute_name: str, attribute_value: str) -> Dict:
+                                       attribute_name: str, attribute_value: str) -> dict:
         """Delete a whitelist entry by sending POST request.
 
         Args:
@@ -1357,7 +1358,7 @@ class Client(BaseClient):
         return self.http_request('DELETE', '/lookupTable/deleteLookupConfigAndData', headers={'token': self._token},
                                  params=params, response_type='text')
 
-    def get_lookup_tables_request(self, max_records: Optional[int] = 50, offset: Optional[int] = 0) -> List:
+    def get_lookup_tables_request(self, max_records: int | None = 50, offset: int | None = 0) -> list:
         """Get the list of lookup tables stored on the Securonix platform.
 
         Args:
@@ -1373,8 +1374,8 @@ class Client(BaseClient):
         }
         return self.http_request('GET', '/lookupTable/listLookupTables', headers={'token': self._token}, params=params)
 
-    def add_entry_to_lookup_table_request(self, name: str, entries: List[Dict],
-                                          tenant_name: Optional[str] = None) -> str:
+    def add_entry_to_lookup_table_request(self, name: str, entries: list[dict],
+                                          tenant_name: str | None = None) -> str:
         """Adds the provided entries to the specified lookup table.
 
         Args:
@@ -1391,12 +1392,12 @@ class Client(BaseClient):
         return self.http_request('POST', '/lookupTable/addLookupTableData', headers={'token': self._token}, json=body,
                                  response_type='text')
 
-    def list_lookup_table_entries_request(self, name: str, query: Optional[str] = None,
-                                          attribute: Optional[str] = 'key',
-                                          max_records: Optional[int] = 15, offset: Optional[int] = 0,
-                                          page_num: Optional[int] = 1,
-                                          sort: Optional[str] = None,
-                                          order: Optional[str] = 'asc') -> List:
+    def list_lookup_table_entries_request(self, name: str, query: str | None = None,
+                                          attribute: str | None = 'key',
+                                          max_records: int | None = 15, offset: int | None = 0,
+                                          page_num: int | None = 1,
+                                          sort: str | None = None,
+                                          order: str | None = 'asc') -> list:
         """List the entries of the lookup table.
 
         Args:
@@ -1433,8 +1434,8 @@ class Client(BaseClient):
 
         return self.http_request('GET', '/lookupTable/getLookupTableData', headers=headers, data=payload)
 
-    def create_lookup_table_request(self, tenant_name: str, name: str, scope: str, field_names: List, encrypt: List,
-                                    key: List) -> Dict:
+    def create_lookup_table_request(self, tenant_name: str, name: str, scope: str, field_names: list, encrypt: list,
+                                    key: list) -> dict:
         """Create a lookup table by sending a POST request.
 
         Args:
@@ -1448,7 +1449,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        data: Dict[str, Any] = {
+        data: dict[str, Any] = {
             "lookupTableName": name,
             "lookupTableScope": scope,
             "tenantName": tenant_name
@@ -1463,7 +1464,7 @@ class Client(BaseClient):
                                      headers={'token': self._token}, json=data, response_type='text')
         return response
 
-    def delete_lookup_table_entries(self, name: str, lookup_unique_keys: List[str]) -> str:
+    def delete_lookup_table_entries(self, name: str, lookup_unique_keys: list[str]) -> str:
         """Delete entries from the lookup table.
 
         Args:
@@ -1473,7 +1474,7 @@ class Client(BaseClient):
         Returns:
             str: Response from API.
         """
-        data: Dict[str, Any] = {
+        data: dict[str, Any] = {
             'lookupTableName': name,
             'keyList': lookup_unique_keys
         }
@@ -1501,7 +1502,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def list_workflows(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_workflows(client: Client, *_) -> tuple[str, dict, dict]:
     """List all workflows.
 
     Args:
@@ -1520,7 +1521,7 @@ def list_workflows(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, workflows
 
 
-def get_default_assignee_for_workflow(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_default_assignee_for_workflow(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Perform action on an incident.
 
     Args:
@@ -1542,7 +1543,7 @@ def get_default_assignee_for_workflow(client: Client, args: Dict) -> Tuple[str, 
     return human_readable, entry_context, default_assignee
 
 
-def list_possible_threat_actions(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_possible_threat_actions(client: Client, *_) -> tuple[str, dict, dict]:
     """List all workflows.
 
     Args:
@@ -1558,7 +1559,7 @@ def list_possible_threat_actions(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, threat_actions
 
 
-def list_policies(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_policies(client: Client, *_) -> tuple[str, dict, dict]:
     """List all policies.
 
     Args:
@@ -1580,7 +1581,7 @@ def list_policies(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, policies
 
 
-def list_resource_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_resource_groups(client: Client, *_) -> tuple[str, dict, dict]:
     """List all resource groups.
 
     Args:
@@ -1605,7 +1606,7 @@ def list_resource_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, resource_groups
 
 
-def list_users(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_users(client: Client, *_) -> tuple[str, dict, dict]:
     """List all users.
 
     Args:
@@ -1629,7 +1630,7 @@ def list_users(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, users
 
 
-def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
+def list_activity_data(client: Client, args) -> tuple[str, dict, dict]:
     """List activity data.
 
     Args:
@@ -1683,7 +1684,7 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, activity_data
 
 
-def list_violation_data(client: Client, args) -> List[CommandResults]:
+def list_violation_data(client: Client, args) -> list[CommandResults]:
     """List violation data.
 
     Args:
@@ -1778,7 +1779,7 @@ def run_polling_command(client, args: dict, command_name: str, search_function: 
     return result
 
 
-def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_incidents(client: Client, args: dict) -> tuple[str, dict, dict]:
     """List incidents.
 
     Args:
@@ -1813,7 +1814,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, incidents
 
 
-def get_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_incident(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get incident.
 
     Args:
@@ -1839,7 +1840,7 @@ def get_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, incident
 
 
-def get_incident_status(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_incident_status(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get incident.
 
     Args:
@@ -1860,7 +1861,7 @@ def get_incident_status(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'Incident {incident_id} status is {incident_status}.', entry_context, incident
 
 
-def get_incident_workflow(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_incident_workflow(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get incident workflow.
 
     Args:
@@ -1882,7 +1883,7 @@ def get_incident_workflow(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'Incident {incident_id} workflow is {incident_workflow}.', entry_context, incident
 
 
-def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_incident_available_actions(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get incident available actions.
 
     Args:
@@ -1909,7 +1910,7 @@ def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dic
     return f'Incident {incident_id} available actions: {actions}.', entry_context, incident_actions
 
 
-def get_incident_attachments(client: Client, args: Dict, incident_id: str = None):
+def get_incident_attachments(client: Client, args: dict, incident_id: str = None):
     """Get incident attachments.
 
     Args:
@@ -1950,7 +1951,7 @@ def get_incident_attachments(client: Client, args: Dict, incident_id: str = None
     content_disposition = attachments_res.headers.get('Content-Disposition')
     filename = content_disposition.split(';')[1].replace('filename=', '')
     file_list = []
-    if filename.startswith((incident_id or incident_id_)):
+    if filename.startswith(incident_id or incident_id_):
         zip_obj = ZipFile(io.BytesIO(attachments_res.content))
         zip_filenames = zip_obj.namelist()
         zip_obj.extractall(path=os.path.abspath(os.getcwd()))
@@ -1971,7 +1972,7 @@ def get_incident_attachments(client: Client, args: Dict, incident_id: str = None
         return file_list
 
 
-def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def perform_action_on_incident(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Perform action on an incident.
 
     Args:
@@ -1990,7 +1991,7 @@ def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, D
     return f'Action {action} was performed on incident {incident_id}.', {}, incident_result
 
 
-def add_comment_to_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def add_comment_to_incident(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Add comment to an incident.
 
     Args:
@@ -2008,7 +2009,7 @@ def add_comment_to_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return f'Comment was added to the incident {incident_id} successfully.', {}, incident
 
 
-def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_incident(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Create an incident.
 
     Args:
@@ -2054,7 +2055,7 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def list_watchlists(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_watchlists(client: Client, *_) -> tuple[str, dict, dict]:
     """List all watchlists.
 
     Args:
@@ -2072,7 +2073,7 @@ def list_watchlists(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, watchlists
 
 
-def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
+def get_watchlist(client: Client, args) -> tuple[str, dict, dict]:
     """Get watchlist data.
 
     Args:
@@ -2104,7 +2105,7 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, watchlist
 
 
-def create_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
+def create_watchlist(client: Client, args) -> tuple[str, dict, dict]:
     """Create a watchlist.
 
     Args:
@@ -2131,7 +2132,7 @@ def create_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def check_entity_in_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
+def check_entity_in_watchlist(client: Client, args) -> tuple[str, dict, dict]:
     """Check if entity is in a watchlist.
 
     Args:
@@ -2158,7 +2159,7 @@ def check_entity_in_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, watchlist
 
 
-def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
+def add_entity_to_watchlist(client: Client, args) -> tuple[str, dict, dict]:
     """Adds an entity to a watchlist.
 
     Args:
@@ -2181,7 +2182,7 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def list_threats(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
+def list_threats(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     """List threats violated within a specified time range and get details about the threat models and policies violated.
 
     Args:
@@ -2214,7 +2215,7 @@ def list_threats(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]
     return human_readable, entry_context, threat_response
 
 
-def get_incident_activity_history(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, List]:
+def get_incident_activity_history(client: Client, args: dict[str, Any]) -> tuple[str, dict, list]:
     """Get the incident activity history for the specified incident ID.
 
     Args:
@@ -2262,7 +2263,7 @@ def get_incident_activity_history(client: Client, args: Dict[str, Any]) -> Tuple
     return human_readable, entry_context, activity_history
 
 
-def list_whitelists(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, List]:
+def list_whitelists(client: Client, args: dict[str, Any]) -> tuple[str, dict, list]:
     """List all whitelist.
 
     Args:
@@ -2301,7 +2302,7 @@ def list_whitelists(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Li
     return human_readable, entry_context, whitelists
 
 
-def get_whitelist_entry(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
+def get_whitelist_entry(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     """Get information for the specified whitelist.
 
     Args:
@@ -2345,7 +2346,7 @@ def get_whitelist_entry(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict
     return human_readable, entry_context, whitelist
 
 
-def add_whitelist_entry(client: Client, args) -> Tuple[str, Dict, Dict]:
+def add_whitelist_entry(client: Client, args) -> tuple[str, dict, dict]:
     """Adds an entry to a whitelist.
 
     Args:
@@ -2398,7 +2399,7 @@ def add_whitelist_entry(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def create_whitelist(client: Client, args) -> Tuple[str, Dict, Dict]:
+def create_whitelist(client: Client, args) -> tuple[str, dict, dict]:
     """Create a whitelist.
 
     Args:
@@ -2427,7 +2428,7 @@ def create_whitelist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def delete_lookup_table_config_and_data(client: Client, args: Dict[str, Any]) -> Tuple:
+def delete_lookup_table_config_and_data(client: Client, args: dict[str, Any]) -> tuple:
     """Delete a lookup table and its configuration data from Securonix.
 
     Args:
@@ -2458,7 +2459,7 @@ def delete_lookup_table_config_and_data(client: Client, args: Dict[str, Any]) ->
     return human_readable, entry_context, response
 
 
-def delete_whitelist_entry(client: Client, args) -> Tuple[str, Dict, Dict]:
+def delete_whitelist_entry(client: Client, args) -> tuple[str, dict, dict]:
     """Delete an entry from the whitelist.
 
     Args:
@@ -2489,7 +2490,7 @@ def delete_whitelist_entry(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def list_lookup_tables(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, List]:
+def list_lookup_tables(client: Client, args: dict[str, Any]) -> tuple[str, dict, list]:
     """Retrieves a list of lookup tables available within the Securonix platform.
 
     Args:
@@ -2522,7 +2523,7 @@ def list_lookup_tables(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict,
     return human_readable, entry_context, lookup_tables
 
 
-def validate_expiry_time_of_lookup_table_entries(table_entries: Union[Dict, List[Dict]]) -> None:
+def validate_expiry_time_of_lookup_table_entries(table_entries: Union[dict, list[dict]]) -> None:
     """Check whether the expiration time of the lookup table entries is valid.
 
     Args:
@@ -2548,7 +2549,7 @@ def validate_expiry_time_of_lookup_table_entries(table_entries: Union[Dict, List
                 is_expiration_time_in_valid_format(expiration_time)
 
 
-def add_entry_to_lookup_table(client: Client, args: Dict[str, Any]) -> Tuple:
+def add_entry_to_lookup_table(client: Client, args: dict[str, Any]) -> tuple:
     """Add entries to the lookup table.
 
     Args:
@@ -2576,7 +2577,7 @@ def add_entry_to_lookup_table(client: Client, args: Dict[str, Any]) -> Tuple:
         file_path = file_obj.get('path')
 
         try:
-            with open(file_path, 'r') as file:
+            with open(file_path) as file:
                 json_entries = json.loads(file.read())
         except json.JSONDecodeError as exception:
             raise Exception(f'Could not able to parse the provided JSON data. Error: {str(exception)}') from exception
@@ -2599,7 +2600,7 @@ def add_entry_to_lookup_table(client: Client, args: Dict[str, Any]) -> Tuple:
     return response, {}, response
 
 
-def prepare_entry_contex_lookup_table_entries_list(entries: List[Dict]) -> List[Dict]:
+def prepare_entry_contex_lookup_table_entries_list(entries: list[dict]) -> list[dict]:
     """Prepare entry context for list-lookup-table-entries command.
 
     Args:
@@ -2611,7 +2612,7 @@ def prepare_entry_contex_lookup_table_entries_list(entries: List[Dict]) -> List[
     new_entries = []
 
     for entry in entries:
-        new_entry: Dict[str, Any] = {'entry': []}
+        new_entry: dict[str, Any] = {'entry': []}
 
         for key, value in entry.items():
             if key.startswith('value_'):
@@ -2627,7 +2628,7 @@ def prepare_entry_contex_lookup_table_entries_list(entries: List[Dict]) -> List[
     return new_entries
 
 
-def prepare_human_readable_for_lookup_table_entries_list(entries: List[Dict]) -> str:
+def prepare_human_readable_for_lookup_table_entries_list(entries: list[dict]) -> str:
     """Prepare human-readable string for lookup-table-entries-list command.
 
     Args:
@@ -2652,7 +2653,7 @@ def prepare_human_readable_for_lookup_table_entries_list(entries: List[Dict]) ->
     return tableToMarkdown(name='Entries:', t=table, removeNull=True)
 
 
-def list_lookup_table_entries(client: Client, args: Dict[str, Any]) -> Tuple:
+def list_lookup_table_entries(client: Client, args: dict[str, Any]) -> tuple:
     """List the entries of the provided lookup table.
 
     Args:
@@ -2683,7 +2684,7 @@ def list_lookup_table_entries(client: Client, args: Dict[str, Any]) -> Tuple:
                                                         max_records=max_records, offset=offset,
                                                         page_num=page_num, sort=sort, order=order)
 
-    entry_context_list: List[Dict] = prepare_entry_contex_lookup_table_entries_list(response)
+    entry_context_list: list[dict] = prepare_entry_contex_lookup_table_entries_list(response)
     human_readable = prepare_human_readable_for_lookup_table_entries_list(entry_context_list)
 
     entry_context = {
@@ -2694,7 +2695,7 @@ def list_lookup_table_entries(client: Client, args: Dict[str, Any]) -> Tuple:
     return human_readable, entry_context, response
 
 
-def create_lookup_table(client: Client, args) -> Tuple[str, Dict, Dict]:
+def create_lookup_table(client: Client, args) -> tuple[str, dict, dict]:
     """Create a lookup table.
 
     Args:
@@ -2719,7 +2720,7 @@ def create_lookup_table(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def delete_lookup_table_entries(client: Client, args: Dict[str, Any]):
+def delete_lookup_table_entries(client: Client, args: dict[str, Any]):
     """Delete entries from the lookup table.
 
     Args:
@@ -2744,8 +2745,8 @@ def delete_lookup_table_entries(client: Client, args: Dict[str, Any]):
     return human_readable, {}, response
 
 
-def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident_status: str, default_severity: str,
-                             max_fetch: str, last_run: Dict, close_incident: bool) -> list:
+def fetch_securonix_incident(client: Client, fetch_time: str | None, incident_status: str, default_severity: str,
+                             max_fetch: str, last_run: dict, close_incident: bool) -> list:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -2782,7 +2783,7 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
         new_last_run = last_run
         demisto.debug('Using the last run object got from the previous run.')
 
-    demisto_incidents: List = list()
+    demisto_incidents: list = list()
 
     from_epoch = new_last_run.get('from')
     to_epoch = new_last_run.get('to')
@@ -2801,7 +2802,7 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
     )
 
     if securonix_incidents:
-        already_fetched: List[str] = new_last_run.get('already_fetched', [])  # type: ignore
+        already_fetched: list[str] = new_last_run.get('already_fetched', [])  # type: ignore
         incident_items = securonix_incidents.get('incidentItems', [])
 
         for incident in incident_items:
@@ -2863,8 +2864,8 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
     return demisto_incidents
 
 
-def fetch_securonix_threat(client: Client, fetch_time: Optional[str], tenant_name: str, max_fetch: str,
-                           last_run: Dict) -> list:
+def fetch_securonix_threat(client: Client, fetch_time: str | None, tenant_name: str, max_fetch: str,
+                           last_run: dict) -> list:
     """Uses to fetch threats into Demisto.
 
     Args:
@@ -2883,7 +2884,7 @@ def fetch_securonix_threat(client: Client, fetch_time: Optional[str], tenant_nam
             timestamp_format)}
     else:
         new_last_run = last_run
-    demisto_incidents: List = list()
+    demisto_incidents: list = list()
     from_epoch = date_to_timestamp(new_last_run.get('time'), date_format=timestamp_format)
     to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
     # Get threats from Securonix
@@ -2923,7 +2924,7 @@ def fetch_securonix_threat(client: Client, fetch_time: Optional[str], tenant_nam
     return demisto_incidents
 
 
-def get_incident_name(incident: Dict, incident_id: str, violator_id: str) -> str:
+def get_incident_name(incident: dict, incident_id: str, violator_id: str) -> str:
     """Get the incident name by concatenating the incident reasons if possible
 
     Args:
@@ -2954,7 +2955,7 @@ def get_incident_name(incident: Dict, incident_id: str, violator_id: str) -> str
     return incident_name
 
 
-def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """Retrieve the IDs of the incidents which are updated since the last updated.
 
     Args:
@@ -3005,7 +3006,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> Ge
             break
 
     # Filter out None values if there are any.
-    updated_incident_ids: List[str] = list(filter(None, updated_incident_ids))
+    updated_incident_ids: list[str] = list(filter(None, updated_incident_ids))
 
     # Filter out any duplicate incident IDs.
     updated_incident_ids = list(set(updated_incident_ids))
@@ -3021,8 +3022,8 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> Ge
     return GetModifiedRemoteDataResponse(updated_incident_ids)
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any],
-                            close_states_of_securonix: List[str]) -> Union[str, GetRemoteDataResponse]:
+def get_remote_data_command(client: Client, args: dict[str, Any],
+                            close_states_of_securonix: list[str]) -> Union[str, GetRemoteDataResponse]:
     """Return the updated incident and updated entries.
 
     Args:
@@ -3110,7 +3111,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any],
         for _comment in comments_list:
             comments_text.append(_comment.get('Comments'))
 
-        comments_text: List[str] = list(filter(None, comments_text))
+        comments_text: list[str] = list(filter(None, comments_text))
 
         if "Mirrored From XSOAR" in ", ".join(comments_text):
             demisto.debug('Skipping the comment as it is mirrored from XSOAR.')
@@ -3145,7 +3146,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any],
     return GetRemoteDataResponse(remote_incident_data, new_entries_to_return)
 
 
-def create_xsoar_to_securonix_state_mapping(params: Dict[str, Any]) -> CommandResults:
+def create_xsoar_to_securonix_state_mapping(params: dict[str, Any]) -> CommandResults:
     """Create a mapping of Securonix status and action with XSOAR's states.
 
     Args:
@@ -3194,7 +3195,7 @@ def create_xsoar_to_securonix_state_mapping(params: Dict[str, Any]) -> CommandRe
     )
 
 
-def update_remote_system(client: Client, args: Dict[str, Any]) -> str:
+def update_remote_system(client: Client, args: dict[str, Any]) -> str:
     """This command pushes local changes to the remote incident.
 
     Args:
@@ -3299,7 +3300,7 @@ def main():
                         verify=verify, proxy=proxy, securonix_retry_count=TOTAL_RETRY_COUNT,  # type: ignore
                         securonix_retry_delay=securonix_retry_delay,  # type: ignore[arg-type]
                         securonix_retry_delay_type=securonix_retry_delay_type)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]] = {
             'securonix-list-workflows': list_workflows,
             'securonix-get-default-assignee-for-workflow': get_default_assignee_for_workflow,
             'securonix-list-possible-threat-actions': list_possible_threat_actions,

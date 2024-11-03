@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 
-from typing import Dict, List, Any
+from typing import Any
 import traceback
 import requests
 
@@ -15,7 +15,7 @@ from sixgill.sixgill_enrich_client import SixgillEnrichClient
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-hashes: Dict[str, Any] = {}
+hashes: dict[str, Any] = {}
 
 
 def to_demisto_score(feed_id: str, revoked: bool):
@@ -55,7 +55,7 @@ def get_file_hashes(indicators: list = []):
     return hashes
 
 
-def process_file_hashes(stix2obj: Dict[str, Any], log):
+def process_file_hashes(stix2obj: dict[str, Any], log):
     """
     Get the file hashes from indicator
     """
@@ -82,14 +82,14 @@ def process_file_hashes(stix2obj: Dict[str, Any], log):
     return hashes
 
 
-def ip_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
+def ip_reputation_command(client: SixgillEnrichClient, args) -> list[CommandResults]:
     ips = argToList(args.get("ip"))
     skip = int(args.get("skip"))
 
     if len(ips) == 0:
         raise ValueError("IP(s) not specified")
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for ip in ips:
         ip_data = client.enrich_ioc("ip", ip, skip)
@@ -120,14 +120,14 @@ def ip_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResu
     return command_results
 
 
-def domain_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
+def domain_reputation_command(client: SixgillEnrichClient, args) -> list[CommandResults]:
     domains = argToList(args.get("domain"))
     skip = int(args.get("skip"))
 
     if len(domains) == 0:
         raise ValueError("DOMAIN(s) not specified")
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for domain in domains:
         domain_data = client.enrich_ioc("domain", domain, skip)
@@ -161,14 +161,14 @@ def domain_reputation_command(client: SixgillEnrichClient, args) -> List[Command
     return command_results
 
 
-def url_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
+def url_reputation_command(client: SixgillEnrichClient, args) -> list[CommandResults]:
     urls = argToList(args.get("url"))
     skip = int(args.get("skip"))
 
     if len(urls) == 0:
         raise ValueError("URL(s) not specified")
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for url in urls:
         url_data = client.enrich_ioc("url", url, skip)
@@ -199,14 +199,14 @@ def url_reputation_command(client: SixgillEnrichClient, args) -> List[CommandRes
     return command_results
 
 
-def file_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
+def file_reputation_command(client: SixgillEnrichClient, args) -> list[CommandResults]:
     files = argToList(args.get("file"))
     skip = int(args.get("skip"))
 
     if len(files) == 0:
         raise ValueError("HASH(s) not specified")
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for file_hash in files:
         file_data = client.enrich_ioc("hash", file_hash, skip)
@@ -249,14 +249,14 @@ def file_reputation_command(client: SixgillEnrichClient, args) -> List[CommandRe
     return command_results
 
 
-def actor_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
+def actor_reputation_command(client: SixgillEnrichClient, args) -> list[CommandResults]:
     actors = argToList(args.get("actor"))
     skip = int(args.get("skip"))
 
     if len(actors) == 0:
         raise ValueError("ACTOR(s) not specified")
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for actor in actors:
         actor_data = client.enrich_actor(actor, skip)
@@ -274,14 +274,14 @@ def actor_reputation_command(client: SixgillEnrichClient, args) -> List[CommandR
     return command_results
 
 
-def postid_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
+def postid_reputation_command(client: SixgillEnrichClient, args) -> list[CommandResults]:
     postids = argToList(args.get("post_id"))
     skip = int(args.get("skip"))
 
     if len(postids) == 0:
         raise ValueError("POSTID(s) not specified")
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for post_id in postids:
         post_id_data = client.enrich_postid(post_id, skip)

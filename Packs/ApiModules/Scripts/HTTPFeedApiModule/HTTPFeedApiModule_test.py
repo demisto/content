@@ -166,7 +166,7 @@ def test_get_feed_config():
         custom_fields_mapping=custom_fields_mapping
     )
     # Check that if an empty .get_feed_config is called, an empty dict returned
-    assert {} == client.get_feed_config()
+    assert client.get_feed_config() == {}
 
 
 def test_feed_main_fetch_indicators(mocker, requests_mock):

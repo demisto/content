@@ -17,7 +17,7 @@ def load_test_data(folder: str, file_name: str) -> dict:
     Returns:
         dict: Dictionary data loaded from the json file.
     """
-    with open(Path("test_data") / folder / f"{file_name}.json", "r") as f:
+    with open(Path("test_data") / folder / f"{file_name}.json") as f:
         return json.load(f)
 
 

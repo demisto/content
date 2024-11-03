@@ -44,7 +44,7 @@ class StreamResponse:
 
 def util_load_json(path):
     """Load a JSON file to python dictionary."""
-    with open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -178,7 +178,7 @@ def test_test_module(mocker, mock_client, capfd):
     mock_response = MockResponse()
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           'test_data/stream_detections.txt'), 'r') as f:
+                           'test_data/stream_detections.txt')) as f:
 
         mock_response.iter_lines = lambda **_: f.readlines()
 
@@ -206,7 +206,7 @@ def test_test_module_for_error(mocker, mock_client, capfd):
     mock_response = MockResponse()
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           'test_data/stream_detections_error_2.txt'), 'r') as f:
+                           'test_data/stream_detections_error_2.txt')) as f:
 
         mock_response.iter_lines = lambda **_: f.readlines()
 
@@ -254,7 +254,7 @@ def test_stream_detection_alerts_in_retry_loop(mocker, mock_client, capfd):
                                                                  'test_data/steam_detection_outputs.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           'test_data/stream_detections.txt'), 'r') as f:
+                           'test_data/stream_detections.txt')) as f:
 
         mock_response.iter_lines = lambda **_: f.readlines()
 
@@ -283,7 +283,7 @@ def test_stream_detection_alerts_in_retry_loop_with_error(mocker, mock_client, c
     mock_response = MockResponse()
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           'test_data/stream_detections_error.txt'), 'r') as f:
+                           'test_data/stream_detections_error.txt')) as f:
 
         mock_response.iter_lines = lambda **_: f.readlines()
 
@@ -314,7 +314,7 @@ def test_stream_detection_alerts_in_retry_loop_with_empty_response(mocker, mock_
     mock_response = MockResponse()
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           'test_data/stream_detections_empty.txt'), 'r') as f:
+                           'test_data/stream_detections_empty.txt')) as f:
 
         mock_response.iter_lines = lambda **_: f.readlines()
 
@@ -345,7 +345,7 @@ def test_stream_detection_alerts_in_retry_loop_with_400(mocker, mock_client, cap
     mock_response.status_code = 400
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           'test_data/stream_detections_error.txt'), 'r') as f:
+                           'test_data/stream_detections_error.txt')) as f:
 
         mock_response.iter_lines = lambda **_: f.readlines()
 

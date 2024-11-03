@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Callable
+from collections.abc import Callable
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -75,7 +75,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_response_with_pagination(client_command: Callable, client_command_args: List, limit: int) -> List[Dict]:
+def get_response_with_pagination(client_command: Callable, client_command_args: List, limit: int) -> List[dict]:
     """
     Preforms API calls to CircleCI, using pagination mechanism given by CircleCI.
     CircleCI gives a page token for retrieving next page if more results exists.
@@ -87,7 +87,7 @@ def get_response_with_pagination(client_command: Callable, client_command_args: 
     Returns:
         (List[Dict]): List of the results.
     """
-    results: List[Dict] = []
+    results: List[dict] = []
     response = client_command(*client_command_args)
     results.extend(response.get('items', []))
     while len(results) < limit:
@@ -100,7 +100,7 @@ def get_response_with_pagination(client_command: Callable, client_command_args: 
     return results[:limit]
 
 
-def get_common_arguments(client: Client, args: Dict[str, Any]) -> Tuple[str, str, str, int]:
+def get_common_arguments(client: Client, args: dict[str, Any]) -> tuple[str, str, str, int]:
     """
     Performs same logic for getting arguments.
     Args:
@@ -145,7 +145,7 @@ def test_module_command(client: Client) -> str:
     return message
 
 
-def circleci_workflows_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_workflows_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves workflows list details from CircleCI.
     Args:
@@ -172,7 +172,7 @@ def circleci_workflows_list_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def circleci_artifacts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_artifacts_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves artifacts list from CircleCI job.
     Args:
@@ -210,7 +210,7 @@ def circleci_artifacts_list_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def circleci_workflow_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_workflow_jobs_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieve jobs list from CircleCI workflow.
     Args:
@@ -235,7 +235,7 @@ def circleci_workflow_jobs_list_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_workflow_last_runs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieve jobs list from CircleCI workflow.
     Args:
@@ -266,7 +266,7 @@ def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-def circleci_trigger_workflow_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def circleci_trigger_workflow_command(client: Client, args: dict[str, Any]) -> CommandResults:
     vc_type, organization, project, _ = get_common_arguments(client, args)
     parameters_json: str = args.get('parameters', '')
 

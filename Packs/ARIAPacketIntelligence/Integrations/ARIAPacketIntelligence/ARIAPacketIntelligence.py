@@ -9,7 +9,6 @@ import urllib3
 
 class ParameterError(Exception):
     """ Raised when the function parameters do not meet requirements """
-    pass
 
 
 """
@@ -86,7 +85,7 @@ class RCS:
 
         rcs = rcsp.group(2)
 
-        return RD_name, rcs, "success: {0}".format(rcsp.group(1))
+        return RD_name, rcs, f"success: {rcsp.group(1)}"
 
     """
     Parse a FQN
@@ -110,7 +109,7 @@ class RCS:
 
         rcs = rcsp.group(2)
 
-        return RD_fqn, rcs, "success: {0}".format(rcsp.group(1))
+        return RD_fqn, rcs, f"success: {rcsp.group(1)}"
 
     """
     Parse a security domain name SDN
@@ -134,7 +133,7 @@ class RCS:
 
         rcs = rcsp.group(2)
 
-        return RD_sdn, rcs, "success: {0}".format(rcsp.group(1))
+        return RD_sdn, rcs, f"success: {rcsp.group(1)}"
 
     """
     Parse an RGN label as a name
@@ -187,7 +186,7 @@ class RCS:
             elif rcsp.group(1) == "":
                 return None, None, "failed: RD rgn list rcsp.g1 name empty"
 
-            names = "{0}{1}".format(names, rcsp.group(1))
+            names = f"{names}{rcsp.group(1)}"
 
             rcs = rcsp.group(2)
             if rcs is None:
@@ -210,14 +209,14 @@ class RCS:
 
             rcs = rcsp.group(1)
 
-            names = "{},".format(names)
+            names = f"{names},"
 
         if names == "":
             return None, None, "failed: RD rgn list names empty"
 
-        names = "({})".format(names)
+        names = f"({names})"
 
-        return names, rcs, "success: {0}".format(names)
+        return names, rcs, f"success: {names}"
 
     """
     Parse an RGN label as asterik
@@ -255,37 +254,37 @@ class RCS:
                 rcs = rcsp.group(1)
                 label, rcs, msg = self._parse_RDL_RD_RGN_list(rcs)
                 if label is None:
-                    return None, None, "failed: RD rgn label exclusive none {0}".format(msg)
+                    return None, None, f"failed: RD rgn label exclusive none {msg}"
                 elif label == "":
-                    return None, None, "failed: RD rgn label exclusive empty {0}".format(msg)
-                label = "!{0}".format(label)
+                    return None, None, f"failed: RD rgn label exclusive empty {msg}"
+                label = f"!{label}"
                 break
 
             rcsp = re.match(r"^[(].*$", rcs)
             if rcsp is not None:
                 label, rcs, msg = self._parse_RDL_RD_RGN_list(rcs)
                 if label is None:
-                    return None, None, "failed: RD rgn label inclusive none {0}".format(msg)
+                    return None, None, f"failed: RD rgn label inclusive none {msg}"
                 elif label == "":
-                    return None, None, "failed: RD rgn label inclusive empty {0}".format(msg)
+                    return None, None, f"failed: RD rgn label inclusive empty {msg}"
                 break
 
             rcsp = re.match(r"^\*.*$", rcs)
             if rcsp is not None:
                 label, rcs, msg = self._parse_RDL_RD_RGN_asterik(rcs)
                 if label is None:
-                    return None, None, "failed: RD rgn label asterik none {0}".format(msg)
+                    return None, None, f"failed: RD rgn label asterik none {msg}"
                 elif label == "":
-                    return None, None, "failed: RD rgn label asterik empty {0}".format(msg)
+                    return None, None, f"failed: RD rgn label asterik empty {msg}"
                 break
 
             rcsp = re.match(r"^[\w].*$", rcs)
             if rcsp is not None:
                 label, rcs, msg = self._parse_RDL_RD_RGN_name(rcs)
                 if label is None:
-                    return None, None, "failed: RD rgn label name none {0}".format(msg)
+                    return None, None, f"failed: RD rgn label name none {msg}"
                 elif label == "":
-                    return None, None, "failed: RD rgn label name empty {0}".format(msg)
+                    return None, None, f"failed: RD rgn label name empty {msg}"
                 break
 
             return None, None, "failed: RD rgn label invalid"
@@ -304,13 +303,13 @@ class RCS:
 
         region, rcs, msg = self._parse_RDL_RD_RGN_label(rcs)
         if region is None:
-            return None, None, "failed: RD rgn region none {0}".format(msg)
+            return None, None, f"failed: RD rgn region none {msg}"
         elif region == "":
-            return None, None, "failed: RD rgn region empty {0}".format(msg)
+            return None, None, f"failed: RD rgn region empty {msg}"
         elif rcs is None:
-            return None, None, "failed: RD rgn region rcs none {0}".format(msg)
+            return None, None, f"failed: RD rgn region rcs none {msg}"
         elif rcs == "":
-            return None, None, "failed: RD rgn region rcs empty {0}".format(msg)
+            return None, None, f"failed: RD rgn region rcs empty {msg}"
 
         rcsp = re.match(r"^\.(.+)$", rcs)
         if rcsp is None:
@@ -323,13 +322,13 @@ class RCS:
 
         group, rcs, msg = self._parse_RDL_RD_RGN_label(rcs)
         if group is None:
-            return None, None, "failed: RD rgn group none {0}".format(msg)
+            return None, None, f"failed: RD rgn group none {msg}"
         elif group == "":
-            return None, None, "failed: RD rgn group empty {0}".format(msg)
+            return None, None, f"failed: RD rgn group empty {msg}"
         elif rcs is None:
-            return None, None, "failed: RD rgn group rcs none {0}".format(msg)
+            return None, None, f"failed: RD rgn group rcs none {msg}"
         elif rcs == "":
-            return None, None, "failed: RD rgn group rcs empty {0}".format(msg)
+            return None, None, f"failed: RD rgn group rcs empty {msg}"
 
         rcsp = re.match(r"^\.(.+)$", rcs)
         if rcsp is None:
@@ -342,11 +341,11 @@ class RCS:
 
         name, rcs, msg = self._parse_RDL_RD_RGN_label(rcs)
         if name is None:
-            return None, None, "failed: RD rgn name none {0}".format(msg)
+            return None, None, f"failed: RD rgn name none {msg}"
         elif name == "":
-            return None, None, "failed: RD rgn name empty {0}".format(msg)
+            return None, None, f"failed: RD rgn name empty {msg}"
 
-        RGN = ("RGN", "{0}.{1}.{2}".format(region, group, name))
+        RGN = ("RGN", f"{region}.{group}.{name}")
 
         return RGN, rcs, "success"
 
@@ -380,7 +379,7 @@ class RCS:
         while True:
             if rcs is None:
                 break
-            elif rcs == "":
+            if rcs == "":
                 break
 
             while True:
@@ -390,9 +389,9 @@ class RCS:
                         return None, None, "failure: RGN (all-none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN (all-obj) {0}".format(msg)
+                        return None, None, f"failure: RGN (all-obj) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN (all len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN (all len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -410,9 +409,9 @@ class RCS:
                         return None, None, "failure: SD (none)"
                     RD, rcs, msg = self._parse_RDL_RD_SDN(rcs)
                     if RD is None:
-                        return None, None, "failure: SD (empty) {0}".format(msg)
+                        return None, None, f"failure: SD (empty) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: SD (len != 2) {0}".format(msg)
+                        return None, None, f"failure: SD (len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -422,9 +421,9 @@ class RCS:
                         return None, None, "failure: FQN (empty)"
                     RD, rcs, msg = self._parse_RDL_RD_FQN(rcs)
                     if RD is None:
-                        return None, None, "failure: FQN (obj) {0}".format(msg)
+                        return None, None, f"failure: FQN (obj) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: FQN (len != 2) {0}".format(msg)
+                        return None, None, f"failure: FQN (len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -434,9 +433,9 @@ class RCS:
                         return None, None, "failure: RGN (exclusive-none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN (exclusive-obj) {0}".format(msg)
+                        return None, None, f"failure: RGN (exclusive-obj) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN (exclusive len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN (exclusive len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -446,9 +445,9 @@ class RCS:
                         return None, None, "failure: RGN (inclusive-none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN (inclusive-none) {0}".format(msg)
+                        return None, None, f"failure: RGN (inclusive-none) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN (inclusive len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN (inclusive len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -458,9 +457,9 @@ class RCS:
                         return None, None, "failure: RGN (asterik-none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN (asterik-none) {0}".format(msg)
+                        return None, None, f"failure: RGN (asterik-none) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN (asterik len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN (asterik len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -482,23 +481,23 @@ class RCS:
                         return None, None, "failure: name RGN (none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN name (obj) {0}".format(msg)
+                        return None, None, f"failure: RGN name (obj) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN name (len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN name (len != 2) {msg}"
                     RDL.append(RD)
                     break
 
                 RD, rcs, msg = self._parse_RDL_RD_name(rcs)
                 if RD is None:
-                    return None, None, "failure: NAME (obj) {0}".format(msg)
+                    return None, None, f"failure: NAME (obj) {msg}"
                 elif len(RD) != 2:
-                    return None, None, "failure: NAME (len != 2) {0}".format(msg)
+                    return None, None, f"failure: NAME (len != 2) {msg}"
                 RDL.append(RD)
                 break
 
             if rcs is None:
                 break
-            elif rcs == "":
+            if rcs == "":
                 break
 
             rcsp = re.match("^,(.*)$", rcs)
@@ -517,7 +516,7 @@ class RCS:
         if len(RDL) <= 0:
             return None, None, "failure: RDL empty"
 
-        return RDL, None, "success: {0}".format(len(RDL))
+        return RDL, None, f"success: {len(RDL)}"
 
     """
      parse the RET component of the RCS:
@@ -534,7 +533,7 @@ class RCS:
 
         rcsp = re.match("^Remediation@(.+)$", rcs)
         if rcsp is None:
-            rcs = "Remediation@drop()${0}".format(rcs)
+            rcs = f"Remediation@drop()${rcs}"
             rcsp = re.match("^Remediation@(.+)$", rcs)
             if rcsp is None:
                 return None, rcs, "failure: RET failed insert drop()"
@@ -549,7 +548,7 @@ class RCS:
 
         rcsp = re.match(r"^\$(.+)$", rcs)
         if rcsp is not None:
-            rcs = "drop(){0}".format(rcs)
+            rcs = f"drop(){rcs}"
 
         while True:
             rcsp = re.match(r"(\w[\w]*)([(].+\$.+)$", rcs)
@@ -618,7 +617,7 @@ class RCS:
         if len(RET) <= 0:
             return None, None, "failure: RET list empty"
 
-        return RET, rcs, "success: {0}".format(len(RET))
+        return RET, rcs, f"success: {len(RET)}"
 
     """
      parse the SDL component of the RCS:
@@ -694,7 +693,7 @@ class RCS:
         if len(SDL) <= 0:
             return None, None, "failure: SDL list empty"
 
-        return SDL, rcs, "success: {0}".format(len(SDL))
+        return SDL, rcs, f"success: {len(SDL)}"
 
     """
     Parse out the components of the RCS: [SDL] | [RET] | RDL
@@ -721,30 +720,30 @@ class RCS:
         SDL, rcs_next, msg = self._parse_SDL(rcs)
         if SDL is not None:
             if len(SDL) <= 0:
-                return None, None, None, None, "failed: SDL returned but is empty (msg={0})".format(msg)
+                return None, None, None, None, f"failed: SDL returned but is empty (msg={msg})"
         if rcs_next is None:
-            return SDL, None, None, None, "failed: RCS invalid parse after SDL (none) (msg={0})".format(msg)
+            return SDL, None, None, None, f"failed: RCS invalid parse after SDL (none) (msg={msg})"
         elif rcs_next == "":
-            return SDL, None, None, None, "failed: RCS invalid parse after SDL (empty) (msg={0})".format(msg)
+            return SDL, None, None, None, f"failed: RCS invalid parse after SDL (empty) (msg={msg})"
 
         RET, rcs_next, msg = self._parse_RET(rcs_next)
         if RET is None:
-            return SDL, None, None, None, "failed: RET is none (msg={0})".format(msg)
+            return SDL, None, None, None, f"failed: RET is none (msg={msg})"
         elif len(RET) <= 0:
-            return SDL, None, None, None, "failed: RET is empty (msg={0})".format(msg)
+            return SDL, None, None, None, f"failed: RET is empty (msg={msg})"
         elif rcs_next is None:
-            return SDL, RET, None, None, "failed: RCS invalid parse after RET (none) (msg={0})".format(msg)
+            return SDL, RET, None, None, f"failed: RCS invalid parse after RET (none) (msg={msg})"
         elif rcs_next == "":
-            return SDL, RET, None, None, "failed: RCS invalid parse after RET (none) (msg={0})".format(msg)
+            return SDL, RET, None, None, f"failed: RCS invalid parse after RET (none) (msg={msg})"
 
         RDL, rcs_next, msg = self._parse_RDL(rcs_next)
         if RDL is None:
-            return SDL, RET, None, None, "failed: RDL is none (msg={0})".format(msg)
+            return SDL, RET, None, None, f"failed: RDL is none (msg={msg})"
         elif len(RDL) <= 0:
-            return SDL, RET, None, None, "failed: RDL is empty (msg={0})".format(msg)
+            return SDL, RET, None, None, f"failed: RDL is empty (msg={msg})"
         elif rcs_next is not None:
             if rcs_next != "":
-                return SDL, RET, RDL, None, "failed: RCS invalid parse after RDL (not empty) (msg={0})".format(msg)
+                return SDL, RET, RDL, None, f"failed: RCS invalid parse after RDL (not empty) (msg={msg})"
 
         return SDL, RET, RDL, rcs_next, "success"
 
@@ -860,7 +859,7 @@ class RCS:
         return RET, True
 
 
-class ARIA(object):
+class ARIA:
 
     def __init__(self, sdso_url: str, verify_cert: bool = True):
         self.sdso_url = sdso_url

@@ -12,7 +12,7 @@ if res[0]['Type'] == entryTypes['error']:
     demisto.results('File not found')
 
 try:
-    with open(res[0]['Contents']['path'], 'r') as file:
+    with open(res[0]['Contents']['path']) as file:
         data = file.readlines()
 
         for line in data:

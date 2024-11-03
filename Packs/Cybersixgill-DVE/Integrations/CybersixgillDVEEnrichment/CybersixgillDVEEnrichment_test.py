@@ -397,7 +397,7 @@ args = {"cve_id": "CVE-2020-9047"}
 channel_code = "d5cd46c205c20c87006b55a18b106428"
 
 
-class MockedResponse(object):
+class MockedResponse:
     def __init__(self, status_code, text, reason=None, url=None, method=None):
         self.status_code = status_code
         self.text = text

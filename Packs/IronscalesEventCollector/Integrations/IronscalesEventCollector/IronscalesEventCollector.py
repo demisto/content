@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 
 import copy
 import urllib3
-from typing import Dict, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -47,7 +46,7 @@ class Client(BaseClient):  # pragma: no cover
         except ValueError:
             super().client_error_handler(res)
 
-    def get_jwt_token(self, api_key: str, scopes: list) -> Dict[str, Any]:
+    def get_jwt_token(self, api_key: str, scopes: list) -> dict[str, Any]:
         try:
             jwt_key = self._http_request(
                 method="POST",
@@ -62,7 +61,7 @@ class Client(BaseClient):  # pragma: no cover
                 )
             raise e
 
-    def get_incident(self, incident_id: int) -> Dict[str, Any]:
+    def get_incident(self, incident_id: int) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix=f"/incident/{self.company_id}/details/{incident_id}",
@@ -148,11 +147,11 @@ def get_open_incident_ids_to_fetch(
     )
 
 
-def incident_to_events(incident: Dict[str, Any]) -> List[Dict[str, Any]]:
+def incident_to_events(incident: dict[str, Any]) -> List[dict[str, Any]]:
     """Creates an event for each report in the current incident.
         Returns the list of events.
     """
-    def report_to_event(report_data: Dict[str, Any]) -> Dict[str, Any]:
+    def report_to_event(report_data: dict[str, Any]) -> dict[str, Any]:
         """Transforms a single report data of the incident to an event.
         """
         event = copy.deepcopy(incident)
@@ -168,8 +167,8 @@ def incident_to_events(incident: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 def get_events_command(
     client: Client,
-    args: Dict[str, Any]
-) -> Tuple[CommandResults, List[Dict[str, Any]]]:
+    args: dict[str, Any]
+) -> tuple[CommandResults, List[dict[str, Any]]]:
     limit: int = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
     assert isinstance(since_time, datetime)
@@ -187,7 +186,7 @@ def fetch_events_command(
     first_fetch: datetime,
     max_fetch: int,
     last_id: Optional[int] = None,
-) -> Tuple[List[Dict[str, Any]], int]:
+) -> tuple[List[dict[str, Any]], int]:
     """Fetches IRONSCALES incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
 
@@ -202,7 +201,7 @@ def fetch_events_command(
             - A list of new events.
             - ID of the most recent incident ingested in the current run.
     """
-    events: List[Dict[str, Any]] = []
+    events: List[dict[str, Any]] = []
     incident_ids: List[int] = get_open_incident_ids_to_fetch(
         client=client,
         first_fetch=first_fetch,

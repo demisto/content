@@ -58,7 +58,7 @@ def main(args):
     container_array = []
     dataset = {}
     try:
-        with open(path, 'r') as f:
+        with open(path) as f:
             all_lines = f.read()
             # fetch all data items and create a dataset
     except UnicodeDecodeError:

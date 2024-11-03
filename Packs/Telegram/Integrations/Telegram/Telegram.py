@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 TOKEN = demisto.params().get('credentials_api_token', {}).get('password') or demisto.params().get('token')
-BASE_URL = 'https://api.telegram.org/bot{}/'.format(TOKEN)
+BASE_URL = f'https://api.telegram.org/bot{TOKEN}/'
 
 ''' HELPER FUNCTIONS '''
 
@@ -123,7 +123,7 @@ def get_user_id(username):
     if username in users:
         return users[username]
     else:
-        return
+        return None
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

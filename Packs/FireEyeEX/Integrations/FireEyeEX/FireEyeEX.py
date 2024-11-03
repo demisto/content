@@ -1,4 +1,3 @@
-from typing import Tuple
 
 from CommonServerPython import *
 # Disable insecure warnings
@@ -468,7 +467,7 @@ def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 @logger
 def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch: int = 50,
-                    info_level: str = 'concise') -> Tuple[dict, list]:
+                    info_level: str = 'concise') -> tuple[dict, list]:
     if not last_run:  # if first time fetching
         next_run = {
             'time': to_fe_datetime_converter(first_fetch),

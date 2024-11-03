@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple, List
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -20,7 +20,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool,
-                 create_relationships: bool, feed_tags: List[str], tlp_color: str):
+                 create_relationships: bool, feed_tags: list[str], tlp_color: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.create_relationships = create_relationships
         self.feed_tags = feed_tags
@@ -35,7 +35,7 @@ class Client(BaseClient):
         demisto.debug('Getting indicators from lolbas api.')
         return self._http_request('GET', '/lolbas.json', resp_type='json')
 
-    def get_mitre_data(self) -> List[Dict[str, Any]]:
+    def get_mitre_data(self) -> list[dict[str, Any]]:
         """
         Get MITRE data from GitHub.
         """
@@ -66,7 +66,7 @@ def test_module(client: Client):  # pragma: no cover
     return_results('ok')
 
 
-def create_relationship_list(indicator: Dict[str, Any]) -> List[Dict[str, Any]]:
+def create_relationship_list(indicator: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Create relationships between indicators.
     For example, if an indicator has a MITRE ID, create a relationship between the indicator and the MITRE ID.
@@ -85,7 +85,7 @@ def create_relationship_list(indicator: Dict[str, Any]) -> List[Dict[str, Any]]:
     return relationships
 
 
-def map_indicator_fields(raw_indicator: Dict[str, Any]) -> Dict[str, Any]:
+def map_indicator_fields(raw_indicator: dict[str, Any]) -> dict[str, Any]:
     command_keys = ['Command', 'Description', 'Usecase', 'Category', 'Privileges', 'MitreID', 'OperatingSystem', 'MitreName']
 
     mapped_commands = []
@@ -113,7 +113,7 @@ def map_indicator_fields(raw_indicator: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def build_indicator_custom_fields(client: Client) -> Dict[str, Any]:
+def build_indicator_custom_fields(client: Client) -> dict[str, Any]:
     """
     Map MITRE ID to MITRE name.
     """
@@ -129,14 +129,14 @@ def build_indicator_custom_fields(client: Client) -> Dict[str, Any]:
             mitre_name = obj.get('name')
             if mitre_id := external_ref.get('external_id'):
                 result_map[mitre_id] = mitre_name
-    for mitre_id in result_map.keys():
+    for mitre_id in result_map:
         if len(mitre_id.split('.')) == 2:
             main_mitre_id = mitre_id.split('.')[0]
             result_map[mitre_id] = f"{result_map[main_mitre_id]}: {result_map[mitre_id]}"
     return result_map
 
 
-def build_mitre_tags(raw_indicator: Dict[str, Any], mitre_id_to_name: Dict[str, str]) -> List[str]:
+def build_mitre_tags(raw_indicator: dict[str, Any], mitre_id_to_name: dict[str, str]) -> list[str]:
     """
     Returns an extended MITRE tags list of a single indicator.
     """
@@ -149,18 +149,18 @@ def build_mitre_tags(raw_indicator: Dict[str, Any], mitre_id_to_name: Dict[str, 
     return mitre_tags
 
 
-def build_indicators(client: Client, raw_indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def build_indicators(client: Client, raw_indicators: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Builds indicators JSON data in XSOAR expected format from the raw response.
     """
     demisto.debug(f'Creating {len(raw_indicators)} indicators.')
-    indicators: List[Dict[str, Any]] = []
+    indicators: list[dict[str, Any]] = []
     mitre_id_to_name = build_indicator_custom_fields(client)
 
     for raw_indicator in raw_indicators:
         additional_tags = build_mitre_tags(raw_indicator, mitre_id_to_name)
 
-        indicator: Dict[str, Any] = {
+        indicator: dict[str, Any] = {
             'type': ThreatIntel.ObjectsNames.TOOL,
             'value': raw_indicator.get('Name'),
             'fields': map_indicator_fields(raw_indicator),
@@ -176,7 +176,7 @@ def build_indicators(client: Client, raw_indicators: List[Dict[str, Any]]) -> Li
     return indicators
 
 
-def create_relationships(indicator: Dict[str, Any]) -> List[Dict[str, Any]]:
+def create_relationships(indicator: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Create relationships between indicators.
     """
@@ -185,7 +185,7 @@ def create_relationships(indicator: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def fetch_indicators(client: Client, limit: int = None) -> \
-        List[Dict[str, Any]] | Tuple[List[Dict[str, Any]], str]:
+        list[dict[str, Any]] | tuple[list[dict[str, Any]], str]:
     """
         Fetch indicators from LOLBAS API and create indicators in XSOAR.
     """
@@ -209,7 +209,7 @@ def get_indicators(client, limit):
     if limit and limit <= 0:
         raise ValueError('Limit must be a positive number.')
     indicators, raw_res = fetch_indicators(client, limit)
-    indicators = indicators[:limit] if isinstance(indicators, List) \
+    indicators = indicators[:limit] if isinstance(indicators, list) \
         else [indicators] if indicators else []
     for record in indicators:
         hr = {'Name': record.get('value'), 'Description': record.get('fields', {}).get('description')}

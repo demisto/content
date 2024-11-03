@@ -21,7 +21,7 @@ urllib3.disable_warnings()
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f+00:00"
 
 
-class Client(object):
+class Client:
     """
     Client will implement the feed service.
     Contatins the requests and return data.
@@ -187,7 +187,7 @@ class Client(object):
                         break
 
         except Exception as e:
-            demisto.error("Failed to fetch feed details, exception:{}".format(e))
+            demisto.error(f"Failed to fetch feed details, exception:{e}")
             raise e
 
         return taxii_data, save_fetch_time
@@ -206,7 +206,7 @@ class Client(object):
                             collection_list.append({'name': eachone.name})
                         break
         except Exception as e:
-            demisto.error("Failed to fetch collections, exception:{}".format(e))
+            demisto.error(f"Failed to fetch collections, exception:{e}")
             raise e
 
         return collection_list
@@ -266,7 +266,7 @@ def cyble_fetch_taxii(client: Client, args: Dict[str, Any]):
         args['begin'] = str(parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC)) if args.get('begin', None) else None
         args['end'] = str(parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)) if args.get('end', None) else None
     except Exception as e:
-        raise ValueError("Invalid date format received, [{}]".format(e))
+        raise ValueError(f"Invalid date format received, [{e}]")
 
     result, time = client.get_taxii(args)
     indicators = client.build_indicators(args, result)
@@ -291,7 +291,7 @@ def fetch_indicators(client: Client):
     args = {}
     last_run = demisto.getLastRun()
     if isinstance(last_run, dict):
-        last_fetch_time = last_run.get('lastRun_{}'.format(client.collection_name), None)
+        last_fetch_time = last_run.get(f'lastRun_{client.collection_name}', None)
 
     if last_fetch_time:
         args['begin'] = str(parser.parse(last_fetch_time).replace(tzinfo=pytz.UTC))
@@ -309,7 +309,7 @@ def fetch_indicators(client: Client):
     indicators = client.build_indicators(args, indicator)
 
     if save_fetch_time:
-        last_run['lastRun_{}'.format(client.collection_name)] = save_fetch_time
+        last_run[f'lastRun_{client.collection_name}'] = save_fetch_time
         demisto.setLastRun(last_run)
 
     return indicators
@@ -331,7 +331,7 @@ def validate_input(args: Dict[str, Any]):
             if args.get('end', None):
                 _end_date = parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)
         except Exception as e:
-            raise ValueError("Invalid date format received, [{}]".format(e))
+            raise ValueError(f"Invalid date format received, [{e}]")
 
         if args.get('begin', None) and _start_date > datetime.now(timezone.utc):
             raise ValueError("Start date must be a date before or equal to current")
@@ -343,9 +343,9 @@ def validate_input(args: Dict[str, Any]):
         if not args.get('collection', False):
             raise ValueError(f"Collection Name should be provided: {arg_to_number(args.get('collection', None))}")
 
-        return None
+        return
     except Exception as e:
-        demisto.error("Exception with validating inputs [{}]".format(e))
+        demisto.error(f"Exception with validating inputs [{e}]")
         raise e
 
 

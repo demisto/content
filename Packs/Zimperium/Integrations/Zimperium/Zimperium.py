@@ -1,5 +1,4 @@
 import shutil
-from typing import Dict, Tuple
 from dateparser import parse
 import urllib3
 from CommonServerPython import *
@@ -218,7 +217,7 @@ def test_module(client: Client, *_) -> str:
     return 'ok'
 
 
-def users_search(client: Client, args: Dict) -> CommandResults:
+def users_search(client: Client, args: dict) -> CommandResults:
     """Search users
 
     Args:
@@ -264,7 +263,7 @@ def users_search(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def user_get_by_id(client: Client, args: Dict) -> CommandResults:
+def user_get_by_id(client: Client, args: dict) -> CommandResults:
     """Retrieve details for a single user.
 
     Args:
@@ -292,7 +291,7 @@ def user_get_by_id(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def devices_search(client: Client, args: Dict) -> CommandResults:
+def devices_search(client: Client, args: dict) -> CommandResults:
     """Search devices
 
     Args:
@@ -328,7 +327,7 @@ def devices_search(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def device_get_by_id(client: Client, args: Dict) -> CommandResults:
+def device_get_by_id(client: Client, args: dict) -> CommandResults:
     """Retrieve details for a single device.
 
     Args:
@@ -357,7 +356,7 @@ def device_get_by_id(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def devices_get_last_updated(client: Client, args: Dict) -> CommandResults:
+def devices_get_last_updated(client: Client, args: dict) -> CommandResults:
     """Retrieve last updated devices
 
     Args:
@@ -396,7 +395,7 @@ def devices_get_last_updated(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def app_classification_get(client: Client, args: Dict) -> CommandResults:
+def app_classification_get(client: Client, args: dict) -> CommandResults:
     """Retrieve application classification.
 
     Args:
@@ -449,7 +448,7 @@ def calculate_dbot_score(application_data: dict) -> int:
     return 3  # classification == Malicious
 
 
-def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
+def file_reputation(client: Client, args: dict) -> List[CommandResults]:
     """Get the reputation of a hash representing an App
 
     Args:
@@ -520,7 +519,7 @@ def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
     return command_results_list
 
 
-def report_get(client: Client, args: Dict) -> CommandResults:
+def report_get(client: Client, args: dict) -> CommandResults:
     """Retrieve a report.
 
     Args:
@@ -567,7 +566,7 @@ def report_get(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def events_search(client: Client, args: Dict) -> CommandResults:
+def events_search(client: Client, args: dict) -> CommandResults:
     """Search events.
 
     Args:
@@ -609,7 +608,7 @@ def events_search(client: Client, args: Dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, last_run: dict, fetch_query: str, first_fetch_time: str, max_fetch: str = '50')\
-        -> Tuple[dict, list]:
+        -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
 

@@ -1,11 +1,10 @@
 import demistomock as demisto
 
 
-from typing import Dict
 
 
 def main():
-    args: Dict = demisto.args()
+    args: dict = demisto.args()
 
     s: str = str(args.get('value'))
     length: int = int(args.get('length', 0))

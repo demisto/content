@@ -80,7 +80,7 @@ class OleClient:
         elif self.ole_command == 'olevba':
             cr = self.olevba()
         else:
-            raise NotImplementedError('Command "{}" is not implemented.'.format(self.ole_command))
+            raise NotImplementedError(f'Command "{self.ole_command}" is not implemented.')
 
         self.wrap_command_result(cr)
         return cr

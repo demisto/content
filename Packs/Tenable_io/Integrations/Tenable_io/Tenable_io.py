@@ -1880,7 +1880,7 @@ def parse_vulnerabilities(vulns):
     for vuln in vulns:
         vuln_str = json.dumps(vuln)
         if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
-            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(sys.getsizeof(vuln_str))))
+            demisto.debug(f"found object with size: {sys.getsizeof(sys.getsizeof(vuln_str))}")
             if vuln.get('output'):
                 demisto.debug("replacing output key")
                 vuln['output'] = ""

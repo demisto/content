@@ -11,4 +11,4 @@ def test_cbp_catalog_find_hash(mocker):
     cbp_catalog_find_hash(args)
     res = demisto.results
     content = res.call_args[0][0]
-    assert [{'Type': 1, 'ContentsFormat': 'table', 'Contents': ['getTicketResponse']}] == content
+    assert content == [{'Type': 1, 'ContentsFormat': 'table', 'Contents': ['getTicketResponse']}]

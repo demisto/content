@@ -1,10 +1,9 @@
 import json
-import io
 from Ironscales import fetch_incidents
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

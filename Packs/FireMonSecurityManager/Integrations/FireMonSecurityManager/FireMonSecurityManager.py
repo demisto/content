@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 """ IMPORTS """
-from typing import Any, Dict
+from typing import Any
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -201,7 +201,7 @@ class Client(BaseClient):
         )
         return rule_rec_api_response
 
-    def get_paged_search_secrule(self, auth_token: str, payload: Dict[str, Any]):
+    def get_paged_search_secrule(self, auth_token: str, payload: dict[str, Any]):
         """Calling siql paged search api for searching security rules
         using `SIQL` language query
 
@@ -209,7 +209,7 @@ class Client(BaseClient):
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        parameters: Dict[str, Any] = {
+        parameters: dict[str, Any] = {
             "q": payload["q"],
             "pageSize": payload["pageSize"],
             "page": payload["page"],
@@ -227,14 +227,14 @@ class Client(BaseClient):
         )
         return secrule_page_search_response
 
-    def get_paged_all_collectors(self, auth_token: str, payload: Dict[str, Any]):
+    def get_paged_all_collectors(self, auth_token: str, payload: dict[str, Any]):
         """Calling get paged search api for collector
 
         Args:
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        parameters: Dict[str, Any] = {
+        parameters: dict[str, Any] = {
             "pageSize": payload["pageSize"],
             "page": payload["page"],
         }
@@ -329,13 +329,13 @@ def pca_command(client, args):
         return CommandResults(
             outputs_prefix="FireMonSecurityManager.PCA",
             outputs_key_field="pca",
-            outputs="No matching rule found for this requirement, " "Please go back and update the requirement",
+            outputs="No matching rule found for this requirement, Please go back and update the requirement",
             readable_output=tableToMarkdown(
                 name="FireMon SecurityManager PCA:",
-                t={"pca": "No matching rule found for this requirement, " "Please go back and update the requirement"},
+                t={"pca": "No matching rule found for this requirement, Please go back and update the requirement"},
                 removeNull=True,
             ),
-            raw_response="No matching rule found for this requirement, " "Please go back and update the requirement",
+            raw_response="No matching rule found for this requirement, Please go back and update the requirement",
         )
 
     for i in range(len(list_of_device_changes)):
@@ -399,7 +399,7 @@ def pca_command(client, args):
     )
 
 
-def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+def get_paged_search_secrule(client: Client, auth_token: str, payload: dict[str, Any]) -> List:
     """Make subsequent requests using client and other arguments
 
     Args:
@@ -424,7 +424,7 @@ def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str,
     return result
 
 
-def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
+def secmgr_secrule_search_command(client: Client, args: dict[str, Any]):
     """Searches for security rules using the SIQL language query
 
     Args:
@@ -457,7 +457,7 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+def get_paged_all_collectors(client: Client, auth_token: str, payload: dict[str, Any]) -> List:
     """Make subsequent requests using client and other arguments
 
     Args:
@@ -482,7 +482,7 @@ def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str,
     return result
 
 
-def collector_get_all_command(client: Client, args: Dict[str, Any]):
+def collector_get_all_command(client: Client, args: dict[str, Any]):
     """List all the collectors in the inventory
 
     Args:
@@ -513,7 +513,7 @@ def collector_get_all_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def collector_get_status_byid_command(client: Client, args: Dict[str, Any]):
+def collector_get_status_byid_command(client: Client, args: dict[str, Any]):
     """Get collector status by ID
 
     Args:

@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import traceback
-from typing import Dict, Any, List, Tuple
+from typing import Any
 from requests_ntlm import HttpNtlmAuth
 
 
@@ -57,7 +57,7 @@ class Client(BaseClient):
 
         return response['authEndpoint']
 
-    def varonis_authenticate(self, username: str, password: str, url: str) -> Dict[str, Any]:
+    def varonis_authenticate(self, username: str, password: str, url: str) -> dict[str, Any]:
         """Gets the authentication token using the '/auth/win' API endpoint and ntlm authentication
 
         :type username: ``str``
@@ -85,7 +85,7 @@ class Client(BaseClient):
         }
         return response
 
-    def varonis_get_users(self, search_string: str) -> List[Any]:
+    def varonis_get_users(self, search_string: str) -> list[Any]:
         """Search users by search string
 
         :type search_string: ``str``
@@ -94,7 +94,7 @@ class Client(BaseClient):
         :return: The list of users
         :rtype: ``Dict[str, Any]``
         """
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
         request_params['columns'] = '[\'SamAccountName\',\'Email\',\'DomainName\',\'ObjName\']'
         request_params['searchString'] = search_string
         request_params['limit'] = 1000
@@ -106,7 +106,7 @@ class Client(BaseClient):
         )
         return response['ResultSet']
 
-    def varonis_get_enum(self, enum_id: int) -> List[Any]:
+    def varonis_get_enum(self, enum_id: int) -> list[Any]:
         """Gets an enum by enum_id. Usually needs for retrieving object required for a search
 
         :type enum_id: ``int``
@@ -118,7 +118,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'/api/entitymodel/enum/{enum_id}')
         return response
 
-    def varonis_update_alert_status(self, query: Dict[str, Any]) -> bool:
+    def varonis_update_alert_status(self, query: dict[str, Any]) -> bool:
         """Update alert status
 
         :type query: ``Dict[str, Any]``
@@ -133,8 +133,8 @@ class Client(BaseClient):
             '/api/alert/alert/SetStatusToAlerts',
             json_data=query)
 
-    def varonis_get_alerted_events(self, alerts: List[str], count: int, page: int,
-                                   descending_order: bool) -> List[Dict[str, Any]]:
+    def varonis_get_alerted_events(self, alerts: list[str], count: int, page: int,
+                                   descending_order: bool) -> list[dict[str, Any]]:
         """Get alerted events
 
         :type alerts: ``List[str]``
@@ -152,7 +152,7 @@ class Client(BaseClient):
         :return: Alerted events
         :rtype: ``List[Dict[str, Any]]``
         """
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         request_params['alertId'] = alerts
         request_params['maxResults'] = count
@@ -165,11 +165,11 @@ class Client(BaseClient):
             params=request_params
         )
 
-    def varonis_get_alerts(self, threat_models: Optional[List[str]], start_time: Optional[datetime],
-                           end_time: Optional[datetime], device_names: Optional[List[str]], last_days: Optional[int],
-                           sid_ids: Optional[List[int]], from_alert_id: Optional[int], alert_statuses: Optional[List[str]],
-                           alert_severities: Optional[List[str]], aggregate: bool, count: int,
-                           page: int, descending_order: bool) -> List[Dict[str, Any]]:
+    def varonis_get_alerts(self, threat_models: Optional[list[str]], start_time: Optional[datetime],
+                           end_time: Optional[datetime], device_names: Optional[list[str]], last_days: Optional[int],
+                           sid_ids: Optional[list[int]], from_alert_id: Optional[int], alert_statuses: Optional[list[str]],
+                           alert_severities: Optional[list[str]], aggregate: bool, count: int,
+                           page: int, descending_order: bool) -> list[dict[str, Any]]:
         """Get alerts
 
         :type threat_models: ``Optional[List[str]]``
@@ -214,7 +214,7 @@ class Client(BaseClient):
         :return: Alerts
         :rtype: ``List[Dict[str, Any]]``
         """
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if threat_models and len(threat_models) > 0:
             request_params['ruleName'] = threat_models
@@ -283,7 +283,7 @@ def convert_to_demisto_severity(severity: Optional[str]) -> int:
     }[severity]
 
 
-def get_included_severitires(severity: Optional[str]) -> List[str]:
+def get_included_severitires(severity: Optional[str]) -> list[str]:
     """ Return list of severities that is equal or higher then provided
 
     :type severity: ``Optional[str]``
@@ -307,7 +307,7 @@ def get_included_severitires(severity: Optional[str]) -> List[str]:
     return severities
 
 
-def validate_threat_models(client: Client, threat_models: List[str]):
+def validate_threat_models(client: Client, threat_models: list[str]):
     """ Validates if threat models exist in Varonis
 
     :type client: ``Client``
@@ -360,7 +360,7 @@ def strEqual(text1: str, text2: str) -> bool:
     return text1.casefold() == text2.casefold()
 
 
-def enrich_with_pagination(output: Dict[str, Any], page: int, page_size: int) -> Dict[str, Any]:
+def enrich_with_pagination(output: dict[str, Any], page: int, page_size: int) -> dict[str, Any]:
     """Enriches command output with pagination info
 
     :type output: ``Dict[str, Any]``
@@ -381,7 +381,7 @@ def enrich_with_pagination(output: Dict[str, Any], page: int, page_size: int) ->
     return output
 
 
-def enrich_with_url(output: Dict[str, Any], baseUrl: str, id: str) -> Dict[str, Any]:
+def enrich_with_url(output: dict[str, Any], baseUrl: str, id: str) -> dict[str, Any]:
     """Enriches result with alert url
 
     :type output: ``Dict[str, Any]``
@@ -401,7 +401,7 @@ def enrich_with_url(output: Dict[str, Any], baseUrl: str, id: str) -> Dict[str, 
     return output
 
 
-def get_sids(client: Client, values: List[str], user_domain_name: Optional[str], key: str) -> List[int]:
+def get_sids(client: Client, values: list[str], user_domain_name: Optional[str], key: str) -> list[int]:
     """Return list of user ids
 
     :type client: ``Client``
@@ -416,7 +416,7 @@ def get_sids(client: Client, values: List[str], user_domain_name: Optional[str],
     :return: List of user ids
     :rtype: ``List[int]``
     """
-    sidIds: List[int] = []
+    sidIds: list[int] = []
 
     if not values:
         return sidIds
@@ -435,7 +435,7 @@ def get_sids(client: Client, values: List[str], user_domain_name: Optional[str],
     return sidIds
 
 
-def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_name: str) -> List[int]:
+def get_sids_by_user_name(client: Client, user_names: list[str], user_domain_name: str) -> list[int]:
     """Return list of user ids
 
     :type client: ``Client``
@@ -453,7 +453,7 @@ def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_nam
     return get_sids(client, user_names, user_domain_name, DISPLAY_NAME_KEY)
 
 
-def get_sids_by_sam(client: Client, sam_account_names: List[str]) -> List[int]:
+def get_sids_by_sam(client: Client, sam_account_names: list[str]) -> list[int]:
     """Return list of user ids
 
     :type client: ``Client``
@@ -468,7 +468,7 @@ def get_sids_by_sam(client: Client, sam_account_names: List[str]) -> List[int]:
     return get_sids(client, sam_account_names, None, SAM_ACCOUNT_NAME_KEY)
 
 
-def get_sids_by_email(client: Client, emails: List[str]) -> List[int]:
+def get_sids_by_email(client: Client, emails: list[str]) -> list[int]:
     """Return list of user ids
 
     :type client: ``Client``
@@ -505,7 +505,7 @@ def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, a
     if len(alert_ids) == 0:
         raise ValueError('alert id(s) not specified')
 
-    query: Dict[str, Any] = {
+    query: dict[str, Any] = {
         'AlertGuids': alert_ids,
         'closeReasonId': close_reason_id,
         'statusId': status_id
@@ -543,9 +543,9 @@ def test_module(client: Client) -> str:
     return message
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: Optional[datetime], max_results: int,
+def fetch_incidents(client: Client, last_run: dict[str, int], first_fetch_time: Optional[datetime], max_results: int,
                     alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
-                    ) -> Tuple[Dict[str, Optional[int]], List[dict]]:
+                    ) -> tuple[dict[str, Optional[int]], list[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -587,8 +587,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     if max_results > MAX_INCIDENTS_TO_FETCH:
         raise ValueError(f'{max_results} is too big number to fetch. Max incidents to fetch is {MAX_INCIDENTS_TO_FETCH}')
 
-    last_fetched_id = last_run.get('last_fetched_id', None)
-    incidents: List[Dict[str, Any]] = []
+    last_fetched_id = last_run.get('last_fetched_id')
+    incidents: list[dict[str, Any]] = []
 
     demisto.debug(f'Fetching incidents. Last fetched id: {last_fetched_id}')
 
@@ -631,7 +631,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
     return next_run, incidents
 
 
-def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def varonis_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get alerts from Varonis DA
 
     :type client: ``Client``
@@ -660,19 +660,19 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     :rtype: ``CommandResults``
     """
-    threat_model_names = args.get('threat_model_name', None)
-    max_results = args.get('max_results', None)
-    start_time = args.get('start_time', None)
-    end_time = args.get('end_time', None)
-    alert_statuses = args.get('alert_status', None)
-    alert_severities = args.get('alert_severity', None)
-    device_names = args.get('device_name', None)
+    threat_model_names = args.get('threat_model_name')
+    max_results = args.get('max_results')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    alert_statuses = args.get('alert_status')
+    alert_severities = args.get('alert_severity')
+    device_names = args.get('device_name')
     page = args.get('page', '1')
-    user_domain_name = args.get('user_domain_name', None)
-    user_names = args.get('user_name', None)
-    sam_account_names = args.get('sam_account_name', None)
-    emails = args.get('email', None)
-    last_days = args.get('last_days', None)
+    user_domain_name = args.get('user_domain_name')
+    user_names = args.get('user_name')
+    sam_account_names = args.get('sam_account_name')
+    emails = args.get('email')
+    last_days = args.get('last_days')
     descending_order = args.get('descending_order', True)
 
     user_names = try_convert(user_names, lambda x: argToList(x))
@@ -737,7 +737,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     if alert_statuses:
         for status in alert_statuses:
-            if status.lower() not in ALERT_STATUSES.keys():
+            if status.lower() not in ALERT_STATUSES:
                 raise ValueError(f'There is no status {severity}.')
 
     alerts = client.varonis_get_alerts(threat_model_names, start_time, end_time, device_names,
@@ -763,7 +763,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) -> bool:
+def varonis_update_alert_status_command(client: Client, args: dict[str, Any]) -> bool:
     """Update Varonis alert status command
 
     :type client: ``Client``
@@ -779,7 +779,7 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
     :rtype: ``bool``
 
     """
-    status = args.get('status', None)
+    status = args.get('status')
     statuses = list(filter(lambda name: name != 'closed', ALERT_STATUSES.keys()))
     if status.lower() not in statuses:
         raise ValueError(f'status must be one of {statuses}.')
@@ -789,7 +789,7 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
     return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')))
 
 
-def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
+def varonis_close_alert_command(client: Client, args: dict[str, Any]) -> bool:
     """Close Varonis alert command
 
     :type client: ``Client``
@@ -805,7 +805,7 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     :rtype: ``bool``
 
     """
-    close_reason = args.get('close_reason', None)
+    close_reason = args.get('close_reason')
     close_reasons = list(filter(lambda name: not strEqual(name, 'none'), CLOSE_REASONS.keys()))
     if close_reason.lower() not in close_reasons:
         raise ValueError(f'close reason must be one of {close_reasons}')
@@ -815,7 +815,7 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')))
 
 
-def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def varonis_get_alerted_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get alerted events from Varonis DA
 
     :type client: ``Client``
@@ -834,7 +834,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
 
     :rtype: ``CommandResults``
     """
-    alerts = args.get('alert_id', None)
+    alerts = args.get('alert_id')
     page = args.get('page', '1')
     max_results = args.get('max_results', '100')
     descending_order = args.get('descending_order', True)

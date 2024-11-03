@@ -5,7 +5,7 @@ import urllib3
 
 
 import json
-from typing import Any, Dict, Tuple, List
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -169,8 +169,8 @@ class Client(BaseClient):
         )
         return result
 
-    def blocked_lists_update(self, action_type: str, senders_list: List[str], urls_list: List[str],
-                             filehashes_list: List[str]) -> dict:
+    def blocked_lists_update(self, action_type: str, senders_list: list[str], urls_list: list[str],
+                             filehashes_list: list[str]) -> dict:
         """
         Handle update blocked lists request.
         Args:
@@ -260,8 +260,8 @@ def test_module(client: Client, params) -> str:
     return 'ok'
 
 
-def fetch_incidents(client: Client, max_results: int, last_run, list_services: List[str], first_fetch_time: str,
-                    list_event_type: List[str], is_test_module: bool) -> Tuple[Dict[str, dict], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run, list_services: list[str], first_fetch_time: str,
+                    list_event_type: list[str], is_test_module: bool) -> tuple[dict[str, dict], list[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
     This function has to implement the logic of making sure that incidents are
     fetched only once and no incidents are missed. By default it's invoked by
@@ -286,7 +286,7 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     """
     next_run = last_run.copy()
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     end = parse_date_to_isoformat('now', 'end')
 
     quota = False
@@ -320,7 +320,7 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
                             ' this exceeds you user license rate limit')
                     demisto.info('quota_error - maximum allowed requests exceeded - All incidents collected were saved')
                     break
-                elif 'Authentication token not found' in str(e):
+                if 'Authentication token not found' in str(e):
                     return_error('Authorization Error: make sure Token Key or Service URL are correctly set')
                 else:
                     raise e

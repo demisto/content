@@ -1,4 +1,3 @@
-from typing import Dict
 
 import pytest
 
@@ -56,7 +55,7 @@ DOMAIN_RESULTS = {
 
 CLIENT = Client(BASE_URL, threshold=50)
 
-EMPTY_RESPONSE: Dict = {'result': []}
+EMPTY_RESPONSE: dict = {'result': []}
 
 
 class TestDeTi:

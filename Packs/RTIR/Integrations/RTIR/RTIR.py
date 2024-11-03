@@ -934,8 +934,7 @@ def get_ticket_id(ticket):
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_ticket_id = last_run['ticket_id'] if (last_run and last_run['ticket_id']) else 0
-    raw_query = 'id>{}+AND+Priority>{}+AND+Queue={}{}{}'.format(last_ticket_id, FETCH_PRIORITY, apostrophe, FETCH_QUEUE,
-                                                                apostrophe)
+    raw_query = f'id>{last_ticket_id}+AND+Priority>{FETCH_PRIORITY}+AND+Queue={apostrophe}{FETCH_QUEUE}{apostrophe}'
     if FETCH_STATUS:
         status_list = FETCH_STATUS.split(',')
         status_query = '+AND+('

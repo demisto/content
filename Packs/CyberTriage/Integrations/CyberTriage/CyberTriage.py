@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Tuple
+from typing import Any
 
 import requests
 import urllib3
@@ -17,7 +17,7 @@ class CyberTriageClient(BaseClient):
     SCAN_OPTIONS = ['pr', 'nw', 'nc', 'st', 'sc', 'ru', 'co', 'lo', 'ns', 'wb', 'fs']
 
     def __init__(self, server: str, rest_port: str, api_key: str, user: str,
-                 password: str, verify_server_cert: bool, ok_codes: Tuple[int, ...]):
+                 password: str, verify_server_cert: bool, ok_codes: tuple[int, ...]):
         base_url = f'https://{server}:{rest_port}/api/' if not (
             server.startswith('https://') or server.startswith('http://')
         ) else f'{server}:{rest_port}/api/'
@@ -107,7 +107,7 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
     try:
-        acceptable_status_codes: Tuple[int, ...] = tuple(
+        acceptable_status_codes: tuple[int, ...] = tuple(
             int(code) for code in requests.status_codes.codes if IS_2XX(code)
         )
         client = CyberTriageClient(server, rest_port, api_key, user, password,

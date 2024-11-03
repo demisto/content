@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 
 import dateparser
 from requests import Response
-from typing import Dict, Any, Union, Tuple
+from typing import Any
 from requests.exceptions import (
     MissingSchema,
     InvalidSchema,
@@ -37,14 +37,14 @@ MAX_WORKERS = 5
 TOKEN_TIME_DIFF = 60
 INTEGRATION_VERSION = 'v1.0'
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'GET_TOKEN': '/token',
     'GET_EVENTS': '/policy_events',
     'REMEDIATE_MSG': '/messages/{}/remediate',
     'GET_MESSAGES': '/messages',
 }
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data.',
     'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured API Key and Secret Key.',
     'PROXY_ERROR': "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or "
@@ -71,7 +71,7 @@ MESSAGES: Dict[str, str] = {
     '"Message Alert". ',
 }
 
-HR_MESSAGES: Dict[str, str] = {
+HR_MESSAGES: dict[str, str] = {
     'REMEDIATE_MSG_SUCCESS': "Message ID - {} remediated successfully with operation '{}'."
 }
 
@@ -353,7 +353,7 @@ def validate_fetch_policy_action(fetch_policy_action) -> bool:
     if fetch_policy_action == '' or fetch_policy_action is None:
         return True
 
-    if not (fetch_policy_action in policy_actions):
+    if fetch_policy_action not in policy_actions:
         raise ValueError(MESSAGES['INVALID_POLICY_ACTION_TYPE'])
     return False
 
@@ -370,7 +370,7 @@ def validate_exclude_alert_type(exclude_alert_type) -> bool:
     if exclude_alert_type == '' or exclude_alert_type is None:
         return True
 
-    if not (exclude_alert_type in exclude_alert_types):
+    if exclude_alert_type not in exclude_alert_types:
         raise ValueError(MESSAGES['INVALID_EXCLUDE_ALERT_TYPE'])
     return False
 
@@ -504,8 +504,8 @@ def test_function(**kwargs) -> str:
 
 
 def get_events_params(
-    args: Dict[str, Any], max_record=MAX_LIMIT_FOR_EVENT
-) -> Dict[str, Any]:
+    args: dict[str, Any], max_record=MAX_LIMIT_FOR_EVENT
+) -> dict[str, Any]:
     """
     Validates the input arguments of command and returns parameter dictionary
     or raises ValueError in case of validation failed.
@@ -582,8 +582,8 @@ def get_events_params(
 
 
 def list_policy_events_command(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve list of events based on various argument(s).
     Will raise an exception if validation fails.
@@ -618,8 +618,8 @@ def list_policy_events_command(
 
 
 def list_message_data_command(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve list of messages based on various argument(s).
     Will raise an exception if validation fails.
@@ -664,7 +664,7 @@ def list_message_data_command(
 
 
 def remediate_message_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Remediate a message by applying a remediation operation 'move' or 'delete'.
@@ -702,7 +702,7 @@ def remediate_message_command(
 
 
 def get_list_policies_api_endpoint(
-    client: Client, params: Dict[str, Any]
+    client: Client, params: dict[str, Any]
 ) -> Any:
     """
     This function gets list of policies
@@ -724,7 +724,7 @@ def get_list_policies_api_endpoint(
     )
 
 
-def fetch_incidents_params(**kwargs) -> Dict[str, Any]:
+def fetch_incidents_params(**kwargs) -> dict[str, Any]:
     """
     Validates the input arguments of integration for fetching incidents and returns parameter dictionary
     or raises ValueError in case of validation failed.
@@ -805,10 +805,10 @@ def get_message(client: Client, policy_id: str) -> Any:
 
 def fetch_incidents(
     client: Client,
-    last_run: Dict[str, Any],
-    args: Dict[str, Any],
+    last_run: dict[str, Any],
+    args: dict[str, Any],
     call_from_test=False,
-) -> Tuple[dict, list]:
+) -> tuple[dict, list]:
     """
     This function is called for fetching incidents.
     This function gets all policies, then after using ThreadPoolExecutor, for each policy in all policies, get each

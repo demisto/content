@@ -182,13 +182,13 @@ def main():
             if numIncidentsList >= incident_thresholds['numberofincidentsIObiggerthan1mb']:
                 actionableItems.append({'category': 'DB analysis',
                                         'severity': 'Medium',
-                                        'description': '{} {}'.format(numIncidentsList, DESCRIPTION[0]),
+                                        'description': f'{numIncidentsList} {DESCRIPTION[0]}',
                                         'resolution': RESOLUTION[0],
                                         })
             if numIncidentsListBiggerThan10 >= incident_thresholds['numberofincidentsIObiggerthan10mb']:
                 actionableItems.append({'category': 'DB analysis',
                                         'severity': 'High',
-                                        'description': '{} {}'.format(numIncidentsListBiggerThan10, DESCRIPTION[1]),
+                                        'description': f'{numIncidentsListBiggerThan10} {DESCRIPTION[1]}',
                                         'resolution': RESOLUTION[0]
                                         })
             results = CommandResults(

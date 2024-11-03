@@ -127,7 +127,7 @@ def do_post(token, is_xml, suffix, body):
         if res.content:
             parsed_response = xml2json(res.content)
         else:
-            return_error('Unable to parse the following response: {}'.format(res))
+            return_error(f'Unable to parse the following response: {res}')
     else:
         parsed_response = parse_response(res)
     return parsed_response
@@ -168,20 +168,20 @@ def parse_response(resp):
         try:
             return resp.json()
         except Exception as ex:
-            return_error('Unable to parse response: {}'.format(ex))
+            return_error(f'Unable to parse response: {ex}')
     else:
         try:
             message = resp.json().get('errorMessage')
-            return_error('Error: {}'.format(message))
+            return_error(f'Error: {message}')
         except Exception:
-            return_error('Error: {}'.format(resp))
+            return_error(f'Error: {resp}')
 
 
 def get_token_from_response(resp):
     if resp.get('token'):
         return resp.get('token')
     else:
-        return_error('No token: {}'.format(resp))
+        return_error(f'No token: {resp}')
 
 
 def choose_columns(column_arg, default_list):
@@ -197,19 +197,19 @@ def choose_columns(column_arg, default_list):
 
 def build_command_xml(data):
     return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"' \
-           ' xmlns:com="http://command.client.webservice.sepm.symantec.com/"> \
-            <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data)
+           f' xmlns:com="http://command.client.webservice.sepm.symantec.com/"> \
+            <soapenv:Header/><soapenv:Body>{data}</soapenv:Body></soapenv:Envelope>'
 
 
 def build_client_xml(data):
     return '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' \
-           'xmlns:cli="http://client.webservice.sepm.symantec.com/"> \
-            <soapenv:Header/><soapenv:Body>{0}</soapenv:Body></soapenv:Envelope>'.format(data)
+           f'xmlns:cli="http://client.webservice.sepm.symantec.com/"> \
+            <soapenv:Header/><soapenv:Body>{data}</soapenv:Body></soapenv:Envelope>'
 
 
 def get_command_status_details(token, command_id):
     xml = build_command_xml(
-        '<com:getCommandStatusDetails><commandID>{0}</commandID></com:getCommandStatusDetails>'.format(command_id))
+        f'<com:getCommandStatusDetails><commandID>{command_id}</commandID></com:getCommandStatusDetails>')
     res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
     return res_json
 
@@ -218,7 +218,7 @@ def build_command_response_output(title, command_id, message, response):
     cmd_status_details = response.get('cmdStatusDetail')
     cmd_status_details.pop('hardwareKey', None)
     md = tableToMarkdown(title, cmd_status_details) + '\n'
-    md += '### Command ID: {0}\n'.format(command_id)
+    md += f'### Command ID: {command_id}\n'
     md += '### ' + message
     demisto.results({
         'Type': entryTypes['note'],
@@ -236,7 +236,7 @@ def build_command_response_output(title, command_id, message, response):
 
 
 def get_computer_id_by_ip(token, ip):
-    xml = build_client_xml('<cli:getComputersByIP><ipAddresses>{0}</ipAddresses></cli:getComputersByIP>'.format(ip))
+    xml = build_client_xml(f'<cli:getComputersByIP><ipAddresses>{ip}</ipAddresses></cli:getComputersByIP>')
     res_json = do_post(token, True, 'sepm/ws/v1/ClientService', xml)
     return demisto.get(json.loads(res_json),
                        'Envelope.Body.getComputersByIPResponse.ComputerResult.computers.computerId')
@@ -244,8 +244,8 @@ def get_computer_id_by_ip(token, ip):
 
 def get_computer_id_by_hostname(token, hostname):
     xml = build_client_xml(
-        '<cli:getComputersByHostName><computerHostNames>{0}</computerHostNames>'
-        '</cli:getComputersByHostName>'.format(hostname))
+        f'<cli:getComputersByHostName><computerHostNames>{hostname}</computerHostNames>'
+        '</cli:getComputersByHostName>')
     res_json = do_post(token, True, 'sepm/ws/v1/ClientService', xml)
     return demisto.get(json.loads(res_json),
                        'Envelope.Body.getComputersByHostNameResponse.ComputerResult.computers.computerId')
@@ -269,8 +269,8 @@ def get_computer_id(token, endpoint_ip, endpoint_host_name):
 
 def update_content(token, computer_id):
     xml = build_command_xml(
-        '<com:runClientCommandUpdateContent><computerGUIDList>{0}</computerGUIDList>'
-        '</com:runClientCommandUpdateContent>'.format(computer_id))
+        f'<com:runClientCommandUpdateContent><computerGUIDList>{computer_id}</computerGUIDList>'
+        '</com:runClientCommandUpdateContent>')
     res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
     command_id = demisto.get(json.loads(
         res_json), 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.commandId')
@@ -282,7 +282,7 @@ def update_content(token, computer_id):
             'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage')
         if error_code or error_message:
             return_error('An error response has returned from server:'
-                         ' {0} with code: {1}'.format(error_message, error_code))
+                         f' {error_message} with code: {error_code}')
         else:
             return_error('Could not retrieve command ID, no error was returned from server')
     return command_id
@@ -290,8 +290,8 @@ def update_content(token, computer_id):
 
 def scan(token, computer_id, scan_type):
     xml = build_command_xml(
-        '<com:runClientCommandScan><computerGUIDList>{0}</computerGUIDList>'
-        '<scanType>{1}</scanType></com:runClientCommandScan>'.format(computer_id, scan_type))
+        f'<com:runClientCommandScan><computerGUIDList>{computer_id}</computerGUIDList>'
+        f'<scanType>{scan_type}</scanType></com:runClientCommandScan>')
     res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
     command_id = demisto.get(json.loads(res_json), 'Envelope.Body.runClientCommandScanResponse.'
                                                    'CommandClientResult.commandId')
@@ -301,8 +301,7 @@ def scan(token, computer_id, scan_type):
         error_message = demisto.get(json.loads(
             res_json), 'Envelope.Body.runClientCommandScanResponse.CommandClientResult.inputErrors.errorMessage')
         if error_code or error_message:
-            return_error('An error response has returned from server: {0} with code: {1}'.format(error_message,
-                                                                                                 error_code))
+            return_error(f'An error response has returned from server: {error_message} with code: {error_code}')
         else:
             return_error('Could not retrieve command ID, no error was returned from server')
     return command_id
@@ -310,9 +309,9 @@ def scan(token, computer_id, scan_type):
 
 def quarantine(token, computer_id, action_type):
     xml = build_command_xml(
-        '<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}'
+        f'<com:runClientCommandQuarantine><command><commandType>{action_type}</commandType><targetObjectIds>{computer_id}'
         '</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command>'
-        '</com:runClientCommandQuarantine>'.format(action_type, computer_id))
+        '</com:runClientCommandQuarantine>')
     res_json = do_post(token, True, 'sepm/ws/v1/CommandService', xml)
     command_id = demisto.get(json.loads(
         res_json), 'Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.commandId')
@@ -322,8 +321,7 @@ def quarantine(token, computer_id, action_type):
         error_message = demisto.get(json.loads(
             res_json), 'Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.inputErrors.errorMessage')
         if error_code or error_message:
-            return_error('An error response has returned from server: {0} with code: {1}'.format(error_message,
-                                                                                                 error_code))
+            return_error(f'An error response has returned from server: {error_message} with code: {error_code}')
         else:
             return_error('Could not retrieve command ID, no error was returned from server')
     return command_id
@@ -439,11 +437,11 @@ def get_endpoints_info(token, computer_name, last_update, os, page_size, columns
 def create_endpints_filter_string(computer_name, last_update, os, page_size, group_name=None):
     md = '## Endpoints Information'
     if last_update != '0':
-        md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
-    md += ', filtered for hostname: {}'.format(computer_name) if computer_name else ''
-    md += ', filtered for os: {}'.format(os) if os else ''
-    md += ', filtered for group name: {}'.format(group_name) if group_name else ''
-    md += ', page size: {}'.format(page_size) if page_size else ''
+        md += f', filtered for last updated status: {last_update}' if last_update else ''
+    md += f', filtered for hostname: {computer_name}' if computer_name else ''
+    md += f', filtered for os: {os}' if os else ''
+    md += f', filtered for group name: {group_name}' if group_name else ''
+    md += f', page size: {page_size}' if page_size else ''
     md += '\n'
     return md
 
@@ -489,7 +487,7 @@ def endpoint_quarantine(token, endpoint, action):
 
 
 def get_location_list(token, group_id):
-    url = 'sepm/api/v1/groups/{}/locations'.format(group_id)
+    url = f'sepm/api/v1/groups/{group_id}/locations'
     url_resp = do_get(token, False, url)
     location_ids = list(map(lambda location_string: {'ID': location_string.split('/')[-1]}, url_resp))
     return url_resp, location_ids
@@ -582,7 +580,7 @@ def old_clients_command(token):
 def client_content_command(token):
     time_zone = demisto.getParam('timeZone')
     client_content_json, client_version, last_update_date = get_client_content(token, time_zone)
-    md = '## Client Content, last updated on {0}\n'.format(last_update_date)
+    md = f'## Client Content, last updated on {last_update_date}\n'
     md += tableToMarkdown('Client Content Versions', client_version)
     demisto.results({
         'Type': entryTypes['note'],
@@ -640,7 +638,7 @@ def groups_info_command(token):
 def command_status(token):
     command_id = demisto.getArg('commandId')
     cmd_status_detail, message = get_command_status(token, command_id)
-    md = '### Command ID: {0}\n'.format(command_id)
+    md = f'### Command ID: {command_id}\n'
     md += '### State ID: {0}\n'.format(cmd_status_detail.get('stateId'))
     md += '### ' + message
     demisto.results({
@@ -680,11 +678,9 @@ def assign_policie_command(token):
     locatoion_id = demisto.getArg('locationID')
     policy_type = demisto.getArg('policyType').lower()
     policy_id = demisto.getArg('policyID')
-    do_put(token, 'sepm/api/v1/groups/{0}/locations/{1}/policies/{2}'.format(group_id,
-                                                                             locatoion_id, policy_type),
+    do_put(token, f'sepm/api/v1/groups/{group_id}/locations/{locatoion_id}/policies/{policy_type}',
            {'id': policy_id})
-    md = '### Policy: {0}, of type: {1}, was assigned to location: {2}, in group: {3}'.format(
-        policy_id, policy_type, locatoion_id, group_id)
+    md = f'### Policy: {policy_id}, of type: {policy_type}, was assigned to location: {locatoion_id}, in group: {group_id}'
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -714,10 +710,9 @@ def endpoint_quarantine_command(token):
     endpoint = demisto.getArg('endpoint')
     action = demisto.getArg('actionType')
     command_id = endpoint_quarantine(token, endpoint, action)
-    message = '### Initiated quarantine for endpoint {0}.' \
-              ' Command ID: {1}.'.format(endpoint, command_id) \
-        if action == 'Add' else '### Removing endpoint: {0} from quarantine. Command ID: {1}.'.format(endpoint,
-                                                                                                      command_id)
+    message = f'### Initiated quarantine for endpoint {endpoint}.' \
+              f' Command ID: {command_id}.' \
+        if action == 'Add' else f'### Removing endpoint: {endpoint} from quarantine. Command ID: {command_id}.'
     context = {
         'CommandID': command_id,
         'Action': action,
@@ -739,8 +734,7 @@ def scan_endpoint_command(token):
     endpoint = demisto.getArg('endpoint')
     scan_type = demisto.getArg('scanType')
     command_id = scan_endpoint(token, endpoint, scan_type)
-    message = '### Initiated scan on endpoint: {0} with type: {1}. Command ID: {2}.'.format(endpoint,
-                                                                                            scan_type, command_id)
+    message = f'### Initiated scan on endpoint: {endpoint} with type: {scan_type}. Command ID: {command_id}.'
     context = {
         'CommandID': command_id,
         'Type': scan_type,
@@ -761,7 +755,7 @@ def scan_endpoint_command(token):
 def update_endpoint_content_command(token):
     endpoint = demisto.getArg('endpoint')
     command_id = update_endpoint_content(token, endpoint)
-    message = '### Updating endpoint: {0}. Command ID: {1}.'.format(endpoint, command_id)
+    message = f'### Updating endpoint: {endpoint}. Command ID: {command_id}.'
     context = {
         'CommandID': command_id,
         'Endpoint': endpoint

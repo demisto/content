@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import hashlib
-from typing import Dict, List
 from urllib3 import disable_warnings
 from CommonServerUserPython import *
 
@@ -23,8 +22,8 @@ class Client(BaseClient):
     SHA256_LEN = 64
     DEFAULT_THRESHOLD = 70
 
-    def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False,
-                 credentials: Dict = None, threshold=None):
+    def __init__(self, base_url: str, api_params: dict, verify=True, proxy=False,
+                 credentials: dict = None, threshold=None):
         self.command_params = api_params
         self.threshold = threshold if threshold else Client.DEFAULT_THRESHOLD
         if credentials:
@@ -36,7 +35,7 @@ class Client(BaseClient):
 
     def file(self):
         human_readable = ''
-        context_entry: Dict = {
+        context_entry: dict = {
             'Lastline': list(),
             'File': list(),
             'DBotScore': list()
@@ -75,7 +74,7 @@ class Client(BaseClient):
                 self.command_params[param] = self.command_params[param].replace('T', ' ')
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
-            context_entry: List = []
+            context_entry: list = []
             if self.credentials:
                 context_entry = self.get_status_and_time_from_get_history_response(argToList(result['data']))
             else:
@@ -127,8 +126,8 @@ class Client(BaseClient):
         self.get_task_list()
         return 'ok', {}, {}
 
-    def get_status_and_time(self, uuids) -> List:
-        task_list: List[List] = []
+    def get_status_and_time(self, uuids) -> list:
+        task_list: list[list] = []
         for uuid in uuids:
             self.command_params['uuid'] = uuid
             result = self.http_request('/analysis/get')
@@ -143,9 +142,9 @@ class Client(BaseClient):
             task_list.append([uuid, task_time.replace(' ', 'T'), status])
         return task_list
 
-    def get_status_and_time_from_get_history_response(self, tasks) -> List:
-        task_list: List[List] = []
-        filtered_tasks: List = []
+    def get_status_and_time_from_get_history_response(self, tasks) -> list:
+        task_list: list[list] = []
+        filtered_tasks: list = []
         uuid_set: set = set(map(lambda x: x.get('task_uuid'), tasks))
 
         for uuid in uuid_set:
@@ -165,12 +164,12 @@ class Client(BaseClient):
             task_list.append([task.get('task_uuid'), task_time.replace(' ', 'T'), status])
         return task_list
 
-    def http_request(self, path: str, headers=None, file_to_upload=None) -> Dict:
+    def http_request(self, path: str, headers=None, file_to_upload=None) -> dict:
         if file_to_upload:
             with open(file_to_upload, 'rb') as _file:
                 file_to_upload = {'file': (file_to_upload, _file.read())}
 
-        result: Dict = {}
+        result: dict = {}
         if self.credentials:
             url_suffix = SUFFIX_TRANSFORMER[path]
             result = self._http_request(url_suffix['method'], url_suffix['url'], data=self.credentials,
@@ -182,7 +181,7 @@ class Client(BaseClient):
         return result
 
 
-def lastline_exception_handler(result: Dict):
+def lastline_exception_handler(result: dict):
     if result.get("success") is not None:
         if result.get("success") == 0:
             error_msg = "error "
@@ -208,8 +207,8 @@ def hash_type_checker(hash_file: str) -> str:
         raise DemistoException(f'{INTEGRATION_NAME} File command support md5/ sha1/ sha256 only.')
 
 
-def report_generator(result: Dict, threshold=None):
-    context_entry: Dict = get_report_context(result, threshold)
+def report_generator(result: dict, threshold=None):
+    context_entry: dict = get_report_context(result, threshold)
     if 'File' in context_entry:
         key = 'File'
     elif 'URL' in context_entry:
@@ -233,11 +232,11 @@ def report_generator(result: Dict, threshold=None):
     return human_readable, context_entry
 
 
-def get_report_context(result: Dict, threshold=None) -> Dict:
+def get_report_context(result: dict, threshold=None) -> dict:
     key = 'File'
-    context_entry: Dict = {}
+    context_entry: dict = {}
     if 'data' in result:
-        data: Dict = {}
+        data: dict = {}
         dbotscore = {
             'Vendor': 'Lastline',
             'Score': 0,
@@ -261,7 +260,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
                 dbotscore['Score'] = 1
         else:
             status = 'Analyzing'
-        lastline: Dict = {
+        lastline: dict = {
             'Submission': {
                 'Status': status,
                 'UUID': result['data'].get('task_uuid'),
@@ -269,8 +268,8 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
             }
         }
         if 'analysis_subject' in result['data']:
-            analysis_subject: Dict = result['data']['analysis_subject']
-            temp_dict: Dict = {
+            analysis_subject: dict = result['data']['analysis_subject']
+            temp_dict: dict = {
                 'YaraSignatures': analysis_subject.get('yara_signatures'),
                 'DNSqueries': analysis_subject.get('dns_queries'),
                 'NetworkConnections': analysis_subject.get('network_connections'),

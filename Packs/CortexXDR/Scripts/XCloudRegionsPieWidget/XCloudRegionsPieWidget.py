@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import collections
 import random
-from typing import Counter
+from collections import Counter
 
 
 def parse_data(regions_name):

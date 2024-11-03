@@ -63,7 +63,7 @@ def test_file_hash():
 @pytest.mark.parametrize('path', data_test_get_report_context)
 def test_get_report_context(path):
     if path is None:
-        assert {} == get_report_context({}), f'{INTEGRATION_NAME} get_report_context filed'
+        assert get_report_context({}) == {}, f'{INTEGRATION_NAME} get_report_context filed'
     else:
         out_dict = {}
         with open(path) as json_obj:

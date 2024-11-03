@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 
-from typing import Any, Dict
 from pyopnsense2 import core_core, core_diagnostics, core_firmware, core_firewall, plugins_firewall
 import json
 import urllib3
@@ -208,7 +207,7 @@ def rule_reformat_result(data):
                 if data['rule'][key][subkey]['selected'] == 1:
                     tmpvalue = subkey
                     break
-                elif data['rule'][key][subkey]['selected'] == 0:
+                if data['rule'][key][subkey]['selected'] == 0:
                     pass
             result['rule'][key] = tmpvalue
         else:
@@ -228,7 +227,7 @@ def alias_reformat_result(data):
                 if data['alias'][key][subkey]['selected'] == 1:
                     tmpvalue = subkey
                     break
-                elif data['alias'][key][subkey]['selected'] == 0:
+                if data['alias'][key][subkey]['selected'] == 0:
                     pass
             result['alias'][key] = tmpvalue
         else:

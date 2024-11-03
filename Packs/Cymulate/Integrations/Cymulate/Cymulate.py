@@ -115,7 +115,7 @@ class Client(BaseClient):
         elif module_type == CymulateModuleTypeEnum.MAIL:
             get_ids_route = 'mail/ids'
 
-        demisto.debug("url of get ids: {0}?from={1}".format(get_ids_route, from_date))
+        demisto.debug(f"url of get ids: {get_ids_route}?from={from_date}")
 
         results = self._http_request(
             method='GET',
@@ -268,10 +268,10 @@ def fetch_incidents(client, module_type, last_run, first_fetch_time, only_penatr
 
     next_run = {"last_fetch": next_run_ts}
 
-    demisto.debug("start_query_time:{0}".format(start_query_time))
-    demisto.debug("len(items):{0}".format(len(items)))
-    demisto.debug("len(incidents):{0}".format(len(incidents)))
-    demisto.debug("next_run:{0}".format(next_run))
+    demisto.debug(f"start_query_time:{start_query_time}")
+    demisto.debug(f"len(items):{len(items)}")
+    demisto.debug(f"len(incidents):{len(incidents)}")
+    demisto.debug(f"next_run:{next_run}")
 
     return next_run, incidents[:limit], incidents[limit:]
 
@@ -326,8 +326,8 @@ def main():
     fetch_limit = 25
 
     LOG(f'Command being called is: {demisto.command()}')
-    demisto.debug("MAIN CALL , PARAMS session_token:{0} module_type:{1} only_penatrated:{2} use_proxy:{3} insecure:{4}"
-                  " is_fetch:{5}".format(session_token, module_type, only_penatrated, use_proxy, insecure, is_fetch))
+    demisto.debug(f"MAIN CALL , PARAMS session_token:{session_token} module_type:{module_type} only_penatrated:{only_penatrated} use_proxy:{use_proxy} insecure:{insecure}"
+                  f" is_fetch:{is_fetch}")
 
     try:
         client = Client(
@@ -349,8 +349,8 @@ def main():
 
             # Get the context
             integration_context = demisto.getIntegrationContext()
-            demisto.debug("initial integration_context:{0}".format(integration_context))
-            demisto.debug("initial last_run:{0}".format(demisto.getLastRun()))
+            demisto.debug(f"initial integration_context:{integration_context}")
+            demisto.debug(f"initial last_run:{demisto.getLastRun()}")
 
             # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents, remained_incidents = fetch_incidents(
@@ -362,9 +362,9 @@ def main():
                 limit=fetch_limit,
                 integration_context=integration_context)
 
-            demisto.debug("updated next_run:{0}".format(next_run))
-            demisto.debug("return incidents:{0}".format(incidents))
-            demisto.debug("return remained_incidents:{0}".format(remained_incidents))
+            demisto.debug(f"updated next_run:{next_run}")
+            demisto.debug(f"return incidents:{incidents}")
+            demisto.debug(f"return remained_incidents:{remained_incidents}")
 
             # Store next_run, incidents, remained incidents into integration
             demisto.setLastRun(next_run)
@@ -373,7 +373,7 @@ def main():
             # Store integration context
             integration_context['incidents'] = remained_incidents
             demisto.setIntegrationContext(integration_context)
-            demisto.debug("updated integration_context:{0}".format(integration_context))
+            demisto.debug(f"updated integration_context:{integration_context}")
 
             demisto.debug("******###CYMULATE-LOGS-END-FETCH_INCIDENTS!!!*******")
 
@@ -386,7 +386,7 @@ def main():
             # Get incident_id
             incident_id = demisto.args().get('incident_id', None)
 
-            demisto.debug("PARAMS attack_id:{0} incident_id:{1}".format(attack_id, incident_id))
+            demisto.debug(f"PARAMS attack_id:{attack_id} incident_id:{incident_id}")
 
             # Get technical data from server
             technical_data = cymulate_get_incident_info(
@@ -394,8 +394,7 @@ def main():
                 attack_id=attack_id
             )
 
-            demisto.debug("API RESULT technical_data_length:{0} technical_data:{1}".
-                          format(len(technical_data), technical_data))
+            demisto.debug(f"API RESULT technical_data_length:{len(technical_data)} technical_data:{technical_data}")
 
             if technical_data and len(technical_data) > 0:
 
@@ -437,7 +436,7 @@ def main():
                     "Cymulate.Incident(val.ID == obj.ID)": parsed_technical_data
                 }
 
-                demisto.debug("outputs results: {0}".format(outputs))
+                demisto.debug(f"outputs results: {outputs}")
 
                 # Return output to client
                 return_outputs(

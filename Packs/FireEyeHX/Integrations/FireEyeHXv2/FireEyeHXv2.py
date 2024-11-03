@@ -1,7 +1,7 @@
 import urllib.parse
 import urllib3
 from json import JSONDecodeError
-from typing import Tuple, Pattern
+from re import Pattern
 
 from CommonServerPython import *
 
@@ -1365,7 +1365,7 @@ def oneFromList(list_of_args, args):
     return result if checker == 1 else False
 
 
-def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
+def organize_search_body_host(client: Client, arg: tuple, body: Dict):
     if arg[0] == "hostsNames":
         hostsNames = arg[1].split(",")
         agentsIds = []
@@ -1398,7 +1398,7 @@ def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
     return body
 
 
-def organize_search_body_query(argForQuery: Tuple, args: Dict):
+def organize_search_body_query(argForQuery: tuple, args: Dict):
     query = []
     if argForQuery[0] == "fieldSearchName":
         if not args.get("fieldSearchOperator") or not args.get("fieldSearchValue"):
@@ -1684,7 +1684,7 @@ def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
     if isinstance(event_values, dict):
         indicator = event_values.get(event_indicator, '')
 
-    incident_name = u'{event_type_parsed}: {indicator}'.format(
+    incident_name = '{event_type_parsed}: {indicator}'.format(
         event_type_parsed=pattern.sub("\g<1> \g<2>", event_type).title(),
         indicator=indicator
     )
@@ -2272,7 +2272,7 @@ ACQUISITION
 """
 
 
-def data_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def data_acquisition_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if 'acquisition_id' not in args:
         acquisition_info = get_data_acquisition(client, args)
         acquisition_id = acquisition_info.get('_id')
@@ -2330,7 +2330,7 @@ def delete_data_acquisition_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def file_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def file_acquisition_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if "acquisition_id" not in args:
         if not args.get('hostName') and not args.get('agentId'):
             raise ValueError('Please provide either agentId or hostName')
@@ -2427,7 +2427,7 @@ def get_data_acquisition_command(client: Client, args: Dict[str, Any]) -> List[C
             outputs_key_field="_id",
             outputs=acquisition_info,
             readable_output=f"{message}\nacquisition ID: {acquisition_id}"
-        ), fileResult('{}_agent_{}_data.mans'.format(acquisition_id, agent_id), data)]
+        ), fileResult(f'{acquisition_id}_agent_{agent_id}_data.mans', data)]
 
     # else return message for states in [ NEW, ERROR, QUEUED, RUNNING, FAILED ]
     state = acquisition_info.get('state')
@@ -2859,7 +2859,7 @@ SEARCHES
 """
 
 
-def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def start_search_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if 'searchId' not in args:
         demisto.debug("searchId is not in the args, starting a new search")
         list_of_args = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]

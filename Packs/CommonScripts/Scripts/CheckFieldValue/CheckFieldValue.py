@@ -1,4 +1,3 @@
-from typing import Dict
 
 from CommonServerPython import *
 
@@ -13,7 +12,7 @@ def check_field(field_value, regex=None):
     return False
 
 
-def poll_field(args: Dict[str, Any]) -> CommandResults:
+def poll_field(args: dict[str, Any]) -> CommandResults:
     field = args.get('field')
     regex = args.get('regex')
     ignore_case = argToBoolean(args.get('ignore_case', 'False'))

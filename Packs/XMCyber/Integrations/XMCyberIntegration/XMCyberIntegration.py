@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 from datetime import datetime
 
 import json
@@ -31,17 +31,17 @@ PAGE_SIZE = 50
 MAX_PAGES = 10
 SENSOR_TYPE = "Sensor"
 
-XmEventType = Dict[str, Any]
+XmEventType = dict[str, Any]
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
     """Client class to interact with XM Cyber API"""
 
-    def get(self, url_suffix: str, params: Optional[Dict[str, Any]] = None):
+    def get(self, url_suffix: str, params: dict[str, Any] | None = None):
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
-    def post(self, url_suffix: str, params: Optional[Dict[str, Any]] = None):
+    def post(self, url_suffix: str, params: dict[str, Any] | None = None):
         return self._http_request(
             method="POST", url_suffix=url_suffix, data=json.dumps(params)
         )
@@ -50,7 +50,7 @@ class Client(BaseClient):
         self,
         method: str,
         url_suffix: str,
-        params: Dict[str, Any],
+        params: dict[str, Any],
         page_size: int,
         max_pages: int,
         log: bool,
@@ -78,7 +78,7 @@ class Client(BaseClient):
     def get_paginated(
         self,
         url_suffix: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         page_size: int = PAGE_SIZE,
         max_pages: int = MAX_PAGES,
         log: bool = True,
@@ -89,7 +89,7 @@ class Client(BaseClient):
     def post_paginated(
         self,
         url_suffix: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         page_size: int = PAGE_SIZE,
         max_pages: int = MAX_PAGES,
         log: bool = True,
@@ -160,7 +160,7 @@ class XM:
             "current_score": risk_score_stats["score"],
         }
 
-    def get_entities(self, time_id: int, only_assets: bool) -> Dict[str, Any]:
+    def get_entities(self, time_id: int, only_assets: bool) -> dict[str, Any]:
         """
         This general function returns data regarding the entities at a specific timeId
         Params:
@@ -175,7 +175,7 @@ class XM:
         query = {"timeId": time_id, "filter": filterObj}
         return self.client.post_paginated(URLS.Entities, query)
 
-    def _top_entities(self, url, time_id, amount_of_results) -> List[Dict[str, Any]]:
+    def _top_entities(self, url, time_id, amount_of_results) -> list[dict[str, Any]]:
         response = self.client.get(
             url, {"timeId": time_id, "amountOfResults": amount_of_results}
         )
@@ -184,12 +184,12 @@ class XM:
 
     def top_assets_at_risk(
         self, time_id: str = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return self._top_entities(URLS.Top_Assets_At_Risk, time_id, amount_of_results)
 
     def top_choke_points(
         self, time_id: str = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return self._top_entities(URLS.Top_Choke_Points, time_id, amount_of_results)
 
     def get_affected_assets(
@@ -198,7 +198,7 @@ class XM:
         time_id: str = DEFAULT_TIME_ID,
         page_size: int = PAGE_SIZE,
         max_pages: int = MAX_PAGES,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return self.client.get_paginated(
             URLS.Critical_Assets_At_Risk.format(entity_id=entity_id),
             {"timeId": time_id, "sort": "attackComplexity"},
@@ -212,7 +212,7 @@ class XM:
         time_id: str = DEFAULT_TIME_ID,
         page_size: int = PAGE_SIZE,
         max_pages: int = MAX_PAGES,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return self.client.get_paginated(
             URLS.Affected_Entities.format(entity_id=entity_id),
             {"timeId": time_id, "sort": "attackComplexity"},
@@ -221,9 +221,9 @@ class XM:
         )
 
     def search_entities(
-        self, field_name_to_value: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
-        params: Dict[str, Union[str, Dict[str, Any]]] = dict()
+        self, field_name_to_value: dict[str, Any]
+    ) -> list[dict[str, Any]]:
+        params: dict[str, str | dict[str, Any]] = dict()
         for field_name, value in field_name_to_value.items():
             if field_name == "name":
                 params["search"] = f'{{"$regex":"/{value}/i"}}'
@@ -240,14 +240,14 @@ class XM:
         time_id: str,
         page_size: int,
         max_pages: int,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return self.client.get_paginated(
             URLS.Techniques, {"timeId": time_id}, page_size, max_pages
         )
 
     def get_technique_remediation(
         self, technique: str, time_id: str = DEFAULT_TIME_ID
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         return self.client.get(
             f"{URLS.Techniques}/{technique}/remediation", {"timeId": time_id}
         )
@@ -270,7 +270,7 @@ class XM:
     def get_technique_url(self, technique: str, time_id: str = DEFAULT_TIME_ID) -> str:
         return f"{self._get_base_url_without_api()}/#/report/technique/{technique}?timeId={time_id}"
 
-    def get_link_for_report(self, event_type: str, data: Dict[str, Any]) -> str:
+    def get_link_for_report(self, event_type: str, data: dict[str, Any]) -> str:
         if event_type == EVENT_NAME.AssetAtRisk or event_type == EVENT_NAME.ChokePoint:
             return self.get_entity_report_url(data["entityId"])
 
@@ -295,8 +295,8 @@ class XM:
         self,
         name: str,
         additional_data_to_title: str,
-        data: Dict[str, Any],
-        date: Optional[datetime] = None,
+        data: dict[str, Any],
+        date: datetime | None = None,
     ) -> XmEventType:
         if self.date_created is not None:
             date = self.date_created
@@ -312,7 +312,7 @@ class XM:
         return data
 
     def _create_event_for_risk_score(
-        self, xm_events: List[XmEventType], run_data: Dict[str, str]
+        self, xm_events: list[XmEventType], run_data: dict[str, str]
     ):
         risk_score = self.risk_score()
         trend = risk_score["trend"]
@@ -328,11 +328,11 @@ class XM:
 
     def _create_events_from_top_dashboard(
         self,
-        xm_events: List[XmEventType],
-        top_fetched_events: List[Dict[str, Any]],
+        xm_events: list[XmEventType],
+        top_fetched_events: list[dict[str, Any]],
         event_name: str,
         trend_negative: bool,
-        run_data: Dict[str, str],
+        run_data: dict[str, str],
     ):
         for event in top_fetched_events:
             trend = event["trend"]
@@ -354,8 +354,8 @@ class XM:
                     )
 
     def _get_technique_best_practices_and_remediation(
-        self, technique: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        self, technique: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         advices = []
         remediations = self.get_technique_remediation(technique["technique"])
         for remediation in remediations:
@@ -370,10 +370,10 @@ class XM:
 
     def _create_events_from_top_techniques(
         self,
-        xm_events: List[XmEventType],
-        current_techniques: List[Dict[str, Any]],
-        previous_techniques: List[Dict[str, Any]],
-        run_data: Dict[str, str],
+        xm_events: list[XmEventType],
+        current_techniques: list[dict[str, Any]],
+        previous_techniques: list[dict[str, Any]],
+        run_data: dict[str, str],
     ):
         for current_tech in current_techniques:
             previous_tech = None
@@ -407,8 +407,8 @@ class XM:
                         )
                     )
 
-    def get_fetch_incidents_events(self, run_data: Dict[str, Any]):
-        cortex_events: List = []
+    def get_fetch_incidents_events(self, run_data: dict[str, Any]):
+        cortex_events: list = []
 
         writeLog("risk score")
         # risk score
@@ -498,7 +498,7 @@ def path_to_compromising_technique(path: Any):
     return path[-1]["event"]["displayName"]
 
 
-def entity_obj_to_data(xm: XM, entity: Dict[str, Any]) -> Dict[str, Any]:
+def entity_obj_to_data(xm: XM, entity: dict[str, Any]) -> dict[str, Any]:
     try:
         is_asset = entity["asset"]
     except KeyError:
@@ -529,7 +529,7 @@ def entity_obj_to_data(xm: XM, entity: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def pretty_print_entity(entity: Dict[str, Any]):
+def pretty_print_entity(entity: dict[str, Any]):
     entityId = entity["id"]
     displayName = entity["name"]
     entityType = entity["type"]
@@ -548,7 +548,7 @@ def pretty_print_entity(entity: Dict[str, Any]):
 
 
 def affected_critical_assets_list_command(
-    xm: XM, args: Dict[str, Any]
+    xm: XM, args: dict[str, Any]
 ) -> CommandResults:
     time_id = args.get("timeId")
     if not time_id:
@@ -591,7 +591,7 @@ def affected_critical_assets_list_command(
     )
 
 
-def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def affected_entities_list_command(xm: XM, args: dict[str, Any]) -> CommandResults:
     time_id = args.get("timeId")
     if not time_id:
         time_id = "timeAgo_days_7"
@@ -637,8 +637,8 @@ def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
 
 
 def _fetch_incidents_internal(
-    xm: XM, args: Dict[str, Any], run_data: Dict[str, Any]
-) -> List:
+    xm: XM, args: dict[str, Any], run_data: dict[str, Any]
+) -> list:
     events = []
     should_run = True
 
@@ -659,7 +659,7 @@ def _fetch_incidents_internal(
 # This function runs every 3 seconds. In each run, we check if 24 hours passed since the last ran. If not, we just exit
 # Otherwise, we fetch 4 type of XM's incidents (Security score, Assets at risk, Choke points and techniques)
 # Each incident can be created only one time in each week (in order to avoid spamming the incidents page)
-def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def fetch_incidents_command(xm: XM, args: dict[str, Any]) -> CommandResults:
     run_data = demisto.getLastRun()
     keys_to_delete = []
     # Clean the dict key with old values
@@ -699,7 +699,7 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def get_version_command(xm: XM, args: dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="XMCyber.Version",
         outputs_key_field="entityId",
@@ -707,7 +707,7 @@ def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def is_xm_version_supported_command(xm: XM, args: dict[str, Any]) -> CommandResults:
     version = xm.get_version()
     system_version = version["system"]
     system_version_splitted = system_version.split(".")
@@ -721,10 +721,10 @@ def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResu
 
 def update_command_results(
     xm: XM,
-    command_results: List[CommandResults],
-    xm_data_list: List[Dict[str, Any]],
+    command_results: list[CommandResults],
+    xm_data_list: list[dict[str, Any]],
     readable_output,
-    entity: Dict[str, Any],
+    entity: dict[str, Any],
 ):
     id_ = entity.get("entityId")
     try:
@@ -761,11 +761,11 @@ def update_command_results(
 
 
 def _enrich_from_field(
-    xm: XM, field_name: str, field_values: List[str]
-) -> List[CommandResults]:
+    xm: XM, field_name: str, field_values: list[str]
+) -> list[CommandResults]:
     # Context standard for IP class
-    command_results: List[CommandResults] = []
-    xm_data_list: List[Dict[str, Any]] = []
+    command_results: list[CommandResults] = []
+    xm_data_list: list[dict[str, Any]] = []
     readable_output = ""
 
     for value in field_values:
@@ -796,9 +796,9 @@ def _enrich_from_field(
     return command_results
 
 
-def _enrich_from_multiple_fields(xm: XM, field_name_to_value: Dict[str, Any]):
-    command_results: List[CommandResults] = []
-    xm_data_list: List[Dict[str, Any]] = []
+def _enrich_from_multiple_fields(xm: XM, field_name_to_value: dict[str, Any]):
+    command_results: list[CommandResults] = []
+    xm_data_list: list[dict[str, Any]] = []
     entities = xm.search_entities(field_name_to_value=field_name_to_value)
     if len(entities) > 0:
         readable_output = (
@@ -825,7 +825,7 @@ def _enrich_from_multiple_fields(xm: XM, field_name_to_value: Dict[str, Any]):
     return command_results
 
 
-def enrich_from_entity_id(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
+def enrich_from_entity_id(xm: XM, args: dict[str, Any]) -> list[CommandResults]:
     entity_ids = argToList(args.get("entityId"))
     if len(entity_ids) == 0:
         raise ValueError("EntityId(s) not specified")
@@ -833,7 +833,7 @@ def enrich_from_entity_id(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
     return _enrich_from_field(xm=xm, field_name="entityId", field_values=entity_ids)
 
 
-def enrich_entity_from_fields(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
+def enrich_entity_from_fields(xm: XM, args: dict[str, Any]) -> list[CommandResults]:
     field_names = argToList(args.get("fields"))
     field_values = argToList(args.get("values"))
     if not field_names or not field_values or len(field_names) != len(field_values):
@@ -844,7 +844,7 @@ def enrich_entity_from_fields(xm: XM, args: Dict[str, Any]) -> List[CommandResul
     )
 
 
-def enrich_from_hostname(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
+def enrich_from_hostname(xm: XM, args: dict[str, Any]) -> list[CommandResults]:
     hostnames = argToList(args.get("hostname"))
     if len(hostnames) == 0:
         raise ValueError("Hostname(s) not specified")
@@ -852,7 +852,7 @@ def enrich_from_hostname(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
     return _enrich_from_field(xm=xm, field_name="name", field_values=hostnames)
 
 
-def enrich_from_ip(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
+def enrich_from_ip(xm: XM, args: dict[str, Any]) -> list[CommandResults]:
     ips = argToList(args.get("ip"))
     if len(ips) == 0:
         raise ValueError("IP(s) not specified")
@@ -860,7 +860,7 @@ def enrich_from_ip(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
     return _enrich_from_field(xm=xm, field_name="ipv4Str", field_values=ips)
 
 
-def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def test_module_command_internal(xm: XM, args: dict[str, Any]) -> CommandResults:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.

@@ -55,17 +55,16 @@ def main():
 
     res = demisto.getFilePath(entry_id)
     if not res:
-        return_error("Entry {} not found".format(entry_id))
+        return_error(f"Entry {entry_id} not found")
 
     file_path = res['path']
     file_name = res['name']
     if not file_name.lower().endswith('.csv'):
         return_error(
-            '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extension'.format(
-                file_name))
+            f'"{file_name}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extension')
 
     csv_data: list = []
-    with open(file_path, mode='r') as csv_file:
+    with open(file_path) as csv_file:
         if header_row:
             csv_reader = csv.DictReader(csv_file)
             for line in csv_reader:
@@ -97,7 +96,7 @@ def main():
                 search_column = int(search_column) - 1
             except ValueError:
                 return_error(
-                    "CSV column spec must be integer if header_row not supplied (got {})".format(search_column))
+                    f"CSV column spec must be integer if header_row not supplied (got {search_column})")
             csv_data = search_lists(search_column, search_value, csv_data)
 
     output = {

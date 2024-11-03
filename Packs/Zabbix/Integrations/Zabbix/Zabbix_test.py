@@ -85,7 +85,7 @@ class TestZabbix():
         spy.assert_called_once_with('host.get', {})
 
 
-class ZabbixApiStub(object):
+class ZabbixApiStub:
 
     def __init__(self):
         self.apiinfo = apiinfo()
@@ -98,7 +98,7 @@ class ZabbixApiStub(object):
         }
 
 
-class apiinfo(object):
+class apiinfo:
 
     def version(self):
         return {

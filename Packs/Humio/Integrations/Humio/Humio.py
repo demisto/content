@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 from datetime import datetime
-from typing import Dict
 
 import requests
 
@@ -44,9 +43,7 @@ def test_module(client, headers=None):
         try:
             resp = response.json()
         except Exception:
-            return "Could connect to server, but got unexpected response: {}".format(
-                response.text
-            )
+            return f"Could connect to server, but got unexpected response: {response.text}"
 
         if resp["status"].lower() == "ok":
             incidentquery = demisto.params().get("queryParameter")
@@ -66,9 +63,7 @@ def test_module(client, headers=None):
                 return "ok"
 
     else:
-        return "Bad status from server: ({}) {}".format(
-            response.status_code, response.text
-        )
+        return f"Bad status from server: ({response.status_code}) {response.text}"
 
 
 def humio_query(client, args, headers):
@@ -120,7 +115,7 @@ def humio_query_job(client, args, headers):
 
 
 def humio_poll(client, args, headers):
-    data: Dict[str, str] = {}
+    data: dict[str, str] = {}
     url = (
         "/api/v1/repositories/"
         + args.get("repository")
@@ -144,7 +139,7 @@ def humio_poll(client, args, headers):
 
 
 def humio_delete_job(client, args, headers):
-    data: Dict[str, str] = {}
+    data: dict[str, str] = {}
     url = (
         "/api/v1/repositories/"
         + args.get("repository")
@@ -162,7 +157,7 @@ def humio_delete_job(client, args, headers):
 
 
 def humio_list_alerts(client, args, headers):
-    data: Dict[str, str] = {}
+    data: dict[str, str] = {}
     url = "/api/v1/repositories/" + args.get("repository") + "/alerts"
     headers["Accept"] = "application/json"
     response = client.http_request("GET", url, data, headers)
@@ -176,7 +171,7 @@ def humio_list_alerts(client, args, headers):
 
 
 def humio_get_alert_by_id(client, args, headers):
-    data: Dict[str, str] = {}
+    data: dict[str, str] = {}
     url = "/api/v1/repositories/" + args.get("repository") + "/alerts/" + args.get("id")
     headers["Accept"] = "application/json"
     response = client.http_request("GET", url, data, headers)
@@ -226,7 +221,7 @@ def humio_create_alert(client, args, headers):
 
 
 def humio_delete_alert(client, args, headers):
-    data: Dict[str, str] = {}
+    data: dict[str, str] = {}
     url = "/api/v1/repositories/" + args.get("repository") + "/alerts/" + args.get("id")
     headers["Accept"] = "application/json"
     response = client.http_request("DELETE", url, data, headers)

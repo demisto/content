@@ -1,9 +1,9 @@
 from CommonServerPython import *
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
-def has_key(dictionary: Dict[str, Any], key: str) -> bool:
+def has_key(dictionary: dict[str, Any], key: str) -> bool:
     """
     Check whether dictionary has given key is present or not
 
@@ -11,12 +11,12 @@ def has_key(dictionary: Dict[str, Any], key: str) -> bool:
     :param key: Key value that need to check
     :return: Boolean value based on given key is present in the dictionary
     """
-    if key in dictionary.keys():
+    if key in dictionary:
         return True
     return False
 
 
-def get_entry_context(identifiers: Dict[str, Any]) -> Dict[str, List[Optional[list]]]:
+def get_entry_context(identifiers: dict[str, Any]) -> dict[str, list[list | None]]:
     """
     Prepare entry context for asset identifiers - hostname, IP address and MAC address.
 

@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -46,7 +46,7 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def get_ip_information(self, ip: str) -> Dict:
+    def get_ip_information(self, ip: str) -> dict:
         """
         Returns a simple python dict with the enriched information
         about the provided IP.
@@ -152,7 +152,7 @@ def test_module(client: Client) -> str:
 
 
 def ip_command(
-    client: Client, reliability: str, args: Dict[str, Any]
+    client: Client, reliability: str, args: dict[str, Any]
 ) -> List[CommandResults]:
 
     ips = argToList(args.get('ip'))
@@ -162,7 +162,7 @@ def ip_command(
     command_results: List[CommandResults] = []
     for ip in ips:
         if not is_ip_valid(ip):
-            raise ValueError("Invalid IP '{}'".format(ip))
+            raise ValueError(f"Invalid IP '{ip}'")
 
         # Call the Client function and get the raw response
         result = client.get_ip_information(ip)
@@ -260,7 +260,7 @@ def main() -> None:
                 "Please provide a valid value for the Source Reliability parameter."
             )
 
-        headers: Dict = {"x-api-key": api_key}
+        headers: dict = {"x-api-key": api_key}
 
         client = Client(
             base_url=CROWDSEC_CTI_API_URL,

@@ -762,11 +762,8 @@ class SearchLightTriagePoller:
         Returns the largest event-num from the triage item events that were processed.
         """
         demisto.info(
-            "Polling triage items. Event num start: {}, Event created after: {}, Limit: {} risk_level: {} "
-            "alert_risk_types: {}".format(
-                event_num_start,
-                event_created_after,
-                limit, risk_level, alert_risk_types))
+            f"Polling triage items. Event num start: {event_num_start}, Event created after: {event_created_after}, Limit: {limit} risk_level: {risk_level} "
+            f"alert_risk_types: {alert_risk_types}")
         risk_types_filter = []
 
         if RISK_TYPE_ALL not in alert_risk_types and len(alert_risk_types) > 0:
@@ -776,9 +773,8 @@ class SearchLightTriagePoller:
                                         risk_types=risk_types_filter, event_num_after=event_num_start, limit=limit)
         if not events:
             demisto.info(
-                "No events were fetched. Event num start: {}, Event created after: {}, Limit: {}, "
-                "risk_level: {}, alert_risk_types: {}".format(
-                    event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+                f"No events were fetched. Event num start: {event_num_start}, Event created after: {event_created_after}, Limit: {limit}, "
+                f"risk_level: {risk_level}, alert_risk_types: {alert_risk_types}")
             return RQPollResult(event_num_start, [])
 
         else:
@@ -801,9 +797,9 @@ class SearchLightTriagePoller:
         if not triage_items:
             # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
             # so validate before proceeding
-            demisto.info("No triage items were fetched. Event num start: {}, Event created after: {}, Limit: {},  "
-                         "risk_level: {}, alert_risk_types: {}"
-                         .format(event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+            demisto.info(f"No triage items were fetched. Event num start: {event_num_start}, Event created after: {event_created_after}, Limit: {limit},  "
+                         f"risk_level: {risk_level}, alert_risk_types: {alert_risk_types}"
+                         )
             return RQPollResult(max_event_num, [])
 
         triage_item_comments = get_triage_item_comments(self.request_handler, triage_item_ids=triage_item_ids)

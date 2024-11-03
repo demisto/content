@@ -8,7 +8,6 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
-from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -557,7 +556,7 @@ def list_assets_command(client: Client, args: dict):
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     max_fetch: str, fetch_filter: str,
-                    first_fetch_time: str) -> Tuple[Dict, List[dict]]:
+                    first_fetch_time: str) -> tuple[Dict, List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:

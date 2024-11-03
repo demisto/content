@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 
 from CommonServerUserPython import *
 
@@ -30,7 +29,7 @@ def parse_date_range_expire_date(date_range):
                      'etc.)')
 
     number = int(range_split[0])
-    if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
+    if range_split[1] not in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
         return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
 
     start_time = datetime.now() + timedelta(hours=0)
@@ -1282,7 +1281,7 @@ def fetch_incidents(
         first_fetch_time: str,
         score: str,
         max_fetch: str = '50'
-) -> Tuple[dict, list]:
+) -> tuple[dict, list]:
 
     # if first time fetching
     if not last_run:

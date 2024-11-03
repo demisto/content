@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict, List
 
 from greynoise import GreyNoise, exceptions, util  # type: ignore
 
@@ -132,7 +131,7 @@ def build_feed_query(query: str) -> str:
     return query_string
 
 
-def fetch_indicators(client: Client, params) -> List[Dict]:
+def fetch_indicators(client: Client, params) -> list[dict]:
     """Retrieves all entries from the feed.
     Returns:
         A list of objects, containing the indicators.
@@ -144,7 +143,7 @@ def fetch_indicators(client: Client, params) -> List[Dict]:
 
     try:
         response = client.query(query=feed_query, exclude_raw=True)
-        indicators: List = []
+        indicators: list = []
         complete = False
         while not complete:
             for indicator in response.get("data", []):
@@ -190,8 +189,8 @@ def get_indicators_command(client: Client, params) -> CommandResults:
 
     try:
         response = client.query(query=feed_query, exclude_raw=True, size=25)
-        hr_indicators: List = []
-        output_list: List = []
+        hr_indicators: list = []
+        output_list: list = []
 
         for indicator in response.get("data", []):
             hr = format_indicator(indicator, tlp_color)
@@ -217,7 +216,7 @@ def get_indicators_command(client: Client, params) -> CommandResults:
     )
 
 
-def fetch_indicators_command(client: Client, params) -> List[Dict]:
+def fetch_indicators_command(client: Client, params) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request.

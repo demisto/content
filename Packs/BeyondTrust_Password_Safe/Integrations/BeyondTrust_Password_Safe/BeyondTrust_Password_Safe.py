@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 import json
-from typing import Dict, List
 
 import requests
 import urllib3
@@ -153,7 +152,7 @@ def get_managed_accounts():
                    managed_accounts)
 
 
-def get_managed_systems_request() -> List[Dict]:
+def get_managed_systems_request() -> list[dict]:
     """
     Request for all managed systems
     """
@@ -452,7 +451,7 @@ def fetch_credentials():
         })
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
-        demisto.debug("Amount of credentials for identifier: {} is {}".format(identifier, len(credentials)))
+        demisto.debug(f"Amount of credentials for identifier: {identifier} is {len(credentials)}")
 
     demisto.credentials(credentials)
 

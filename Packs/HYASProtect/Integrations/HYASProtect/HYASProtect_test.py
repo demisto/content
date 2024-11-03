@@ -1,6 +1,5 @@
 import pytest
 import json
-import io
 
 from HYASProtect import Client, get_domain_verdict, get_ip_verdict, \
     get_fqdn_verdict, get_nameserver_verdict
@@ -12,7 +11,7 @@ client = Client(
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

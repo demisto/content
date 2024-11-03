@@ -232,7 +232,7 @@ def error_parser(resp_err: requests.Response) -> str:
                 demisto.debug(err_str)
                 return err_str
             # If no error message
-            raise ValueError()
+            raise ValueError
     except ValueError:
         return resp_err.text
 

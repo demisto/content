@@ -166,7 +166,7 @@ HAPPY_PATH_ARGS_FOR_COMMAND_RESULTS = [
     ('list_directory', list_directory_command, DIR_LIST_EXPECTED_OUTPUT, (), TEST_DIR_LIST),
     ('create_process', create_process_command, 'פלט בעברית',
      dict(command_string='test_cmd_line_path', wait_timeout=30, wait_for_output=True, wait_for_completion=True),
-     'פלט בעברית'.encode('utf-8'))
+     'פלט בעברית'.encode())
 ]
 
 
@@ -334,7 +334,7 @@ class TestCommands:
         res = memdump_command(**kwargs)
 
         # assert
-        assert 'Memory was successfully dumped to test_target_path.' == res
+        assert res == 'Memory was successfully dumped to test_target_path.'
 
     @pytest.mark.parametrize('force, expected_call_count', [(False, 1), (True, 11)])
     def test_delete_reg_key_force(self, mocker, force, expected_call_count):

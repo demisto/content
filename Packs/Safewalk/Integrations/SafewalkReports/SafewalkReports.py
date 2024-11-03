@@ -97,8 +97,7 @@ class Client(BaseClient):
 
         return json.loads(self._http_request(
             method='GET',
-            url_suffix='/reports/registrations/?begin_date={}&end_date={}&user_information={}'.format(
-                begindate, enddate, str(userinformation)),
+            url_suffix=f'/reports/registrations/?begin_date={begindate}&end_date={enddate}&user_information={str(userinformation)}',
             resp_type='text'
         ))
 

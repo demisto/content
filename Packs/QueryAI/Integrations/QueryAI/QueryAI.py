@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerUserPython import *
 from CommonServerPython import *
 
-from typing import Any, Dict
+from typing import Any
 import urllib3
 import urllib.parse
 
@@ -41,7 +41,7 @@ class Client(BaseClient):   # type: ignore
         )
 
     def run_query(self, query: str, connection_params: str = None, workflow_params: str = None, time_text: str = None,
-                  alias: str = None) -> Dict[str, Any]:
+                  alias: str = None) -> dict[str, Any]:
         """Gets result from QueryAI for the given query
 
         :type query: ``str``
@@ -103,7 +103,7 @@ def generate_drilldown_url(query, alias, time_text=None, workflow_params=None):
     return drilldown_url
 
 
-def queryai_run_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # type: ignore
+def queryai_run_query_command(client: Client, args: dict[str, Any]) -> CommandResults:  # type: ignore
     """queryai-run-query command: Returns response for the query being run on QueryAI
 
     :type client: ``Client``
@@ -123,8 +123,8 @@ def queryai_run_query_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     query = args.get('query', '')
     connection_params = args.get('connection_params', client.connection_params)
-    workflow_params = args.get('workflow_params', None)
-    time_text = args.get('time_text', None)
+    workflow_params = args.get('workflow_params')
+    time_text = args.get('time_text')
     alias = args.get('alias', client.alias)
 
     if not query:

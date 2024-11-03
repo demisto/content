@@ -41,7 +41,7 @@ GLOBAL VARS
 """
 
 SERVER_URL = demisto.params()['server']
-BASE_PATH = '{}/api/v2'.format(SERVER_URL) if SERVER_URL.endswith('/') else '{}/api/v2'.format(SERVER_URL)
+BASE_PATH = f'{SERVER_URL}/api/v2' if SERVER_URL.endswith('/') else f'{SERVER_URL}/api/v2'
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_SSL = not demisto.params()['insecure']
@@ -328,7 +328,7 @@ def get_machines(query, limit):
     while True:
         res = http_request(
             'GET',
-            '{}/machines'.format(BASE_PATH),
+            f'{BASE_PATH}/machines',
             url_params=query
         )
         items = res.get('Items')
@@ -429,7 +429,7 @@ def get_machine(machine_id):
     # GET /machines/{Guid}
     response = http_request(
         'GET',
-        '{}/machines/{}'.format(BASE_PATH, machine_id)
+        f'{BASE_PATH}/machines/{machine_id}'
     )
     return response.get('Machine')
 
@@ -446,7 +446,7 @@ def create_machine_entry(machine_id):
         'Contents': machine,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('NetWitness Endpoint - Machine {} Full Data'.format(machine_name),
+        'HumanReadable': tableToMarkdown(f'NetWitness Endpoint - Machine {machine_name} Full Data',
                                          machine_data, MACHINE_DATA_EXTENDED),
         'EntryContext': {
             "NetWitness.Machines(obj.MachineGUID==val.MachineGUID)": machine_data
@@ -475,7 +475,7 @@ def list_iocs(machine_id, limit):
     while True:
         res = http_request(
             'GET',
-            '{}/machines/{}/instantiocs'.format(BASE_PATH, machine_id),
+            f'{BASE_PATH}/machines/{machine_id}/instantiocs',
             url_params=paging_params
         )
         items = res.get('Iocs')
@@ -546,7 +546,7 @@ def get_machine_modules(machine_id, query, limit):
     while True:
         res = http_request(
             'GET',
-            '{}/machines/{}/modules'.format(BASE_PATH, machine_id),
+            f'{BASE_PATH}/machines/{machine_id}/modules',
             url_params=query
         )
         items = res.get('Items')
@@ -638,7 +638,7 @@ def get_machine_module(machine_guid, moudule_id):
     # GET machines/{Guid}/modules/{Id}
     response = http_request(
         'GET',
-        '{}/machines/{}/modules/{}'.format(BASE_PATH, machine_guid, moudule_id),
+        f'{BASE_PATH}/machines/{machine_guid}/modules/{moudule_id}',
     )
     return response.get('MachineModulePath')
 
@@ -682,7 +682,7 @@ def blacklist_ips(ips):
     }
     response = http_request(
         'POST',
-        '{}/blacklist/ip'.format(BASE_PATH),
+        f'{BASE_PATH}/blacklist/ip',
         data=body
 
     )
@@ -696,7 +696,7 @@ def blacklist_domains(domains):
     }
     response = http_request(
         'POST',
-        '{}/blacklist/domain'.format(BASE_PATH),
+        f'{BASE_PATH}/blacklist/domain',
         data=body
 
     )

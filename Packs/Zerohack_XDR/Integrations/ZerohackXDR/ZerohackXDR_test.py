@@ -29,7 +29,7 @@ import json
 
 
 def util_load_json(path):
-    with open(path, "r") as file:
+    with open(path) as file:
         text = file.read()
         return json.loads(text)
 

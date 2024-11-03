@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import List
 
 HOURS_DAYS_HEADER = 'Hours / Days'
 SUNDAY_HEADER = 'Sunday'
@@ -33,7 +32,7 @@ def time_fix(t):
 def main():
     user_id = demisto.args().get('userId', False)
     if not user_id:
-        get_users_res: List = demisto.executeCommand("getUsers",
+        get_users_res: list = demisto.executeCommand("getUsers",
                                                      {"current": True})
         if is_error(get_users_res):
             return_error(
@@ -44,12 +43,12 @@ def main():
         else:
             return_error('Failed to get users: User object is empty')
 
-    get_roles_response: List = demisto.executeCommand('getRoles', {})
+    get_roles_response: list = demisto.executeCommand('getRoles', {})
     if is_error(get_roles_response):
         return_error(
             f'Failed to get roles: {str(get_error(get_roles_response))}')
 
-    get_users_response: List = demisto.executeCommand('getUsers', {})
+    get_users_response: list = demisto.executeCommand('getUsers', {})
     if is_error(get_users_response):
         return_error(
             f'Failed to get users: {str(get_error(get_users_response))}')

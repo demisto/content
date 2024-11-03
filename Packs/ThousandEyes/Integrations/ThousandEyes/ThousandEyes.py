@@ -5,7 +5,6 @@ import json
 import time
 import traceback
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Union
 
 import dateparser
 import urllib3
@@ -29,13 +28,13 @@ class Client(BaseClient):
         self,
         method: str,
         url_suffix: str,
-        params: Optional[Dict] = None,
-        data: Optional[Dict] = None,
-        json_data: Optional[Dict] = None,
+        params: dict | None = None,
+        data: dict | None = None,
+        json_data: dict | None = None,
         timeout: float = 10,
         resp_type: str = "response",
         test_module: bool = False
-    ) -> Union[Response, Dict]:
+    ) -> Response | dict:
         """
             Handles the reached rate limit, performs API request to the specified endpoint and reutrns the full Response object
 
@@ -134,7 +133,7 @@ def test_module_command(client: Client, *_) -> str:
 ''' Helper Functions '''
 
 
-def fetch_all_aids(client: Client) -> Union[List, Dict]:
+def fetch_all_aids(client: Client) -> list | dict:
     """
         Fetches all AIDs configured in ThousandEyes
 
@@ -162,7 +161,7 @@ def fetch_all_aids(client: Client) -> Union[List, Dict]:
     return group_aid_list
 
 
-def parse_agent_response_helper(raw_response: Dict) -> Tuple[List, List]:
+def parse_agent_response_helper(raw_response: dict) -> tuple[list, list]:
     """
         Prepare the context and human readable data for Agents
     Args:
@@ -175,7 +174,7 @@ def parse_agent_response_helper(raw_response: Dict) -> Tuple[List, List]:
     entry_context = []
     human_readable = []
     if raw_response:
-        agents_list: Union[List, None] = raw_response.get("agents")
+        agents_list: list | None = raw_response.get("agents")
 
         if agents_list:
             for items in agents_list:
@@ -214,7 +213,7 @@ def parse_agent_response_helper(raw_response: Dict) -> Tuple[List, List]:
     return (entry_context, human_readable)
 
 
-def get_alerts_helper(alert_info: Dict, aid: Optional[int], human_readable: bool) -> Tuple[Dict, Dict]:
+def get_alerts_helper(alert_info: dict, aid: int | None, human_readable: bool) -> tuple[dict, dict]:
     """
         Prepare the context and human readable data for Alerts
     Args:
@@ -260,10 +259,10 @@ def get_alerts_helper(alert_info: Dict, aid: Optional[int], human_readable: bool
 def parse_alerts_response(
     client: Client,
     method: str,
-    response: Union[Response, Dict],
-    aid: Optional[int],
+    response: Response | dict,
+    aid: int | None,
     human_readable: bool = False
-) -> Tuple[bool, List, List, List]:
+) -> tuple[bool, list, list, list]:
     """
         Parses the fetched alerts and looks for information in additional pages (if any)
     Args:
@@ -277,9 +276,9 @@ def parse_alerts_response(
         Tuple of (alerts_found (bool), raw_response (List[Dict]), entry_context (List[Dict]), human_readable_data (List[Dict]))
     """
 
-    raw_response: List[Dict] = []
-    entry_context: List[Dict] = []
-    human_readable_data: List[Dict] = []
+    raw_response: list[dict] = []
+    entry_context: list[dict] = []
+    human_readable_data: list[dict] = []
 
     # Handle parsing results from multiple pages if any
     if isinstance(response, requests.models.Response):
@@ -371,7 +370,7 @@ def parse_agent_response(response: Response):
     return results
 
 
-def filter_out_alerts_above_minimum_severity(raw_response_list: List, minimum_severity: str) -> List:
+def filter_out_alerts_above_minimum_severity(raw_response_list: list, minimum_severity: str) -> list:
     """
         Filters out alerts which are equal and below the provided minimum severity value
 
@@ -397,21 +396,21 @@ def filter_out_alerts_above_minimum_severity(raw_response_list: List, minimum_se
         4: "CRITICAL"
     }
 
-    minimum_severity_ranking: Optional[int] = severity_to_rank_mapping.get(minimum_severity)
+    minimum_severity_ranking: int | None = severity_to_rank_mapping.get(minimum_severity)
 
     # Can return None in case of Severity classes are modified by Thousand Eyes API
     if not minimum_severity_ranking:
         raise KeyError("Severity classes are modified by ThousandEyes API, "
                        "please modify the filter_out_alerts_above_minimum_severity() function accordingly")
 
-    whitelisted_severity_ranks: List = [i for i in rank_to_severity_mapping.keys() if i >= minimum_severity_ranking]
+    whitelisted_severity_ranks: list = [i for i in rank_to_severity_mapping if i >= minimum_severity_ranking]
 
     events_to_create = []
 
     for raw_response in raw_response_list:
         severity_in_response: str = raw_response.get("severity")
 
-        severity_ranking: Optional[int] = severity_to_rank_mapping.get(severity_in_response)
+        severity_ranking: int | None = severity_to_rank_mapping.get(severity_in_response)
 
         if severity_ranking in whitelisted_severity_ranks:
             events_to_create.append(raw_response)
@@ -425,10 +424,10 @@ def filter_out_alerts_above_minimum_severity(raw_response_list: List, minimum_se
 def fetch_incidents_command(
     client: Client,
     max_results: int,
-    last_run: Dict,
+    last_run: dict,
     first_fetch_time: str,
     minimum_severity: str
-) -> Tuple[Dict, List]:
+) -> tuple[dict, list]:
     """
         Fetches the events and returns the incidents list.
 
@@ -451,10 +450,10 @@ def fetch_incidents_command(
     else:
         last_fetch = dateparser.parse(first_fetch_time).strftime(THOUSAND_EYES_DATE_TIME_FORMAT)  # type: ignore[union-attr]
 
-    incidents_to_create: List = []
+    incidents_to_create: list = []
     incident_created_time: str = ""
-    events_to_create: List = get_alerts_command(client=client, from_date=last_fetch, fetch_for_incident=True)
-    events_to_create: List = filter_out_alerts_above_minimum_severity(events_to_create, minimum_severity)
+    events_to_create: list = get_alerts_command(client=client, from_date=last_fetch, fetch_for_incident=True)
+    events_to_create: list = filter_out_alerts_above_minimum_severity(events_to_create, minimum_severity)
 
     for event in events_to_create:
 
@@ -476,9 +475,9 @@ def fetch_incidents_command(
 
 def get_alerts_command(
     client: Client,
-    aid: Optional[int] = None,
-    from_date: Optional[str] = None,
-    to_date: Optional[str] = None,
+    aid: int | None = None,
+    from_date: str | None = None,
+    to_date: str | None = None,
     fetch_for_incident: bool = False
 ):
     """
@@ -498,11 +497,11 @@ def get_alerts_command(
 
     endpoint = '/alerts.json'
     method = 'GET'
-    raw_response_list: List[Dict] = []
-    entry_context: List[Dict] = []
-    human_readable_data: List[Dict] = []
+    raw_response_list: list[dict] = []
+    entry_context: list[dict] = []
+    human_readable_data: list[dict] = []
 
-    params: Dict = {}
+    params: dict = {}
     if aid and not from_date and not to_date:
         params = {
             "aid": aid

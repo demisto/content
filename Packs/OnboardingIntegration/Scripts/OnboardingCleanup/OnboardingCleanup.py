@@ -26,7 +26,7 @@ try:
             }
             demisto.executeCommand('closeInvestigation', close_investigation_cmd_args)
     headers = ['Incident ID', 'Incident Name']
-    title = 'Total Incidents Closed: {}'.format(len(res))
+    title = f'Total Incidents Closed: {len(res)}'
     human_readable = tableToMarkdown(title, res, headers=headers, removeNull=True)
     demisto.results({
         'Type': entryTypes['note'],

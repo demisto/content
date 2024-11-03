@@ -1226,9 +1226,9 @@ def create_firewall_policy_command(client: Client, args: dict) -> CommandResults
     response_param = response_cases(args.get('response', ''))
     direction = args.get('direction', '').upper()
     source_rule_object_id = arg_to_number(args.get('source_rule_object_id', -1))
-    source_rule_object_type = args.get('source_rule_object_type', None)
+    source_rule_object_type = args.get('source_rule_object_type')
     destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', -1))
-    destination_rule_object_type = args.get('destination_rule_object_type', None)
+    destination_rule_object_type = args.get('destination_rule_object_type')
 
     check_source_and_destination(source_rule_object_id, source_rule_object_type, destination_rule_object_id,
                                  destination_rule_object_type, 'create')
@@ -1276,10 +1276,10 @@ def update_firewall_policy_command(client: Client, args: dict) -> CommandResults
     response_param = args.get('response')
     rule_enabled = args.get('rule_enabled')
     direction = args.get('direction')
-    source_rule_object_id = arg_to_number(args.get('source_rule_object_id', None))
-    source_rule_object_type = args.get('source_rule_object_type', None)
+    source_rule_object_id = arg_to_number(args.get('source_rule_object_id'))
+    source_rule_object_type = args.get('source_rule_object_type')
     source_rule_object_type = rule_object_type_cases(source_rule_object_type, 'up') if source_rule_object_type else None
-    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', None))
+    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id'))
     destination_rule_object_type = args.get('destination_rule_object_type')
     destination_rule_object_type = rule_object_type_cases(destination_rule_object_type, 'up') \
         if destination_rule_object_type else None
@@ -1445,7 +1445,7 @@ def create_rule_object_command(client: Client, args: dict) -> CommandResults:
     name = args.get('name')
     visible_to_child = argToBoolean(args.get('visible_to_child', True))
     description = args.get('description')
-    address_ip_v_4 = argToList(args.get('address_ip_v.4', None))
+    address_ip_v_4 = argToList(args.get('address_ip_v.4'))
     from_address_ip_v_4 = args.get('from_address_ip_v.4')
     to_address_ip_v_4 = args.get('to_address_ip_v.4')
     address_ip_v_6 = argToList(args.get('address_ip_v.6'))
@@ -1516,7 +1516,7 @@ def update_rule_object_command(client: Client, args: dict) -> CommandResults:
     name = args.get('name')
     visible_to_child = args.get('visible_to_child')
     description = args.get('description')
-    address_ip_v_4 = argToList(args.get('address_ip_v.4', None))
+    address_ip_v_4 = argToList(args.get('address_ip_v.4'))
     from_address_ip_v_4 = args.get('from_address_ip_v.4')
     to_address_ip_v_4 = args.get('to_address_ip_v.4')
     address_ip_v_6 = argToList(args.get('address_ip_v.6'))
@@ -1677,11 +1677,11 @@ def get_alerts_command(client: Client, args: dict) -> CommandResults:
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     time_period = args.get('time_period', 'LAST_7_DAYS')
-    start_time = args.get('start_time', None)
-    end_time = args.get('end_time', None)
-    state = args.get('state', None)
-    search = args.get('search', None)
-    filter_arg = args.get('filter', None)
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    state = args.get('state')
+    search = args.get('search')
+    filter_arg = args.get('filter')
     domain_id = arg_to_number(args.get('domain_id')) or 0
     if args.get('new_state'):
         state = args.get('new_state')
@@ -1904,7 +1904,7 @@ def get_domains_command(client: Client, args: dict) -> CommandResults:
         Returns:
             A CommandResult object with The domain details or domains list.
     """
-    domain_id = arg_to_number(args.get('domain_id', None))
+    domain_id = arg_to_number(args.get('domain_id'))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
@@ -2136,13 +2136,13 @@ def update_alerts_command(client: Client, args: dict) -> CommandResults:
             A CommandResult object with the list of the changed alerts.
     """
     state = args.get('state', 'Any')
-    time_period = args.get('time_period', None)
-    start_time = args.get('start_time', None)
-    end_time = args.get('end_time', None)
-    new_state = args.get('new_state', None)
-    new_assignee = args.get('new_assignee', None)
-    search = args.get('search', None)
-    filter_arg = args.get('filter', None)
+    time_period = args.get('time_period')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    new_state = args.get('new_state')
+    new_assignee = args.get('new_assignee')
+    search = args.get('search')
+    filter_arg = args.get('filter')
 
     if not new_state and not new_assignee:
         raise Exception('Error! You must specify a new alert state or a new assignee')

@@ -13,7 +13,7 @@ def check_instance(all_instances: dict, integration_name: str, err_msg: str):
     :param err_msg: error message string
     """
     instance_found_active: bool = False
-    for instance in all_instances.keys():
+    for instance in all_instances:
         if (all_instances[instance]['brand'] == integration_name or instance == integration_name) \
                 and all_instances[instance]['state'] == 'active':
             instance_found_active = True

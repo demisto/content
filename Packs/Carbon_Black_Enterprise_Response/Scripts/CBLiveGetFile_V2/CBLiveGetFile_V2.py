@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 import json
 
 from contextlib import contextmanager
-from typing import Tuple, Union
 
 '''Globals'''
 ERROR_SENSOR = -1
@@ -134,7 +133,7 @@ def open_session(endpoint: str, timeout: str):
         close_session(active_session)
 
 
-def get_file_from_endpoint_path(session_id: str, path: str) -> Tuple[Union[dict, list], dict]:
+def get_file_from_endpoint_path(session_id: str, path: str) -> tuple[dict | list, dict]:
     """ Get file from file from session (endpoint/sensor).
 
     Args:
@@ -211,7 +210,7 @@ def build_table_dict(entry_contexts: List[dict]) -> List[dict]:
 ''' COMMAND FUNCTION '''
 
 
-def cb_live_get_file_command(**kwargs) -> Tuple[str, dict, dict]:
+def cb_live_get_file_command(**kwargs) -> tuple[str, dict, dict]:
     entry_contexts = cb_live_get_file(**kwargs)
     human_readable = tableToMarkdown(name=f"Files downloaded from endpoint {kwargs.get('endpoint')}",
                                      t=build_table_dict(entry_contexts))

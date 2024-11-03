@@ -477,13 +477,13 @@ def update_parameters():
     max_num_of_incidents = int(params.get('max_num_of_incidents', '10'))
     frequency = int(params.get('frequency')) if params.get('frequency') else None
     global INCIDENTS_PER_MINUTE
-    if INCIDENTS_PER_MINUTE != incidents_per_minute:
+    if incidents_per_minute != INCIDENTS_PER_MINUTE:
         INCIDENTS_PER_MINUTE = incidents_per_minute
     global MAX_NUM_OF_INCIDENTS
-    if MAX_NUM_OF_INCIDENTS != max_num_of_incidents:
+    if max_num_of_incidents != MAX_NUM_OF_INCIDENTS:
         MAX_NUM_OF_INCIDENTS = max_num_of_incidents
     global FREQUENCY
-    if FREQUENCY != frequency:
+    if frequency != FREQUENCY:
         FREQUENCY = frequency
 
 
@@ -718,7 +718,7 @@ def demo_ip_command():
         outputPaths['ip']: standard_ip_output
     }
 
-    title = 'OnboardingIntegration IP Reputation - {}'.format(ip)
+    title = f'OnboardingIntegration IP Reputation - {ip}'
     human_readable = tableToMarkdown(title, dbotscore_output)
 
     demisto.results({
@@ -766,7 +766,7 @@ def demo_url_command():
         outputPaths['url']: standard_url_output
     }
 
-    title = 'OnboardingIntegration URL Reputation - {}'.format(url)
+    title = f'OnboardingIntegration URL Reputation - {url}'
     human_readable = tableToMarkdown(title, dbotscore_output)
 
     demisto.results({
@@ -814,7 +814,7 @@ def demo_domain_command():
         outputPaths['domain']: standard_domain_output
     }
 
-    title = 'OnboardingIntegration Domain Reputation - {}'.format(domain)
+    title = f'OnboardingIntegration Domain Reputation - {domain}'
     human_readable = tableToMarkdown(title, dbotscore_output)
 
     demisto.results({
@@ -863,7 +863,7 @@ def demo_file_command():
         outputPaths['file']: standard_file_output
     }
 
-    title = 'OnboardingIntegration File Reputation - {}'.format(file)
+    title = f'OnboardingIntegration File Reputation - {file}'
     human_readable = tableToMarkdown(title, dbotscore_output)
 
     demisto.results({
@@ -911,7 +911,7 @@ def demo_email_command():
         outputPaths['email']: standard_email_output
     }
 
-    title = 'OnboardingIntegration Email Reputation - {}'.format(email)
+    title = f'OnboardingIntegration Email Reputation - {email}'
     human_readable = tableToMarkdown(title, dbotscore_output)
 
     demisto.results({
@@ -940,7 +940,7 @@ def main():
     try:
         if demisto.command() == 'test-module':
             demisto.results('ok')
-        elif demisto.command() in COMMANDS.keys():
+        elif demisto.command() in COMMANDS:
             COMMANDS[demisto.command()]()
     except Exception as e:
         return_error(str(e))

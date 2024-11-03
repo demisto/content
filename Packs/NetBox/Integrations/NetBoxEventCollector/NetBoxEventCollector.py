@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Dict, List, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -30,7 +29,7 @@ class Client(BaseClient):
 
     def search_events(
         self, url_suffix: str, limit: int, prev_id: int = 0, ordering: str = ""
-    ) -> Tuple[int, List[Dict[str, Any]]]:
+    ) -> tuple[int, list[dict[str, Any]]]:
         """
         Searches for NetBox alerts using the '/<url_suffix>' API endpoint.
         Args:
@@ -43,7 +42,7 @@ class Client(BaseClient):
             list: A list containing the events
         """
         next_id = prev_id
-        results: List[Dict] = []
+        results: list[dict] = []
 
         next_page = True
         params = {
@@ -89,7 +88,7 @@ class Client(BaseClient):
         return next_run
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Adds the _time key to the events.
     Args:
@@ -132,7 +131,7 @@ def test_module_command(client: Client) -> str:
 
 def get_events_command(
     client: Client, limit: int
-) -> Tuple[List[Dict[str, Any]], CommandResults]:
+) -> tuple[list[dict[str, Any]], CommandResults]:
     """
     Gets all the events from the NetBox API for each log type.
     Args:
@@ -142,7 +141,7 @@ def get_events_command(
         list: A list containing the events
         CommandResults: A CommandResults object that contains the events in a table format.
     """
-    events: List[Dict] = []
+    events: list[dict] = []
     hr = ""
     for log_type in LOG_TYPES:
         _, events_ = client.search_events(url_suffix=log_type, limit=limit)
@@ -156,8 +155,8 @@ def get_events_command(
 
 
 def fetch_events_command(
-    client: Client, max_fetch: int, last_run: Dict[str, int], first_fetch_time: str
-) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
+    client: Client, max_fetch: int, last_run: dict[str, int], first_fetch_time: str
+) -> tuple[dict[str, int], list[dict[str, Any]]]:
     """
     Args:
         client (Client): NetBox client to use.

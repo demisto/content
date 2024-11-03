@@ -9,11 +9,11 @@ def get_html_representation(entity: str, is_isolated: str) -> str:
         html = "<div style='color:grey; text-align:center;'><h1>No IP Address associated with the " \
                "ChronicleAsset</h1></div>"
     else:
-        html = "<div style='color:green; text-align:center;'><h1>{0}<br/>IP Address Not Isolated</h1></div>"\
-            .format(entity)
+        html = f"<div style='color:green; text-align:center;'><h1>{entity}<br/>IP Address Not Isolated</h1></div>"\
+            
         if is_isolated == 'Yes':
-            html = "<div style='color:red; text-align:center;'><h1>{0}<br/>IP Address Isolated</h1>" \
-                   "</div>".format(entity)
+            html = f"<div style='color:red; text-align:center;'><h1>{entity}<br/>IP Address Isolated</h1>" \
+                   "</div>"
     return html
 
 

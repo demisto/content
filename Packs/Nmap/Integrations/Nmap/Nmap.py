@@ -38,9 +38,9 @@ if demisto.command() == 'nmap-scan':
         h['Address'] = host.address
         h['Status'] = host.status
         svc = []
-        md += "### Nmap scan report for {0}".format(tmp_host) + \
-              (" ({0})\n".format(host.address) if tmp_host != host.address else "\n")
-        md += "#### Host is {0}.\n".format(host.status)
+        md += f"### Nmap scan report for {tmp_host}" + \
+              (f" ({host.address})\n" if tmp_host != host.address else "\n")
+        md += f"#### Host is {host.status}.\n"
         for serv in host.services:
             svc.append({
                 'Port': serv.port,

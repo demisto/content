@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -52,7 +52,7 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def check_connection(self) -> Dict[str, Any]:
+    def check_connection(self) -> dict[str, Any]:
         """
         Check connection '/monitor/check-connection' API endpoint
         """
@@ -95,7 +95,7 @@ class Client(BaseClient):
 
 
 def get_human_readable_output(module_name, monitor_task_id, result):
-    return tableToMarkdown(name="{0} results from task with ID {1}".format(module_name, monitor_task_id),
+    return tableToMarkdown(name=f"{module_name} results from task with ID {monitor_task_id}",
                            t=result, removeNull=True, date_fields=['detection_date'])
 
 
@@ -137,7 +137,7 @@ def get_task_monitor_results_command(module_name: str):
     Args:
         module_name (str): _description_
     """
-    def get_task_monitor_results(client: Client, args: Dict) -> CommandResults:
+    def get_task_monitor_results(client: Client, args: dict) -> CommandResults:
 
         # get params from user
         monitor_task_id = arg_to_number(args.get("monitor_task_id"), 'monitor_task_id', True)
@@ -224,7 +224,7 @@ def main() -> None:
     try:
 
         # Add the proper headers for authentication
-        headers: Dict = {}
+        headers: dict = {}
 
         client = Client(
             base_url=base_url,

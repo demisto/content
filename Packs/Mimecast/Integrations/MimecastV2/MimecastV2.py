@@ -163,8 +163,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             'Authorization': auth_header
         }
 
-    LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
-        method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+    LOG(f'running {method} request with url={url}\tparams={json.dumps(params)}\tdata={json.dumps(payload)}\tis user auth={is_user_auth}')
     try:
         res = requests.request(
             method,
@@ -2957,7 +2956,7 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
         md = 'Incident ' + incident_id + ' has been created'
     else:
         md = 'Incident ' + incident_id + ' has been found'
-    md_metadata = """
+    md_metadata = f"""
 #### Code: {incident_code}
 #### Type: {incident_type}
 #### Reason: {incident_reason}
@@ -2965,13 +2964,7 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
 #### The number successfully remediated messages: {incident_successful_messages_amount}
 #### The number of messages that failed to remediate: {incident_failed_messages_amount}
 #### The number of messages that were restored from the incident: {incident_restored_messages_amount}
-""".format(incident_code=incident_code,
-           incident_type=incident_type,
-           incident_reason=incident_reason,
-           incident_identified_messages_amount=incident_identified_messages_amount,
-           incident_successful_messages_amount=incident_successful_messages_amount,
-           incident_failed_messages_amount=incident_failed_messages_amount,
-           incident_restored_messages_amount=incident_restored_messages_amount)
+"""
 
     message = response_data['searchCriteria']
     message_entry = {

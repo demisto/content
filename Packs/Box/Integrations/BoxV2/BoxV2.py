@@ -12,7 +12,7 @@ import jwt
 import re
 from distutils.util import strtobool
 from datetime import timezone
-from typing import Any, Dict, Tuple, List, Optional, BinaryIO
+from typing import Any, BinaryIO
 from requests.models import Response
 from hashlib import sha1
 from cryptography import exceptions
@@ -263,7 +263,7 @@ class Client(BaseClient):
         auth_header = {'Authorization': f'Bearer {access_token}'}
         return auth_header
 
-    def handle_as_user(self, as_user_arg: Optional[str]) -> str:
+    def handle_as_user(self, as_user_arg: str | None) -> str:
         """
         Wrapper which gracefully handles the as-user header variable as well as resolves an argument
         to an ID if the given argument is a users login and the search_user_id parameter is set.
@@ -284,7 +284,7 @@ class Client(BaseClient):
         else:
             return as_user
 
-    def _handle_default_user(self, as_user_arg: Optional[str]) -> Union[str, Any]:
+    def _handle_default_user(self, as_user_arg: str | None) -> Union[str, Any]:
         """
         When the as-user argument is absent when executing a command, this function will return the
         default user if there is one. If neither have been provided, we raise an error.
@@ -319,7 +319,7 @@ class Client(BaseClient):
                 " valid ID", exception)
         return str(matched_user_id)
 
-    def search_content(self, as_user: str, query_object: QueryHandler) -> Dict[str, Any]:
+    def search_content(self, as_user: str, query_object: QueryHandler) -> dict[str, Any]:
         """
         Searches for files, folders, web links, and shared files across the users content or across
         the entire enterprise.
@@ -336,7 +336,7 @@ class Client(BaseClient):
             params=query_object.prepare_params_object()
         )
 
-    def find_file_folder_by_share_link(self, shared_link: str, password: str) -> Dict[str, Any]:
+    def find_file_folder_by_share_link(self, shared_link: str, password: str) -> dict[str, Any]:
         """
         Return the file represented by a shared link.
 
@@ -355,7 +355,7 @@ class Client(BaseClient):
             resp_type='json'
         )
 
-    def get_shared_link_by_file(self, file_id: str, as_user: str) -> Dict[str, Any]:
+    def get_shared_link_by_file(self, file_id: str, as_user: str) -> dict[str, Any]:
         """
         Gets the shared link associated with a particular file.
 
@@ -375,7 +375,7 @@ class Client(BaseClient):
 
     def crud_file_share_link(self, file_share_link: FileShareLink, as_user: str,
                              is_delete: bool = False
-                             ) -> Dict[str, Any]:
+                             ) -> dict[str, Any]:
         """
         CRUD function which makes the request to the API based on the given parameters.
 
@@ -420,7 +420,7 @@ class Client(BaseClient):
         )
 
     def crud_folder_share_link(self, folder_share_link: FolderShareLink, as_user: str,
-                               is_delete: bool = False) -> Dict[str, Any]:
+                               is_delete: bool = False) -> dict[str, Any]:
         """
         CRUD function which makes the request to the API based on the given parameters.
 
@@ -560,8 +560,8 @@ class Client(BaseClient):
             params=remove_empty_elements(query_params)
         )
 
-    def _create_upload_session(self, file_name: Optional[str], file_size: int, folder_id: Optional[str],
-                               as_user: Optional[str]) -> dict:
+    def _create_upload_session(self, file_name: str | None, file_size: int, folder_id: str | None,
+                               as_user: str | None) -> dict:
         """
         Each file upload where the file is greater than the maximum_chunk_size of 50MBs requires a
         session to be created. This session returns the endpoints and determined chunk size required
@@ -603,8 +603,8 @@ class Client(BaseClient):
                 break
             yield data
 
-    def chunk_upload(self, file_name: Optional[str], file_size: int, file_path: str,
-                     folder_id: Optional[str], as_user: Optional[str]):
+    def chunk_upload(self, file_name: str | None, file_size: int, file_path: str,
+                     folder_id: str | None, as_user: str | None):
         """
         Handles the uploading of the file parts to the session endpoint. Box requires a SHA1 digest
         hash to be included as part of the request headers. This function handles that as it
@@ -652,7 +652,7 @@ class Client(BaseClient):
                 index = offset
         return parts, upload_url_suffix
 
-    def commit_file(self, file_path: str, as_user: Optional[str], parts: List[Dict],
+    def commit_file(self, file_path: str, as_user: str | None, parts: list[dict],
                     upload_url_suffix: str) -> dict:
         """
         Once a file has been uploaded, the file must be committed. This request requires the SHA1
@@ -684,8 +684,8 @@ class Client(BaseClient):
                 headers=final_headers
             )
 
-    def upload_file(self, entry_id: str, file_name: Optional[str] = None, folder_id: Optional[str] = None,
-                    as_user: Optional[str] = None) -> dict:
+    def upload_file(self, entry_id: str, file_name: str | None = None, folder_id: str | None = None,
+                    as_user: str | None = None) -> dict:
         """
         Main function used to handle the `box-upload-file` command. Box enforces size limitations
         which determines which endpoint is used to upload a file. for files under 50MB, the generic
@@ -837,7 +837,7 @@ class Client(BaseClient):
                            role: str = None,
                            language: str = None, is_sync_enabled: bool = False,
                            job_title: str = None, phone: str = None, address: str = None,
-                           space_amount: int = None, tracking_codes: List[Dict] = None,
+                           space_amount: int = None, tracking_codes: list[dict] = None,
                            can_see_managed_users: bool = False, time_zone: str = None,
                            is_exempt_from_device_limits: bool = False,
                            is_exempt_from_login_verification: bool = False,
@@ -1024,7 +1024,7 @@ def arg_to_int(arg: Any, arg_name: str, default: int = None) -> int:
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -1091,7 +1091,7 @@ def format_time_range(range_arg: str):
         return None
 
 
-def parse_key_value_arg(arg_str: Optional[Any]):
+def parse_key_value_arg(arg_str: Any | None):
     """
     In some cases it is necessary to pass an argument with a specific name. The common usecase is
     for Tags. This function allows a user to create their own key value pairs.
@@ -1116,7 +1116,7 @@ def parse_key_value_arg(arg_str: Optional[Any]):
 ''' COMMAND FUNCTIONS '''
 
 
-def find_file_folder_by_share_link_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def find_file_folder_by_share_link_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command function which retrieves the file or folder for a given share link.
 
@@ -1128,7 +1128,7 @@ def find_file_folder_by_share_link_command(client: Client, args: Dict[str, Any])
     return_results function in main()
     """
     share_link: str = args.get('shared_link')  # type:ignore
-    password: str = args.get('password', None)
+    password: str = args.get('password')
     response: dict = client.find_file_folder_by_share_link(shared_link=share_link, password=password)
     readable_output = tableToMarkdown(
         name=f'File/Folder Share Link for {share_link}',
@@ -1144,7 +1144,7 @@ def find_file_folder_by_share_link_command(client: Client, args: Dict[str, Any])
     )
 
 
-def search_content_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_content_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command function which uses the `search_content` client function to query for an item.
 
@@ -1172,7 +1172,7 @@ def search_content_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def create_update_file_share_link_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_update_file_share_link_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command function which uses the `crud_file_share_link` client function to create or update a
     file's share link. Since the API does not differentiate between creation or update of the links,
@@ -1201,7 +1201,7 @@ def create_update_file_share_link_command(client: Client, args: Dict[str, Any]) 
     )
 
 
-def remove_file_share_link_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_file_share_link_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command function which uses the `crud_file_share_link` client function to delete/remove a
     file's share link. This is done by passing the `is_delete` parameter to the crud function which
@@ -1227,7 +1227,7 @@ def remove_file_share_link_command(client: Client, args: Dict[str, Any]) -> Comm
     )
 
 
-def get_shared_link_for_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_shared_link_for_file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command function which retrieves the shared link for a given file.
 
@@ -1257,7 +1257,7 @@ def get_shared_link_for_file_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def get_shared_link_by_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_shared_link_by_folder_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command function which retrieves the shared link for a given folder.
 
@@ -1284,7 +1284,7 @@ def get_shared_link_by_folder_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def create_update_folder_share_link_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_update_folder_share_link_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command function which uses the `crud_folder_share_link` client function to create or update a
     folder's share link. Since the API does not differentiate between creation or update of the
@@ -1314,7 +1314,7 @@ def create_update_folder_share_link_command(client: Client, args: Dict[str, Any]
     )
 
 
-def remove_folder_share_link_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_folder_share_link_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command function which uses the `crud_folder_share_link` client function to delete/remove a
     folder's share link. This is done by passing the `is_delete` parameter to the crud function
@@ -1344,7 +1344,7 @@ def remove_folder_share_link_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def get_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_folder_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command which retrieves details about a given folder.
 
@@ -1381,7 +1381,7 @@ def get_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_folder_items_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_folder_items_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command which lists the items within a given folder.
 
@@ -1422,7 +1422,7 @@ def list_folder_items_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def folder_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def folder_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command which creates a folder under the given parent folder. If no parent is given, the folder
     will be created under the root (0) folder.
@@ -1446,7 +1446,7 @@ def folder_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command which when given a file_id will delete the file. The deleted file will be sent to the
     Trash folder. If the file is to be deleted permanently, then it is necessary to use the
@@ -1471,7 +1471,7 @@ def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_users_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command which will list all users for which the query applies. The retrieved user_ids are
     necessary for subsequent calls made to the API.
@@ -1503,7 +1503,7 @@ def list_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def upload_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def upload_file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Uploads a file to Box. For files with a size over the set limit, the file will be uploaded in
     chunks. For files which are under the limit, they will be submitted using a POST request.
@@ -1529,7 +1529,7 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def trashed_items_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def trashed_items_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Lists items which have been trashed.
 
@@ -1560,7 +1560,7 @@ def trashed_items_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def trashed_item_restore_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def trashed_item_restore_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Restores an item which has been trashed.
 
@@ -1583,7 +1583,7 @@ def trashed_item_restore_command(client: Client, args: Dict[str, Any]) -> Comman
     )
 
 
-def trashed_item_delete_permanently_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def trashed_item_delete_permanently_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Permanently deletes a file. Please note, the file must be sent to trash prior to permanent
     deletion.
@@ -1607,7 +1607,7 @@ def trashed_item_delete_permanently_command(client: Client, args: Dict[str, Any]
     )
 
 
-def list_user_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_user_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
 
     Retrieves events which were generated by a specific user.
@@ -1640,7 +1640,7 @@ def list_user_events_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def list_enterprise_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_enterprise_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
 
     Retrieves enterprise level events from the Box service.
@@ -1678,7 +1678,7 @@ def list_enterprise_events_command(client: Client, args: Dict[str, Any]) -> Comm
     )
 
 
-def get_current_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_current_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command executed when `box-get-current-user` is called. Uses the `As-User` header parameter to
     set the current user for the request.
@@ -1706,7 +1706,7 @@ def get_current_user_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def create_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command executed when `box-create_user` is called. Will create a user based on the given
     arguments.
@@ -1727,7 +1727,7 @@ def create_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     phone: str = args.get('phone')  # type:ignore
     address: str = args.get('address')  # type:ignore
     space_amount: int = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
-    tracking_codes: List[Dict] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
+    tracking_codes: list[dict] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
     can_see_managed_users: bool = argToBoolean(args.get('can_see_managed_users'))
     time_zone: str = args.get('timezone')  # type:ignore
     is_exempt_from_device_limits: bool = argToBoolean(args.get('is_exempt_from_device_limits'))
@@ -1765,7 +1765,7 @@ def create_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def update_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command executed when `box-create_user` is called. Will create a user based on the given
     arguments.
@@ -1787,17 +1787,17 @@ def update_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     phone: str = args.get('phone')  # type:ignore
     address: str = args.get('address')  # type:ignore
     space_amount: int = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
-    tracking_codes: Optional[Any] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
+    tracking_codes: Any | None = parse_key_value_arg(arg_str=args.get('tracking_codes'))
     can_see_managed_users: bool = argToBoolean(
         args.get('can_see_managed_users', 'false'))  # type:ignore
-    time_zone: Optional[Any] = args.get('timezone')
+    time_zone: Any | None = args.get('timezone')
     is_exempt_from_device_limits: bool = argToBoolean(
         args.get('is_exempt_from_device_limits', 'false'))  # type:ignore
     is_exempt_from_login_verification: bool = argToBoolean(
         args.get('is_exempt_from_login_verification', 'false'))  # type:ignore
     is_external_collab_restricted: bool = argToBoolean(
         args.get('is_external_collab_restricted', 'false'))  # type:ignore
-    status: Optional[Any] = args.get('status')
+    status: Any | None = args.get('status')
 
     response = client.create_update_user(as_user=as_user, login=login, name=name, role=role,
                                          language=language, is_sync_enabled=is_sync_enabled,
@@ -1823,7 +1823,7 @@ def update_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def delete_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command executed when `box-create_user` is called. Will create a user based on the given
     arguments.
@@ -1851,7 +1851,7 @@ def delete_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def download_file_command(auth_params: dict, base_url: str, verify: bool, proxy: bool,
-                          args: Dict[str, Any]) -> dict:
+                          args: dict[str, Any]) -> dict:
     """
     Command executed when `box-download-file` is called. Will download a file based on the given
     arguments.
@@ -1887,7 +1887,7 @@ def download_file_command(auth_params: dict, base_url: str, verify: bool, proxy:
     return fileResult(filename=file_name, data=response.content)
 
 
-def move_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def move_folder_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command executed when `box-move-folder` is called. Will move the folder from one user to another
 
@@ -1952,7 +1952,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: int,
-                    as_user: str) -> Tuple[str, List[Dict]]:
+                    as_user: str) -> tuple[str, list[dict]]:
     """
 
     :param client:
@@ -1962,7 +1962,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     :param as_user:
     :return:
     """
-    created_after = last_run.get('time', None)
+    created_after = last_run.get('time')
     incidents = []
     if not created_after:
         created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(

@@ -1,12 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 FINAL_VERDICT_VENDOR = 'XSOAR'
 
 
-def reliability_level(reliability: Optional[str]) -> int:
+def reliability_level(reliability: str | None) -> int:
     if reliability is None:
         return -1
 
@@ -21,7 +21,7 @@ def reliability_level(reliability: Optional[str]) -> int:
     }.get(reliability, -1)
 
 
-def is_source_reliable(final: Optional[Dict[str, Any]], source: Dict[str, Any]) -> bool:
+def is_source_reliable(final: dict[str, Any] | None, source: dict[str, Any]) -> bool:
     if source.get('Vendor') == 'Manual':
         return True
 
@@ -43,7 +43,7 @@ def is_source_reliable(final: Optional[Dict[str, Any]], source: Dict[str, Any]) 
     return False
 
 
-def get_final_verdict(sources: List[Dict[str, Any]], indicator_value: str) -> Optional[Dict[str, Any]]:
+def get_final_verdict(sources: list[dict[str, Any]], indicator_value: str) -> dict[str, Any] | None:
     """ Get the DBotScore of the final verdict of an indicator from list of source DBotScores
 
         Vendor = Manual:

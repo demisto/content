@@ -19,7 +19,6 @@ from SecurityScorecard import \
 from unittest.mock import MagicMock
 
 import json
-import io
 import pytest
 
 
@@ -37,7 +36,7 @@ DOMAIN_NE = "domain2.com"
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
 

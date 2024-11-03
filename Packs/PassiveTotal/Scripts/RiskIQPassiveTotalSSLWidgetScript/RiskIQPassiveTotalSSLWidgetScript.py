@@ -1,15 +1,15 @@
 from CommonServerPython import *
 
 import traceback
-from typing import Dict, Any
+from typing import Any
 
 
-def set_arguments_for_widget_view(indicator_data: Dict[str, Any]) -> Dict[str, str]:
+def set_arguments_for_widget_view(indicator_data: dict[str, Any]) -> dict[str, str]:
     """
         Prepare argument for commands or message to set custom layout of indicator
     """
     indicator_type = indicator_data.get('indicator_type', '').lower()
-    arguments: Dict[str, str] = {}
+    arguments: dict[str, str] = {}
     if indicator_type == 'file sha-1':
         arguments = {
             'field': 'sha1',

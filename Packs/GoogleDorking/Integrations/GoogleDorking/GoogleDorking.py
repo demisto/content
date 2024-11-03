@@ -6,7 +6,7 @@ import traceback
 import json
 import math
 from os import path
-from typing import Optional, Union, Callable
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -99,7 +99,7 @@ def calculate_page_size(current_page: int, max_results: int) -> int:
     return MAX_RESULTS_PER_PAGE
 
 
-def get_search_results(client: Client, parser: Callable) -> Union[list, str]:
+def get_search_results(client: Client, parser: Callable) -> list | str:
     """ Searches google and returns a result using the parser"""
     results = []
     query = client.build_query()
@@ -172,7 +172,7 @@ def google_search_command(
         file_types: str = None,
         keywords: str = None,
         urls: str = None,
-) -> Union[list, str]:
+) -> list | str:
     if after:
         client.after = after
     if file_types:
@@ -184,7 +184,7 @@ def google_search_command(
     return get_search_results(client, item_to_result)
 
 
-def fetch_incidents(client: Client, last_run: Optional[dict]) -> list:
+def fetch_incidents(client: Client, last_run: dict | None) -> list:
     now = datetime.now()
     last_run_date = last_run.get(LAST_RUN_TIME_KEY) if last_run else None
     if last_run_date:

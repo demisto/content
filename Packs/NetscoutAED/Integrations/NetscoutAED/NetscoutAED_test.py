@@ -1,5 +1,4 @@
 import json
-import io
 import pytest
 import requests_mock
 from NetscoutAED import Client
@@ -19,7 +18,7 @@ outbound_whitelisted = {'direction': 'outbound', 'list_color': 'whitelist'}
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -626,8 +625,8 @@ def test_handle_domain_list_commands(mocker):
     result = handle_domain_list_commands(client, {})
     assert "google.com" in result.readable_output
     assert "2021-03-18T16:49:50.000Z" in result.readable_output
-    assert {'annotation': [], 'cid': [-1], 'domain': 'google.com', 'pgid': [-1],
-            'update_time': '2021-03-18T16:49:26.000Z'} == result.outputs[0]
+    assert result.outputs[0] == {'annotation': [], 'cid': [-1], 'domain': 'google.com', 'pgid': [-1],
+            'update_time': '2021-03-18T16:49:26.000Z'}
 
 
 domain_addition_params = [('google.com',
@@ -751,8 +750,8 @@ def test_handle_url_list_commands(mocker):
     result = handle_url_list_commands(client, {})
     assert "google.com" in result.readable_output
     assert "2021-03-18T16:52:26.000Z" in result.readable_output
-    assert {'annotation': [], 'cid': [-1], 'pgid': [-1], 'url': 'google.com',
-            'update_time': '2021-03-18T16:52:26.000Z'} == result.outputs[0]
+    assert result.outputs[0] == {'annotation': [], 'cid': [-1], 'pgid': [-1], 'url': 'google.com',
+            'update_time': '2021-03-18T16:52:26.000Z'}
 
 
 url_addition_params = [('maps.google.com',

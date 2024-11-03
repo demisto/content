@@ -121,8 +121,8 @@ class Client(BaseClient):
         elif response.status_code > 500:
             err_msg = HTTP_ERROR[500]
         elif response.status_code not in HTTP_ERROR:
-            err_msg = 'Error in API call [{}] - {}' \
-                .format(response.status_code, response.reason)
+            err_msg = f'Error in API call [{response.status_code}] - {response.reason}' \
+                
             headers = response.headers
             if 'application/json' in headers.get('Content-Type', ''):
                 error_entry = response.json()

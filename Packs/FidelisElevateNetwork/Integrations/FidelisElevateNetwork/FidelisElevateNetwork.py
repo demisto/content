@@ -104,7 +104,7 @@ def logout():
     global SESSION_ID
     if SESSION_ID is not None:
         try:
-            url = '/j/rest/v1/access/logout/{}/'.format(SESSION_ID)
+            url = f'/j/rest/v1/access/logout/{SESSION_ID}/'
             http_request('GET', url)
             SESSION_ID = None
 
@@ -401,7 +401,7 @@ def manage_alert_closealert_command():
 
     raw_response = manage_alert_closealert(data)
 
-    return_outputs("Closed alert conclusion ID {}".format(conclusion_id), {}, raw_response)
+    return_outputs(f"Closed alert conclusion ID {conclusion_id}", {}, raw_response)
 
 
 @logger
@@ -654,7 +654,7 @@ def get_alert_pcap_command():
 def get_alert_pcap(alert_id):
     # result = http_request('GET', '/j/rest/v1/alert/pcap/{}/'.format(alert_id), is_json=False)
     # return result
-    raise NotImplementedError()
+    raise NotImplementedError
 
 
 def get_alert_report_command():
@@ -1154,7 +1154,7 @@ def main():
     try:
         handle_proxy()
         command = demisto.command()
-        demisto.debug('Command being called is {}'.format(command))
+        demisto.debug(f'Command being called is {command}')
         login()
         if command == 'test-module':
             test_integration()
@@ -1237,7 +1237,7 @@ def main():
             manage_alert_label_command()
 
     except Exception as e:
-        return_error('error has occurred: {}'.format(str(e)))
+        return_error(f'error has occurred: {str(e)}')
 
     finally:
         logout()

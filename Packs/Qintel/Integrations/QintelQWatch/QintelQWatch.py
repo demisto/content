@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 ''' IMPORTS '''
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 from datetime import datetime
 from dateutil.parser import parse as parse_dt
 from pytz import utc as pyutc
@@ -55,7 +55,7 @@ class Client(BaseClient):
             'Cf-Access-Client-Secret': kwargs.get('client_secret')
         }
 
-    def search(self, endpoint: str, params: dict) -> Dict[str, Any]:
+    def search(self, endpoint: str, params: dict) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=endpoint,
@@ -64,7 +64,7 @@ class Client(BaseClient):
             retries=5
         )
 
-    def ping(self) -> Dict[str, Any]:
+    def ping(self) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/users/me',
@@ -76,14 +76,14 @@ def test_module(client) -> str:
     try:
         client.ping()
     except Exception as e:
-        return 'Test failed: {}'.format(e)
+        return f'Test failed: {e}'
 
     return 'ok'
 
 
 def _make_timestamp(ts):
     if not ts:
-        return
+        return None
 
     if isinstance(ts, int):
         return datetime.utcfromtimestamp(ts)
@@ -94,7 +94,7 @@ def _make_timestamp(ts):
 
 def _set_fetch_params(params, now):
 
-    fetch_params: Dict[str, Any] = {'meta[total]': True, 'stats': True}
+    fetch_params: dict[str, Any] = {'meta[total]': True, 'stats': True}
 
     limit = arg_to_number(
         arg=demisto.params().get('max_fetch'),
@@ -133,7 +133,7 @@ def _process_exposure_data(data, fetch_passwords):
     return_data = []
 
     for r in data:
-        entry: Dict = {}
+        entry: dict = {}
         for k, v in EXPOSURE_FIELDS.items():
             if k == 'password' and not fetch_passwords:
                 entry[k] = None

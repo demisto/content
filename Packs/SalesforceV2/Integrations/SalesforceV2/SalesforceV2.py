@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
-from typing import Any, Dict
+from typing import Any
 
 import urllib3
 from dateparser import parse
@@ -278,28 +278,27 @@ def searchToEntry(client, searchRecords):
         if record_type == 'CaseComment':
             case_comment.append(record.get('Id'))
             break
-        elif record_type == 'getOrgName':
+        if record_type == 'getOrgName':
             get_org.append(record.get('Id'))
             break
-        elif record_type == 'Case':
+        if record_type == 'Case':
             case_ids.append(record.get('Id'))
             break
-        elif record_type == 'Contact':
+        if record_type == 'Contact':
             contact_ids.append(record.get('id'))
             break
-        elif record_type == 'Lead':
+        if record_type == 'Lead':
             lead_ids.append(record.get('Id'))
             break
-        elif record_type == 'Task':
+        if record_type == 'Task':
             task_ids.append(record.get('Id'))
             break
-        elif record_type == 'User':
+        if record_type == 'User':
             user_ids.append(record.get('Id'))
             break
-        else:
-            # in case we don't know how to parse the object
-            general.append(record)
-            break
+        # in case we don't know how to parse the object
+        general.append(record)
+        break
 
     condition = None
     properties = None
@@ -462,7 +461,7 @@ def objectToEntry(client, raw_info):
     return results
 
 
-def get_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_object_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     if path := args.get('path'):
         result = client.getObject(path)
@@ -472,7 +471,7 @@ def get_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return objectToEntry(client, result)
 
 
-def update_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_object_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     client.updateObject(args.get('path'), args.get('json'))
     # return updated object
@@ -486,7 +485,7 @@ def create_object_command(client: Client) -> CommandResults:
     return result
 
 
-def get_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_case_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     if args.get('caseNumber'):
         condition = f"CaseNumber='{args.get('caseNumber')}"
@@ -504,20 +503,20 @@ def get_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raise Exception('You must specify object ID or a Case Number')
 
 
-def get_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     response = client.getUser(args.get('oid'), args.get('caseNumber'))
     return objectToEntry(client, response)
 
 
-def get_case_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_case_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     result = client.getCaseComment(args.get('oid'), args.get('caseNumber'))
 
     return objectToEntry(client, result.get('records', []))
 
 
-def get_org_name_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_org_name_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     if case_number := args.get('caseNumber'):
         condition = f"CaseNumber='{case_number}'"
@@ -531,7 +530,7 @@ def get_org_name_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return objectToEntry(client, users_a)
 
 
-def post_case_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_case_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     results = client.postCaseComment(args.get('public'), args.get(
         'oid'), args.get('caseNumber'), args.get('text'))
@@ -543,7 +542,7 @@ def post_case_comment_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return objectToEntry(client, case_comment)
 
 
-def create_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_case_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     data = {
         "Subject": args.get('subject'),
@@ -563,7 +562,7 @@ def create_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return objectToEntry(client, case)
 
 
-def update_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_case_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     case_number = args.get('caseNumber')
     oid = args.get('oid')
@@ -611,13 +610,13 @@ def get_cases_command(client: Client) -> CommandResults:
     return objectToEntry(client, cases)
 
 
-def close_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def close_case_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     args['status'] = 'Closed'
     return update_case_command(client, args)
 
 
-def delete_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_case_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     case_number = args.get('caseNumber')
     if args.get('oid') and case_number:
@@ -636,26 +635,26 @@ def delete_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return client.deleteObject(f'Case/{oid}')
 
 
-def push_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def push_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     return client.pushComment(args.get('oid'), args.get('text'), args.get('linkUrl'))
 
 
-def push_comment_thread_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def push_comment_thread_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     results = client.pushCommentThread(args.get('id'), args.get('text'))
 
     return results
 
 
-def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     search_records = client.sendRequestInSession(
         'GET', f"search/?q=FIND+%7B{args.get('pattern')}%7D", '').get('searchRecords')
     return searchToEntry(client, search_records)
 
 
-def list_case_files_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_case_files_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     case_oid = args.get('caseoId')
     case_number = args.get('caseNumber')
@@ -671,12 +670,12 @@ def list_case_files_command(client: Client, args: Dict[str, Any]) -> CommandResu
     return results
 
 
-def get_case_file_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_case_file_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     return client.getCaseFileById(args.get('caseNumber'), args.get('caseFileId'))
 
 
-def describe_sobject_field_command(client: Client, args: Dict[str, Any]):
+def describe_sobject_field_command(client: Client, args: dict[str, Any]):
 
     response = client.sendRequestInSession('GET', 'sobjects/Case/describe/')
 
@@ -705,7 +704,7 @@ def get_mapping_fields_command(client):
     return mapping_response
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> str:
     """
     This command pushes local changes to the remote system.
     Args:

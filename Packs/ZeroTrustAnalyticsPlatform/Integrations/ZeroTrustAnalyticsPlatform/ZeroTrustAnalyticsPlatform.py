@@ -6,7 +6,6 @@ import traceback
 import re
 import urllib3
 
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -291,7 +290,7 @@ def delta_or_data(remote_args, key):
         return remote_args.data.get(key)
 
 
-def alert_to_incident(alert: Dict):
+def alert_to_incident(alert: dict):
     alert_id = alert["id"]
     description = alert["description"]
     return {
@@ -399,8 +398,8 @@ def comments_to_notes(client: Client, comments: List):
 
 def get_notes_for_alert(
     client: Client,
-    investigation: Dict,
-    alert: Dict,
+    investigation: dict,
+    alert: dict,
     last_update: datetime,
     update_status: bool,
 ):
@@ -472,14 +471,14 @@ def get_notes_for_alert(
     return entries
 
 
-def get_comment_links(comment: Dict):
+def get_comment_links(comment: dict):
     # Format [description](link)
     # Extract description, link
     link_regex = re.compile(r"\[([^\]]+)\]\(([^)]+incident_uploads[^)]+)\)")
     return link_regex.findall(comment["comment"])
 
 
-def strip_comment_links(comment: Dict):
+def strip_comment_links(comment: dict):
     # Format [description](link)
     # Remove the (link)
     strip_regex = re.compile(r"(\[[^\]]+\])\([^)]+incident_uploads[^)]+\)")
@@ -548,7 +547,7 @@ def extract_trigger_kv(trigger_events: list):
 
 def fetch_incidents(
     client: Client,
-    last_run: Dict,
+    last_run: dict,
     first_fetch_time: str,
     max_fetch: int,
     mirror_direction: Optional[str],
@@ -639,8 +638,8 @@ def get_mapping_fields():
 
 def get_remote_data(
     client: Client,
-    investigation: Dict,
-    args: Dict,
+    investigation: dict,
+    args: dict,
 ):
     """
     Gets updated data from ZTAP for an alert that has changed
@@ -679,7 +678,7 @@ def get_remote_data(
         raise Exception(str(e))
 
 
-def get_modified_remote_data(client: Client, args: Dict):
+def get_modified_remote_data(client: Client, args: dict):
     """
     Gets ZTAP alerts that have been modified since the last check
     """
@@ -704,8 +703,8 @@ def get_modified_remote_data(client: Client, args: Dict):
 
 def update_remote_system(
     client: Client,
-    investigation: Dict,
-    args: Dict,
+    investigation: dict,
+    args: dict,
 ):
     """
     Updates ZTAP with new comments and/or closes the alert if closed in XSOAR
@@ -776,7 +775,7 @@ def update_remote_system(
 
 def ztap_get_alert_entries(
     client: Client,
-    args: Dict,
+    args: dict,
 ):
     """
     Gets all entries (comments/attachments) for an alert
@@ -791,7 +790,7 @@ def ztap_get_alert_entries(
             "datetime_closed": None,
         }
 
-        investigation: Dict = {}
+        investigation: dict = {}
         entries = get_notes_for_alert(
             client, investigation, alert, epoch(), update_status=False
         )

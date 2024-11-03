@@ -1,10 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Union
 import jmespath
 
 
-def jmespath_search(expression: str, value: Union[dict, list]) -> dict:
+def jmespath_search(expression: str, value: dict | list) -> dict:
     try:
         expression_compiled = jmespath.compile(expression)
     except Exception as err:

@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import os
 import hashlib
-from typing import List, Dict, Optional, Any
+from typing import Any
 
 
 def parse_attachment_entries(entries):
@@ -35,7 +35,7 @@ def parse_attachment_entries(entries):
     return entry_context
 
 
-def find_attachment_entry(file_ents: List[Dict[str, Any]], attachment_ent: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+def find_attachment_entry(file_ents: list[dict[str, Any]], attachment_ent: dict[str, Any]) -> dict[str, Any] | None:
     """
     Find an incident attachment entry
 

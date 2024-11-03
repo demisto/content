@@ -2,7 +2,7 @@ from CommonServerPython import *
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Any
 import urllib3
 
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -113,10 +113,10 @@ def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_qu
     else:
         start_time = round((datetime.now() - timedelta(days=int(fetch_start))).timestamp() * 1000)
     if fetch_query_filter:
-        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round((datetime.now().timestamp() * 1000))})'\
+        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round(datetime.now().timestamp() * 1000)})'\
                              + fetch_query_filter
     else:
-        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round((datetime.now().timestamp() * 1000))})'
+        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round(datetime.now().timestamp() * 1000)})'
 
     results = client.query_entities(entity_type=object_to_fetch, query_filter=fetch_query_filter,
                                     order_by="Id desc", entity_fields=fetch_fields,
@@ -141,11 +141,11 @@ def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_qu
     demisto.incidents(incidents)
 
 
-def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_entity_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
-    entity_type = args.get('entity_type', None)
-    entity_id = args.get('entity_id', None)
-    entity_fields = args.get('entity_fields', None)
+    entity_type = args.get('entity_type')
+    entity_id = args.get('entity_id')
+    entity_fields = args.get('entity_fields')
 
     readable_entity = {}
 
@@ -180,14 +180,14 @@ def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
-def query_entities_command(client: Client, args: Dict[str, Any]):
+def query_entities_command(client: Client, args: dict[str, Any]):
 
-    entity_type = args.get('entity_type', None)
-    entity_fields = args.get('entity_fields', None)
-    query_filter = args.get('query_filter', None)
-    order_by = args.get('order_by', None)
-    size = args.get('size', None)
-    skip = args.get('skip', None)
+    entity_type = args.get('entity_type')
+    entity_fields = args.get('entity_fields')
+    query_filter = args.get('query_filter')
+    order_by = args.get('order_by')
+    size = args.get('size')
+    skip = args.get('skip')
 
     readable_entities = []
 
@@ -234,9 +234,9 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
         )
 
 
-def create_entities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_entities_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
-    entities = args.get('entities', None)
+    entities = args.get('entities')
 
     readable_entities = []
     context_entities = []
@@ -269,9 +269,9 @@ def create_entities_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def update_entities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_entities_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
-    entities = args.get('entities', None)
+    entities = args.get('entities')
 
     readable_entities = []
     context_entities = []
@@ -304,7 +304,7 @@ def update_entities_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def create_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable_entities = []
     context_entities = []
@@ -312,11 +312,11 @@ def create_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     incident_name = args.get('incident_name')
     incident_description = args.get('incident_description')
     impacted_service = args.get('impacted_service')
-    requested_by = args.get('requested_by', None)
-    incident_urgency = args.get('incident_urgency', None)
-    impact_scope = args.get('impact_scope', None)
-    service_desk_group = args.get('service_desk_group', None)
-    other_properities = args.get('other_properities', None)
+    requested_by = args.get('requested_by')
+    incident_urgency = args.get('incident_urgency')
+    impact_scope = args.get('impact_scope')
+    service_desk_group = args.get('service_desk_group')
+    other_properities = args.get('other_properities')
 
     incident_properities = {
         "DisplayLabel": incident_name,
@@ -365,20 +365,20 @@ def create_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable_entities = []
     context_entities = []
 
     incident_id = args.get('incident_id')
-    incident_description = args.get('incident_description', None)
-    incident_urgency = args.get('incident_urgency', None)
-    incident_scope = args.get('incident_scope', None)
-    incident_status = args.get('incident_status', None)
-    incident_closure_category = args.get('incident_closure_category', None)
-    incident_completion_code = args.get('incident_completion_code', None)
-    incident_solution = args.get('incident_solution', None)
-    other_properities = args.get('other_properities', None)
+    incident_description = args.get('incident_description')
+    incident_urgency = args.get('incident_urgency')
+    incident_scope = args.get('incident_scope')
+    incident_status = args.get('incident_status')
+    incident_closure_category = args.get('incident_closure_category')
+    incident_completion_code = args.get('incident_completion_code')
+    incident_solution = args.get('incident_solution')
+    other_properities = args.get('other_properities')
 
     incident_properities = {
         "Id": incident_id
@@ -431,7 +431,7 @@ def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def create_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable_entities = []
     context_entities = []
@@ -440,9 +440,9 @@ def create_request_command(client: Client, args: Dict[str, Any]) -> CommandResul
     request_description = args.get('request_description')
     requested_by = args.get('requested_by')
     requested_for = args.get('requested_for')
-    request_urgency = args.get('request_urgency', None)
-    impact_scope = args.get('impact_scope', None)
-    other_properities = args.get('other_properities', None)
+    request_urgency = args.get('request_urgency')
+    impact_scope = args.get('impact_scope')
+    other_properities = args.get('other_properities')
 
     request_properities = {
         "DisplayLabel": request_name,
@@ -488,18 +488,18 @@ def create_request_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def update_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable_entities = []
     context_entities = []
 
     request_id = args.get('request_id')
-    request_description = args.get('request_description', None)
-    request_urgency = args.get('request_urgency', None)
-    impact_scope = args.get('impact_scope', None)
-    request_status = args.get('request_status', None)
-    request_note = args.get('request_note', None)
-    other_properities = args.get('other_properities', None)
+    request_description = args.get('request_description')
+    request_urgency = args.get('request_urgency')
+    impact_scope = args.get('impact_scope')
+    request_status = args.get('request_status')
+    request_note = args.get('request_note')
+    other_properities = args.get('other_properities')
 
     request_properities = {
         "Id": request_id

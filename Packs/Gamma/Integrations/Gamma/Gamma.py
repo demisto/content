@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 import json
 import urllib3
-from typing import Any, Dict
+from typing import Any
 from enum import Enum
 
 # Disable insecure warnings
@@ -37,7 +37,7 @@ class Client(BaseClient):
             proxy=proxy
         )
 
-    def get_violation_list(self, minimum_violation: int, limit: int) -> Dict[str, Any]:
+    def get_violation_list(self, minimum_violation: int, limit: int) -> dict[str, Any]:
         """ Gets dict of all violations starting from the minimum ID
 
         :type minimum_violation: int
@@ -56,7 +56,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_violation(self, violation: int) -> Dict[str, Any]:
+    def get_violation(self, violation: int) -> dict[str, Any]:
         """ Get dict of violation by unique ID
 
         :type violation: int
@@ -72,7 +72,7 @@ class Client(BaseClient):
             }
         )
 
-    def update_violation(self, violation: int, status: str, notes: str) -> Dict[str, Any]:
+    def update_violation(self, violation: int, status: str, notes: str) -> dict[str, Any]:
         """ Update a violation's status and notes
 
         :type violation: int
@@ -107,7 +107,7 @@ class ViolationStatus(Enum):
 class Command:
 
     @staticmethod
-    def get_violation_list(client: Client, args: Dict[str, Any]) -> CommandResults:
+    def get_violation_list(client: Client, args: dict[str, Any]) -> CommandResults:
         """
         :type client: Client
         :param client: Gamma client
@@ -149,7 +149,7 @@ class Command:
         )
 
     @staticmethod
-    def get_violation(client: Client, args: Dict[str, Any]) -> CommandResults:
+    def get_violation(client: Client, args: dict[str, Any]) -> CommandResults:
         """
         :type client: Client
         :param client: Gamma client
@@ -185,7 +185,7 @@ class Command:
         )
 
     @staticmethod
-    def update_violation(client: Client, args: Dict[str, Any]) -> CommandResults:
+    def update_violation(client: Client, args: dict[str, Any]) -> CommandResults:
         """
         :type client: Client
         :param client: Gamma client
@@ -323,7 +323,7 @@ def fetch_incidents(client: Client, last_run_violation: dict,
     return next_run_violation, incidents
 
 
-def get_human_readable(violation: List[Dict[str, Any]]) -> str:
+def get_human_readable(violation: List[dict[str, Any]]) -> str:
     """ Parse results into human readable format
 
     :type violation: List

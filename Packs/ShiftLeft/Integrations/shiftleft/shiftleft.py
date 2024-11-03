@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import traceback
-from typing import Dict, Any
+from typing import Any
 
 """ CONSTANTS """
 
@@ -28,7 +28,7 @@ class ShiftLeftClient(BaseClient):
     def list_apps(
             self,
             org_id: str,
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """Returns list of apps"""
         return self._http_request(
             method="GET",
@@ -42,7 +42,7 @@ class ShiftLeftClient(BaseClient):
             severity: Union[str, List[str], None],
             type: Union[str, List[str], None],
             version: Union[str, None],
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """Returns list of findings"""
         return self._http_request(
             method="GET",
@@ -104,7 +104,7 @@ def list_apps_command(client: ShiftLeftClient, org_id: str) -> CommandResults:
         return CommandResults(readable_output="No apps were found.")
 
 
-def list_app_secrets_command(client: ShiftLeftClient, org_id: str, args: Dict[str, Any]) -> CommandResults:
+def list_app_secrets_command(client: ShiftLeftClient, org_id: str, args: dict[str, Any]) -> CommandResults:
     app_name = args.get("app_name")
     if not app_name:
         raise ValueError("Shiftleft error: app_name not specified")
@@ -173,7 +173,7 @@ def list_app_secrets_command(client: ShiftLeftClient, org_id: str, args: Dict[st
         return CommandResults()
 
 
-def list_app_findings_command(client: ShiftLeftClient, org_id: str, args: Dict[str, Any]) -> CommandResults:
+def list_app_findings_command(client: ShiftLeftClient, org_id: str, args: dict[str, Any]) -> CommandResults:
     app_name = args.get("app_name")
     if not app_name:
         raise ValueError("Shiftleft error: app_name not specified")
@@ -289,7 +289,7 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
-        headers: Dict = {
+        headers: dict = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {access_token}",
         }

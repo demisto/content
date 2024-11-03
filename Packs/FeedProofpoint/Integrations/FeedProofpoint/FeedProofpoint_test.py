@@ -15,7 +15,7 @@ def test_fetch_ips(requests_mock):
         "https://example.com/cool/reputation/detailed-iprepdata.txt", text=data
     )
     indicators = fetch_indicators_command(client, client.IP_TYPE)
-    assert 4 == len(indicators)
+    assert len(indicators) == 4
 
 
 def test_fetch_domains(requests_mock):
@@ -26,7 +26,7 @@ def test_fetch_domains(requests_mock):
         "https://example.com/cool/reputation/detailed-domainrepdata.txt", text=data
     )
     indicators = fetch_indicators_command(client, client.DOMAIN_TYPE)
-    assert 12 == len(indicators)
+    assert len(indicators) == 12
     # making sure all domains are not of type domain glob
     domains = [ind for ind in indicators if ind.get('type') == FeedIndicatorType.Domain]
     domain_globs = [ind for ind in indicators if ind.get('type') == FeedIndicatorType.DomainGlob]

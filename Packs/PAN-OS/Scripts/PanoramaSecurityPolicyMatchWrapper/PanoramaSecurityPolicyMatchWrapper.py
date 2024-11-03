@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any
+from typing import Any
 
 ''' STANDALONE FUNCTION '''
 
@@ -78,7 +78,7 @@ def wrapper_panorama_security_policy_match(destinations: list, sources: list, de
     return results
 
 
-def wrapper_command(args: Dict[str, Any]):
+def wrapper_command(args: dict[str, Any]):
     destinations = argToList(args.get('destination'))
     sources = argToList(args.get('source'))
     destination_ports = argToList(args.get('destination_port'))

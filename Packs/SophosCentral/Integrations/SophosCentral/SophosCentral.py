@@ -3287,7 +3287,7 @@ def fetch_incidents(
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
-    last_fetch_timestamp = last_run.get("last_fetch", None)
+    last_fetch_timestamp = last_run.get("last_fetch")
 
     if last_fetch_timestamp:
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)

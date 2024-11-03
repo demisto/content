@@ -2,11 +2,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import fnmatch
 import re
-from typing import Any, Dict, Iterator, List, Tuple
+from typing import Any
+from collections.abc import Iterator
 
 
 def to_string(value: Any) -> Optional[str]:
-    if isinstance(value, (List, Dict)) or value is None:
+    if isinstance(value, (list, dict)) or value is None:
         return None
     try:
         return str(value)
@@ -48,7 +49,7 @@ def build_pattern(pattern_algorithm: str, pattern: str, case_insensitive: bool) 
 
 class EntryFilter:
     def __init__(self, include_pattern: re.Pattern[str], exclude_pattern: Optional[re.Pattern[str]],
-                 node_paths: List[str], filter_entry_formats: List[str], filter_entry_types: List[str]):
+                 node_paths: list[str], filter_entry_formats: list[str], filter_entry_types: list[str]):
         """
         Initialize the filter with the matching conditions.
 
@@ -69,7 +70,7 @@ class EntryFilter:
             if not EntryFormat.is_valid_type(f):
                 raise ValueError(f'Invalid entry format: {f}')
 
-    def match(self, entry: Dict[str, Any]) -> Optional[Tuple[re.Match, str]]:
+    def match(self, entry: dict[str, Any]) -> Optional[tuple[re.Match, str]]:
         """
         Search the entry for the pattern.
 
@@ -110,13 +111,13 @@ class EntryFilter:
 
 
 class Entry:
-    def __init__(self, entry: Dict[str, Any], match: Optional[re.Match], value_matched: Optional[str]):
+    def __init__(self, entry: dict[str, Any], match: Optional[re.Match], value_matched: Optional[str]):
         self.entry = entry
         self.match = match
         self.value_matched = value_matched
 
 
-def iterate_entries(incident_id: Optional[str], query_filter: Dict[str, Any],
+def iterate_entries(incident_id: Optional[str], query_filter: dict[str, Any],
                     entry_filter: Optional[EntryFilter] = None) -> Iterator[Entry]:
     """
     Iterate war room entries
@@ -202,7 +203,7 @@ def main():
             rent = {
                 'ID': entry.entry['ID']
             }
-            if 'verbose' == output_option and entry.match:
+            if output_option == 'verbose' and entry.match:
                 rent['Where'] = entry.match[0][:128]
                 rent['Text'] = entry.value_matched
             ents.append(rent)
@@ -231,8 +232,8 @@ def main():
         if output_option != 'quiet':
             header = assign_params(
                 ID='Entry ID',
-                Where='Where' if 'verbose' == output_option else None,
-                Text='Text' if 'verbose' == output_option else None
+                Where='Where' if output_option == 'verbose' else None,
+                Text='Text' if output_option == 'verbose' else None
             )
             md += '\n' + tblToMd('', ents, headers=header.keys(), headerTransform=lambda h: header.get(h, ''))
         return_outputs(md)

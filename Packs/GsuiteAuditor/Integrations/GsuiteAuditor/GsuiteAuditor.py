@@ -7,7 +7,7 @@ from GSuiteApiModule import *  # noqa: E402
 ''' IMPORTS '''
 
 import urllib3
-from typing import List, Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,7 +16,7 @@ ADMIN_EMAIL = None
 
 ''' CONSTANTS '''
 
-OUTPUT_PREFIX: Dict[str, str] = {
+OUTPUT_PREFIX: dict[str, str] = {
     'ACTIVITY_LIST': 'GSuite.ActivitySearch',
     'ACTIVITY_LIST_PAGE_TOKEN': 'GSuite.PageToken.ActivitySearch',
 }
@@ -42,7 +42,7 @@ def is_email_valid(email: str) -> bool:
     return True if re.match(emailRegex, email) else False
 
 
-def prepare_args_for_activities_list(args: Dict[str, str]) -> Dict[str, str]:
+def prepare_args_for_activities_list(args: dict[str, str]) -> dict[str, str]:
     """
     Prepares arguments for gsuite-activity-search command.
 
@@ -65,7 +65,7 @@ def prepare_args_for_activities_list(args: Dict[str, str]) -> Dict[str, str]:
     })
 
 
-def prepare_readable_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def prepare_readable_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     readable_items = [
         {
             'Time': item.get('id', {}).get('time'),
@@ -80,7 +80,7 @@ def prepare_readable_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return GSuiteClient.remove_empty_entities(readable_items)
 
 
-def prepare_output_for_activities_list(response: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_output_for_activities_list(response: dict[str, Any]) -> dict[str, Any]:
     """
         prepares context output for gsuite-activity-search.
 
@@ -101,7 +101,7 @@ def prepare_output_for_activities_list(response: Dict[str, Any]) -> Dict[str, An
     }
 
 
-def prepare_gsuite_client(params: Dict) -> GSuiteClient:
+def prepare_gsuite_client(params: dict) -> GSuiteClient:
     user_service_account = params.get('credentials', {}).get('password')
     service_account_dict = GSuiteClient.safe_load_non_strict_json(user_service_account)
     verify_certificate = not params.get('insecure', False)
@@ -140,7 +140,7 @@ def test_module(client: GSuiteClient) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def activities_list_command(client: GSuiteClient, args: Dict[str, Any]) -> CommandResults:
+def activities_list_command(client: GSuiteClient, args: dict[str, Any]) -> CommandResults:
     """
     Prints all activities in the G Suite instance.
 

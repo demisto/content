@@ -54,7 +54,7 @@ def parse_response(response, error_operation, file_content=False, is_fetch=False
     try:
         response.raise_for_status()
         if not response.content:
-            return
+            return None
         if file_content:
             return response.content
         else:
@@ -142,7 +142,7 @@ def request_new_access_token(using_refresh):
 
 def get_new_access_token(is_fetch=False):
     response = request_new_access_token(True)
-    if not response.status_code == HTTP_CODES['success']:
+    if response.status_code != HTTP_CODES['success']:
         response = request_new_access_token(False)
     res_json = parse_response(response,
                               "Could not get token. Check your credentials (user/password/client id) and try again",
@@ -328,7 +328,7 @@ def download_attachments(id_type, object_id, business_object_type_name=None, bus
                                      attachment_type, is_fetch=is_fetch)
     attachments_to_download = result.get('attachments')
     if not attachments_to_download:
-        return
+        return None
     return get_attachments_content(attachments_to_download, is_fetch=is_fetch)
 
 
@@ -414,7 +414,6 @@ def save_incidents(objects_to_save):
     for obj in objects_to_save:
         final_incidents.append(object_to_incident(obj))
     demisto.incidents(final_incidents)
-    return
 
 
 def fetch_incidents_attachments(incidents, is_fetch):
@@ -447,7 +446,6 @@ def validate_params_for_fetch(max_result, objects_to_fetch, real_fetch):
     if len(objects_to_fetch) == 0:
         objects_to_fetch_err_message = 'No objects to fetch were given'
         raise_or_return_error(objects_to_fetch_err_message, real_fetch)
-    return
 
 
 def fetch_incidents(objects_names, fetch_time, max_results, query_string, fetch_attachments, real_fetch=False):
@@ -504,7 +502,6 @@ def remove_attachment(id_type, object_id, type_name, attachment_id):
         f'attachmentid/{attachment_id}/busobname/{type_name}/{id_type_str}/{object_id}'
     response = make_request('DELETE', url)
     parse_response(response, f'Could not remove attachment {attachment_id} from {type_name} {object_id}')
-    return
 
 
 def link_related_business_objects(action, parent_business_object_id, parent_business_object_record_id, relationship_id,
@@ -518,7 +515,6 @@ def link_related_business_objects(action, parent_business_object_id, parent_busi
     http_method = 'GET' if action == 'link' else 'DELETE'
     response = make_request(http_method, url)
     parse_response(response, "Could not link business objects")
-    return
 
 
 def business_objects_relation_action(action, parent_type_name, parent_record_id, child_type_name, child_record_id,
@@ -527,12 +523,11 @@ def business_objects_relation_action(action, parent_type_name, parent_record_id,
     child_business_object_id = resolve_business_object_id_by_name(child_type_name)
     link_related_business_objects(action, parent_business_object_id, parent_record_id, relationship_id,
                                   child_business_object_id, child_record_id)
-    return
 
 
 def validate_query_list(query_list, is_fetch):
     for index, query in enumerate(query_list):
-        if not len(query) == 3:
+        if len(query) != 3:
             length_err_message = f'Cannot parse query, should be of the form: `[["FieldName","Operator","Value"],' \
                 f'["FieldName","Operator","Value"],...]`. Filter in index {index} is malformed: {query}'
             raise_or_return_error(length_err_message, is_fetch)
@@ -540,7 +535,6 @@ def validate_query_list(query_list, is_fetch):
             operator_err_message = f'Operator should be one of the following: {", ".join(QUERY_OPERATORS)}. Filter in' \
                 f' index {index}, was: {query[1]}'
             raise_or_return_error(operator_err_message, is_fetch)
-    return
 
 
 def validate_query_for_fetch_incidents(objects_names, query_string, real_fetch):
@@ -703,7 +697,6 @@ def test_command():
         fetch_incidents(OBJECTS_TO_FETCH, FETCH_TIME, MAX_RESULT, QUERY_STRING, FETCH_ATTACHMENTS)
     else:
         get_access_token(True)
-    return
 
 
 def create_business_object_command():
@@ -804,7 +797,6 @@ def fetch_incidents_command():
             'last_created_time': next_created_time_to_fetch,
             'objects_names_to_fetch': objects_names_to_fetch
         })
-    return
 
 
 def download_attachments_command():

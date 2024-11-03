@@ -1,4 +1,4 @@
-from typing import Callable, Tuple  # noqa:F401
+from collections.abc import Callable  # noqa:F401
 from urllib3 import disable_warnings
 from CommonServerPython import *
 

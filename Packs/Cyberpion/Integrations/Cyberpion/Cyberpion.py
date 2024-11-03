@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
-from typing import Dict, Tuple, List
 from datetime import timezone
 import urllib3
 
@@ -88,7 +87,7 @@ class Client(BaseClient):
                          max_fetch: int = None,
                          last_fetched_creation_time: str = None,
                          domain: str = None
-                         ) -> List[dict]:
+                         ) -> list[dict]:
         params = {
             'verbosity': 'details',
             'urgency__gte': min_severity,
@@ -144,7 +143,7 @@ class Client(BaseClient):
                                 min_severity: int,
                                 alert_types: list = None,
                                 show_only_active=True
-                                ) -> Dict[str, Any]:
+                                ) -> dict[str, Any]:
         # call API
         return {
             "Domain": domain,
@@ -183,7 +182,7 @@ def convert_to_demisto_severity(severity: float) -> int:
         return 3
     elif 7.6 <= severity <= 10:
         return 4
-    raise Exception('value of severity is not between 0-10. invalid value of severity: {}'.format(severity))
+    raise Exception(f'value of severity is not between 0-10. invalid value of severity: {severity}')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -221,7 +220,7 @@ def fetch_incidents(client: Client,
                     alert_types: list,
                     show_only_active: bool,
                     first_fetch: str = None
-                    ) -> Tuple[Dict[str, str], List[dict]]:
+                    ) -> tuple[dict[str, str], list[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -255,7 +254,7 @@ def fetch_incidents(client: Client,
     last_run_dict = demisto.getLastRun()
     if 'last_fetch' in last_run_dict:
         last_fetch = last_run_dict['last_fetch']
-        demisto.debug('last fetch: {}'.format(str(last_fetch)))
+        demisto.debug(f'last fetch: {str(last_fetch)}')
     else:
         demisto.debug('no previous data... this means this is the first time we are fetching incidents')
         last_fetch = first_fetch
@@ -294,7 +293,7 @@ def fetch_incidents(client: Client,
     return new_last_run_dict, incidents
 
 
-def get_domain_state_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_domain_state_command(client: Client, args: dict[str, Any]) -> CommandResults:
     domain = args.get('domain')
     if not domain:
         raise ValueError('no domain specified')
@@ -322,7 +321,7 @@ def get_domain_state_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def get_domain_action_items_command(client: Client, args: Dict[str, Any], min_severity: int, alert_types: list = None,
+def get_domain_action_items_command(client: Client, args: dict[str, Any], min_severity: int, alert_types: list = None,
                                     show_only_active: bool = True) -> CommandResults:
     domain = args.get('domain')
     if not domain:
@@ -379,7 +378,7 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers = {
-            'Authorization': 'Token {}'.format(api_key)
+            'Authorization': f'Token {api_key}'
         }
         client = Client(
             base_url=base_url,
@@ -411,7 +410,7 @@ def main() -> None:  # pragma: no cover
             try:
                 max_fetch = int(max_fetch)
                 if max_fetch > 500 or max_fetch < 1:
-                    raise ValueError()
+                    raise ValueError
             except ValueError:
                 raise ValueError('max_fetch must be an integer between 1 to 500')
             if max_fetch > DEFAULT_MAX_INCIDENTS_TO_FETCH:

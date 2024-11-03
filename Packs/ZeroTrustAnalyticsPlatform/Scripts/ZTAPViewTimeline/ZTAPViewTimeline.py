@@ -1,6 +1,6 @@
 from CommonServerPython import *
 
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 """ STANDALONE FUNCTION """
@@ -43,7 +43,7 @@ def view_timeline(notes, ztap_tags) -> str:
 """ COMMAND FUNCTION """
 
 
-def view_timeline_command(args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
+def view_timeline_command(args: dict[str, Any]) -> CommandResults:  # pragma: no cover
     incident = demisto.incident()
     input_tag = incident.get("CustomFields").get("ztapinputtag")
     output_tags = incident.get("dbotMirrorTags")

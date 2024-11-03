@@ -103,7 +103,6 @@ class AlertAttributes:
 class AlertItem:
     def __init__(self, row: dict):
         self.row = row
-        pass
 
     def __getitem__(self, key: str) -> Any:
         if hasattr(self.row, key):

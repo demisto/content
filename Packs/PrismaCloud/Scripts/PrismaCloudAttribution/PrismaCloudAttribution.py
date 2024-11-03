@@ -6,7 +6,8 @@ from CommonServerUserPython import *  # noqa
 """
 
 
-from typing import Dict, List, Any, Iterable, Union
+from typing import Any
+from collections.abc import Iterable
 
 IPADDRESS_KEYS = ['publicIpAddress', 'natIP', 'publicIp', 'inboundIpAddress', 'ipAddress', 'IPAddress']
 FQDN_KEYS = ['publicDnsName', 'dnsname', 'domainName', 'name', 'dnsName', 'hostName', 'properties.hostName', 'fqdn',
@@ -15,7 +16,7 @@ FQDN_KEYS = ['publicDnsName', 'dnsname', 'domainName', 'name', 'dnsName', 'hostN
 ''' STANDALONE FUNCTION '''
 
 
-def recursive_find(keys: Union[List[str], str], value: Iterable[Any]) -> Iterable[Any]:
+def recursive_find(keys: list[str] | str, value: Iterable[Any]) -> Iterable[Any]:
     if not isinstance(keys, list):
         keys = [keys]
     for k, v in (value.items() if isinstance(value, dict) else
@@ -30,8 +31,8 @@ def recursive_find(keys: Union[List[str], str], value: Iterable[Any]) -> Iterabl
                 yield result
 
 
-def handle_data(data: Dict[str, Any], fields: List[str]) -> Dict[str, Any]:
-    out_dict: Dict = {}
+def handle_data(data: dict[str, Any], fields: list[str]) -> dict[str, Any]:
+    out_dict: dict = {}
     if 'ip' in fields:
         ips = list(set(recursive_find(IPADDRESS_KEYS, data)))
         out_dict["ip"] = ips if ips else None
@@ -44,13 +45,13 @@ def handle_data(data: Dict[str, Any], fields: List[str]) -> Dict[str, Any]:
 ''' COMMAND FUNCTION '''
 
 
-def attribution_command(args: Dict[str, Any]) -> CommandResults:
+def attribution_command(args: dict[str, Any]) -> CommandResults:
 
     assets = argToList(args.get('assets', []))
     fields = argToList(
         args.get('fields', 'id,cloudType,resourceName,resourceType,regionId,accountId,accountName,hasAlert,service,ip,fqdn'))
 
-    asset_dict: Dict[str, Dict[str, Any]] = {}
+    asset_dict: dict[str, dict[str, Any]] = {}
 
     for asset in assets:
         if not isinstance(asset, dict):

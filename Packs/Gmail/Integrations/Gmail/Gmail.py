@@ -107,7 +107,6 @@ def html_to_text(html):
         parser.close()
     except Exception as e:
         demisto.error(f'The following error occurred while parsing the HTML: {e}')
-        pass
     return parser.get_text()
 
 

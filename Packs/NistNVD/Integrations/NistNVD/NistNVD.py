@@ -68,7 +68,7 @@ def extractVulnDetails(requestfromconnection):
         'CVSS Availability Impact': ['cvssData.availabilityImpact', 'availabilityImpact']
     }
 
-    if (not ('vulns') in req):
+    if (('vulns') not in req):
         for i in req['vulnerabilities']:
             pretty_dict = {}
             pretty_dict['CVE ID'] = i['cve']['id']

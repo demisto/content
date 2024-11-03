@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # ----------------------------------------- Imports ---------------------------
 import copy
 import math
-from typing import Tuple, Callable
+from collections.abc import Callable
 
 from requests import Response
 
@@ -483,7 +483,7 @@ def create_paging_header(results_num: int, page_number: int, length: int, pagina
     return f'Showing {results_num} results, limit={length}\n'
 
 
-def calculate_offset_and_limit(page_number: int, page_size: int) -> Tuple[int, int, int, int]:
+def calculate_offset_and_limit(page_number: int, page_size: int) -> tuple[int, int, int, int]:
     # start / offset == page_number * page_size, and limit is page size
     page_size = page_size_validness(page_size)
     page_number = page_number_validness(page_number)

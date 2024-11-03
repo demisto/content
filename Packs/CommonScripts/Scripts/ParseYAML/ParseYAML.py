@@ -6,12 +6,12 @@ Loads and parses a YAML string and outputs to context
 """
 
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 import yaml
 
 
-def load_yaml(stream: str) -> Dict:
+def load_yaml(stream: str) -> dict:
     """Simple YAML Loader function
 
     Args:
@@ -23,7 +23,7 @@ def load_yaml(stream: str) -> Dict:
     return yaml.safe_load(stream)
 
 
-def load_and_parse_yaml_command(args: Dict[str, Any]) -> CommandResults:
+def load_and_parse_yaml_command(args: dict[str, Any]) -> CommandResults:
     """XSOAR command function
 
     Args:
@@ -35,7 +35,7 @@ def load_and_parse_yaml_command(args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: XSOAR CommandResults object
     """
-    stream = args.get("string", None)
+    stream = args.get("string")
 
     if not stream:
         raise ValueError("string not specified in command args")

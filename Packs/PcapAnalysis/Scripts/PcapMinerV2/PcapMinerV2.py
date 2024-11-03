@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 import pyshark
 import re
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
@@ -39,7 +39,7 @@ class PCAP():
         """
 
         # setup data structures
-        self.hierarchy: Dict[str, int] = {}
+        self.hierarchy: dict[str, int] = {}
         self.num_of_packets = 0
         self.tcp_streams = 0
         self.udp_streams = 0
@@ -47,8 +47,8 @@ class PCAP():
         self.bytes_transmitted = 0
         self.min_time = float('inf')
         self.max_time = -float('inf')
-        self.conversations: Dict[tuple, Any] = {}
-        self.flows: Dict[tuple, Any] = {}
+        self.conversations: dict[tuple, Any] = {}
+        self.flows: dict[tuple, Any] = {}
         self.unique_source_ip: set = set([])
         self.unique_dest_ip: set = set([])
         self.ips_extracted: set = set([])
@@ -57,7 +57,7 @@ class PCAP():
         self.homemade_extracted: set = set([])
         self.last_layer: set = set([])
         self.irc_data: list = list()
-        self.protocol_data: Dict[str, Any] = dict()
+        self.protocol_data: dict[str, Any] = dict()
         self.entry_id = entry_id
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
@@ -247,7 +247,6 @@ class PCAP():
         if message_code_results:
             if message_code_results:
                 self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])  # type: ignore[attr-defined]
-        return
 
     @logger
     def extract_irc(self, packet):
@@ -319,7 +318,7 @@ class PCAP():
             self.urls_extracted.update(self.reg_url.findall(str(packet)))
 
         if self.homemade_regex:
-            self.homemade_extracted.update(self.reg_homemade.findall((str(packet))))
+            self.homemade_extracted.update(self.reg_homemade.findall(str(packet)))
 
         if 'DNS' in self.extracted_protocols and 'DNS' in layers:
             return self.extract_dns(packet)
@@ -598,9 +597,9 @@ def hierarchy_to_md(hierarchy: dict) -> str:
         A markdown string for displaying the hierarchy in a nice view. The script also counts the number of occurrences
         each hierarchy.
     """
-    final_dict: Dict[str, Any] = {}
+    final_dict: dict[str, Any] = {}
     num_of_all_packets = 0
-    for k in hierarchy.keys():
+    for k in hierarchy:
         layer_heir = ''
         for layer in k.split(','):
             layer_heir += ' -> ' + layer
@@ -664,7 +663,7 @@ def flows_to_ec(flows: dict) -> list:
         flows data in ec format.
     """
     flows_ec = []
-    for flow in flows.keys():
+    for flow in flows:
         flow_data = flows[flow]
         flow_ec = {
             'SourceIP': flow[0],

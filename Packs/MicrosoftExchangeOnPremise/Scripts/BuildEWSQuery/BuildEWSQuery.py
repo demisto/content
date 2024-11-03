@@ -34,10 +34,10 @@ def build_ews_query(demisto_args):
         args["Subject"] = match_string
 
     if escapeColons:
-        query = " AND ".join(r'{0}\\:"{1}"'.format(key, value) for (key, value) in args.items())
+        query = " AND ".join(rf'{key}\\:"{value}"' for (key, value) in args.items())
 
     else:
-        query = " AND ".join('{0}:"{1}"'.format(key, value) for (key, value) in args.items())
+        query = " AND ".join(f'{key}:"{value}"' for (key, value) in args.items())
 
     search_last_week = True if demisto_args.get("searchThisWeek").lower() == "true" else False
     if search_last_week:

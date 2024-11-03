@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
-from typing import Tuple, Optional
 import traceback
 import dateparser
 import httplib2
@@ -612,7 +611,7 @@ def convert_datetime_to_iso_str(publish_time):
         return publish_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def attribute_pairs_to_dict(attrs_str: Optional[str], delim_char: str = ","):
+def attribute_pairs_to_dict(attrs_str: str | None, delim_char: str = ","):
     """
     Transforms a string of multiple inputs to a dictionary list
 
@@ -663,7 +662,7 @@ def topics_list_command(
     project_id: str,
     page_size: str = None,
     page_token: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get topics list by project_id
     Requires one of the following OAuth scopes:
@@ -699,7 +698,7 @@ def publish_message_command(
     data: str = None,
     attributes: str = None,
     delim_char_attributes: str = ",",
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Publishes message in the topic
     Requires one of the following OAuth scopes:
@@ -766,7 +765,7 @@ def pull_messages_command(
     project_id: str,
     max_messages: str = None,
     ack: str = None,
-) -> Tuple[str, dict, list]:
+) -> tuple[str, dict, list]:
     """
     Pulls messages from the subscription
     Requires one of the following OAuth scopes:
@@ -800,7 +799,7 @@ def pull_messages_command(
 
 def ack_messages_command(
     client: PubSubClient, ack_ids: str, subscription_id: str, project_id: str,
-) -> Tuple[str, dict, list]:
+) -> tuple[str, dict, list]:
     """
     ACKs previously pulled messages using ack Ids
     Requires one of the following OAuth scopes:
@@ -843,7 +842,6 @@ def extract_acks_and_msgs(raw_msgs, add_ack_to_msg=True):
             except Exception as e:
                 # display message with b64 value
                 demisto.debug(f'Unable to encode {decoded_data}:\n{e}')
-                pass
 
             msg["data"] = decoded_data
             ack_id = raw_msg.get("ackId")
@@ -861,7 +859,7 @@ def subscriptions_list_command(
     page_size: str = None,
     page_token: str = None,
     topic_id: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get subscription list by project_id or by topic_id
     Requires one of the following OAuth scopes:
@@ -912,7 +910,7 @@ def subscriptions_list_command(
 
 def get_subscription_command(
     client: PubSubClient, subscription_id: str, project_id: str
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get subscription list by project_id or by topic_id
     Requires one of the following OAuth scopes:
@@ -948,7 +946,7 @@ def create_subscription_command(
     message_retention_duration: str = "",
     labels: str = "",
     expiration_ttl: str = "",
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Creates a subscription
     Requires one of the following OAuth scopes:
@@ -1009,7 +1007,7 @@ def update_subscription_command(
     message_retention_duration: str = "",
     labels: str = "",
     expiration_ttl: str = "",
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Creates a subscription
     Requires one of the following OAuth scopes:
@@ -1066,7 +1064,7 @@ def create_topic_command(
     allowed_persistence_regions: str = "",
     kms_key_name: str = None,
     labels: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Creates a topic
     :param client: PubSub client instance
@@ -1091,7 +1089,7 @@ def create_topic_command(
 
 def delete_topic_command(
     client: PubSubClient, project_id: str, topic_id: str
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Delete a topic
     :param client: PubSub client instance
@@ -1113,7 +1111,7 @@ def update_topic_command(
     allowed_persistence_regions: str = "",
     kms_key_name: str = None,
     labels: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Creates a topic
     :param client: PubSub client instance
@@ -1143,7 +1141,7 @@ def seek_message_command(
     subscription_id: str,
     time_string: str = None,
     snapshot: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get topics list by project_id
     Requires one of the following OAuth scopes:
@@ -1178,7 +1176,7 @@ def snapshot_list_command(
     topic_id: str = None,
     page_size: str = None,
     page_token: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Get snapshots list by project_id or topic_id
     Requires one of the following OAuth scopes:
@@ -1217,7 +1215,7 @@ def snapshot_create_command(
     subscription_id: str,
     snapshot_id: str,
     labels: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Create a snapshot
     Requires one of the following OAuth scopes:
@@ -1254,7 +1252,7 @@ def snapshot_update_command(
     update_mask: str,
     expire_time: str = None,
     labels: str = None,
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Updates a snapshot
     Requires one of the following OAuth scopes:
@@ -1289,7 +1287,7 @@ def snapshot_update_command(
 
 def snapshot_delete_command(
     client: PubSubClient, project_id: str, snapshot_id: str
-) -> Tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Delete a topic
     :param client: PubSub client instance

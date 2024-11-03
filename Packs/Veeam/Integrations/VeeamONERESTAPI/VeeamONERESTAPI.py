@@ -239,9 +239,9 @@ class Client(BaseClient):
 
 
 def get_triggered_alarms_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    Offset = args.get('Offset', None)
+    Offset = args.get('Offset')
     try_cast_to_int(Offset)
-    Limit = args.get('Limit', None)
+    Limit = args.get('Limit')
     try_cast_to_int(Limit)
     Filter = str(args.get('Filter', ''))
     Sort = str(args.get('Sort', ''))
@@ -476,7 +476,7 @@ def fetch_incidents(
 ) -> tuple[dict, list[dict]]:
 
     demisto.debug(f'Last run: {json.dumps(last_run)}')
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
 
     # Handle first fetch time
     if last_fetch is None:
@@ -581,8 +581,7 @@ def handle_command_with_token_refresh(command: Callable, command_params: dict, c
             else:
                 raise e
 
-    else:
-        raise ValueError('Failed to obtain a valid API Key after 3 attempts')
+    raise ValueError('Failed to obtain a valid API Key after 3 attempts')
 
 
 def main() -> None:

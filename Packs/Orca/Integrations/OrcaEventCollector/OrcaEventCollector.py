@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -19,10 +18,10 @@ PRODUCT = 'security'
 
 class Client(BaseClient):
 
-    def __init__(self, server_url: str, headers: Dict, proxy: bool = False, verify: bool = False):
+    def __init__(self, server_url: str, headers: dict, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
 
-    def get_alerts_request(self, max_fetch: int, last_fetch: str, next_page_token: Optional[str]) -> Dict:
+    def get_alerts_request(self, max_fetch: int, last_fetch: str, next_page_token: Optional[str]) -> dict:
         """ Retrieve information about alerts.
             Args:
                 max_fetch: int - Limit number of returned records.
@@ -49,7 +48,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def add_time_key_to_alerts(alerts: List[Dict]) -> List[Dict]:
+def add_time_key_to_alerts(alerts: List[dict]) -> List[dict]:
     """
     Adds the _time key to the alerts.
     Args:
@@ -128,7 +127,7 @@ def main() -> None:
     demisto.info(f'Orca Security. Command being called is {command}')
     try:
 
-        headers: Dict = {
+        headers: dict = {
             "Authorization": f'Token {api_token}'
         }
 

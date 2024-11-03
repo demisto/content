@@ -51,7 +51,7 @@ def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: l
         and 'allowed' in rule
     ):
         # Test if targetTags are relevant or not (if show up in keys or tag match)
-        target_tags_verdict = ('targetTags' not in rule.keys() or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
+        target_tags_verdict = ('targetTags' not in rule or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
         for entry in rule['allowed']:
             # Match is all protocol AND either no target tags OR target tags match
             if entry.get('IPProtocol') == 'all' and target_tags_verdict:

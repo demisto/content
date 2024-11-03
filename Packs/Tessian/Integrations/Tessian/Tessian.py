@@ -99,8 +99,8 @@ def format_url(url: str) -> str:
 
 def list_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     limit = int(args.get('limit', 100))
-    after_checkpoint = args.get('after_checkpoint', None)
-    created_after = args.get('created_after', None)
+    after_checkpoint = args.get('after_checkpoint')
+    created_after = args.get('created_after')
 
     results = client.list_events(limit, after_checkpoint, created_after)
 
@@ -134,7 +134,7 @@ def list_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    event_id = args.get('event_id', None)
+    event_id = args.get('event_id')
 
     if event_id is None:
         raise ValueError('Event ID is required')
@@ -171,7 +171,7 @@ def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> Com
 
 
 def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    event_id = args.get('event_id', None)
+    event_id = args.get('event_id')
 
     if event_id is None:
         raise ValueError('Event ID is required')
@@ -208,7 +208,7 @@ def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> Comm
 
 
 def delete_from_inbox_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    event_id = args.get('event_id', None)
+    event_id = args.get('event_id')
 
     if event_id is None:
         raise ValueError('Event ID is required')

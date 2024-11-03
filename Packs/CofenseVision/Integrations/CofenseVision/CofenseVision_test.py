@@ -1,6 +1,5 @@
 """Test file for Cofense Vision integration."""
 
-import io
 import os
 from time import time
 
@@ -41,7 +40,7 @@ TEST_DAY_DATA = "10 days"
 
 def util_load_json(path):
     """Load a json file located at the given path."""
-    with io.open(path, mode="r", encoding="utf-8") as file:
+    with open(path, encoding="utf-8") as file:
         return json.loads(file.read())
 
 

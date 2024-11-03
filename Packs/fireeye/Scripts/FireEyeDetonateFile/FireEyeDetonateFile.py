@@ -39,11 +39,10 @@ def detonate_file(args):
                 demisto.results(resp)
                 should_continue = False
                 break
-            else:
-                feSubmissionKey = demisto.get(resp[0], 'Contents')
-                if isinstance(feSubmissionKey, str):
-                    feSubmissionKey = json.loads(feSubmissionKey)
-                feSubmissionKeys[profile] = demisto.get(feSubmissionKey[0], 'ID')
+            feSubmissionKey = demisto.get(resp[0], 'Contents')
+            if isinstance(feSubmissionKey, str):
+                feSubmissionKey = json.loads(feSubmissionKey)
+            feSubmissionKeys[profile] = demisto.get(feSubmissionKey[0], 'ID')
     else:
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                         "Contents": 'FireEye: Integration not available.'})
@@ -109,7 +108,7 @@ def get_results(feDone, profiles, stauses, feSubmissionKeys, file):
                     demisto.results("No results.")
         else:
             demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                            "Contents": 'FireEye: Failed to detonate file {0}, exit status = {1}'.format(file, status)})
+                            "Contents": f'FireEye: Failed to detonate file {file}, exit status = {status}'})
 
 
 def main():  # pragma: no cover

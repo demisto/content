@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -37,7 +37,7 @@ class Client(BaseClient):
             raise Exception("Google Safe Browsing v2 error: "
                             "Please provide a valid value for the Source Reliability parameter.")
 
-    def build_request_body(self, client_body: Dict, list_url: List) -> Dict:
+    def build_request_body(self, client_body: dict, list_url: List) -> dict:
         """ build the request body according to the client body and the urls.
 
         Args:
@@ -50,7 +50,7 @@ class Client(BaseClient):
         for url in list_url:
             list_urls.append({"url": url})
 
-        body: Dict = {
+        body: dict = {
             "client": client_body,
             "threatInfo": {
                 "threatTypes": TYPES.get('threatTypes'),
@@ -61,7 +61,7 @@ class Client(BaseClient):
         }
         return body
 
-    def url_request(self, client_body, list_url) -> Dict:
+    def url_request(self, client_body, list_url) -> dict:
         """ send the url request.
 
         Args:
@@ -98,7 +98,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def handle_errors(result: Dict) -> None:
+def handle_errors(result: dict) -> None:
     """
     Handle errors, raise Exception when there is errors in the response.
     """
@@ -121,7 +121,7 @@ def handle_errors(result: Dict) -> None:
         raise Exception(f'Failed accessing Google Safe Browsing APIs. Error: {error_massage}. Error code: {error_code}')
 
 
-def arrange_results_to_urls(results: List, url_list: List) -> Dict:
+def arrange_results_to_urls(results: List, url_list: List) -> dict:
     """ Arrange and filter the URLs results according to the URLs list that we asked information on.
     Args:
         results: the API response.
@@ -129,7 +129,7 @@ def arrange_results_to_urls(results: List, url_list: List) -> Dict:
     Returns:
         (dict) The results according the urls.
     """
-    urls_results: Dict[str, list] = {}
+    urls_results: dict[str, list] = {}
     for url in url_list:
         urls_results[url] = []
 
@@ -140,7 +140,7 @@ def arrange_results_to_urls(results: List, url_list: List) -> Dict:
     return urls_results
 
 
-def url_command(client: Client, args: Dict[str, Any]) -> Union[List[CommandResults], CommandResults]:
+def url_command(client: Client, args: dict[str, Any]) -> Union[List[CommandResults], CommandResults]:
     """
     url command: Returns URL details for a list of URL
     """
@@ -218,7 +218,7 @@ def url_command(client: Client, args: Dict[str, Any]) -> Union[List[CommandResul
     return url_data_list
 
 
-def build_base_url(params: Dict) -> str:
+def build_base_url(params: dict) -> str:
     api_key = params.get('api_creds', {}).get('password') or params.get('api_key')
     base_url = params.get('url', '')
 

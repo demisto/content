@@ -1,6 +1,6 @@
 from RemoveKeyFromList import remove_key_from_list_command
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import List, Dict, Any
+from typing import Any
 import json
 
 MOCK_LIST_NAME = "TestList"
@@ -17,11 +17,11 @@ def test_remove_nonexisting_key_in_nonempty_list(mocker):
     Then
         - a message saying the key was not found is returned
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         "AnotherKey": "SomeValue"
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -50,9 +50,9 @@ def test_remove_nonexisting_key_in_empty_list(mocker):
     Then
         - a message saying the key was not found is returned
     """
-    MOCKED_START_LIST: Dict = {}
+    MOCKED_START_LIST: dict = {}
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -82,15 +82,15 @@ def test_remove_existing_key(mocker):
         - requested key is removed from list
         - list is left with only one item
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         MOCK_KEY_NAME: "Value",
         "AnotherKey": "AnotherValue"
     }
-    MOCKED_END_LIST: Dict = {
+    MOCKED_END_LIST: dict = {
         "AnotherKey": "AnotherValue"
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -122,12 +122,12 @@ def test_remove_existing_last_key(mocker):
         - requested key is removed from list
         - list is empty
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         MOCK_KEY_NAME: "Value"
     }
-    MOCKED_END_LIST: Dict = {}
+    MOCKED_END_LIST: dict = {}
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':

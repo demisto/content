@@ -13,7 +13,7 @@ def extract_users_from_file(entry_id: str, pattern: Optional[str]) -> list:
         raise DemistoException(f"Entry {entry_id} was not found")
     regex = re.compile(pattern) if pattern else None
     file_path = res['path']
-    with open(file_path, mode='r') as file:
+    with open(file_path) as file:
         for line in file.readlines():
             if regex:
                 regex_res = regex.search(line)

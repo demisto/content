@@ -165,8 +165,7 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
     explain_result['Probability'] = float(explain_result["Probability"])
     predicted_prob = explain_result["Probability"]
     if predicted_prob < label_threshold:
-        handle_error("Label probability is {:.2f} and it's below the input confidence threshold".format(
-            predicted_prob), is_return_error)
+        handle_error(f"Label probability is {predicted_prob:.2f} and it's below the input confidence threshold", is_return_error)
 
     positive_tokens = OrderedSet(explain_result['PositiveWords'])
     negative_tokens = OrderedSet(explain_result['NegativeWords'])

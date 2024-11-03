@@ -12,7 +12,7 @@ if not res:
 file_path = res.get('path')
 
 # open the file, and try and load the JSON, error if it's invalid.
-with open(file_path, 'r') as f:
+with open(file_path) as f:
     try:
         data = json.load(f)
     except ValueError as e:

@@ -27,7 +27,7 @@ def big_string(size):
 def mem_size_to_bytes(mem: str) -> int:
     res = re.match(r'(\d+)\s*([gm])?b?', mem, re.IGNORECASE)
     if not res:
-        raise ValueError("Failed parsing memory string: {}".format(mem))
+        raise ValueError(f"Failed parsing memory string: {mem}")
     b = int(res.group(1))
     if res.group(2):
         b = b * 1024 * 1024  # convert to mega byte
@@ -48,14 +48,14 @@ def check_memory(target_mem: str, check_type: str) -> str:  # pragma: no cover
     """
     size = mem_size_to_bytes(target_mem)
     if check_type == "allocate":
-        LOG("starting process to check memory of size: {}".format(size))
+        LOG(f"starting process to check memory of size: {size}")
         p = Process(target=big_string, args=(size, ))
         p.start()
         p.join()
-        LOG("memory intensive process status code: {}".format(p.exitcode))
+        LOG(f"memory intensive process status code: {p.exitcode}")
         if p.exitcode == 0:
-            return ("Succeeded allocating memory of size: {}. "
-                    "It seems that you haven't limited the available memory to the docker container.".format(target_mem))
+            return (f"Succeeded allocating memory of size: {target_mem}. "
+                    "It seems that you haven't limited the available memory to the docker container.")
     else:
         cgroup_file_v1 = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
         cgroup_file_v2 = "/sys/fs/cgroup/memory.max"
@@ -68,7 +68,7 @@ def check_memory(target_mem: str, check_type: str) -> str:  # pragma: no cover
                     ' cgroup files found, verify cgroups is enabled.')
 
         try:
-            with open(cgroup_file, "r") as f:
+            with open(cgroup_file) as f:
                 mem_bytes = int(f.read().strip())
                 if mem_bytes > size:
                     return (f'According to memory cgroup configuration at: {cgroup_file}'
@@ -81,7 +81,7 @@ def check_memory(target_mem: str, check_type: str) -> str:  # pragma: no cover
 
 
 def check_pids(pid_num: int) -> str:
-    LOG("Starting pid check for: {}".format(pid_num))
+    LOG(f"Starting pid check for: {pid_num}")
     processes = [Process(target=time.sleep, args=(30, )) for i in range(pid_num)]
     try:
         for p in processes:
@@ -92,12 +92,12 @@ def check_pids(pid_num: int) -> str:
             if p.is_alive():
                 alive += 1
         if alive >= pid_num:
-            return ("Succeeded creating processs of size: {}. "
-                    "It seems that you haven't limited the available pids to the docker container.".format(pid_num))
+            return (f"Succeeded creating processs of size: {pid_num}. "
+                    "It seems that you haven't limited the available pids to the docker container.")
         else:
             LOG(f'Number of processes that are alive: {alive} is smaller than {pid_num}. All good.')
     except Exception as ex:
-        LOG("Pool startup failed (as expected): {}".format(ex))
+        LOG(f"Pool startup failed (as expected): {ex}")
     finally:
         for p in processes:
             if p.is_alive():
@@ -109,17 +109,17 @@ def check_pids(pid_num: int) -> str:
 def check_fd_limits(soft, hard) -> str:
     s, h = resource.getrlimit(resource.RLIMIT_NOFILE)
     if s > soft:
-        return "FD soft limit: {} is above desired limt: {}.".format(s, soft)
+        return f"FD soft limit: {s} is above desired limt: {soft}."
     if h > hard:
-        return "FD hard limit: {} is above desired limit: {}.".format(h, hard)
+        return f"FD hard limit: {h} is above desired limit: {hard}."
     return ""
 
 
 def check_non_root():
     uid = os.getuid()
     if uid == 0:
-        return ("Running as root with uid: {}."
-                " It seems that you haven't set the docker container to run with a non-root internal user.".format(uid))
+        return (f"Running as root with uid: {uid}."
+                " It seems that you haven't set the docker container to run with a non-root internal user.")
     return ""
 
 
@@ -141,7 +141,7 @@ def check_cpus(num_cpus: int) -> str:
     for p in processes:
         p.join()
     runtime = time.time_ns() - start
-    LOG("cpus check runtime for {} processes time: {}".format(num_cpus, runtime))
+    LOG(f"cpus check runtime for {num_cpus} processes time: {runtime}")
     processes = [Process(target=intensive_calc, args=(iterval, )) for i in range(num_cpus * 2)]
     start = time.time_ns()
     for p in processes:
@@ -150,12 +150,12 @@ def check_cpus(num_cpus: int) -> str:
         p.join()
     runtime2 = time.time_ns() - start
     # runtime 2 should be 2 times slower. But we give it a safty as the machine itself maybe loaded
-    LOG("cpus check runtime for {} processes time: {}".format(num_cpus * 2, runtime2))
+    LOG(f"cpus check runtime for {num_cpus * 2} processes time: {runtime2}")
     if runtime2 < runtime * 1.5:
         return ("CPU processing power increased significantly when increasing processes "
-                "from: {} (time: {}) to: {} (time: {}). "
+                f"from: {num_cpus} (time: {runtime}) to: {num_cpus * 2} (time: {runtime2}). "
                 "Note: this test may fail even if the proper configuration has been applied and"
-                " the machine itself is loaded.".format(num_cpus, runtime, num_cpus * 2, runtime2))
+                " the machine itself is loaded.")
     return ""
 
 

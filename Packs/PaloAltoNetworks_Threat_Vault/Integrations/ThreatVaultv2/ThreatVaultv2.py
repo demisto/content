@@ -187,7 +187,7 @@ def validate_arguments_search_command(
 
     if sum(1 for x in (cve, vendor, name) if x) > 1:
         raise ValueError(
-            "Only one of the following can be used at a time: " "cve, vendor, name"
+            "Only one of the following can be used at a time: cve, vendor, name"
         )
 
     if sum(1 for x in (from_release_date, to_release_date) if x) == 1:
@@ -1063,7 +1063,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command." f"\nError:\n{str(err)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(err)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

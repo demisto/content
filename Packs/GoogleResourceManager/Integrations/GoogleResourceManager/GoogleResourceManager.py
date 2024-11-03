@@ -166,7 +166,7 @@ def poll_operation(operation):
         exc = operation.get('error')
         err_code = exc.get('code')
         err_msg = exc.get('message')
-        full_err_msg = "error code: {}\nerror message: {}".format(err_code, err_msg)
+        full_err_msg = f"error code: {err_code}\nerror message: {err_msg}"
         return_error(full_err_msg)
 
 
@@ -289,7 +289,7 @@ def delete_project_command(service):
             }
         })
     else:
-        return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+        return_error(f'Unexpected return object from {demisto.command()} execution. Results uncertain.')
 
 
 def undelete_project(service, project_id):
@@ -339,7 +339,7 @@ def undelete_project_command(service):
             }
         })
     else:
-        return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+        return_error(f'Unexpected return object from {demisto.command()} execution. Results uncertain.')
 
 
 def get_project(service, project_id):
@@ -421,7 +421,7 @@ def list_projects_command(service):
             'Label': project.get('labels')
         }
         contexts.append(context)
-    title = "Projects Filtered by '{}'".format(filter_list) if filter_list else "All Projects"
+    title = f"Projects Filtered by '{filter_list}'" if filter_list else "All Projects"
     md = tableToMarkdown(title, contexts)
     entry = {
         'Type': entryTypes['note'],
@@ -654,8 +654,7 @@ def main():
                 error_msg = dict_safe_get(err_json, ['error', 'message'])
                 error_reason = dict_safe_get(err_json, ['error', 'errors', 0, 'reason'])
                 error_status = dict_safe_get(err_json, ['error', 'status'])
-                full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
-                                                                                   error_reason, error_status)
+                full_err_msg = f"error code: {error_code}\n{error_msg}\nreason: {error_reason}\nstatus: {error_status}"
                 return_error(full_err_msg)
         else:
             return_error(str(exc))

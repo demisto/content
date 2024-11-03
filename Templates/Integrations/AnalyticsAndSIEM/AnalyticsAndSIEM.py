@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, Optional, Union, AnyStr
+from typing import AnyStr
 import urllib3
 
 """Example for Analytics and SIEM integration
@@ -31,7 +31,7 @@ INTEGRATION_CONTEXT_NAME = 'AnalyticsAndSIEM'
 
 
 class Client(BaseClient):
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -39,10 +39,10 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'version')
 
-    def list_events(self, max_results: Union[int, str] = None,
-                    event_created_date_after: Optional[Union[str, datetime]] = None,
-                    event_created_date_before: Optional[Union[str, datetime]] = None
-                    ) -> Dict:
+    def list_events(self, max_results: int | str = None,
+                    event_created_date_after: str | datetime | None = None,
+                    event_created_date_before: str | datetime | None = None
+                    ) -> dict:
         """Returns all events by sending a GET request.
 
         Args:
@@ -63,7 +63,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
-    def get_event(self, event_id: AnyStr) -> Dict:
+    def get_event(self, event_id: AnyStr) -> dict:
         """Return an event by the event ID.
 
         Args:
@@ -79,7 +79,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
-    def close_event(self, event_id: AnyStr) -> Dict:
+    def close_event(self, event_id: AnyStr) -> dict:
         """Closes the specified event.
 
         Args:
@@ -95,8 +95,8 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('DELETE', suffix, params=params)
 
-    def update_event(self, event_id: AnyStr, description: Optional[AnyStr] = None,
-                     assignee: Optional[List[str]] = None) -> Dict:
+    def update_event(self, event_id: AnyStr, description: AnyStr | None = None,
+                     assignee: list[str] | None = None) -> dict:
         """Updates the specified event.
 
         Args:
@@ -115,7 +115,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def create_event(self, description: str, assignee: List[str] = None) -> Dict:
+    def create_event(self, description: str, assignee: list[str] = None) -> dict:
         """Creates an event in the service.
 
         Args:
@@ -132,7 +132,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def query(self, **kwargs) -> Dict:
+    def query(self, **kwargs) -> dict:
         """Query the specified kwargs.
 
         Args:
@@ -150,7 +150,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def raw_response_to_context(events: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context(events: dict | list) -> dict | list:
     """Formats the API response to Demisto context.
 
     Args:
@@ -184,7 +184,7 @@ def raw_response_to_context(events: Union[Dict, List]) -> Union[Dict, List]:
 
 
 @logger
-def test_module_command(client: Client, *_) -> Tuple[str, None, None]:
+def test_module_command(client: Client, *_) -> tuple[str, None, None]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -207,7 +207,7 @@ def test_module_command(client: Client, *_) -> Tuple[str, None, None]:
 def fetch_incidents_command(
         client: Client,
         fetch_time: str,
-        last_run: Optional[str] = None) -> Tuple[List, str]:
+        last_run: str | None = None) -> tuple[list, str]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -229,7 +229,7 @@ def fetch_incidents_command(
     else:
         datetime_new_last_run = parse_date_string(last_run)
     new_last_run = datetime_new_last_run.strftime(occurred_format)
-    incidents: List = list()
+    incidents: list = list()
     raw_response = client.list_events(event_created_date_after=datetime_new_last_run)
     events = raw_response.get('event')
     if events:
@@ -249,7 +249,7 @@ def fetch_incidents_command(
 
 
 @logger
-def list_events_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_events_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Lists all events and return outputs in Demisto's format
 
     Args:
@@ -282,7 +282,7 @@ def list_events_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def get_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_event_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Gets an event by event ID and return outputs in Demisto's format
 
     Args:
@@ -314,7 +314,7 @@ def get_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def close_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def close_event_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Closes an event and return outputs in Demisto's format
 
     Args:
@@ -346,7 +346,7 @@ def close_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def update_event_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Updates an event and return outputs in Demisto's format
 
     Args:
@@ -378,7 +378,7 @@ def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_event_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Creates a new event and return outputs in Demisto's format
 
     Args:
@@ -410,7 +410,7 @@ def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def query_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def query_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Search for event by given args
 
     Args:

@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 
 SIZE_LIMIT = 1024000
@@ -10,7 +10,7 @@ MAX_SIZE = int(demisto.params().get('maxsize', SIZE_LIMIT))
 MAX_SIZE = MAX_SIZE if MAX_SIZE <= SIZE_LIMIT else SIZE_LIMIT
 
 
-def xsoar_store_list_command(args: Dict[str, Any]) -> CommandResults:
+def xsoar_store_list_command(args: dict[str, Any]) -> CommandResults:
 
     namespace = args.get('namespace', 'default')
 
@@ -36,7 +36,7 @@ def xsoar_store_list_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def xsoar_store_put_command(args: Dict[str, Any]) -> CommandResults:
+def xsoar_store_put_command(args: dict[str, Any]) -> CommandResults:
 
     namespace = args.get('namespace', 'default')
 
@@ -61,7 +61,7 @@ def xsoar_store_put_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def xsoar_store_get_command(args: Dict[str, Any]) -> CommandResults:
+def xsoar_store_get_command(args: dict[str, Any]) -> CommandResults:
 
     namespace = args.get('namespace', 'default')
 

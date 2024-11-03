@@ -57,10 +57,10 @@ def http_request(endpoint, data, method='POST'):
         try:
             return response.json()
         except Exception as e:
-            return_error('Response JSON decoding failed due to {}'.format(str(e)))
+            return_error(f'Response JSON decoding failed due to {str(e)}')
 
     else:
-        return_error('API Returned, {}:{}'.format(response.status_code, response.reason))
+        return_error(f'API Returned, {response.status_code}:{response.reason}')
 
 
 def get_dbot_score(verdict):
@@ -114,7 +114,7 @@ def get_dbot_std_context(indicator, ioc_type, verdict, threat_type):
     if dbot_score == 3:
         standard_cont['Malicious'] = {
             'Vendor': 'SlashNext Phishing Incident Response',
-            'Description': 'Detected "{}" Activity'.format(threat_type)
+            'Description': f'Detected "{threat_type}" Activity'
         }
 
     return dbot_score_cont, standard_cont
@@ -264,7 +264,7 @@ def download_forensics_data(scanid, tag, screenshot=False, html=False, txt=False
             sc_base64 = response.get('scData').get('scBase64')
             sc_data = base64.b64decode(sc_base64)
 
-            sc_file = fileResult('slashnext_{}.jpg'.format(scanid), sc_data, entryTypes['image'])
+            sc_file = fileResult(f'slashnext_{scanid}.jpg', sc_data, entryTypes['image'])
 
             demisto.results({
                 'Type': entryTypes['image'],
@@ -287,7 +287,7 @@ def download_forensics_data(scanid, tag, screenshot=False, html=False, txt=False
             html_base64 = response.get('htmlData').get('htmlBase64')
             html_data = base64.b64decode(html_base64)
 
-            html_file = fileResult('slashnext_{}.html'.format(scanid), html_data, entryTypes['file'])
+            html_file = fileResult(f'slashnext_{scanid}.html', html_data, entryTypes['file'])
 
             demisto.results({
                 'Type': entryTypes['file'],
@@ -310,7 +310,7 @@ def download_forensics_data(scanid, tag, screenshot=False, html=False, txt=False
             text_base64 = response.get('textData').get('textBase64')
             text_data = base64.b64decode(text_base64)
 
-            text_file = fileResult('slashnext_{}.txt'.format(scanid), text_data, entryTypes['file'])
+            text_file = fileResult(f'slashnext_{scanid}.txt', text_data, entryTypes['file'])
 
             demisto.results({
                 'Type': entryTypes['file'],
@@ -322,7 +322,7 @@ def download_forensics_data(scanid, tag, screenshot=False, html=False, txt=False
 
     # Show Error Message
     if show_error_msg is True and (screenshot is True or html is True or txt is True):
-        demisto.results('API Returned, {}:{}'.format(error_no, error_msg))
+        demisto.results(f'API Returned, {error_no}:{error_msg}')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -386,7 +386,7 @@ def ip_command():
     }
 
     title = 'SlashNext Phishing Incident Response - IP Lookup\n' \
-            '##### ip = {}'.format(ip)
+            f'##### ip = {ip}'
 
     md = tableToMarkdown(
         title,
@@ -448,7 +448,7 @@ def domain_command():
     domain = domain.encode('idna')
 
     title = 'SlashNext Phishing Incident Response - Domain Lookup\n' \
-            '##### domain = {}'.format(domain.decode())
+            f'##### domain = {domain.decode()}'
 
     md = tableToMarkdown(
         title,
@@ -566,7 +566,7 @@ def host_reputation_command():
     snx_ioc_cont = get_snx_host_ioc_context(host, ioc_type, response.get('threatData'))
 
     ec = {
-        'SlashNext.{}(val.Value === obj.Value)'.format(ioc_type): snx_ioc_cont,
+        f'SlashNext.{ioc_type}(val.Value === obj.Value)': snx_ioc_cont,
         'DBotScore': dbot_score_cont,
         ioc_type: host_cont
     }
@@ -574,7 +574,7 @@ def host_reputation_command():
     host = host.encode('idna')
 
     title = 'SlashNext Phishing Incident Response - Host Reputation\n' \
-            '##### host = {}'.format(host.decode())
+            f'##### host = {host.decode()}'
 
     md = tableToMarkdown(
         title,
@@ -613,7 +613,7 @@ def host_report_command():
     snx_ioc_cont = get_snx_host_ioc_context(host, ioc_type, response.get('threatData'))
 
     ec = {
-        'SlashNext.{}(val.Value === obj.Value)'.format(ioc_type): snx_ioc_cont,
+        f'SlashNext.{ioc_type}(val.Value === obj.Value)': snx_ioc_cont,
         'DBotScore': dbot_score_cont,
         ioc_type: host_cont
     }
@@ -621,7 +621,7 @@ def host_report_command():
     enc_host = host.encode('idna')
 
     title = 'SlashNext Phishing Incident Response - Host Report\n'\
-            '##### host = {}'.format(enc_host.decode())
+            f'##### host = {enc_host.decode()}'
 
     md = tableToMarkdown(
         title,
@@ -672,7 +672,7 @@ def host_report_command():
     enc_host = host.encode('idna')
 
     title = 'SlashNext Phishing Incident Response - Latest Scanned URL\n' \
-            '##### host = {}'.format(enc_host.decode())
+            f'##### host = {enc_host.decode()}'
 
     md = tableToMarkdown(
         title,
@@ -760,7 +760,7 @@ def host_urls_command():
     host = host.encode('idna')
 
     title = 'SlashNext Phishing Incident Response - Host URLs\n' \
-            '##### host = {}'.format(host.decode())
+            f'##### host = {host.decode()}'
 
     md = tableToMarkdown(
         title,
@@ -1056,9 +1056,9 @@ def scan_report(scanid):
 
     if response.get('errorNo') == 1:
         md = '### SlashNext Phishing Incident Response - Scan Report\n' \
-             '##### scanid = {}\n' \
+             f'##### scanid = {scanid}\n' \
              'Your Url Scan request is submitted to the cloud and may take up-to 60 seconds to complete.\n' \
-             'Please check back later using "slashnext-scan-report" command with Scan ID = {}'.format(scanid, scanid)
+             f'Please check back later using "slashnext-scan-report" command with Scan ID = {scanid}'
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1149,7 +1149,7 @@ def download_screenshot(scanid, resolution='high'):
     if response.get('errorNo') == 1:
         demisto.results(
             'Your Url Scan request is submitted to the cloud and may take up-to 60 seconds to complete.\n'
-            'Please check back later using "slashnext-download-screenshot" command with Scan ID = {}'.format(scanid))
+            f'Please check back later using "slashnext-download-screenshot" command with Scan ID = {scanid}')
     elif response.get('errorNo') != 0:
         return_error('API Returned, {}:{}'.format(response.get('errorNo'), response.get('errorMsg')))
 
@@ -1172,12 +1172,12 @@ def download_screenshot_command():
     sc_base64 = response.get('scData').get('scBase64')
     sc_data = base64.b64decode(sc_base64)
 
-    sc_file = fileResult('slashnext_{}.jpg'.format(scanid), sc_data, entryTypes['image'])
+    sc_file = fileResult(f'slashnext_{scanid}.jpg', sc_data, entryTypes['image'])
 
     demisto.results({
         'Type': entryTypes['image'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Forensics: Webpage Screenshot for URL Scan ID = {}'.format(scanid),
+        'Contents': f'Forensics: Webpage Screenshot for URL Scan ID = {scanid}',
         'File': sc_file.get('File'),
         'FileID': sc_file.get('FileID')
     })
@@ -1198,7 +1198,7 @@ def download_html(scanid):
     if response.get('errorNo') == 1:
         demisto.results(
             'Your Url Scan request is submitted to the cloud and may take up-to 60 seconds to complete.\n'
-            'Please check back later using "slashnext-download-html" command with Scan ID = {}'.format(scanid))
+            f'Please check back later using "slashnext-download-html" command with Scan ID = {scanid}')
     elif response.get('errorNo') != 0:
         return_error('API Returned, {}:{}'.format(response.get('errorNo'), response.get('errorMsg')))
 
@@ -1220,12 +1220,12 @@ def download_html_command():
     html_base64 = response.get('htmlData').get('htmlBase64')
     html_data = base64.b64decode(html_base64)
 
-    html_file = fileResult('slashnext_{}.html'.format(scanid), html_data, entryTypes['file'])
+    html_file = fileResult(f'slashnext_{scanid}.html', html_data, entryTypes['file'])
 
     demisto.results({
         'Type': entryTypes['file'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Forensics: Webpage HTML for URL Scan ID = {}'.format(scanid),
+        'Contents': f'Forensics: Webpage HTML for URL Scan ID = {scanid}',
         'File': html_file.get('File'),
         'FileID': html_file.get('FileID')
     })
@@ -1246,7 +1246,7 @@ def download_text(scanid):
     if response.get('errorNo') == 1:
         demisto.results(
             'Your Url Scan request is submitted to the cloud and may take up-to 60 seconds to complete.\n'
-            'Please check back later using "slashnext-download-text" command with Scan ID = {}'.format(scanid))
+            f'Please check back later using "slashnext-download-text" command with Scan ID = {scanid}')
     elif response.get('errorNo') != 0:
         return_error('API Returned, {}:{}'.format(response.get('errorNo'), response.get('errorMsg')))
 
@@ -1268,12 +1268,12 @@ def download_text_command():
     text_base64 = response.get('textData').get('textBase64')
     text_data = base64.b64decode(text_base64)
 
-    text_file = fileResult('slashnext_{}.txt'.format(scanid), text_data, entryTypes['file'])
+    text_file = fileResult(f'slashnext_{scanid}.txt', text_data, entryTypes['file'])
 
     demisto.results({
         'Type': entryTypes['file'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Forensics: Webpage Rendered Text for URL Scan ID = {}'.format(scanid),
+        'Contents': f'Forensics: Webpage Rendered Text for URL Scan ID = {scanid}',
         'File': text_file.get('File'),
         'FileID': text_file.get('FileID')
     })
@@ -1336,7 +1336,7 @@ def api_quota_command():
 
 
 def main():
-    LOG('Command to be executed is {}.'.format(demisto.command()))
+    LOG(f'Command to be executed is {demisto.command()}.')
     handle_proxy()
     try:
         if demisto.command() == 'test-module':

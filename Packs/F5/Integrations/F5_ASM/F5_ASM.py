@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Optional, List
 
 import urllib3
 # Disable insecure warnings
@@ -113,9 +112,9 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, headers=self.headers)
 
     def update_policy_blocking_setting(self, policy_md5: str, endpoint: str,
-                                       description: str, enabled: Optional[bool],
-                                       learn: Optional[bool], alarm: Optional[bool],
-                                       block: Optional[bool]):
+                                       description: str, enabled: bool | None,
+                                       learn: bool | None, alarm: bool | None,
+                                       block: bool | None):
         object_id = self.get_id(policy_md5, action=f'blocking-settings/{endpoint}',
                                 resource_name=description, compare_value='description')
         json_body = {'enabled': enabled, 'learn': learn, 'alarm': alarm, 'block': block}
@@ -131,8 +130,8 @@ class Client(BaseClient):
                                                                 "kind": kind, "items": items})
 
     def create_policy(self, name: str, kind: str, enforcement_mode: str,
-                      protocol_independent: bool, parent: Optional[str],
-                      description: Optional[str], allow: Optional[bool], active: Optional[bool]):
+                      protocol_independent: bool, parent: str | None,
+                      description: str | None, allow: bool | None, active: bool | None):
         body = {'name': name,
                 'description': description,
                 'enforcementMode': enforcement_mode,
@@ -298,9 +297,9 @@ class Client(BaseClient):
                                   url_suffix=f'asm/policies/{policy_md5}/urls')
 
     def add_policy_url(self, policy_md5: str, name: str, protocol: str, url_type: str,
-                       is_allowed: bool, description: Optional[str],
-                       perform_staging: Optional[bool], clickjacking_protection: Optional[bool],
-                       method: Optional[str]):
+                       is_allowed: bool, description: str | None,
+                       perform_staging: bool | None, clickjacking_protection: bool | None,
+                       method: str | None):
 
         json_body = {'name': name, 'protocol': protocol, 'description': description,
                      'method': method, 'type': url_type, 'isAllowed': is_allowed,
@@ -2230,7 +2229,7 @@ def format_date(date):
     return time.strftime(DATE_FORMAT, time.localtime(date))
 
 
-def build_output(headers: List[str], result: dict):
+def build_output(headers: list[str], result: dict):
     """helper function. Builds the printable results."""
     printable_result = {}
     new_headers = headers
@@ -2264,7 +2263,7 @@ def build_list_output(printable_result: list, result: dict):
 
 def build_command_result(result: dict, table_name: str):
     """Build readable_output and printable_result for list commands."""
-    printable_result: List[dict] = []
+    printable_result: list[dict] = []
     readable_output = 'No results'
 
     result = result.get('items')  # type: ignore

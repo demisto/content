@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
 import tempfile
-from typing import Tuple
 
 from lxml import etree
 from bs4 import BeautifulSoup
@@ -438,7 +437,7 @@ class STIX2Parser:
             "architecture_execution_envs": malware_obj.get('architecture_execution_envs', []),
             "capabilities": malware_obj.get('capabilities', []),
             "sample_refs": malware_obj.get('sample_refs', []),
-            "tags": list((set(malware_obj.get('labels', [])))),
+            "tags": list(set(malware_obj.get('labels', []))),
         }
 
         malware['customFields'] = fields
@@ -814,7 +813,7 @@ class STIX2Parser:
 
     @staticmethod
     def get_indicators_from_indicator_groups(
-            indicator_groups: List[Tuple[str, str]],
+            indicator_groups: List[tuple[str, str]],
             indicator_obj: Dict[str, str],
             indicator_types: Dict[str, str],
             field_map: Dict[str, str],
@@ -895,14 +894,14 @@ class STIX2Parser:
     @staticmethod
     def extract_indicator_groups_from_pattern(
             pattern: str, regexes: List
-    ) -> List[Tuple[str, str]]:
+    ) -> List[tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern
         :param pattern: stix pattern
         :param regexes: regexes to run to pattern
         :return: extracted indicators list from pattern
         """
-        groups: List[Tuple[str, str]] = []
+        groups: List[tuple[str, str]] = []
         for regex in regexes:
             find_result = regex.findall(pattern)
             if find_result:
@@ -1007,7 +1006,7 @@ def package_extract_properties(package):
     if information_source is not None:
         identity = next((c for c in information_source if c.name == 'Identity'), None)
         if identity is not None:
-            name = next((c for c in identity if c.name == 'Name'))
+            name = next(c for c in identity if c.name == 'Name')
             if name is not None:
                 result['stix_package_information_source'] = name.text
 
@@ -1151,7 +1150,7 @@ def create_relationships(indicator):
     return results
 
 
-class AddressObject(object):
+class AddressObject:
     """
     Implements address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/AddressObj/AddressObjectType/
@@ -1186,7 +1185,7 @@ class AddressObject(object):
                     else:
                         type_ = 'IPv6'
                 else:
-                    LOG('Unknown ip version: {!r}'.format(ip.version))
+                    LOG(f'Unknown ip version: {ip.version!r}')
                     return []
 
                 result.append({'indicator': address, 'type': type_})
@@ -1197,7 +1196,7 @@ class AddressObject(object):
         return result
 
 
-class DomainNameObject(object):
+class DomainNameObject:
     """
     Implements domain object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/DomainNameObj/DomainNameObjectType/
@@ -1221,7 +1220,7 @@ class DomainNameObject(object):
         return domains
 
 
-class FileObject(object):
+class FileObject:
     """
     Implements file object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/FileObj/FileObjectType/
@@ -1279,7 +1278,7 @@ class FileObject(object):
         return result
 
 
-class URIObject(object):
+class URIObject:
     """
     Implements URI object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/URIObj/URIObjectType/
@@ -1307,7 +1306,7 @@ class URIObject(object):
         return urls
 
 
-class SocketAddressObject(object):
+class SocketAddressObject:
     """
     Implements socket address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/SocketAddressObj/SocketAddressObjectType/
@@ -1321,7 +1320,7 @@ class SocketAddressObject(object):
         return []
 
 
-class LinkObject(object):
+class LinkObject:
     """
     Implements link object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/LinkObj/LinkObjectType/
@@ -1331,7 +1330,7 @@ class LinkObject(object):
     def decode(props, **kwargs):
         ltype = props.get('type', 'URL')
         if ltype != 'URL':
-            LOG('Unhandled LinkObjectType type: {}'.format(ltype))
+            LOG(f'Unhandled LinkObjectType type: {ltype}')
             return []
         value = props.get('value', None)
         if value is None:
@@ -1348,7 +1347,7 @@ class LinkObject(object):
         }]
 
 
-class HTTPSessionObject(object):
+class HTTPSessionObject:
     """
     Implements http session object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/HTTPSessionObj/HTTPSessionObjectType/
@@ -1377,7 +1376,7 @@ class HTTPSessionObject(object):
         return []
 
 
-class StixDecode(object):
+class StixDecode:
     """
     Decode STIX strings formatted as xml, and extract indicators from them
     """
@@ -1397,7 +1396,7 @@ class StixDecode(object):
         type_ = props.get('xsi:type').rsplit(':')[-1]
 
         if type_ not in StixDecode.DECODERS:
-            LOG('Unhandled cybox Object type: {!r} - {!r}'.format(type_, props))
+            LOG(f'Unhandled cybox Object type: {type_!r} - {props!r}')
             return []
 
         return StixDecode.DECODERS[type_](props, **kwargs)
@@ -1632,7 +1631,7 @@ def main():  # pragma: no cover
         raise Exception('You must enter iocXml or entry_id of the Indicator.')
     elif entry_id:
         file_path = demisto.getFilePath(entry_id).get('path')
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             indicator_txt = f.read()
 
     if stix2 := convert_to_json(indicator_txt):

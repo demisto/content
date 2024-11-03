@@ -13,7 +13,7 @@ try:
     time_diff = end_time_obj - start_time_obj
     mins = round((time_diff.total_seconds() / 60), 2)
 
-    hr = 'Calculated Time Difference: {} minutes.'.format(str(mins))
+    hr = f'Calculated Time Difference: {str(mins)} minutes.'
     context = {
         "Time.Difference": mins,
         "Time.Start": start_time,

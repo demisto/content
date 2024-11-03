@@ -5,7 +5,7 @@ Cisco Firepower Management Center API Integration for Cortex XSOAR (aka Demisto)
 """
 import copy
 from http import HTTPStatus
-from typing import Callable, Dict, List, MutableMapping, MutableSequence, Tuple, Union
+from collections.abc import Callable, MutableMapping, MutableSequence
 
 from CommonServerUserPython import *  # pylint: disable=wildcard-import
 
@@ -118,7 +118,7 @@ def pagination(
             limit: Optional[int],
             *args,
             **kwarg
-        ) -> tuple[Union[list, dict], Union[list, dict]]:
+        ) -> tuple[list | dict, list | dict]:
             """
             Handle pagination arguments to return multiple response from an API.
 
@@ -270,7 +270,7 @@ class Client(BaseClient):
             'X-auth-access-token': auth_token,
         }
 
-    def get_list(self, limit: int, offset: int, object_path: str) -> Dict:
+    def get_list(self, limit: int, offset: int, object_path: str) -> dict:
         """
         Bridge command to list requests.
 
@@ -286,7 +286,7 @@ class Client(BaseClient):
         suffix = f'object/{object_path}'
         return self._http_request('GET', suffix, params=params)
 
-    def get_policy_assignments(self, policy_assignment_id: str) -> Dict[str, Any]:
+    def get_policy_assignments(self, policy_assignment_id: str) -> dict[str, Any]:
         """
         Retrieves the policy assignment associated with the specified ID.
 
@@ -301,7 +301,7 @@ class Client(BaseClient):
             url_suffix=f'assignment/policyassignments/{policy_assignment_id}'
         )
 
-    def list_policy_assignments(self, limit: int, offset: int) -> Dict:
+    def list_policy_assignments(self, limit: int, offset: int) -> dict:
         """
         Retrieves a list of all policy assignments to target devices.
 
@@ -316,7 +316,7 @@ class Client(BaseClient):
         suffix = 'assignment/policyassignments'
         return self._http_request('GET', suffix, params=params)
 
-    def get_deployable_devices(self, limit: int, offset: int, container_uuid: str) -> Dict:
+    def get_deployable_devices(self, limit: int, offset: int, container_uuid: str) -> dict:
         """
         Retrieves a list of all devices with configuration changes that are ready to deploy.
 
@@ -333,7 +333,7 @@ class Client(BaseClient):
         suffix = f'deployment/deployabledevices{end_suffix}'
         return self._http_request('GET', suffix, params=params)
 
-    def get_device_records(self, limit: int, offset: int) -> Dict:
+    def get_device_records(self, limit: int, offset: int) -> dict:
         """
         Retrieves a list of all device records.
 
@@ -348,7 +348,7 @@ class Client(BaseClient):
         suffix = 'devices/devicerecords'
         return self._http_request('GET', suffix, params=params)
 
-    def get_network_objects(self, limit: int, offset: int, object_id: str) -> Dict:
+    def get_network_objects(self, limit: int, offset: int, object_id: str) -> dict:
         """
         Retrieves the network objects associated with the specified ID.
         If not supplied, retrieves a list of all network objects.
@@ -365,7 +365,7 @@ class Client(BaseClient):
         suffix = f'object/networks{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def get_hosts_objects(self, limit: int, offset: int, object_id: str) -> Dict:
+    def get_hosts_objects(self, limit: int, offset: int, object_id: str) -> dict:
         """
         Retrieves the groups of host objects associated with the specified ID.
         If no ID is passed, the input ID retrieves a list of all network objects.
@@ -382,7 +382,7 @@ class Client(BaseClient):
         suffix = f'object/hosts{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_network_objects(self, name: str, value: str, description: str, overridable: bool) -> Dict:
+    def create_network_objects(self, name: str, value: str, description: str, overridable: bool) -> dict:
         """
         Create a network object.
 
@@ -399,7 +399,7 @@ class Client(BaseClient):
         suffix = 'object/networks'
         return self._http_request('POST', suffix, json_data=data)
 
-    def create_host_objects(self, name: str, value: str, description: str, overridable: bool) -> Dict:
+    def create_host_objects(self, name: str, value: str, description: str, overridable: bool) -> dict:
         """
         Create a host object.
 
@@ -417,7 +417,7 @@ class Client(BaseClient):
         return self._http_request('POST', suffix, json_data=data)
 
     def update_network_objects(
-            self, name: str, value: str, description: str, overridable: bool, object_id: str) -> Dict:
+            self, name: str, value: str, description: str, overridable: bool, object_id: str) -> dict:
         """
         Update the specified network object.
 
@@ -435,7 +435,7 @@ class Client(BaseClient):
         suffix = f'object/networks/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def update_host_objects(self, name: str, value: str, description: str, overridable: bool, object_id: str) -> Dict:
+    def update_host_objects(self, name: str, value: str, description: str, overridable: bool, object_id: str) -> dict:
         """
         Update the specified host object.
 
@@ -453,7 +453,7 @@ class Client(BaseClient):
         suffix = f'object/hosts/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def delete_network_objects(self, object_id: str) -> Dict:
+    def delete_network_objects(self, object_id: str) -> dict:
         """
         Delete the specified network object.
 
@@ -466,7 +466,7 @@ class Client(BaseClient):
         suffix = f'object/networks/{object_id}'
         return self._http_request('DELETE', suffix)
 
-    def delete_host_objects(self, object_id: str) -> Dict:
+    def delete_host_objects(self, object_id: str) -> dict:
         """
         Delete the specified host object.
 
@@ -479,7 +479,7 @@ class Client(BaseClient):
         suffix = f'object/hosts/{object_id}'
         return self._http_request('DELETE', suffix)
 
-    def get_network_groups_objects(self, limit: int, offset: int, object_id: str) -> Dict:
+    def get_network_groups_objects(self, limit: int, offset: int, object_id: str) -> dict:
         """
         Retrieves the groups of network objects and addresses associated with the specified ID.
         If not supplied, retrieves a list of all network objects.
@@ -496,7 +496,7 @@ class Client(BaseClient):
         suffix = f'object/networkgroups{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def get_url_groups_objects(self, limit: int, offset: int, object_id: str) -> Dict:
+    def get_url_groups_objects(self, limit: int, offset: int, object_id: str) -> dict:
         """
         Retrieves the groups of url objects and addresses associated with the specified ID.
         If not supplied, retrieves a list of all url objects.
@@ -514,7 +514,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix)
 
     def create_network_groups_objects(
-            self, name: str, ids: str, values: str, description: str, overridable: bool) -> Dict:
+            self, name: str, ids: str, values: str, description: str, overridable: bool) -> dict:
         """
         Creates a group of network objects.
 
@@ -536,7 +536,7 @@ class Client(BaseClient):
         return self._http_request('POST', suffix, json_data=data)
 
     def update_network_groups_objects(
-            self, name: str, ids: str, values: str, group_id: str, description: str, overridable: bool) -> Dict:
+            self, name: str, ids: str, values: str, group_id: str, description: str, overridable: bool) -> dict:
         """
         Updates a group of network objects.
 
@@ -559,7 +559,7 @@ class Client(BaseClient):
         return self._http_request('PUT', suffix, json_data=data)
 
     def update_url_groups_objects(
-            self, name: str, ids: str, values: str, group_id: str, description: str, overridable: bool) -> Dict:
+            self, name: str, ids: str, values: str, group_id: str, description: str, overridable: bool) -> dict:
         """
         Update the ID of a group of url objects.
 
@@ -581,7 +581,7 @@ class Client(BaseClient):
         suffix = f'object/urlgroups/{group_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def delete_network_groups_objects(self, object_id: str) -> Dict:
+    def delete_network_groups_objects(self, object_id: str) -> dict:
         """
         Deletes a group of network objects.
 
@@ -594,7 +594,7 @@ class Client(BaseClient):
         suffix = f'object/networkgroups/{object_id}'
         return self._http_request('DELETE', suffix)
 
-    def get_access_policy(self, limit: int, offset: int, policy_id: str) -> Dict:
+    def get_access_policy(self, limit: int, offset: int, policy_id: str) -> dict:
         """
         Retrieves the access control policy associated with the specified ID.
         If no access policy ID is passed, all access control policies are returned.
@@ -611,7 +611,7 @@ class Client(BaseClient):
         suffix = f'policy/accesspolicies{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_access_policy(self, name: str, action: str) -> Dict:
+    def create_access_policy(self, name: str, action: str) -> dict:
         """
         Create an access control policy.
 
@@ -626,7 +626,7 @@ class Client(BaseClient):
         suffix = 'policy/accesspolicies'
         return self._http_request('POST', suffix, json_data=data)
 
-    def update_access_policy(self, name: str, policy_id: str, action: str, action_id: str) -> Dict:
+    def update_access_policy(self, name: str, policy_id: str, action: str, action_id: str) -> dict:
         """
         Update the specified access control policy.
 
@@ -649,7 +649,7 @@ class Client(BaseClient):
         suffix = f'policy/accesspolicies/{policy_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def delete_access_policy(self, policy_id: str) -> Dict:
+    def delete_access_policy(self, policy_id: str) -> dict:
         """
         Deletes the specified access control policy.
 
@@ -662,7 +662,7 @@ class Client(BaseClient):
         suffix = f'policy/accesspolicies/{policy_id}'
         return self._http_request('DELETE', suffix)
 
-    def get_task_status(self, task_id: str) -> Dict:
+    def get_task_status(self, task_id: str) -> dict:
         """
         The ID of the task for which to check the status.
 
@@ -676,7 +676,7 @@ class Client(BaseClient):
         suffix = f'job/taskstatuses/{task_id}'
         return self._http_request('GET', suffix)
 
-    def create_policy_assignments(self, policy_id: str, device_ids: str, device_group_ids: str) -> Dict:
+    def create_policy_assignments(self, policy_id: str, device_ids: str, device_group_ids: str) -> dict:
         """
         Creates policy assignments to target devices.
 
@@ -694,7 +694,7 @@ class Client(BaseClient):
         suffix = 'assignment/policyassignments'
         return self._http_request('POST', suffix, json_data=data_to_post)
 
-    def update_policy_assignments(self, policy_id: str, device_ids: str, device_group_ids: str) -> Dict:
+    def update_policy_assignments(self, policy_id: str, device_ids: str, device_group_ids: str) -> dict:
         """
         Update the specified policy assignments to target devices.
 
@@ -712,7 +712,7 @@ class Client(BaseClient):
         suffix = f'assignment/policyassignments/{policy_id}'
         return self._http_request('PUT', suffix, json_data=data_to_post)
 
-    def get_access_rules(self, limit: int, offset: int, policy_id: str, rule_id: str) -> Dict:
+    def get_access_rules(self, limit: int, offset: int, policy_id: str, rule_id: str) -> dict:
         """
         Retrieves the access control rule associated with the specified policy ID and rule ID.
         If no rule ID is specified, retrieves a list of all access rules associated with the specified policy ID.
@@ -749,7 +749,7 @@ class Client(BaseClient):
             name: str,
             policy_id: str,
             action: str
-    ) -> Dict:
+    ) -> dict:
         """
         Creates an access control rule.
 
@@ -828,7 +828,7 @@ class Client(BaseClient):
             policy_id: str,
             action: str,
             rule_id: str
-    ) -> Dict:
+    ) -> dict:
         """
         Update the specified access control rule.
 
@@ -913,11 +913,11 @@ class Client(BaseClient):
             del data_from_get['links']
             return self._http_request('PUT', suffix, json_data=data_from_get)
 
-    def delete_access_rules(self, policy_id, rule_id) -> Dict:
+    def delete_access_rules(self, policy_id, rule_id) -> dict:
         suffix = f'policy/accesspolicies/{policy_id}/accessrules/{rule_id}'
         return self._http_request('DELETE', suffix)
 
-    def deploy_to_devices(self, force_deploy, ignore_warning, version, device_ids) -> Dict:
+    def deploy_to_devices(self, force_deploy, ignore_warning, version, device_ids) -> dict:
         data_to_post = assign_params(forceDeploy=force_deploy, ignoreWarning=ignore_warning, version=version,
                                      deviceList=argToList(device_ids), type="DeploymentRequest")
         suffix = 'deployment/deploymentrequests'
@@ -929,7 +929,7 @@ class Client(BaseClient):
         basepolicy_id: str,
         description: str = None,
         inspection_mode: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Creates an Intrusion Policy with the specified parameters.
 
@@ -944,7 +944,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: New Intrusion Policy's information.
         """
-        body: Dict[str, Any] = remove_empty_elements({
+        body: dict[str, Any] = remove_empty_elements({
             'name': name,
             'description': description,
             'inspection_mode': inspection_mode,
@@ -960,7 +960,7 @@ class Client(BaseClient):
             timeout=EXECUTION_TIMEOUT,
         )
 
-    def get_intrusion_policy(self, intrusion_policy_id: str, include_count: bool = None) -> Dict[str, Any]:
+    def get_intrusion_policy(self, intrusion_policy_id: str, include_count: bool = None) -> dict[str, Any]:
         """
         Retrieves the intrusion policy associated with the specified ID.
 
@@ -988,7 +988,7 @@ class Client(BaseClient):
         limit: int = None,
         offset: int = None,
         expanded_response: bool = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of intrusion policies.
 
@@ -1024,7 +1024,7 @@ class Client(BaseClient):
         description: str = None,
         inspection_mode: str = None,
         replicate_inspection_mode: bool = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Modifies the Intrusion Policy associated with the specified ID.
 
@@ -1047,7 +1047,7 @@ class Client(BaseClient):
         params = assign_params(
             replicateInspectionMode=replicate_inspection_mode
         )
-        body: Dict[str, Any] = remove_empty_elements({
+        body: dict[str, Any] = remove_empty_elements({
             'id': intrusion_policy_id,
             'name': name,
             'description': description,
@@ -1068,7 +1068,7 @@ class Client(BaseClient):
     def delete_intrusion_policy(
         self,
         intrusion_policy_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deletes the Intrusion Policy associated with the specified ID.
 
@@ -1086,8 +1086,8 @@ class Client(BaseClient):
     def create_intrusion_rule(
             self,
             rule_data: str,
-            rule_group_ids: List[str]
-    ) -> Dict[str, Any]:
+            rule_group_ids: list[str]
+    ) -> dict[str, Any]:
         """
         Creates or overrides the Snort3 Intrusion rule group with the specified parameters.
 
@@ -1098,7 +1098,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: New Intrusion Rule's information.
         """
-        body: Dict[str, Any] = {
+        body: dict[str, Any] = {
             'ruleData': rule_data,
             'ruleGroups': [
                 {
@@ -1117,8 +1117,8 @@ class Client(BaseClient):
             self,
             intrusion_rule_id: str,
             rule_data: str,
-            rule_group_ids: List[str]
-    ) -> Dict[str, Any]:
+            rule_group_ids: list[str]
+    ) -> dict[str, Any]:
         """
         Modifies the Snort3 Intrusion rule group with the specified ID.
 
@@ -1130,7 +1130,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: Modified Intrusion Rule's information.
         """
-        body: Dict[str, Any] = {
+        body: dict[str, Any] = {
             'id': intrusion_rule_id,
             'ruleData': rule_data,
             'ruleGroups': [
@@ -1149,7 +1149,7 @@ class Client(BaseClient):
     def delete_intrusion_rule(
             self,
             intrusion_rule_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deletes the specified Snort3 rule.
 
@@ -1164,7 +1164,7 @@ class Client(BaseClient):
             url_suffix=f'object/intrusionrules/{intrusion_rule_id}',
         )
 
-    def get_intrusion_rule(self, intrusion_rule_id: str) -> Dict[str, Any]:
+    def get_intrusion_rule(self, intrusion_rule_id: str) -> dict[str, Any]:
         """
         Retrieves the Snort3 Intrusion rule group.
 
@@ -1184,10 +1184,10 @@ class Client(BaseClient):
         self,
         limit: int = None,
         offset: int = None,
-        sort: List[str] = None,
+        sort: list[str] = None,
         filter_string: str = None,
         expanded_response: bool = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of intrusion policies.
 
@@ -1227,8 +1227,8 @@ class Client(BaseClient):
         payload_file: str,
         validate_only: bool,
         rule_import_mode: str = None,
-        rule_group_ids: List[str] = None,
-    ) -> Dict[str, Any]:
+        rule_group_ids: list[str] = None,
+    ) -> dict[str, Any]:
         """
         Imports or validate custom Snort 3 intrusion rules within a file.
 
@@ -1270,7 +1270,7 @@ class Client(BaseClient):
         self,
         name: str,
         description: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Creates or overrides the Snort3 Intrusion rule group with the specified parameters.
 
@@ -1282,7 +1282,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: New Intrusion Rule Group's information.
         """
-        body: Dict[str, Any] = remove_empty_elements({
+        body: dict[str, Any] = remove_empty_elements({
             'name': name,
             'description': description,
         })
@@ -1293,7 +1293,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def get_intrusion_rule_group(self, rule_group_id: str) -> Dict[str, Any]:
+    def get_intrusion_rule_group(self, rule_group_id: str) -> dict[str, Any]:
         """
         Retrieves the Snort3 Intrusion rule group.
 
@@ -1315,7 +1315,7 @@ class Client(BaseClient):
         offset: int = None,
         filter_string: str = None,
         expanded_response: bool = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of all Snort3 Intrusion rule groups.
 
@@ -1351,7 +1351,7 @@ class Client(BaseClient):
         rule_group_id: str,
         name: str,
         description: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Modifies the Snort3 Intrusion rule group with the specified ID.
 
@@ -1364,7 +1364,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: Modified Intrusion Rule Group's information.
         """
-        body: Dict[str, Any] = remove_empty_elements({
+        body: dict[str, Any] = remove_empty_elements({
             'id': rule_group_id,
             'name': name,
             'description': description,
@@ -1380,7 +1380,7 @@ class Client(BaseClient):
         self,
         rule_group_id: str,
         delete_related_rules: bool = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deletes the specified Snort3 intrusion rule group.
 
@@ -1410,7 +1410,7 @@ class Client(BaseClient):
         basepolicy_id: str,
         description: str = None,
         inspection_mode: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Creates a network analysis policy.
 
@@ -1426,7 +1426,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: New network analysis policy's information.
         """
-        body: Dict[str, Any] = remove_empty_elements({
+        body: dict[str, Any] = remove_empty_elements({
             'name': name,
             'description': description,
             'inspectionMode': inspection_mode,
@@ -1442,7 +1442,7 @@ class Client(BaseClient):
             timeout=EXECUTION_TIMEOUT,
         )
 
-    def get_network_analysis_policy(self, network_analysis_policy_id: str) -> Dict[str, Any]:
+    def get_network_analysis_policy(self, network_analysis_policy_id: str) -> dict[str, Any]:
         """
         Retrieves the network analysis policy with the specified ID
 
@@ -1463,7 +1463,7 @@ class Client(BaseClient):
         limit: int = None,
         offset: int = None,
         expanded_response: bool = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Retrieves list of all network analysis policies.
 
@@ -1499,7 +1499,7 @@ class Client(BaseClient):
         description: str = None,
         inspection_mode: str = None,
         replicate_inspection_mode: bool = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Modifies the network analysis policy associated with the specified ID.
 
@@ -1522,7 +1522,7 @@ class Client(BaseClient):
         params = assign_params(
             replicateInspectionMode=replicate_inspection_mode,
         )
-        body: Dict[str, Any] = remove_empty_elements({
+        body: dict[str, Any] = remove_empty_elements({
             'id': network_analysis_policy_id,
             'name': name,
             'description': description,
@@ -1543,7 +1543,7 @@ class Client(BaseClient):
     def delete_network_analysis_policy(
         self,
         network_analysis_policy_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deletes the network analysis policy associated with the specified ID.
 
@@ -1562,7 +1562,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''  # pylint: disable=pointless-string-statement
 
 
-def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
+def switch_list_to_list_counter(data: dict | list) -> dict | list:
     """Receives a list of dictionaries or a dictionary,
     and if one of the keys contains a list or dictionary with lists,
     returns the size of the lists
@@ -1601,7 +1601,7 @@ def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
     return new_data
 
 
-def raw_response_to_context_list(list_key: List, items: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context_list(list_key: list, items: dict | list) -> dict | list:
     """Receives a dictionary or list of dictionaries and returns only the keys that exist in the list_key
     and changes the keys by Context Standards
 
@@ -1618,7 +1618,7 @@ def raw_response_to_context_list(list_key: List, items: Union[Dict, List]) -> Un
     return list_to_output
 
 
-def raw_response_to_context_network_groups(items: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context_network_groups(items: dict | list) -> dict | list:
     """Receives raw response and returns Context entry to network groups command
 
     :type items: ``list`` or ``dict``
@@ -1650,7 +1650,7 @@ def raw_response_to_context_network_groups(items: Union[Dict, List]) -> Union[Di
     }
 
 
-def raw_response_to_context_url_groups(items: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context_url_groups(items: dict | list) -> dict | list:
     """Receives raw response and returns Context entry to url groups command
     :type items: ``list`` or ``dict``
     :param items:  list of dict or dict of data from http request
@@ -1680,7 +1680,7 @@ def raw_response_to_context_url_groups(items: Union[Dict, List]) -> Union[Dict, 
     }
 
 
-def raw_response_to_context_policy_assignment(items: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context_policy_assignment(items: dict | list) -> dict | list:
     """Receives raw response and returns Context entry to policy assignment command
 
     :type items: ``list`` or ``dict``
@@ -1707,7 +1707,7 @@ def raw_response_to_context_policy_assignment(items: Union[Dict, List]) -> Union
     }
 
 
-def raw_response_to_context_access_policy(items: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context_access_policy(items: dict | list) -> dict | list:
     """Receives raw response and returns Context entry to access policy command
 
     :type items: ``list`` or ``dict``
@@ -1725,7 +1725,7 @@ def raw_response_to_context_access_policy(items: Union[Dict, List]) -> Union[Dic
     }
 
 
-def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context_rules(items: dict | list) -> dict | list:
     """Receives raw response and returns Context entry to rules command
 
     :type items: ``list`` or ``dict``
@@ -1856,9 +1856,9 @@ def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]
 
 
 def get_readable_output(
-    response: Dict[str, Any],
-    header_by_keys: Dict[str, List[str]],
-    keys_to_items: List[str] = None,
+    response: dict[str, Any],
+    header_by_keys: dict[str, list[str]],
+    keys_to_items: list[str] = None,
     title: str = '',
 ) -> str:
     """
@@ -1876,9 +1876,9 @@ def get_readable_output(
     items = dict_safe_get(response, keys_to_items) if keys_to_items else response
     headers = list(header_by_keys.keys())
 
-    item_readable_arguments: List[Dict[str, Any]] = []
+    item_readable_arguments: list[dict[str, Any]] = []
 
-    if isinstance(items, Dict):
+    if isinstance(items, dict):
         items = [items]
 
     for item in items:
@@ -1901,8 +1901,8 @@ def get_readable_output(
 
 def delete_keys_from_dict(
     dictionary: MutableMapping,
-    keys_to_delete: Union[List[str], Set[str]]
-) -> Dict[str, Any]:
+    keys_to_delete: list[str] | Set[str]
+) -> dict[str, Any]:
     """
     Get a modified dictionary without the requested keys
     Args:
@@ -1912,7 +1912,7 @@ def delete_keys_from_dict(
         Dict[str, Any]: Modified dictionary without requested keys.
     """
     keys_set = set(keys_to_delete)
-    modified_dict: Dict[str, Any] = {}
+    modified_dict: dict[str, Any] = {}
 
     for key, value in dictionary.items():
         if key not in keys_set:
@@ -1934,11 +1934,11 @@ def delete_keys_from_dict(
 
 
 def get_context_output(
-    response: Dict[str, Any],
-    contexts_to_delete: List[str],
-    item_to_add: Tuple[str, Any] = None,
-    keys_to_items: List[str] = None,
-) -> List[Dict[str, Any]]:
+    response: dict[str, Any],
+    contexts_to_delete: list[str],
+    item_to_add: tuple[str, Any] = None,
+    keys_to_items: list[str] = None,
+) -> list[dict[str, Any]]:
     """
     Get context output from the response.
     Loop through each value and create a modified response without the contexts_to_delete.
@@ -1955,13 +1955,13 @@ def get_context_output(
     """
     items = dict_safe_get(response, keys_to_items) if keys_to_items else response
 
-    if isinstance(items, Dict):
+    if isinstance(items, dict):
         items = [items]
 
-    context_outputs: List[Dict[str, Any]] = []
+    context_outputs: list[dict[str, Any]] = []
 
     for item in items:
-        context_output: Dict[str, Any] = {}
+        context_output: dict[str, Any] = {}
 
         if contexts_to_delete:
             context_output = delete_keys_from_dict(item, contexts_to_delete)
@@ -1978,11 +1978,11 @@ def get_context_output(
 
 
 def parse_results(
-    raw_response: Dict[str, Any],
-    command_headers_by_keys: Dict[str, Any],
+    raw_response: dict[str, Any],
+    command_headers_by_keys: dict[str, Any],
     command_title: str,
     command_context: str,
-    raw_responses: Union[List, Dict] = None
+    raw_responses: list | dict = None
 ) -> CommandResults:
     """
     Create a CommandResults from a given response.
@@ -2023,7 +2023,7 @@ def parse_results(
     return command_results
 
 
-def append_items_to_value(raw_response: Dict[str, Any], value: str, items_key: str, inner_key: str) -> str:
+def append_items_to_value(raw_response: dict[str, Any], value: str, items_key: str, inner_key: str) -> str:
     """
     Appends items within the raw_response to the current value.
 
@@ -2084,7 +2084,7 @@ def arg_to_optional_bool(arg: Optional[Any]) -> Optional[bool]:
 ''' COMMANDS '''  # pylint: disable=pointless-string-statement
 
 
-def list_zones_command(client: Client, args: Dict) -> CommandResults:
+def list_zones_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of all security zone objects.
 
@@ -2107,7 +2107,7 @@ def list_zones_command(client: Client, args: Dict) -> CommandResults:
             'InterfaceMode': item.get('interfaceMode', ''),
             'Interfaces': [{
                 'Name': obj.get('name', ''),
-                'ID': obj.get('id' '')
+                'ID': obj.get('id')
             } for obj in item.get('interfaces', {})
             ]
         } for item in items
@@ -2131,7 +2131,7 @@ def list_zones_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def list_ports_command(client: Client, args: Dict) -> CommandResults:
+def list_ports_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves list of all port objects.
 
@@ -2168,7 +2168,7 @@ def list_ports_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def list_url_categories_command(client: Client, args: Dict) -> CommandResults:
+def list_url_categories_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of all URL category objects.
 
@@ -2205,7 +2205,7 @@ def list_url_categories_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def get_network_objects_command(client: Client, args: Dict) -> CommandResults:
+def get_network_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves the network objects associated with the specified ID.
     If not supplied, retrieves a list of all network objects.
@@ -2222,7 +2222,7 @@ def get_network_objects_command(client: Client, args: Dict) -> CommandResults:
     object_id = args.get('object_id', '')
 
     raw_response = client.get_network_objects(limit, offset, object_id)
-    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
+    items: list | dict = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List network objects:'
         if 'id' in raw_response:
@@ -2248,7 +2248,7 @@ def get_network_objects_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def get_host_objects_command(client: Client, args: Dict) -> CommandResults:
+def get_host_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves the groups of host objects associated with the specified ID.
     If no ID is passed, the input ID retrieves a list of all network objects.
@@ -2265,7 +2265,7 @@ def get_host_objects_command(client: Client, args: Dict) -> CommandResults:
     object_id = args.get('object_id', '')
 
     raw_response = client.get_hosts_objects(limit, offset, object_id)
-    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
+    items: list | dict = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List host objects:'
         if 'id' in raw_response:
@@ -2291,7 +2291,7 @@ def get_host_objects_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def create_network_objects_command(client: Client, args: Dict) -> CommandResults:
+def create_network_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Creates a network object.
 
@@ -2323,7 +2323,7 @@ def create_network_objects_command(client: Client, args: Dict) -> CommandResults
     )
 
 
-def create_host_objects_command(client: Client, args: Dict) -> CommandResults:
+def create_host_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Creates a host object.
 
@@ -2355,7 +2355,7 @@ def create_host_objects_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def update_network_objects_command(client: Client, args: Dict) -> CommandResults:
+def update_network_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Updates the specified network object.
 
@@ -2389,7 +2389,7 @@ def update_network_objects_command(client: Client, args: Dict) -> CommandResults
     )
 
 
-def update_host_objects_command(client: Client, args: Dict) -> CommandResults:
+def update_host_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Updates the specified host object.
 
@@ -2423,7 +2423,7 @@ def update_host_objects_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def delete_network_objects_command(client: Client, args: Dict) -> CommandResults:
+def delete_network_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Deletes the specified network object.
 
@@ -2452,7 +2452,7 @@ def delete_network_objects_command(client: Client, args: Dict) -> CommandResults
     )
 
 
-def delete_host_objects_command(client: Client, args: Dict) -> CommandResults:
+def delete_host_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Deletes the specified host object.
 
@@ -2481,7 +2481,7 @@ def delete_host_objects_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_network_groups_objects_command(client: Client, args: Dict) -> CommandResults:
+def get_network_groups_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves the groups of network objects and addresses associated with the specified ID.
     If not supplied, retrieves a list of all network objects.
@@ -2497,7 +2497,7 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> CommandRes
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
     raw_response = client.get_network_groups_objects(limit, offset, object_id)
-    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
+    items: list | dict = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List of network groups object:'
         if 'id' in raw_response:
@@ -2521,7 +2521,7 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> CommandRes
         raise DemistoException(f'{INTEGRATION_NAME} - Could not get the network groups.')
 
 
-def get_url_groups_objects_command(client: Client, args: Dict) -> CommandResults:
+def get_url_groups_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves the groups of url objects and addresses associated with the specified ID.
     If not supplied, retrieves a list of all url objects.
@@ -2537,7 +2537,7 @@ def get_url_groups_objects_command(client: Client, args: Dict) -> CommandResults
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
     raw_response = client.get_url_groups_objects(limit, offset, object_id)
-    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
+    items: list | dict = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List of url groups object:'
         if 'id' in raw_response:
@@ -2561,7 +2561,7 @@ def get_url_groups_objects_command(client: Client, args: Dict) -> CommandResults
         raise DemistoException(f'{INTEGRATION_NAME} - Could not get the URL groups.')
 
 
-def create_network_groups_objects_command(client: Client, args: Dict) -> CommandResults:
+def create_network_groups_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Creates a group of network objects.
 
@@ -2599,7 +2599,7 @@ def create_network_groups_objects_command(client: Client, args: Dict) -> Command
         raise DemistoException(f'{INTEGRATION_NAME} - Could not create new group, Missing value or ID.')
 
 
-def update_network_groups_objects_command(client: Client, args: Dict) -> CommandResults:
+def update_network_groups_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Updates a group of network objects.
 
@@ -2665,7 +2665,7 @@ def update_network_groups_objects_command(client: Client, args: Dict) -> Command
         raise DemistoException(f'{INTEGRATION_NAME} - Could not update the group, Missing value or ID.')
 
 
-def update_url_groups_objects_command(client: Client, args: Dict) -> CommandResults:
+def update_url_groups_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Updates the ID of a group of url objects.
 
@@ -2731,7 +2731,7 @@ def update_url_groups_objects_command(client: Client, args: Dict) -> CommandResu
         raise DemistoException(f'{INTEGRATION_NAME} - Could not update the group, Missing value or ID.')
 
 
-def delete_network_groups_objects_command(client: Client, args: Dict) -> CommandResults:
+def delete_network_groups_objects_command(client: Client, args: dict) -> CommandResults:
     """
     Deletes a group of network objects.
 
@@ -2760,7 +2760,7 @@ def delete_network_groups_objects_command(client: Client, args: Dict) -> Command
     )
 
 
-def get_access_policy_command(client: Client, args: Dict) -> CommandResults:
+def get_access_policy_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves the access control policy associated with the specified ID.
     If no access policy ID is passed, all access control policies are returned.
@@ -2776,7 +2776,7 @@ def get_access_policy_command(client: Client, args: Dict) -> CommandResults:
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
     raw_response = client.get_access_policy(limit, offset, policy_id)
-    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
+    items: list | dict = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List access policy:'
         if 'id' in raw_response:
@@ -2801,7 +2801,7 @@ def get_access_policy_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def create_access_policy_command(client: Client, args: Dict) -> CommandResults:
+def create_access_policy_command(client: Client, args: dict) -> CommandResults:
     """
     Creates an access control policy.
 
@@ -2830,7 +2830,7 @@ def create_access_policy_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def update_access_policy_command(client: Client, args: Dict) -> CommandResults:
+def update_access_policy_command(client: Client, args: dict) -> CommandResults:
     """
     Updates the specified access control policy.
 
@@ -2862,7 +2862,7 @@ def update_access_policy_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def delete_access_policy_command(client: Client, args: Dict) -> CommandResults:
+def delete_access_policy_command(client: Client, args: dict) -> CommandResults:
     """
     Deletes the specified access control policy.
 
@@ -2890,7 +2890,7 @@ def delete_access_policy_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def list_security_group_tags_command(client: Client, args: Dict) -> CommandResults:
+def list_security_group_tags_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of all custom security group tag objects.
 
@@ -2927,7 +2927,7 @@ def list_security_group_tags_command(client: Client, args: Dict) -> CommandResul
         )
 
 
-def list_ise_security_group_tags_command(client: Client, args: Dict) -> CommandResults:
+def list_ise_security_group_tags_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of all ISE security group tag objects.
 
@@ -2964,7 +2964,7 @@ def list_ise_security_group_tags_command(client: Client, args: Dict) -> CommandR
         )
 
 
-def list_vlan_tags_command(client: Client, args: Dict) -> CommandResults:
+def list_vlan_tags_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of all vlan tag objects.
 
@@ -3009,7 +3009,7 @@ def list_vlan_tags_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def list_vlan_tags_group_command(client: Client, args: Dict) -> CommandResults:
+def list_vlan_tags_group_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of all vlan group tag objects.
 
@@ -3063,7 +3063,7 @@ def list_vlan_tags_group_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def list_applications_command(client: Client, args: Dict) -> CommandResults:
+def list_applications_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of all application objects.
 
@@ -3119,7 +3119,7 @@ def list_applications_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def get_access_rules_command(client: Client, args: Dict) -> CommandResults:
+def get_access_rules_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves the access control rule associated with the specified policy ID and rule ID.
     If no rule ID is specified, retrieves a list of all access rules associated with the specified policy ID.
@@ -3164,7 +3164,7 @@ def get_access_rules_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def create_access_rules_command(client: Client, args: Dict) -> CommandResults:
+def create_access_rules_command(client: Client, args: dict) -> CommandResults:
     """
     Creates an access control rule.
 
@@ -3228,7 +3228,7 @@ def create_access_rules_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def update_access_rules_command(client: Client, args: Dict) -> CommandResults:
+def update_access_rules_command(client: Client, args: dict) -> CommandResults:
     """
     Updates the specified access control rule.
 
@@ -3296,7 +3296,7 @@ def update_access_rules_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def delete_access_rules_command(client: Client, args: Dict) -> CommandResults:
+def delete_access_rules_command(client: Client, args: dict) -> CommandResults:
     """
     Deletes the specified access control rule.
 
@@ -3328,7 +3328,7 @@ def delete_access_rules_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def list_policy_assignments_command(client: Client, args: Dict) -> CommandResults:
+def list_policy_assignments_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves the policy assignment associated with the specified ID.
     If no ID is specified, retrieves a list of all policy assignments to target devices.
@@ -3366,7 +3366,7 @@ def list_policy_assignments_command(client: Client, args: Dict) -> CommandResult
         )
 
 
-def create_policy_assignments_command(client: Client, args: Dict) -> CommandResults:
+def create_policy_assignments_command(client: Client, args: dict) -> CommandResults:
     """
     Creates policy assignments to target devices.
 
@@ -3397,7 +3397,7 @@ def create_policy_assignments_command(client: Client, args: Dict) -> CommandResu
     )
 
 
-def update_policy_assignments_command(client: Client, args: Dict) -> CommandResults:
+def update_policy_assignments_command(client: Client, args: dict) -> CommandResults:
     """
     Updates the specified policy assignments to target devices.
 
@@ -3443,7 +3443,7 @@ def update_policy_assignments_command(client: Client, args: Dict) -> CommandResu
     )
 
 
-def get_deployable_devices_command(client: Client, args: Dict) -> CommandResults:
+def get_deployable_devices_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of all devices with configuration changes that are ready to deploy.
 
@@ -3512,7 +3512,7 @@ def get_deployable_devices_command(client: Client, args: Dict) -> CommandResults
         )
 
 
-def get_device_records_command(client: Client, args: Dict) -> CommandResults:
+def get_device_records_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves list of all device records.
 
@@ -3555,7 +3555,7 @@ def get_device_records_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def deploy_to_devices_command(client: Client, args: Dict) -> CommandResults:
+def deploy_to_devices_command(client: Client, args: dict) -> CommandResults:
     """
     Creates a request for deploying configuration changes to devices.
 
@@ -3594,7 +3594,7 @@ def deploy_to_devices_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_task_status_command(client: Client, args: Dict) -> CommandResults:
+def get_task_status_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves information about a previously submitted pending job or task with the specified ID.
     Used for deploying.
@@ -3630,7 +3630,7 @@ def get_task_status_command(client: Client, args: Dict) -> CommandResults:
         )
 
 
-def create_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_intrusion_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates an Intrusion Policy with the specified parameters.
 
@@ -3661,7 +3661,7 @@ def create_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def list_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_intrusion_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the intrusion policy associated with the specified ID.
     If no ID is specified, retrieves list of intrusion policies.
@@ -3712,7 +3712,7 @@ def list_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def update_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_intrusion_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Modifies the Intrusion Policy associated with the specified ID.
 
@@ -3765,7 +3765,7 @@ def update_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def delete_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_intrusion_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes the Intrusion Policy associated with the specified ID.
 
@@ -3803,7 +3803,7 @@ def delete_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def create_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_intrusion_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates or overrides the Snort3 Intrusion rule group with the specified parameters.
 
@@ -3830,7 +3830,7 @@ def create_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def list_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_intrusion_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the Snort3 Intrusion rule group.
     If no ID is specified, retrieves a list of all Snort3 Intrusion rule groups.
@@ -3886,7 +3886,7 @@ def list_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def update_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_intrusion_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Modifies the Snort3 Intrusion rule group with the specified ID.
     Must enter at least one of the following if not both: rule_data or rule_group_ids.
@@ -3944,7 +3944,7 @@ def update_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def delete_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_intrusion_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes the specified Snort3 rule.
 
@@ -3973,7 +3973,7 @@ def delete_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def upload_intrusion_rule_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def upload_intrusion_rule_file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Imports or validate custom Snort 3 intrusion rules within a file.
 
@@ -4006,7 +4006,7 @@ def upload_intrusion_rule_file_command(client: Client, args: Dict[str, Any]) -> 
     if file_type not in ('.txt', '.rules'):
         raise ValueError(f'Supported file formats are ".txt" and ".rules", got {file_type}')
 
-    with open(file_entry['path'], 'r') as file_handler:
+    with open(file_entry['path']) as file_handler:
         raw_response = client.upload_intrusion_rule_file(
             filename=filename,
             payload_file=file_handler.read(),
@@ -4038,7 +4038,7 @@ def upload_intrusion_rule_file_command(client: Client, args: Dict[str, Any]) -> 
     )
 
 
-def create_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_intrusion_rule_group_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates an Intrusion Rule Group with the specified parameters.
 
@@ -4065,7 +4065,7 @@ def create_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-def list_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_intrusion_rule_group_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the Snort3 Intrusion rule group.
     If no ID is specified, retrieves a list of all Snort3 Intrusion rule groups.
@@ -4116,7 +4116,7 @@ def list_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def update_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_intrusion_rule_group_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Updates an Intrusion Rule Group with the specified parameters.
 
@@ -4150,7 +4150,7 @@ def update_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-def delete_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_intrusion_rule_group_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes an Intrusion Rule Group with the specified parameters.
 
@@ -4181,7 +4181,7 @@ def delete_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-def create_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_network_analysis_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates a network analysis policy.
 
@@ -4212,7 +4212,7 @@ def create_network_analysis_policy_command(client: Client, args: Dict[str, Any])
     )
 
 
-def list_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_network_analysis_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the network analysis policy with the specified ID.
     If no ID is specified, retrieves list of all network analysis policies.
@@ -4261,7 +4261,7 @@ def list_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -
     )
 
 
-def update_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_network_analysis_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
         Modifies the network analysis policy associated with the specified ID.
 
@@ -4314,7 +4314,7 @@ def update_network_analysis_policy_command(client: Client, args: Dict[str, Any])
     )
 
 
-def delete_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_network_analysis_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes the network analysis policy associated with the specified ID.
 
@@ -4347,8 +4347,8 @@ def delete_network_analysis_policy_command(client: Client, args: Dict[str, Any])
 
 
 def main():  # pragma: no cover
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
 
     base_url = params['url']
@@ -4357,7 +4357,7 @@ def main():  # pragma: no cover
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'ciscofp-list-zones': list_zones_command,
         'ciscofp-list-ports': list_ports_command,
         'ciscofp-list-url-categories': list_url_categories_command,

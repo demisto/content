@@ -40,7 +40,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     """
     path = os.path.join('test_data', file_name)
 
-    with io.open(path, mode='r', encoding='utf-8') as mock_file:
+    with open(path, encoding='utf-8') as mock_file:
         if os.path.splitext(file_name)[1] == '.json':
             return json.loads(mock_file.read())
 
@@ -119,7 +119,7 @@ def test_query_command(requests_mock, mock_client):
     response = query_command(mock_client, args)
 
     assert response.outputs_prefix == QUERY_OUTPUTS_PREFIX
-    assert ['MD5', 'SHA1', 'SHA256'] == response.outputs_key_field
+    assert response.outputs_key_field == ['MD5', 'SHA1', 'SHA256']
     assert 'ThreatEmulation' in response.outputs
     assert 'AntiVirus' in response.outputs
     assert 'ThreatExtraction' in response.outputs

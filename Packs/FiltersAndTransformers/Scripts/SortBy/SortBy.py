@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 from collections import OrderedDict
-from typing import Any, List, Tuple
+from typing import Any
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
@@ -22,7 +22,7 @@ def demisto_get(obj: Any, path: Any) -> Any:
     :param path: The path to get values in the node.
     :return: The value(s) specified with `path` in the node.
     """
-    def split_context_path(path: str) -> List[str]:
+    def split_context_path(path: str) -> list[str]:
         """
         Get keys in order from the path which supports a syntax of path escaped with backslash.
 
@@ -104,7 +104,7 @@ class Key:
         else:
             return json.dumps(v)
 
-    def get(self) -> Tuple[int, Any]:
+    def get(self) -> tuple[int, Any]:
         """
         Get the key from the value.
 

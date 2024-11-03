@@ -1,5 +1,4 @@
 import json
-import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
@@ -23,7 +22,7 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

@@ -137,7 +137,7 @@ class TestHelperFunctions:
         )
 
         datetime_with_ms = dateparser.parse(self.DATE_WITH_MS)
-        assert self.DATE_WITH_MS == convert_datetime_to_iso_str(datetime_with_ms)
+        assert convert_datetime_to_iso_str(datetime_with_ms) == self.DATE_WITH_MS
 
     def test_message_to_incident(self):
         """
@@ -149,7 +149,7 @@ class TestHelperFunctions:
             - message_to_incident should convert it correctly
         """
         incident = message_to_incident(self.MOCK_MESSAGE)
-        assert self.DATE_WITH_MS == incident.get("occurred")
+        assert incident.get("occurred") == self.DATE_WITH_MS
         assert (
             f'Google PubSub Message {self.MOCK_MESSAGE.get("messageId")}'
             == incident.get("name")
@@ -247,7 +247,7 @@ class TestHelperFunctions:
             Then:
                 - return attribute pairs
             """
-            assert "" == attribute_pairs_to_dict("")
+            assert attribute_pairs_to_dict("") == ""
             assert attribute_pairs_to_dict(None) is None
 
         def test_attribute_pairs_to_dict__single(self):
@@ -418,9 +418,9 @@ class TestCommands:
         def ack_messages(self, a, b):
             return ""
 
-    with open("test_data/commands_outputs.json", "r") as f:
+    with open("test_data/commands_outputs.json") as f:
         COMMAND_OUTPUTS = json.load(f)
-    with open("test_data/raw_responses.json", "r") as f:
+    with open("test_data/raw_responses.json") as f:
         RAW_RESPONSES = json.load(f)
 
     TEST_COMMANDS_LIST = [

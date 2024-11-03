@@ -9,9 +9,9 @@ from CommonServerPython import *
 def read_file_content(input_entry_or_string):
     res = demisto.getFilePath(input_entry_or_string)
     if not res:
-        return_error("Entry {} not found".format(input_entry_or_string))
+        return_error(f"Entry {input_entry_or_string} not found")
     file_path = res['path']
-    with open(file_path, 'r') as f:
+    with open(file_path) as f:
         file_content = f.read()
     return file_content
 
@@ -37,8 +37,8 @@ def main():
     elif storing_method == 'list':
         res = demisto.executeCommand("createList", {"listName": model_name, "listData": file_content['modelData']})
     else:
-        return_error('Unsupported *modelStoreType* value received ({}).'
-                     ' *modelStoreType* should be "mlModel" or "list"'.format(storing_method))
+        return_error(f'Unsupported *modelStoreType* value received ({storing_method}).'
+                     ' *modelStoreType* should be "mlModel" or "list"')
 
     if is_error(res):
         return_error(get_error(res))

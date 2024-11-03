@@ -1,12 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Any, Dict
+from typing import Any
 import traceback
 import json
 
 
-def get_source_hr(source) -> Dict[str, Any]:
+def get_source_hr(source) -> dict[str, Any]:
     return {
         'Category/Description': source.get('Category', ''),
         'Confidence': source.get('IntRawConfidenceScore', 0),

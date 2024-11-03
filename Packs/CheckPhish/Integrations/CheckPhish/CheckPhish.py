@@ -63,7 +63,7 @@ def http_request(method, url, use_ssl, params=None, data=None):
         return res.json()
 
     except ValueError as err:
-        return_error('Failed to parse response from service, received the following error:\n{}'.format(str(err)))
+        return_error(f'Failed to parse response from service, received the following error:\n{str(err)}')
 
 
 def unite_dispositions(good_disp, susp_disp, bad_disp):

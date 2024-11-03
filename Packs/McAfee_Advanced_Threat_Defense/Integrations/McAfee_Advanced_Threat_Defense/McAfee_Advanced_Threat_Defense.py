@@ -616,7 +616,7 @@ def build_report_context(report_summary, upload_data, status, threshold, task_id
         else:  # detonation did not return any data
             # retrieve submission url by the task ID, if exist
             submission_dt = demisto.dt(
-                demisto.context(), 'ATD.Task(val.taskId === "{}")'.format(task_id))
+                demisto.context(), f'ATD.Task(val.taskId === "{task_id}")')
             if isinstance(submission_dt, list):
                 submission = submission_dt[0]
             else:

@@ -1,6 +1,6 @@
 from AddKeyToList import add_key_to_list_command
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import List, Dict, Any
+from typing import Any
 import json
 
 MOCK_LIST_NAME = "TestList"
@@ -19,12 +19,12 @@ def test_add_new_key_in_empty_list(mocker):
         - key/value successfully added (list contains only the key/value)
         - success message is returned
     """
-    MOCKED_START_LIST: Dict = {}
-    MOCKED_END_LIST: Dict = {
+    MOCKED_START_LIST: dict = {}
+    MOCKED_END_LIST: dict = {
         MOCK_KEY_NAME: MOCK_VALUE
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -59,15 +59,15 @@ def test_add_new_key_in_nonempty_list(mocker):
         - key/value successfully added (list contains both old and new key/value pairs)
         - success message is returned
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         "ExistingKey": "ExistingValue"
     }
-    MOCKED_END_LIST: Dict = {
+    MOCKED_END_LIST: dict = {
         "ExistingKey": "ExistingValue",
         MOCK_KEY_NAME: MOCK_VALUE
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -104,14 +104,14 @@ def test_replace_key_in_existing_list(mocker):
         - value for key successfully replaced (list contains only new key/value pair)
         - success message is returned
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         MOCK_KEY_NAME: "OldValue"
     }
-    MOCKED_END_LIST: Dict = {
+    MOCKED_END_LIST: dict = {
         MOCK_KEY_NAME: MOCK_VALUE
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -148,11 +148,11 @@ def test_no_change_same_value_same_key_no_dup_in_existing_list(mocker):
         - list is not changed
         - return message says that list wasn't changed as value already exists for key
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         MOCK_KEY_NAME: MOCK_VALUE
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -187,14 +187,14 @@ def test_append_value_to_existing_key_in_existing_list(mocker):
         - value for the key is transformed into a list containing both old and new value
         - success message is returned
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         MOCK_KEY_NAME: "OldValue"
     }
-    MOCKED_END_LIST: Dict = {
+    MOCKED_END_LIST: dict = {
         MOCK_KEY_NAME: ["OldValue", MOCK_VALUE]
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -231,14 +231,14 @@ def test_append_value_to_existing_list_key_in_existing_list(mocker):
         - new value for the key is appended to the existing list for that key
         - success message is returned
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         MOCK_KEY_NAME: ["OldValue1", "OldValue2"]
     }
-    MOCKED_END_LIST: Dict = {
+    MOCKED_END_LIST: dict = {
         MOCK_KEY_NAME: ["OldValue1", "OldValue2", MOCK_VALUE]
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -275,11 +275,11 @@ def test_no_append_existing_value_same_list_key_no_dup_in_existing_list(mocker):
         - list is not changed
         - return message says that list wasn't changed as value already exists for key
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         MOCK_KEY_NAME: ["OldValue", MOCK_VALUE]
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':
@@ -314,14 +314,14 @@ def test_append_duplicate_value_to_existing_key_in_existing_list(mocker):
         - value for the key is changed in a list that contains the same value twice
         - return success message
     """
-    MOCKED_START_LIST: Dict = {
+    MOCKED_START_LIST: dict = {
         MOCK_KEY_NAME: MOCK_VALUE
     }
-    MOCKED_END_LIST: Dict = {
+    MOCKED_END_LIST: dict = {
         MOCK_KEY_NAME: [MOCK_VALUE, MOCK_VALUE]
     }
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getList':
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
         elif name == 'setList':

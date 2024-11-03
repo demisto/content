@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Dict, List, Optional
 
 import urllib3
 from urllib.parse import urlparse
@@ -11,7 +10,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         result = []
         res = self._http_request('GET',
                                  url_suffix='',
@@ -53,8 +52,8 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1,
-                     create_relationships: bool = False) -> List[Dict]:
+def fetch_indicators(client: Client, tlp_color: str | None = None, feed_tags: list = [], limit: int = -1,
+                     create_relationships: bool = False) -> list[dict]:
     iterator = client.build_iterator()
     indicators = []
     if limit > 0:
@@ -104,8 +103,8 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
 
 
 def get_indicators_command(client: Client,
-                           params: Dict[str, str],
-                           args: Dict[str, str]
+                           params: dict[str, str],
+                           args: dict[str, str]
                            ) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
@@ -130,7 +129,7 @@ def get_indicators_command(client: Client,
     )
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: dict[str, str]) -> list[dict]:
     feed_tags = argToList(params.get('feedTags', ''))
     tlp_color = params.get('tlp_color')
     create_relationships = argToBoolean(params.get('create_relationships', True))

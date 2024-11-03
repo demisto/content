@@ -10,7 +10,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Any
 from keeper_secrets_manager_core import SecretsManager
 from keeper_secrets_manager_core.storage import InMemoryKeyValueStorage
 
@@ -125,7 +125,7 @@ class Client:
 
         return result or ''
 
-    def ksm_list_records(self) -> List[Dict[str, str]]:
+    def ksm_list_records(self) -> list[dict[str, str]]:
         result = []
         records = self.secrets_manager.get_secrets()
         if records:
@@ -135,7 +135,7 @@ class Client:
                                'title': r.title})
         return result
 
-    def ksm_find_records(self, title: str, partial_match: bool = True) -> List[Dict[str, str]]:
+    def ksm_find_records(self, title: str, partial_match: bool = True) -> list[dict[str, str]]:
         result = []
         title = title.lower()
         records = self.secrets_manager.get_secrets() or []
@@ -147,7 +147,7 @@ class Client:
                                'title': r.title})
         return result
 
-    def ksm_fetch_credentials(self) -> List[Dict[str, str]]:
+    def ksm_fetch_credentials(self) -> list[dict[str, str]]:
         result = []
         records = self.secrets_manager.get_secrets()
         if records:
@@ -158,7 +158,7 @@ class Client:
                                    'name': r.title})
         return result
 
-    def list_credentials(self) -> List[Dict[str, str]]:
+    def list_credentials(self) -> list[dict[str, str]]:
         result = []
         records = self.secrets_manager.get_secrets()
         if records:
@@ -169,7 +169,7 @@ class Client:
                                    'uid': r.uid})
         return result
 
-    def ksm_list_files(self, record_uids: List[str]) -> List[Dict[str, str]]:
+    def ksm_list_files(self, record_uids: list[str]) -> list[dict[str, str]]:
         result = []
         records = self.secrets_manager.get_secrets(record_uids) or []
         for r in records:
@@ -181,7 +181,7 @@ class Client:
                                'file_size': f.size})
         return result
 
-    def ksm_find_files(self, file_name: str, partial_match: bool = True) -> List[Dict[str, str]]:
+    def ksm_find_files(self, file_name: str, partial_match: bool = True) -> list[dict[str, str]]:
         result = []
         file_name = file_name.lower()
         records = self.secrets_manager.get_secrets() or []
@@ -196,7 +196,7 @@ class Client:
                                    'file_size': f.size})
         return result
 
-    def ksm_get_file(self, record_uid: str, file_uid: str) -> List[Tuple[str, bytes]]:
+    def ksm_get_file(self, record_uid: str, file_uid: str) -> list[tuple[str, bytes]]:
         result = []
         record_filter = [record_uid] if record_uid else []
         records = self.secrets_manager.get_secrets(record_filter) or []
@@ -258,7 +258,7 @@ LIST_CREDENTIALS_OUTPUTS = [OutputArgument(name='uid', output_type=str, descript
                             outputs_list=LIST_CREDENTIALS_OUTPUTS, restore=True,
                             description="Use this command to list all credentials in your Keeper Vault"
                                         " that are shared to the KSM application.")
-def list_credentials_command(client: Client, args: Dict[str, Any], **kwargs) -> CommandResults:
+def list_credentials_command(client: Client, args: dict[str, Any], **kwargs) -> CommandResults:
     """Lists all credentials available to the KSM application.
     :param client: the client object with the given params
     :return: the credentials info without the explicit password
@@ -284,7 +284,7 @@ def list_credentials_command(client: Client, args: Dict[str, Any], **kwargs) -> 
                                                        required=True,
                                                        description="Keeper KSM notation URI.")],
                             description="Use this command to get field value from Keeper record.")
-def get_field_command(client: Client, args: Dict[str, Any], **kwargs) -> CommandResults:
+def get_field_command(client: Client, args: dict[str, Any], **kwargs) -> CommandResults:
     """Get field command - returns field value.
 
     Args:
@@ -300,7 +300,7 @@ def get_field_command(client: Client, args: Dict[str, Any], **kwargs) -> Command
     """
 
     demisto.debug('get_field_command - command_name: ' + str(kwargs.get('command_name', '')))
-    notation = args.get('notation', None)
+    notation = args.get('notation')
     if not notation:
         raise ValueError('notation URI not specified')
 
@@ -326,7 +326,7 @@ GET_RECORDS_OUTPUTS = [OutputArgument(name='uid', output_type=str, description='
                             outputs_list=GET_RECORDS_OUTPUTS, restore=True,
                             description="Use this command to list all records from your Keeper Vault"
                                         " that are shared to the application.")
-def list_records_command(client: Client, args: Dict[str, Any], **kwargs) -> CommandResults:
+def list_records_command(client: Client, args: dict[str, Any], **kwargs) -> CommandResults:
     """List records command - returns list of record info.
 
     Args:
@@ -364,7 +364,7 @@ def list_records_command(client: Client, args: Dict[str, Any], **kwargs) -> Comm
                                                        default=False,
                                                        description="Search for partial title match.")],
                             description="Search for records by full or partial title match.")
-def find_records_command(client: Client, args: Dict[str, Any], **kwargs) -> CommandResults:
+def find_records_command(client: Client, args: dict[str, Any], **kwargs) -> CommandResults:
     """Find records command - returns list of record info.
 
     Args:
@@ -382,7 +382,7 @@ def find_records_command(client: Client, args: Dict[str, Any], **kwargs) -> Comm
     demisto.debug('find_records_command - command_name: ' + str(kwargs.get('command_name', '')))
 
     title = args.get('title') or ''
-    partial_match = args.get('partial_match', None)
+    partial_match = args.get('partial_match')
     partial_match = True if partial_match else False
     demisto.debug(f'Find records with title={title} and partial_match={partial_match}')
 
@@ -414,7 +414,7 @@ GET_FILES_OUTPUTS = [OutputArgument(name='record_uid', output_type=str, descript
                                                        description="A comma-separated list of record UIDs to search."
                                                        " If left empty all records with file attachments will be listed.")],
                             description="Use this command to list all records that have file attachments.")
-def list_files_command(client: Client, args: Dict[str, Any], **kwargs) -> CommandResults:
+def list_files_command(client: Client, args: dict[str, Any], **kwargs) -> CommandResults:
     """List files command - returns list of record and file info.
 
     Args:
@@ -457,7 +457,7 @@ def list_files_command(client: Client, args: Dict[str, Any], **kwargs) -> Comman
                                                        default=False,
                                                        description="Search for partial file name match.")],
                             description="Search for records by full or partial file name match.")
-def find_files_command(client: Client, args: Dict[str, Any], **kwargs) -> CommandResults:
+def find_files_command(client: Client, args: dict[str, Any], **kwargs) -> CommandResults:
     """Find files command - returns list of record and file info.
 
     Args:
@@ -475,7 +475,7 @@ def find_files_command(client: Client, args: Dict[str, Any], **kwargs) -> Comman
     demisto.debug('find_files_command - command_name: ' + str(kwargs.get('command_name', '')))
 
     file_name = args.get('file_name') or ''
-    partial_match = args.get('partial_match', None)
+    partial_match = args.get('partial_match')
     partial_match = True if partial_match else False
     demisto.debug(f'Find records with file_name={file_name} and partial_match={partial_match}')
 
@@ -502,7 +502,7 @@ def find_files_command(client: Client, args: Dict[str, Any], **kwargs) -> Comman
                                                        description="Record UID to search for files."
                                                        " Search all records if empty.")],
                             description="Use this command to fetch the file attachment as a File.")
-def get_file_command(client: Client, args: Dict[str, Any], **kwargs) -> Optional[dict]:
+def get_file_command(client: Client, args: dict[str, Any], **kwargs) -> dict | None:
     """Get file command - returns the file attachment as a File.
 
     Args:
@@ -519,7 +519,7 @@ def get_file_command(client: Client, args: Dict[str, Any], **kwargs) -> Optional
 
     demisto.debug('get_file_command - command_name: ' + str(kwargs.get('command_name', '')))
     record_uid = args.get('record_uid') or ''
-    file_uid = args.get('file_uid', None)
+    file_uid = args.get('file_uid')
     if not file_uid:
         raise ValueError('file_uid not specified')
     demisto.debug(f'Get file UID: "{file_uid}" from record UID:"{record_uid}"')
@@ -542,7 +542,7 @@ def get_file_command(client: Client, args: Dict[str, Any], **kwargs) -> Optional
                                                        description="Record UID to search for files."
                                                        " Search all records if empty.")],
                             description="Use this command to fetch the file attachment as an Info File.")
-def get_infofile_command(client: Client, args: Dict[str, Any], **kwargs) -> Optional[dict]:
+def get_infofile_command(client: Client, args: dict[str, Any], **kwargs) -> dict | None:
     """Get info file command - returns the file attachment as an Info File.
 
     Args:
@@ -559,7 +559,7 @@ def get_infofile_command(client: Client, args: Dict[str, Any], **kwargs) -> Opti
 
     demisto.debug('get_infofile_command - command_name: ' + str(kwargs.get('command_name', '')))
     record_uid = args.get('record_uid') or ''
-    file_uid = args.get('file_uid', None)
+    file_uid = args.get('file_uid')
     if not file_uid:
         raise ValueError('file_uid not specified')
     demisto.debug(f'Get file UID: "{file_uid}" from record UID:"{record_uid}"')

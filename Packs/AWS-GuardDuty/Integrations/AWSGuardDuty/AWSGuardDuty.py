@@ -4,7 +4,7 @@ import json
 from datetime import datetime, date
 from AWSApiModule import *  # noqa: E402
 from collections import defaultdict
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 # The following import are used only for type hints and autocomplete.
 # It is not used at runtime, and not exist in the docker image.
@@ -425,7 +425,7 @@ def list_findings(client: "GuardDutyClient", args: dict) -> CommandResults:
                           outputs_key_field='')
 
 
-def get_pagination_args(args: dict) -> Tuple[int, int, Optional[int]]:
+def get_pagination_args(args: dict) -> tuple[int, int, Optional[int]]:
     """
     Gets and validates pagination arguments.
     :param args: The command arguments (page, page_size or limit)
@@ -530,7 +530,7 @@ def time_to_unix_epoch(date_time: datetime) -> int:
 
 
 def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_run: dict, fetch_limit: int,
-                    first_fetch_time: str, is_archive: bool) -> Tuple[Dict[str, Any], List[dict]]:
+                    first_fetch_time: str, is_archive: bool) -> tuple[Dict[str, Any], List[dict]]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -570,7 +570,7 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
     created_time_to_ids[latest_created_time] = last_incidents_ids
 
     # Represents the criteria to be used in the filter for querying findings.
-    criterion_conditions: Dict[str, "ConditionTypeDef"] = {}
+    criterion_conditions: Dict[str, ConditionTypeDef] = {}
     criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
     if is_archive:
         demisto.debug('Fetching Amazon GuardDuty with Archive')
@@ -777,7 +777,7 @@ def main():  # pragma: no cover
                                timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
         args = demisto.args()
 
-        client: "GuardDutyClient" = aws_client.aws_session(service=SERVICE, region=args.get('region'),
+        client: GuardDutyClient = aws_client.aws_session(service=SERVICE, region=args.get('region'),
                                                            role_arn=args.get('roleArn'),
                                                            role_session_name=args.get('roleSessionName'),
                                                            role_session_duration=args.get('roleSessionDuration'))

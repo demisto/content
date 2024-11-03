@@ -30,7 +30,7 @@ def main():
         if sender:
             parts = sender.split('@')
             if len(parts) == 2:
-                if not parts[1] in domains:
+                if parts[1] not in domains:
                     distances = []
                     for domain in domains:
                         distance = levenshtein(domain, parts[1])

@@ -6,7 +6,8 @@ from CommonServerUserPython import *
 import urllib3
 import traceback
 from datetime import datetime
-from typing import Any, Dict, List, Callable, Tuple, Optional
+from typing import Any
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -19,7 +20,7 @@ BASE_URL = 'https://alertcenter.googleapis.com/'
 NEXT_PAGE_TOKEN = '### Next Page Token:\n{}\n'
 LIST_FEEDBACK_PAGE_SIZE = 50
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'LIST_ALERTS': 'v1beta1/alerts',
     'FEEDBACK': 'v1beta1/alerts/{0}/feedback',
     'GET_ALERT': 'v1beta1/alerts/{}',
@@ -37,7 +38,7 @@ OUTPUT_PATHS = {
     'BATCH_RECOVER_FAILED': 'GSuiteSecurityAlert.Recover.failedAlerts(val.id && val.id == obj.id)'
 }
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'TEST_CONNECTIVITY_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
     'INTEGER_ERROR': 'The argument {} must be a positive integer.',
     'MAX_INCIDENT_ERROR': 'Value of maximum number of incidents to fetch every time must be a positive integer '
@@ -52,7 +53,7 @@ MESSAGES: Dict[str, str] = {
 }
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-SCOPES: Dict[str, List[str]] = {
+SCOPES: dict[str, list[str]] = {
     'ALERT': ['https://www.googleapis.com/auth/apps.alerts']
 }
 ALERT_FEEDBACK_TYPES = ['alert_feedback_type_unspecified', 'not_useful', 'somewhat_useful', 'very_useful']
@@ -83,7 +84,7 @@ def validate_date(first_fetch) -> str:
     return create_time
 
 
-def validate_params_for_fetch_incidents(params: Dict[str, Any], last_run: Dict) -> Tuple[Dict[str, Any], str]:
+def validate_params_for_fetch_incidents(params: dict[str, Any], last_run: dict) -> tuple[dict[str, Any], str]:
     """
     Validates parameters for fetch-incidents command.
 
@@ -151,7 +152,7 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any], last_run: Dict) 
     return GSuiteClient.remove_empty_entities(updated_params), last_fetch
 
 
-def validate_params_for_list_alerts(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_params_for_list_alerts(args: dict[str, str]) -> dict[str, Any]:
     """
     Prepares arguments for list alerts.
 
@@ -177,7 +178,7 @@ def validate_params_for_list_alerts(args: Dict[str, str]) -> Dict[str, Any]:
     return GSuiteClient.remove_empty_entities(params)
 
 
-def prepare_hr_for_alerts(alerts: List[Dict[str, Any]], header: str) -> str:
+def prepare_hr_for_alerts(alerts: list[dict[str, Any]], header: str) -> str:
     """
     Prepare the Human readable info for alerts command.
 
@@ -204,7 +205,7 @@ def prepare_hr_for_alerts(alerts: List[Dict[str, Any]], header: str) -> str:
                                              'Update Time'], removeNull=True)
 
 
-def prepare_hr_for_alert_feedback(feedbacks: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_alert_feedback(feedbacks: list[dict[str, Any]]) -> str:
     """
     Prepare the Human readable info for create alert feedback command.
 
@@ -212,7 +213,7 @@ def prepare_hr_for_alert_feedback(feedbacks: List[Dict[str, Any]]) -> str:
     :return: Human readable.
     """
 
-    hr_table: List[Dict[str, Any]] = []
+    hr_table: list[dict[str, Any]] = []
     for feedback in feedbacks:
         hr_table.append({
             'Feedback ID': feedback.get('feedbackId', ''),
@@ -225,7 +226,7 @@ def prepare_hr_for_alert_feedback(feedbacks: List[Dict[str, Any]]) -> str:
                            ['Feedback ID', 'Alert ID', 'Create Time', 'Feedback Type', 'Email'], removeNull=True)
 
 
-def prepare_hr_for_batch_command(response: Dict[str, Any], method: str) -> str:
+def prepare_hr_for_batch_command(response: dict[str, Any], method: str) -> str:
     """
     Prepare the Human readable info for batch delete and recover alerts command.
 
@@ -234,7 +235,7 @@ def prepare_hr_for_batch_command(response: Dict[str, Any], method: str) -> str:
     :return: Human readable.
     """
 
-    hr_list: List[Dict[str, Any]] = []
+    hr_list: list[dict[str, Any]] = []
     for each_success_id in response.get('successAlertIds', []):
         hr_record = {
             'Alert ID': each_success_id,
@@ -257,24 +258,24 @@ def prepare_hr_for_batch_command(response: Dict[str, Any], method: str) -> str:
     )
 
 
-def create_custom_context_for_batch_command(response: Dict[str, Any]) -> Tuple[List, List]:
+def create_custom_context_for_batch_command(response: dict[str, Any]) -> tuple[list, list]:
     """
     Prepare the custom Context Output for batch delete and recover alerts command.
 
     :param response: The batch delete and recover alerts data.
     :return: Success alerts list and failed alerts list
     """
-    success_list: List = []
-    failed_list: List = []
+    success_list: list = []
+    failed_list: list = []
     for each_id in response.get('successAlertIds', []):
-        success_obj: Dict[str, Any] = {
+        success_obj: dict[str, Any] = {
             'id': each_id,
             'status': 'Success'
         }
         success_list.append(success_obj)
 
     for failed_key, value in response.get('failedAlertStatus', {}).items():
-        failed_alert_id: Dict[str, Any] = {
+        failed_alert_id: dict[str, Any] = {
             'id': failed_key,
             'status': 'Fail',
             'code': value.get('code'),
@@ -285,7 +286,7 @@ def create_custom_context_for_batch_command(response: Dict[str, Any]) -> Tuple[L
     return success_list, failed_list
 
 
-def check_required_arguments(required_arguments: List[str], args: Dict[str, Any]):
+def check_required_arguments(required_arguments: list[str], args: dict[str, Any]):
     """
     Checks if the required arguments after trimming the spaces are non empty
 
@@ -295,7 +296,7 @@ def check_required_arguments(required_arguments: List[str], args: Dict[str, Any]
     """
     missing_args = []
     for arg in required_arguments:
-        if arg not in args.keys():
+        if arg not in args:
             missing_args.append(arg)
     if missing_args:
         raise ValueError(MESSAGES['MISSING_REQUIRED_ARGUMENTS_ERROR'].format(", ".join(missing_args)))
@@ -305,7 +306,7 @@ def check_required_arguments(required_arguments: List[str], args: Dict[str, Any]
 
 
 @logger
-def test_module(gsuite_client, last_run: Dict, params: Dict[str, Any]) -> str:
+def test_module(gsuite_client, last_run: dict, params: dict[str, Any]) -> str:
     """
     Performs test connectivity by valid http response
 
@@ -335,7 +336,7 @@ def test_module(gsuite_client, last_run: Dict, params: Dict[str, Any]) -> str:
 
 
 @logger
-def gsac_list_alerts_command(client, args: Dict[str, str]) -> CommandResults:
+def gsac_list_alerts_command(client, args: dict[str, str]) -> CommandResults:
     """
     List alerts from G Suite Security Alert center.
 
@@ -380,7 +381,7 @@ def gsac_list_alerts_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def gsac_get_alert_command(client, args: Dict[str, str]) -> CommandResults:
+def gsac_get_alert_command(client, args: dict[str, str]) -> CommandResults:
     """
     Get a single alert from G Suite Security Alert center.
 
@@ -419,7 +420,7 @@ def gsac_get_alert_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def gsac_batch_delete_alerts_command(client, args: Dict[str, str]) -> CommandResults:
+def gsac_batch_delete_alerts_command(client, args: dict[str, str]) -> CommandResults:
     """
     Performs batch delete operation on alerts.
 
@@ -432,7 +433,7 @@ def gsac_batch_delete_alerts_command(client, args: Dict[str, str]) -> CommandRes
     check_required_arguments(required_arguments=['alert_id'], args=args)
 
     # Prepare params
-    json_body: Dict[str, Any] = {}
+    json_body: dict[str, Any] = {}
     admin_email = args.get('admin_email')
 
     ids = argToList(args.get('alert_id', []), ",")
@@ -446,7 +447,7 @@ def gsac_batch_delete_alerts_command(client, args: Dict[str, str]) -> CommandRes
 
     # Create entry context
     success_list, failed_list = create_custom_context_for_batch_command(batch_delete_response)
-    custom_context: Dict[str, Any] = {
+    custom_context: dict[str, Any] = {
         OUTPUT_PATHS['BATCH_DELETE_SUCCESS']: success_list,
         OUTPUT_PATHS['BATCH_DELETE_FAILED']: failed_list
     }
@@ -462,7 +463,7 @@ def gsac_batch_delete_alerts_command(client, args: Dict[str, str]) -> CommandRes
 
 
 @logger
-def gsac_batch_recover_alerts_command(client, args: Dict[str, str]) -> CommandResults:
+def gsac_batch_recover_alerts_command(client, args: dict[str, str]) -> CommandResults:
     """
     Performs batch recover operation on alerts.
 
@@ -475,7 +476,7 @@ def gsac_batch_recover_alerts_command(client, args: Dict[str, str]) -> CommandRe
     check_required_arguments(required_arguments=['alert_id'], args=args)
 
     # Prepare params
-    json_body: Dict[str, Any] = {}
+    json_body: dict[str, Any] = {}
     admin_email = args.get('admin_email')
 
     ids = argToList(args.get('alert_id', []), ",")
@@ -489,7 +490,7 @@ def gsac_batch_recover_alerts_command(client, args: Dict[str, str]) -> CommandRe
 
     # Create entry context
     success_list, failed_list = create_custom_context_for_batch_command(batch_recover_response)
-    custom_context: Dict[str, Any] = {
+    custom_context: dict[str, Any] = {
         OUTPUT_PATHS['BATCH_RECOVER_SUCCESS']: success_list,
         OUTPUT_PATHS['BATCH_RECOVER_FAILED']: failed_list
     }
@@ -505,7 +506,7 @@ def gsac_batch_recover_alerts_command(client, args: Dict[str, str]) -> CommandRe
 
 
 @logger
-def gsac_create_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> CommandResults:
+def gsac_create_alert_feedback_command(gsuite_client, args: dict[str, Any]) -> CommandResults:
     """
     Creates new feedback for an alert.
 
@@ -520,8 +521,8 @@ def gsac_create_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> C
     check_required_arguments(required_arguments=['alert_id', 'feedback_type'], args=args)
 
     # Prepare Params
-    json_body: Dict[str, Any] = {}
-    params: Dict[str, Any] = {}
+    json_body: dict[str, Any] = {}
+    params: dict[str, Any] = {}
     admin_email = args.get('admin_email')
 
     if args['feedback_type'].lower() not in ALERT_FEEDBACK_TYPES:
@@ -551,7 +552,7 @@ def gsac_create_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> C
 
 
 @logger
-def gsac_list_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> CommandResults:
+def gsac_list_alert_feedback_command(gsuite_client, args: dict[str, Any]) -> CommandResults:
     """
     Lists all the feedback for an alert.
 
@@ -566,7 +567,7 @@ def gsac_list_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> Com
     check_required_arguments(required_arguments=['alert_id'], args=args)
 
     # Prepare params
-    params: Dict[str, Any] = {
+    params: dict[str, Any] = {
         'filter': args.get('filter', '').replace("'", '"'),
     }
     admin_email = args.get('admin_email')
@@ -601,8 +602,8 @@ def gsac_list_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> Com
 
 
 @logger
-def fetch_incidents(client, last_run: Dict, params: Dict, is_test: bool = False) -> \
-        Tuple[Optional[list], Optional[dict]]:
+def fetch_incidents(client, last_run: dict, params: dict, is_test: bool = False) -> \
+        tuple[list | None, dict | None]:
     """
     This function is called for fetching incidents.
     This function gets all alerts, then after get latest feedback for each alert.
@@ -636,7 +637,7 @@ def fetch_incidents(client, last_run: Dict, params: Dict, is_test: bool = False)
     demisto.info(f'[GSAC ALERT]: Request URL: {BASE_URL}{URL_SUFFIX["LIST_ALERTS"]}')
     demisto.info(f'[GSAC ALERT]: Next Token: {next_page_token}')
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     # Prepare incidents data
     for alert in alerts:
@@ -673,7 +674,7 @@ def main() -> None:
     """
 
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'gsac-alert-list': gsac_list_alerts_command,
         'gsac-alert-feedback-create': gsac_create_alert_feedback_command,
         'gsac-alert-get': gsac_get_alert_command,

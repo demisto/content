@@ -1,12 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import List, Optional, Union
 
 from xlsxwriter import Workbook
 from xlsxwriter.format import Format
 
 
-def write_data(sheet: str, data_item: Union[dict, list], data_headers: Optional[list], workbook: Workbook, bold: Format,
+def write_data(sheet: str, data_item: dict | list, data_headers: list | None, workbook: Workbook, bold: Format,
                border: Format):
     if not isinstance(data_item, list):
         data_item = [data_item]
@@ -36,7 +35,7 @@ def write_data(sheet: str, data_item: Union[dict, list], data_headers: Optional[
                 col += 1
 
 
-def parse_data(data: Union[str, dict, list], sheets: list):
+def parse_data(data: str | dict | list, sheets: list):
     if isinstance(data, str):  # Indicates that the data is a comma-separated list of context keys.
         data_list = json.loads("[" + data + "]")
         if len(sheets) != len(data_list):
@@ -86,7 +85,7 @@ def main():
 
             bold, border = prepare_bold_and_border(workbook, is_bold, is_border)
 
-            multi_header_list: List[Optional[List]] = []
+            multi_header_list: list[list | None] = []
             if headers_list:  # Can be 1 item in case there is one sheet, or multiple items in case there are multiple
                 # sheets
                 for header_list in headers_list:

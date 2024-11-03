@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import MailSenderNew
 import demistomock as demisto
 import pytest
@@ -10,11 +9,11 @@ RETURN_ERROR_TARGET = 'MailSenderNew.return_error'
 
 @pytest.mark.parametrize('subject,subj_include,headers',
                          [
-                             (u'test-before\ntest-after', 'test-after', 'foo=baz'),
+                             ('test-before\ntest-after', 'test-after', 'foo=baz'),
                              ('test-before\ntest-after', 'test-after', 'foo=baz'),
                              ('\xd7\xa2\xd7\x91\xd7\xa8\xd7\x99\xd7\xaa', '=?utf-8?', 'foo=baz'),
                              # non-ascii char utf-8 encoded
-                             (u'עברית', '=?utf-8?', 'foo=baz')
+                             ('עברית', '=?utf-8?', 'foo=baz')
                          ]
                          )  # noqa: E124
 def test_create_msg(mocker, subject, subj_include, headers):
@@ -66,7 +65,7 @@ def test_hmac(mocker):
     Test that hmac is able to handle unicode user/pass
     """
     mocker.patch.object(demisto, 'params', return_value={
-        'credentials': {'identifier': u'user', 'password': u'pass'}
+        'credentials': {'identifier': 'user', 'password': 'pass'}
     })
     user, password = MailSenderNew.get_user_pass()
     res = user + hmac.HMAC(str.encode(password), b'test', hashlib.sha256).hexdigest()

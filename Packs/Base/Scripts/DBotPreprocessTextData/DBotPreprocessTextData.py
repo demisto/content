@@ -427,8 +427,8 @@ def main():
         input_str = clean_text_of_single_text(input_str, remove_html_tags)
         is_correct_lang, actual_language = is_text_in_input_language(input_str, language)
         if not is_correct_lang:
-            return_error("Input text was detected as as being in a different language from {} ('{}' found)."
-                         .format(language, actual_language))
+            return_error(f"Input text was detected as as being in a different language from {language} ('{actual_language}' found)."
+                         )
         res = pre_process_single_text(raw_text=input_str,
                                       hash_seed=hash_seed, pre_process_type=pre_process_type)
         return res

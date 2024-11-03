@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from base64 import b64encode
-from typing import Any, Dict
+from typing import Any
 from distutils.version import LooseVersion
 
 
@@ -43,7 +43,7 @@ def encode_string(value: str) -> str:
     return b64.hex()
 
 
-def get_data_collection_url(task_id: str, users: List[str]) -> List[Dict[str, str]]:
+def get_data_collection_url(task_id: str, users: List[str]) -> List[dict[str, str]]:
     demisto_urls = demisto.demistoUrls()
     server_url = demisto_urls.get('server', '')
     incident_id = demisto.incident().get('id')
@@ -63,8 +63,8 @@ def get_data_collection_url(task_id: str, users: List[str]) -> List[Dict[str, st
     return urls
 
 
-def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
-    task_id = args.get('task_id', None)
+def get_data_collection_url_command(args: dict[str, Any]) -> CommandResults:  # pragma: no cover
+    task_id = args.get('task_id')
     if not task_id:
         raise ValueError('task_id not specified')
 

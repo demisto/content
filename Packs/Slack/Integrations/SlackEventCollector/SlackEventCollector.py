@@ -61,7 +61,7 @@ class Client(BaseClient):
             last_run.pop('last_id')
 
         cursor = last_run.pop('cursor', None)
-        last_event = last_run.get('last_fetched_event', None)
+        last_event = last_run.get('last_fetched_event')
         if cursor:
             query_params['cursor'] = cursor
             query_params.pop('oldest')

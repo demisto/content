@@ -24,11 +24,11 @@ def test_extract_indicators(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     args: Dict[str, str] = {}
     results = extract_indicators_from_file(args)
-    assert {'Contents': '{"IP": ["1.1.1.1"]}',
+    assert results == {'Contents': '{"IP": ["1.1.1.1"]}',
             'ContentsFormat': 'text',
             'EntryContext': {'IP': ['1.1.1.1']},
             'HumanReadable': '### IP\n- 1.1.1.1\n',
-            'Type': 1} == results
+            'Type': 1}
 
 
 def test_extract_indicators_no_file():

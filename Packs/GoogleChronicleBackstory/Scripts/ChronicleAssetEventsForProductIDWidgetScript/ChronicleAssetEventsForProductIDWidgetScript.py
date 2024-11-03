@@ -2,10 +2,10 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import traceback
-from typing import Any, Dict, Union
+from typing import Any
 
 
-def set_arguments_for_widget_view(indicator_data: Dict[str, Any]) -> Union[Dict[str, str], str]:
+def set_arguments_for_widget_view(indicator_data: dict[str, Any]) -> dict[str, str] | str:
     args = {}
     chronicleasset_product_id = indicator_data.get('CustomFields', {}).get('chronicleassetproductid', '')
     if chronicleasset_product_id:

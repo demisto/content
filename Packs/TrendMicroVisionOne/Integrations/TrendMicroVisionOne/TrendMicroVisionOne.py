@@ -9,7 +9,7 @@ import requests
 import urllib3
 import re
 from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, Union
+from typing import Any
 from requests.models import HTTPError
 
 """CONSTANTS"""
@@ -225,7 +225,7 @@ class Client(BaseClient):
         :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
         header = {
-            "Authorization": "Bearer {token}".format(token=self.api_key),
+            "Authorization": f"Bearer {self.api_key}",
             "Content-Type": f"{CONTENT_TYPE_JSON};charset=utf-8",
             "User-Agent": USER_AGENT,
         }
@@ -261,7 +261,7 @@ class Client(BaseClient):
             else:
                 return response
 
-    def status_check(self, data: Dict[str, Any]) -> Any:
+    def status_check(self, data: dict[str, Any]) -> Any:
         """
         Check the status of particular task.
         :type data: ``dict``
@@ -285,7 +285,7 @@ class Client(BaseClient):
             outputs=message,
         )
 
-    def sandbox_submission_polling(self, data: Dict[str, Any]) -> Any:
+    def sandbox_submission_polling(self, data: dict[str, Any]) -> Any:
         """
         Check the status of sandbox submission
         :type data: ``dict``
@@ -363,10 +363,10 @@ class Client(BaseClient):
         )
 
         # Regex expression for validating IPv6
-        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" "([0-9a-fA-F]){1,4}"
+        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}"
 
         # Regex expression for validating mac
-        regex2 = "([0-9A-Fa-f]{2}[:-]){5}" "([0-9A-Fa-f]{2})"
+        regex2 = "([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})"
 
         p = re.compile(regex)
         p1 = re.compile(regex1)
@@ -477,8 +477,8 @@ class Client(BaseClient):
 
 
 def run_polling_command(
-    args: Dict[str, Any], cmd: str, client: Client
-) -> Union[str, CommandResults]:
+    args: dict[str, Any], cmd: str, client: Client
+) -> str | CommandResults:
     """
     Performs polling interval to check status of task or sandbox submission result.
     :type args: ``args``
@@ -524,7 +524,7 @@ def run_polling_command(
     return command_results
 
 
-def get_task_status(args: Dict[str, Any], client: Client) -> Union[str, CommandResults]:
+def get_task_status(args: dict[str, Any], client: Client) -> str | CommandResults:
     """
     check status of task.
 
@@ -538,8 +538,8 @@ def get_task_status(args: Dict[str, Any], client: Client) -> Union[str, CommandR
 
 
 def get_sandbox_submission_status(
-    args: Dict[str, Any], client: Client
-) -> Union[str, CommandResults]:
+    args: dict[str, Any], client: Client
+) -> str | CommandResults:
     """
     call polling command to check status of sandbox submission.
 
@@ -563,8 +563,8 @@ def test_module(client: Client) -> Any:
 
 
 def get_endpoint_info(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve information abouut the endpoint queried and
     sends the result to demisto war room.
@@ -615,7 +615,7 @@ def get_endpoint_info(
     return results
 
 
-def add_delete_block_list_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
+def add_delete_block_list_mapping(data: dict[str, Any]) -> dict[str, Any]:
     """
     Mapping add to block list response data.
 
@@ -631,8 +631,8 @@ def add_delete_block_list_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def add_or_remove_from_block_list(
-    client: Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve data from the add or remove from block list and
     sends the result to demist war room.
@@ -729,7 +729,7 @@ def fetch_incidents(client: Client):
     return incidents
 
 
-def quarantine_delete_email_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
+def quarantine_delete_email_mapping(data: dict[str, Any]) -> dict[str, Any]:
     """
     Mapping quarantine email message response data.
 
@@ -745,8 +745,8 @@ def quarantine_delete_email_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def quarantine_or_delete_email_message(
-    client: Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve data from the quarantine or delete email message and
     sends the result to demist war room.
@@ -801,7 +801,7 @@ def quarantine_or_delete_email_message(
     return results
 
 
-def isolate_restore_endpoint_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
+def isolate_restore_endpoint_mapping(data: dict[str, Any]) -> dict[str, Any]:
     """
     Mapping isolate endpoint and restore endpoint response data.
 
@@ -817,8 +817,8 @@ def isolate_restore_endpoint_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def isolate_or_restore_connection(
-    client: Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve data from the isolate or restore endpoint connection and
     sends the result to demist war room.
@@ -873,8 +873,8 @@ def isolate_or_restore_connection(
 
 
 def terminate_process(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Terminate the process running on the end point and
     sends the result to demist war room.
@@ -926,8 +926,8 @@ def terminate_process(
 
 
 def add_or_delete_from_exception_list(
-    client: Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Add or Delete the exception object to exception list and
     sends the result to demist war room.
@@ -978,8 +978,8 @@ def add_or_delete_from_exception_list(
 
 
 def add_to_suspicious_list(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Add suspicious object to suspicious list and
     sends the result to demist war room.
@@ -1039,8 +1039,8 @@ def add_to_suspicious_list(
 
 
 def delete_from_suspicious_list(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Delete the suspicious object from suspicious list and
     sends the result to demist war room.
@@ -1078,8 +1078,8 @@ def delete_from_suspicious_list(
 
 
 def get_file_analysis_status(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Get the status of file based on task id and
     sends the result to demist war room
@@ -1155,8 +1155,8 @@ def get_file_analysis_status(
 
 
 def get_file_analysis_report(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Get the report of file based on report id and sends the result to demist war room
     :type client: ``Client``
@@ -1215,7 +1215,7 @@ def get_file_analysis_report(
     return results
 
 
-def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def collect_file(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Collect forensic file and sends the result to demist war room
     :type client: ``Client``
@@ -1256,8 +1256,8 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
 
 
 def download_information_collected_file(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Gets the download information for collected forensic file and sends the result to demist war room
     :type client: ``Client``
@@ -1295,8 +1295,8 @@ def download_information_collected_file(
 
 
 def submit_file_to_sandbox(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     submit file to sandbox and sends the result to demist war room
     :type client: ``Client``
@@ -1307,7 +1307,7 @@ def submit_file_to_sandbox(
     :rtype: ``dict`
     """
     data = {}
-    params: Dict[Any, Any] = {}
+    params: dict[Any, Any] = {}
     file_url = args.get(FILE_URL)
     file_name = args.get(FILE_NAME)
     document_pass = args.get(DOCUMENT_PASSWORD)
@@ -1361,15 +1361,15 @@ def submit_file_to_sandbox(
 
 
 def submit_file_entry_to_sandbox(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     entry = args.get(ENTRY_ID)
     file_ = demisto.getFilePath(entry)
     file_name = file_.get("name")
     file_path = file_.get("path")
     archive_pass = args.get(ARCHIVE_PASSWORD)
     document_pass = args.get(DOCUMENT_PASSWORD)
-    query_params: Dict[Any, Any] = {}
+    query_params: dict[Any, Any] = {}
     headers = {AUTHORIZATION: f"{BEARER} {client.api_key}"}
     with open(file_path, "rb") as f:
         contents = f.read()
@@ -1415,7 +1415,7 @@ def submit_file_entry_to_sandbox(
     return results
 
 
-def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def add_note(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Adds a note to an existing workbench alert
     :type client: ``Client``
@@ -1451,7 +1451,7 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     return results
 
 
-def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def update_status(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Updates the status of an existing workbench alert
     :type client: ``Client``

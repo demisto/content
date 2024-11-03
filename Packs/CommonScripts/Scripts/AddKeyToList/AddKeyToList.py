@@ -6,7 +6,7 @@ Adds/Updates a Key to a JSON-backed List
 
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
@@ -23,7 +23,7 @@ def add_key_to_list(list_name: str, key_name: str, value: str, append: bool = Fa
     ):
         raise ValueError(f'Cannot retrieve list {list_name}')
 
-    list_data: Dict = {}
+    list_data: dict = {}
     data: str = res[0]['Contents']
     if data and len(data) > 0:
         try:
@@ -53,17 +53,17 @@ def add_key_to_list(list_name: str, key_name: str, value: str, append: bool = Fa
 ''' COMMAND FUNCTION '''
 
 
-def add_key_to_list_command(args: Dict[str, Any]) -> CommandResults:
+def add_key_to_list_command(args: dict[str, Any]) -> CommandResults:
 
-    list_name = args.get('listName', None)
+    list_name = args.get('listName')
     if not list_name:
         raise ValueError('listName must be specified')
 
-    key_name = args.get('keyName', None)
+    key_name = args.get('keyName')
     if not key_name:
         raise ValueError('keyName must be specified')
 
-    value = args.get('value', None)
+    value = args.get('value')
     if not value:
         raise ValueError('value must be specified')
 

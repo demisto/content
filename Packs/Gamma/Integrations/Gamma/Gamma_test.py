@@ -181,7 +181,7 @@ def test_get_violation_command(requests_mock, mocker, capfd):
     with capfd.disabled():
         main()
     content = demisto.results.call_args[0][0]['Contents'][0]['violation_id']
-    assert 2036 == content
+    assert content == 2036
 
 
 @pytest.mark.parametrize("demisto_args,output", [
@@ -337,7 +337,7 @@ def test_main_get_violation(requests_mock, mocker, capfd):
     mock_demisto(mocker, args, command)
     with capfd.disabled():
         main()
-    assert 2036 == demisto.results.call_args[0][0]["Contents"][0]["violation_id"]
+    assert demisto.results.call_args[0][0]["Contents"][0]["violation_id"] == 2036
 
 
 def test_main_update(requests_mock, mocker, capfd):

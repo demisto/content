@@ -1,5 +1,4 @@
 """Ignite Test File."""
-import io
 import json
 import os.path
 from datetime import timedelta
@@ -33,13 +32,13 @@ MESSAGES.update({
 
 def util_load_json(path: str) -> dict:
     """Load a json to python dict."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_text_data(path: str) -> str:
     """Load a text file."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return f.read()
 
 
@@ -84,7 +83,7 @@ def test_test_module_using_main_function(mock_return, requests_mock, mocker):
     mocker.patch.object(demisto, 'command', return_value='test-module')
 
     main()
-    assert "ok" == mock_return.call_args.args[0]
+    assert mock_return.call_args.args[0] == "ok"
 
 
 @pytest.mark.parametrize('params, err_msg', [
@@ -1124,7 +1123,7 @@ def test_domain_lookup_command_success_when_empty_response(mock_return, requests
 
     assert hr_output_for_domain_lookup_reputation == mock_return.call_args.args[0].get('HumanReadable')
     assert domain_lookup_empty_reputation_context == mock_return.call_args.args[0].get('EntryContext')
-    assert {} == mock_return.call_args.args[0].get('Contents')
+    assert mock_return.call_args.args[0].get('Contents') == {}
 
 
 def test_domain_lookup_command_when_invalid_value_is_provided(mocker):
@@ -1260,7 +1259,7 @@ def test_ip_lookup_command_success_when_empty_response(mock_return, requests_moc
 
     assert hr_output_for_ip_lookup_reputation == mock_return.call_args.args[0].get('HumanReadable')
     assert ip_lookup_empty_reputation_context == mock_return.call_args.args[0].get('EntryContext')
-    assert {} == mock_return.call_args.args[0].get('Contents')
+    assert mock_return.call_args.args[0].get('Contents') == {}
 
 
 @pytest.mark.parametrize('args, error_msg', [
@@ -1424,8 +1423,8 @@ def test_common_lookup_command_success_when_empty_response(mock_return, requests
     main()
 
     assert hr_output_for_common_lookup_empty_response == mock_return.call_args.args[0].get('HumanReadable')
-    assert {} == mock_return.call_args.args[0].get('EntryContext')
-    assert {} == mock_return.call_args.args[0].get('Contents')
+    assert mock_return.call_args.args[0].get('EntryContext') == {}
+    assert mock_return.call_args.args[0].get('Contents') == {}
 
 
 def test_common_lookup_command_when_invalid_value_is_provided(mocker):

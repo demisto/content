@@ -7,7 +7,6 @@ import os
 from pytest_mock import MockerFixture
 from time import sleep
 import subprocess
-from typing import Optional
 
 
 SSL_TEST_KEY = '''-----BEGIN PRIVATE KEY-----
@@ -87,7 +86,7 @@ def test_nginx_conf_taxii2(tmp_path: Path, mocker):
         assert '$http_range' in conf
 
 
-NGINX_PROCESS: Optional[subprocess.Popen] = None
+NGINX_PROCESS: subprocess.Popen | None = None
 
 
 @pytest.fixture

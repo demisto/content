@@ -29,7 +29,7 @@ def equals_object(obj1, obj2) -> bool:
 
 
 def test_1(mocker):
-    with open('./test_data/test-1.json', 'r') as f:
+    with open('./test_data/test-1.json') as f:
         test_list = json.load(f)
 
     for case in test_list:

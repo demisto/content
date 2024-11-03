@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -15,7 +15,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 SOCRADAR_API_ENDPOINT = 'https://platform.socradar.com/api'
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data.',
     'AUTHORIZATION_ERROR': 'Authorization Error: make sure API Key is correctly set.',
     'RATE_LIMIT_EXCEED_ERROR': 'Rate limit has been exceeded. Please make sure your your API key\'s rate limit is adequate.',
@@ -71,7 +71,7 @@ class Client(BaseClient):
             429: MESSAGES['RATE_LIMIT_EXCEED_ERROR']
         }
 
-        if response.status_code in status_code_messages.keys():
+        if response.status_code in status_code_messages:
             demisto.debug(f'Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}')
             raise DemistoException(status_code_messages[response.status_code])
         else:
@@ -224,7 +224,7 @@ def map_indicator_type(socradar_indicator_type: str) -> Optional[str]:
     return indicator_map.get(socradar_indicator_type)
 
 
-def build_entry_context(results: Union[Dict, List], indicator_type: str):
+def build_entry_context(results: Union[dict, List], indicator_type: str):
     """Formatting results from SOCRadar API to Demisto Context
 
     :type results: ``Union[Dict, List]``
@@ -298,7 +298,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar reputation details for the given IP entities.
 
     :type client: ``Client``
@@ -364,7 +364,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
-def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar reputation details for the given domain entities.
 
     :type client: ``Client``
@@ -438,7 +438,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     return command_results_list
 
 
-def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar reputation details for the given hash entities.
 
     :type client: ``Client``
@@ -505,7 +505,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
-def score_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def score_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Returns SOCRadar reputation details for the given IP entity.
 
     :type client: ``Client``
@@ -545,7 +545,7 @@ def score_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def score_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def score_domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Returns SOCRadar reputation details for the given domain entity.
 
     :type client: ``Client``
@@ -585,7 +585,7 @@ def score_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def score_hash_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def score_hash_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Returns SOCRadar reputation details for the given hash entity.
 
     :type client: ``Client``

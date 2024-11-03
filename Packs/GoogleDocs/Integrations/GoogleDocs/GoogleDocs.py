@@ -8,7 +8,6 @@ import urllib.parse
 from oauth2client import service_account
 from googleapiclient import discovery
 
-import typing
 from collections import defaultdict
 
 # Disable insecure warnings
@@ -312,7 +311,7 @@ def batch_update_document(service, document_id, actions, required_revision_id=No
         "requests": []
     }
 
-    write_control: typing.DefaultDict = defaultdict(dict)
+    write_control: defaultdict = defaultdict(dict)
     if required_revision_id and target_revision_id:
         raise Exception("Enter required_revision_id or target_revision_id but not both")
     elif required_revision_id:
@@ -335,7 +334,7 @@ def create_document_command(service):
     args = demisto.args()
     title = args.get('title')
     document = create_document(service, title)
-    human_readable_text = "The document with the title {title} was created. The results are:".format(title=title)
+    human_readable_text = f"The document with the title {title} was created. The results are:"
     return generate_results(document, human_readable_text)
 
 

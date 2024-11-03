@@ -11,7 +11,7 @@ if not res['scripts']:
 scriptsList = []
 for item in res["scripts"]:
     script = {}
-    if not (item.get('detached') is None):
+    if item.get('detached') is not None:
         if item['detached'] is True:
             script['name'] = item['name']
             scriptsList.append(script)

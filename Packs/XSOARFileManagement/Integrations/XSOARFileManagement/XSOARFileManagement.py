@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 
 import re
 import time
-from typing import Tuple
 import urllib3
 import base64
 import hashlib
@@ -330,7 +329,7 @@ def delete_file_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f"File {entry_id} deleted !", outputs=new_files, outputs_prefix="File")
 
 
-def get_entry_file_path_name(file_input: str) -> Tuple[str, str]:
+def get_entry_file_path_name(file_input: str) -> tuple[str, str]:
     """Get the path and the name of a file
     Arguments:
         file_input {str} -- can be an entryID or a path under the key incident.attachments.path

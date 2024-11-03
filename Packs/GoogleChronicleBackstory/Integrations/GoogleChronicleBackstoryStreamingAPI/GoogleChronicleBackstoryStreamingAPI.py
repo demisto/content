@@ -1,7 +1,8 @@
 """Main file for GoogleChronicleBackstory Integration."""
 from CommonServerPython import *
 
-from typing import Any, Mapping, Tuple, Iterator
+from typing import Any
+from collections.abc import Mapping, Iterator
 
 from google.oauth2 import service_account
 from google.auth.transport import requests as auth_requests
@@ -614,7 +615,7 @@ def stream_detection_alerts(
         req_data: dict[str, Any],
         integration_context: dict[str, Any],
         test_mode: bool = False
-) -> Tuple[int, str, str]:
+) -> tuple[int, str, str]:
     """Makes one call to stream_detection_alerts, and runs until disconnection.
 
     Each call to stream_detection_alerts streams all detection alerts found after

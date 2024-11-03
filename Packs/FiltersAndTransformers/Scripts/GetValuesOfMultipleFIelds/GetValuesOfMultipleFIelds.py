@@ -1,9 +1,8 @@
 import demistomock as demisto
 
-from typing import List, Dict
 
 
-def update_list(_list: List, update_with):
+def update_list(_list: list, update_with):
     if isinstance(update_with, list):
         _list.extend(update_with)
     else:
@@ -11,14 +10,14 @@ def update_list(_list: List, update_with):
 
 
 def main():
-    args: Dict = demisto.args()
+    args: dict = demisto.args()
     root = args.get('key')
     if root:
         if not isinstance(root, list):
             root = [root]
-        keys: List = args.get('list', '').split(',')
+        keys: list = args.get('list', '').split(',')
 
-        t: List = []
+        t: list = []
         for obj in root:
             for _key in keys:
                 temp = obj.get(_key) if obj else None

@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-from typing import Any, Dict, Tuple, List
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,14 +16,14 @@ DATE_REG = '[0-9]+-[0-9]+-[0-9]+[0-9]+T[0-9]+:[0-9]+:[0-9]+Z'
 
 ''' CLIENT CLASS '''
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'NODES': '/nodes?{}',
     'ELEMENTS': '/elements?{}',
     'VERSIONS': '/versions?{}',
     'TOKEN': '/csrf-token',
     'RULES': '/rules?{}', }
 
-RULES_HUMAN_READABLE_HEADERS: Dict[str, list] = {
+RULES_HUMAN_READABLE_HEADERS: dict[str, list] = {
     'RULES': ['name', 'id', 'severity', 'elementName', 'type', 'command', 'importedTime', 'modifiedTime'],
     'ELEMENTS': ['id', 'name', 'nodeName', 'ruleName', 'baselineVersionId'],
     'VERSIONS': ['id', 'timeDetected', 'elementName', 'changeType', 'nodeName', 'ruleName'],
@@ -272,7 +272,7 @@ def test_module(client: Client, params: dict) -> str:
     return 'ok'
 
 
-def versions_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def versions_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """tripwire-versions-list command
 
     :type client: ``Client``
@@ -299,7 +299,7 @@ def versions_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def rules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def rules_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """tripwire-rules-list command
 
     :type client: ``Client``
@@ -326,7 +326,7 @@ def rules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def nodes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def nodes_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """tripwire-nodes-list command
 
     :type client: ``Client``
@@ -353,7 +353,7 @@ def nodes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def elements_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """tripwire-elements-list command
 
     :type client: ``Client``
@@ -380,7 +380,7 @@ def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dict[str, Any], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, params: dict) -> tuple[dict[str, Any], list[dict]]:
     """
     :type client: ``Client``
     :param client: Tripwire client to use
@@ -412,12 +412,12 @@ def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dic
     }
     fetch_filter = filter_versions(fetch_args)
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     # This is necessary for making sure there are no duplicate incidents. The reason for it is as the api returns
     # the versions that occurred from the given time including and this causes duplicates.
-    last_fetched_ids: List[str] = last_run_obj.get('fetched_ids', [])
-    current_fetched_ids: List[str] = []
+    last_fetched_ids: list[str] = last_run_obj.get('fetched_ids', [])
+    current_fetched_ids: list[str] = []
 
     max_incident_created_time: datetime = datetime.strptime(start_detected_time, DATE_FORMAT)
 

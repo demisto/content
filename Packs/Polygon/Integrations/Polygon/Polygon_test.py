@@ -13,7 +13,7 @@ def handle_calling_context(mocker):
     mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
-with open("test_data/args.json", "r") as f:
+with open("test_data/args.json") as f:
     data = json.load(f)
     MOCKED_CLIENT_KWARGS = data["client_kwargs"]
     MOCKED_UPLOAD_FILE_ARGS = data["upload_file_args"]
@@ -21,22 +21,22 @@ with open("test_data/args.json", "r") as f:
     MOCKED_ANALYSIS_INFO_ARGS = data["analysis_info_args"]
     MOCKED_FILE_ARGS = data["file_args"]
 
-with open("test_data/get_report.json", "r") as f:
+with open("test_data/get_report.json") as f:
     MOCKED_REPORT = json.load(f)
 
-with open("test_data/get_result.json", "r") as f:
+with open("test_data/get_result.json") as f:
     MOCKED_REPORT_RESULT = json.load(f)
 
-with open("test_data/get_file_reputation.json", "r") as f:
+with open("test_data/get_file_reputation.json") as f:
     MOCKED_FILE_REPUTATION_DATA = json.load(f)
 
-with open("test_data/upload.json", "r") as f:
+with open("test_data/upload.json") as f:
     MOCKED_UPLOAD_DATA = json.load(f)
 
-with open("test_data/get_analysis_info.json", "r") as f:
+with open("test_data/get_analysis_info.json") as f:
     MOCKED_ANALYSIS_INFO_DATA = json.load(f)
 
-with open("test_data/results.json", "r") as f:
+with open("test_data/results.json") as f:
     data = json.load(f)
     MOCKED_UPLOAD_FILE_RESULTS = data["upload_file_results"]
     MOCKED_UPLOAD_URL_RESULTS = data["upload_url_results"]
@@ -69,7 +69,7 @@ def test_file_command(mocker):
     from Polygon import file_command
     mocked_client = MockedClient(**MOCKED_CLIENT_KWARGS)
     results = file_command(mocked_client, MOCKED_FILE_ARGS)
-    assert MOCKED_FILE_REPUTATION_RESULTS == [r.to_context() for r in results]
+    assert [r.to_context() for r in results] == MOCKED_FILE_REPUTATION_RESULTS
 
 
 def test_upload_file_command(mocker):
@@ -114,7 +114,7 @@ def test_get_packages_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert MOCKED_PACKAGES_INDICATORS == [r['EntryContext'] for r in indicators_list]
+    assert [r['EntryContext'] for r in indicators_list] == MOCKED_PACKAGES_INDICATORS
 
 
 def test_get_network_indicators(mocker):
@@ -123,7 +123,7 @@ def test_get_network_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert MOCKED_NETWORK_INDICATORS == [r['EntryContext'] for r in indicators_list]
+    assert [r['EntryContext'] for r in indicators_list] == MOCKED_NETWORK_INDICATORS
 
 
 def test_get_monitor_indicators(mocker):
@@ -132,4 +132,4 @@ def test_get_monitor_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert MOCKED_MONITOR_INDICATORS == [r['EntryContext'] for r in indicators_list]
+    assert [r['EntryContext'] for r in indicators_list] == MOCKED_MONITOR_INDICATORS

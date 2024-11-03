@@ -12,7 +12,6 @@ from BMCDiscovery import Client, \
     discovery_scan_results_list_command
 import os
 import sys
-import io
 import json
 from CommonServerPython import *
 p = os.path.abspath('.')
@@ -25,7 +24,7 @@ URL = "http://fake-bmc-api.com"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

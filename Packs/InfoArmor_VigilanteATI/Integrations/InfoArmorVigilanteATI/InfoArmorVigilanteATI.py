@@ -53,13 +53,12 @@ def http_request(method, url, hmac_url, params={}, data=None):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Request failed.\nURL: {}\nStatusCode: {}\nResponse: \n{}'.format(fullurl, res.status_code, res.text))
+        return_error(f'Request failed.\nURL: {fullurl}\nStatusCode: {res.status_code}\nResponse: \n{res.text}')
 
     try:
         res.json()
     except Exception:
-        return_error('Response failed, the response body is not json.\nURL: {}\nStatusCode: {}\nResponse: \n{}'.format(
-            fullurl, res.status_code, res.text))
+        return_error(f'Response failed, the response body is not json.\nURL: {fullurl}\nStatusCode: {res.status_code}\nResponse: \n{res.text}')
 
     return res
 
@@ -319,8 +318,7 @@ def get_leak_command(args):
         account['email'] = account['plain']
         del account['plain']
 
-    markdown = tableToMarkdown('Accounts related to leak {}'.format(
-        leak_id), leak.get('accounts'), ['email', 'domain', 'password', 'type_id'])
+    markdown = tableToMarkdown(f'Accounts related to leak {leak_id}', leak.get('accounts'), ['email', 'domain', 'password', 'type_id'])
     outputs = {
         'VigilanteATI.Leaks(val.leak_id === obj.leak_id)': {
             'leak_id': leak_id,
@@ -474,7 +472,7 @@ def query_domains_command(args):
         account = accounts[i]
         account['email'] = account['plain']
         del account['plain']
-    markdown = tableToMarkdown('Accounts related to domain: {}'.format(domain), accounts,
+    markdown = tableToMarkdown(f'Accounts related to domain: {domain}', accounts,
                                ['leak_id', 'email', 'password', 'source_type', 'type_id'])
 
     outputs = {

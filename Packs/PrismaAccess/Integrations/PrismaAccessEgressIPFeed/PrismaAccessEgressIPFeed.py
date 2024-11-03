@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Callable, Dict, List, Tuple, Optional
+from typing import Any
+from collections.abc import Callable
 
 import urllib3
 
@@ -18,7 +19,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, clientConfigs: list, api_key: str, insecure: bool = False, proxy: bool = False,
-                 tags: Optional[list] = [], tlp_color: Optional[str] = None):
+                 tags: list | None = [], tlp_color: str | None = None):
         """
         Implements class for Prisma Access feed.
         :param clientConfigs: config data
@@ -31,7 +32,7 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
         super().__init__(base_url=clientConfigs, verify=not insecure, proxy=proxy)
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
 
         Returns:
@@ -57,7 +58,7 @@ class Client(BaseClient):
                 response.raise_for_status()
                 responseData = response.json()
                 prismaStatus = responseData.get('status', '')
-                if 'success' == prismaStatus:
+                if prismaStatus == 'success':
                     zones = responseData.get('result', [])
                     for z in zones:
                         zoneName = z.get('zone', '')
@@ -94,7 +95,7 @@ class Client(BaseClient):
         return result
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -106,7 +107,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, limit: int = -1) -> list[dict]:
     """Retrieves indicators from the feed
 
     Args:
@@ -147,7 +148,7 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client, args: dict[str, str]) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -177,7 +178,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     return human_readable, outputs, retIndicators
 
 
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -220,7 +221,7 @@ def main():
 
     try:
         client = Client(clientConfigs, param_api_key, insecure, proxy, tags, tlp_color)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]] = {
             'test-module': test_module,
             'prisma-access-get-indicators': get_indicators_command
         }

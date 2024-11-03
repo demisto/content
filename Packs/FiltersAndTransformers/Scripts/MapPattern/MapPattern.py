@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 import fnmatch
 import json
 import re
-from typing import Any, Dict, Generator, List, Optional, Tuple, Union, Callable
+from typing import Any
+from collections.abc import Generator, Callable
 
 
 DEFAULT_ALGORITHM = 'literal'
@@ -14,7 +15,7 @@ def demisto_get(obj: Any, path: Any) -> Any:
     """
     demisto.get(), this supports a syntax of path escaped with backslash.
     """
-    def split_context_path(path: str) -> List[str]:
+    def split_context_path(path: str) -> list[str]:
         nodes = []
         node = []
         itr = iter(path)
@@ -84,7 +85,7 @@ def expand_match(match: re.Match, value: Any) -> Any:
 
 
 class Mapping:
-    def __init__(self, pattern: str, repl: Union[str, Dict[str, Any]]):
+    def __init__(self, pattern: str, repl: str | dict[str, Any]):
         """
         :param pattern: The pattern to compare to the value.
         :param repl: The parameters for pattern matching or making outputs.
@@ -93,14 +94,14 @@ class Mapping:
         exclude = repl.get('exclude') or []
 
         self.pattern: str = pattern
-        self.exclude: List[str] = exclude if isinstance(exclude, list) else [exclude]
+        self.exclude: list[str] = exclude if isinstance(exclude, list) else [exclude]
         self.output: Any = repl.get('output')
-        self.algorithm: Optional[str] = repl.get('algorithm')
+        self.algorithm: str | None = repl.get('algorithm')
         self.next: Any = repl.get('next')
         self.ignore_syntax = bool(repl.get('ignore_syntax') or False)
 
 
-def iterate_pattern_mapping(pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]]) -> Generator[Mapping, None, None]:
+def iterate_pattern_mapping(pattern_mapping: list[dict[str, Any]] | dict[str, Any]) -> Generator[Mapping, None, None]:
     """ Iterate mapping entry.
 
     :param pattern_mapping: The pattern mapping table.
@@ -117,7 +118,7 @@ def iterate_pattern_mapping(pattern_mapping: Union[List[Dict[str, Any]], Dict[st
 
 
 class ContextData:
-    def __init__(self, context: Any = None, arg_value: Optional[Dict[str, Any]] = None):
+    def __init__(self, context: Any = None, arg_value: dict[str, Any] | None = None):
         """
         :param context: The demisto context.
         :param arg_value: The data of the `value` given in the argument parameters.
@@ -125,7 +126,7 @@ class ContextData:
         self.__demisto = context
         self.__value = arg_value
 
-    def get(self, key: Optional[str], node: Optional[Any] = None, ignore_errors: bool = False) -> Any:
+    def get(self, key: str | None, node: Any | None = None, ignore_errors: bool = False) -> Any:
         """ Get the context value given the key
 
         :param key: The dt expressions (string within ${}).
@@ -176,14 +177,11 @@ class Formatter:
 
     def __extract(self,
                   source: str,
-                  extractor: Optional[Callable[[str,
-                                                Optional[ContextData],
-                                                Optional[Dict[str, Any]]],
-                                               Any]],
-                  dx: Optional[ContextData],
-                  node: Optional[Dict[str, Any]],
+                  extractor: Callable[[str, ContextData | None, dict[str, Any] | None], Any] | None,
+                  dx: ContextData | None,
+                  node: dict[str, Any] | None,
                   si: int,
-                  markers: Optional[Tuple[str, str]]) -> Tuple[Any, Optional[int]]:
+                  markers: tuple[str, str] | None) -> tuple[Any, int | None]:
         """ Extract a template text, or an enclosed value within starting and ending marks
 
         :param source: The template text, or the enclosed value starts with the next charactor of a start marker
@@ -247,12 +245,9 @@ class Formatter:
 
     def build(self,
               template: Any,
-              extractor: Optional[Callable[[str,
-                                            Optional[ContextData],
-                                            Optional[Dict[str, Any]]],
-                                           Any]],
-              dx: Optional[ContextData],
-              node: Optional[Dict[str, Any]]) -> Any:
+              extractor: Callable[[str, ContextData | None, dict[str, Any] | None], Any] | None,
+              dx: ContextData | None,
+              node: dict[str, Any] | None) -> Any:
         """ Format a text from a template including DT expressions
 
         :param template: The template.
@@ -274,8 +269,8 @@ class Formatter:
 
 
 def extract_value(source: Any,
-                  dx: Optional[ContextData],
-                  node: Optional[Dict[str, Any]] = None) -> Any:
+                  dx: ContextData | None,
+                  node: dict[str, Any] | None = None) -> Any:
     """ Extract value including dt expression
 
     :param source: The value to be extracted that may include dt expressions.
@@ -284,8 +279,8 @@ def extract_value(source: Any,
     :return: The value extracted.
     """
     def __extract_dt(dtstr: str,
-                     dx: Optional[ContextData],
-                     node: Optional[Dict[str, Any]] = None) -> Any:
+                     dx: ContextData | None,
+                     node: dict[str, Any] | None = None) -> Any:
         try:
             return dx.get(dtstr, node) if dx else dtstr
         except Exception as err:
@@ -300,7 +295,7 @@ class Translator:
                  context: Any,
                  arg_value: Any,
                  fields_comp_mode: bool,
-                 wildcards: List[str],
+                 wildcards: list[str],
                  regex_flags: int):
         """
         :param context: The demisto context.
@@ -320,8 +315,8 @@ class Translator:
                 algorithm: str,
                 pattern: str,
                 value: Any,
-                exclusions: List[str],
-                ignore_syntax: bool = False) -> Union[bool, re.Match]:
+                exclusions: list[str],
+                ignore_syntax: bool = False) -> bool | re.Match:
         """ Perform the pattern matching.
 
           Supported algorithms:
@@ -394,9 +389,9 @@ class Translator:
 
     def translate(self,
                   source: Any,
-                  pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]],
+                  pattern_mapping: list[dict[str, Any]] | dict[str, Any],
                   priority: str,
-                  algorithm: str) -> Tuple[Any, bool]:
+                  algorithm: str) -> tuple[Any, bool]:
         """ Replace the string given with the patterns.
 
         :param source: The string to be replaced.
@@ -461,10 +456,10 @@ class Translator:
         return matched_output, matched
 
     def translate_fields(self,
-                         obj_value: Dict[str, Any],
-                         field_mapping: Dict[str, Any],
+                         obj_value: dict[str, Any],
+                         field_mapping: dict[str, Any],
                          priority: str,
-                         algorithm: str) -> Tuple[Any, bool]:
+                         algorithm: str) -> tuple[Any, bool]:
         """ Replace the string given with the field mapping.
 
         :param obj_value: The object whose values to be replaced.

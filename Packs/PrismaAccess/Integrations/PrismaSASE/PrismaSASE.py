@@ -1977,7 +1977,7 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
     for profile in profiles:
         # we only want predefined profiles
         if profile.get('folder', '') == 'predefined':
-            for category in categories.keys():
+            for category in categories:
                 categories[category].extend(profile.get(category, []))
                 categories[category].extend(profile.get('credential_enforcement', {}).get(category, []))
                 # remove duplicates

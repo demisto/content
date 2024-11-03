@@ -165,7 +165,7 @@ def test_generate_ansible_inventory_creds():
     assert winrm_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_connection') == 'winrm'
 
 
-class Object(object):
+class Object:
     pass
 
 

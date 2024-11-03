@@ -1,8 +1,6 @@
-import io
 import json
 
 import pytest
-from typing import Tuple, Dict
 from CircleCI import Client, circleci_workflows_list_command, circleci_artifacts_list_command, \
     circleci_workflow_jobs_list_command, circleci_workflow_last_runs_command, DEFAULT_LIMIT_VALUE
 from CommonServerPython import CommandResults
@@ -11,7 +9,7 @@ fake_client = Client('', '', False, False, '', '', '')
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -84,7 +82,7 @@ GET_COMMON_ARGUMENTS_INPUTS = [(Client('', '', False, False, vc_type='a', organi
 
 
 @pytest.mark.parametrize('client, args, expected', GET_COMMON_ARGUMENTS_INPUTS)
-def test_get_common_arguments(client: Client, args: Dict, expected: Tuple[str, str, str, int]):
+def test_get_common_arguments(client: Client, args: dict, expected: tuple[str, str, str, int]):
     """
     Given:
     - XSOAR arguments

@@ -19,7 +19,7 @@ class Server():
         try:
             socket.inet_aton(self.host)
             is_ip = True
-        except socket.error:
+        except OSError:
             is_ip = False
         if not is_ip:
             try:

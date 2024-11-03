@@ -2,10 +2,10 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 
-def extract_list_of_events_from_indicator(indicator_data: Dict[str, Any]) -> Dict[str, Any]:
+def extract_list_of_events_from_indicator(indicator_data: dict[str, Any]) -> dict[str, Any]:
     list_of_events = indicator_data.get("CustomFields", {}).get('chronicleassetsummary', [])
     number_of_events = {'GENERIC_EVENT': 0, 'NETWORK_HTTP': 0, 'NETWORK_CONNECTION': 0, 'USER_LOGIN': 0, 'OTHERS': 0}
     for event in list_of_events:
@@ -16,7 +16,7 @@ def extract_list_of_events_from_indicator(indicator_data: Dict[str, Any]) -> Dic
     return create_pie(number_of_events)
 
 
-def create_pie(number_of_events: Dict[str, int]) -> Dict[str, Any]:
+def create_pie(number_of_events: dict[str, int]) -> dict[str, Any]:
     data = {
         "Type": 17,
         "ContentsFormat": "pie",

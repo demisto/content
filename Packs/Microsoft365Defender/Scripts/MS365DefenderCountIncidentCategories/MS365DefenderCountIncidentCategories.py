@@ -23,7 +23,7 @@ def count_dict(value):
 
     for category in categories:
         category = category.lower()
-        category = category if category in count_d.keys() else 'other'
+        category = category if category in count_d else 'other'
         count_d[category] += 1
 
     return count_d

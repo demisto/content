@@ -89,7 +89,7 @@ def calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class):
 
 def reformat_df_fractions_to_percentage(metrics_df):
     hr_df = metrics_df.copy()
-    hr_df['Precision'] = hr_df['Precision'].apply(lambda p: '{:.1f}%'.format(p * 100))
+    hr_df['Precision'] = hr_df['Precision'].apply(lambda p: f'{p * 100:.1f}%')
     hr_df['TP'] = hr_df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['TP']),
                                                                    int(row['Coverage']),
                                                                    float(row['TP']) * 100 / row['Coverage']),
@@ -113,21 +113,18 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
     human_readable_threshold = ['## Summary']
     # in case the found threshold meets the target accuracy
     if actual_threshold_precision >= target_precision or abs(found_threshold - target_precision) < 10 ** -2:
-        human_readable_threshold += ['- A confidence threshold of {:.2f} meets the conditions of required precision.'
-                                     .format(found_threshold)]
+        human_readable_threshold += [f'- A confidence threshold of {found_threshold:.2f} meets the conditions of required precision.'
+                                     ]
     else:
         human_readable_threshold += ['- Could not find a threshold which meets the conditions of required precision. '
-                                     'The confidence threshold of {:.2f} achieved highest '
-                                     'possible precision'.format(found_threshold)]
+                                     f'The confidence threshold of {found_threshold:.2f} achieved highest '
+                                     'possible precision']
     human_readable_threshold += [
-        '- {}/{} incidents of the evaluation set were predicted with higher confidence than this threshold.'.format(
-            int(coverage), int(test_set_size)),
-        '- The remainder, {}/{} incidents of the evaluation set, were predicted with lower confidence than this threshold '
-        '(these predictions were ignored).'.format(
-            int(test_set_size - coverage), int(test_set_size)),
-        '- Expected coverage ratio: The model will attempt to provide a prediction for {:.2f}% of incidents. '
-        '({}/{})'.format(
-            float(coverage) / test_set_size * 100, int(coverage), int(test_set_size)),
+        f'- {int(coverage)}/{int(test_set_size)} incidents of the evaluation set were predicted with higher confidence than this threshold.',
+        f'- The remainder, {int(test_set_size - coverage)}/{int(test_set_size)} incidents of the evaluation set, were predicted with lower confidence than this threshold '
+        '(these predictions were ignored).',
+        f'- Expected coverage ratio: The model will attempt to provide a prediction for {float(coverage) / test_set_size * 100:.2f}% of incidents. '
+        f'({int(coverage)}/{int(test_set_size)})',
         '- Evaluation of the model performance using this probability threshold can be found below:']
     pd.set_option('display.max_columns', None)
 
@@ -218,8 +215,7 @@ def find_threshold(y_true, y_pred_all_classes, customer_target_precision, target
     unified_threshold, unified_threshold_precision, target_unified_precision = find_best_threshold_for_target_precision(
         class_to_arrs, customer_target_precision, labels)
     if unified_threshold is None or unified_threshold_precision is None:
-        error_message = 'Could not find any threshold at ranges {} - {:.2f}.'.format(target_unified_precision,
-                                                                                     customer_target_precision)
+        error_message = f'Could not find any threshold at ranges {target_unified_precision} - {customer_target_precision:.2f}.'
         return_error(error_message)
     entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class, unified_threshold,
                           customer_target_precision, unified_threshold_precision, detailed_output)

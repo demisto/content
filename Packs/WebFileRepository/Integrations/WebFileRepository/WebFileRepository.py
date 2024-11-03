@@ -19,7 +19,7 @@ from datetime import timezone
 from email import parser as email_parser
 from enum import Enum
 from tempfile import NamedTemporaryFile
-from typing import (IO, Tuple, Any)
+from typing import (IO, Any)
 from collections.abc import Callable, Iterator
 
 import bottle
@@ -3471,7 +3471,7 @@ class FileReceiver:
     def handle_chunk_file(
         self,
         request: BaseRequest
-    ) -> Tuple[str, IO[bytes]] | None:
+    ) -> tuple[str, IO[bytes]] | None:
         """ Handle for a uploaded chunk file
 
         :param request: A HTTP request data.

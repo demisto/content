@@ -1,6 +1,5 @@
 """Dataminr Pulse Integration for Cortex XSOAR - Unit Tests file."""
 
-import io
 import json
 import os
 
@@ -13,7 +12,7 @@ from DataminrPulse import BASE_URL, ENDPOINTS, ERRORS, timezone, datetime, Demis
 
 def util_load_json(path):
     """Load a JSON file to python dictionary."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -296,7 +295,7 @@ def test_dataminr_watchlists_get_command_for_success(requests_mock, mock_client_
     watchlists_get_for_success_outputs_resp = util_load_json(os.path.join(os.path.dirname(
         os.path.realpath(__file__)), 'test_data/dataminr_watchlists_get_command_for_success_output.json'))
     with open(os.path.join(os.path.dirname(
-            os.path.realpath(__file__)), 'test_data/dataminr_watchlist_get.md'), 'r') as f:
+            os.path.realpath(__file__)), 'test_data/dataminr_watchlist_get.md')) as f:
         dataminr_watchlists_get_hr = f.read()
 
     assert resp.outputs == remove_empty_elements(watchlists_get_for_success_outputs_resp)
@@ -412,7 +411,7 @@ def test_alerts_get_command_success_with_watchlist_names(requests_mock, mock_cli
 
 @pytest.mark.parametrize('args, err_msg', [
     ({'num': '-1', 'use_configured_watchlist_names': 'false'}, ERRORS['INVALID_MAX_NUM'].format('-1', '3333')),
-    ({'num': '{}'.format(MAX_NUMBER_OF_ALERTS_TO_RETRIEVE + 1), 'use_configured_watchlist_names': 'false'},
+    ({'num': f'{MAX_NUMBER_OF_ALERTS_TO_RETRIEVE + 1}', 'use_configured_watchlist_names': 'false'},
      ERRORS['INVALID_MAX_NUM'].format(MAX_NUMBER_OF_ALERTS_TO_RETRIEVE + 1, 3333)),
     ({'use_configured_watchlist_names': 'false'},
      ERRORS['AT_LEAST_ONE_REQUIRED'].format('query', 'watchlist_ids')),
@@ -509,7 +508,7 @@ def test_dataminr_related_alert_get_command_for_success(requests_mock, mock_clie
         os.path.realpath(__file__)), 'test_data/dataminr_related_alert_get_command_for_success_output.json'))
 
     with open(os.path.join(os.path.dirname(
-            os.path.realpath(__file__)), 'test_data/dataminr_related_alert.md'), 'r') as f:
+            os.path.realpath(__file__)), 'test_data/dataminr_related_alert.md')) as f:
         dataminr_related_alert_hr = f.read()
 
     assert resp.outputs == remove_empty_elements(dataminr_related_get_for_success_outputs_resp)

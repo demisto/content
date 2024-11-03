@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Callable, Union
+from collections.abc import Callable
 import time
 from urllib.parse import quote, unquote
 
@@ -58,7 +58,7 @@ class DeletionArgs:
         results = search_result[0].get('value', [])
         results = [res for res in results if res.get('internetMessageId') == search_args['message-id']]
         if not results:
-            raise MissingEmailException()
+            raise MissingEmailException
         internal_id = results[0].get('id')
         return {
             'user_id': search_args['user_id'],
@@ -217,7 +217,7 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
         return 'In Progress', schedule_next_command(args)
 
     if not was_email_found_security_and_compliance(results):
-        raise MissingEmailException()
+        raise MissingEmailException
 
     # the email was found, start deletion
     search_action_name = f'{search_name}_Purge'
@@ -243,8 +243,7 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
 
 
 def delete_email(search_args: dict, search_function: str,
-                 delete_args_function: Union[Callable[[dict, dict], dict],
-                                             Callable[[dict], dict]], delete_function: str,
+                 delete_args_function: Callable[[dict, dict], dict] | Callable[[dict], dict], delete_function: str,
                  deletion_error_condition: Callable[[str], bool] = lambda x: 'successfully' not in x):
     """
     Generic function to perform the search and delete operations.
@@ -260,7 +259,7 @@ def delete_email(search_args: dict, search_function: str,
     if search_function:
         search_result = execute_command(search_function, search_args)
         if not search_result or isinstance(search_result, str):
-            raise MissingEmailException()
+            raise MissingEmailException
         delete_args = delete_args_function(search_result, search_args)  # type: ignore
     else:
         delete_args = delete_args_function(search_args)  # type: ignore

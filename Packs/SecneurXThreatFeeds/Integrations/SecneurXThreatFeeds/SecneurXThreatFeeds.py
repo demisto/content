@@ -111,7 +111,7 @@ def test_module(client: Client) -> Any:
     return 'ok'
 
 
-def parseIndicators(feedJson: Dict) -> Any:
+def parseIndicators(feedJson: dict) -> Any:
     try:
         indicatorList = []
         if feedJson:
@@ -132,7 +132,7 @@ def parseIndicators(feedJson: Dict) -> Any:
                     descriptionValue = None
                     reportByValue = SNXIocParse.SNX_FEED_KEY
                     verdictScore = DemistoScore.MALICIOUS
-                    if SNXIocParse.SNX_INDICATOR_KEY == ioc_data[SNXIocParse.SNX_TYPE_KEY]:
+                    if ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_INDICATOR_KEY:
                         if SNXIocParse.SNX_ID_KEY in ioc_data.keys():
                             indicatorIdValue = ioc_data[SNXIocParse.SNX_ID_KEY]
                         if SNXIocParse.SNX_PATTERN_KEY in ioc_data.keys():
@@ -177,7 +177,7 @@ def parseIndicators(feedJson: Dict) -> Any:
                             "value": indicatorValue
                         }
 
-                    elif SNXIocParse.SNX_MALWARE_KEY == ioc_data[SNXIocParse.SNX_TYPE_KEY]:
+                    elif ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_MALWARE_KEY:
                         indicatorType = STIX_INTEL_TYPE_TO_DEMISTO_TYPES[SNXIocParse.SNX_MALWARE_KEY]
                         if SNXIocParse.SNX_ID_KEY in ioc_data.keys():
                             indicatorIdValue = ioc_data[SNXIocParse.SNX_ID_KEY]
@@ -202,10 +202,10 @@ def parseIndicators(feedJson: Dict) -> Any:
                             "value": indicatorValue
                         }
 
-                    elif SNXIocParse.SNX_RELATIONSHIP_KEY == ioc_data[SNXIocParse.SNX_TYPE_KEY]:
+                    elif ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_RELATIONSHIP_KEY:
                         relationship_iocs.append(ioc_data)
 
-                    elif SNXIocParse.SNX_ATTACK_PATTERN_KEY == ioc_data[SNXIocParse.SNX_TYPE_KEY]:
+                    elif ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_ATTACK_PATTERN_KEY:
                         indicatorType = STIX_INTEL_TYPE_TO_DEMISTO_TYPES[SNXIocParse.SNX_ATTACK_PATTERN_KEY]
                         if SNXIocParse.SNX_ID_KEY in ioc_data.keys():
                             indicatorIdValue = ioc_data[SNXIocParse.SNX_ID_KEY]
@@ -288,7 +288,7 @@ def parse_ioc_values(ioc_data):
             ioc_type = patternKey
         else:
             ioc_type = patternKey.lower()
-        if ioc_type in SNX_TYPES_TO_DEMISTO_TYPES.keys():
+        if ioc_type in SNX_TYPES_TO_DEMISTO_TYPES:
             patternKey = SNX_TYPES_TO_DEMISTO_TYPES[ioc_type]
             return patternKey, patternValue
         else:
@@ -299,7 +299,7 @@ def parse_ioc_values(ioc_data):
 
 
 def parse_ioc_relationships(relationshipIocs, ioc_contents):
-    dummy_indicator: Dict[str, Any] = {}
+    dummy_indicator: dict[str, Any] = {}
     relationships_list = []
     try:
         for relation_obj in relationshipIocs:
@@ -368,7 +368,7 @@ def parse_ioc_relationships(relationshipIocs, ioc_contents):
     return dummy_indicator
 
 
-def getIndicatorsCommand(client: Client, args: Dict[str, int]) -> CommandResults:
+def getIndicatorsCommand(client: Client, args: dict[str, int]) -> CommandResults:
     count = arg_to_number(args.get('limit')) or 2
     feedJson, err_msg = client.get_feeds(None)
     if feedJson:

@@ -86,9 +86,9 @@ def set_status_and_updated_time_of_incident(incident_fields: Dict[str, Any]):
             {"lastupdatetime": updated_time},
         )
     else:
-        raise DemistoException(('Error occurred while running JiraChangeStatus'
+        raise DemistoException('Error occurred while running JiraChangeStatus'
                                 ', could not find the issue\'s updated time. The issue'
-                                f' returned is :{incident_fields}'))
+                                f' returned is :{incident_fields}')
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:  # pragma: no cover

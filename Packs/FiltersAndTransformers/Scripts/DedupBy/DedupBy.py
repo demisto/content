@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, List, Union
+from typing import Any
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
@@ -20,7 +20,7 @@ def demisto_get(obj: Any, path: Any) -> Any:
     :param path: The path to get values in the node.
     :return: The value(s) specified with `path` in the node.
     """
-    def split_context_path(path: str) -> List[str]:
+    def split_context_path(path: str) -> list[str]:
         """
         Get keys in order from the path which supports a syntax of path escaped with backslash.
 
@@ -55,7 +55,7 @@ def demisto_get(obj: Any, path: Any) -> Any:
     return obj
 
 
-class Key(object):
+class Key:
     """
     The custom key object class, which enables you to compare any types of data even in different types.
     This can be used for keys of dict.
@@ -114,7 +114,7 @@ def main():
             temp = {}
             if paths := argToList(args.get('keys')):
                 for v in value:
-                    k: Union[tuple, Key] = tuple(Key(v, path) for path in paths)
+                    k: tuple | Key = tuple(Key(v, path) for path in paths)
                     if k not in temp:
                         temp[k] = v
             else:

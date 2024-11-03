@@ -54,7 +54,7 @@ def get_device_tag_args():
 @pytest.fixture
 def argtest():
     def _argtest(**_kwargs):
-        class TestArgs(object):
+        class TestArgs:
             def __call__(self, *args, **kwargs):
                 self.args = list(args)
                 self.kwargs = kwargs
@@ -111,7 +111,6 @@ def load_mock_response(file_name: str) -> dict:
     """
     with open(
         os.path.join(os.path.dirname(__file__), f"test_data/{file_name}"),
-        mode="r",
         encoding="utf-8",
     ) as json_file:
         return json.loads(json_file.read())
@@ -125,7 +124,7 @@ def load_file(file_name: str) -> str:
         file_name (str): Name of the mock response JSON file to return.
     """
     with open(
-        os.path.join(os.path.dirname(__file__), f"test_data/{file_name}"), mode="r"
+        os.path.join(os.path.dirname(__file__), f"test_data/{file_name}")
     ) as file:
         return file.read()
 
@@ -2326,7 +2325,7 @@ def test_validate_ip_for_get_peer_command_failure(requests_mock) -> None:
     mock_client = init_mock_client(on_cloud=False, requests_mock=requests_mock)
     with pytest.raises(ExtraHop_v2.DemistoException) as error:
         _ = ExtraHop_v2.peers_get_command(mock_client, args, False)
-    assert "Error parsing IP Address 1:1:1" == str(error.value)
+    assert str(error.value) == "Error parsing IP Address 1:1:1"
 
 
 def test_empty_response_of_device_failure_for_peers_get_command(requests_mock) -> None:
@@ -2349,7 +2348,7 @@ def test_empty_response_of_device_failure_for_peers_get_command(requests_mock) -
     }
     with pytest.raises(ExtraHop_v2.DemistoException) as error:
         _ = ExtraHop_v2.peers_get_command(mock_client, args, False)
-    assert "Error in API call [404] - None\n[]" == str(error.value)
+    assert str(error.value) == "Error in API call [404] - None\n[]"
 
 
 def test_for_prepare_device_get_output_success(requests_mock) -> None:
@@ -2364,8 +2363,8 @@ def test_for_prepare_device_get_output_success(requests_mock) -> None:
     """
     result = setup_peers_get_command_by_id(False, True, requests_mock)
 
-    assert "No Devices found" == result.readable_output
-    assert [] == result.raw_response
+    assert result.readable_output == "No Devices found"
+    assert result.raw_response == []
 
 
 def test_module_on_prem_success(requests_mock) -> None:

@@ -148,7 +148,7 @@ def http_request(method, url, body=None, headers={}, url_params=None):
     if url_params is not None:
         request_kwargs['params'] = json.dumps(url_params)
 
-    LOG('attempting {} request sent to {} with body:\n{}'.format(method, url, json.dumps(body, indent=4)))
+    LOG(f'attempting {method} request sent to {url} with body:\n{json.dumps(body, indent=4)}')
     response = requests.request(
         method,
         url,
@@ -156,7 +156,7 @@ def http_request(method, url, body=None, headers={}, url_params=None):
     )
     # handle request failure
     if response.status_code not in range(200, 205):
-        raise ValueError('Request failed with status code {}\n{}'.format(response.status_code, response.text))
+        raise ValueError(f'Request failed with status code {response.status_code}\n{response.text}')
     return response.json()
 
 
@@ -174,7 +174,7 @@ def to_search_attribute_object(value, filter=None, is_list=False, valid_values=N
     if valid_values:
         for val in values:
             if val not in valid_values:
-                raise ValueError('{} is not a valid value'.format(val))
+                raise ValueError(f'{val} is not a valid value')
 
     attribute = {
         'value': values,
@@ -280,7 +280,7 @@ def message_context_data(message):
 
 
 def search_messages_request(attributes={}, has_attachments=None, max_message_size=None):
-    url = '{}/messages/trace'.format(BASE_PATH)
+    url = f'{BASE_PATH}/messages/trace'
     body = {
         'attributes': attributes,
         'type': 'MessageAttributes',
@@ -361,7 +361,7 @@ def search_messages_command():
 
 
 def get_message_request(message_id):
-    url = '{}/messages/{}'.format(BASE_PATH, message_id)
+    url = f'{BASE_PATH}/messages/{message_id}'
     response = http_request(
         'GET',
         url
@@ -468,7 +468,7 @@ def alert_context_data(alert):
 
 
 def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_id=None, size=None, raw_response=False):
-    url = '{}/alerts'.format(BASE_PATH)
+    url = f'{BASE_PATH}/alerts'
 
     # constract the body for the request
     body = {}
@@ -645,7 +645,7 @@ def download_yara_file_command(client, args):
 
 
 def get_alert_request(alert_id):
-    url = '{}/alerts/{}'.format(BASE_PATH, alert_id)
+    url = f'{BASE_PATH}/alerts/{alert_id}'
     response = http_request(
         'GET',
         url
@@ -693,7 +693,7 @@ def get_alert_command():
             'Contents': alert_raw,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': '## FireEye ETP - Get Alert\n{}\n{}'.format(alert_md_table, malware_md_table),
+            'HumanReadable': f'## FireEye ETP - Get Alert\n{alert_md_table}\n{malware_md_table}',
             'EntryContext': {
                 "FireEyeETP.Alerts(obj.id==val.id)": alert_context
             }

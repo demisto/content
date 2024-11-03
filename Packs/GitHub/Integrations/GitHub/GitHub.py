@@ -71,9 +71,7 @@ def get_installation_access_token(installation_id: str, jwt_token: str):
     :param jwt_token: str token needed in the request for retrieving the access token
     """
     response = requests.post(
-        "{}/app/installations/{}/access_tokens".format(
-            BASE_URL, installation_id
-        ),
+        f"{BASE_URL}/app/installations/{installation_id}/access_tokens",
         headers={
             "Authorization": f"Bearer {jwt_token}",
             "Accept": MEDIA_TYPE_INTEGRATION_PREVIEW,

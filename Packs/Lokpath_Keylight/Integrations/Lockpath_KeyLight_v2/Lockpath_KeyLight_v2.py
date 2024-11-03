@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from datetime import datetime, timedelta
-from typing import Union
 import traceback
 import urllib3
 
@@ -158,7 +157,7 @@ class Client(BaseClient):
             result['ComponentID'] = component_id
         return res
 
-    def change_record(self, component_id: str, record_id: Union[str, None] = None,
+    def change_record(self, component_id: str, record_id: str | None = None,
                       record_json: dict = None) -> None:
         json_data = {
             'componentId': component_id,
@@ -201,7 +200,7 @@ class Client(BaseClient):
                 component = comp
         return str(component.get('Id'))
 
-    def field_id_from_name(self, name: str, component_id: str) -> Union[str, None]:
+    def field_id_from_name(self, name: str, component_id: str) -> str | None:
         """
 
         Args:
@@ -298,7 +297,7 @@ class Client(BaseClient):
         return final_fields
 
     @logger
-    def string_to_FieldValues(self, fields_json: Union[dict, list], component_id: str) -> list:
+    def string_to_FieldValues(self, fields_json: dict | list, component_id: str) -> list:
         """
         Args:
             field_json in the format:

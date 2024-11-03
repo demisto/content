@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import traceback
-from typing import Any, Dict, Optional
+from typing import Any
 
 import urllib3
 
@@ -21,39 +21,39 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get_policy(self, policy_id: Optional[str] = None) -> Dict[str, Any]:
+    def get_policy(self, policy_id: str | None = None) -> dict[str, Any]:
         if policy_id:
             return self._http_request(
                 method='GET',
-                url_suffix='/policy/{}'.format(policy_id))
+                url_suffix=f'/policy/{policy_id}')
         else:
             return self._http_request(
                 method='GET',
                 url_suffix='/policy')
 
-    def set_policy(self, policy_id: str, update_method: str, policy_json: Dict[str, Any]) -> Dict[str, Any]:
+    def set_policy(self, policy_id: str, update_method: str, policy_json: dict[str, Any]) -> dict[str, Any]:
         update_method = update_method.upper()
         return self._http_request(
             method=update_method,
-            url_suffix='/policy/{}'.format(policy_id),
+            url_suffix=f'/policy/{policy_id}',
             json_data=policy_json)
 
-    def search_events(self, args: Optional[dict]) -> Dict[str, Any]:
+    def search_events(self, args: dict | None) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/search/events',
             json_data=args)
 
-    def remediate_message(self, action: str, action_args: Optional[dict]) -> Dict[str, Any]:
+    def remediate_message(self, action: str, action_args: dict | None) -> dict[str, Any]:
         return self._http_request(
             method='POST',
-            url_suffix='/remediation/{}'.format(action),
+            url_suffix=f'/remediation/{action}',
             json_data=action_args)
 
-    def revert_remediate_message(self, action: str, action_args: Optional[dict]) -> Dict[str, Any]:
+    def revert_remediate_message(self, action: str, action_args: dict | None) -> dict[str, Any]:
         return self._http_request(
             method='POST',
-            url_suffix='/remediation/revert/{}'.format(action),
+            url_suffix=f'/remediation/revert/{action}',
             json_data=action_args)
 
 
@@ -84,7 +84,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def gh_search_message_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gh_search_message_command(client: Client, args: dict[str, Any]) -> CommandResults:
     fields = argToList(args.get('fields'))
     limit = args.get('limit')
     sort = args.get('sort')
@@ -160,20 +160,20 @@ def gh_search_message_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def gh_revert_remediate_message_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    valid_actions: Dict[str, list] = {"banner": [],
+def gh_revert_remediate_message_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    valid_actions: dict[str, list] = {"banner": [],
                                       "quarantinerequest": [],
                                       "quarantinerelease": [],
                                       "quarantinedeny": [],
                                       "removeattachments": [],
                                       "review": []
                                       }
-    if args.get('action', "").lower() not in valid_actions.keys():
+    if args.get('action', "").lower() not in valid_actions:
         raise ValueError('Invalid action "{}" specified'.format(args.get('action')))
     action = args.get('action', "").lower()
     for arg in valid_actions.get(action, []):
         if args.get(arg) is None:
-            raise ValueError('Revert action "{}" requires argument "{}" to be specified'.format(action, arg))
+            raise ValueError(f'Revert action "{action}" requires argument "{arg}" to be specified')
 
     del args['action']
     if action == "quarantinerequest":
@@ -202,8 +202,8 @@ def gh_revert_remediate_message_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-def gh_remediate_message_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    valid_actions: Dict[str, list] = {"archive": [],
+def gh_remediate_message_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    valid_actions: dict[str, list] = {"archive": [],
                                       "banner": ["hasButton", "message"],
                                       "delete": [],
                                       "label": ["label"],
@@ -213,12 +213,12 @@ def gh_remediate_message_command(client: Client, args: Dict[str, Any]) -> Comman
                                       "review": [],
                                       "trash": []
                                       }
-    if args.get('action', "").lower() not in valid_actions.keys():
+    if args.get('action', "").lower() not in valid_actions:
         raise ValueError('Invalid action "{}" specified'.format(args.get('action')))
     action = args.get('action', "").lower()
     for arg in valid_actions.get(action, []):
         if args.get(arg) is None:
-            raise ValueError('Remediate action "{}" requires argument "{}" to be specified'.format(action, arg))
+            raise ValueError(f'Remediate action "{action}" requires argument "{arg}" to be specified')
 
     del args['action']
     if action != "banner":
@@ -243,7 +243,7 @@ def gh_remediate_message_command(client: Client, args: Dict[str, Any]) -> Comman
     )
 
 
-def gh_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gh_set_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     update_method = args.get('updatemethod', "").lower()
     policy_id = args.get('policyid', "")
     policy_json = json.loads(args.get('policyjson', {}))
@@ -262,7 +262,7 @@ def gh_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def gh_get_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gh_get_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     policy_ids = argToList(args.get('policyid'))
     results = []
     if policy_ids:
@@ -297,7 +297,7 @@ def gh_get_policy_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def gh_get_message_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gh_get_message_command(client: Client, args: dict[str, Any]) -> CommandResults:
     ghid = argToList(args.get('id'))
     includeheaders = args.get('includeheaders', "false").lower() == "true"
     showalllinks = args.get('showalllinks', "false").lower() == "true"

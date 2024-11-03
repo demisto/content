@@ -14,7 +14,7 @@ RISK_VECTOR_INPUT = "SSL Certificates"
 
 def util_load_json(path):
     """Load file in JSON format."""
-    with open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -166,7 +166,7 @@ def test_fetch_incidents_success_with_last_run(mocker):
                                                 params=inp_args)
 
     assert res['response']['count'] + 2 == last_run['offset']
-    assert '2022-03-27' == last_run['first_fetch']
+    assert last_run['first_fetch'] == '2022-03-27'
     assert events == res["incidents"]
 
 
@@ -182,5 +182,5 @@ def test_fetch_incidents_when_empty_response(mocker):
                                                 last_run={"first_fetch": "2022-03-27", "offset": 3},
                                                 params=inp_args)
 
-    assert 3 == last_run['offset']
-    assert '2022-03-27' == last_run['first_fetch']
+    assert last_run['offset'] == 3
+    assert last_run['first_fetch'] == '2022-03-27'

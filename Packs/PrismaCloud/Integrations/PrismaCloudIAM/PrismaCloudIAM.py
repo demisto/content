@@ -237,7 +237,7 @@ def get_user_error_handler(res: requests.Response):
     """
     err_msg = get_error_details(res)
     if 'user_inactive_or_not_exist' in err_msg:
-        return None
+        return
 
     raise DemistoException(err_msg, res=res)
 

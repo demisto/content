@@ -5,7 +5,6 @@ from CommonServerUserPython import *  # noqa
 
 from copy import deepcopy
 import requests
-from typing import Dict, Tuple
 from datetime import timezone
 import urllib3
 
@@ -186,7 +185,7 @@ class NetscoutClient(BaseClient):
         Returns:
             (dict): Netscout relationships object
         """
-        relationships: Dict[str, Any] = {}
+        relationships: dict[str, Any] = {}
         for key, val in kwargs.items():
             if val:
                 # In some cases the name of the relationships is not the same as the type (most cases it is)
@@ -239,7 +238,7 @@ class NetscoutClient(BaseClient):
                 param_list.append(f'/data/attributes/{key + operator + val}')
         return ' AND '.join(param_list)
 
-    def fetch_incidents(self, params_dict: dict) -> Tuple[list, str]:
+    def fetch_incidents(self, params_dict: dict) -> tuple[list, str]:
         """
         Perform fetch incidents process.
         1.  We first save the current time to know what was the time at the beginning of the incidents counting process.
@@ -294,7 +293,7 @@ class NetscoutClient(BaseClient):
                     })
         return incidents, new_last_start_time
 
-    def fetch_incidents_loop(self) -> Tuple[list, str]:
+    def fetch_incidents_loop(self) -> tuple[list, str]:
         """
         Calls the fetch incidents function to pull incidents with for each alert_type/alert_class separately.
 
@@ -627,7 +626,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def mitigation_delete_command(client: NetscoutClient, args: Dict[str, str]):
+def mitigation_delete_command(client: NetscoutClient, args: dict[str, str]):
     mitigation_id = args.get('mitigation_id', '')
     client.delete_mitigation(mitigation_id)
     hr = f'### Mitigation {mitigation_id} was deleted'
@@ -726,7 +725,7 @@ def main() -> None:
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
-        headers: Dict = {
+        headers: dict = {
             'X-Arbux-APIToken': api_token
         }
 

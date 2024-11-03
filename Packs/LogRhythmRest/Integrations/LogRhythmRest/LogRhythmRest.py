@@ -1722,7 +1722,7 @@ def get_alarm_events(data_args):
             fix_date_values(log)
             if not show_log_message:
                 del log['logMessage']
-            events.append((log))
+            events.append(log)
 
     events = events[:count]
     human_readable = tableToMarkdown('Events information for alarm ' + id, events)
@@ -1998,7 +1998,7 @@ def main():
         elif demisto.command() == 'lr-add-login':
             add_login(demisto.args())
     except Exception as e:
-        return_error('error has occurred: {}'.format(str(e)))
+        return_error(f'error has occurred: {str(e)}')
 
 
 # python2 uses __builtin__ python3 uses builtins

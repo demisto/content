@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Tuple, Dict, Any
+from typing import Any
 from _collections import defaultdict
 import urllib3
 import hashlib
@@ -19,7 +19,6 @@ DEFAULT_THRESHOLD = 5
 
 class Error(Exception):
     """Base class for exceptions in this module."""
-    pass
 
 
 class NotFoundError(Error):
@@ -55,8 +54,8 @@ class Client(BaseClient):
                 try:
                     return res.json()
                 except ValueError as exception:
-                    raise DemistoException('Failed to parse json object from response: {}'
-                                           .format(res.content), exception)
+                    raise DemistoException(f'Failed to parse json object from response: {res.content}'
+                                           , exception)
 
             if res.status_code in [401, 403, 500]:
                 try:
@@ -208,7 +207,7 @@ def create_tags(tags: list) -> list:
     return clean_tags
 
 
-def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def ip_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
     Executes IP enrichment against Maltiverse.
 
@@ -272,7 +271,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     return markdown, context, reports
 
 
-def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def url_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
      Executes URL enrichment against Maltiverse.
 
@@ -349,7 +348,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     return markdown, context, reports
 
 
-def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def domain_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
      Executes domain enrichment against Maltiverse.
 
@@ -410,7 +409,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
     return markdown, context, reports
 
 
-def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def file_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
     Executes file hash enrichment against Maltiverse.
 

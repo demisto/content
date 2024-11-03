@@ -5,7 +5,7 @@ import requests
 
 import dateparser
 
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 import urllib3
@@ -141,7 +141,7 @@ class Client(BaseClient):
                                       json_data=data, headers=headers)
         return response
 
-    def update_incident_request(self, update_body: Dict[str, Any]) -> Dict[str, str]:
+    def update_incident_request(self, update_body: dict[str, Any]) -> dict[str, str]:
         """Update incident
         :param update_body: The details to update in the incident.
 
@@ -154,7 +154,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_incident_static_attributes_request(self, incident_id: str) -> Dict[str, str]:
+    def get_incident_static_attributes_request(self, incident_id: str) -> dict[str, str]:
         """Returns incident static attributes.
 
         :param incident_id: The incident ID.
@@ -168,7 +168,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_incident_editable_attributes_request(self, incident_id: str) -> Dict[str, str]:
+    def get_incident_editable_attributes_request(self, incident_id: str) -> dict[str, str]:
         """Returns incident editable attributes.
 
         :param incident_id: The incident ID.
@@ -226,7 +226,7 @@ class Client(BaseClient):
                                       headers=headers, resp_type='bytes')
         return response
 
-    def get_report_filters_request(self, report_id: str) -> Dict[str, str]:
+    def get_report_filters_request(self, report_id: str) -> dict[str, str]:
         """Returns incident static attributes.
 
         :param report_id: The report id ID.
@@ -250,7 +250,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_sender_recipient_pattern_request(self, pattern_id: str) -> Dict[str, str]:
+    def get_sender_recipient_pattern_request(self, pattern_id: str) -> dict[str, str]:
         """Returns incident static attributes.
 
         :param incident_id: The incident ID.
@@ -282,7 +282,7 @@ class Client(BaseClient):
         pattern_description: str | None,
         new_ips: List[str] = None,
         new_users: List[str] = None
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """
         Updates the sender pattern
 
@@ -317,7 +317,7 @@ class Client(BaseClient):
         new_ips: List[str] = None,
         new_emails: List[str] = None,
         new_domains: List[str] = None
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """
         Updates the sender pattern
 
@@ -347,7 +347,7 @@ class Client(BaseClient):
                                       headers=headers, json_data=data)
         return response
 
-    def get_message_body_request(self, incident_id: str) -> Dict[str, str]:
+    def get_message_body_request(self, incident_id: str) -> dict[str, str]:
         """Returns incident message body.
         :param incident_id: The incident ID.
         """
@@ -368,7 +368,7 @@ def check_status_ids_type(status_ids_list: list):
     return status_ids_list
 
 
-def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[Any], operator: str) -> Dict[str, Any]:
+def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[Any], operator: str) -> dict[str, Any]:
     """Creates a dictionary with the filter for the list-incidents request.
 
     :param filter_type: The filter type.
@@ -632,7 +632,7 @@ def create_update_body(incident_ids: list, data_owner_email: str = None, data_ow
                        incident_status_id: str = None, remediation_status_name: str = None,
                        remediation_location: str = None,
                        severity: str = None, custom_attributes: List[str] = None):
-    data: Dict[str, Any] = assign_params(**{"incidentIds": incident_ids, 'dataOwnerEmail': data_owner_email,
+    data: dict[str, Any] = assign_params(**{"incidentIds": incident_ids, 'dataOwnerEmail': data_owner_email,
                                             'dataOwnerName': data_owner_name,
                                             'incidentStatusId': incident_status_id,
                                             'preventOrProtectStatus': remediation_status_name,
@@ -708,7 +708,7 @@ def test_module(client: Client, params, fetch_time, fetch_limit, incident_type, 
     return message
 
 
-def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
     creation_date = parse_creation_date(args.get('creation_date', ''))
     status_ids = argToList(args.get('status_id', ''))
     severities = argToList(args.get('severity', ''))
@@ -760,7 +760,7 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
     incident_ids = argToList(args.get('incident_ids'))
     if not all(incident_id.isdigit() for incident_id in incident_ids):
         raise ValueError("Incident IDs must be integers.")
@@ -786,7 +786,7 @@ def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def get_incident_details_command(client: Client, args: Dict[str, Any]):
+def get_incident_details_command(client: Client, args: dict[str, Any]):
     """
     static attributes API docs - https://techdocs.broadcom.com/us/en/symantec-security-software/information-security/
     data-loss-prevention/15-8/DLP-Enforce-REST-APIs-overview/definitions/staticincidentinfomap.html
@@ -846,7 +846,7 @@ def list_incident_status_command(client: Client) -> CommandResults:
     )
 
 
-def get_incident_history_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_incident_history_command(client: Client, args: dict[str, Any]) -> CommandResults:
     incident_id = arg_to_number(args.get('incident_id'))
     limit = arg_to_number(args.get('limit', 50))
     incident_history_result = client.get_incident_history_request(incident_id)
@@ -882,7 +882,7 @@ def get_list_remediation_status(client: Client) -> CommandResults:
     )
 
 
-def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
+def get_incident_original_message_command(client: Client, args: dict[str, Any]):
     """
     Fetch the original message
     """
@@ -904,7 +904,7 @@ def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
             raise DemistoException(f"Error {e.res}")
 
 
-def get_report_filters_command(client: Client, args: Dict[str, Any]):
+def get_report_filters_command(client: Client, args: dict[str, Any]):
     """
     Get report filters
     """
@@ -940,7 +940,7 @@ def list_users_command(client: Client) -> CommandResults:
     )
 
 
-def get_sender_recipient_pattern_command(client: Client, args: Dict[str, Any]):
+def get_sender_recipient_pattern_command(client: Client, args: dict[str, Any]):
     """
     Fetch the original message
     """
@@ -972,7 +972,7 @@ def list_sender_recipient_patterns_command(client: Client) -> CommandResults:
     )
 
 
-def update_sender_pattern_command(client: Client, args: Dict[str, Any]):
+def update_sender_pattern_command(client: Client, args: dict[str, Any]):
     """
     Update the sender pattern
     """
@@ -997,7 +997,7 @@ def update_sender_pattern_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def update_recipient_pattern_command(client: Client, args: Dict[str, Any]):
+def update_recipient_pattern_command(client: Client, args: dict[str, Any]):
     """
     Update the sender pattern
     """
@@ -1022,7 +1022,7 @@ def update_recipient_pattern_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_message_body_command(client: Client, args: Dict[str, Any]):
+def get_message_body_command(client: Client, args: dict[str, Any]):
     """
     Fetch the message body
     """

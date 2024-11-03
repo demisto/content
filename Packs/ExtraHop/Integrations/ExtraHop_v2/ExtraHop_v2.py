@@ -5,7 +5,6 @@ import json
 import traceback
 from collections import defaultdict
 from ipaddress import ip_address
-from typing import DefaultDict, Tuple
 from requests import Response
 
 import urllib3
@@ -184,7 +183,7 @@ class ExtraHopClient(BaseClient):
 
         return token
 
-    def authenticate(self, client_id: str, client_secret: str) -> Tuple[str, int]:
+    def authenticate(self, client_id: str, client_secret: str) -> tuple[str, int]:
         """
         Get the access token from the ExtraHop API.
 
@@ -238,7 +237,7 @@ class ExtraHopClient(BaseClient):
             uuid_lookup[network["node_id"]] = network.get("appliance_uuid")
         return uuid_lookup
 
-    def get_device_by_id(self, device_id: str, ok_codes: Tuple = None):
+    def get_device_by_id(self, device_id: str, ok_codes: tuple = None):
         """Retrieve the device from the Reveal(X).
 
         Args:
@@ -996,8 +995,8 @@ def get_protocols(client: ExtraHopClient, ip_or_id, query_from, query_until) -> 
 
     activitymap = client.get_peers(body)
 
-    client_protocols: DefaultDict[str, int] = defaultdict(int)
-    server_protocols: DefaultDict[str, int] = defaultdict(int)
+    client_protocols: defaultdict[str, int] = defaultdict(int)
+    server_protocols: defaultdict[str, int] = defaultdict(int)
     for edge in activitymap["edges"]:
         if "annotations" in edge and "protocols" in edge.get("annotations"):
             for protocol_list in edge.get("annotations", {}).get("protocols"):
@@ -1061,7 +1060,7 @@ def peers_get(client: ExtraHopClient, ip_or_id: Optional[Any], query_from: Optio
 
     activitymap = client.get_peers(body)
 
-    peers: DefaultDict[str, dict] = defaultdict(lambda: {
+    peers: defaultdict[str, dict] = defaultdict(lambda: {
         "weight": 0,
         "client_protocols": defaultdict(int),
         "server_protocols": defaultdict(int)
@@ -1426,7 +1425,7 @@ def append_participant_device_data(client: ExtraHopClient, detections: CommandRe
 
 
 def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, last_run: Dict, on_cloud: bool) -> \
-        Tuple[List, Dict]:
+        tuple[List, Dict]:
     """Fetch detections from ExtraHop according to the given filter.
 
     Args:

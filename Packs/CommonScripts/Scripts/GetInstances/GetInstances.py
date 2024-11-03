@@ -1,12 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Iterator
+from collections.abc import Iterator
 
 
 INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin', 'testmodule']
 
 
-def filter_config(module: Dict, filter_brand: Optional[List[str]] = None, instance_status: str = 'active'):
+def filter_config(module: dict, filter_brand: Optional[List[str]] = None, instance_status: str = 'active'):
     brand = module.get('brand')
     if brand in INTERNAL_MODULES_BRANDS:
         return False
@@ -18,7 +18,7 @@ def filter_config(module: Dict, filter_brand: Optional[List[str]] = None, instan
     return True
 
 
-def prepare_args(args: Dict):
+def prepare_args(args: dict):
     if 'brand' in args:
         args['filter_brand'] = argToList(args.pop('brand'))
 
@@ -28,7 +28,7 @@ def prepare_args(args: Dict):
     return args
 
 
-def filter_instances(modules: Dict, **kwargs) -> Iterator[Dict]:
+def filter_instances(modules: dict, **kwargs) -> Iterator[dict]:
     for instance, config in modules.items():
         if filter_config(config, **kwargs):
             config['name'] = instance

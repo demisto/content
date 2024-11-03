@@ -398,13 +398,13 @@ def prisma_access_logout_user(computer: str, domain: str, user: str, tenant: str
         b64User = (b64encode(user.encode('utf8'))).decode('utf8')
         cmd = ''
         if domain:
-            cmd = '''<request><plugins><cloud_services><gpcs>
-                  <logout_mobile_user><gateway>{}<domain>{}</domain><user>{}</user></gateway></logout_mobile_user>
-                  </gpcs></cloud_services></plugins></request>'''.format(xmlComputer, domain, b64User)
+            cmd = f'''<request><plugins><cloud_services><gpcs>
+                  <logout_mobile_user><gateway>{xmlComputer}<domain>{domain}</domain><user>{b64User}</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>'''
         else:
-            cmd = '''<request><plugins><cloud_services><gpcs>
-                  <logout_mobile_user><gateway>{}<user>{}</user></gateway></logout_mobile_user>
-                  </gpcs></cloud_services></plugins></request>'''.format(xmlComputer, b64User)
+            cmd = f'''<request><plugins><cloud_services><gpcs>
+                  <logout_mobile_user><gateway>{xmlComputer}<user>{b64User}</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>'''
 
         if tenant:
             tenant_entry = f"<multi-tenant><tenant-name><entry name='{tenant}'></entry></tenant-name>"

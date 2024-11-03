@@ -8,7 +8,7 @@ import json
 import re
 
 
-class EndaceVisionAPIAdapter(object):
+class EndaceVisionAPIAdapter:
     """Adapter for EndaceWebSession which allows
     a simpler interface to the private Vision API.
 
@@ -33,7 +33,7 @@ class EndaceVisionAPIAdapter(object):
                 }
         try:
             r = self.endace_session.requests.request(
-                method, self.endace_session.page("{}/{}".format(self.API_BASE, path)), headers=headers, **kwargs)
+                method, self.endace_session.page(f"{self.API_BASE}/{path}"), headers=headers, **kwargs)
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
             return err.response.status_code
@@ -53,7 +53,7 @@ class EndaceVisionAPIAdapter(object):
         return self.request("DELETE", path, **kwargs)
 
 
-class EndaceWebSession(object):
+class EndaceWebSession:
 
     LOGIN_PAGE = "/admin/launch?script=rh&template=login"
     LOGIN_ACTION = "/admin/launch?script=rh&template=login&action=login"
@@ -83,7 +83,7 @@ class EndaceWebSession(object):
             self.requests = None
 
     def page(self, path="/"):
-        return "{}{}".format(self.app_url, path)
+        return f"{self.app_url}{path}"
 
     def logout(self):
         if self.requests:
@@ -91,7 +91,7 @@ class EndaceWebSession(object):
             if logout.status_code == 200:
                 return True
             else:
-                raise Exception("logout to {} failed".format(self.app_url))
+                raise Exception(f"logout to {self.app_url} failed")
         else:
             return False
 
@@ -156,7 +156,7 @@ class EndaceWebSession(object):
         return None
 
 
-class EndaceVisionData(object):
+class EndaceVisionData:
     def __init__(self, args=None):
         self.args = args
 
@@ -327,7 +327,7 @@ class EndaceVisionData(object):
         return allfilterslist
 
 
-class EndaceApp(object):
+class EndaceApp:
     delta_time = 120
     wait_time = 5
 
@@ -1196,7 +1196,7 @@ def endace_delete_archive_task_command(app, args):
              exception: If delete command fails
     """
     jobid = args.get("jobid")
-    if not re.fullmatch(r'[0-9a-zA-Z\-]+', jobid) is None:
+    if re.fullmatch(r'[0-9a-zA-Z\-]+', jobid) is not None:
 
         #   calling delete archive task function of app instance
         result = app.delete_archive_task(jobid)

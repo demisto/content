@@ -8,7 +8,7 @@ class TestConcatFormat:
         return demisto.get(obj, dt)
 
     def test_main(self, mocker):
-        with open('./test_data/test.json', 'r') as f:
+        with open('./test_data/test.json') as f:
             test_list = json.load(f)
 
         mocker.patch.object(demisto, 'dt', side_effect=self.__side_effect_demisto_dt)

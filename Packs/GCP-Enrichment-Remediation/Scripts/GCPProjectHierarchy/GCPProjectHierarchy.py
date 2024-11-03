@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
@@ -20,7 +20,7 @@ def lookup(parent_obj: str, level: int) -> tuple[str, dict]:
         dict: dictionary of id, name and level of the lookup object.
 
     """
-    temp: Dict[str, str] = {}
+    temp: dict[str, str] = {}
     try:
         if "folder" in parent_obj:
             folder_info = execute_command("gcp-iam-folders-get", {"folder_name": parent_obj})
@@ -47,7 +47,7 @@ def lookup(parent_obj: str, level: int) -> tuple[str, dict]:
 ''' COMMAND FUNCTION '''
 
 
-def gcp_project_heirarchy(args: Dict[str, Any]) -> CommandResults:
+def gcp_project_heirarchy(args: dict[str, Any]) -> CommandResults:
     """
     Determine GCP project hierarchy by looking up parent objects until the organization level is reached.
     Args:

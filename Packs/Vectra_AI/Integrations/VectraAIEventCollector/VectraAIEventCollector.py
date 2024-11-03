@@ -10,7 +10,7 @@ It uses version 2.2 of Vectra AI REST API.
 See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
-from typing import Dict, Any, Tuple, List
+from typing import Any
 from datetime import datetime, timedelta
 from urllib.parse import urljoin  # type: ignore
 
@@ -55,7 +55,7 @@ class VectraClient(BaseClient):
             headers=self._create_headers(),
         )
 
-    def _create_headers(self) -> Dict[str, str]:
+    def _create_headers(self) -> dict[str, str]:
         """
         Generates the necessary HTTP headers.
 
@@ -68,7 +68,7 @@ class VectraClient(BaseClient):
             "Authorization": f"Token {self.api_key}",
         }
 
-    def get_detections(self, first_timestamp: str) -> Dict[str, Any]:
+    def get_detections(self, first_timestamp: str) -> dict[str, Any]:
         """
         Retrieve detections. Detection objects contain all the information related to security events detected on the network.
 
@@ -91,7 +91,7 @@ class VectraClient(BaseClient):
             params=params,
         )
 
-    def get_audits(self, start: str) -> Dict[str, Any]:
+    def get_audits(self, start: str) -> dict[str, Any]:
         """
         Retrieve audits. Audit objects contain data that lists requested accesses to resources. This information includes but
         is not limited to:
@@ -118,7 +118,7 @@ class VectraClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def add_parsing_rules(event: Dict[str, Any]) -> Any:
+def add_parsing_rules(event: dict[str, Any]) -> Any:
     """
     Helper method to add the Parsing Rules to an event.
 
@@ -158,8 +158,8 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
 
 
 def get_audits_to_send(
-    audits: List[Dict[str, Any]], is_first_fetch: bool, prev_fetch_timestamp: str
-) -> List[Dict[str, Any]]:
+    audits: list[dict[str, Any]], is_first_fetch: bool, prev_fetch_timestamp: str
+) -> list[dict[str, Any]]:
     """
     Helper method to filter out audits that should not be sent. Since the API
     returns audits on a day resolution, we need to check the audit timestamp
@@ -187,7 +187,7 @@ def get_audits_to_send(
         return audits
 
 
-def get_most_recent_detection(detections: List[Dict[str, Any]]) -> Dict[str, Any]:
+def get_most_recent_detection(detections: list[dict[str, Any]]) -> dict[str, Any]:
     """
     Helper method to return the most recent detection.
 
@@ -239,7 +239,7 @@ def get_detections_cmd(client: VectraClient, first_timestamp: str) -> CommandRes
     - `CommandResults` to War Room.
     """
 
-    detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results", [])  # type: ignore
+    detections: list[dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results", [])  # type: ignore
     if detections:
         md = tableToMarkdown(
             "Detections",
@@ -284,7 +284,7 @@ def get_audits_cmd(client: VectraClient, start: str) -> CommandResults:
     - `CommandResults` to War Room.
     """
 
-    audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits", [])  # type: ignore
+    audits: list[dict[str, Any]] = client.get_audits(start=start).get("audits", [])  # type: ignore
     if audits:
         md = tableToMarkdown(f"Audits since {start}", audits)
 
@@ -320,7 +320,7 @@ def fetch_events_cmd(client) -> None:
     demisto.debug(f"Setting last run to {str(next_fetch)}...")
     demisto.setLastRun(next_fetch)
 
-    parsed_events: List[Dict[str, Any]] = []
+    parsed_events: list[dict[str, Any]] = []
 
     demisto.debug("Attempting to add parsing rules to event...")
     for event in detections + audits:
@@ -335,7 +335,7 @@ def fetch_events_cmd(client) -> None:
 
 def fetch_events(
     client: VectraClient,
-) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, str]]:
     """
     Fetch detections based on whether it's the first fetch or not.
 
@@ -373,7 +373,7 @@ def fetch_events(
 
     # Fetch Audits
     demisto.debug(f"Fetching audits from {start} to now...")
-    returned_audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits", [])
+    returned_audits: list[dict[str, Any]] = client.get_audits(start=start).get("audits", [])
 
     audits = get_audits_to_send(
         returned_audits, is_first_fetch, previous_fetch_most_recent_audit_timestamp_str
@@ -421,7 +421,7 @@ def fetch_events(
 
 def get_events(
     client: VectraClient, first_fetch: datetime
-) -> Tuple[CommandResults, CommandResults]:
+) -> tuple[CommandResults, CommandResults]:
     """
     Command function to retrieve detections and audits.
 
@@ -484,7 +484,7 @@ def main() -> None:  # pragma: no cover
                 return_results(audits_cmd_res)
 
                 if argToBoolean(args.pop("should_push_events")):
-                    parsed_events: List[Dict[str, Any]] = []
+                    parsed_events: list[dict[str, Any]] = []
 
                     demisto.debug("Attempting to add parsing rules to event...")
                     for event in detections_cmd_res.outputs + audits_cmd_res.outputs:  # type: ignore

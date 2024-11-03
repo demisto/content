@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, Set
 
 
 import urllib3
@@ -14,7 +13,7 @@ from enum import Enum
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-headers: Dict[str, str] = {}
+headers: dict[str, str] = {}
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
@@ -139,7 +138,7 @@ def get_users_with_cracked_passwords(client: Client):
     mitigations_results = client.get_mitigations(timeout=timeout)
     users_formatted = []
     table_headers = ["Username"]
-    procedures_ids: Set[str] = set()
+    procedures_ids: set[str] = set()
     mitigation_id = None
     privileged_users = []
     unprivileged_users = []

@@ -95,8 +95,8 @@ class Client(BaseClient):
         """
         cmd = 'ssl-labs-analyze'
         ScheduledCommand.raise_error_if_not_supported()
-        polling_timeout = int(600)
-        interval_in_secs = int(60)
+        polling_timeout = 600
+        interval_in_secs = 60
         url_suffix = (
             f'/analyze?host={host}&publish={publish}&startNew={start_new}'
             f'&fromCache={from_cache}&maxAge={max_age}&all={all_endpoints}'

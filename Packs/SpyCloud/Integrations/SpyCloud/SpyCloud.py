@@ -28,7 +28,7 @@ def get_breach_data():
     breach_id = demisto.args().get('id')
 
     # form the URL with the arguments and execute GET request
-    URL_SUFFIX = BASE_URL + "breach/catalog/{}".format(breach_id)
+    URL_SUFFIX = BASE_URL + f"breach/catalog/{breach_id}"
     resp = requests.get(URL_SUFFIX, headers=headers, timeout=30)
     jdata = resp.json()
 
@@ -62,13 +62,9 @@ def list_breaches():
 
     # form the URL with the arguments and execute GET request
     if query == "empty":
-        URL_SUFFIX = BASE_URL + "breach/catalog?&since={}&until={}".format(
-            since, until
-        )
+        URL_SUFFIX = BASE_URL + f"breach/catalog?&since={since}&until={until}"
     else:
-        URL_SUFFIX = BASE_URL + "breach/catalog?&since={}&until={}&query={}".format(
-            since, until, query
-        )
+        URL_SUFFIX = BASE_URL + f"breach/catalog?&since={since}&until={until}&query={query}"
     resp = requests.get(URL_SUFFIX, headers=headers, timeout=10)
     jdata = resp.json()
 
@@ -103,9 +99,7 @@ def get_domain_data():
     since = demisto.args().get('since')
 
     URL_SUFFIX = BASE_URL + \
-        "breach/data/domains/{}/?type={}&severity={}&since={}".format(
-            domain, type_search, severity, since
-        )
+        f"breach/data/domains/{domain}/?type={type_search}&severity={severity}&since={since}"
     sc_data = []
     cursor = ' '
     total_records = download_data(URL_SUFFIX)['hits']
@@ -149,15 +143,13 @@ def get_email_data():
     until = demisto.args().get('until')
 
     URL_SUFFIX = BASE_URL + \
-        "breach/data/emails/{}?since={}".format(
-            emailaddr, since
-        )
+        f"breach/data/emails/{emailaddr}?since={since}"
     if severity != "empty":
-        URL_SUFFIX + "&severity={}".format(severity)
+        URL_SUFFIX + f"&severity={severity}"
     if until != "empty":
-        URL_SUFFIX + "&until={}".format(until)
+        URL_SUFFIX + f"&until={until}"
     if breach_id != "empty":
-        URL_SUFFIX + "&source_id={}".format(breach_id)
+        URL_SUFFIX + f"&source_id={breach_id}"
 
     sc_data = []
     cursor = ' '
@@ -202,13 +194,11 @@ def get_watchlist_data():
     until = demisto.args().get('until')
 
     URL_SUFFIX = BASE_URL + \
-        "breach/data/watchlist?watchlist_type={}&since={}&type={}".format(
-            watchlist_type, since, type_search
-        )
+        f"breach/data/watchlist?watchlist_type={watchlist_type}&since={since}&type={type_search}"
     if until != "empty":
-        URL_SUFFIX + "&until={}".format(until)
+        URL_SUFFIX + f"&until={until}"
     if breach_id != "empty":
-        URL_SUFFIX + "&source_id={}".format(breach_id)
+        URL_SUFFIX + f"&source_id={breach_id}"
 
     sc_data = []
     cursor = ' '

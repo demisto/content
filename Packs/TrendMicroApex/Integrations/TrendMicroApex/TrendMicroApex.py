@@ -480,7 +480,7 @@ class Client(BaseClient):
 
         # fix the keys to their correct name
         new_log = log.copy()
-        for key in log.keys():
+        for key in log:
             if key in keys_to_fix:
                 new_log[CEF_HEADERS_TO_TREND_MICRO_HEADERS[key]] = new_log.pop(key)
             if key == 'rt':  # this key is always referencing to 'Creation Time' header

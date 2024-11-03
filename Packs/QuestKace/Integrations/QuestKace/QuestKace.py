@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Optional, Tuple, Callable, Any, Union
+from typing import Any
+from collections.abc import Callable
 
 from CommonServerUserPython import *
 import json
@@ -141,7 +142,7 @@ class Client(BaseClient):
         self._password = password
         self._token, self._cookie = self.get_token()
 
-    def get_token(self) -> Tuple[str, str]:
+    def get_token(self) -> tuple[str, str]:
         """Get a token for the connection.
             Returns:
                 token , cookie for the connection.
@@ -194,7 +195,7 @@ class Client(BaseClient):
                  f' kboxid={kboxid}; x-dell-auth-jwt={x_dell_auth_jwt}; KACE_CSRF_TOKEN={KACE_CSRF_TOKEN}'
         return cookie
 
-    def token_request(self, url: str, headers: Optional[dict] = None, data: Optional[str] = None) -> dict:
+    def token_request(self, url: str, headers: dict | None = None, data: str | None = None) -> dict:
         """login request for initiating a connection with the product.
         Args:
             url: full url that the request will be sent to.
@@ -215,7 +216,7 @@ class Client(BaseClient):
             raise DemistoException("Error Code 401 - Invalid user or password")
         return response.__dict__
 
-    def machines_list_request(self, filter_fields: Optional[str] = None):
+    def machines_list_request(self, filter_fields: str | None = None):
         """List of machines.
            Returns:
                Response from API.
@@ -231,7 +232,7 @@ class Client(BaseClient):
             url_suffix += f'?filtering={filter_fields}'
         return self._http_request("GET", url_suffix=url_suffix, headers=headers)
 
-    def assets_list_request(self, filter_fields: Optional[str] = None) -> dict:
+    def assets_list_request(self, filter_fields: str | None = None) -> dict:
         """List of assets.
            Returns:
                Response from API.
@@ -247,7 +248,7 @@ class Client(BaseClient):
             url_suffix += f'?filtering={filter_fields}'
         return self._http_request("GET", url_suffix=url_suffix, headers=headers)
 
-    def queues_list_request(self, filter_fields: Optional[str] = None) -> dict:
+    def queues_list_request(self, filter_fields: str | None = None) -> dict:
         """List of queues.
            Returns:
                Response from API.
@@ -366,7 +367,7 @@ class Client(BaseClient):
         return self._http_request("GET", url_suffix=f"/service_desk/tickets?filtering={filter_fields}", headers=headers)
 
 
-def test_module(client: Client, *_) -> Tuple[str, dict, dict]:
+def test_module(client: Client, *_) -> tuple[str, dict, dict]:
     """Function which checks if there is a connection with the api.
         Args:
             client : Integration client which communicates with the api.
@@ -385,7 +386,7 @@ def test_module(client: Client, *_) -> Tuple[str, dict, dict]:
     return 'ok', {}, {}
 
 
-def get_machines_list_command(client, args) -> Tuple[str, dict, dict]:
+def get_machines_list_command(client, args) -> tuple[str, dict, dict]:
     """Function which returns all machines in the system.
         Args:
             client : Integretion client which communicates with the api.
@@ -414,7 +415,7 @@ def get_machines_list_command(client, args) -> Tuple[str, dict, dict]:
     return human_readable_markdown, context, raw_response
 
 
-def get_assets_list_command(client, args) -> Tuple[str, dict, dict]:
+def get_assets_list_command(client, args) -> tuple[str, dict, dict]:
     """Function which returns all assets in the system.
         Args:
             client : Integretion client which communicates with the api.
@@ -437,7 +438,7 @@ def get_assets_list_command(client, args) -> Tuple[str, dict, dict]:
     return human_readable_markdown, context, raw_response
 
 
-def get_queues_list_command(client, args) -> Tuple[str, dict, dict]:
+def get_queues_list_command(client, args) -> tuple[str, dict, dict]:
     """Function which returns all queues in the system.
         Args:
             client : Integretion client which communicates with the api.
@@ -458,7 +459,7 @@ def get_queues_list_command(client, args) -> Tuple[str, dict, dict]:
     return human_readable_markdown, context, raw_response
 
 
-def get_tickets_list_command(client, args) -> Tuple[str, dict, dict]:
+def get_tickets_list_command(client, args) -> tuple[str, dict, dict]:
     """Function which returns all tickets in the system.
         Args:
             client : Integretion client which communicates with the api.
@@ -482,7 +483,7 @@ def get_tickets_list_command(client, args) -> Tuple[str, dict, dict]:
     return human_readable_markdown, context, raw_response
 
 
-def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
+def create_ticket_command(client, args) -> tuple[str, dict, dict]:
     """Function which creates a new ticket to the system according to users arguments.
         Args:
             client : Integretion client which communicates with the api.
@@ -543,11 +544,11 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
     return ticket_view, {}, {}
 
 
-def create_body_from_args(hd_queue_id: Union[str, int] = None, title: Union[str, int] = None,
-                          summary: Union[str, int] = None, impact: Union[str, int] = None,
-                          category: Union[str, int] = None, status: Union[str, int] = None,
-                          priority: Union[str, int] = None, machine: Union[str, int] = None,
-                          asset: Union[str, int] = None) -> dict:
+def create_body_from_args(hd_queue_id: str | int = None, title: str | int = None,
+                          summary: str | int = None, impact: str | int = None,
+                          category: str | int = None, status: str | int = None,
+                          priority: str | int = None, machine: str | int = None,
+                          asset: str | int = None) -> dict:
     """Function which creates the body of the request from user arguments.
         Args:
            hd_queue_id: the queue number to insert the ticket to.
@@ -584,7 +585,7 @@ def create_body_from_args(hd_queue_id: Union[str, int] = None, title: Union[str,
     return body
 
 
-def update_ticket_command(client, args) -> Tuple[str, dict, dict]:
+def update_ticket_command(client, args) -> tuple[str, dict, dict]:
     """Function which updates the body of the request from user arguments.
         Args:
             client : Integretion client which communicates with the api.
@@ -630,7 +631,7 @@ def update_ticket_command(client, args) -> Tuple[str, dict, dict]:
     return ticket_view, {}, {}
 
 
-def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
+def delete_ticket_command(client, args) -> tuple[str, dict, dict]:
     """Function which deleted a specific ticket by ticket id.
         Args:
             client : Integretion client which communicates with the api.
@@ -658,8 +659,8 @@ def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
         raise DemistoException('Error while deleting the ticket.')
 
 
-def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_run: Dict, fetch_limit: str,
-                    fetch_queue_id: Optional[list] = None, fetch_filter: Optional[str] = None) -> list:
+def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_run: dict, fetch_limit: str,
+                    fetch_queue_id: list | None = None, fetch_filter: str | None = None) -> list:
     """
     This function will execute each interval (default is 1 minute).
     Args:
@@ -740,7 +741,7 @@ def shaping_fetch(client: Client, fetch_queue_id: list) -> str:
     return fetch_shaping
 
 
-def get_fields_by_queue(client, queue: Optional[list]) -> list:
+def get_fields_by_queue(client, queue: list | None) -> list:
     """
     Creating a list of all queue ids that are in the system.
     Args:
@@ -795,7 +796,7 @@ def shaping_by_fields(fields: list) -> str:
     return shaping
 
 
-def set_shaping(client, queue: Optional[list] = None) -> str:
+def set_shaping(client, queue: list | None = None) -> str:
     """
     Creating a shaping for the request.
     Args:
@@ -810,7 +811,7 @@ def set_shaping(client, queue: Optional[list] = None) -> str:
 
 
 def parse_incidents(items: list, fetch_limit: str, time_format: str, parsed_last_time: datetime) \
-        -> Tuple[list, Any]:
+        -> tuple[list, Any]:
     """
     This function will create a list of incidents
     Args:
@@ -890,7 +891,7 @@ def main():
         command = demisto.command()
         LOG(f'Command being called is {command}')
         # Commands dict
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, dict, dict]]] = {
+        commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict, dict]]] = {
             'test-module': test_module,
             'kace-machines-list': get_machines_list_command,
             'kace-assets-list': get_assets_list_command,

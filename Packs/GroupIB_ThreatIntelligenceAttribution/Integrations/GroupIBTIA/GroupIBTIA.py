@@ -754,7 +754,7 @@ def test_module(client: Client) -> str:
 
     collections_list, _ = client.get_available_collections()
     for collection in collections_list.get("collections"):
-        if collection not in MAPPING.keys():
+        if collection not in MAPPING:
             return "Test failed, some problems with getting available collections."
     return "ok"
 
@@ -1202,7 +1202,7 @@ def global_search_command(client: Client, args: dict):
 
 
 def local_search_command(client: Client, args: dict):
-    query, date_from, date_to = args.get('query'), args.get('date_from', None), args.get('date_to', None)
+    query, date_from, date_to = args.get('query'), args.get('date_from'), args.get('date_to')
     collection_name = str(args.get('collection_name'))
 
     if date_from is not None:

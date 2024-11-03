@@ -1,5 +1,4 @@
 import json
-import io
 import pytest
 from CommonServerPython import *
 from VMwareWorkspaceONEUEM import Client, HTTP_ERROR, MESSAGES
@@ -12,7 +11,7 @@ client = Client("user", "user123", BASE_URL, {'aw-tenant-code': "abed", "Accept"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -89,11 +88,11 @@ def test_vmwuem_device_os_updates_list_command_when_valid_response_is_returned(r
 
     expected_response = util_load_json("test_data/vmwuem_device_osupdates_list_command_response.json")
 
-    requests_mock.get(BASE_URL + 'devices/{}/osupdate'.format(uuid), json=expected_response)
+    requests_mock.get(BASE_URL + f'devices/{uuid}/osupdate', json=expected_response)
 
     expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context.json")
 
-    with open("test_data/vmwuem_device_osupdates_list_command_readable_output.md", 'r') as f:
+    with open("test_data/vmwuem_device_osupdates_list_command_readable_output.md") as f:
         expected_readable_output = f.read()
 
     args = {
@@ -142,7 +141,7 @@ def test_vmwuem_device_os_updates_list_command_when_no_records_found(requests_mo
     expected_response = {
         "OSUpdateList": []
     }
-    requests_mock.get(BASE_URL + 'devices/{}/osupdate'.format(uuid), json=expected_response)
+    requests_mock.get(BASE_URL + f'devices/{uuid}/osupdate', json=expected_response)
 
     response = vmwuem_device_os_updates_list_command(client, args={'uuid': uuid})
 
@@ -158,11 +157,11 @@ def test_vmwuem_device_osupdates_list_command_when_laptop_device_provided(reques
 
     expected_response = util_load_json("test_data/vmwuem_device_osupdates_list_command_response_laptop.json")
 
-    requests_mock.get(BASE_URL + 'devices/{}/osupdate'.format(uuid), json=expected_response)
+    requests_mock.get(BASE_URL + f'devices/{uuid}/osupdate', json=expected_response)
 
     expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context_laptop.json")
 
-    with open("test_data/vmwuem_device_osupdates_list_command_readable_output_laptop.md", 'r') as f:
+    with open("test_data/vmwuem_device_osupdates_list_command_readable_output_laptop.md") as f:
         expected_readable_output = f.read()
 
     args = {

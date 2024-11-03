@@ -1,13 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 
 DBOT_NAME = 'DBot'
 
 
-def dbot_fact(category) -> Dict[str, Any]:
+def dbot_fact(category) -> dict[str, Any]:
     args = {}
     if category:
         args['category'] = category
@@ -45,7 +45,7 @@ def get_readable_output(fact, image) -> str:
     return f'### {fact}\n![Image]({image})'
 
 
-def get_user_fact(args: Dict[str, Any]) -> CommandResults:
+def get_user_fact(args: dict[str, Any]) -> CommandResults:
     category = args.get('category')
 
     res = dbot_fact(category)

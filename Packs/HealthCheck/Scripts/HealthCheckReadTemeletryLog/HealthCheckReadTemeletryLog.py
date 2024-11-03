@@ -8,7 +8,7 @@ if res[0]['Type'] == entryTypes['error']:
     demisto.results('File not found')
 else:
     try:
-        with open(res[0]['Contents']['path'], 'r') as file:
+        with open(res[0]['Contents']['path']) as file:
 
             if 'notelemetry' in file.read():
                 demisto.executeCommand("setIncident", {'xsoartelemetrystatus': 'Not Enabled'})

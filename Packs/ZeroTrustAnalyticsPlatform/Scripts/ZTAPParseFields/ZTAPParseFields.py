@@ -1,6 +1,6 @@
 from CommonServerPython import *
 
-from typing import Dict, Any
+from typing import Any
 import traceback
 from collections import defaultdict
 
@@ -55,7 +55,7 @@ def parse_fields(events, full, max_fields, max_value_length) -> str:
 """ COMMAND FUNCTION """
 
 
-def parse_fields_command(args: Dict[str, Any]) -> CommandResults:
+def parse_fields_command(args: dict[str, Any]) -> CommandResults:
 
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields")

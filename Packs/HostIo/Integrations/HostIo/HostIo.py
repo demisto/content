@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import Any
 import urllib3
 from CommonServerPython import *
 from math import ceil
@@ -67,7 +67,7 @@ def test_module_command(client: Client) -> str:
     return 'ok'
 
 
-def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def domain_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     """domain command: Returns domain reputation for a list of domains
 
     :type client: ``Client``
@@ -86,7 +86,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     """
     domains = argToList(args.get('domain'))
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     for domain in domains:
         domain_data = client.get_domain_data(domain)
 

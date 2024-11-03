@@ -42,7 +42,7 @@ def test_set_arguments_for_widget_view_when_hostname_is_empty():
     # Execute
     arguments = ChronicleAssetEventsForHostnameWidgetScript.set_arguments_for_widget_view(indicator_data)
     # Assert
-    assert {} == arguments
+    assert arguments == {}
 
 
 def test_set_arguments_for_widget_view_when_hostname_is_valid():

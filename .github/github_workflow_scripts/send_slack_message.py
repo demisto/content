@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from typing import List
 
 from slack_sdk import WebClient
 from blessings import Terminal
@@ -49,7 +48,7 @@ def create_slack_markdown(text: str) -> dict:
     }
 
 
-def create_slack_fields(text_fields: List) -> dict:
+def create_slack_fields(text_fields: list) -> dict:
     """Create slack block-kit section entry with fields key
 
         Args:
@@ -80,7 +79,7 @@ def create_slack_section(key: str, value: str) -> dict:
     })
 
 
-def create_individual_pack_segment(metadata_obj: dict) -> List[dict]:
+def create_individual_pack_segment(metadata_obj: dict) -> list[dict]:
     """Create the pack information segment of the message
 
         Args:
@@ -104,7 +103,7 @@ def create_individual_pack_segment(metadata_obj: dict) -> List[dict]:
     return pack_details
 
 
-def create_packs_segment(metadata_files: list) -> List[dict]:
+def create_packs_segment(metadata_files: list) -> list[dict]:
     """Aggregate the pack information segments of the message
 
         Args:
@@ -121,7 +120,7 @@ def create_packs_segment(metadata_files: list) -> List[dict]:
     return all_packs
 
 
-def create_pull_request_segment(pr: PullRequest.PullRequest) -> List[dict]:
+def create_pull_request_segment(pr: PullRequest.PullRequest) -> list[dict]:
     """Create the pull request information segment of the message
 
         Args:
@@ -143,7 +142,7 @@ def create_pull_request_segment(pr: PullRequest.PullRequest) -> List[dict]:
     return [pr_info_segment, {'text': create_slack_markdown(f'*URL:* `{pr.html_url}`'), 'type': 'section'}]
 
 
-def create_pr_title(pr: PullRequest.PullRequest) -> List[dict]:
+def create_pr_title(pr: PullRequest.PullRequest) -> list[dict]:
     """Create the message title
 
         Args:
@@ -163,7 +162,7 @@ def create_pr_title(pr: PullRequest.PullRequest) -> List[dict]:
     return header
 
 
-def slack_post_message(client: WebClient, message_blocks: List):
+def slack_post_message(client: WebClient, message_blocks: list):
     """Post a message to a slack channel
 
         Args:

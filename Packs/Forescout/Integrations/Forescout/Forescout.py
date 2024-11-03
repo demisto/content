@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import urllib3
-from typing import Dict, List, Tuple, Any, Union, cast
+from typing import Any, cast
 import xml.etree.ElementTree as ET_PHONE_HOME
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
@@ -182,7 +182,7 @@ def create_update_hostfields_request_body(host_ip: str, update_type: str,
 
     # parse fields_json
     non_composite_fields = {}
-    composite_fields: Dict[Any, Any] = {}
+    composite_fields: dict[Any, Any] = {}
     if fields_json:
         fields_json_dict = json.loads(fields_json)
         for key, val in fields_json_dict.items():
@@ -247,7 +247,7 @@ def create_update_hostfields_request_body(host_ip: str, update_type: str,
     return root
 
 
-def filter_hostfields_data(args: Dict, data: Dict) -> List:
+def filter_hostfields_data(args: dict, data: dict) -> list:
     """
     Filter host fields data by get_host_fields_command arguments.
 
@@ -303,8 +303,7 @@ def filter_hostfields_data(args: Dict, data: Dict) -> List:
                 if search_term == val_to_search:
                     filtered_hostfields.append(host_field)
                     break
-                else:
-                    continue
+                continue
             else:
                 if search_term in val_to_search:
                     filtered_hostfields.append(host_field)
@@ -313,7 +312,7 @@ def filter_hostfields_data(args: Dict, data: Dict) -> List:
     return filtered_hostfields
 
 
-def dict_to_formatted_string(dictionary: Union[Dict, List]) -> str:
+def dict_to_formatted_string(dictionary: dict | list) -> str:
     """
     Return dictionary as clean string for war room output.
 
@@ -339,7 +338,7 @@ def dict_to_formatted_string(dictionary: Union[Dict, List]) -> str:
     return json.dumps(dictionary).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
 
 
-def format_policies_data(data: Dict) -> List:
+def format_policies_data(data: dict) -> list:
     """
     Return policies formatted to Demisto standards.
 
@@ -375,7 +374,7 @@ def format_policies_data(data: Dict) -> List:
     return formatted_policies
 
 
-def create_web_api_headers() -> Dict:
+def create_web_api_headers() -> dict:
     """
     Update JWT if it has expired and return headers object that formats to Forescout Web API expectations
 
@@ -408,8 +407,8 @@ def web_api_login():
         LAST_JWT_FETCH = fetch_time
 
 
-def http_request(method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
-                 auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
+def http_request(method: str, url_suffix: str, full_url: str = None, headers: dict = None,
+                 auth: tuple = None, params: dict = None, data: dict = None, files: dict = None,
                  timeout: float = HTTP_TIMEOUT, resp_type: str = 'json') -> Any:
     """
     A wrapper for requests lib to send our requests and handle requests
@@ -464,14 +463,14 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
 
         # Handle error responses gracefully
         if res.status_code not in {200, 304}:
-            err_msg = 'Error in Forescout Integration API call [{}] - {}'.format(res.status_code, res.reason)
+            err_msg = f'Error in Forescout Integration API call [{res.status_code}] - {res.reason}'
             try:
                 # Try to parse json error response
                 res_json = res.json()
                 message = res_json.get('message')
                 if message.endswith(' See log for more details.'):
                     message = message.replace(' See log for more details.', '')
-                err_msg += '\n{}'.format(message)
+                err_msg += f'\n{message}'
                 return_error(err_msg)
             except json.decoder.JSONDecodeError:
                 if res.status_code in {400, 401, 501}:
@@ -628,7 +627,7 @@ def get_host_command():
         'Endpoint(val.ID && val.ID === obj.ID)': endpoint
     }
 
-    title = 'Endpoint Details for {}'.format(identifier) if identifier else 'Endpoint Details'
+    title = f'Endpoint Details for {identifier}' if identifier else 'Endpoint Details'
     human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
 
@@ -843,9 +842,9 @@ def main():
         handle_proxy()
 
         cmd_name = demisto.command()
-        LOG('Command being called is {}'.format(cmd_name))
+        LOG(f'Command being called is {cmd_name}')
 
-        if cmd_name in COMMANDS.keys():
+        if cmd_name in COMMANDS:
             COMMANDS[cmd_name]()
 
     except Exception as e:

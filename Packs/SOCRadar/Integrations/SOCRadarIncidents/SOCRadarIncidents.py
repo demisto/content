@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 import urllib3
 import traceback
 from json.decoder import JSONDecodeError
-from typing import Dict, Any, Tuple, cast
+from typing import Any, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # noqa # pylint: disable=no-member
@@ -18,7 +18,7 @@ SOCRADAR_SEVERITIES = ['Unknown', 'Info', 'Low', 'Medium', 'High']
 EXCLUDED_INCIDENT_FIELDS = ('extra_info', 'alarm_notification_texts')
 MAX_INCIDENTS_TO_FETCH = 50
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data.',
     'AUTHORIZATION_ERROR': 'Authorization Error: make sure API Key is correctly set.',
     'RATE_LIMIT_EXCEED_ERROR': 'Rate limit has been exceeded. Please make sure your your API key\'s rate limit is adequate.',
@@ -120,7 +120,7 @@ class Client(BaseClient):
         : start timestamp (epoch in seconds) for the alert search
         """
 
-        api_params: Dict[str, Any] = {'key': self.api_key}
+        api_params: dict[str, Any] = {'key': self.api_key}
 
         if resolution_status and resolution_status.lower() != 'all':
             api_params['is_resolved'] = True if resolution_status.lower() == 'resolved' else False
@@ -163,7 +163,7 @@ class Client(BaseClient):
         :param comments: Possible comments of the mark as false positive action which will be sent to SOCRadar.
         """
 
-        api_params: Dict[str, str] = {'key': self.api_key}
+        api_params: dict[str, str] = {'key': self.api_key}
         json_data = {'alarm_ids': [incident_id], 'comments': comments}
 
         suffix = f'/company/{self.socradar_company_id}/incidents/fp'
@@ -183,8 +183,8 @@ class Client(BaseClient):
         :param comments: Possible comments of the mark as resolved action which will be sent to SOCRadar.
         """
 
-        api_params: Dict[str, str] = {'key': self.api_key}
-        json_data: Dict[str, Any] = {'alarm_ids': [incident_id], 'comments': comments}
+        api_params: dict[str, str] = {'key': self.api_key}
+        json_data: dict[str, Any] = {'alarm_ids': [incident_id], 'comments': comments}
 
         suffix = f'/company/{self.socradar_company_id}/incidents/resolve'
         response = self._http_request(method='POST', url_suffix=suffix, params=api_params, json_data=json_data,
@@ -213,7 +213,7 @@ class Client(BaseClient):
             429: MESSAGES['RATE_LIMIT_EXCEED_ERROR']
         }
 
-        if response.status_code in status_code_messages.keys():
+        if response.status_code in status_code_messages:
             demisto.debug(f'Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}')
             raise DemistoException(status_code_messages[response.status_code])
         else:
@@ -240,10 +240,10 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
+def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int],
                     first_fetch_time: Optional[int], resolution_status: Optional[str], fp_status: Optional[str],
                     severity: List[str], incident_main_type: Optional[str], incident_sub_type: Optional[str]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+                    ) -> tuple[dict[str, int], List[dict]]:
     """
     :type client: ``Client``
     :param client: SOCRadar client to use
@@ -305,7 +305,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: List[dict[str, Any]] = []
 
     # Check if severity contains allowed values, use all if default
     if severity:
@@ -386,7 +386,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def mark_incident_as_fp_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def mark_incident_as_fp_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Sends a request that marks incident as false positive in SOCRadar platform.
 
     :type client: ``Client``
@@ -417,7 +417,7 @@ def mark_incident_as_fp_command(client: Client, args: Dict[str, str]) -> Command
     )
 
 
-def mark_incident_as_resolved_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def mark_incident_as_resolved_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Sends a request that marks incident as resolved in SOCRadar platform.
 
     :param client: client to use

@@ -28,16 +28,16 @@ def test_remove_prefix():
     from CarbonBlackProtect import remove_prefix
     prefix = "test_prefix"
 
-    str_with_prefix = '{}a'.format(prefix)
+    str_with_prefix = f'{prefix}a'
     expected_response = 'a'
     assert remove_prefix(prefix, str_with_prefix) == expected_response
 
-    str_without_prefix = 'b{}'.format(prefix)
+    str_without_prefix = f'b{prefix}'
     expected_response = str_without_prefix
     assert remove_prefix(prefix, str_without_prefix) == expected_response
 
-    str_with_two_prefixes = '{prefix}{prefix}c'.format(prefix=prefix)
-    expected_response = '{}c'.format(prefix)
+    str_with_two_prefixes = f'{prefix}{prefix}c'
+    expected_response = f'{prefix}c'
     assert remove_prefix(prefix, str_with_two_prefixes) == expected_response
 
 

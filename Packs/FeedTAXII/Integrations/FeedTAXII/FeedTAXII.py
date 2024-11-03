@@ -417,9 +417,8 @@ class Taxii11:
         if message_id is None:
             message_id = Taxii11.new_message_id()
 
-        return '''<taxii_11:Collection_Information_Request xmlns:taxii_11=
-        "http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="{}"/>'''.format(
-            message_id)
+        return f'''<taxii_11:Collection_Information_Request xmlns:taxii_11=
+        "http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="{message_id}"/>'''
 
     @staticmethod
     def poll_request(
@@ -442,8 +441,7 @@ class Taxii11:
         if subscription_id is not None:
             result.append(f'subscription_id="{subscription_id}"')
         result.append('>')
-        result.append('<taxii_11:Exclusive_Begin_Timestamp>{}</taxii_11:Exclusive_Begin_Timestamp>'.format(
-            exclusive_begin_timestamp))
+        result.append(f'<taxii_11:Exclusive_Begin_Timestamp>{exclusive_begin_timestamp}</taxii_11:Exclusive_Begin_Timestamp>')
         result.append(
             f'<taxii_11:Inclusive_End_Timestamp>{inclusive_end_timestamp}</taxii_11:Inclusive_End_Timestamp>')
 
@@ -556,12 +554,12 @@ class TAXIIClient:
 
         # authentication
         if credentials:
-            if '_header:' in credentials.get('identifier', None):
-                self.api_header = credentials.get('identifier', None).split('_header:')[1]
-                self.api_key = credentials.get('password', None)
+            if '_header:' in credentials.get('identifier'):
+                self.api_header = credentials.get('identifier').split('_header:')[1]
+                self.api_key = credentials.get('password')
             else:
-                self.username = credentials.get('identifier', None)
-                self.password = credentials.get('password', None)
+                self.username = credentials.get('identifier')
+                self.password = credentials.get('password')
 
         cert_text = replace_spaces_in_credential(creds_certificate.get('identifier')) or cert_text
         key_text = creds_certificate.get('password') or key_text
@@ -688,9 +686,7 @@ class TAXIIClient:
             address = coll_service.find('Address')
             if address is None:
                 LOG(
-                    '{} - Collection management service with no address: {!r}'.format(
-                        INTEGRATION_NAME, coll_service
-                    )
+                    f'{INTEGRATION_NAME} - Collection management service with no address: {coll_service!r}'
                 )
                 continue
             address = address.string

@@ -2,7 +2,7 @@ from CommonServerPython import *
 import urllib3
 from datetime import datetime, timedelta
 import time
-from typing import Any, Tuple
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -128,7 +128,7 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
     return event_list
 
 
-def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
         Implement the get_events command
         Args:
@@ -150,7 +150,7 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
     return event_list, CommandResults(readable_output=hr)
 
 
-def create_events_for_push(event_list: list, last_time: str, id_list: list, limit: int) -> Tuple[list, str, list]:
+def create_events_for_push(event_list: list, last_time: str, id_list: list, limit: int) -> tuple[list, str, list]:
     """
        Create events for pushing them and prepares the values for next_run save
        Args:
@@ -188,7 +188,7 @@ def create_events_for_push(event_list: list, last_time: str, id_list: list, limi
     return event_list_for_push, last_time, id_list
 
 
-def fetch_events(client: Client, last_run: dict[str, list], limit: int) -> Tuple[dict, list]:
+def fetch_events(client: Client, last_run: dict[str, list], limit: int) -> tuple[dict, list]:
     """
     Args:
         client (Client): DG client to use.

@@ -115,15 +115,7 @@ class Client:
             string containing all of the required parameters
         """
 
-        conn_string = ("DRIVER={};DATABASE={};HOSTNAME={};PORT={};PROTOCOL={};UID={};PWD={};").format(
-            DRIVER_NAME,
-            self.dbname,
-            self.host,
-            self.port,
-            PROTOCOL,
-            self.username,
-            self.password,
-        )
+        conn_string = (f"DRIVER={DRIVER_NAME};DATABASE={self.dbname};HOSTNAME={self.host};PORT={self.port};PROTOCOL={PROTOCOL};UID={self.username};PWD={self.password};")
 
         if self.ssl_connect:
             conn_string += "SECURITY=SSL;"

@@ -1,6 +1,6 @@
 from CommonServerPython import *
 
-from typing import Dict, Any
+from typing import Any
 import traceback
 from collections import defaultdict
 
@@ -46,7 +46,7 @@ def parse_links(events) -> str:
 """ COMMAND FUNCTION """
 
 
-def parse_links_command(args: Dict[str, Any]) -> CommandResults:
+def parse_links_command(args: dict[str, Any]) -> CommandResults:
 
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields")

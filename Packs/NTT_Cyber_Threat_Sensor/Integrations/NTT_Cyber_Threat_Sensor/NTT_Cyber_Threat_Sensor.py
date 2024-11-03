@@ -29,9 +29,9 @@ USE_SSL = not demisto.params().get('insecure')
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'x-api-key': '{}'.format(APIKEY),
-    'x-soar-token': '{}'.format(SOARTOKEN),
-    'tenant-id': '{}'.format(TENANT_ID)
+    'x-api-key': f'{APIKEY}',
+    'x-soar-token': f'{SOARTOKEN}',
+    'tenant-id': f'{TENANT_ID}'
 }
 
 """HELPER FUNCTIONS
@@ -68,7 +68,7 @@ def http_request(method, url_suffix, json_dict=None, params=None, headers=None, 
     if res.status_code == 401:
         raise DemistoException('UnauthorizedError: please validate your credentials.')
     if res.status_code not in {200}:
-        raise DemistoException('Error in API call [{}] - {}'.format(res.status_code, res.reason))
+        raise DemistoException(f'Error in API call [{res.status_code}] - {res.reason}')
     return res.json()
 
 
@@ -273,13 +273,13 @@ def main():
     """Main function
     """
     cmd = demisto.command()
-    demisto.debug('Command being called is {}'.format(cmd))
+    demisto.debug(f'Command being called is {cmd}')
 
     try:
         if cmd in COMMANDS:
             COMMANDS[cmd]()
         else:
-            demisto.debug('Command {} not implemented'.format(cmd))
+            demisto.debug(f'Command {cmd} not implemented')
 
     # Log exceptions
     except Exception as e:
@@ -290,7 +290,7 @@ def main():
             demisto.debug(str(e))
             raise
         else:
-            return_error('An error occurred: {}'.format(str(e)))
+            return_error(f'An error occurred: {str(e)}')
 
 
 # python2 uses __builtin__ python3 uses builtins

@@ -1,5 +1,4 @@
 import json
-import io
 
 MOCK_EMPTY_RESPONSE = {"kind": "tm:asm:policies:host-names:host-namecollectionstate",
                        "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/host-names",
@@ -9,7 +8,7 @@ MOCK_EMPTY_RESPONSE = {"kind": "tm:asm:policies:host-names:host-namecollectionst
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

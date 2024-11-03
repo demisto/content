@@ -203,7 +203,7 @@ def test_indicator_field_update_command(mocker, field, value):
     mocker.patch.object(client.stix_cyber_observable, 'update_field', return_value={'id': '123456'})
     results: CommandResults = indicator_field_update_command(client, args)
     assert "updated successfully" in results.readable_output
-    assert {'id': '123456'} == results.outputs
+    assert results.outputs == {'id': '123456'}
 
 
 def test_indicator_create_command(mocker):
@@ -303,8 +303,8 @@ def test_organization_list_command(mocker):
                         })
     results: CommandResults = organization_list_command(client, {})
     assert "Organizations" in results.readable_output
-    assert [{'id': '1', 'name': 'test organization'}] == \
-        results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)') == \
+        [{'id': '1', 'name': 'test organization'}]
 
 
 def test_organization_create_command(mocker):
@@ -323,7 +323,7 @@ def test_organization_create_command(mocker):
     mocker.patch.object(client.identity, 'create', return_value={'id': '1'})
     results: CommandResults = organization_create_command(client, args)
     assert "was created successfully" in results.readable_output
-    assert {'id': '1'} == results.outputs
+    assert results.outputs == {'id': '1'}
 
 
 def test_label_list_command(mocker):
@@ -343,7 +343,7 @@ def test_label_list_command(mocker):
                         })
     results: CommandResults = label_list_command(client, {})
     assert "Labels" in results.readable_output
-    assert [{'id': '1', 'value': 'test-label'}] == results.outputs.get('OpenCTI.Labels.LabelsList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.Labels.LabelsList(val.id === obj.id)') == [{'id': '1', 'value': 'test-label'}]
 
 
 def test_label_create_command(mocker):
@@ -362,7 +362,7 @@ def test_label_create_command(mocker):
     mocker.patch.object(client.label, 'create', return_value={'id': '1'})
     results: CommandResults = label_create_command(client, args)
     assert "was created successfully" in results.readable_output
-    assert {'id': '1'} == results.outputs
+    assert results.outputs == {'id': '1'}
 
 
 def test_external_reference_create_command(mocker):
@@ -383,7 +383,7 @@ def test_external_reference_create_command(mocker):
     mocker.patch.object(client.external_reference, 'create', return_value={'id': '1'})
     results: CommandResults = external_reference_create_command(client, args)
     assert "was created successfully" in results.readable_output
-    assert {'id': '1'} == results.outputs
+    assert results.outputs == {'id': '1'}
 
 
 def test_marking_list_command(mocker):
@@ -403,5 +403,5 @@ def test_marking_list_command(mocker):
                         })
     results: CommandResults = marking_list_command(client, {})
     assert "Markings" in results.readable_output
-    assert [{'id': '1', 'value': 'TLP:RED'}] \
-        == results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)')
+    assert results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)') \
+        == [{'id': '1', 'value': 'TLP:RED'}]

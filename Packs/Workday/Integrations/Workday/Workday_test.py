@@ -1,4 +1,3 @@
-import io
 import json
 import pytest
 from Workday import Client, list_workers_command, create_worker_context, convert_to_json, main
@@ -10,12 +9,12 @@ client = Client(tenant_url="https://test.workday.com/XSOAR", verify_certificate=
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_read_file(path):
-    with open(path, 'r') as _file:
+    with open(path) as _file:
         return _file.read()
 
 
@@ -54,7 +53,7 @@ def test_create_worker_context():
        """
     WORKER_DATA = util_load_json('test_data/worker_data.json')
     context = create_worker_context(WORKER_DATA, num_of_managers=2)
-    assert WORKER_CONTEXT_DATA == context
+    assert context == WORKER_CONTEXT_DATA
     assert len(context[0].get('Managers')) == 2
     if context[0]['Emails'][0]['Primary']:
         assert True
@@ -72,7 +71,7 @@ def test_convert_to_json():
     XML_RAW_RESPONSE = util_read_file('test_data/xml_raw_response.txt')
     JSON_RAW_RESPONSE = util_load_json('test_data/json_raw_respose.json')
     raw_response, worker_data = convert_to_json(XML_RAW_RESPONSE)
-    assert JSON_RAW_RESPONSE == raw_response
+    assert raw_response == JSON_RAW_RESPONSE
     assert worker_data == worker_data
 
 

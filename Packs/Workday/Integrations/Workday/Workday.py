@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Tuple
 
 # IMPORTS
 # Disable insecure warnings
@@ -251,7 +250,7 @@ class Client(BaseClient):
         self.username = username
         self.password = password
 
-    def list_workers(self, page, count, employee_id=None) -> Tuple:
+    def list_workers(self, page, count, employee_id=None) -> tuple:
         if employee_id:
             body = GET_EMPLOYEE_BY_ID.format(
                 token=self.token, username=self.username, password=self.password, api_version=API_VERSION,
@@ -264,7 +263,7 @@ class Client(BaseClient):
         return convert_to_json(raw_response)
 
 
-def test_module(client: Client, args: Dict) -> str:
+def test_module(client: Client, args: dict) -> str:
     try:
         client.list_workers(page='1', count='1')
     except Exception as e:

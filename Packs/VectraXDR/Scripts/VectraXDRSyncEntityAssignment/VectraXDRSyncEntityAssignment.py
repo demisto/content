@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any, List
+from typing import Any
 import traceback
 
 ASSIGNMENT_LAYOUT_FIELDS = ['date_resolved', 'resolved_by', 'outcome']
@@ -10,7 +10,7 @@ EMPTY_ASSIGNMENT = [{"id": "", "date_assigned": "", "date_resolved": "", "assign
 
 # HELPER FUNCTIONS
 
-def handle_error(command_results: List[Dict[str, Any]]) -> None:
+def handle_error(command_results: list[dict[str, Any]]) -> None:
     """
     Handle the error entries after executing the commands.
 
@@ -23,7 +23,7 @@ def handle_error(command_results: List[Dict[str, Any]]) -> None:
         return return_error(command_results[0]["Contents"])
 
 
-def map_and_update_entity_assignments(data: Dict[str, Any], mapper: str, mapper_type: str) -> CommandResults:
+def map_and_update_entity_assignments(data: dict[str, Any], mapper: str, mapper_type: str) -> CommandResults:
     """
     Perform dictionary mapping using pre-configured mappers and update the entity assignments accordingly.
 

@@ -15,7 +15,6 @@ import AttackSurfaceManagement
 from CommonServerPython import *
 import pytest
 import json
-import io
 
 import sys
 import os
@@ -495,7 +494,7 @@ MOCK_GET_REMOTE_DATA_NOTES_RESPONSE = {
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

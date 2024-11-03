@@ -1,11 +1,10 @@
 import json
-import io
 
 MOCKED_BASE_URL = 'https://api.test.com/api/'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

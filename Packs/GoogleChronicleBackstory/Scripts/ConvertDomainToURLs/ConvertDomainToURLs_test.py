@@ -38,4 +38,4 @@ def test_get_entry_context_success():
     """
 
     converted_urls = ConvertDomainToURLs.get_entry_context(ARGS.get('domains'), True)
-    assert {'DomainToURL': ['http://demo.com', 'https://demo.com']} == converted_urls  # NOSONAR
+    assert converted_urls == {'DomainToURL': ['http://demo.com', 'https://demo.com']}  # NOSONAR

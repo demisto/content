@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
-from typing import Any, Dict, Generator, List, Optional, Tuple, Union
+from typing import Any
+from collections.abc import Generator
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 
@@ -11,15 +12,15 @@ TITLE_THRESHOLD = 4
 class Table:
     def __init__(self, title: str):
         self.__title = title
-        self.__headers: List[str] = []
-        self.__rows: List[Tuple[List[str], List[str]]] = []
-        self.__rowspan_labels: List[Tuple[int, str]] = []
+        self.__headers: list[str] = []
+        self.__rows: list[tuple[list[str], list[str]]] = []
+        self.__rowspan_labels: list[tuple[int, str]] = []
 
-    def __set_rowspan_labels(self, columns: Optional[List[Tag]]):
+    def __set_rowspan_labels(self, columns: list[Tag] | None):
         if not columns or not any(col.attrs.get('rowspan') for col in columns):
             return
 
-        rowspan_labels: List[Tuple[int, str]] = []
+        rowspan_labels: list[tuple[int, str]] = []
         for col in columns:
             try:
                 rowspan = int(col.attrs.get('rowspan') or 1)
@@ -40,13 +41,13 @@ class Table:
     def get_title(self) -> str:
         return self.__title
 
-    def set_header_labels(self, headers: List[Tag]):
+    def set_header_labels(self, headers: list[Tag]):
         self.__headers = [header.text.strip() for header in headers]
 
-    def get_header_labels(self) -> List[str]:
+    def get_header_labels(self) -> list[str]:
         return self.__headers
 
-    def add_row(self, columns: List[Tag], labels: Optional[List[Tag]] = None):
+    def add_row(self, columns: list[Tag], labels: list[Tag] | None = None):
         """
         Add a row with cells and labels.
 
@@ -91,18 +92,18 @@ class Table:
 
         self.__rows.append((normalized_labels, normalized_columns))
 
-    def get_rows(self) -> List[Tuple[List[str], List[str]]]:
+    def get_rows(self) -> list[tuple[list[str], list[str]]]:
         return self.__rows
 
-    def make_pretty_table_rows(self, default_header_line: Optional[str] = None) -> Any:
+    def make_pretty_table_rows(self, default_header_line: str | None = None) -> Any:
         """
         Format a table
 
         :param default_header_line: Which table line handles as header by default, 'first_column' or 'first_row'
         :return: The table formatted in JSON structure.
         """
-        rows: List[Union[str, Dict[str, Any]]] = []
-        temp_row: Dict[str, Any] = {}
+        rows: list[str | dict[str, Any]] = []
+        temp_row: dict[str, Any] = {}
 
         tbl_rows = self.__rows
         headers = self.__headers
@@ -171,8 +172,8 @@ class Table:
         return rows
 
 
-def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
-                     node: Union[BeautifulSoup, Tag, NavigableString]) -> Optional[str]:
+def find_table_title(base: BeautifulSoup | Tag | NavigableString | None,
+                     node: BeautifulSoup | Tag | NavigableString) -> str | None:
     """
     Search for a table title from a node.
 
@@ -210,7 +211,7 @@ def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
     return title
 
 
-def list_columns(node: Union[BeautifulSoup, Tag, NavigableString], name: str) -> List[Tag]:
+def list_columns(node: BeautifulSoup | Tag | NavigableString, name: str) -> list[Tag]:
     """
     List columns of the row.
 
@@ -235,8 +236,8 @@ def list_columns(node: Union[BeautifulSoup, Tag, NavigableString], name: str) ->
     return vals
 
 
-def is_descendant(ancestor: Optional[Union[BeautifulSoup, Tag, NavigableString]],
-                  node: Optional[Union[BeautifulSoup, Tag, NavigableString]]) -> bool:
+def is_descendant(ancestor: BeautifulSoup | Tag | NavigableString | None,
+                  node: BeautifulSoup | Tag | NavigableString | None) -> bool:
     """
     Check if a node is descendant in the tree.
 
@@ -247,8 +248,8 @@ def is_descendant(ancestor: Optional[Union[BeautifulSoup, Tag, NavigableString]]
     return ancestor is not None and node is not None and any([ancestor is p for p in node.parents])
 
 
-def parse_table(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
-                table_node: Union[BeautifulSoup, Tag, NavigableString]) -> Generator[Table, None, None]:
+def parse_table(base: BeautifulSoup | Tag | NavigableString | None,
+                table_node: BeautifulSoup | Tag | NavigableString) -> Generator[Table, None, None]:
     """
     Parse a HTML table and enumerate tables found in the table.
 
@@ -293,7 +294,7 @@ def parse_table(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
         yield table
 
 
-def parse_tables(node: Union[BeautifulSoup, Tag, NavigableString]) -> Generator[Table, None, None]:
+def parse_tables(node: BeautifulSoup | Tag | NavigableString) -> Generator[Table, None, None]:
     """
     Parse HTML tables and enumerate them.
 

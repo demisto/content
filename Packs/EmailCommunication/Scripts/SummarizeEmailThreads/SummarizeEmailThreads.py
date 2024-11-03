@@ -110,7 +110,7 @@ def main():
             'Type': EntryType.NOTE,
             'Contents': no_entries_message
         })
-        return None
+        return
 
     demisto.results({
         'ContentsFormat': EntryFormat.TABLE,

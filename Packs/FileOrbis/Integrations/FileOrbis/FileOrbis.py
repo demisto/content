@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -117,7 +117,7 @@ def test_module(client: FileOrbisClient) -> str:
         return response.get("Message")
 
 
-def change_user_status_command(client: FileOrbisClient, args: Dict[str, Any]) -> CommandResults:
+def change_user_status_command(client: FileOrbisClient, args: dict[str, Any]) -> CommandResults:
     user_id: str = args.get('user_id')  # type:ignore
     status: int = int(args.get('status'))  # type:ignore
 

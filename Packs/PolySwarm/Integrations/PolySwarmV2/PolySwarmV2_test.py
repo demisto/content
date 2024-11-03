@@ -1009,8 +1009,7 @@ def test_file(mocker, requests_mock):
 
     param = {'hash': TEST_HASH_FILE}
 
-    path_search_hash = '/search/hash/sha256?hash={hash}'. \
-                       format(hash=TEST_HASH_FILE)
+    path_search_hash = f'/search/hash/sha256?hash={TEST_HASH_FILE}'
 
     requests_mock.get(MOCK_API_URL + path_search_hash,
                       json=MOCK_SEARCH_JSON_RESPONSE)

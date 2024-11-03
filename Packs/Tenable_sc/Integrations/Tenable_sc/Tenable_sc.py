@@ -2322,7 +2322,7 @@ def get_organization_command(client: Client, args: dict[str, Any]):
     Returns:
         CommandResults: command results object with the response, human readable section, and the context entries to add.
     """
-    fields = argToList(args.get('fields', None))
+    fields = argToList(args.get('fields'))
     res = client.get_organization(fields)
 
     if not res or 'response' not in res:

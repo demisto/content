@@ -9,7 +9,6 @@ import httplib2
 import urllib.parse
 from googleapiclient.discovery import build, Resource
 from oauth2client import service_account
-from typing import Optional
 
 SERVICE_ACCOUNT_FILE = 'token.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -291,7 +290,7 @@ def parse_sheets_for_get_response(sheets: list, include_grid_data: bool) -> list
 
 
 def default_ranges_if_not_specified(spreadsheet: str, ranges: str, include_grid_data: bool, service: Resource) -> \
-        Optional[str]:
+        str | None:
     """
         Args:
             ranges: (str) A Google A1 notation ranges
@@ -457,9 +456,9 @@ def create_sheet(service: Resource, args: dict) -> CommandResults:
             {
                 "addSheet": {
                     "properties": {
-                        "sheetId": args.get('sheet_id', None),
-                        "title": args.get('sheet_title', None),
-                        "index": args.get('sheet_index', None),
+                        "sheetId": args.get('sheet_id'),
+                        "title": args.get('sheet_title'),
+                        "index": args.get('sheet_index'),
                         "sheetType": args.get('sheet_type', "GRID"),
                         "rightToLeft": argToBoolean(args.get('right_to_left', False)),
                         "tabColor": {
@@ -684,7 +683,7 @@ def data_paste_sheets(service: Resource, args: dict) -> CommandResults:     # pr
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet', None),
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet'),
     }
     request_to_update = remove_empty_elements(request_to_update)
     kind = args.get('data_kind')
@@ -914,7 +913,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'google-sheets-value-append':
             return_results(value_append_sheets(service, demisto.args()))
         else:
-            raise NotImplementedError('Command "{}" is not implemented.'.format(demisto.command()))
+            raise NotImplementedError(f'Command "{demisto.command()}" is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:

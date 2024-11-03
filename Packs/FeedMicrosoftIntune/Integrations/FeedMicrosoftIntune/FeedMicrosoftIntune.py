@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Dict, List, Tuple, Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 
 import urllib3
 import re
@@ -17,7 +18,7 @@ class Client(BaseClient):
     Client to use in the Microsoft Intune Feed integration. Overrides BaseClient.
     """
 
-    def __init__(self, base_url: str, verify: bool = False, proxy: bool = False, tlp_color: Optional[str] = None):
+    def __init__(self, base_url: str, verify: bool = False, proxy: bool = False, tlp_color: str | None = None):
         """
         Implements class for Microsoft Intune feeds.
         :param url: the Intune endpoint URL
@@ -28,7 +29,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self.tlp_color = tlp_color
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
 
         Returns:
@@ -82,7 +83,7 @@ class Client(BaseClient):
         return result
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -94,7 +95,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, feed_tags: list = [], limit: int = -1) -> list[dict]:
     """Retrieves indicators from the feed
 
     Args:
@@ -134,9 +135,9 @@ def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> L
 
 
 def get_indicators_command(client: Client,
-                           params: Dict[str, str],
-                           args: Dict[str, str]
-                           ) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+                           params: dict[str, str],
+                           args: dict[str, str]
+                           ) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -156,7 +157,7 @@ def get_indicators_command(client: Client,
     return human_readable, {}, {'raw_response': indicators}
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: dict[str, str]) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -192,8 +193,8 @@ def main():
             tlp_color=tlp_color
         )
 
-        commands: Dict[
-            str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
+        commands: dict[
+            str, Callable[[Client, dict[str, str], dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]
         ] = {
             'test-module': test_module,
             'intune-get-indicators': get_indicators_command

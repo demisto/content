@@ -42,9 +42,7 @@ class SecBIClient(BaseClient):
         :return: SecBI Incident IDs List
         """
         params = assign_params(query=query, limit=limit)
-        LOG('Performing SecBI get_incidents_list request to {}/{} with params={}'.format(self._base_url,
-                                                                                         SECBI_API_ENDPOINT_INCIDENTS,
-                                                                                         str(params)))
+        LOG(f'Performing SecBI get_incidents_list request to {self._base_url}/{SECBI_API_ENDPOINT_INCIDENTS} with params={str(params)}')
         return self._http_request(method='GET',
                                   url_suffix=SECBI_API_ENDPOINT_INCIDENTS,
                                   params=params)
@@ -97,7 +95,7 @@ def secbi_get_incidents_list_command(client: SecBIClient, args: dict) -> tuple[s
     :param args: The Demisto args
     :return: Content for return_outputs()
     """
-    query = args.get('query', None)
+    query = args.get('query')
     limit = args.get('limit', 100)
     incidents_list = client.secbi_get_incidents_list(query, limit)
 
@@ -116,7 +114,7 @@ def secbi_get_incident_command(client: SecBIClient, args: dict) -> tuple[str, di
     :param args: The Demisto args
     :return: Content for return_outputs()
     """
-    incident_id = args.get('incident_id', None)
+    incident_id = args.get('incident_id')
     raw_incident = client.secbi_get_incident(incident_id)
     incident_data = as_secbi_incident(raw_incident)
 
@@ -134,7 +132,7 @@ def secbi_get_incident_by_host_command(client: SecBIClient, args: dict) -> tuple
     :param args: The Demisto args
     :return: Content for return_outputs()
     """
-    host = args.get('host', None)
+    host = args.get('host')
     raw_incident = client.secbi_get_incident_by_host(host)
     incident_data = as_secbi_incident(raw_incident)
 

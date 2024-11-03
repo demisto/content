@@ -15,7 +15,7 @@ if res[0]['Type'] == entryTypes['error']:
     demisto.results('File not found')
 
 try:
-    with open(res[0]['Contents']['path'], 'r') as file:
+    with open(res[0]['Contents']['path']) as file:
         python_dict = json.loads(str(file.read()))
         if 'validTil' in python_dict:
             validTil = python_dict['validTil']

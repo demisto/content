@@ -6,7 +6,7 @@ import urllib3
 import traceback
 from urllib.parse import urlparse
 from ipaddress import ip_address
-from typing import Dict, Tuple, Any
+from typing import Any
 from jarm.scanner.scanner import Scanner
 
 # Disable insecure warnings
@@ -18,18 +18,18 @@ DEFAULT_PORT = 443
 
 
 class Client:
-    def jarm_fingerprint(self, host: str, port: int) -> Tuple[str, str, int]:
+    def jarm_fingerprint(self, host: str, port: int) -> tuple[str, str, int]:
         return asyncio.run(Scanner.scan_async(host, port, suppress=True))
 
 
 """ HELPER FUNCTIONS """
 
 
-def parse_hostname(hostname: str, port: Optional[int]) -> Dict[str, Any]:
+def parse_hostname(hostname: str, port: Optional[int]) -> dict[str, Any]:
     """
     Parses a target hostname. Supports multiple ipv4/fqdn with and without port formats.
     """
-    target: Dict[str, Any] = {}
+    target: dict[str, Any] = {}
     if not hostname.startswith('https://'):
         hostname = 'https://' + hostname
 
@@ -60,13 +60,13 @@ def test_module(client: Client) -> str:
 
 
 def jarm_fingerprint_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     class JARMDBotScore(Common.Indicator):
-        def __init__(self, output: Dict[str, Any]):
+        def __init__(self, output: dict[str, Any]):
             self._jarm = output.get('Fingerprint')
 
-        def to_context(self) -> Dict[str, Any]:
+        def to_context(self) -> dict[str, Any]:
             return {
                 "DBotScore": {
                     "Indicator": self._jarm,

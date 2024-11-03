@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 """ IMPORTS """
 import urllib3
 import csv
-from typing import Generator, Tuple, Optional, List
+from collections.abc import Generator
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -14,7 +14,7 @@ SOURCE_NAME = "Proofpoint Feed"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, auth_code, tags: list = None, tlp_color: Optional[str] = None, **kwargs):
+    def __init__(self, base_url, auth_code, tags: list = None, tlp_color: str | None = None, **kwargs):
         if tags is None:
             tags = []
         self._tags: list = tags
@@ -108,7 +108,7 @@ class Client(BaseClient):
                 yield item
 
     @staticmethod
-    def _process_item(item: dict, tags: list, tlp_color: Optional[str] = None) -> dict:
+    def _process_item(item: dict, tags: list, tlp_color: str | None = None) -> dict:
         indicator_obj = {
             "value": item["value"],
             "type": item["type"],
@@ -148,7 +148,7 @@ class Client(BaseClient):
         """
         return self._build_iterator(self.IP_TYPE)
 
-    def get_indicators_domain(self) -> List[dict]:
+    def get_indicators_domain(self) -> list[dict]:
         """ Gets indicator's dict of domains
 
         Returns:
@@ -159,7 +159,7 @@ class Client(BaseClient):
             for item in self._build_iterator_domain()
         ]
 
-    def get_indicators_ip(self) -> List[dict]:
+    def get_indicators_ip(self) -> list[dict]:
         """ Gets indicator's dict of ips
 
         Returns:
@@ -170,7 +170,7 @@ class Client(BaseClient):
             for item in self._build_iterator_ip()
         ]
 
-    def get_indicators(self) -> List[dict]:
+    def get_indicators(self) -> list[dict]:
         """ Gets indicator's dict of domains and ips
 
         Returns:
@@ -212,7 +212,7 @@ def module_test_command(client: Client, indicator_type: str) -> str:
     return "ok"
 
 
-def fetch_indicators_command(client: Client, indicator_type: Optional[str]):
+def fetch_indicators_command(client: Client, indicator_type: str | None):
     """ Retrieving indicators from the API
 
     Args:
@@ -230,7 +230,7 @@ def fetch_indicators_command(client: Client, indicator_type: Optional[str]):
         return client.get_indicators()
 
 
-def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict, list]:
+def get_indicators_command(client: Client, args: dict) -> tuple[str, dict, list]:
     """ Gets indicator to context
 
     Args:
@@ -274,7 +274,7 @@ def main():
         tlp_color=params.get('tlp_color')
     )
     command = demisto.command()
-    demisto.info("Command being called is {}".format(command))
+    demisto.info(f"Command being called is {command}")
     # Switch case
     try:
         if command == "fetch-indicators":

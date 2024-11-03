@@ -1,8 +1,8 @@
 from CommonServerPython import *
-from typing import Dict, Any
+from typing import Any
 
 
-def display_cve_chart() -> Dict[str, Any]:
+def display_cve_chart() -> dict[str, Any]:
     cves_count = demisto.args().get('CvesCount', 0)
     trending_cves_count = demisto.args().get('TrendingCvesCount', 0)
 

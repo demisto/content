@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any, Tuple
+from typing import Any
 from demisto_sdk.commands.common.tools import _get_file_id, get_file_displayed_name, find_type, get_file
 from pathlib import Path
 from collections import defaultdict
@@ -26,7 +26,7 @@ def update_file_prefix(file_name: str) -> str:
     return file_name
 
 
-def get_content_details(tar_file_handler: Any, member_file: Any) -> Tuple[str, dict]:
+def get_content_details(tar_file_handler: Any, member_file: Any) -> tuple[str, dict]:
     """Get content id from tar member file.
 
     Args:
@@ -99,7 +99,7 @@ def filter_lists(include: list, exclude: list) -> list:
     return [item for item in include if item.get('id') not in exclude]
 
 
-def get_included_ids_command(args: Dict[str, Any]) -> CommandResults:
+def get_included_ids_command(args: dict[str, Any]) -> CommandResults:
     """Get included ids from installed custom content unless id is excluded.
 
     Args:

@@ -214,16 +214,15 @@ def fetch_incidents(dfir_iris, params):
         if case['case_id'] == LastCaseId:
             demisto.info('The case number is the same, do not continue the process')
             break
-        elif case['case_id'] < LastCaseId:
+        if case['case_id'] < LastCaseId:
             demisto.info('The previous case was deleted, do not continue the process')
             break
-        else:
-            incident = {
-                'name': case['case_name'],
-                'rawJSON': json.dumps(case)
-            }
+        incident = {
+            'name': case['case_name'],
+            'rawJSON': json.dumps(case)
+        }
 
-            incidents.append(incident)
+        incidents.append(incident)
 
     return incidents, cases[0]['case_id']
 

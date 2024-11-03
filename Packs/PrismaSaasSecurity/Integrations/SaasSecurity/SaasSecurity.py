@@ -470,8 +470,8 @@ def get_remote_data_command(client, args):
         GetRemoteDataResponse object, which contain the incident data to update.
     """
     remote_args = GetRemoteDataArgs(args)
-    demisto.debug('Performing get-remote-data command with incident id: {} and last_update: {}'
-                  .format(remote_args.remote_incident_id, remote_args.last_update))
+    demisto.debug(f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id} and last_update: {remote_args.last_update}'
+                  )
 
     incident_data = {}
     try:

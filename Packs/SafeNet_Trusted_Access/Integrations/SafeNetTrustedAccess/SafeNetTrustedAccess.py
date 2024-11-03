@@ -4,7 +4,7 @@ import json
 import re
 import traceback
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import quote_plus
 import urllib3
 import copy
@@ -747,7 +747,7 @@ def test_module(client, args):
     return 'ok'
 
 
-def get_userlist_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_userlist_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-list command. Get list of all the users in the tenant. """
 
     response = client.get_userlist_sta(limit=args.get('limit'))
@@ -767,7 +767,7 @@ def get_userlist_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def get_user_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_info_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-info command. Get profile information of a specific user."""
 
     response = client.get_user_info_sta(userName=args.get('userName'))
@@ -789,7 +789,7 @@ def get_user_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def create_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_user_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-create-user command. Create a new user in the tenant. """
 
     response = client.create_user_sta(args=args)
@@ -810,7 +810,7 @@ def create_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_user_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-update-user-info command. Update profile of a specific user. """
 
     response = client.update_user_sta(args=args)
@@ -831,7 +831,7 @@ def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_user_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-user command. Delete user from the tenant. """
 
     response = client.delete_user_sta(userName=args.get('userName'))
@@ -847,7 +847,7 @@ def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_groups_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-groups command. Get all the groups associated with a specific user. """
 
     response, output_data = client.user_groups_data(userName=args.get('userName'), limit=args.get('limit'))
@@ -866,7 +866,7 @@ def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_group_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_group_list_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-group-list command. Get list of all the groups in the tenant. """
 
     response = client.get_group_list_sta(limit=args.get('limit'))
@@ -884,7 +884,7 @@ def get_group_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_group_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_group_info_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-group-info command. Get information of a specific group. """
 
     response = client.get_group_info_sta(groupName=args.get('groupName'))
@@ -902,7 +902,7 @@ def get_group_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_group_members_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-group-members command. Get list of users in a specific group. """
 
     response, output_data = client.group_members_data(groupName=args.get('groupName'), limit=args.get('limit'))
@@ -921,7 +921,7 @@ def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-create-group command. Create a new group in the tenant. """
 
     response = client.create_group_sta(args=args)
@@ -940,7 +940,7 @@ def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def delete_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-group command. Delete group from the tenant. """
 
     response = client.delete_group_sta(groupName=args.get('groupName'))
@@ -956,7 +956,7 @@ def delete_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def update_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-update-group-info command. Update information of a specific group. """
 
     response = client.update_group_sta(args=args)
@@ -974,7 +974,7 @@ def update_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def user_exist_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def user_exist_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-user-exist-group command. Checks if a user is a member of a specific group."""
 
     response = client.user_exist_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
@@ -992,7 +992,7 @@ def user_exist_group_sta_command(client: Client, args: Dict[str, Any]) -> Comman
         )
 
 
-def add_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_user_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-add-user-group command. Add user to a specific group. """
 
     response = client.add_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
@@ -1009,7 +1009,7 @@ def add_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def remove_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_user_group_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-remove-user-group command. Remove user from a specific group. """
 
     response = client.remove_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
@@ -1026,7 +1026,7 @@ def remove_user_group_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def get_logs_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_logs_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-logs command. Get user's logs. """
 
     response = client.get_logs_sta(userName=args.get('userName'), since=args.get('since'),
@@ -1047,7 +1047,7 @@ def get_logs_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def validate_tenant_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def validate_tenant_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-validate-tenant command. Validate key and permissions. """
 
     client.validate_tenant_sta()
@@ -1058,7 +1058,7 @@ def validate_tenant_sta_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_application_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_application_list_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-application-list command. Get list of all the applications in the tenant. """
 
     response = client.get_application_list_sta(limit=args.get('limit'))
@@ -1076,7 +1076,7 @@ def get_application_list_sta_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def get_application_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_application_info_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-application-info command. Get profile information of a specific application."""
 
     readable_output, context_data = client.get_application_info_sta(applicationName=args.get('applicationName'))
@@ -1097,7 +1097,7 @@ def get_application_info_sta_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def get_user_applications_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_applications_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-applications. Get all the applications associated with a specific user. """
 
     response, output_data = client.user_applications_data(userName=args.get('userName'), limit=args.get('limit'))
@@ -1116,7 +1116,7 @@ def get_user_applications_sta_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def get_user_sessions_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_user_sessions_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-sessions command. Get all the sessions associated with a specific user. """
 
     response, output_data = client.user_sessions_data(userName=args.get('userName'))
@@ -1137,7 +1137,7 @@ def get_user_sessions_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def delete_user_sessions_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_user_sessions_sta_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-user-sessions command. Delete all the IDP sessions associated with a specific user. """
 
     response = client.delete_sessions_sta(userName=args.get('userName'))

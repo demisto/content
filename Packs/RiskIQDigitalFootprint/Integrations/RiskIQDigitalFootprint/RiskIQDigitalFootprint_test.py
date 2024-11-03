@@ -46,7 +46,7 @@ def test_http_request_missing_schema_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Invalid API URL. No schema supplied: http(s).' == str(e.value)
+    assert str(e.value) == 'Invalid API URL. No schema supplied: http(s).'
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -62,7 +62,7 @@ def test_http_request_invalid_schema_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Invalid API URL. Supplied schema is invalid, supports http(s).' == str(e.value)
+    assert str(e.value) == 'Invalid API URL. Supplied schema is invalid, supports http(s).'
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -76,8 +76,8 @@ def test_http_request_bad_request_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'An error occurred while fetching the data.' \
-           ' Reason: Id:dummy could not be normalized' == str(e.value)
+    assert str(e.value) == 'An error occurred while fetching the data.' \
+           ' Reason: Id:dummy could not be normalized'
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -90,7 +90,7 @@ def test_http_request_authentication_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Unauthenticated. Check the configured API token and API secret.' == str(e.value)
+    assert str(e.value) == 'Unauthenticated. Check the configured API token and API secret.'
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -104,7 +104,7 @@ def test_http_request_page_not_found_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'No record(s) found. Reason: Asset with id: dummy not found' == str(e.value)
+    assert str(e.value) == 'No record(s) found. Reason: Asset with id: dummy not found'
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -117,8 +117,8 @@ def test_http_request_internal_server_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'The server encountered an internal error for RiskIQ Digital Footprint and' \
-           ' was unable to complete your request.' == str(e.value)
+    assert str(e.value) == 'The server encountered an internal error for RiskIQ Digital Footprint and' \
+           ' was unable to complete your request.'
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -186,8 +186,8 @@ def test_http_request_proxy_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or' \
-           ' check the host, authentication details and connection details for the proxy.' == str(e.value)
+    assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or' \
+           ' check the host, authentication details and connection details for the proxy.'
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -203,8 +203,8 @@ def test_http_request_proxy_error_based_on_status(mock_base_http_request, client
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or check ' \
-           'the host, authentication details and connection details for the proxy.' == str(e.value)
+    assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or check ' \
+           'the host, authentication details and connection details for the proxy.'
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -220,7 +220,7 @@ def test_http_request_connection_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Connectivity failed. Check your internet connection or the API URL.' == str(e.value)
+    assert str(e.value) == 'Connectivity failed. Check your internet connection or the API URL.'
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -237,8 +237,8 @@ def test_http_request_connect_timeout_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Connection timed out. Check your internet connection or try decreasing the' \
-           ' value of the size argument if specified.' == str(e.value)
+    assert str(e.value) == 'Connection timed out. Check your internet connection or try decreasing the' \
+           ' value of the size argument if specified.'
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -255,8 +255,8 @@ def test_http_request_read_timeout_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Connection timed out. Check your internet connection or try decreasing the' \
-           ' value of the size argument if specified.' == str(e.value)
+    assert str(e.value) == 'Connection timed out. Check your internet connection or try decreasing the' \
+           ' value of the size argument if specified.'
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -272,7 +272,7 @@ def test_http_request_other_demisto_exception(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'custom' == str(e.value)
+    assert str(e.value) == 'custom'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -354,9 +354,9 @@ def test_asset_connections_invalid_type(client):
     with pytest.raises(ValueError) as e:
         validate_asset_connections_args_and_get_params(args={'type': 'dummy'})
 
-    assert 'The given value for type is invalid. Valid Types: Domain, Host,' \
-           ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.' \
-           == str(e.value)
+    assert str(e.value) \
+           == 'The given value for type is invalid. Valid Types: Domain, Host,' \
+           ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.'
 
 
 def test_asset_connections_invalid_global(client):
@@ -368,8 +368,8 @@ def test_asset_connections_invalid_global(client):
     with pytest.raises(ValueError) as e:
         validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'global': 'dummy'})
 
-    assert 'The given value for global argument is invalid. Valid values: true, false.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for global argument is invalid. Valid values: true, false.' \
+           ' This argument supports a single value only.'
 
 
 def test_asset_connections_exceeding_page_lower_limit(client):
@@ -382,8 +382,8 @@ def test_asset_connections_exceeding_page_lower_limit(client):
     with pytest.raises(ValueError) as e:
         validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'page': '-2'})
 
-    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
-           == str(e.value)
+    assert str(e.value)\
+           == 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'
 
 
 def test_asset_connections_invalid_page(client):
@@ -396,8 +396,8 @@ def test_asset_connections_invalid_page(client):
     with pytest.raises(ValueError) as e:
         validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'page': '-2'})
 
-    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
-           == str(e.value)
+    assert str(e.value)\
+           == 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -447,7 +447,7 @@ def test_asset_changes_summary_deep_link_with_only_date(client):
 
     deep_link = prepare_deep_link_for_asset_changes_summary(resp, args['date'], args['range'])
 
-    assert 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-06-05' == deep_link
+    assert deep_link == 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-06-05'
 
 
 def test_asset_changes_summary_deep_link_with_only_range(client):
@@ -467,7 +467,7 @@ def test_asset_changes_summary_deep_link_with_only_range(client):
 
     deep_link = prepare_deep_link_for_asset_changes_summary(resp, args['date'], args['range'])
 
-    assert 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-05-26/30' == deep_link
+    assert deep_link == 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-05-26/30'
 
 
 def test_asset_changes_summary_invalid_date(client):
@@ -483,8 +483,8 @@ def test_asset_changes_summary_invalid_date(client):
     with pytest.raises(ValueError) as e:
         validate_asset_changes_summary_args(args['date'], args['range'])
 
-    assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
+           ' This argument supports a single value only.'
 
 
 def test_asset_changes_summary_invalid_date_exception(client):
@@ -500,8 +500,8 @@ def test_asset_changes_summary_invalid_date_exception(client):
     with pytest.raises(ValueError) as e:
         validate_asset_changes_summary_args(args['date'], args['range'])
 
-    assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
+           ' This argument supports a single value only.'
 
 
 def test_asset_changes_summary_invalid_range(client):
@@ -518,8 +518,8 @@ def test_asset_changes_summary_invalid_range(client):
     with pytest.raises(ValueError) as e:
         validate_asset_changes_summary_args(args['date'], args['range'])
 
-    assert 'The given value for range is invalid. Valid values: 1, 7, 30.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for range is invalid. Valid values: 1, 7, 30.' \
+           ' This argument supports a single value only.'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -625,8 +625,8 @@ def test_asset_changes_deep_link_with_only_date(client):
     deep_link = prepare_deep_link_for_asset_changes(resp.get('content')[0].get('runDate'), args['type'],
                                                     args['measure'], args['date'], args['range'])
 
-    assert 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-06-05' \
-           '&measure=REMOVED&range=1&type=DOMAIN' == deep_link
+    assert deep_link == 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-06-05' \
+           '&measure=REMOVED&range=1&type=DOMAIN'
 
 
 def test_asset_changes_deep_link_with_date_and_range(client):
@@ -650,8 +650,8 @@ def test_asset_changes_deep_link_with_date_and_range(client):
     deep_link = prepare_deep_link_for_asset_changes(resp.get('content')[0].get('runDate'), args['type'],
                                                     args['measure'], args['date'], args['range'])
 
-    assert 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-06-13' \
-           '&measure=ADDED&range=30&type=IP_ADDRESS' == deep_link
+    assert deep_link == 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-06-13' \
+           '&measure=ADDED&range=30&type=IP_ADDRESS'
 
 
 def test_asset_changes_invalid_type(client):
@@ -663,10 +663,10 @@ def test_asset_changes_invalid_type(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'dummy'})
 
-    assert 'The given value for type is invalid. Valid asset types: Domain, Host, IP Address, IP Block, ASN, Page,' \
+    assert str(e.value) \
+           == 'The given value for type is invalid. Valid asset types: Domain, Host, IP Address, IP Block, ASN, Page,' \
            ' SSL Cert, Contact. Valid asset detail types: Self Hosted Resource, ThirdParty Hosted Resource.' \
-           ' This argument supports a single value only.' \
-           == str(e.value)
+           ' This argument supports a single value only.'
 
 
 def test_asset_changes_invalid_date_exception(client):
@@ -678,8 +678,8 @@ def test_asset_changes_invalid_date_exception(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'ASN', 'date': '2020-5-222'})
 
-    assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
+           ' This argument supports a single value only.'
 
 
 def test_asset_changes_invalid_date(client):
@@ -691,8 +691,8 @@ def test_asset_changes_invalid_date(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'ASN', 'date': '2020-05-2'})
 
-    assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
+           ' This argument supports a single value only.'
 
 
 def test_asset_changes_invalid_range_for_asset_type(client):
@@ -705,8 +705,8 @@ def test_asset_changes_invalid_range_for_asset_type(client):
         get_asset_changes_params(args={'range': '5', 'tag': 'dummy', 'brand': 'dummy',
                                        'organization': 'dummy', 'type': 'DOMAIN', 'date': '2020-05-20'})
 
-    assert 'The given value for range is invalid. Valid values: 1, 7, 30.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for range is invalid. Valid values: 1, 7, 30.' \
+           ' This argument supports a single value only.'
 
 
 def test_asset_changes_invalid_range_for_asset_detail_type(client):
@@ -719,8 +719,8 @@ def test_asset_changes_invalid_range_for_asset_detail_type(client):
         get_asset_changes_params(args={'range': '30', 'tag': 'dummy', 'brand': 'dummy',
                                        'organization': 'dummy', 'type': 'SELF_HOSTED_RESOURCE'})
 
-    assert 'The given value for range is invalid. Only single day changes can be shown for Self Hosted Resource type.' \
-           ' Valid value: 1. This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for range is invalid. Only single day changes can be shown for Self Hosted Resource type.' \
+           ' Valid value: 1. This argument supports a single value only.'
 
 
 def test_asset_changes_invalid_measure_for_asset_type(client):
@@ -732,8 +732,8 @@ def test_asset_changes_invalid_measure_for_asset_type(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'measure': 'CHANGED', 'type': 'DOMAIN'})
 
-    assert 'The given value for measure(type of change) is invalid. Valid options are Added or Removed.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for measure(type of change) is invalid. Valid options are Added or Removed.' \
+           ' This argument supports a single value only.'
 
 
 def test_asset_changes_invalid_measure_for_asset_detail_type(client):
@@ -745,8 +745,8 @@ def test_asset_changes_invalid_measure_for_asset_detail_type(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'measure': 'REMOVED', 'type': 'SELF_HOSTED_RESOURCE'})
 
-    assert 'The given value for measure(type of change) is invalid. Valid options are Added or Changed.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for measure(type of change) is invalid. Valid options are Added or Changed.' \
+           ' This argument supports a single value only.'
 
 
 def test_asset_changes_exceeding_page_lower_limit(client):
@@ -759,8 +759,8 @@ def test_asset_changes_exceeding_page_lower_limit(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'DOMAIN', 'size': 100, 'page': '-2'})
 
-    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
-           == str(e.value)
+    assert str(e.value)\
+           == 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'
 
 
 def test_asset_changes_invalid_page(client):
@@ -773,8 +773,8 @@ def test_asset_changes_invalid_page(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'DOMAIN', 'size': 100, 'page': 'dummy'})
 
-    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
-           == str(e.value)
+    assert str(e.value)\
+           == 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1114,8 +1114,8 @@ def test_get_asset_invalid_global(client):
     with pytest.raises(ValueError) as e:
         get_asset_params(args)
 
-    assert 'The given value for global argument is invalid. Valid values: true, false.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for global argument is invalid. Valid values: true, false.' \
+           ' This argument supports a single value only.'
 
 
 def test_get_asset_invalid_recent(client):
@@ -1132,8 +1132,8 @@ def test_get_asset_invalid_recent(client):
     with pytest.raises(ValueError) as e:
         get_asset_params(args)
 
-    assert 'The given value for recent argument is invalid. Valid values: true, false.' \
-           ' This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for recent argument is invalid. Valid values: true, false.' \
+           ' This argument supports a single value only.'
 
 
 def test_get_asset_invalid_asset_type(client):
@@ -1150,8 +1150,8 @@ def test_get_asset_invalid_asset_type(client):
     with pytest.raises(ValueError) as e:
         validate_and_fetch_get_asset_arguments(args)
 
-    assert 'The given value for type is invalid. Valid Types: Domain, Host, IP Address, IP Block, ASN, Page,' \
-           ' SSL Cert, Contact. This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for type is invalid. Valid Types: Domain, Host, IP Address, IP Block, ASN, Page,' \
+           ' SSL Cert, Contact. This argument supports a single value only.'
 
 
 def test_get_asset_invalid_combination_of_arguments(client):
@@ -1168,7 +1168,7 @@ def test_get_asset_invalid_combination_of_arguments(client):
     with pytest.raises(ValueError) as e:
         validate_and_fetch_get_asset_arguments(args)
 
-    assert 'Argument uuid cannot be used with other arguments except global and recent.' == str(e.value)
+    assert str(e.value) == 'Argument uuid cannot be used with other arguments except global and recent.'
 
 
 def test_get_asset_when_type_is_not_passed_with_name_argument(client):
@@ -1184,8 +1184,8 @@ def test_get_asset_when_type_is_not_passed_with_name_argument(client):
     with pytest.raises(ValueError) as e:
         validate_and_fetch_get_asset_arguments(args)
 
-    assert 'Required argument(s) uuid or [name, type] to get asset details. One or more of them are not present.'\
-           == str(e.value)
+    assert str(e.value)\
+           == 'Required argument(s) uuid or [name, type] to get asset details. One or more of them are not present.'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1409,9 +1409,9 @@ def test_add_and_update_asset_invalid_type(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='add')
-    assert 'The given value for type is invalid. Valid Types: Domain, Host,' \
-           ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.' \
-           == str(e.value)
+    assert str(e.value) \
+           == 'The given value for type is invalid. Valid Types: Domain, Host,' \
+           ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.'
 
 
 def test_add_and_update_asset_with_no_properties(client):
@@ -1426,9 +1426,9 @@ def test_add_and_update_asset_with_no_properties(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert 'At least one property argument should have a value in order to update the asset. ' \
+    assert str(e.value) == 'At least one property argument should have a value in order to update the asset. ' \
            'The property arguments are: state, priority, removed_state, brand, ' \
-           'organization, tag and enterprise.' == str(e.value)
+           'organization, tag and enterprise.'
 
 
 def test_add_and_update_asset_invalid_state(client):
@@ -1445,9 +1445,9 @@ def test_add_and_update_asset_invalid_state(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert 'The given value for state is invalid. Valid States: Candidate, Approved Inventory, ' \
-           'Requires Investigation, Dependencies, Monitor Only. This argument supports a single value only.'\
-           == str(e.value)
+    assert str(e.value)\
+           == 'The given value for state is invalid. Valid States: Candidate, Approved Inventory, ' \
+           'Requires Investigation, Dependencies, Monitor Only. This argument supports a single value only.'
 
 
 def test_add_and_update_asset_invalid_priority(client):
@@ -1464,8 +1464,8 @@ def test_add_and_update_asset_invalid_priority(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='add')
-    assert 'The given value for priority is invalid. Valid Priority levels: High, Medium, Low, None. This argument' \
-           ' supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for priority is invalid. Valid Priority levels: High, Medium, Low, None. This argument' \
+           ' supports a single value only.'
 
 
 def test_add_and_update_asset_invalid_enterprise(client):
@@ -1482,8 +1482,8 @@ def test_add_and_update_asset_invalid_enterprise(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert 'The given value for enterprise argument is invalid. Valid values: true, false. ' \
-           'This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for enterprise argument is invalid. Valid values: true, false. ' \
+           'This argument supports a single value only.'
 
 
 def test_add_and_update_asset_invalid_confirm(client):
@@ -1500,8 +1500,8 @@ def test_add_and_update_asset_invalid_confirm(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='add')
-    assert 'The given value for confirm argument is invalid. Valid values: true, false. ' \
-           'This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for confirm argument is invalid. Valid values: true, false. ' \
+           'This argument supports a single value only.'
 
 
 def test_add_and_update_asset_invalid_removed_state(client):
@@ -1518,8 +1518,8 @@ def test_add_and_update_asset_invalid_removed_state(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert 'The given value for removed state is invalid. Valid value: Dismissed. This argument supports a' \
-           ' single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for removed state is invalid. Valid value: Dismissed. This argument supports a' \
+           ' single value only.'
 
 
 def test_update_asset_invalid_action(client):
@@ -1537,8 +1537,8 @@ def test_update_asset_invalid_action(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert 'The given value for action is invalid. Valid values: Add, Remove, Update. This argument supports' \
-           ' a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for action is invalid. Valid values: Add, Remove, Update. This argument supports' \
+           ' a single value only.'
 
 
 def test_add_and_update_asset_invalid_arguments(client):
@@ -1555,7 +1555,7 @@ def test_add_and_update_asset_invalid_arguments(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='add')
-    assert 'Argument asset_json cannot be used with other arguments except fail_on_error.' == str(e.value)
+    assert str(e.value) == 'Argument asset_json cannot be used with other arguments except fail_on_error.'
 
 
 def test_add_and_update_asset_required_arguments(client):
@@ -1570,7 +1570,7 @@ def test_add_and_update_asset_required_arguments(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='add')
-    assert 'Argument asset_json or arguments name and type are required to add an asset.' == str(e.value)
+    assert str(e.value) == 'Argument asset_json or arguments name and type are required to add an asset.'
 
 
 def test_add_and_update_asset_required_keys(client):
@@ -1585,8 +1585,8 @@ def test_add_and_update_asset_required_keys(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='add')
-    assert "Required keys for add asset(s) are ['assets', 'properties']. One or more of them are not present in the" \
-           " asset JSON." == str(e.value)
+    assert str(e.value) == "Required keys for add asset(s) are ['assets', 'properties']. One or more of them are not present in the" \
+           " asset JSON."
 
 
 def test_add_and_update_asset_required_keys_in_asset(client):
@@ -1601,8 +1601,8 @@ def test_add_and_update_asset_required_keys_in_asset(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='update')
-    assert "Required keys for update asset(s) are ['name', 'type'] in assets key." \
-           " One or more of them are not present in the asset JSON." == str(e.value)
+    assert str(e.value) == "Required keys for update asset(s) are ['name', 'type'] in assets key." \
+           " One or more of them are not present in the asset JSON."
 
 
 def test_add_and_update_asset_invalid_value_fail_on_error(client):
@@ -1619,8 +1619,8 @@ def test_add_and_update_asset_invalid_value_fail_on_error(client):
     }
     with pytest.raises(ValueError) as e:
         get_add_and_update_assets_params(args)
-    assert 'The given value for fail_on_error argument is invalid. Valid values: true, false. ' \
-           'This argument supports a single value only.' == str(e.value)
+    assert str(e.value) == 'The given value for fail_on_error argument is invalid. Valid values: true, false. ' \
+           'This argument supports a single value only.'
 
 
 def test_update_asset_required_keys_in_asset_json(client):
@@ -1646,8 +1646,8 @@ def test_update_asset_required_keys_in_asset_json(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='update')
-    assert "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
-           " them are not present in the asset JSON." == str(e.value)
+    assert str(e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
+           " them are not present in the asset JSON."
 
 
 def test_add_and_update_asset_required_keys_in_asset_json(client):
@@ -1673,8 +1673,8 @@ def test_add_and_update_asset_required_keys_in_asset_json(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='update')
-    assert "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
-           " them are not present in the asset JSON." == str(e.value)
+    assert str(e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
+           " them are not present in the asset JSON."
 
 
 def task_status(client, resp):
@@ -1777,8 +1777,8 @@ def test_request_timeout_and_size_failure():
     with pytest.raises(ValueError) as e:
         get_timeout_and_size('1001')
 
-    assert 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'\
-           == str(e.value)
+    assert str(e.value)\
+           == 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'
 
 
 def test_request_timeout_and_size_invalid_value():
@@ -1790,8 +1790,8 @@ def test_request_timeout_and_size_invalid_value():
     with pytest.raises(ValueError) as e:
         get_timeout_and_size('dummy')
 
-    assert 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'\
-           == str(e.value)
+    assert str(e.value)\
+           == 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'
 
 
 def validate_size(client, args):

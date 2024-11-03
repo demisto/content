@@ -174,7 +174,7 @@ def collect_attachments():
                 'cid': cid
             })
         except Exception as exc:
-            demisto.error("Invalid entry {} with exception: {}".format(aid, exc))
+            demisto.error(f"Invalid entry {aid} with exception: {exc}")
             return_error_mail_sender('Entry %s is not valid or is not a file entry' % aid)
 
     # handle transient files
@@ -333,9 +333,9 @@ def swap_stderr(new_stderr):
         module = smtplib
     else:
         module = sys  # type: ignore
-    old_stderr = getattr(module, 'stderr')
+    old_stderr = module.stderr
     if new_stderr:
-        setattr(module, 'stderr', new_stderr)
+        module.stderr = new_stderr
     return old_stderr
 
 
@@ -372,7 +372,7 @@ def main():
         # also reset at the bottom finally
         swap_stderr(stderr_org)  # type: ignore[union-attr]
         smtplib.SMTP.debuglevel = 0
-        demisto.error('Failed test: {}\nStack trace: {}'.format(e, traceback.format_exc()))
+        demisto.error(f'Failed test: {e}\nStack trace: {traceback.format_exc()}')
         return_error_mail_sender(e)
         return  # so mypy knows that we don't continue after this
     # -- COMMANDS --
@@ -411,8 +411,8 @@ def main():
         else:
             return_error_mail_sender('Command not recognized')
     except SMTPRecipientsRefused as e:
-        error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.items())
-        return_error_mail_sender("Encountered error: {}".format(error_msg))
+        error_msg = ''.join(f'{val}\n' for key, val in e.recipients.items())
+        return_error_mail_sender(f"Encountered error: {error_msg}")
     except Exception as e:
         return_error_mail_sender(e)
     finally:

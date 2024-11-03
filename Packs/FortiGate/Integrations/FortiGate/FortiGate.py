@@ -8,7 +8,8 @@ import http
 import ipaddress
 import json
 import re
-from typing import Any, Callable, NamedTuple
+from typing import Any, NamedTuple
+from collections.abc import Callable
 
 import requests
 import urllib3

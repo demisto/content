@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import time
-from typing import Tuple, cast
+from typing import cast
 
 from dateutil import parser
 import urllib3
@@ -199,7 +199,7 @@ def host_get_hosts_command(client, args):
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], cvss_score: Optional[float],
                     risk_more_than: Optional[str], cvss_score_greater_than: Optional[float]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+                    ) -> tuple[Dict[str, int], List[dict]]:
 
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch', None)

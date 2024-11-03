@@ -715,8 +715,8 @@ def main():
         error_class = str(exception.__class__)
         err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
         err_msg = 'Verify that you have access to the server from your host.' \
-                  '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-            .format(err_type, exception.errno, exception.strerror)
+                  f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n' \
+            
         return_error(err_msg, exception)
     except Exception as exception:
         return_error(str(exception), exception)

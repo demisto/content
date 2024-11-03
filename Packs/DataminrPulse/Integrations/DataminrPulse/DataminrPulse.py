@@ -2,7 +2,7 @@
 
 from functools import reduce
 from operator import concat
-from typing import Optional, Callable, Tuple
+from collections.abc import Callable
 
 import urllib3
 
@@ -98,7 +98,7 @@ class DataminrPulseClient(BaseClient):
 
     def http_request(self, method, url_suffix, params=None, status_list_to_retry=STATUS_LIST_TO_RETRY,
                      backoff_factor=30, retries=3, internal_retries=3,
-                     **kwargs) -> Optional[Dict]:
+                     **kwargs) -> Dict | None:
         """
         Method to override private _http_request of BaseClient to handle specific status code.
 
@@ -156,7 +156,7 @@ class DataminrPulseClient(BaseClient):
             raise DemistoException(err_msg)
         return None
 
-    def update_refresh_token(self, refresh_token: str) -> Optional[str]:
+    def update_refresh_token(self, refresh_token: str) -> str | None:
         """
         Update a refresh token using the given client credentials and save it in the integration context.
 
@@ -190,8 +190,7 @@ class DataminrPulseClient(BaseClient):
             if res.get('refreshToken'):
                 demisto.debug('Setting new refresh token in the integration context.')
                 expiry_time = res.get('expire', 0) - EARLY_EXPIRY_TIME
-                demisto.debug('Setting the expiry time of the authentication token to {}.'.format(
-                    timestamp_to_datestring(expiry_time, is_utc=True)))
+                demisto.debug(f'Setting the expiry time of the authentication token to {timestamp_to_datestring(expiry_time, is_utc=True)}.')
                 dma_token: str = res.get('dmaToken')
                 new_token = {
                     'dmaToken': dma_token,
@@ -206,7 +205,7 @@ class DataminrPulseClient(BaseClient):
             demisto.error(str(e.args[0]))
         return None
 
-    def get_dma_token(self, use_refresh_token: bool = True) -> Optional[str]:
+    def get_dma_token(self, use_refresh_token: bool = True) -> str | None:
         """
         Get a DMA token that was previously created if it is still valid, else, generate a new authorization token from
         the client id, client secret and refresh token.
@@ -227,7 +226,7 @@ class DataminrPulseClient(BaseClient):
                 return previous_token.get('dmaToken')  # type: ignore
             demisto.debug('Trying to re-generate a new authentication token using the refresh token stored in the '
                           'integration context.')
-            dma_token: Optional[str] = self.update_refresh_token(previous_token.get('refreshToken'))  # type: ignore
+            dma_token: str | None = self.update_refresh_token(previous_token.get('refreshToken'))  # type: ignore
             if dma_token:
                 return dma_token  # if dma_token is found then return it.
                 # else, continue on next block to generate new token
@@ -254,8 +253,7 @@ class DataminrPulseClient(BaseClient):
             raise DemistoException(ERRORS['GENERAL_AUTH_ERROR'].format(str(res)))
         if res.get('dmaToken'):
             expiry_time = res.get('expire', 0) - EARLY_EXPIRY_TIME
-            demisto.debug('Setting the expiry time of the authentication token to {}.'.format(
-                timestamp_to_datestring(expiry_time, is_utc=True)))
+            demisto.debug(f'Setting the expiry time of the authentication token to {timestamp_to_datestring(expiry_time, is_utc=True)}.')
             new_token = {
                 'dmaToken': res.get('dmaToken'),
                 'refreshToken': res.get('refreshToken'),
@@ -266,7 +264,7 @@ class DataminrPulseClient(BaseClient):
             return res.get('dmaToken')
         return None
 
-    def get_watchlists(self) -> Optional[Dict]:
+    def get_watchlists(self) -> Dict | None:
         """Retrieves the watchlists stored on the Dataminr platform.
 
         :return: A dictionary of Watchlists grouped by their types.
@@ -274,8 +272,8 @@ class DataminrPulseClient(BaseClient):
         """
         return self.http_request(method='GET', url_suffix=ENDPOINTS['WATCHLISTS_ENDPOINT'])
 
-    def get_alerts(self, watchlist_ids: Optional[List], query: Optional[str], _from: Optional[str], to: Optional[str],
-                   num: int = DEFAULT_NUMBER_OF_ALERTS_TO_RETRIEVE) -> Optional[Dict]:
+    def get_alerts(self, watchlist_ids: List | None, query: str | None, _from: str | None, to: str | None,
+                   num: int = DEFAULT_NUMBER_OF_ALERTS_TO_RETRIEVE) -> Dict | None:
         """
         Retrieves the alerts stored on the Dataminr platform.
 
@@ -305,7 +303,7 @@ class DataminrPulseClient(BaseClient):
             params['lists'] = ','.join(map(str, watchlist_ids))  # type: ignore
         return self.http_request(method='GET', url_suffix=ENDPOINTS['ALERTS_ENDPOINT'], params=params)
 
-    def get_related_alerts(self, alert_id: str, include_root: bool) -> Optional[List]:
+    def get_related_alerts(self, alert_id: str, include_root: bool) -> List | None:
         """
         Retrieve the related alerts for the given alert id from the Dataminr platform.
 
@@ -330,9 +328,9 @@ class DataminrPulseClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def validate_params_for_alerts_get(watchlist_ids: Optional[List], watchlist_names: Optional[list], query: Optional[str],
-                                   _from: Optional[str],
-                                   to: Optional[str], num: int = DEFAULT_NUMBER_OF_ALERTS_TO_RETRIEVE,
+def validate_params_for_alerts_get(watchlist_ids: List | None, watchlist_names: list | None, query: str | None,
+                                   _from: str | None,
+                                   to: str | None, num: int = DEFAULT_NUMBER_OF_ALERTS_TO_RETRIEVE,
                                    use_configured_watchlist_names: bool = True, is_fetch: bool = False):
     """
     To validate arguments for the alerts get.
@@ -364,7 +362,7 @@ def validate_params_for_alerts_get(watchlist_ids: Optional[List], watchlist_name
     if is_fetch:
         if num < 0:
             raise ValueError(ERRORS['INVALID_MAX_FETCH'].format(num))
-    elif MAX_NUMBER_OF_ALERTS_TO_RETRIEVE < num or num < 0:
+    elif num > MAX_NUMBER_OF_ALERTS_TO_RETRIEVE or num < 0:
         raise ValueError(ERRORS['INVALID_MAX_NUM'].format(num, MAX_NUMBER_OF_ALERTS_TO_RETRIEVE))
     if not watchlist_ids and not query:
         if use_configured_watchlist_names:
@@ -378,7 +376,7 @@ def validate_params_for_alerts_get(watchlist_ids: Optional[List], watchlist_name
         raise ValueError(ERRORS['EITHER_ONE_REQUIRED'].format('from', 'to'))
 
 
-def validate_params_for_related_alerts_get_command(alert_id: Optional[str]) -> None:
+def validate_params_for_related_alerts_get_command(alert_id: str | None) -> None:
     """
     To validate arguments for the related alerts get.
 
@@ -405,7 +403,7 @@ def trim_spaces_from_args(args: Dict) -> Dict:
     return args
 
 
-def transform_watchlists_data(watchlists_data: Optional[Dict]) -> List:
+def transform_watchlists_data(watchlists_data: Dict | None) -> List:
     """
     Transform watchlist data from dictionary to single List.
 
@@ -425,7 +423,7 @@ def transform_watchlists_data(watchlists_data: Optional[Dict]) -> List:
     return list_of_watchlists
 
 
-def get_watchlist_ids(client: DataminrPulseClient, watchlist_names: Optional[List]) -> List:
+def get_watchlist_ids(client: DataminrPulseClient, watchlist_names: List | None) -> List:
     """
     Get watchlist IDs as per the given watchlist names using integration context and get_watchlists method from client.
 
@@ -444,8 +442,7 @@ def get_watchlist_ids(client: DataminrPulseClient, watchlist_names: Optional[Lis
         watchlists_data)) if watchlist_names else watchlists_data
     if not filtered_watchlists_data:
         demisto.debug(
-            'No matching watchlist data was found for the "{}" watchlist names configured in the instance.'.format(
-                watchlist_names))
+            f'No matching watchlist data was found for the "{watchlist_names}" watchlist names configured in the instance.')
         return []
     watchlist_ids: List = [watchlist_data.get('id') for watchlist_data in filtered_watchlists_data]
     watchlist_ids: List = list(filter(None, watchlist_ids))
@@ -574,7 +571,7 @@ def test_module(client: DataminrPulseClient) -> str:
 
 
 def fetch_incidents(client: DataminrPulseClient, last_run: Dict[str, Any], params: Dict[str, Any],
-                    is_test: bool = False) -> Tuple[Dict, List]:
+                    is_test: bool = False) -> tuple[Dict, List]:
     """Fetch issues list incidents.
 
     :type client: ``DataminrPulseClient``
@@ -608,7 +605,7 @@ def fetch_incidents(client: DataminrPulseClient, last_run: Dict[str, Any], param
 
     if num > 200:  # type: ignore
         demisto.debug(
-            'The value for the max_fetch parameter is {} which is greater than 200, so reducing it to 200.'.format(num))
+            f'The value for the max_fetch parameter is {num} which is greater than 200, so reducing it to 200.')
         num = 200
 
     validate_params_for_alerts_get(watchlist_ids=watchlist_ids, watchlist_names=watchlist_names, query=query,
@@ -644,7 +641,7 @@ def fetch_incidents(client: DataminrPulseClient, last_run: Dict[str, Any], param
                 continue
         alert_id = alert.get('alertId')
         if alert_id in found_alert_ids:
-            demisto.debug('Found existing alert. Alert ID: {}'.format(alert_id))
+            demisto.debug(f'Found existing alert. Alert ID: {alert_id}')
             continue
         occurred_date = timestamp_to_datestring(alert.get('eventTime', 0), DATE_FORMAT, is_utc=True)  # type: ignore
         incidents.append({
@@ -762,7 +759,7 @@ def dataminrpulse_related_alerts_get_command(client: DataminrPulseClient, args: 
     :return: Standard command result.
     """
     # Extract the arguments passed with the command.
-    alert_id: Optional[str] = args.get('alert_id')
+    alert_id: str | None = args.get('alert_id')
     include_root: bool = argToBoolean(args.get('include_root'))
 
     validate_params_for_related_alerts_get_command(alert_id=alert_id)

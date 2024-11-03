@@ -46,8 +46,8 @@ class Client(BaseClient):
                  proxy: bool,
                  timeout: int,
                  limit: int,
-                 project_id: typing.Optional[int],
-                 collection_ids: typing.Optional[typing.List[str]]):
+                 project_id: int | None,
+                 collection_ids: list[str] | None):
         self._access_key: str = access_key
         self._secret_key: str = secret_key
         self.base_url: str = base_url
@@ -58,9 +58,9 @@ class Client(BaseClient):
         self.limit: int = limit
 
         self.project_id: Optional[int] = project_id
-        self.collection_ids: typing.List[str] = collection_ids or []
+        self.collection_ids: list[str] = collection_ids or []
 
-    def get_projects_list(self) -> typing.List:
+    def get_projects_list(self) -> list:
         endpoint = 'projects'
         response = self._http_request('GET', endpoint, headers=self.get_headers(include_project=False))
 
@@ -70,7 +70,7 @@ class Client(BaseClient):
 
         return response.get('result') or []
 
-    def get_collections_list(self, project_id: int) -> typing.List:
+    def get_collections_list(self, project_id: int) -> list:
         endpoint = 'user_collections'
 
         response = self._http_request('GET', endpoint,
@@ -205,7 +205,7 @@ def helper_create_incident(issue: dict, project_id: int) -> dict:
     return issue
 
 
-def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, list]:
+def fetch_incident_helper(client: Client, last_run: dict) -> tuple[dict, list]:
     last_start_time: datetime
 
     params = demisto.params()

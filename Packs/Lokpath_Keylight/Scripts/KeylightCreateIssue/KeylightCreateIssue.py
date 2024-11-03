@@ -34,8 +34,8 @@ def main():
     components = demisto.executeCommand("kl-get-component", {})[0].get('Contents', {})
 
     final_json = []
-    for field_name in args.keys():
-        if field_name in lookup_fields.keys():
+    for field_name in args:
+        if field_name in lookup_fields:
             component_id = get_component_id_by_name(lookup_fields.get(field_name), components)
             records = demisto.executeCommand("kl-get-records", {'component_id': component_id})[0].get('Contents', {})
             lookup_field_id = get_lookup_id(args[field_name], records)

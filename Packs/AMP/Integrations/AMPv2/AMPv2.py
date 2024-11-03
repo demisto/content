@@ -5,7 +5,8 @@ CiscoAMP (Advanced Malware Protection) API Integration for Cortex XSOAR (aka Dem
 """
 import copy
 import math
-from typing import Callable, Dict, Any, MutableMapping, MutableSequence, Tuple, Optional
+from typing import Any
+from collections.abc import Callable, MutableMapping, MutableSequence
 from http import HTTPStatus
 from collections import namedtuple
 from CommonServerUserPython import *  # pylint: disable=wildcard-import
@@ -221,7 +222,7 @@ class Client(BaseClient):
         group_guids: List[str] = None,
         last_seen_within: int = None,
         last_seen_over: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Return a single computer with a connector_guid or a list filtered by the other arguments.
 
@@ -268,7 +269,7 @@ class Client(BaseClient):
     def computer_get_request(
         self,
         connector_guid: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Return a single computer with a connector_guid.
 
@@ -285,7 +286,7 @@ class Client(BaseClient):
 
     def computer_trajectory_list_request(
         self, connector_guid: str, limit: int = None, query_string: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get information about a computer and its trajectory which be set in a list of events.
 
@@ -317,7 +318,7 @@ class Client(BaseClient):
         username: str,
         limit: int = None,
         offset: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get computers that have observed activity by given username.
 
@@ -343,7 +344,7 @@ class Client(BaseClient):
 
     def computer_user_trajectory_list_request(
         self, connector_guid: str, limit: int = None, username: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get information about a computer and its trajectory which be set in a list of events.
 
@@ -377,7 +378,7 @@ class Client(BaseClient):
         end_time: str = None,
         limit: int = None,
         offset: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Return vulnerabilities observed on a specific computer.
 
@@ -413,7 +414,7 @@ class Client(BaseClient):
 
     def computer_move_request(
         self, connector_guid: str, group_guid: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Moves the computer with the input connector_guid to a group with the input group_guid.
 
@@ -432,7 +433,7 @@ class Client(BaseClient):
             },
         )
 
-    def computer_delete_request(self, connector_guid: str) -> Dict[str, Any]:
+    def computer_delete_request(self, connector_guid: str) -> dict[str, Any]:
         """
         Deletes the computer with the connector_guid.
 
@@ -449,7 +450,7 @@ class Client(BaseClient):
 
     def computer_activity_list_request(
         self, query_string: str, limit: int = None, offset: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get computers that have observed activity by given username.
 
@@ -495,7 +496,7 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def computer_isolation_get_request(self, connector_guid: str) -> Dict[str, Any]:
+    def computer_isolation_get_request(self, connector_guid: str) -> dict[str, Any]:
         """
         Get information about a computer's isolation.
 
@@ -512,7 +513,7 @@ class Client(BaseClient):
 
     def computer_isolation_create_request(
         self, connector_guid: str, comment: str, unlock_code: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Put a computer in isolation.
 
@@ -541,7 +542,7 @@ class Client(BaseClient):
         self,
         connector_guid: str,
         comment: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Stop a computer in isolation.
 
@@ -575,7 +576,7 @@ class Client(BaseClient):
         event_types: List[int] = None,
         limit: int = None,
         offset: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get a list of events that can be filtered by the input parameters.
 
@@ -619,7 +620,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def event_type_list_request(self) -> Dict[str, Any]:
+    def event_type_list_request(self) -> dict[str, Any]:
         """
         Get a list of event types.
 
@@ -633,7 +634,7 @@ class Client(BaseClient):
 
     def file_list_application_blocking_list_request(
         self, names: List[str] = None, limit: int = None, offset: int = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get a file list of application blocking type.
 
@@ -662,7 +663,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def file_list_get_request(self, file_list_guid: str) -> Dict[str, Any]:
+    def file_list_get_request(self, file_list_guid: str) -> dict[str, Any]:
         """
         Get a file list.
 
@@ -679,7 +680,7 @@ class Client(BaseClient):
 
     def file_list_simple_custom_detections_list_request(
         self, names: List[str] = None, limit: int = None, offset: int = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get a file list of simple custom detections type.
 
@@ -710,7 +711,7 @@ class Client(BaseClient):
 
     def file_list_item_list_request(
         self, file_list_guid: str, limit: int = None, offset: int = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get information about a file list items.
 
@@ -739,7 +740,7 @@ class Client(BaseClient):
 
     def file_list_item_get_request(
         self, file_list_guid: str, sha256: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get information about a file list item.
 
@@ -757,7 +758,7 @@ class Client(BaseClient):
 
     def file_list_item_create_request(
         self, file_list_guid: str, sha256: str, description: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create a new file list item.
 
@@ -782,7 +783,7 @@ class Client(BaseClient):
 
     def file_list_item_delete_request(
         self, file_list_guid: str, sha256: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Delete an item from a file list item.
 
@@ -800,7 +801,7 @@ class Client(BaseClient):
 
     def group_list_request(
         self, name: str = None, limit: int = None, offset: int = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get a list of groups information that can be filtered by a name.
 
@@ -829,7 +830,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def group_get_request(self, group_guid: str) -> Dict[str, Any]:
+    def group_get_request(self, group_guid: str) -> dict[str, Any]:
         """
         Get information about a group.
 
@@ -851,7 +852,7 @@ class Client(BaseClient):
         mac_policy_guid: str = None,
         android_policy_guid: str = None,
         linux_policy_guid: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Update a group's Policy to given Policy GUID.
 
@@ -888,7 +889,7 @@ class Client(BaseClient):
         self,
         child_guid: str,
         parent_group_guid: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Converts an existing group to a child of another group or an existing
         child group to a root group (that is, one with no parent groups).
@@ -907,7 +908,7 @@ class Client(BaseClient):
             json_data=remove_empty_elements({"parent_group_guid": parent_group_guid}),
         )
 
-    def group_create_request(self, name: str, description: str) -> Dict[str, Any]:
+    def group_create_request(self, name: str, description: str) -> dict[str, Any]:
         """
         Create a new group and get its information.
 
@@ -929,7 +930,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def group_delete_request(self, group_guid: str) -> Dict[str, Any]:
+    def group_delete_request(self, group_guid: str) -> dict[str, Any]:
         """
         Deletes the group with the group_guid.
 
@@ -944,7 +945,7 @@ class Client(BaseClient):
             url_suffix=f"groups/{group_guid}",
         )
 
-    def indicator_get_request(self, indicator_guid: str) -> Dict[str, Any]:
+    def indicator_get_request(self, indicator_guid: str) -> dict[str, Any]:
         """
         Get information about a indicator.
 
@@ -961,7 +962,7 @@ class Client(BaseClient):
 
     def indicator_list_request(
         self, limit: int = None, offset: int = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get a list of indicators information.
 
@@ -993,7 +994,7 @@ class Client(BaseClient):
         names: List[str] = None,
         limit: int = None,
         offset: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get a list of policies information.
 
@@ -1025,7 +1026,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def policy_get_request(self, policy_guid: str) -> Dict[str, Any]:
+    def policy_get_request(self, policy_guid: str) -> dict[str, Any]:
         """
         Get information about a policy.
 
@@ -1040,7 +1041,7 @@ class Client(BaseClient):
             url_suffix=f"/policies/{policy_guid}",
         )
 
-    def app_trajectory_query_list_request(self, ios_bid: str) -> Dict[str, Any]:
+    def app_trajectory_query_list_request(self, ios_bid: str) -> dict[str, Any]:
         """
         Get app trajectory query for a given IOS bundle ID.
 
@@ -1058,7 +1059,7 @@ class Client(BaseClient):
             method="GET", url_suffix="/app_trajectory/queries", params=params
         )
 
-    def version_get_request(self) -> Dict[str, Any]:
+    def version_get_request(self) -> dict[str, Any]:
         """
         Get the current version of the API.
 
@@ -1077,7 +1078,7 @@ class Client(BaseClient):
         end_time: str = None,
         limit: int = None,
         offset: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get a list of vulnerabilities.
 
@@ -1122,7 +1123,7 @@ class Client(BaseClient):
         end_time: str = None,
         limit: int = None,
         offset: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get a list of computers observed with given SHA-256.
 
@@ -1323,7 +1324,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def computer_list_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     Get information about computers.
     The command can get a list of filtered computers or a specific computer with connector_guid.
@@ -1373,7 +1374,7 @@ def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandR
 
     if not is_get_request:
         pagination = get_pagination_parameters(page, page_size, limit)
-        raw_response_list: List[Dict[str, Any]] = []
+        raw_response_list: List[dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
         for request_number in pagination_range(pagination):
@@ -1395,7 +1396,7 @@ def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandR
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: Dict[str, Any] = combine_response_results(
+        raw_response: dict[str, Any] = combine_response_results(
             raw_response_list, pagination.is_automatic
         )
 
@@ -1439,7 +1440,7 @@ def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandR
 
 
 def computer_trajectory_list_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get information about a computer's trajectory.
@@ -1494,7 +1495,7 @@ def computer_trajectory_list_command(
 
 
 def computer_user_activity_list_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get information about computers with user activity on them.
@@ -1514,7 +1515,7 @@ def computer_user_activity_list_command(
     limit = arg_to_number(args.get("limit", 0))
 
     pagination = get_pagination_parameters(page, page_size, limit)
-    raw_response_list: List[Dict[str, Any]] = []
+    raw_response_list: List[dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
     for request_number in pagination_range(pagination):
@@ -1531,7 +1532,7 @@ def computer_user_activity_list_command(
         if not raw_response_list[-1]["data"]:
             break
 
-    raw_response: Dict[str, Any] = combine_response_results(
+    raw_response: dict[str, Any] = combine_response_results(
         raw_response_list, pagination.is_automatic
     )
 
@@ -1555,7 +1556,7 @@ def computer_user_activity_list_command(
 
 
 def computer_user_trajectory_list_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get information about a computer's trajectory with the option filter by username.
@@ -1598,7 +1599,7 @@ def computer_user_trajectory_list_command(
 
 
 def computer_vulnerabilities_list_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get information about a computer's vulnerabilities.
@@ -1620,7 +1621,7 @@ def computer_vulnerabilities_list_command(
     limit = arg_to_number(args.get("limit", 0))
 
     pagination = get_pagination_parameters(page, page_size, limit)
-    raw_response_list: List[Dict[str, Any]] = []
+    raw_response_list: List[dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
     for request_number in pagination_range(pagination):
@@ -1639,7 +1640,7 @@ def computer_vulnerabilities_list_command(
         if not raw_response_list[-1]["data"]:
             break
 
-    raw_response: Dict[str, Any] = combine_response_results(
+    raw_response: dict[str, Any] = combine_response_results(
         raw_response_list, pagination.is_automatic
     )
 
@@ -1670,7 +1671,7 @@ def computer_vulnerabilities_list_command(
     )
 
 
-def computer_move_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def computer_move_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Move a computer to another group.
 
@@ -1701,7 +1702,7 @@ def computer_move_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def computer_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def computer_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes a computer and returns a result if the deletion has succeeded.
 
@@ -1736,7 +1737,7 @@ def computer_delete_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def computer_activity_list_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get information about computers with query activity on them.
@@ -1769,7 +1770,7 @@ def computer_activity_list_command(
         raise ValueError("query_string must be: SHA-256/IPv4/URL/Filename")
 
     pagination = get_pagination_parameters(page, page_size, limit)
-    raw_response_list: List[Dict[str, Any]] = []
+    raw_response_list: List[dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
     for request_number in pagination_range(pagination):
@@ -1786,7 +1787,7 @@ def computer_activity_list_command(
         if not raw_response_list[-1]["data"]:
             break
 
-    raw_response: Dict[str, Any] = combine_response_results(
+    raw_response: dict[str, Any] = combine_response_results(
         raw_response_list, pagination.is_automatic
     )
 
@@ -1810,7 +1811,7 @@ def computer_activity_list_command(
 
 
 def computers_isolation_feature_availability_get_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get information about available isolation options for a computer.
@@ -1842,7 +1843,7 @@ def computers_isolation_feature_availability_get_command(
 
 
 def computer_isolation_get_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get information about a computer's isolation.
@@ -1882,7 +1883,7 @@ def computer_isolation_get_command(
 
 
 def computer_isolation_create_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Put a computer in isolation.
@@ -1932,7 +1933,7 @@ def computer_isolation_create_command(
     requires_polling_arg=False,
 )
 def computer_isolation_create_polling_command(
-    args: Dict[str, Any], **kwargs
+    args: dict[str, Any], **kwargs
 ) -> PollResult:
     """
     Polling command to display the progress of computer isolation create command.
@@ -1955,7 +1956,7 @@ def computer_isolation_create_polling_command(
 
 
 def computer_isolation_delete_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Stop a computer's in isolation.
@@ -1998,7 +1999,7 @@ def computer_isolation_delete_command(
     requires_polling_arg=False,
 )
 def computer_isolation_delete_polling_command(
-    args: Dict[str, Any], **kwargs
+    args: dict[str, Any], **kwargs
 ) -> PollResult:
     """
     Polling command to display the progress of computer isolation delete command.
@@ -2022,9 +2023,9 @@ def computer_isolation_delete_polling_command(
 
 def computer_isolation_polling_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
     computer_isolation_command: Callable,
-    result_isolation_status: Tuple[str, str],
+    result_isolation_status: tuple[str, str],
 ) -> PollResult:
     """
     _summary_
@@ -2101,7 +2102,7 @@ def create_relationships(
     return relationships if relationships else None
 
 
-def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def event_list_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     Get information about events with the option to filter them.
     The command supports pagination.
@@ -2136,7 +2137,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
         raise ValueError("application_sha256 must be: SHA-256")
 
     pagination = get_pagination_parameters(page, page_size, limit)
-    raw_response_list: List[Dict[str, Any]] = []
+    raw_response_list: List[dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
     for request_number in pagination_range(pagination):
@@ -2155,7 +2156,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
             )
         )
 
-    raw_response: Dict[str, Any] = combine_response_results(
+    raw_response: dict[str, Any] = combine_response_results(
         raw_response_list, pagination.is_automatic
     )
 
@@ -2215,7 +2216,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def event_type_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def event_type_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about event types.
     The command supports pagination.
@@ -2262,7 +2263,7 @@ def event_type_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def file_list_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_list_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about policies.
     The command supports pagination.
@@ -2289,7 +2290,7 @@ def file_list_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     if not file_list_guid:
         pagination = get_pagination_parameters(page, page_size, limit)
-        raw_response_list: List[Dict[str, Any]] = []
+        raw_response_list: List[dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
         for request_number in pagination_range(pagination):
@@ -2306,7 +2307,7 @@ def file_list_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: Dict[str, Any] = combine_response_results(
+        raw_response: dict[str, Any] = combine_response_results(
             raw_response_list, pagination.is_automatic
         )
 
@@ -2334,7 +2335,7 @@ def file_list_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def file_list_item_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_list_item_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about file list items.
     The command supports pagination.
@@ -2355,7 +2356,7 @@ def file_list_item_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     if not sha256:
         pagination = get_pagination_parameters(page, page_size, limit)
-        raw_response_list: List[Dict[str, Any]] = []
+        raw_response_list: List[dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
         for request_number in pagination_range(pagination):
@@ -2372,7 +2373,7 @@ def file_list_item_list_command(client: Client, args: Dict[str, Any]) -> Command
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: Dict[str, Any] = combine_response_results(
+        raw_response: dict[str, Any] = combine_response_results(
             raw_response_list, pagination.is_automatic
         )
 
@@ -2411,7 +2412,7 @@ def file_list_item_list_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def file_list_item_create_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Create a new item for a file list.
@@ -2461,7 +2462,7 @@ def file_list_item_create_command(
 
 
 def file_list_item_delete_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Delete an item from a file list.
@@ -2495,7 +2496,7 @@ def file_list_item_delete_command(
     )
 
 
-def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about groups with the option to filter by name.
     The command supports pagination.
@@ -2516,7 +2517,7 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     if not group_guid:
         pagination = get_pagination_parameters(page, page_size, limit)
-        raw_response_list: List[Dict[str, Any]] = []
+        raw_response_list: List[dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
         for request_number in pagination_range(pagination):
@@ -2533,7 +2534,7 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: Dict[str, Any] = combine_response_results(
+        raw_response: dict[str, Any] = combine_response_results(
             raw_response_list, pagination.is_automatic
         )
 
@@ -2568,7 +2569,7 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def group_policy_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def group_policy_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update a groups Policy and get information about the group.
 
@@ -2627,7 +2628,7 @@ def group_policy_update_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def group_parent_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def group_parent_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Update a groups Policy and get information about the group.
 
@@ -2666,7 +2667,7 @@ def group_parent_update_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Create a new group and get information about it.
 
@@ -2702,7 +2703,7 @@ def group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def groups_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def groups_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes a group and returns a result if the deletion has succeeded.
 
@@ -2736,7 +2737,7 @@ def groups_delete_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def indicator_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def indicator_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about indicators.
     The command supports pagination.
@@ -2756,7 +2757,7 @@ def indicator_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     if not indicator_guid:
         pagination = get_pagination_parameters(page, page_size, limit)
-        raw_response_list: List[Dict[str, Any]] = []
+        raw_response_list: List[dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
         for request_number in pagination_range(pagination):
@@ -2772,7 +2773,7 @@ def indicator_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: Dict[str, Any] = combine_response_results(
+        raw_response: dict[str, Any] = combine_response_results(
             raw_response_list, pagination.is_automatic
         )
 
@@ -2816,7 +2817,7 @@ def indicator_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about policies.
     The command supports pagination.
@@ -2838,7 +2839,7 @@ def policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     if not policy_guid:
         pagination = get_pagination_parameters(page, page_size, limit)
-        raw_response_list: List[Dict[str, Any]] = []
+        raw_response_list: List[dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
         for request_number in pagination_range(pagination):
@@ -2856,7 +2857,7 @@ def policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             if not raw_response_list[-1]["data"]:
                 break
 
-        raw_response: Dict[str, Any] = combine_response_results(
+        raw_response: dict[str, Any] = combine_response_results(
             raw_response_list, pagination.is_automatic
         )
 
@@ -2885,7 +2886,7 @@ def policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def app_trajectory_query_list_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """
     Get app trajectory query for a given IOS bundle ID..
@@ -2934,7 +2935,7 @@ def app_trajectory_query_list_command(
 
 
 def version_get_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:  # pylint: disable=unused-argument
     """
     Get the current version of the API.
@@ -2962,7 +2963,7 @@ def version_get_command(
     )
 
 
-def vulnerability_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def vulnerability_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get information about vulnerabilities within computers.
     The command supports pagination.
@@ -2984,7 +2985,7 @@ def vulnerability_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     limit = arg_to_number(args.get("limit", 0))
 
     pagination = get_pagination_parameters(page, page_size, limit)
-    raw_response_list: List[Dict[str, Any]] = []
+    raw_response_list: List[dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
     for request_number in pagination_range(pagination):
@@ -3018,7 +3019,7 @@ def vulnerability_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         if not raw_response_list[-1]["data"]:
             break
 
-    raw_response: Dict[str, Any] = combine_response_results(
+    raw_response: dict[str, Any] = combine_response_results(
         raw_response_list, pagination.is_automatic
     )
 
@@ -3048,7 +3049,7 @@ def vulnerability_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def endpoint_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     Generic command that returns information about an endpoint.
 
@@ -3125,7 +3126,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
     return endpoints
 
 
-def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     Generic command that returns information about files.
 
@@ -3237,9 +3238,9 @@ def pagination_range(pagination: Pagination) -> range:
 
 
 def get_pagination_parameters(
-    page: Optional[int] = 0,
-    page_size: Optional[int] = 0,
-    limit: Optional[int] = 0,
+    page: int | None = 0,
+    page_size: int | None = 0,
+    limit: int | None = 0,
 ) -> Pagination:
     """
     Get the limit and offset required for the http request,
@@ -3312,8 +3313,8 @@ def get_pagination_parameters(
 
 
 def extract_pagination_from_response(
-    pagination: Pagination, raw_response: Dict[str, Any]
-) -> Tuple[List, str]:
+    pagination: Pagination, raw_response: dict[str, Any]
+) -> tuple[List, str]:
     """
     Extract values from the response according to pagination parameters.
 
@@ -3356,7 +3357,7 @@ def extract_pagination_from_response(
 
 def delete_keys_from_dict(
     dictionary: MutableMapping, keys_to_delete: List[str] | Set[str]
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get a modified dictionary without the requested keys
 
@@ -3368,7 +3369,7 @@ def delete_keys_from_dict(
         Dict[str, Any]: Modified dictionary without requested keys.
     """
     keys_set = set(keys_to_delete)
-    modified_dict: Dict[str, Any] = {}
+    modified_dict: dict[str, Any] = {}
 
     for key, value in dictionary.items():
         if key not in keys_set:
@@ -3391,7 +3392,7 @@ def delete_keys_from_dict(
 
 
 def add_item_to_all_dictionaries(
-    dictionaries: List[Dict[str, Any]], key: str, value: Any
+    dictionaries: List[dict[str, Any]], key: str, value: Any
 ) -> None:
     for dictionary in dictionaries:
         dictionary[key] = value
@@ -3472,8 +3473,8 @@ def get_dbotscore(
 
 
 def combine_response_results(
-    raw_response_list: List[Dict[str, Any]], is_automatic: bool = False
-) -> Dict[str, Any]:
+    raw_response_list: List[dict[str, Any]], is_automatic: bool = False
+) -> dict[str, Any]:
     """
     If the pagination is automatic combine the results returned from all the http requests.
 
@@ -3484,7 +3485,7 @@ def combine_response_results(
     Returns:
         Dict[str, Any]: Concatenated response from the server.
     """
-    concatenated_raw_response: Dict[str, Any] = raw_response_list[0]
+    concatenated_raw_response: dict[str, Any] = raw_response_list[0]
 
     if not is_automatic:
         return concatenated_raw_response
@@ -3503,10 +3504,10 @@ def combine_response_results(
 
 
 def get_context_output(
-    response: Dict[str, Any],
+    response: dict[str, Any],
     contexts_to_delete: List[str],
-    item_to_add: Tuple[str, Any] = None,
-) -> List[Dict[str, Any]]:
+    item_to_add: tuple[str, Any] = None,
+) -> List[dict[str, Any]]:
     """
     Get context output from the response.
     Loop through each value and create a modified response without the contexts_to_delete.
@@ -3523,7 +3524,7 @@ def get_context_output(
     if not isinstance(data_list, List):
         data_list = [data_list]
 
-    context_outputs: List[Dict[str, Any]] = []
+    context_outputs: List[dict[str, Any]] = []
 
     for data in data_list:
         modified_data = delete_keys_from_dict(data, contexts_to_delete)
@@ -3538,7 +3539,7 @@ def get_context_output(
     return context_outputs
 
 
-def get_results_readable_output(response: Dict[str, Any]) -> str:
+def get_results_readable_output(response: dict[str, Any]) -> str:
     """
     Get relevant information for the readable output.
 
@@ -3564,8 +3565,8 @@ def get_results_readable_output(response: Dict[str, Any]) -> str:
 
 
 def get_readable_output(
-    response: Dict[str, Any],
-    header_by_keys: Dict[str, List[str]],
+    response: dict[str, Any],
+    header_by_keys: dict[str, List[str]],
     keys_to_items_option_1: List[str],
     keys_to_items_option_2: List[str] = [],
     title: str = "",
@@ -3591,14 +3592,14 @@ def get_readable_output(
     if not items:
         return ""
 
-    item_readable_arguments: List[Dict[str, Any]] = []
+    item_readable_arguments: List[dict[str, Any]] = []
     headers = [header for header in header_by_keys]
 
     if not isinstance(items, List):
         items = [items]
 
     for item in items:
-        dictionary: Dict[str, Any] = {}
+        dictionary: dict[str, Any] = {}
 
         for key, value in header_by_keys.items():
             dictionary[key] = dict_safe_get(item, value)
@@ -3615,7 +3616,7 @@ def get_readable_output(
     return readable_output
 
 
-def get_computer_readable_output(response: Dict[str, Any]) -> str:
+def get_computer_readable_output(response: dict[str, Any]) -> str:
     """
     Get relevant information for the readable output.
     If the raw response is of a single computer, cast it to a list.
@@ -3633,7 +3634,7 @@ def get_computer_readable_output(response: Dict[str, Any]) -> str:
         computers = [computers]
 
     operating_system_format = "{operating_system} (Build {os_version})"
-    readable_arguments: List[Dict[str, Any]] = []
+    readable_arguments: List[dict[str, Any]] = []
 
     for computer in computers:
         readable_arguments.append(
@@ -3711,8 +3712,8 @@ def main() -> None:
     Raises:
         NotImplementedError: An error if the input command hasn't been implemented
     """
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     command = demisto.command()
 
     server_url = params["server_url"]

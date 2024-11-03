@@ -114,7 +114,7 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
     incident['CustomFields'].update({
         'cybersixgillstatus': status.replace('_', ' ').title(),
         'cybersixgillsite': item_info.get('site', None),
-        'cybersixgillactor': content_item.get('creator', None),
+        'cybersixgillactor': content_item.get('creator'),
         'cybersixgilltriggeredassets': triggered_assets
     })
 
@@ -268,8 +268,7 @@ def update_alert_status():
     alert_status = args.get('alert_status')
     alert_id = args.get('alert_id')
     aggregate_alert_id = args.get('aggregate_alert_id')
-    demisto.info("update_alert_status: status - {}, alert_id - {}, aggregate_alert_id - {}".
-                 format(alert_status, alert_id, aggregate_alert_id))
+    demisto.info(f"update_alert_status: status - {alert_status}, alert_id - {alert_id}, aggregate_alert_id - {aggregate_alert_id}")
     aggregate_alert_id = [int(aggregate_alert_id)] if aggregate_alert_id else aggregate_alert_id
     alert_body = {
         "status": {

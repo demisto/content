@@ -81,7 +81,7 @@ def ec_key(path, *merge_by):
     for key in merge_by:
         if js_condition:
             js_condition += ' && '
-        js_condition += 'val.{0} && val.{0} === obj.{0}'.format(key)
+        js_condition += f'val.{key} && val.{key} === obj.{key}'
 
     return f'{path}({js_condition})'
 

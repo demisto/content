@@ -43,11 +43,11 @@ username_req = [
         '2013-12-04T00:00:00Z', 'LogoPath': 'https://haveibeenpwned.com/Content/Images/PwnedLogos/Gawker.png',
         'AddedDate': '2013-12-04T00:00:00Z', 'IsVerified': True, 'Description':
         'In December 2010, Gawker was attacked by the hacker collective &quot;Gnosis&quot; in retaliation for what was'
-        u' reported to be a feud between Gawker and 4Chan. Information about Gawkers 1.3M users was published along'
-        u' with the data from Gawker\'s other web presences including Gizmodo and Lifehacker. Due to the prevalence of'
-        u' password reuse, many victims of the breach <a href="http://www.troyhunt.com/2011/01/why-your-apps-security'
-        u'-design-could.html" target="_blank" rel="noopener">then had their Twitter accounts compromised to send Acai'
-        u' berry spam</a>.'
+        ' reported to be a feud between Gawker and 4Chan. Information about Gawkers 1.3M users was published along'
+        ' with the data from Gawker\'s other web presences including Gizmodo and Lifehacker. Due to the prevalence of'
+        ' password reuse, many victims of the breach <a href="http://www.troyhunt.com/2011/01/why-your-apps-security'
+        '-design-could.html" target="_blank" rel="noopener">then had their Twitter accounts compromised to send Acai'
+        ' berry spam</a>.'
     },
     {
         'PwnCount': 191540, 'Domain': 'hackforums.net', 'IsSensitive': False, 'Name': 'HackForums', 'Title':
@@ -57,16 +57,16 @@ username_req = [
                                           'Usernames', 'Website activity'], 'IsRetired': False, 'IsSpamList':
         False, 'BreachDate': '2011-06-25',
         'IsFabricated': False, 'ModifiedDate': '2014-05-11T10:30:43Z', 'LogoPath': 'https://haveibeenpwned.com/'
-                                                                                   u'Content/Images/PwnedLogos/HackForums.png',
+                                                                                   'Content/Images/PwnedLogos/HackForums.png',
         'AddedDate': '2014-05-11T10:30:43Z', 'IsVerified': True,
         'Description': 'In June 2011, the hacktivist group known as "LulzSec" leaked <a href='
-                       u'"http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-'
-                       u'dumping-nato-att-gamer-data/" target="_blank" rel="noopener">one final large'
-                       u' data breach they titled "50 days of lulz"</a>. The compromised data came from'
-                       u' sources such as AT&T, Battlefield Heroes and the <a href="http://hackforums.'
-                       u'net" target="_blank" rel="noopener">hackforums.net website</a>. The leaked '
-                       u'Hack Forums data included credentials and personal '
-                       u'information of nearly 200,000 registered forum users.'
+                       '"http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-'
+                       'dumping-nato-att-gamer-data/" target="_blank" rel="noopener">one final large'
+                       ' data breach they titled "50 days of lulz"</a>. The compromised data came from'
+                       ' sources such as AT&T, Battlefield Heroes and the <a href="http://hackforums.'
+                       'net" target="_blank" rel="noopener">hackforums.net website</a>. The leaked '
+                       'Hack Forums data included credentials and personal '
+                       'information of nearly 200,000 registered forum users.'
     }
 ]
 
@@ -76,16 +76,16 @@ domain_req = [
         'Adobe', 'DataClasses': ['Email addresses', 'Password hints', 'Passwords', 'Usernames'], 'IsRetired':
         False, 'IsSpamList': False, 'BreachDate': '2013-10-04', 'IsFabricated': False, 'ModifiedDate':
         '2013-12-04T00:00:00Z', 'LogoPath': 'https://haveibeenpwned.com/Content/Images/PwnedLogos/Adobe'
-                                            u'.png', 'AddedDate': '2013-12-04T00:00:00Z', 'IsVerified':
+                                            '.png', 'AddedDate': '2013-12-04T00:00:00Z', 'IsVerified':
         True, 'Description': 'In October 2013, 153 million Adobe accounts were breached with each'
-                             u' containing an internal ID, username, email, <em>encrypted</em> password and'
-                             u' a password hint in plain text. The password cryptography was poorly done'
-                             u' and <a href="http://stricture-group.com/files/adobe-top100.txt" target="_'
-                             u'blank" rel="noopener">many were quickly resolved back to plain text</a>. '
-                             u'The unencrypted hints also <a href="http://www.troyhunt.com/2013/11/adobe-'
-                             u'credentials-and-serious.html" target="_blank" rel="noopener">disclosed much'
-                             u' about the passwords</a> adding further to the risk that hundreds of '
-                             u'millions of Adobe customers already faced.'
+                             ' containing an internal ID, username, email, <em>encrypted</em> password and'
+                             ' a password hint in plain text. The password cryptography was poorly done'
+                             ' and <a href="http://stricture-group.com/files/adobe-top100.txt" target="_'
+                             'blank" rel="noopener">many were quickly resolved back to plain text</a>. '
+                             'The unencrypted hints also <a href="http://www.troyhunt.com/2013/11/adobe-'
+                             'credentials-and-serious.html" target="_blank" rel="noopener">disclosed much'
+                             ' about the passwords</a> adding further to the risk that hundreds of '
+                             'millions of Adobe customers already faced.'
     }
 ]
 

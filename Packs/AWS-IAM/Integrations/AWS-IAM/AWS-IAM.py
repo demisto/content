@@ -850,9 +850,9 @@ def list_user_policies(args, client):
     if policy_data:
         ec = {'AWS.IAM.UserPolicies(val.PolicyName && val.UserName && val.PolicyName === obj.PolicyName && '
               'val.UserName === obj.UserName)': policy_data,
-              'AWS.IAM.Users(val.UserName === \'{}\').InlinePoliciesMarker'.format(user_name): marker}
+              f'AWS.IAM.Users(val.UserName === \'{user_name}\').InlinePoliciesMarker': marker}
 
-    human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format(user_name),
+    human_readable = tableToMarkdown(f'AWS IAM Policies for user {user_name}',
                                      headers=["PolicyNames"],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -888,9 +888,9 @@ def list_attached_user_policies(args, client):
     if policy_data:
         ec = {'AWS.IAM.AttachedUserPolicies(val.PolicyArn && val.UserName && val.PolicyArn === obj.PolicyArn && '
               'val.UserName === obj.UserName)': policy_data,
-              'AWS.IAM.Users(val.UserName === \'{}\').AttachedPoliciesMarker'.format(user_name): marker}
+              f'AWS.IAM.Users(val.UserName === \'{user_name}\').AttachedPoliciesMarker': marker}
 
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for user {}'.format(user_name),
+    human_readable = tableToMarkdown(f'AWS IAM Attached Policies for user {user_name}',
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -927,9 +927,9 @@ def list_attached_group_policies(args, client):
     if policy_data:
         ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
               'val.GroupName === obj.GroupName)': policy_data,
-              'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format(group_name): marker}
+              f'AWS.IAM.Groups(val.GroupName === \'{group_name}\').AttachedPoliciesMarker': marker}
 
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for group {}'.format(group_name),
+    human_readable = tableToMarkdown(f'AWS IAM Attached Policies for group {group_name}',
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -957,7 +957,7 @@ def get_user_login_profile(args, client):
 
         ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
 
-        human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
+        human_readable = tableToMarkdown(f'AWS IAM Login Profile for user {user_name}',
                                          t=data.get('LoginProfile'),
                                          headers=['CreateDate', 'PasswordResetRequired'],
                                          removeNull=True,
@@ -967,7 +967,7 @@ def get_user_login_profile(args, client):
         return_outputs(human_readable, ec, response)
     except botocore.exceptions.ClientError as error:
         if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
-            return_outputs(tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name), t={}))
+            return_outputs(tableToMarkdown(f'AWS IAM Login Profile for user {user_name}', t={}))
         else:
             raise error
 
@@ -1326,7 +1326,7 @@ def main():     # pragma: no cover
     )
 
     try:
-        LOG('Command being called is {command}'.format(command=command))
+        LOG(f'Command being called is {command}')
         if command == 'test-module':
             test_function(client)
         elif command == 'aws-iam-create-user':
@@ -1455,8 +1455,7 @@ def main():     # pragma: no cover
             return_results(list_attached_role_policies_command(args, client))
     except Exception as e:
         LOG(str(e))
-        return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
-            code=type(e), message=str(e)))
+        return_error(f'Error has occurred in the AWS IAM Integration: {type(e)}\n {str(e)}')
 
 
 from AWSApiModule import *  # noqa: E402

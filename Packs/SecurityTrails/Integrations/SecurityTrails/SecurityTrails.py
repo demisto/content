@@ -791,11 +791,11 @@ def get_whois_history_command(client, args):
         whois_object = {
             "DomainStatus": ", ".join(x.get('status', [])),
             "NameServers": ", ".join(x.get('nameServers', [])),
-            "CreationDate": datetime.fromtimestamp((x.get('createdDate') / 1000)).strftime(
+            "CreationDate": datetime.fromtimestamp(x.get('createdDate') / 1000).strftime(
                 "%Y-%m-%dT%H:%M:%SZ") if x.get('createdDate', None) else None,
-            "UpdatedDate": datetime.fromtimestamp((x.get('updatedDate') / 1000)).strftime(
+            "UpdatedDate": datetime.fromtimestamp(x.get('updatedDate') / 1000).strftime(
                 "%Y-%m-%dT%H:%M:%SZ") if x.get('updatedDate', None) else None,
-            "ExpirationDate": datetime.fromtimestamp((x.get('expiresDate') / 1000)).strftime(
+            "ExpirationDate": datetime.fromtimestamp(x.get('expiresDate') / 1000).strftime(
                 "%Y-%m-%dT%H:%M:%SZ") if x.get('expiresDate', None) else None
         }
         if admin_contact:

@@ -86,7 +86,7 @@ def check_ip(ip):
     """
     Filter function that excludes the inet any address (0.0.0.0).
     """
-    return "0.0.0.0" != ip
+    return ip != "0.0.0.0"
 
 
 def check_domain_name(domain):

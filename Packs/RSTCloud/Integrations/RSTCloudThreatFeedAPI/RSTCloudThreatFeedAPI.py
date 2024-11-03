@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Tuple
 import urllib3
 
 
@@ -400,7 +399,7 @@ def test_module(client: Client) -> str:
     return result
 
 
-def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
+def ip_command(client: Client, args: dict[str, str]) -> tuple[list, list, list]:
     """
     Executes IP enrichment against RST Threat Feed.
 
@@ -484,7 +483,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
     return markdown, raw_results, indicators
 
 
-def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
+def domain_command(client: Client, args: dict[str, str]) -> tuple[list, list, list]:
     """
     Executes Domain enrichment against RST Threat Feed.
 
@@ -572,7 +571,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
     return markdown, raw_results, indicators
 
 
-def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
+def url_command(client: Client, args: dict[str, str]) -> tuple[list, list, list]:
     """
     Executes URL enrichment against RST Threat Feed.
 
@@ -655,7 +654,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
     return markdown, raw_results, indicators
 
 
-def file_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
+def file_command(client: Client, args: dict[str, str]) -> tuple[list, list, list]:
     """
     Executes File enrichment against RST Threat Feed.
 
@@ -745,7 +744,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list
     return markdown, raw_results, indicators
 
 
-def submit_command(client: Client, args: Dict[str, str]) -> list:
+def submit_command(client: Client, args: dict[str, str]) -> list:
     """
         Submits a new indicator to RST Threat Feed via API
 
@@ -768,7 +767,7 @@ def submit_command(client: Client, args: Dict[str, str]) -> list:
     return markdown
 
 
-def submitfp_command(client: Client, args: Dict[str, str]) -> list:
+def submitfp_command(client: Client, args: dict[str, str]) -> list:
     """
             Submits a potential False Positive indicator to RST Threat Feed via API
 

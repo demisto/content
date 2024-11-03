@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
 from abc import ABCMeta
-from typing import NamedTuple, Type
+from typing import NamedTuple
 
 from requests import Response
 
@@ -127,7 +127,7 @@ class URLUnshortingService(BaseClient, metaclass=ABCMeta):
         return len(redirect_history) >= self.redirect_limit
 
     @staticmethod
-    def find_matching_service(service_name: str) -> Type["URLUnshortingService"]:
+    def find_matching_service(service_name: str) -> type["URLUnshortingService"]:
         """
         Finds a matching service class by name.
 
@@ -154,7 +154,6 @@ class URLUnshortingService(BaseClient, metaclass=ABCMeta):
         Returns:
             URLUnshorteningData: A NamedTuple containing the data for the resolved URL.
         """
-        pass
 
 
 class LongurlInService(URLUnshortingService):

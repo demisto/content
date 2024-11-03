@@ -74,7 +74,7 @@ def test_create_rule_command(mocker):
     assert properties.get('protocol') == '*'
     assert properties.get('sourceAddressPrefix') == '*'
     assert 'sourcePortRanges' not in properties.keys()
-    assert ['1', '2', '3', '4-6'] == properties.get('destinationPortRanges')
+    assert properties.get('destinationPortRanges') == ['1', '2', '3', '4-6']
 
 
 def test_update_rule_command(mocker):

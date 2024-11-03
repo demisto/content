@@ -376,7 +376,7 @@ def fetch_incidents(client: Client, max_alerts: int, last_run: dict[str, int],
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     # Handle first fetch time
     if last_fetch is None:
         last_fetch = first_fetch_time

@@ -157,7 +157,7 @@ class TestDatetimeToStr:
             validate the value returned is 5.
         """
         raw = Client.datetime_to_str([5])
-        assert [5] == raw
+        assert raw == [5]
 
     def test_datetime_to_str_str_no_datetime(self):
         """

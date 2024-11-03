@@ -1,4 +1,3 @@
-from typing import Tuple, List, Dict
 
 import math
 from urllib.parse import urlparse, parse_qsl
@@ -31,7 +30,7 @@ class STIX21Processor:
         reports (List): List of STIX 2.1 reports objects.
     """
 
-    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List,
+    def __init__(self, raw_indicators: list, relationships: dict, entities: dict, reports: list,
                  malicious_threshold: int, reputation_interval: int):
         self.raw_indicators = raw_indicators
         self.relationships = relationships
@@ -47,7 +46,7 @@ class STIX21Processor:
 
         FE_CONFIDENCE_TO_REPUTATION[Common.DBotScore.BAD] = malicious_threshold
 
-    def process_indicators(self) -> List:
+    def process_indicators(self) -> list:
         processed_indicators = list()  # type: List
 
         for raw_data in self.raw_indicators:
@@ -58,7 +57,7 @@ class STIX21Processor:
         return processed_indicators
 
     @staticmethod
-    def process_indicator_value(indicator_pattern_value: str) -> Tuple[List, List, Dict]:
+    def process_indicator_value(indicator_pattern_value: str) -> tuple[list, list, dict]:
         """Processes the `pattern` value from the feed response into indicator types according to FireEye, their values,
             and, in case of file type, it's hashes values.
 
@@ -148,7 +147,7 @@ class STIX21Processor:
                 if confidence > threshold:
                     return min(score, Common.DBotScore.SUSPICIOUS)
 
-    def process_indicator(self, raw_data: Dict) -> List:
+    def process_indicator(self, raw_data: dict) -> list:
         indicators = list()
 
         _, values, hashes = self.process_indicator_value(raw_data['pattern'])
@@ -191,7 +190,7 @@ class STIX21Processor:
 
         return indicators
 
-    def process_stix_entities(self) -> List:
+    def process_stix_entities(self) -> list:
         processed_entities = list()  # type: List
 
         for entity_type, value in self.entities.items():
@@ -202,7 +201,7 @@ class STIX21Processor:
 
         return processed_entities
 
-    def process_reports(self) -> List:
+    def process_reports(self) -> list:
         processed_reports = list()  # type: List
 
         for raw_data in self.reports:
@@ -213,7 +212,7 @@ class STIX21Processor:
         return processed_reports
 
     @staticmethod
-    def process_malware(raw_data: Dict) -> Dict:
+    def process_malware(raw_data: dict) -> dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Malware'
@@ -241,7 +240,7 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_threat_actor(raw_data: Dict) -> Dict:
+    def process_threat_actor(raw_data: dict) -> dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Threat Actor'
@@ -274,7 +273,7 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_report(raw_data: Dict) -> Dict:
+    def process_report(raw_data: dict) -> dict:
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = 'STIX Report'
@@ -447,7 +446,7 @@ class Client(BaseClient):
 
         return auth_token
 
-    def fetch_all_indicators_from_api(self, limit: int) -> Tuple[List, Dict, Dict, str]:
+    def fetch_all_indicators_from_api(self, limit: int) -> tuple[list, dict, dict, str]:
         """Collects raw data of indicators and their relationships from the feed.
 
         Args:
@@ -527,7 +526,7 @@ class Client(BaseClient):
         demisto.debug('Fetching raw indicators from feed fully completed')
         return raw_indicators, relationships, stix_entities, last_indicators_fetch_time
 
-    def fetch_all_reports_from_api(self, limit: int) -> Tuple[List, str]:
+    def fetch_all_reports_from_api(self, limit: int) -> tuple[list, str]:
         """Collects reports raw data from the feed.
 
         Args:
@@ -594,7 +593,7 @@ class Client(BaseClient):
         demisto.debug('Fetching raw reports from feed fully completed')
         return raw_reports, last_reports_fetch_time
 
-    def build_iterator(self, collections_to_fetch: List, limit: int) -> List:
+    def build_iterator(self, collections_to_fetch: list, limit: int) -> list:
         if 'Indicators' in collections_to_fetch:
             raw_indicators, relationships, stix_entities, last_indicators_fetch_time = \
                 self.fetch_all_indicators_from_api(limit)
@@ -624,12 +623,12 @@ class Client(BaseClient):
         return indicators + stix_indicators + reports
 
 
-def test_module(client: Client, collections_to_fetch: List):
+def test_module(client: Client, collections_to_fetch: list):
     client.build_iterator(collections_to_fetch, limit=10)
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, collections_to_fetch: List):
+def get_indicators_command(client: Client, collections_to_fetch: list):
     """Retrieves indicators from the feed to the war-room.
 
     Args:
@@ -650,7 +649,7 @@ def get_indicators_command(client: Client, collections_to_fetch: List):
     return human_readable, {}, indicators
 
 
-def add_fields_if_exists(client: Client, fields_dict: Dict) -> Dict:
+def add_fields_if_exists(client: Client, fields_dict: dict) -> dict:
     """Adds field mapping if they hold actual values
 
     Args:
@@ -673,7 +672,7 @@ def add_fields_if_exists(client: Client, fields_dict: Dict) -> Dict:
     return fields_dict
 
 
-def fetch_indicators_command(client: Client, collections_to_fetch: List, limit: int = -1) -> Tuple[List, List]:
+def fetch_indicators_command(client: Client, collections_to_fetch: list, limit: int = -1) -> tuple[list, list]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.

@@ -16,7 +16,7 @@ try:
 
     # Compute distance between the set in miles
     geo_distance = round(geopy.distance.geodesic(src_coords, dest_coords).miles, 2)
-    hr = 'Calculated Distance: {} miles.'.format(str(geo_distance))
+    hr = f'Calculated Distance: {str(geo_distance)} miles.'
     context = {
         "Geo.Distance": geo_distance,
         "Geo.Coordinates": [src_coords, dest_coords]

@@ -39,7 +39,7 @@ def bool_arg_set_to_true(arg):
 
 def start_and_return_bigquery_client(google_service_creds_json_string):
     cur_directory_path = os.getcwd()
-    creds_file_name = '{0}.json'.format(demisto.uniqueFile())
+    creds_file_name = f'{demisto.uniqueFile()}.json'
     path_to_save_creds_file = os.path.join(cur_directory_path, creds_file_name)
     with open(path_to_save_creds_file, "w") as creds_file:
         json.dump(json.loads(google_service_creds_json_string), creds_file)
@@ -160,8 +160,8 @@ def query_command(query_to_run=None):
     rows_contexts = []
     human_readable = 'No results found.'
     if dry_run and str_to_bool(dry_run):
-        human_readable = '### Dry run results: \n This query will process {0} ' \
-                         'bytes'.format(query_results.total_bytes_processed)
+        human_readable = f'### Dry run results: \n This query will process {query_results.total_bytes_processed} ' \
+                         'bytes'
 
     else:
 
@@ -209,13 +209,13 @@ def get_last_run_date():
     Calculate the time from which to start fetching incidents.
     """
     last_date = demisto.getLastRun().get('last_date')
-    demisto.debug('[BigQuery Debug] last_date is: {}'.format(last_date))
+    demisto.debug(f'[BigQuery Debug] last_date is: {last_date}')
 
     if last_date is None:
         first_fetch_time = demisto.params().get('first_fetch_time', '1 days')
         first_fetch, _ = parse_date_range(first_fetch_time, date_format='%Y-%m-%d %H:%M:%S.%f')
         last_date = first_fetch
-        demisto.debug('[BigQuery Debug] FIRST RUN - last_date is: {}'.format(last_date))
+        demisto.debug(f'[BigQuery Debug] FIRST RUN - last_date is: {last_date}')
 
     return last_date
 
@@ -232,7 +232,7 @@ def build_fetch_query(last_date):
         fixed_query += " WHERE"
 
     fetch_time_field = demisto.params().get("fetch_time_field", "CreationTime")
-    fetch_query = "{} `{}` > \"{}\"".format(fixed_query, fetch_time_field, last_date)
+    fetch_query = f"{fixed_query} `{fetch_time_field}` > \"{last_date}\""
     return fetch_query
 
 
@@ -265,7 +265,7 @@ def get_row_date_string(row):
     row_date_field = demisto.params().get("fetch_time_field", "creation_time")
     row_date = row.get(row_date_field)
     if row_date is None:
-        demisto.debug("[BigQuery Debug] missing creation_time, trying CreationTime: {}".format(row))
+        demisto.debug(f"[BigQuery Debug] missing creation_time, trying CreationTime: {row}")
         row_date_str = row.get("CreationTime")
         if row_date_str is not None:
             row_date = datetime.strptime(row_date_str, '%Y-%m-%d %H:%M:%S')
@@ -273,8 +273,8 @@ def get_row_date_string(row):
     else:
         row_date_str = row_date.strftime('%Y-%m-%d %H:%M:%S.%f')
     if row_date_str is None:
-        demisto.debug("[BigQuery Debug] missing creation time completely: {}".format(row))
-        return_error("[BigQuery Debug] missing creation time completely: {}".format(row))
+        demisto.debug(f"[BigQuery Debug] missing creation time completely: {row}")
+        return_error(f"[BigQuery Debug] missing creation time completely: {row}")
     return row_date_str
 
 
@@ -320,15 +320,15 @@ def fetch_incidents():
     verify_params()
     latest_incident_time_str = get_last_run_date()
     fetch_query = build_fetch_query(latest_incident_time_str)
-    demisto.debug("[BigQuery Debug] fetch query with date is: {}".format(fetch_query))
+    demisto.debug(f"[BigQuery Debug] fetch query with date is: {fetch_query}")
     fetch_limit = arg_to_number(demisto.params().get('max_fetch') or 50)
 
     bigquery_rows = list(get_query_results(fetch_query))
 
-    demisto.debug("[BigQuery Debug] number of results is: {}".format(len(bigquery_rows)))
+    demisto.debug(f"[BigQuery Debug] number of results is: {len(bigquery_rows)}")
     if len(bigquery_rows) > 0:
-        demisto.debug("[BigQuery Debug] first row is: {}".format(bigquery_rows[0]))
-        demisto.debug("[BigQuery Debug] last row is: {}".format(bigquery_rows[-1]))
+        demisto.debug(f"[BigQuery Debug] first row is: {bigquery_rows[0]}")
+        demisto.debug(f"[BigQuery Debug] last row is: {bigquery_rows[-1]}")
 
     new_incidents = []  # type: ignore
     found_incidents_ids = demisto.getLastRun().get('found_ids', {})
@@ -344,12 +344,12 @@ def fetch_incidents():
             continue
 
         found_incidents_ids[row_incident_id] = row_date
-        demisto.debug("[BigQuery Debug] cur row: {}".format(row))
+        demisto.debug(f"[BigQuery Debug] cur row: {row}")
         incident = row_to_incident(row)
         new_incidents.append(incident)
 
     demisto.debug(
-        "[BigQuery Debug] new_incidents is: {}\nbigquery_rows is: {}".format(new_incidents, len(bigquery_rows)))
+        f"[BigQuery Debug] new_incidents is: {new_incidents}\nbigquery_rows is: {len(bigquery_rows)}")
 
     if 0 < len(new_incidents) < fetch_limit:  # type: ignore
         demisto.debug("[BigQuery Debug] Less than limit")
@@ -360,7 +360,7 @@ def fetch_incidents():
         "last_date": latest_incident_time_str,
         "found_ids": found_incidents_ids
     }
-    demisto.debug("[BigQuery Debug] next run is: {}".format(next_run))
+    demisto.debug(f"[BigQuery Debug] next run is: {next_run}")
     demisto.setLastRun(next_run)
 
     demisto.incidents(new_incidents)
@@ -381,7 +381,7 @@ def test_module():
         demisto.results("ok")
     except Exception as ex:
         return_error("Authentication error: credentials JSON provided is invalid.\n Exception recieved:"
-                     "{}".format(ex))
+                     f"{ex}")
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

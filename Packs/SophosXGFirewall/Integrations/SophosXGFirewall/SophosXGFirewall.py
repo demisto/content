@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from typing import Callable
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()

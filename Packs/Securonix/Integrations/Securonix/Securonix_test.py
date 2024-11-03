@@ -419,7 +419,7 @@ def test_get_remote_data(mocker):
 
 def add_comment_to_incident_request(*args):
     """Side effect function to replicate add_comment_request function."""
-    assert '[Mirrored From XSOAR] XSOAR Incident ID: 345\nAdded By: Admin\nComment: This is a comment' == args[1]
+    assert args[1] == '[Mirrored From XSOAR] XSOAR Incident ID: 345\nAdded By: Admin\nComment: This is a comment'
     return 'Comment was added to the incident successfully.'
 
 

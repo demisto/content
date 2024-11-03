@@ -32,14 +32,14 @@ def http_request(method, path):
     )
 
     if not res.ok:
-        txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, res.text)
+        txt = f'error in URL {url} status code: {res.status_code} reason: {res.text}'
         demisto.error(txt)
         raise Exception(txt)
 
     try:
         res_json = res.json()
         if res_json.get('code'):
-            txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, res.text)
+            txt = f'error in URL {url} status code: {res.status_code} reason: {res.text}'
             demisto.error(txt)
             raise Exception(txt)
         else:
@@ -54,7 +54,7 @@ def http_request(method, path):
 
 
 def do_ip(ip):
-    path = "/{}?access_key={}".format(ip, API_KEY)
+    path = f"/{ip}?access_key={API_KEY}"
     return http_request('GET', path)
 
 
@@ -119,12 +119,12 @@ def do_ip_command():
 
 
 def test_module():
-    path = "/1.2.3.4?access_key={}".format(API_KEY)
+    path = f"/1.2.3.4?access_key={API_KEY}"
     res = requests.request('GET', BASE_URL + path)
     if res.json().get('ip') == '1.2.3.4':
         demisto.results('ok')
     else:
-        demisto.results('an error occurred. reason: {}'.format(res.text))
+        demisto.results(f'an error occurred. reason: {res.text}')
 
 
 def main():  # pragma: no cover
@@ -134,7 +134,7 @@ def main():  # pragma: no cover
         elif demisto.command() == 'ip':
             do_ip_command()
     except Exception as e:
-        return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+        return_error(f'Unable to perform command : {demisto.command}, Reason: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

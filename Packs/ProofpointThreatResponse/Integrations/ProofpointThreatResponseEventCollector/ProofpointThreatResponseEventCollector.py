@@ -378,7 +378,7 @@ def main():  # pragma: no cover
     fetch_delta = params.get('fetch_delta', '6 hours')
     incidents_states = argToList(params.get('states', ['new', 'open', 'assigned', 'closed', 'ignored']))
 
-    demisto.debug('Command being called is {}'.format(command))
+    demisto.debug(f'Command being called is {command}')
 
     try:
         headers = {

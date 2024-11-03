@@ -28,10 +28,10 @@ INPUTS = [
 def test_main(mocker, in_file, out_file, title, default_header_line):
     from ParseHTMLTables import main
 
-    with open(in_file, 'r') as f:
+    with open(in_file) as f:
         value = f.read()
 
-    with open(out_file, 'r') as f:
+    with open(out_file) as f:
         expected = json.loads(f.read())
 
     mocker.patch.object(demisto, 'args', return_value={

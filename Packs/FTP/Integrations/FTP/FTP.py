@@ -71,7 +71,7 @@ def main():
                 with open(f'/tmp/{file_name}', 'wb') as file:
                     ftp.retrbinary(f'RETR {file_path}/{file_name}', file.write)
 
-                with open(f"/tmp/{file_name}", "r") as f:
+                with open(f"/tmp/{file_name}") as f:
                     data = f.read()
                     return_results(
                         fileResult(filename = file_name, data = data)

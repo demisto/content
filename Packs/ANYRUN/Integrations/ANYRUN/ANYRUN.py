@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Optional
 
 ''' IMPORTS '''
 
@@ -412,7 +411,7 @@ def images_from_report(response):
     for idx, shot in enumerate(screenshots):
         screen_cap_url = shot.get('permanentUrl')
         img_response = requests.request('GET', screen_cap_url, verify=USE_SSL, headers=HEADERS)
-        stored_img = fileResult('screenshot{}.png'.format(idx), img_response.content)
+        stored_img = fileResult(f'screenshot{idx}.png', img_response.content)
         img_entry = {
             'Type': entryTypes['image'],
             'ContentsFormat': formats['text'],
@@ -690,7 +689,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
 
         # Handle error responses gracefully
         if res.status_code not in {200, 201}:
-            err_msg = 'Error in ANYRUN Integration API call [{}] - {}'.format(res.status_code, res.reason)
+            err_msg = f'Error in ANYRUN Integration API call [{res.status_code}] - {res.reason}'
             try:
                 if res.json().get('error'):
                     err_msg += '\n{}'.format(res.json().get('message'))
@@ -753,14 +752,14 @@ def get_history_command():
     formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
     if contents:
-        entry_context: Optional[dict] = {
+        entry_context: dict | None = {
             'ANYRUN.Task(val.ID && val.ID === obj.ID)': formatted_contents
         }
-        title = 'Task History - Filtered By "{}"'.format(filter) if filter else 'Task History'
+        title = f'Task History - Filtered By "{filter}"' if filter else 'Task History'
         # Make Related Clickable
         for task in formatted_contents:
             related = task.get('Related', '')
-            task['Related'] = '[{}]({})'.format(related, related)
+            task['Related'] = f'[{related}]({related})'
         human_readable = tableToMarkdown(title, formatted_contents, removeNull=True)
     else:
         human_readable = 'No results found.'
@@ -825,7 +824,7 @@ def get_report_command():
         **entity
     }
 
-    title = 'Report for Task {}'.format(task_id)
+    title = f'Report for Task {task_id}'
     human_readable_content = humanreadable_from_report_contents(formatted_contents)
     human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
@@ -918,10 +917,10 @@ def main():
 
     try:
         cmd_name = demisto.command()
-        LOG('Command being called is {}'.format(cmd_name))
+        LOG(f'Command being called is {cmd_name}')
         handle_proxy()
 
-        if cmd_name in COMMANDS.keys():
+        if cmd_name in COMMANDS:
             COMMANDS[cmd_name]()
 
     except Exception as e:

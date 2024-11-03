@@ -23,15 +23,15 @@ def build_query_in_reepect_to_phishing_labels(args):
     tag_field = args['tagField']
     query = args.get('query', '')
     if mapping == ALL_LABELS:
-        mapping_query = '{}:*'.format(tag_field)
+        mapping_query = f'{tag_field}:*'
     else:
         mapping_dict = get_phishing_map_labels(mapping)
-        tags_union = ' '.join(['"{}"'.format(label) for label in mapping_dict])
-        mapping_query = '{}:({})'.format(tag_field, tags_union)
+        tags_union = ' '.join([f'"{label}"' for label in mapping_dict])
+        mapping_query = f'{tag_field}:({tags_union})'
     if query == '':
         modified_query = mapping_query
     else:
-        modified_query = '({}) and ({})'.format(query, mapping_query)
+        modified_query = f'({query}) and ({mapping_query})'
     return modified_query
 
 

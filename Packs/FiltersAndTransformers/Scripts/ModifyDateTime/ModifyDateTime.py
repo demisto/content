@@ -3,10 +3,9 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 import dateparser
-from typing import Optional
 
 
-def apply_variation(original_datetime: datetime, variation: str) -> Optional[datetime]:
+def apply_variation(original_datetime: datetime, variation: str) -> datetime | None:
     try:
         new_time = dateparser.parse(variation, settings={'RELATIVE_BASE': original_datetime})
         assert new_time is not None, f'could not parse {variation}'

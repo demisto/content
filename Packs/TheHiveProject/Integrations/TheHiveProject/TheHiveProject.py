@@ -491,7 +491,7 @@ def get_case_command(client: Client, args: dict):
 
 def search_cases_command(client: Client, args: dict):
     if client.version[0] == "4":
-        arguments = args.get('query', None)
+        arguments = args.get('query')
     else:
         arguments = {k: True if v == 'true' else v for k, v in args.items() if v is not None}
         arguments = {k: False if v == 'false' else v for k, v in arguments.items() if v is not None}
@@ -869,10 +869,10 @@ def create_observable_command(client: Client, args: dict):
             "data": args.get('data'),
             "dataType": args.get('dataType'),
             "message": args.get('message'),
-            "startDate": args.get('startDate', None),
-            "tlp": args.get('tlp', None),
+            "startDate": args.get('startDate'),
+            "tlp": args.get('tlp'),
             "ioc": args.get('ioc', 'false') == 'true',
-            "status": args.get('status', None)
+            "status": args.get('status')
         }
         data = {k: v for k, v in data.items() if v}
         res = client.create_observable(case_id=case_id, data=data)
@@ -894,9 +894,9 @@ def update_observable_command(client: Client, args: dict):
 
     data = {
         "message": args.get('message'),
-        "tlp": args.get('tlp', None),
+        "tlp": args.get('tlp'),
         "ioc": args.get('ioc', 'false') == 'true',
-        "status": args.get('status', None)
+        "status": args.get('status')
     }
     data = {k: v for k, v in data.items() if v}
     res = client.update_observable(artifact_id=artifact_id, data=data)

@@ -11,7 +11,6 @@ from CommonServerUserPython import *
 
 import json
 from datetime import datetime
-from typing import Tuple
 
 TRAINING_ACC = 'f6f6f836-8bcd-4f5d-bd61-68d303c4f634'
 MAX_DETECTIONS = 100
@@ -424,7 +423,7 @@ def mapSeverity(severity) -> int:
             return 0
 
 
-def getIncidents(result, last_fetch) -> Tuple[Dict[str, int], List[dict[str, Any]]]:
+def getIncidents(result, last_fetch) -> tuple[Dict[str, int], List[dict[str, Any]]]:
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
     incidents: List[Dict[str, Any]] = []
@@ -782,7 +781,7 @@ def commandGetEntityFile(entityClient: EntityClient, hash: str):
 # Detections API commands
 
 
-def commandFetchIncidents(detectionClient: DetectionClient, account_uuid, params, last_run) -> Tuple[Dict[str, int], List[dict]]:
+def commandFetchIncidents(detectionClient: DetectionClient, account_uuid, params, last_run) -> tuple[Dict[str, int], List[dict]]:
     demisto.debug('commandFetchIncidents has been called.')
 
     demisto.debug(f'last_run retrieved: {last_run}')

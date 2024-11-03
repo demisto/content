@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-from typing import Dict, Tuple, List, Union
 
 import urllib3
 
@@ -68,7 +67,7 @@ class Client(BaseClient):
         suffix = '/alerts/getalertsV2'
         self._http_request('GET', suffix, params={'take': 1})
 
-    def list_alerts(self, limit: str = None, sort: str = None, start_date=None, end_date=None) -> Dict:
+    def list_alerts(self, limit: str = None, sort: str = None, start_date=None, end_date=None) -> dict:
 
         url_suffix = '/alerts/getalertsV2'
         params = assign_params(
@@ -80,7 +79,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix, params=params)
 
-    def get_host_info(self, host_name: str, ip_address: str) -> Dict:
+    def get_host_info(self, host_name: str, ip_address: str) -> dict:
         url_suffix = '/endpoints/v2/0/100/hostname Ascending'
         if host_name:
             field_name = 'HostName'
@@ -104,7 +103,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix, params=params)
 
-    def search_file(self, host=None, md5=None, file_extension=None, file_path=None, file_size=None) -> Dict:
+    def search_file(self, host=None, md5=None, file_extension=None, file_path=None, file_size=None) -> dict:
 
         url_suffix = '/files/search'
         body = assign_params(
@@ -117,44 +116,44 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def file_search_status(self, job_id: str = None, job_result_id: str = None) -> Dict:
+    def file_search_status(self, job_id: str = None, job_result_id: str = None) -> dict:
 
         url_suffix = f'/jobs/getjobstatus/{job_id}/{job_result_id}'
 
         return self._http_request('GET', url_suffix)
 
-    def file_search_results_metadata(self, job_id: str = None, job_result_id: str = None) -> Dict:
+    def file_search_results_metadata(self, job_id: str = None, job_result_id: str = None) -> dict:
 
         url_suffix = f'/jobs/{job_id}/jobresults/{job_result_id}'
 
         return self._http_request('GET', url_suffix)
 
-    def get_file(self, file_id: str = None) -> Union[str, bytes]:
+    def get_file(self, file_id: str = None) -> str | bytes:
 
         url_suffix = f'/files/{file_id}'
 
         return self._http_request('GET', url_suffix, resp_type='content')
 
-    def delete_job(self, job_id: str = None) -> Dict:
+    def delete_job(self, job_id: str = None) -> dict:
 
         url_suffix = f'/jobs/{job_id}'
 
         return self._http_request('DELETE', url_suffix)
 
-    def list_scripts(self) -> Dict:
+    def list_scripts(self) -> dict:
 
         url_suffix = '/packages'
 
         return self._http_request('GET', url_suffix)
 
-    def script_manifest(self, script_id: str = None) -> Dict:
+    def script_manifest(self, script_id: str = None) -> dict:
 
         url_suffix = f'/packages/{script_id}?type=Manifest'
 
         return self._http_request('GET', url_suffix)
 
-    def execute_script(self, script_id: str = None, endpoint_ip: str = None, answer: Union[str, int] = None,
-                       time_out: int = None, additional_answer: Union[None, str] = None) -> Dict:
+    def execute_script(self, script_id: str = None, endpoint_ip: str = None, answer: str | int = None,
+                       time_out: int = None, additional_answer: None | str = None) -> dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -187,7 +186,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def convert_ip_to_endpoint_id(self, ip: list = None) -> Dict:
+    def convert_ip_to_endpoint_id(self, ip: list = None) -> dict:
 
         url_suffix = '/endpoints/endpointidsbyip'
 
@@ -195,7 +194,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def convert_name_to_endpoint_id(self, endpoint_name: list = None) -> Dict:
+    def convert_name_to_endpoint_id(self, endpoint_name: list = None) -> dict:
 
         url_suffix = '/endpoints/endpointidsbyname'
 
@@ -203,7 +202,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def list_process(self, script_id: str = None, time_out: int = None, endpoint_id: str = None) -> Dict:
+    def list_process(self, script_id: str = None, time_out: int = None, endpoint_id: str = None) -> dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -240,14 +239,14 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def script_job_results(self, job_id: str = None) -> Dict:
+    def script_job_results(self, job_id: str = None) -> dict:
 
         url_suffix = f'/jobresults/{job_id}'
 
         return self._http_request('POST', url_suffix)
 
     def kill_process(self, script_id: str = None, pid: int = None, time_out: int = None,
-                     endpoint_ip=None) -> Dict:
+                     endpoint_ip=None) -> dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -276,7 +275,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def delete_file(self, script_id: str = None, file_path: str = None, time_out: int = None, endpoint_ip=None) -> Dict:
+    def delete_file(self, script_id: str = None, file_path: str = None, time_out: int = None, endpoint_ip=None) -> dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -306,7 +305,7 @@ class Client(BaseClient):
         return self._http_request('POST', url_suffix, json_data=body)
 
     def network_isolation(self, script_id: str = None, allowed_server: str = None, time_out: int = None,
-                          endpoint_ip=None) -> Dict:
+                          endpoint_ip=None) -> dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -335,7 +334,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def remove_network_isolation(self, script_id: str = None, time_out: int = None, endpoint_ip: list = None) -> Dict:
+    def remove_network_isolation(self, script_id: str = None, time_out: int = None, endpoint_ip: list = None) -> dict:
 
         url_suffix = '/jobs/createTask'
         body: dict = {
@@ -361,14 +360,14 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def get_script_job_status(self, job_result_id: str = None) -> Dict:
+    def get_script_job_status(self, job_result_id: str = None) -> dict:
 
         url_suffix = f'/jobs/getjobtargets/{job_result_id}'
 
         return self._http_request('GET', url_suffix)
 
     def query_file_by_hash(self, limit: str = None, start_time: str = None, end_time: str = None, logic: str = None,
-                           file_hash: str = None) -> Dict:
+                           file_hash: str = None) -> dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -405,7 +404,7 @@ class Client(BaseClient):
 
     def query_by_process_name(self, limit: str = None, start_time: str = None,
                               end_time: str = None, logic: str = None,
-                              process_name: str = None) -> Dict:
+                              process_name: str = None) -> dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -441,7 +440,7 @@ class Client(BaseClient):
         return response
 
     def query_by_remote_ip(self, limit: str = None, start_time: str = None,
-                           end_time: str = None, logic: str = None, remote_ip: str = None) -> Dict:
+                           end_time: str = None, logic: str = None, remote_ip: str = None) -> dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -479,7 +478,7 @@ class Client(BaseClient):
         return response
 
     def query_by_dns_request(self, limit: str = None, start_time: str = None,
-                             end_time: str = None, logic: str = None, url: str = None) -> Dict:
+                             end_time: str = None, logic: str = None, url: str = None) -> dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -516,7 +515,7 @@ class Client(BaseClient):
 
     def query_by_dns_server_ip(self, limit: str = None, start_time: str = None,
                                end_time: str = None, logic: str = None,
-                               remote_ip: str = None) -> Dict:
+                               remote_ip: str = None) -> dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -553,7 +552,7 @@ class Client(BaseClient):
 
     def query_by_dns_source_ip(self, limit: str = None, start_time: str = None,
                                end_time: str = None, logic: str = None, source_ip: str = None,
-                               domain: str = None) -> Dict:
+                               domain: str = None) -> dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -597,7 +596,7 @@ class Client(BaseClient):
     def query_events(self, limit: str = None, start_time: str = None,
                      end_time: str = None, logic: str = None, column: str = None,
                      value: str = None, entity_type: str = None, operator: str = None,
-                     additional_filter: Dict = None) -> Dict:
+                     additional_filter: dict = None) -> dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -657,7 +656,7 @@ def get_endpoint_id(client: Client, endpoint_ip: list = None, endpoint_name: lis
     return endpoint_id
 
 
-def test_module(client: Client, fetch_limit: str, *_) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, fetch_limit: str, *_) -> tuple[str, dict, dict]:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
@@ -668,7 +667,7 @@ def test_module(client: Client, fetch_limit: str, *_) -> Tuple[str, Dict, Dict]:
     return 'ok', {}, {}
 
 
-def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def list_alerts_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     limit = args.get('limit', '50')
     sort = args.get('sort')
     start_date = args.get('start_date')
@@ -732,7 +731,7 @@ def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def host_info_command(client: Client, args: dict) -> tuple[str, dict, dict]:
 
     ip_address = args.get('ip_address', '')
     host = args.get('host', '')
@@ -789,7 +788,7 @@ def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def file_search(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def file_search(client: Client, args: dict) -> tuple[str, dict, dict]:
     """ Search for files on multiple hosts, using file hash, extension, file size, and other search criteria."""
 
     host = argToList(args.get('host', ['']))
@@ -819,7 +818,7 @@ def file_search(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def file_search_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def file_search_status(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get the file search job status"""
 
     job_id = args.get('job_id')
@@ -845,7 +844,7 @@ def file_search_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def file_search_reasult_metadata(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def file_search_reasult_metadata(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Get the job results metadata"""
 
     job_id = args.get('job_id')
@@ -901,7 +900,7 @@ def get_file_command(client: Client, args: dict):
     return attachment_file
 
 
-def delete_file_search_job_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def delete_file_search_job_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     job_id = args.get('job_id')
     response = client.delete_job(job_id)
     if not response.get('success'):
@@ -910,7 +909,7 @@ def delete_file_search_job_command(client: Client, args: dict) -> Tuple[str, Dic
     return 'The job was successfully deleted', {}, response
 
 
-def list_scripts_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_scripts_command(client: Client, *_) -> tuple[str, dict, dict]:
     headers = ['ID', 'Name', 'Description']
     response = client.list_scripts()
     if not response.get('success'):
@@ -933,7 +932,7 @@ def list_scripts_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def script_manifest_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def script_manifest_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     script_id = args.get('script_id')
     headers = ['ID', 'Name', 'Description', 'Platform', 'Command', 'Questions', 'Priority', 'TimeoutSeconds',
                'ResultColumns', 'ImpersonationUser', 'ImpersonationPassword', 'WizardOverridePassword']
@@ -965,7 +964,7 @@ def script_manifest_command(client: Client, args: dict) -> Tuple[str, Dict, Dict
     return human_readable, entry_context, response
 
 
-def execute_script_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def execute_script_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     script_id = args.get('script_id')
     time_out = args.get('time_out')
     endpoint_ip = argToList(args.get('endpoint_ip'))
@@ -987,7 +986,7 @@ def execute_script_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]
     return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
-def list_process_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def list_process_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
     endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
@@ -1072,7 +1071,7 @@ def get_script_result(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def kill_process_by_pid(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def kill_process_by_pid(client: Client, args: dict) -> tuple[str, dict, dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
     endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
@@ -1100,7 +1099,7 @@ def kill_process_by_pid(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
-def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def delete_file_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
     endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
@@ -1128,7 +1127,7 @@ def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
-def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def network_isolation_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
     endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
@@ -1156,7 +1155,7 @@ def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Di
     return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
-def remove_network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def remove_network_isolation_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
     endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
@@ -1183,7 +1182,7 @@ def remove_network_isolation_command(client: Client, args: dict) -> Tuple[str, D
     return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
-def script_job_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def script_job_status(client: Client, args: dict) -> tuple[str, dict, dict]:
     job_result_id = args.get('job_result_id')
     contents = []
     response = client.get_script_job_status(job_result_id)
@@ -1205,7 +1204,7 @@ def script_job_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def query_file_by_hash_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_file_by_hash_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1291,7 +1290,7 @@ def query_file_by_hash_command(client: Client, args: dict) -> Tuple[str, Dict, D
     return human_readable, entry_context, response
 
 
-def query_process_name_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_process_name_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1349,7 +1348,7 @@ def query_process_name_command(client: Client, args: dict) -> Tuple[str, Dict, D
     return human_readable, entry_context, response
 
 
-def query_connection_by_remote_ip_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_connection_by_remote_ip_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1417,7 +1416,7 @@ def query_connection_by_remote_ip_command(client: Client, args: dict) -> Tuple[s
     return human_readable, entry_context, response
 
 
-def query_dns_request_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_dns_request_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1474,7 +1473,7 @@ def query_dns_request_command(client: Client, args: dict) -> Tuple[str, Dict, Di
     return human_readable, entry_context, response
 
 
-def query_by_server_ip_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_by_server_ip_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1531,7 +1530,7 @@ def query_by_server_ip_command(client: Client, args: dict) -> Tuple[str, Dict, D
     return human_readable, entry_context, response
 
 
-def query_by_source_ip(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_by_source_ip(client: Client, args: dict) -> tuple[str, dict, dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1588,7 +1587,7 @@ def query_by_source_ip(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def query_events_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_events_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1670,7 +1669,7 @@ def query_events_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
+def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:

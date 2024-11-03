@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from itertools import zip_longest
-from typing import Any, List, Dict, Optional
+from typing import Any
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
@@ -21,7 +21,7 @@ def demisto_get(obj: Any, path: Any) -> Any:
     :param path: The path to get values in the node.
     :return: The value(s) specified with `path` in the node.
     """
-    def split_context_path(path: str) -> List[str]:
+    def split_context_path(path: str) -> list[str]:
         """
         Get keys in order from the path which supports a syntax of path escaped with backslash.
 
@@ -60,7 +60,7 @@ def make_dict(element1: Any,
               element2: Any,
               output_name1: str,
               output_name2: str,
-              method: Optional[str]) -> Dict[str, Any]:
+              method: str | None) -> dict[str, Any]:
     if method == 'array1':
         if isinstance(element1, dict):
             return dict(element1, **{output_name2: element2})

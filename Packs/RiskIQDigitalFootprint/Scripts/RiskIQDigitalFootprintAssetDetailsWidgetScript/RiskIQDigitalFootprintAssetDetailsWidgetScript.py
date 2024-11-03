@@ -1,10 +1,10 @@
 from CommonServerPython import *
 
 import traceback
-from typing import Dict, Union, Any
+from typing import Any
 
 
-def set_arguments_for_widget_view(indicator_data: Dict[str, Any]) -> Union[Dict[str, str], str]:
+def set_arguments_for_widget_view(indicator_data: dict[str, Any]) -> dict[str, str] | str:
     riskiq_asset_type = indicator_data.get('CustomFields', {}).get('riskiqassettype', '')
     if riskiq_asset_type:
         return {

@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import List
 
 HOURS_DAYS_HEADER = 'Hours / Days'
 SUNDAY_HEADER = 'Sunday'
@@ -34,7 +33,7 @@ def hour_in_shift(day, hour, shift):
 
 
 def main():
-    get_roles_response: List = demisto.executeCommand('getRoles', {})
+    get_roles_response: list = demisto.executeCommand('getRoles', {})
     if is_error(get_roles_response):
         demisto.error(f'Failed to get roles: {str(get_error(get_roles_response))}')
     else:

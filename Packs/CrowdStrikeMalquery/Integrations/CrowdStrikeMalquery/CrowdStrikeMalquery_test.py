@@ -1,5 +1,4 @@
 import datetime
-import io
 import json
 import pytest
 import demistomock as demisto
@@ -89,7 +88,7 @@ client = Client(
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -155,7 +154,7 @@ def test_exact_search_command_(mocker):
     mocker.patch.object(client, "exact_search", return_value=exact_search_raw_response)
     result = exact_search_command(client, args)
     assert "ac1403c0-d095-4934-5bd2-4cd45f365a45" in result.readable_output
-    assert {'Request_ID': 'ac1403c0-d095-4934-5bd2-4cd45f365a45'} == result.outputs
+    assert result.outputs == {'Request_ID': 'ac1403c0-d095-4934-5bd2-4cd45f365a45'}
 
 
 @pytest.mark.xfail(raises=DemistoException, reason="Must provide a query to search")
@@ -222,7 +221,7 @@ def test_hunt_command(mocker):
     mocker.patch.object(client, "hunt", return_value=hunt_raw_response)
     result = hunt_command(client, args)
     assert "096f6aa5-f245-4b09-790f-133bc89d4d26" in result.readable_output
-    assert {'Request_ID': '096f6aa5-f245-4b09-790f-133bc89d4d26'} == result.outputs
+    assert result.outputs == {'Request_ID': '096f6aa5-f245-4b09-790f-133bc89d4d26'}
 
 
 @pytest.mark.parametrize(
@@ -274,7 +273,7 @@ def test_get_file_metadata_command(mocker):
                         return_value=util_load_json('test_data/get_metadata_raw_response.json'))
     result = get_file_metadata_command(client,
                                        {'file': 'accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995'})
-    assert 3 == result[0].indicator.dbot_score.score
+    assert result[0].indicator.dbot_score.score == 3
     assert hr in result[0].readable_output
     assert outputs[0] == result[0].outputs
 
@@ -291,7 +290,7 @@ def test_samples_multidownload_command(mocker):
                         return_value=util_load_json('test_data/multidownload_raw_response.json'))
     result = samples_multidownload_command(client, {'samples': 'samples'})
     assert "93b55373-3b69-43cb-6ea1-2870a44e1c1e" in result.readable_output
-    assert {'Request_ID': '93b55373-3b69-43cb-6ea1-2870a44e1c1e'} == result.outputs
+    assert result.outputs == {'Request_ID': '93b55373-3b69-43cb-6ea1-2870a44e1c1e'}
 
 
 def test_get_ratelimit_command(mocker):

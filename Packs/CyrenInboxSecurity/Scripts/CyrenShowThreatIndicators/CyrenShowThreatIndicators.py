@@ -58,8 +58,7 @@ def main():
         if isinstance(threat_indicators, list):
             markdown_result +=\
                 "**Number of" \
-                " indicators:**&nbsp;&nbsp;&nbsp;&nbsp; {}\n\n".\
-                format(len(threat_indicators))
+                f" indicators:**&nbsp;&nbsp;&nbsp;&nbsp; {len(threat_indicators)}\n\n"
             for x in threat_indicators:
                 markdown_result += stringify_indicators(x)
         else:
