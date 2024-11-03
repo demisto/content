@@ -689,10 +689,13 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     if any(field not in data for field in required_fields):
         raise DemistoException(f'Update incident request is missing one of the required fields for the '
                                f'API: {required_fields}')
+
+    severity = data.get('severity', '')
+
     properties = {
         'title': data.get('title'),
         'description': delta.get('description'),
-        'severity': LEVEL_TO_SEVERITY[data.get('severity', '')],
+        'severity': severity if severity in LEVEL_TO_SEVERITY.values() else LEVEL_TO_SEVERITY[severity],
         'status': 'Active',
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
