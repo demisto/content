@@ -29,14 +29,14 @@ Returns audit logs events extracted from ServiceNow. This command is used for de
 
 #### Base Command
 
-`service-now-get-events`
+`service-now-get-audit-logs`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
-| max_fetch_audit | Maximum audit events to fetch. Default is 1000. | Optional |
+| limit | Maximum audit events to fetch. Default is 1000. | Optional |
 | max_fetch_syslog_transactions | Maximum syslog transactions events to fetch. Default is 1000. | Optional |
 | from_date | The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM. | Optional |
 | offset | Starting record index from which to begin retrieving records. | Optional |
