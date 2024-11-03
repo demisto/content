@@ -178,19 +178,22 @@ class TabLifecycleManager:
             try:
                 time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
                 self.tab.Page.disable()
+                time.sleep(0.5)
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to disable page due to {ex}')
 
             try:
+                
                 self.tab.stop()
+                time.sleep(0.5)
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}')
 
             try:
                 self.browser.close_tab(tab_id)
+                time.sleep(0.5)
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to close tab {tab_id} due to {ex}')
-
             time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
 
 
