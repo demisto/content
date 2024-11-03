@@ -25,7 +25,7 @@ This automation script is used as part of the content validation that runs as pa
 ## Outputs
 
 ---
-
+ # TODO - Update
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | ValidationResult.Name| Name of validated item. | String |
@@ -58,7 +58,7 @@ This automation script is used as part of the content validation that runs as pa
 ## Human Readable Output
 
 ### Validation Results
-
+ # TODO - Update
 |Name|Error|Line|
 |---|---|---|
 | MyScript | The docker image tag is not the latest numeric tag, please update it. | |

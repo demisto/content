@@ -498,70 +498,57 @@ def main():
 
 
 
-        # file_name, file_content = get_file_name_and_contents(entry_id=args.get('entry_id'))
+        file_name, file_content = get_file_name_and_contents(entry_id=args.get('entry_id'))
 
-#         with TemporaryDirectory() as tmp_dir:
-#             # os.chdir(tmp_dir)
-#             demisto.debug(f'created {tmp_dir=}')
-#             content_dir_path = os.path.join(tmp_dir, CONTENT_DIR_NAME)
-#             demisto.debug(f'{content_dir_path=}')
-#             os.makedirs(content_dir_path, exist_ok=True)
-#             demisto.debug(f'{os.listdir(content_dir_path)=}')
-#             os.environ['DEMISTO_SDK_CONTENT_PATH'] = content_dir_path
-#
-#             demisto.debug(f'\nֿ###############################################################################################\n')
-#             file_name, file_content = get_file_name_and_contents(entry_id=args.get('entry_id'))
-#             demisto.debug(f'loaded {file_name=} |\n\n\n{file_content=}')
-# #
-        # with TemporaryDirectory() as tmp_dir:
-        #     demisto.debug(f'created {tmp_dir=}')
-        #     content_dir_path = os.path.join(tmp_dir, CONTENT_DIR_NAME)
-        #     demisto.debug(f'{content_dir_path=}')
-        #     os.makedirs(content_dir_path, exist_ok=True)
-        #     demisto.debug(f'{os.getenv("DEMISTO_SDK_CONTENT_PATH")=}')
-        #
-        #     # content_repo = git.Repo.init(content_dir_path)
-        #     # content_repo.create_remote('origin', CONTENT_REPO_URL)
-        #
-        #     # os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
-        #     # get_content_modules(content_dir_path, verify_ssl)
-        #     demisto.debug(f'\nֿ###############################################################################################\n')
-        #     # cwd = os.getcwd()
-        #     # demisto.debug(f'{str(cwd)=}')
-        #     # if os.path.isdir(cwd):
-        #     #     demisto.debug(f'{os.listdir(cwd)=}')
-        #
-        #     filename, file_contents = get_file_name_and_contents(
-        #         args.get('filename'),
-        #         args.get('data'),
-        #         args.get('entry_id'),
-        #     )
-        #
-        #     os.chdir(content_dir_path)
-        #     cwd = os.getcwd()
-        #     demisto.debug(f'{cwd=}')
-        #     if os.path.isdir(cwd):
-        #         demisto.debug(f'{os.listdir(cwd)=}')
-        #     demisto.debug(f'\nֿ###############################################################################################\n')
-        #
-        #     result = validate_content(filename, file_contents, content_dir_path)
+        with TemporaryDirectory() as tmp_dir:
+            demisto.debug(f'created {tmp_dir=}')
+            content_dir_path = os.path.join(tmp_dir, CONTENT_DIR_NAME)
+            demisto.debug(f'{content_dir_path=}')
+            os.makedirs(content_dir_path, exist_ok=True)
+            demisto.debug(f'{os.getenv("DEMISTO_SDK_CONTENT_PATH")=}')
 
-        # outputs = []
-        # for validation in result:
-        #     if validation.get('ui') or validation.get('fileType') in {'py', 'ps1', 'yml'}:
-        #         outputs.append({
-        #             'Name': validation.get('name'),
-        #             'Error': validation.get('message'),
-        #             'Line': validation.get('row'),  # TODO - Remove
-        #             # TODO - 'Error Code'
-        #         })
-        # return_results(CommandResults(
-        #     # TODO - Use this: readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Error Code']),
-        #     readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Line']),
-        #     outputs_prefix='ValidationResult',
-        #     outputs=outputs,
-        #     raw_response=result,
-        # ))
+            # content_repo = git.Repo.init(content_dir_path)
+            # content_repo.create_remote('origin', CONTENT_REPO_URL)
+
+            # os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
+            # get_content_modules(content_dir_path, verify_ssl)
+            demisto.debug(f'\nֿ###############################################################################################\n')
+            # cwd = os.getcwd()
+            # demisto.debug(f'{str(cwd)=}')
+            # if os.path.isdir(cwd):
+            #     demisto.debug(f'{os.listdir(cwd)=}')
+
+            filename, file_contents = get_file_name_and_contents(
+                args.get('filename'),
+                args.get('data'),
+                args.get('entry_id'),
+            )
+
+            os.chdir(content_dir_path)
+            cwd = os.getcwd()
+            demisto.debug(f'{cwd=}')
+            if os.path.isdir(cwd):
+                demisto.debug(f'{os.listdir(cwd)=}')
+            demisto.debug(f'\nֿ###############################################################################################\n')
+
+            result = validate_content(filename, file_contents, content_dir_path)
+
+        outputs = []
+        for validation in result:
+            if validation.get('ui') or validation.get('fileType') in {'py', 'ps1', 'yml'}:
+                outputs.append({
+                    'Name': validation.get('name'),
+                    'Error': validation.get('message'),
+                    'Line': validation.get('row'),  # TODO - Remove
+                    # TODO - 'Error Code'
+                })
+        return_results(CommandResults(
+            # TODO - Use this: readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Error Code']),
+            readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Line']),
+            outputs_prefix='ValidationResult',
+            outputs=outputs,
+            raw_response=result,
+        ))
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')

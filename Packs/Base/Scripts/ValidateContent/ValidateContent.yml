@@ -37,13 +37,13 @@ outputs:
   description: The validation error message.
   type: String
 - contextPath: ValidationResult.Line
-  description: The code line number in which the error was found in the lint.
+  description: "The code line number in which the error was found in the lint.  # TODO - Update"
   type: String
 scripttarget: 0
 timeout: 600ns
 runas: DBotWeakRole
 fromversion: 5.5.0
-dockerimage: devdemisto/xsoar-tools:1.0.0.115039
+dockerimage: devdemisto/xsoar-tools:1.0.0.115049
 
 tests:
 - ValidateContent - Test

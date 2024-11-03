@@ -6,15 +6,13 @@ import git
 from shutil import copy
 from tempfile import TemporaryDirectory
 
-from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, ExecutionMode
-from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
 from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 
 CONTENT_DIR_NAME = 'content'
 CONTENT_REPO_URL = 'https://github.com/demisto/content.git'
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 PRE_COMMIT_TEMPLATE_PATH = '.pre-commit-config_template.yaml'
-
+BRANCH_MASTER = 'master'
 
 def log_demisto_sdk_version():
     try:
@@ -47,6 +45,8 @@ def copy_file_to_content_pack(file_name: str, data=None, file_path=None, content
     Raises:
         DemistoException: If the file cannot be copied or moved.
     """
+    from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
+
     if not content_path:
         raise DemistoException(f'copy_file Could not copy file `{file_name}`. No content directory provided.')
 
@@ -88,10 +88,11 @@ def copy_files_to_content_dir(file_name=None, data=None, entry_id=None, content_
         str: path to copied files to be validated.
     """
     # TODO - Handle zips, and other file\'s collection structures.
+
     if file_name and data:
         demisto.info(f'copy_files got {file_name=} & data.')
         demisto.debug(f'copy_files decoding data into base64.')
-        return copy_file_to_content_pack(file_name=file_name, data=data)
+        return copy_file_to_content_pack(file_name=file_name, data=data, content_path=content_path)
 
     elif entry_id:
         demisto.info(f'copy_files getting file with {entry_id=}')
@@ -119,6 +120,7 @@ def run_validate(path_to_validate: str, json_output_file: str) -> int:
     from demisto_sdk.commands.validate.initializer import Initializer
     from demisto_sdk.commands.validate.validation_results import ResultWriter
     from demisto_sdk.commands.validate.validate_manager import ValidateManager
+    from demisto_sdk.commands.common.constants import ExecutionMode
 
     result_writer = ResultWriter(json_output_file)
     config_reader = ConfigReader(category="xsoar_best_practices_path_based_validations")
@@ -231,7 +233,7 @@ def run_pre_commit(path_to_validate: str, json_output_file: str) -> int:
     """
     <DOCSTRING>
     """
-
+    from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
     exit_code = pre_commit_manager(
         # TODO - Verify if it can be both a folder and files.
         input_files=[Path(path_to_validate)],
@@ -239,7 +241,7 @@ def run_pre_commit(path_to_validate: str, json_output_file: str) -> int:
         pre_commit_template_path=Path(PRE_COMMIT_TEMPLATE_PATH),
     )
     demisto.debug(f'run_pre_commit {exit_code=}')
-
+    return exit_code
 
 def reformat_validation_outputs(outputs):
     """Formats validation results output data."""
@@ -256,7 +258,14 @@ def reformat_validation_outputs(outputs):
 
 def validate_content(path_to_validate: str):
     """
-    <DOCSTRING>
+    Validate the content items in the given `path_to_validate`, using demisto-sdk's ValidateManager and PreCommitManager.
+
+    Arguments:
+        path_to_validate: Path to the file/directory to validate.
+
+    Returns:
+        CommandResults objects with validation's & pre-commit's results.
+
     """
     validations_output_file = 'validation_res.json'
     pre_commit_output_file = 'pre_commit_res.json'
@@ -264,13 +273,11 @@ def validate_content(path_to_validate: str):
 
     validate_exit_code = run_validate(path_to_validate, validations_output_file)
 
-    pre_commit_exit_code = 0
-    # pre_commit_exit_code = run_pre_commit(path_to_validate, pre_commit_output_file)
+    pre_commit_exit_code = run_pre_commit(path_to_validate, pre_commit_output_file)
 
     if not (validate_exit_code or pre_commit_exit_code):
-        return_results(CommandResults(readable_output='All validations passed.'))
+        return CommandResults(readable_output='All validations passed.')
 
-    # TODO - Enable later
     all_outputs = []
     with open(validations_output_file, 'r') as json_outputs:
         raw_outputs = json.load(json_outputs)
@@ -280,42 +287,41 @@ def validate_content(path_to_validate: str):
             else:
                 all_outputs.append(raw_outputs)
 
+    # TODO - Read pre-commit results.
+
     reformatted_outputs = reformat_validation_outputs(all_outputs)
-    return_results(CommandResults(
+    return CommandResults(
         readable_output=tableToMarkdown(
             'Validation Results', reformatted_outputs, headers=['Error Code', 'Error', 'File']
         ),
         outputs_prefix='ValidationResult',
         outputs=reformatted_outputs,
         raw_response=raw_outputs,
-    ))
+    )
 
 
 def setup_content_repo(content_path: str):
-    """<DOCSTRING>"""
+    """ Set up local Content git repository to run demisto-sdk commands against. """
     content_repo = git.Repo.init(content_path)
     demisto.debug(f'main created content_repo {os.listdir(content_path)=}')
 
-    # Check if the repository has any commits; make an initial commit if needed
+    # Check if the repository has any commits, make an initial commit if needed.
     if not content_repo.head.is_valid():
-        # Make an empty initial commit to create the master branch
+        # Make an empty initial commit to create the master branch.
         content_repo.index.commit("Initial commit")
 
-    # Set up the remote and fetch it
+    # Set up the remote branch and fetch it.
     content_repo.create_remote('origin', CONTENT_REPO_URL)
     content_repo.remotes.origin.fetch()
 
-    # Ensure the 'master' branch exists, and checkout 'master'
-    if 'master' not in content_repo.heads:
-        content_repo.create_head('master')
+    # Ensure 'master' branch exists, and checkout.
+    if BRANCH_MASTER not in content_repo.heads:
+        content_repo.create_head(BRANCH_MASTER)
     content_repo.heads.master.checkout()
-    # os.chdir(content_path)
-    # content_repo.create_remote('origin', CONTENT_REPO_URL)
-    # content_repo.remotes.origin.fetch()
 
 
 def setup_content_dir(base_dir: str, file_name, file_contents, entry_id, verify_ssl=False) -> tuple[str, str]:
-    """<DOCSTRING>"""
+    """ Set up the content directory to validate the content items in."""
 
     content_path = os.path.join(base_dir, CONTENT_DIR_NAME)
     os.mkdir(content_path)
@@ -339,15 +345,17 @@ def main():
         setup_proxy(args)
         verify_ssl = argToBoolean(args.get('trust_any_certificate'))
 
-        file_name = args.get('file_name', None)
-        file_contents = args.get('file_contents', None)
+        demisto.debug(f'Got args {args}')
+        filename = args.get('filename', None)
+        data = args.get('data', None)
         entry_id = args.get('entry_id', None)
 
         with TemporaryDirectory() as tmp_dir:
             demisto.debug(f"created {tmp_dir=}")
-            content_path, path_to_validate = setup_content_dir(tmp_dir, file_name, file_contents, entry_id, verify_ssl)
-            validate_content(path_to_validate)
+            content_path, path_to_validate = setup_content_dir(tmp_dir, filename, data, entry_id, verify_ssl)
+            return_results(validate_content(path_to_validate))
 
+        demisto.debug(f'Finished validating content.')
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
