@@ -1,3 +1,4 @@
+import pytest
 from CommonServerPython import *
 from dataclasses import dataclass
 
@@ -28,9 +29,27 @@ CUSTOM_HIT = {
 
 CUSTOM_HIT_ELASTIC_V7 = {
     "_source": {
-    CUSTOM_VAL_KEY: '5.5.5.5',
-    CUSTOM_TYPE_KEY: 'IP'
+        CUSTOM_VAL_KEY: '5.5.5.5',
+        CUSTOM_TYPE_KEY: 'IP'
     }}
+
+INSIGHT_HIT_ELASTIC_V7 = {
+    "_source": {
+        "name": '5.5.5.5',
+        "type": 'IP'
+    }}
+
+PARSED_INSIGHT_HIT_ELASTIC_V7 = {
+    'name': '5.5.5.5',
+    'type': 'IP',
+    'value': '5.5.5.5',
+    'rawJSON': {
+        'name': '5.5.5.5',
+        'type': 'IP',
+        'value': '5.5.5.5'
+    },
+    'fields': {}
+}
 
 PARSED_CUSTOM_HIT = {
     'indicatorValue': '5.5.5.5',
@@ -187,11 +206,6 @@ def test_hit_to_indicator():
 
     ioc = esf.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, '', 'URL', ['tag1', 'tag2'], 'AMBER')
     assert ioc['type'] == 'URL'
-    
-def test_hit_to_indicator_insight_hit():
-    import FeedElasticsearch as esf
-    ioc = esf.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None, ['tag1', 'tag2'], 'AMBER')
-    assert ioc == PARSED_CUSTOM_HIT
 
 
 def test_hit_to_indicator_enrichment_excluded():
@@ -208,20 +222,21 @@ def test_hit_to_indicator_enrichment_excluded():
                                enrichment_excluded=True)
     assert ioc.pop('enrichmentExcluded')
     assert ioc == PARSED_CUSTOM_HIT
-    
-def test_hit_to_indicator_elastic_v7(mocker):
+
+
+def test_hit_to_indicator_custom_elastic_v7(mocker):
     """
     Background:
     To maintain backwards compatibility for elastic server v7 and below, we have changed several places in the code where instead
     of using the elasticsearch_dsl library (which is compatible to versions >= 8 we use the elasticsearch library directly).
     In some cases those code changes caused slight differences in API responses structure.
-    
-    In this test we check that the 'hit_to_indicator' function handles the hit object structure we get when searching for
-    indicators hits in Elsticsearch server v7.
-    
+
+    In this test we check that the 'hit_to_indicator' function handles the generic (custom) hit object structure we get when
+    searching for indicators hits in Elasticsearch server v7.
+
     Given:
-        - Elasticsearch client from type 'Elasticsearch' (v7 client), and a mock response of a hit object we get by querying
-          elasticsearch v7 server.
+        - Elasticsearch client from type 'Elasticsearch' (v7 client), and a mock response of a generic (custom) hit object we get
+        by querying elasticsearch v7 server.
     When:
         - Running the 'hit_to_indicator' function.
     Then:
@@ -233,6 +248,28 @@ def test_hit_to_indicator_elastic_v7(mocker):
     ioc = esf.hit_to_indicator(CUSTOM_HIT_ELASTIC_V7, CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None, ['tag1', 'tag2'], 'AMBER')
     assert ioc == PARSED_CUSTOM_HIT
     
+def test_hit_to_indicator_insight_hit_v7():
+    """
+    Background:
+    To maintain backwards compatibility for elastic server v7 and below, we have changed several places in the code where instead
+    of using the elasticsearch_dsl library (which is compatible to versions >= 8 we use the elasticsearch library directly).
+    In some cases those code changes caused slight differences in API responses structure.
+
+    In this test we check that the 'hit_to_indicator' function handles the demisto (insight) hit object structure we get when
+    searching for indicators hits in Elasticsearch server v7.
+
+    Given:
+        - Elasticsearch client from type 'Elasticsearch' (v7 client), and a mock response of a demisto (insight) hit object we get
+          by querying elasticsearch v7 server.
+    When:
+        - Running the 'hit_to_indicator' function.
+    Then:
+        - Make sure that the parsed hit is as expected.
+    """
+    import FeedElasticsearch as esf
+    ioc = esf.hit_to_indicator(INSIGHT_HIT_ELASTIC_V7)
+    assert ioc == PARSED_INSIGHT_HIT_ELASTIC_V7
+
 
 
 def test_extract_indicators_from_insight_hit2(mocker):
@@ -289,17 +326,41 @@ def test_elasticsearch_builder_called_with_username_password(mocker):
     """
     Given:
         - basic authentication parameters are provided (username and password)
+        - Client type is Elasticsearch (elastic v7)
     When:
         - creating an Elasticsearch client
     Then:
         - ensure the client is created with the correct parameters
     """
     import FeedElasticsearch as esf
+    mocker.patch('FeedElasticsearch.ELASTIC_SEARCH_CLIENT', new="Elasticsearch")
     es_mock = mocker.patch.object(esf.Elasticsearch, '__init__', return_value=None)
     username = 'demisto'
     password = 'mock'
     esf.ElasticsearchClient(username=username, password=password)
     assert es_mock.call_args[1].get('http_auth') == ('demisto', 'mock')
+    assert es_mock.call_args[1].get('api_key') is None
+    
+def test_elasticsearch_builder_called_with_username_password_elastic_v8(mocker):
+    """
+    In elastic version >= 8, basic auth params are transferred through the 'basic auth' key instead of the 'http_auth' key.
+    This test check that the parameters are transferred correctly.
+    Given:
+        - basic authentication parameters are provided (username and password)
+        - Client type is Elasticsearch_v8
+    When:
+        - creating an Elasticsearch client
+    Then:
+        - ensure the client is created with the correct parameters
+    """
+    import FeedElasticsearch as esf
+    mocker.patch('FeedElasticsearch.ELASTIC_SEARCH_CLIENT', new="Elasticsearch_v8")
+    es_mock = mocker.patch.object(esf.Elasticsearch, '__init__', return_value=None)
+    username = 'demisto'
+    password = 'mock'
+    esf.ElasticsearchClient(username=username, password=password)
+    assert es_mock.call_args[1].get('basic_auth') == ('demisto', 'mock')
+    assert es_mock.call_args[1].get('http_auth') is None
     assert es_mock.call_args[1].get('api_key') is None
 
 
@@ -363,3 +424,40 @@ def test_last_run():
     last_update, last_ids = update_last_fetch(MockClient(), ioc_lst)
     assert set(last_ids) == {"4", "3"}
     assert datetime.fromtimestamp(last_update // 1000).isoformat() == "2023-01-17T14:33:00"
+    
+@pytest.mark.parametrize(
+    'client_version',
+    [
+        ("Elasticsearch"),
+        ("OpenSearch"),
+        ("Elasticsearch_v8")
+    ]
+)
+def test_get_indicators_by_elastic_version_generic_feed(mocker, client_version):
+    """
+    This test makes sure that the right get indicators functions are called in accordance to the elasticsearch client version.
+
+    Given:
+        - 
+    When:
+        -
+    Then:
+        -
+    """
+    import FeedElasticsearch as esf
+    mocker.patch('FeedElasticsearch.ELASTIC_SEARCH_CLIENT', new=client_version)
+    mocker.patch.object(esf.Elasticsearch, '__init__', return_value=None)
+    mocker.patch.object(esf, 'get_scan_generic_format', return_value=None)
+    mock_get_generic_indicators = mocker.patch.object(esf, 'get_generic_indicators', return_value=None)
+    mock_get_generic_indicators_elastic_v7 = mocker.patch.object(esf, 'get_generic_indicators_elastic_v7', return_value=None)
+    
+    client = esf.ElasticsearchClient()
+    esf.get_indicators_command(client, feed_type='Generic Feed',
+                               src_val='indicatorValue', src_type='indicatorType', default_type="IP")
+    
+    if client_version in ['Elasticsearch_v8', 'OpenSearch']:
+        assert mock_get_generic_indicators.call_count == 1
+        assert mock_get_generic_indicators_elastic_v7.call_count == 0
+    else: # Elasticsearch v7 and below
+        assert mock_get_generic_indicators.call_count == 0
+        assert mock_get_generic_indicators_elastic_v7.call_count == 1
