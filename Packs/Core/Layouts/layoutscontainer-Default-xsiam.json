@@ -1,0 +1,63 @@
+{
+    "cacheVersn": 0,
+    "close": null,
+    "definitionId": "",
+    "description": "Default layout",
+    "detached": false,
+    "details": null,
+    "detailsV2": {
+      "TypeName": "",
+      "tabs": [
+        {
+          "id": "overview",
+          "name": "Overview",
+          "type": "overview"
+        },
+        {
+          "id": "assets_and_artifacts",
+          "name": "Key Assets & Artifacts",
+          "type": "assets_and_artifacts"
+        },
+        {
+          "id": "alerts_and_insights",
+          "name": "Alerts & Insights",
+          "type": "alerts_and_insights"
+        },
+        {
+          "id": "timeline",
+          "name": "Timeline",
+          "type": "timeline"
+        },
+        {
+          "id": "war_room",
+          "name": "Incident War Room",
+          "type": "war_room"
+        },
+        {
+          "id": "executions",
+          "name": "Executions",
+          "type": "executions"
+        }
+      ]
+    },
+    "edit": null,
+    "fromServerVersion": "",
+    "group": "case",
+    "id": "Default XSIAM incident layout",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "itemVersion": "",
+    "locked": true,
+    "mobile": null,
+    "name": "Default XSIAM incident layout",
+    "packID": "",
+    "packName": "",
+    "propagationLabels": [
+      "all"
+    ],
+    "quickView": null,
+    "quickViewV2": null,
+    "system": true,
+    "toServerVersion": "",
+    "version": -1
+  }
