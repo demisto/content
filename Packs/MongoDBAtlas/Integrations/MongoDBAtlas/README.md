@@ -1,5 +1,5 @@
 MongoDBAtlas is integration that supports fetching and managing alerts and events within XSIAM.
-This integration was integrated and tested with version xx of MongoDBAtlasEventCollector.
+This integration was integrated and tested with version 2.0 of MongoDB Atlas.
 
 ## Configure MongoDBAtlas on Cortex XSOAR
 
