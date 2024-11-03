@@ -113,15 +113,34 @@ class Client(BaseClient):
         )
 
 
+def manage_fetch_interval(client, start_run, end_run):
+    """
+    Manages the fetch interval by sleeping if necessary.
+
+    This function calculates the fetch runtime against client.fetch_interval.
+    If the runtime is less than the client.fetch_interval time, it will sleep
+    for the time difference between client.fetch_interval and the fetch runtime.
+    Otherwise, the next fetch will occur immediately.
+
+    Args:
+        client: The client object containing the fetch_interval attribute.
+        start_run: The start time of the fetch operation.
+        end_run: The end time of the fetch operation.
+    """
+    fetch_sleep = client.fetch_interval - (end_run - start_run)
+    if fetch_sleep > 0:
+        time.sleep(fetch_sleep)
+
+
 def normalize_date_format(date_str: str) -> str:
     """
-    Normalize the given date string by removing microseconds.
+    Normalize the given date string by removing milliseconds.
 
     Args:
         date_str (str): The input date string to be normalized.
 
     Returns:
-        str: The normalized date string without microseconds.
+        str: The normalized date string without milliseconds.
     """
     try:
         # Parse the original date string with milliseconds
@@ -155,6 +174,9 @@ def update_new_integration_context(
     events_suspected_duplicates = (
         extract_events_suspected_duplicates(filtered_events) if filtered_events else []
     )
+
+    # Determine the latest event time: Extract the last time of the filtered event,
+    # or use the last known time from integration context if no filtered events exist
     latest_event_time = (
         normalize_date_format(max(filtered_events, key=parse_event_time)["log_time"])
         if filtered_events
@@ -176,7 +198,7 @@ def update_new_integration_context(
         "last_fetch_events": filtered_events if include_last_fetch_events else [],
     }
 
-    demisto.info(f"integration_context that will set - {integration_context=}")
+    demisto.info(f"Updating integration context with new data: {integration_context=}")
     set_integration_context(integration_context)
 
 
@@ -192,7 +214,9 @@ def parse_event_time(event) -> datetime:
     """
     Parse the event time from the given event dict to datetime object.
     """
-    return datetime.strptime(normalize_date_format(event["log_time"]), "%Y-%m-%dT%H:%M:%SZ")
+    return datetime.strptime(
+        normalize_date_format(event["log_time"]), "%Y-%m-%dT%H:%M:%SZ"
+    )
 
 
 def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
@@ -204,7 +228,9 @@ def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
     """
 
     # Find the maximum event time
-    latest_event_time = normalize_date_format(max(events, key=parse_event_time)["log_time"])
+    latest_event_time = normalize_date_format(
+        max(events, key=parse_event_time)["log_time"]
+    )
 
     # Filter all JSONs with the maximum event time
     filtered_events = filter(
@@ -245,17 +271,18 @@ def is_duplicate(
     return False
 
 
-def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]]:
+def filter_duplicate_events(
+    events: list[dict[str, str]], integration_context: dict
+) -> list[dict[str, str]]:
     """
     Filter out duplicate events from the given list of events.
 
     Args:
-        events (list[dict[str, str]]): A list of event dictionaries, each containing 'uuid' and 'time' keys.
+        events (list[dict[str, str]]): A list of event dicts, each containing 'uuid' and 'log_time' keys.
 
     Returns:
-        list[dict[str, str]]: A list of event dictionaries without fear of duplication.
+        list[dict[str, str]]: A list of event dicts without fear of duplication.
     """
-    integration_context = get_integration_context()
     events_suspected_duplicates = set(
         integration_context.get("events_suspected_duplicates", [])
     )
@@ -263,6 +290,7 @@ def filter_duplicate_events(events: list[dict[str, str]]) -> list[dict[str, str]
         integration_context.get("latest_event_time", "2000-01-01T00:00:00.000Z")
         or "2000-01-01T00:00:00.000Z"
     )  # TODO default value
+
     latest_event_time = datetime.strptime(
         normalize_date_format(latest_event_time), "%Y-%m-%dT%H:%M:%SZ"
     )
@@ -294,6 +322,7 @@ def prepare_raw_res_and_load_json(raw_res: str) -> dict:
 def get_events_command(client: Client, integration_context: dict):
     events: list[dict] = []
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
+
     try:
         raw_res = client.get_events(payload=next_fetch)
         json_res = prepare_raw_res_and_load_json(raw_res)
@@ -307,40 +336,23 @@ def get_events_command(client: Client, integration_context: dict):
             raise NextPointingNotAvailable
         raise e
 
-    try:
-        demisto.info(f"Number of json in response - len of json res = {len(json_res)}")
-    except Exception as e:
-        demisto.info(f"Number of json in response - Error: {e}")
-
     for chunk in json_res:
         events.extend(chunk["events"])
     next_hash = json_res[0].get("next", "") if json_res else ""
-    demisto.info(f"Next hash - {next_hash=}")
 
     if not events:
         demisto.info("Not events returned")
         return
 
-    events_debug = []
-    for event in events:
-        events_debug.append(
-            {
-                "uuid": event["uuid"],
-                "time": event["time"],
-                "log_time": event["log_time"],
-            }
-        )
-    demisto.info(f"uuid time log_time - {events_debug=}")
-
-    demisto.info(f"filtering, len of events {len(events)}")
-    filtered_events = filter_duplicate_events(events)
-    demisto.info("filtering passed successfully")
+    demisto.info(f"Starting event filtering. Initial number of events: {len(events)}")
+    filtered_events = filter_duplicate_events(events, integration_context)
+    demisto.info(f"Filtering completed. Total number of events: {len(filtered_events)}")
 
     filtered_events.extend(integration_context.get("last_fetch_events", []))
 
-    demisto.info(f"start pushing to XSIAM, len of events {len(filtered_events)}")
     try:
         push_events(filtered_events)
+        demisto.info("pushing passed successfully")
     except Exception as e:
         update_new_integration_context(
             filtered_events=filtered_events,
@@ -349,13 +361,10 @@ def get_events_command(client: Client, integration_context: dict):
             last_integration_context=integration_context,
         )
         demisto.info(
-            f"pushing dev - Failed to push events to XSIAM, The integration_context updated. Error: {e}"
+            f"Failed to push events to XSIAM, The integration_context updated. Error: {e}"
         )
         raise e
 
-    demisto.info("pushing dev - pushing passed successfully")
-
-    demisto.info("updating context dev - start updating integration context")
     update_new_integration_context(
         filtered_events=filtered_events,
         next_hash=next_hash,
@@ -375,17 +384,23 @@ def perform_long_running_loop(client: Client):
 
         except UnauthorizedToken:
             try:
-                time.sleep(60)
+                # Used to calculate the duration of the fetch run.
+                end_run = get_current_time_in_seconds()
+                manage_fetch_interval(client, start_run, end_run)
+                # Trying to obtain a new access token
                 client.get_token()
             except Exception as e:
                 demisto.info("Failed to obtain a new access token")
-                time.sleep(60)
                 raise e
             continue
         except NextPointingNotAvailable:
             demisto.info("The next hash not available, pop it from integration context")
             integration_context.pop("next_fetch")
             set_integration_context(integration_context)
+
+            # Used to calculate the duration of the fetch run.
+            end_run = get_current_time_in_seconds()
+            manage_fetch_interval(client, start_run, end_run)
             continue
         except Exception as e:
             demisto.info(f"Failed to fetch logs from API. Error: {e}")
@@ -393,13 +408,8 @@ def perform_long_running_loop(client: Client):
 
         # Used to calculate the duration of the fetch run.
         end_run = get_current_time_in_seconds()
-        # Calculation of the fetch runtime against `client.fetch_interval`
-        # If the runtime is less than the `client.fetch_interval` time
-        # then it will go to sleep for the time difference
-        # between the `client.fetch_interval` and the fetch runtime
-        # Otherwise, the next fetch will occur immediately
-        if (fetch_sleep := client.fetch_interval - (end_run - start_run)) > 0:
-            time.sleep(fetch_sleep)
+
+        manage_fetch_interval(client, start_run, end_run)
 
 
 def test_module(client: Client) -> str:
