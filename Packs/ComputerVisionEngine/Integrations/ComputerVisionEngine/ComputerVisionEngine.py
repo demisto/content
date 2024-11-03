@@ -25,7 +25,7 @@ if demisto.command() == 'yolo-coco-process-image':
     try:
         file_result = demisto.getFilePath(entry_id)
     except Exception as ex:
-        return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex))
+        return_error(f"Failed to load file entry with entryid: {entry_id}. Error: {ex}")
 
     args["image"] = file_result.get("path")
     # load the COCO class labels our YOLO model was trained on
@@ -51,7 +51,7 @@ if demisto.command() == 'yolo-coco-process-image':
 
     # determine only the *output* layer names that we need from YOLO
     ln = net.getLayerNames()
-    ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]  # type: ignore[index]
 
     # construct a blob from the input image and then perform a forward
     # pass of the YOLO object detector, giving us our bounding boxes and
@@ -111,7 +111,7 @@ if demisto.command() == 'yolo-coco-process-image':
     # ensure at least one detection exists
     if len(idxs) > 0:
         # loop over the indexes we are keeping
-        for i in idxs.flatten():
+        for i in idxs.flatten():  # type: ignore[attr-defined]
             tmp_list = []
             # extract the bounding box coordinates
             (x, y) = (boxes[i][0], boxes[i][1])  # type: ignore
@@ -120,8 +120,8 @@ if demisto.command() == 'yolo-coco-process-image':
             # draw a bounding box rectangle and label on the image
             color = [int(c) for c in COLORS[classIDs[i]]]  # type: ignore
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)  # pylint: disable=E1101
-            text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])  # type: ignore
-            if LABELS[classIDs[i]] in output_keys.keys():  # type: ignore
+            text = f"{LABELS[classIDs[i]]}: {confidences[i]:.4f}"  # type: ignore
+            if LABELS[classIDs[i]] in output_keys:  # type: ignore
                 if isinstance(output_keys[LABELS[classIDs[i]]], float):  # type: ignore
                     tmp_list = [output_keys[LABELS[classIDs[i]]]]  # type: ignore
                 else:

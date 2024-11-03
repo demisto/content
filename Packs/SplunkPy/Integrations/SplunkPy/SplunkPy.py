@@ -78,7 +78,7 @@ QUERY_NAME = 'query_name'
 QUERY_SEARCH = 'query_search'
 INCIDENT_CREATED = 'incident_created'
 
-DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
+DRILLDOWN_REGEX = r'([^\s\$]+)\s*=\s*"?(\$[^\s\$\\]+\$)"?|"?(\$[^\s\$\\]+\$)"?'
 
 ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     DRILLDOWN_ENRICHMENT: 'successful_drilldown_enrichment',
@@ -951,19 +951,6 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
     return "", ""
 
 
-def remove_double_quotes(query: str) -> str:
-    """
-        query (str): query with double double quotes.
-
-        Return: query with no double double quotes. Example: "this is a ""test""\" -> "this is a "test""
-    """
-    # Regular expression to match two consecutive quotation marks with any character(s) in between
-    pattern = re.compile(r'""(.*?)""')
-
-    # Substitute the pattern with single quotes around the matched content
-    return pattern.sub(r'"\1"', query)
-
-
 def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """ Replaces all needed fields in a drilldown search query, or a search query name
     Args:
@@ -993,12 +980,6 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
             else:
                 replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
 
-        elif field in USER_RELATED_FIELDS:
-            # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
-            # the backslash by using the double-slash ( \\ ) string
-            replacement = replacement.replace('\\', '\\\\')
-            replacement = f""""{replacement.strip('"')}\""""
-
         end = match.start()
         searchable_search.extend((search[start:end], str(replacement)))
         start = match.end()
@@ -1006,8 +987,6 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
 
     parsed_query = ''.join(searchable_search)
 
-    # Avoiding double quotes in splunk variables that were surrounded by quotation marks in the original query (ex: '"$user|s"')
-    parsed_query = remove_double_quotes(parsed_query)
     demisto.debug(f"Parsed query is: {parsed_query}")
 
     return parsed_query
@@ -1995,7 +1974,7 @@ class ResponseReaderWrapper(io.RawIOBase):
     def close(self):
         self.responseReader.close()
 
-    def read(self, n):
+    def read(self, n):  # type: ignore[override]
         return self.responseReader.read(n)
 
     def readinto(self, b):
@@ -2146,7 +2125,11 @@ def rawToDict(raw):
 
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
-                    result[key_and_val[0]] = key_and_val[1]
+                    if key_and_val[0] not in result.keys():
+                        result[key_and_val[0]] = key_and_val[1]
+                    else:
+                        # If there are multiple values for a key, append them.
+                        result[key_and_val[0]] = ", ".join([result[key_and_val[0]], key_and_val[1]])
 
     if REPLACE_FLAG:
         result = replace_keys(result)

@@ -55,6 +55,22 @@ configuration:
   - Incoming
   - Outgoing
   - Both
+- additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
+  defaultvalue: 'true'
+  display: Close Mirrored XSOAR Incident
+  name: close_xsoar_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR.
+  defaultvalue: 'true'
+  display: Close Mirrored Cortex XDR Incident
+  name: close_xdr_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: '1'
   display: XDR mirroring delay in minutes
   name: xdr_delay
@@ -917,6 +933,20 @@ script:
     - name: username
       description: The usernames to query for. Accepts a single user, or comma-separated list of usernames.
       isArray: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments.
+      name: all_results
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return timestamp or date string values.
+      name: convert_timestamp_to_datestring
+      predefined:
+      - "false"
+      - "true"
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set. (Start by counting from 0).
     name: xdr-get-endpoints
     outputs:
@@ -2786,6 +2816,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
+      name: events_from_decider_format
+      auto: PREDEFINED
+      defaultValue: 'dict'
+      predefined:
+      - 'list'
+      - 'dict'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:
@@ -3410,7 +3447,7 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: The name of the host.
+    - description: The host name of a specific host.
       name: host_id
     - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.)
       name: limit

@@ -17,9 +17,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [
-        "Netskope DLP"
-    ],
+    "associatedTypes": ["Netskope DLP", "Netskope DLP Incident"],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,

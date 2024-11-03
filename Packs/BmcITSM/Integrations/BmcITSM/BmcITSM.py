@@ -543,7 +543,7 @@ class Client(BaseClient):
         company: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         assignee: str,
         assignee_login_id: str,
         site_group: str,
@@ -585,7 +585,7 @@ class Client(BaseClient):
             "Reported Source": reported_source,
             "Service_Type": service_type,
             "Assigned Support Organization": assigned_support_organization,
-            "Assigned Group": assigned_support_group_name,
+            "Assigned Group": assigned_group,
             "Assignee": assignee,
             "Assignee Login ID": assignee_login_id,
             "Assigned Support Company": assigned_support_company,
@@ -621,7 +621,7 @@ class Client(BaseClient):
         company: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_support_group_name: str,
+        assigned_group: str,
         assignee: str,
         assignee_login_id: str,
         site_group: str,
@@ -648,7 +648,7 @@ class Client(BaseClient):
             company (str): Ticket company.
             assigned_support_organization (str): Assignee organization.
             assigned_support_company (str):  Assignee company.
-            assigned_support_group_name (str):  Assignee group name.
+            assigned_group (str):  Assignee group name.
             assignee (str): Ticket assignee.
             assignee_login_id (str): Tixcket assignee login ID.
             site_group (str): Site group.
@@ -672,7 +672,7 @@ class Client(BaseClient):
             "Reported Source": reported_source,
             "Service_Type": service_type,
             "Assigned Support Organization": assigned_support_organization,
-            "Assigned Group": assigned_support_group_name,
+            "Assigned Group": assigned_group,
             "Assignee": assignee,
             "Assignee Login ID": assignee_login_id,
             "Assigned Support Company": assigned_support_company,
@@ -1900,7 +1900,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("support_group_name")
+    assigned_group = args.get("assigned_group")
     assignee_login_id = args.get("assignee_login_id")
     assignee = args.get("assignee")
     site_group = args.get("site_group")
@@ -1930,7 +1930,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
         company=company,  # type: ignore[arg-type]
         assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
         assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
-        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
+        assigned_group=assigned_group,  # type: ignore[arg-type]
         assignee=assignee,  # type: ignore[arg-type]
         assignee_login_id=assignee_login_id,  # type: ignore[arg-type]
         site_group=site_group,  # type: ignore[arg-type]
@@ -1983,7 +1983,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("support_group_name")
+    assigned_group = args.get("assigned_group")
     assignee_login_id = args.get("assignee_login_id")
     assignee = args.get("assignee")
     site_group = args.get("site_group")
@@ -2015,7 +2015,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
         company=company,  # type: ignore[arg-type]
         assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
         assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
-        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
+        assigned_group=assigned_group,  # type: ignore[arg-type]
         assignee=assignee,  # type: ignore[arg-type]
         assignee_login_id=assignee_login_id,  # type: ignore[arg-type]
         site_group=site_group,  # type: ignore[arg-type]
@@ -3476,7 +3476,7 @@ def gen_single_filters_statement(filter_key: str, values: list, oper_in_filter: 
 
     stmt = oper_between_filters.join(f"'{filter_key}' {oper_in_filter} \"{resource_id}\""
                                      for resource_id in (values))
-    return stmt
+    return f'({stmt})' if stmt else ''
 
 
 def wrap_filter_value(filter_value: str, operation: str) -> str:
@@ -3530,7 +3530,7 @@ def gen_fetch_incidents_query(
         str: query to fetch a certain ticket type.
     """
     create_time_prop = "Create Date" if ticket_type == "task" else "Submit Date"
-    time_filter = f"'{create_time_prop}' <= \"{t_epoch_to}\" AND '{create_time_prop}' >\"{t_epoch_from}\""
+    time_filter = f"('{create_time_prop}' <= \"{t_epoch_to}\" AND '{create_time_prop}' >\"{t_epoch_from}\")"
 
     status_statement = gen_single_filters_statement(TICKET_TYPE_TO_STATUS_KEY[ticket_type],
                                                     status_filter, "=", " OR ")

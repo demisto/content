@@ -65,11 +65,11 @@ def extract_hyperlinks_from_pptx(file_path: str) -> Set:
 
 
 def extract_hyperlink_by_file_type(file_name: str, file_path: str) -> CommandResults:
-    if file_name.endswith('.xlsx'):
+    if file_name.lower().endswith('.xlsx'):
         result = extract_hyperlinks_from_xlsx(file_path)
-    elif file_name.endswith('.docx'):
+    elif file_name.lower().endswith('.docx'):
         result = extract_hyperlinks_from_docx(file_path)
-    elif file_name.endswith('.pptx'):
+    elif file_name.lower().endswith('.pptx'):
         result = extract_hyperlinks_from_pptx(file_path)
     else:
         raise ValueError("Unsupported file type. Supported types are: 'xlsx, docx, pptx'")

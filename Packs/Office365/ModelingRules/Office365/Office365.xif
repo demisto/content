@@ -252,3 +252,16 @@ call o365_common_fields
 	xdm.target.resource.name = if(ObjectId = null, null, ObjectId ~= "^\s*$", null, ObjectId),
 	xdm.alert.description = to_string(AppAccessContext),	
 	xdm.network.rule = to_string(PolicyDetails);
+
+[MODEL: dataset = "msft_o365_emails_raw"]
+alter
+	xdm.email.message_id = InternetMessageId,								
+	xdm.source.user.username = coalesce(sender -> emailAddress.name, From -> emailAddress.name),
+	xdm.email.sender = coalesce(sender -> emailAddress.address, From -> emailAddress.address),
+	xdm.observer.unique_identifier = webLink,
+	xdm.email.recipients = arraymap(toRecipients -> [], "@element"-> emailAddress.address),
+	xdm.email.cc = arraymap(ccRecipients -> [], "@element"-> emailAddress.address),
+	// xdm.email.bcc = arraymap(bccRecipients -> [], "@element"-> emailAddress.address),
+	xdm.email.attachment.filename = arraystring(arraymap(attachments  -> [], "@element"-> name), "|"),
+	xdm.email.data = to_string(internetMessageHeaders),
+	xdm.alert.severity = importance;

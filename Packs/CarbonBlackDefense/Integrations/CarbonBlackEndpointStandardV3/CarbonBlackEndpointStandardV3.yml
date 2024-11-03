@@ -2317,14 +2317,17 @@ script:
       description: The ID of the job to retrieve the details. This is used internally for polling.
     - name: alert_id
       description: The ID of the alert to retrieve the observation details. Must be specified alone.
-    - name: event_ids
+    - name: observation_ids
       description: A list of observation IDs to retrieve the details. Must be specified alone.
+    - name: event_ids
+      hidden: true
+      description: Functioning the same as `observation_ids`. This argument is retained for backward compatibility to ensure existing implementations continue to work without changes.
     - name: process_hash
       description: The hash of the process to search for. Can be combined with rows, and with device_id or count_unique_devices, but not both.
     - name: device_id
-      description: The ID of the device to filter the observations. Must be combined with process_hash. Cannot be combined with alert_id, event_ids, count_unique_devices.
+      description: The ID of the device to filter the observations. Must be combined with process_hash. Cannot be combined with alert_id, observation_ids, count_unique_devices.
     - name: count_unique_devices
-      description: A boolean indicating whether to count unique devices executing the process hash. Must be combined with process_hash. Cannot be combined with alert_id, event_ids, device_id.
+      description: A boolean indicating whether to count unique devices executing the process hash. Must be combined with process_hash. Cannot be combined with alert_id, observation_ids, device_id.
     - name: rows
       description: The maximum number of rows to return, up to 10,000. Can only be combined with process_hash.
     description: Fetches Carbon Black events details based on specified parameters. Supports polling to wait for the search job completion.

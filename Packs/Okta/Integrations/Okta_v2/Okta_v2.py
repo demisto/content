@@ -765,7 +765,7 @@ def get_user_factors_command(client, args):
 
     raw_response = client.get_user_factors(user_id)
     if not raw_response or len(raw_response) == 0:
-        raise Exception('No Factors found')
+        return 'No Factors found'
 
     factors = client.get_readable_factors(raw_response)
     context = createContext(factors, removeNull=True)
@@ -1432,6 +1432,7 @@ def main():
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get('private_key'),
             jwt_algorithm=JWTAlgorithm(params['jwt_algorithm']) if params.get('jwt_algorithm') else None,
+            key_id=params.get('key_id', None),
         )
 
         if command in commands:

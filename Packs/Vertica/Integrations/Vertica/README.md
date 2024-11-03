@@ -3,7 +3,7 @@
 <p>This integration was integrated and tested with Vertica v4.1.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-vertica-on-demisto">Configure Vertica on Cortex XSOAR</h2>
+<h2 id="configure-vertica-on-xsoar">Configure Vertica on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>

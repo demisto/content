@@ -192,7 +192,7 @@ def test_flashpoint_ignite_get_indicators_command_when_valid_response_is_returne
 
     requests_mock.get(os.path.join(MOCK_URL, URL_SUFFIX["ATTRIBUTES"]), json=indicator_list_response_200, status_code=200)
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./test_data/indicator_list_hr.md"), 'r') as file:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./test_data/indicator_list_hr.md")) as file:
         hr_output = file.read()
 
     indicators: dict = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_data/indicators.json'))
@@ -221,7 +221,7 @@ def test_flashpoint_ignite_get_indicators_command_when_create_relationship_is_tr
 
     requests_mock.get(os.path.join(MOCK_URL, URL_SUFFIX["ATTRIBUTES"]), json=indicator_list_response_200, status_code=200)
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./test_data/indicator_list_hr.md"), 'r') as file:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./test_data/indicator_list_hr.md")) as file:
         hr_output = file.read()
 
     indicators: dict = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),

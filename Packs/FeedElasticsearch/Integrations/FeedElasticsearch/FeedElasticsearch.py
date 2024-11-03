@@ -37,7 +37,7 @@ if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection
+    from elasticsearch import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -45,7 +45,7 @@ else:
 class ElasticsearchClient:
     def __init__(self, insecure=None, server=None, username=None, password=None, api_key=None, api_id=None,
                  time_field=None, time_method=None, fetch_index=None, fetch_time=None, query=None, tags=None,
-                 tlp_color=None):
+                 tlp_color=None, enrichment_excluded: bool = False):
         self._insecure = insecure
         self._proxy = handle_proxy()
         # _elasticsearch_builder expects _proxy to be None if empty
@@ -63,6 +63,7 @@ class ElasticsearchClient:
         self.es = self._elasticsearch_builder()
         self.tags = tags
         self.tlp_color = tlp_color
+        self.enrichment_excluded = enrichment_excluded
 
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
@@ -74,7 +75,9 @@ class ElasticsearchClient:
                                verify_certs=self._insecure, proxies=self._proxy)
         # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
         if self._api_key and hasattr(es, 'transport'):
-            es.transport.get_connection().session.headers['authorization'] = self._get_api_key_header_val(self._api_key)
+            es.transport.get_connection().session.headers["authorization"] = self._get_api_key_header_val(  # type: ignore
+                self._api_key
+            )
         return es
 
     def send_test_request(self):
@@ -171,14 +174,15 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
 def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     """Implements es-get-indicators command"""
     now = datetime.now()
-    if FEED_TYPE_GENERIC in feed_type:
+    if FEED_TYPE_GENERIC in feed_type:  # Generic Feed
         search = get_scan_generic_format(client, now)
-        ioc_lst = get_generic_indicators(search, src_val, src_type, default_type, client.tags, client.tlp_color)
+        ioc_lst = get_generic_indicators(search, src_val, src_type, default_type, client.tags, client.tlp_color,
+                                         client.enrichment_excluded)
         hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
-    else:
+    else:  # Demisto Feed types
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, feed_type=feed_type)
-        ioc_lst, ioc_enrch_lst = get_demisto_indicators(search, client.tags, client.tlp_color)
+        ioc_lst, ioc_enrch_lst = get_demisto_indicators(search, client.tags, client.tlp_color, client.enrichment_excluded)
         hr = tableToMarkdown('Indicators', list({ioc.get('name') for ioc in ioc_lst}), 'Name')
         if ioc_enrch_lst:
             for ioc_enrch in ioc_enrch_lst:
@@ -186,22 +190,26 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     return_outputs(hr, {}, ioc_lst)
 
 
-def get_generic_indicators(search, src_val, src_type, default_type, tags, tlp_color):
+def get_generic_indicators(search, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded):
     """Implements get indicators in generic format"""
+    limit = int(demisto.args().get('limit', FETCH_SIZE))
     ioc_lst: list = []
-    hit = search.execute()
-    hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color)
-    ioc_lst.extend(hit_lst)
+    for hit in search.scan():
+        hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded)
+        ioc_lst.extend(hit_lst)
+        if len(ioc_lst) >= limit:
+            break
     return ioc_lst
 
 
-def get_demisto_indicators(search, tags, tlp_color):
+def get_demisto_indicators(search, tags, tlp_color, enrichment_excluded):
     """Implements get indicators in insight format"""
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     ioc_lst: list = []
     ioc_enrch_lst: list = []
     for hit in search.scan():
-        hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit, tags=tags, tlp_color=tlp_color)
+        hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit, tags=tags, tlp_color=tlp_color,
+                                                                     enrichment_excluded=enrichment_excluded)
         ioc_lst.extend(hit_lst)
         ioc_enrch_lst.extend(hit_enrch_lst)
         if len(ioc_lst) >= limit:
@@ -214,9 +222,11 @@ def update_last_fetch(client, ioc_lst):
     last_calculated_timestamp = None
     last_ids = []
     for ioc in reversed(ioc_lst):
-        calculate_time = dateparser.parse(ioc.get(client.time_field))
+        calculate_time: Optional[datetime] = ''  # type: ignore
+        if time_val := ioc.get(client.time_field):
+            calculate_time = dateparser.parse(time_val)
         if not calculate_time:
-            demisto.info(f"ioc {ioc.get('name')} if missing {client.time_field}")
+            demisto.info(f"ioc {ioc.get('value')} is missing time_field: {client.time_field}")
             break
         calculate_timestamp = int(calculate_time.timestamp() * 1000)
         if not last_calculated_timestamp or calculate_timestamp >= last_calculated_timestamp:
@@ -227,6 +237,9 @@ def update_last_fetch(client, ioc_lst):
             demisto.debug(f"FeedElasticSearch: {calculate_timestamp=}")
             break
     if last_calculated_timestamp is None:
+        # possible cases:
+        # 1. We didn't fetch any indicators in this cycle
+        # 2. This is a fetch of indicators from a generic feed type without a client.time_field
         last_calculated_timestamp = int(datetime.now().timestamp() * 1000)
     demisto.info(f"FeedElasticSearch: The length of the indicators of the last time: {len(last_ids)}")
     demisto.debug(f"FeedElasticSearch: The last ids which were fetched with the same last time: {last_ids}")
@@ -241,19 +254,20 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     now = datetime.now()
     ioc_lst: list = []
     ioc_enrch_lst: list = []
-    if FEED_TYPE_GENERIC not in feed_type:
+    if FEED_TYPE_GENERIC not in feed_type:  # Demisto Feed types
         # Insight is the name of the indicator object as it's saved into the database
-        search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type)
-        for hit in search if client.time_field else search.scan:  # if time field is not set we have to scan all
+        search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type, fetch_limit)
+        for hit in search:
             hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit, tags=client.tags,
-                                                                         tlp_color=client.tlp_color)
+                                                                         tlp_color=client.tlp_color,
+                                                                         enrichment_excluded=client.enrichment_excluded)
             ioc_lst.extend(hit_lst)
             ioc_enrch_lst.extend(hit_enrch_lst)
-    else:
+    else:  # Generic Feed type
         search = get_scan_generic_format(client, now, last_fetch_timestamp, fetch_limit)
-        for hit in search if client.time_field else search.scan:  # if time field is not set we have to scan all
+        for hit in search if client.time_field else search.scan():  # if time field isn't set we have to scan all (in every cycle)
             ioc_lst.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, client.tags,
-                                                               client.tlp_color))
+                                                               client.tlp_color, client.enrichment_excluded))
     ioc_lst = list(filter(lambda ioc: ioc.get("id") not in prev_iocs_ids, ioc_lst))
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
@@ -305,10 +319,10 @@ def get_scan_generic_format(client, now, last_fetch_timestamp=None, fetch_limit=
     return search
 
 
-def extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color):
+def extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded: bool = False):
     """Extracts indicators in generic format"""
     ioc_lst = []
-    ioc = hit_to_indicator(hit, src_val, src_type, default_type, tags, tlp_color)
+    ioc = hit_to_indicator(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded)
     if ioc.get('value'):
         ioc_lst.append(ioc)
     return ioc_lst
@@ -337,11 +351,11 @@ def get_scan_insight_format(client, now, last_fetch_timestamp=None, feed_type=No
     return search
 
 
-def extract_indicators_from_insight_hit(hit, tags, tlp_color):
+def extract_indicators_from_insight_hit(hit, tags, tlp_color, enrichment_excluded: bool = False):
     """Extracts indicators from an insight hit including enrichments"""
     ioc_lst = []
     ioc_enirhcment_list = []
-    ioc = hit_to_indicator(hit, tags=tags, tlp_color=tlp_color)
+    ioc = hit_to_indicator(hit, tags=tags, tlp_color=tlp_color, enrichment_excluded=enrichment_excluded)
     if ioc.get('value'):
         ioc_lst.append(ioc)
         module_to_feedmap = ioc.get(MODULE_TO_FEEDMAP_KEY)
@@ -359,14 +373,15 @@ def extract_indicators_from_insight_hit(hit, tags, tlp_color):
     return ioc_lst, ioc_enirhcment_list
 
 
-def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_type=None, tags=None, tlp_color=None):
+def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_type=None, tags=None, tlp_color=None,
+                     enrichment_excluded: bool = False):
     """Convert a single hit to an indicator"""
     ioc_dict = hit.to_dict()
     ioc_dict['value'] = ioc_dict.get(ioc_val_key)
     ioc_dict['rawJSON'] = dict(ioc_dict)
     if default_ioc_type:
         ioc_dict['type'] = default_ioc_type
-    elif ioc_type_key:
+    if ioc_type_key and ioc_dict.get(ioc_type_key):  # in case the user didn't specify a field type, we keep the default type
         ioc_dict['type'] = ioc_dict.get(ioc_type_key)
 
     ioc_dict['fields'] = {}
@@ -374,6 +389,8 @@ def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_typ
         ioc_dict['fields']['tags'] = tags
     if tlp_color:
         ioc_dict['fields']['trafficlightprotocol'] = tlp_color
+    if enrichment_excluded:
+        ioc_dict['enrichmentExcluded'] = enrichment_excluded
 
     return ioc_dict
 
@@ -410,13 +427,14 @@ def main():
         time_method = params.get('time_method')
         fetch_index = params.get('fetch_index')
         fetch_time = params.get('fetch_time', '3 days')
-        fetch_limit = arg_to_number(params.get('fetch_limit', 10000))
+        fetch_limit = arg_to_number(params.get('fetch_limit', FETCH_LIMIT))
+        enrichment_excluded = params.get('enrichmentExcluded', False)
         if not fetch_limit or fetch_limit > 10_000:
             raise DemistoException(f"Fetch limit must be between 1-10,000, got {fetch_limit}")
         query = params.get('es_query')
         api_id, api_key = extract_api_from_username_password(username, password)
         client = ElasticsearchClient(insecure, server, username, password, api_key, api_id, time_field, time_method,
-                                     fetch_index, fetch_time, query, tags, tlp_color)
+                                     fetch_index, fetch_time, query, tags, tlp_color, enrichment_excluded)
         src_val = params.get('src_val')
         src_type = params.get('src_type')
         default_type = params.get('default_type')

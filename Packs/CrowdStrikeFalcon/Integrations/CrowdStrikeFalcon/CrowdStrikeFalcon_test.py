@@ -88,7 +88,7 @@ def test_incident_to_incident_context():
 
 def test_detection_to_incident_context():
     from CrowdStrikeFalcon import detection_to_incident_context
-    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection")
+    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection", 'created_timestamp')
     assert res == input_data.context_idp_detection
 
 
@@ -2369,8 +2369,10 @@ class TestFetch:
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
         requests_mock.get(f'{SERVER_URL}/alerts/queries/alerts/v1', json={'resources': ['a:ind:1', 'a:ind:2']})
         requests_mock.post(f'{SERVER_URL}/alerts/entities/alerts/v1',
-                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z'},
-                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z'}]})
+                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z',
+                                                "created_timestamp": "2020-09-04T09:16:11.000Z"},
+                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z',
+                                                "created_timestamp": "2020-09-04T09:16:11.000Z"}]})
 
         mocker.patch.object(
             demisto,
@@ -4027,7 +4029,7 @@ def test_rtr_read_registry_keys_command(mocker):
     assert "reg-1key" in parsed_result[0].readable_output
 
 
-detections = {'resources': [
+detections_legacy = {'resources': [
     {'behavior_id': 'example_behavior_1',
      'detection_ids': ['example_detection'],
      'incident_id': 'example_incident_id',
@@ -4040,15 +4042,25 @@ detections = {'resources': [
      }
 ]}
 
+detections_new = {'resources': [
+    {'behavior_id': 'example_behavior',
+     'alert_ids': ['example_detection'],
+     'incident_id': 'example_incident_id',
+     'some_field': 'some_example',
+     }
+]}
+
 DETECTION_FOR_INCIDENT_CASES = [
     (
-        detections,
+        detections_legacy,
+        True,
         ['a', 'b'],
         [
             {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
              'detection_ids': ['example_detection']},
             {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
-             'detection_ids': ['example_detection2']}],
+             'detection_ids': ['example_detection2']}
+        ],
         [
             {'behavior_id': 'example_behavior_1',
              'detection_ids': ['example_detection'],
@@ -4063,23 +4075,42 @@ DETECTION_FOR_INCIDENT_CASES = [
         '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
         '\n| example_behavior_1 | example_detection | example_incident_id |\n'
         '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
-    ({'resources': []}, [], None, None, None, 'Could not find behaviors for incident zz')
+    (
+        detections_new,
+        False,
+        ['a', 'b'],
+        [{'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior',
+          'detection_ids': ['example_detection']}
+         ],
+        [
+            {'behavior_id': 'example_behavior',
+             'alert_ids': ['example_detection'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example'}
+        ],
+        'CrowdStrike.IncidentDetection',
+        '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
+        '\n| example_behavior | example_detection | example_incident_id |\n',
+    ),
+    ({'resources': []}, False, [], None, None, None, 'Could not find behaviors for incident zz')
 ]
 
 
 @pytest.mark.parametrize(
-    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
+    'detections, use_legacy, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
     DETECTION_FOR_INCIDENT_CASES)
-def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
+def test_get_detection_for_incident_command(mocker, detections, use_legacy, resources, expected_outputs, expected_raw,
                                             expected_prefix,
                                             expected_md):
     """
-    Given: An incident ID
-    When: When running cs-falcon-get-detections-for-incident command
+    Given: An incident ID.
+    When: When running cs-falcon-get-detections-for-incident command in legacy and new API.
     Then: validates the created command result contains the correct data (whether found or not).
     """
 
     from CrowdStrikeFalcon import get_detection_for_incident_command
+
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', new=use_legacy)
 
     mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
                  return_value={'resources': resources, 'meta': {'pagination': {'total': len(resources)}}})
@@ -7045,7 +7076,7 @@ def test_http_request_get_token_request(mocker):
     retries = 5
     status_list_to_retry = [429]
     valid_status_codes = [200, 201, 202, 204]
-    int_timeout = 10
+    int_timeout = 60
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     method = 'POST'
     url_suffix = '/oauth2/token'
@@ -7179,7 +7210,7 @@ def test_error_handler():
 @pytest.mark.parametrize('Legacy_version, url_suffix, expected_len', [
     (False,
      "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
-     2),
+     3),
     (True, '/detects/queries/detects/v1', 3)
 ])
 def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expected_len):
@@ -7238,7 +7269,7 @@ def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
 @pytest.mark.parametrize('Legacy_version, url_suffix, request_params', [
     (False,
      "/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
-     {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3}),
+     {'sort': 'created_timestamp.asc', 'offset': 5, 'limit': 3}),
     (True, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc',
      'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
 ])
@@ -7492,3 +7523,50 @@ def test_get_status(mocker):
                        '046761c46ec84f40b27b6f79ce7c6543': 'Online',
                        '8ed44198a6f64f9fabd0479c30989876': 'Online',
                        'd4210a0957e640f18c237a2fa1141122': 'Online'}
+
+
+def test_fix_time_field():
+    """
+    Given:
+        - A detection, a string representing the key of the time we want to fix.
+    When:
+        - Running fetch_incidents command
+    Then:
+        - Validate that the value of the given key in the detection was updated correctly.
+    """
+    from CrowdStrikeFalcon import fix_time_field
+    detection_1 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647194Z'
+    }
+    detection_2 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647Z'
+    }
+    detection_3 = {
+        'created_timestamp': '2023-04-20T11:13:10.424Z'
+    }
+
+    fix_time_field(detection_1, 'created_timestamp')
+    fix_time_field(detection_2, 'created_timestamp')
+    fix_time_field(detection_3, 'created_timestamp')
+
+    assert detection_1['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_2['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_3['created_timestamp'] == '2023-04-20T11:13:10.424Z'
+
+
+def test_enrich_groups_no_resources(mocker):
+    """
+    Given:
+        - A non exist group id.
+    When:
+        - Running enrich_groups.
+    Then:
+        - Validate that the result are empty and no exception raised.
+    """
+    import CrowdStrikeFalcon
+
+    group_ids = "test_group_id"
+
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value={"resources": None})
+
+    assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}

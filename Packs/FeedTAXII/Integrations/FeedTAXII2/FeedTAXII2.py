@@ -303,6 +303,7 @@ def main():  # pragma: no cover
     objects_to_fetch = argToList(params.get('objects_to_fetch') or [])
     default_api_root = params.get('default_api_root')
     update_custom_fields = params.get('update_custom_fields') or False
+    enrichment_excluded = argToBoolean(params.get('enrichmentExcluded', False))
 
     demisto.info(f'{objects_to_fetch=}')
 
@@ -326,6 +327,7 @@ def main():  # pragma: no cover
             key=key,
             default_api_root=default_api_root,
             update_custom_fields=update_custom_fields,
+            enrichment_excluded=enrichment_excluded,
         )
         client.initialise()
         commands = {

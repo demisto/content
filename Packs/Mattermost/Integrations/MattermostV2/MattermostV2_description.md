@@ -12,3 +12,7 @@
 ### For sending messages using the ChatBot app and mirroring
 
 To enable a direct communication with Mattermost for mirroring and sending messages by a Mattermost chatbot, make sure both the *Long running instance* and *Enable Incident Mirroring* parameters are checked.
+
+## Sending notifications with Mattermost
+
+To enable various notifications to be sent to Mattermost, make sure to select all of the relevant notification types in the *Types of Notifications to Send* parameter.

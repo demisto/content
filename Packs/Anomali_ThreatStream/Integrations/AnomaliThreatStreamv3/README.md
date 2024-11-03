@@ -4847,3 +4847,42 @@ Remove tags from the indicators
 #### Context Output
 
 There is no context output for this command.
+
+***
+Clones already imported indicators (observables), used with the edit classification to move to a trusted circle
+
+#### Base Command
+
+`threatstream-clone-imported-indicator`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_id | ID of the indicator to clone. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Clone.ID | String | Indicator ID. | 
+| ThreatStream.Clone.Import_Session_ID | String | Import Session ID for the clone request. | 
+| ThreatStream.Clone.Job_ID | String | Job ID for the clone request. | 
+
+***
+Edit the values for observable that have been cloned
+
+#### Base Command
+
+`threatstream-edit-classification`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| import_id | Import Session ID of the import session from the clone-imported-indicator command. | Required | 
+| data | JSON data of edits to be made {"is_public":false,"circles":[12866]}. | Required |
+
+#### Context Output
+
+There is no context output for this command.

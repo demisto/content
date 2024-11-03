@@ -47,6 +47,7 @@ tasks:
       - "7"
       - "25"
       - '51'
+      - "61"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -189,7 +190,13 @@ tasks:
           right:
             value: {}
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 160\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -526,7 +533,13 @@ tasks:
         simple: Azure
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 540\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 540
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -551,7 +564,13 @@ tasks:
       - "17"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 405\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 395
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -693,7 +712,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "43"
+      - "55"
       "yes":
       - "19"
     separatecontext: false
@@ -750,7 +769,13 @@ tasks:
         simple: "true"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 705\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 705
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -833,7 +858,13 @@ tasks:
       - "44"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 1010\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 1010
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1024,8 +1055,8 @@ tasks:
       script: Set
     nexttasks:
       '#none#':
-      - "34"
       - "33"
+      - "63"
     scriptarguments:
       append:
         simple: "true"
@@ -1035,7 +1066,13 @@ tasks:
         simple: "false"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1600,\n    \"y\": 830\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 820
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1318,7 +1355,9 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      Yes:
+      '#default#':
+      - "55"
+      "Yes":
       - '52'
     note: false
     quietmode: 0
@@ -1369,7 +1408,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '54'
+      - '56'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1414,8 +1453,312 @@ tasks:
     taskid: 46805d76-345f-4694-8330-53f721d6b03d
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 735\n  }\n}"
-view: "{\n  \"linkLabelsPosition\": {\n    \"25_19_yes\": 0.6,\n    \"3_42_#default#\": 0.32,\n    \"3_9_yes\": 0.5,\n    \"4_11_yes\": 0.43,\n    \"4_42_#default#\": 0.31,\n    \"7_18_yes\": 0.5\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3005,\n      \"width\": 2750,\n      \"x\": -440,\n      \"y\": -360\n    }\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 1010\n  }\n}"
+  "55":
+    id: "55"
+    taskid: aee707cb-1fab-477c-8540-b04e3f2edde8
+    type: regular
+    task:
+      id: aee707cb-1fab-477c-8540-b04e3f2edde8
+      version: -1
+      name: Set false flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+      - "34"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_azure
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 385efb9d-430e-4c9e-8387-006a474451a2
+    type: regular
+    task:
+      id: 385efb9d-430e-4c9e-8387-006a474451a2
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_azure
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 6843585f-7052-4c19-8be7-8c583d30a82e
+    type: title
+    task:
+      id: 6843585f-7052-4c19-8be7-8c583d30a82e
+      version: -1
+      name: Tags
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 1721f6d5-d1fe-48c8-85cc-d799074f2030
+    type: regular
+    task:
+      id: 1721f6d5-d1fe-48c8-85cc-d799074f2030
+      version: -1
+      name: Set tags grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      gridfield:
+        simple: asmtags
+      keys:
+        simple: key,value,source
+      val1:
+        complex:
+          root: Azure.Compute
+          accessor: Tags
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: keys(@)
+      val2:
+        complex:
+          root: Azure.Compute
+          accessor: Tags
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: values(@)
+      val3:
+        simple: Azure Compute
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: eb1fe3b0-73eb-4ee6-8e01-6ea8c5b21ccf
+    type: regular
+    task:
+      id: eb1fe3b0-73eb-4ee6-8e01-6ea8c5b21ccf
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_azure
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: f819ff95-46a7-40d7-8c05-2e20677f52b8
+    type: condition
+    task:
+      id: f819ff95-46a7-40d7-8c05-2e20677f52b8
+      version: -1
+      name: Is there Azure tag information?
+      type: condition
+      description: Determines if there is Azure Compute tags to set in the ASM tag field.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Azure.Compute.Tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: ab165c31-9f99-46c1-8366-38351b9498d8
+    type: title
+    task:
+      id: ab165c31-9f99-46c1-8366-38351b9498d8
+      version: -1
+      name: Tags - End
+      description: Set a value in context under the key you entered.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_19_yes": 0.6,
+      "25_55_#default#": 0.14,
+      "3_42_#default#": 0.32,
+      "3_9_yes": 0.5,
+      "4_11_yes": 0.43,
+      "4_42_#default#": 0.31,
+      "51_55_#default#": 0.15,
+      "61_43_#default#": 0.16,
+      "7_18_yes": 0.52,
+      "7_43_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3005,
+        "width": 3310,
+        "x": -440,
+        "y": -360
+      }
+    }
+  }
 inputSections:
 - description: Generic group for inputs
   inputs:

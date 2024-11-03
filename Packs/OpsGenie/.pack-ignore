@@ -7,8 +7,10 @@ ignore=IM111
 [file:OpsGenie_image.png]
 ignore=IM111
 
+# GR103 is temporary, see CIAC-11705
 [file:classifier-OpsGenie_-_Classifier.json]
-ignore=BA101
+ignore=BA101,GR103
+
 
 [file:incidentfield-OpsGenie_AlertId.json]
 ignore=IF115

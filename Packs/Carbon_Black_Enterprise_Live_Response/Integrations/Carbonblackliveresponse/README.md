@@ -188,7 +188,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/28726415/43703413-677cbe4c-9965-11e8-9b1a-d4b3f04c4de7.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/28726415/43703413-677cbe4c-9965-11e8-9b1a-d4b3f04c4de7.png" alt="image" width="751" height="439"></a></p>
+<p><a href="../../doc_files/43703413-677cbe4c-9965-11e8-9b1a-d4b3f04c4de7.png" target="_blank" rel="noopener"><img src="../../doc_files/43703413-677cbe4c-9965-11e8-9b1a-d4b3f04c4de7.png" alt="image" width="751" height="439"></a></p>
 <h3 id="h_8239514313281541320813075">2. Cancel a pending command</h3>
 <p>Cancels the specified command. Only pending commands can be canceled.</p>
 <h5>Base Command</h5>
@@ -785,7 +785,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/28726415/43703931-e78b6146-9966-11e8-8ff1-aefad37df01d.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/28726415/43703931-e78b6146-9966-11e8-8ff1-aefad37df01d.png" alt="image"></a></p>
+<p><a href="../../doc_files/43703931-e78b6146-9966-11e8-8ff1-aefad37df01d.png" target="_blank" rel="noopener"><img src="../../doc_files/43703931-e78b6146-9966-11e8-8ff1-aefad37df01d.png" alt="image"></a></p>
 <h3 id="h_23514693443001541331956718">10. List files</h3>
 <hr>
 <p>Lists files in the given session</p>
@@ -954,7 +954,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/28726415/43703073-629f8f40-9964-11e8-95ca-f1e909fdae0c.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/28726415/43703073-629f8f40-9964-11e8-95ca-f1e909fdae0c.png" alt="image" width="750" height="343"></a></p>
+<p><a href="../../doc_files/43703073-629f8f40-9964-11e8-95ca-f1e909fdae0c.png" target="_blank" rel="noopener"><img src="../../doc_files/43703073-629f8f40-9964-11e8-95ca-f1e909fdae0c.png" alt="image" width="750" height="343"></a></p>
 <h3 id="h_63487902757971541332115887">12. Close a session</h3>
 <hr>
 <p>Closes the specified session.</p>
@@ -1044,7 +1044,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/28726415/43704204-9502339a-9967-11e8-8861-5b2b2ab7c16d.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/28726415/43704204-9502339a-9967-11e8-8861-5b2b2ab7c16d.png" alt="image" width="751" height="358"></a></p>
+<p><a href="../../doc_files/43704204-9502339a-9967-11e8-8861-5b2b2ab7c16d.png" target="_blank" rel="noopener"><img src="../../doc_files/43704204-9502339a-9967-11e8-8861-5b2b2ab7c16d.png" alt="image" width="751" height="358"></a></p>
 <h3 id="h_47996079263941541332614096">13. Create a new session</h3>
 <hr>
 <p>Creates a new Carbon Black session for the specified sensor.</p>
@@ -1130,7 +1130,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/28726415/43704245-b033bd50-9967-11e8-9ba8-dab53573f7af.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/28726415/43704245-b033bd50-9967-11e8-9ba8-dab53573f7af.png" alt="image" width="750" height="324"></a></p>
+<p><a href="../../doc_files/43704245-b033bd50-9967-11e8-9ba8-dab53573f7af.png" target="_blank" rel="noopener"><img src="../../doc_files/43704245-b033bd50-9967-11e8-9ba8-dab53573f7af.png" alt="image" width="750" height="324"></a></p>
 <h3 id="h_19771795072861541332696812">14. Create a new session and wait</h3>
 <hr>
 <p>Creates a new Carbon Black session for the specified sensor and waits for it to be active.</p>
@@ -1356,7 +1356,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/28726415/43704732-4b5aa8f6-9969-11e8-8f45-e76e3bef8ca0.png" target="_blank" rel="noopener"><img src="https://user-images.githubusercontent.com/28726415/43704732-4b5aa8f6-9969-11e8-8f45-e76e3bef8ca0.png" alt="image" width="751" height="367"></a></p>
+<p><a href="../../doc_files/43704732-4b5aa8f6-9969-11e8-8f45-e76e3bef8ca0.png" target="_blank" rel="noopener"><img src="../../doc_files/43704732-4b5aa8f6-9969-11e8-8f45-e76e3bef8ca0.png" alt="image" width="751" height="367"></a></p>
 <h3 id="h_8091131581881541333003941">16. Terminate a process</h3>
 <hr>
 <p>Terminates the specified process on the sensor or endpoint.</p>
@@ -3322,7 +3322,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/31587493/47308009-1e9ebe80-d639-11e8-840a-558301dd6c1d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31587493/47308009-1e9ebe80-d639-11e8-840a-558301dd6c1d.png" alt="screen shot 2018-10-22 at 20 27 52" width="749" height="421"></a></p>
+<p><a href="../../doc_files/47308009-1e9ebe80-d639-11e8-840a-558301dd6c1d.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47308009-1e9ebe80-d639-11e8-840a-558301dd6c1d.png" alt="screen shot 2018-10-22 at 20 27 52" width="749" height="421"></a></p>
 <h3 id="h_229737590200581541334677178">32. Save a file to an endpoint</h3>
 <hr>
 <p>Saves a file to a specific path on an endpoint.</p>

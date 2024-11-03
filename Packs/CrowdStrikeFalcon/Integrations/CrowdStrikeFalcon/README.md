@@ -14,10 +14,10 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
     | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max incidents per fetch |  | False |
-    | Endpoint Detections fetch query |  | False |
-    | Endpoint Incidents fetch query |  | False |
-    | IDP Detections fetch query |  | False |
-    | Mobile Detections fetch query |  | False |
+    | Endpoint Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
+    | Endpoint Incidents fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
+    | IDP Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
+    | Mobile Detections fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
     | IOM fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
     | IOA fetch query | In the format: cloud_provider=aws&amp;aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
     |Detections from On-Demand Scans fetch query| Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql.| False|
@@ -494,7 +494,7 @@ Resolves and updates a detection using the provided arguments. At least one opti
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of one or more IDs to resolve. | Required | 
-| status | The status to transition a detection to. Possible values are: new, in_progress, true_positive, false_positive, closed, reopened, ignored. | Optional | 
+| status | The status to transition a detection to. **Possible** values are: new, in_progress, true_positive, false_positive, closed, reopened, ignored. <br /> Note: The following statuses—true_positive, false_positive, and ignored—are only available in the legacy version of the API.| Optional | 
 | assigned_to_uuid | A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive. | Optional | 
 | comment | Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users. | Optional | 
 | show_in_ui | If true, displays the detection in the UI. Possible values are: true, false. | Optional | 
@@ -6503,3 +6503,4 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 ## Troubleshooting
 * When encountering connectivity or authorization errors within Cortex XSOAR 8, it is necessary to include the IP address corresponding to the relevant region in the CrowdStrike Falcon allow list.
 * When encountering a 429 error code returned from Crowdstrike Falcon within Cortex XSOAR 8, the solution is to use an engine as explained in this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines).
+* In the different query parameters such as Endpoint Detections fetch query, Endpoint Incidents fetch query, etc. if you want to query for multiple values in the same field (for example, retrieving severity_name equal to Medium, High, and Critical) you need to use the following format: field:['value1','value2','value3'].
