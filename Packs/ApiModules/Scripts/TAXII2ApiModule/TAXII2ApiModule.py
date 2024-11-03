@@ -1,8 +1,7 @@
-from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
-
+from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
-
+from CommonServerUserPython import *
 
 from typing import Optional, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
