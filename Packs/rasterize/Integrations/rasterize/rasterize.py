@@ -273,7 +273,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             tabs_count = len(browser.list_tab())
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
-            demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
+            demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs!")
             return browser
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
