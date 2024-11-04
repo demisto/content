@@ -269,7 +269,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             browser = pychrome.Browser(url=browser_url)
 
             # Use list_tab to ping the browser and make sure it's available
-            tabs_count = len(browser.list_tab(timeout=10))
+            tabs_count = len(browser.list_tab())
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
@@ -366,7 +366,7 @@ def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}
         with open(CHROME_INSTANCES_FILE_PATH, 'w') as file:
             json.dump(new_chrome_content, file, indent=4)
     except Exception as e:
-        raise DemistoException(f"An error occurred while writing to the {CHROME_INSTANCES_FILE_PATH} file: {e}")
+        return DemistoException(f"An error occurred while writing to the {CHROME_INSTANCES_FILE_PATH} file: {e}")
 
 
 def opt_name(opt):
