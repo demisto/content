@@ -1,5 +1,6 @@
-fromversion: 6.10.0
-id: SaasSecurityModelingRules
-name: SaasSecurityModelingRules
+fromversion: 8.4.0
+id: Prisma_SAAS_Security_ModelingRule
+name: Prisma SAAS Security Modeling Rule
 rules: ''
 schema: ''
+tags: ''
