@@ -275,7 +275,7 @@ class TestCommandsFunctions:
             last_offset = offset
         assert total_events_count == 2
         assert last_offset == "117d9"
-        
+
     def test_deduplication(self, mocker, client):
         """
         Given:
@@ -299,9 +299,10 @@ class TestCommandsFunctions:
             for j in range(num_of_pages)
         ]
         events_not_in_list = [events[1], events[3], events[5]]
-        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect= events)
+        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
         total_events_count = 0
-        hashed_events = ['{"httpMessage": {"start": 1}, "id": 1}', '{"httpMessage": {"start": 3}, "id": 3}', '{"httpMessage": {"start": 5}, "id": 5}', '{"httpMessage": {"start": 5}, "id": 280}']
+        hashed_events = ['{"httpMessage": {"start": 1}, "id": 1}', '{"httpMessage": {"start": 3}, "id": 3}',
+                         '{"httpMessage": {"start": 5}, "id": 5}', '{"httpMessage": {"start": 5}, "id": 280}']
         for events, offset, total_events_count, returned_hash_events in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       '3 days',
                                                                                       220,
@@ -354,4 +355,3 @@ def test_decode_url(header):
                              'Connection': 'keep-alive', 'Server_Timing': 'intid;desc=dd',
                              'Strict_Transport_Security': 'max-age=31536000 ; includeSubDomains ; preload'}
     assert Akamai_SIEM.decode_url(header) == expected_decoded_dict
-
