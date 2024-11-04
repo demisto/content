@@ -77,10 +77,10 @@ configuration:
 - display: Page size
   name: page_size
   type: 0
-  defaultvalue: '50000'
   required: false
-  additionalinfo: The number of events to fetch per request - the maximum is 600k, raise this parameter in case you're getting aggregated delays.
   section: Collect
+  defaultvalue: '50000'
+  additionalinfo: The number of events to fetch per request - the maximum is 600k, raise this parameter in case you're getting aggregated delays.
   hidden:
   - xsoar
 - display: Fetch incidents
@@ -95,26 +95,26 @@ configuration:
   section: Connect
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
   section: Connect
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
   section: Collect
   hidden:
   - marketplacev2
-- defaultvalue: '1'
-  display: Events Fetch Interval
+- display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
   required: false
-  advanced: true
   section: Collect
   hidden:
   - xsoar
+  defaultvalue: '1'
+  advanced: true
 - display: Fetch Events
   name: isFetchEvents
   type: 8

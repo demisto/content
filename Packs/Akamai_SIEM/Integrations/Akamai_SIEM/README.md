@@ -3,13 +3,16 @@
 This integration was integrated and tested with [API version 1.0 of Akamai WAF SIEM](https://developer.akamai.com/api/cloud_security/siem/v1.html).
 
 ## Use Cases
+
 - Get security events from Akamai WAF.
 - Analyze security events generated on the Akamai platform and correlate them with security events generated from other sources in Cortex XSOAR.
 
 ## Detailed Description
+
 A WAF (web application firewall) is a filter that protects against HTTP application attacks. It inspects HTTP traffic before it reaches your application and protects your server by filtering out threats that could damage your site functionality or compromise data.
 
 ## API keys generating steps
+
 1. Go to `WEB & DATA CENTER SECURITY` > `Security Configuration` > choose your configuration > `Advanced settings` > Enable SIEM integration.
 2. [Open Control panel](https://control.akamai.com/) and login with admin account.
 3. Open `identity and access management` menu.
@@ -23,13 +26,14 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
 11. Now use the credentials to configure Akamai WAF in Cortex XSOAR.
 
 ## Configure Akamai WAF SIEM on Cortex XSOAR
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Akamai WAF SIEM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** | |
     | --- | --- | --- |
-    | Server URL (e.g., https://example.net) | True | |
+    | Server URL (e.g., <https://example.net>) | True | |
     | Client token | False | |
     | Access token | False | |
     | Client secret | False | |
@@ -44,6 +48,7 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
 4. Click **Test** to validate the new instance.
 
 ## Fetch Incidents
+
 ```json
 [
     {
@@ -75,7 +80,7 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
 ]
 ```
 
-### akamai-siem-reset-offset
+## akamai-siem-reset-offset
 
 ***
 Reset the last offset in case the offset is invalid.
