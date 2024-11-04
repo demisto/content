@@ -1,9 +1,11 @@
+import itertools
 import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from datetime import datetime
-from time import time as get_current_time_in_seconds
+import dateparser
+import time
 
 disable_warnings()
 
@@ -76,18 +78,18 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException("Failed getting an access token") from e
-        try:
-            self.headers = {
-                "Authorization": f'Bearer {res["access_token"]}',
-                "Accept": "application/x-ndjson",
-                "Content-Type": "application/json",
-                "Accept-Encoding": "gzip",
-            }
-        except KeyError:
+
+        if "access_token" not in res:
             raise DemistoException(
                 f"The key 'access_token' does not exist in response, Response from API: {res}",
                 res=res,
             )
+        self.headers = {
+            "Authorization": f'Bearer {res["access_token"]}',
+            "Accept": "application/x-ndjson",
+            "Content-Type": "application/json",
+            "Accept-Encoding": "gzip",
+        }
 
     def get_events(self, payload: dict[str, str]) -> str:
         """
@@ -132,28 +134,32 @@ def normalize_date_format(date_str: str) -> str:
     Returns:
         str: The normalized date string without milliseconds.
     """
-    try:
-        # Parse the original date string with milliseconds
-        original_date = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-    except Exception:
-        if "." in date_str:
-            date_str = f"{date_str.split('.')[0]}Z"
-        return date_str
-
+    # Parse the original date string with milliseconds
+    original_date = dateparser.parse(date_str)
+    if not original_date:
+        raise DemistoException(f"Failed to parse date string: {date_str}")
     # Convert back to the desired format without milliseconds
     new_date_str = original_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return new_date_str
 
 
-def update_new_integration_context(
+def calculate_next_fetch(
     filtered_events: list[dict[str, str]],
     next_hash: str,
     include_last_fetch_events: bool,
     last_integration_context: dict[str, str],
 ):
     """
-    Update the integration context.
+    Calculate and update the integration context for the next fetch operation.
+
+    - Extracts the time of the latest event
+    - Extracts all event IDs with time matching the latest event time
+    - If the latest event time matches the latest time from the previous fetch,
+      extend the suspected duplicate IDs from the previous fetch.
+    - If a push to XSIAM fails, store all events in the `integration_context`
+      to be pushed in the next fetch.
+    - Update the integration_context
 
     Args:
         filtered_events (list[dict[str, str]]): A list of filtered events.
@@ -179,6 +185,9 @@ def update_new_integration_context(
         # If the latest event time matches the previous one,
         # extend the suspected duplicates list with events from the previous context,
         # to control deduplication across multiple fetches.
+        demisto.debug(
+            "The latest event time equals the latest event time from the previous fetch"
+        )
         events_suspected_duplicates.extend(
             last_integration_context.get("events_suspected_duplicates", [])
         )
@@ -281,10 +290,9 @@ def filter_duplicate_events(
     events_suspected_duplicates = set(
         integration_context.get("events_suspected_duplicates", [])
     )
-    latest_event_time = (
-        integration_context.get("latest_event_time", "2000-01-01T00:00:00.000Z")
-        or "2000-01-01T00:00:00.000Z"
-    )  # TODO default value
+    latest_event_time = integration_context.get(
+        "latest_event_time", datetime.min.strftime("%Y-%m-%dT%H:%M:%SZ")
+    ) or datetime.min.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     latest_event_time = datetime.strptime(
         normalize_date_format(latest_event_time), "%Y-%m-%dT%H:%M:%SZ"
@@ -315,24 +323,25 @@ def parse_raw_event_response(raw_res: str) -> dict:
 
 
 def get_events_command(client: Client, integration_context: dict):
-    events: list[dict] = []
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
 
     try:
         raw_res = client.get_events(payload=next_fetch)
         json_res = parse_raw_event_response(raw_res)
     except DemistoException as e:
-        if e.res is not None and e.res.status_code == 401:
-            demisto.info(
-                "Unauthorized access token, trying to obtain a new access token"
-            )
-            raise UnauthorizedToken
-        elif e.res is not None and e.res.status_code == 410:
-            raise NextPointingNotAvailable
+        if e.res is not None:
+            if e.res.status_code == 401:
+                demisto.info(
+                    "Unauthorized access token, trying to obtain a new access token"
+                )
+                raise UnauthorizedToken
+            if e.res.status_code == 410:
+                raise NextPointingNotAvailable
         raise
 
-    for chunk in json_res:
-        events.extend(chunk["events"])
+    events: list[dict] = list(
+        itertools.chain.from_iterable(chunk["events"] for chunk in json_res)
+    )
     next_hash = json_res[0].get("next", "") if json_res else ""
 
     if not events:
@@ -353,20 +362,20 @@ def get_events_command(client: Client, integration_context: dict):
     try:
         push_events(filtered_events)
     except Exception as e:
-        update_new_integration_context(
+        # If the push of events to XSIAM fails,
+        # the current fetch's events are stored in `integration_context`,
+        # ensuring they are pushed in the next fetch operation.
+        calculate_next_fetch(
             filtered_events=filtered_events,
             next_hash=next_hash,
             include_last_fetch_events=True,
             last_integration_context=integration_context,
         )
-        demisto.info(
-            f"Failed to push events to XSIAM, The integration_context updated. Error: {e}"
-        )
         raise DemistoException(
             "Failed to push events to XSIAM, The integration_context updated"
         ) from e
 
-    update_new_integration_context(
+    calculate_next_fetch(
         filtered_events=filtered_events,
         next_hash=next_hash,
         include_last_fetch_events=False,
@@ -377,7 +386,7 @@ def get_events_command(client: Client, integration_context: dict):
 def perform_long_running_loop(client: Client):
     while True:
         # Used to calculate the duration of the fetch run.
-        start_timestamp = get_current_time_in_seconds()
+        start_timestamp = time.time()
         try:
             integration_context = get_integration_context()
             demisto.info(f"Starting new fetch with {integration_context=}")
@@ -385,28 +394,22 @@ def perform_long_running_loop(client: Client):
 
         except UnauthorizedToken:
             try:
-                # Used to calculate the duration of the fetch run.
-                end_timestamp = get_current_time_in_seconds()
-                sleep_if_necessary(client, start_timestamp, end_timestamp)
-                # Trying to obtain a new access token
                 client._update_access_token()
             except Exception as e:
                 raise DemistoException("Failed obtaining a new access token") from e
-            continue
         except NextPointingNotAvailable:
-            demisto.info("The next hash not available, pop it from integration context")
+
+            demisto.debug(
+                "Next is pointing to older event which is not available for streaming."
+                "Clearing next_fetch, The integration's dedup mechanism will make sure we don't insert duplicate events. We will eventually get a different pointer and fetching will overcome this edge case"
+            )
             integration_context.pop("next_fetch")
             set_integration_context(integration_context)
-
-            # Used to calculate the duration of the fetch run.
-            end_timestamp = get_current_time_in_seconds()
-            sleep_if_necessary(client, start_timestamp, end_timestamp)
-            continue
         except Exception as e:
             raise DemistoException("Failed to fetch logs from API") from e
 
         # Used to calculate the duration of the fetch run.
-        end_timestamp = get_current_time_in_seconds()
+        end_timestamp = time.time()
 
         sleep_if_necessary(client, start_timestamp, end_timestamp)
 

@@ -4,7 +4,7 @@ from pytest_mock import MockerFixture
 from SymantecEndpointSecurity import (
     normalize_date_format,
     extract_events_suspected_duplicates,
-    update_new_integration_context,
+    calculate_next_fetch,
     filter_duplicate_events,
     perform_long_running_loop,
     UnauthorizedToken,
@@ -196,7 +196,7 @@ def test_filter_duplicate_events(
         )
     ],
 )
-def test_update_new_integration_context_last_latest_event_time_are_equal(
+def test_calculate_next_fetch_last_latest_event_time_are_equal(
     mocker: MockerFixture,
     filtered_events: list[dict[str, str]],
     next_hash: str,
@@ -208,14 +208,14 @@ def test_update_new_integration_context_last_latest_event_time_are_equal(
     Given:
         - A set of filtered events, next hash, and last integration context
     When:
-        - The `update_new_integration_context` function is called
+        - The `calculate_next_fetch` function is called
     Then:
         - Ensure that updated the 'integration_context' with new events in addition to the old ones, and the next hash
     """
     mock_set_integration_context = mocker.patch(
         "SymantecEndpointSecurity.set_integration_context"
     )
-    update_new_integration_context(
+    calculate_next_fetch(
         filtered_events, next_hash, include_last_fetch_events, last_integration_context
     )
 
