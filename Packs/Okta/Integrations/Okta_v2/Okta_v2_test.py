@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
     get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command, \
@@ -1018,7 +1018,7 @@ def test_expire_password_with_revoke_session():
 
     readable_output, outputs, raw_response = expire_password_command(client, args)
 
-    client.revoke_session.assert_called_once_with('user123', args)
+    client.revoke_session.assert_called_once_with('user123')
     assert 'Account(val.ID && val.ID === obj.ID)' in outputs
     assert outputs['Account(val.ID && val.ID === obj.ID)']['ID'] == 'user123'
     assert 'test_password' in raw_response['tempPassword']
@@ -1136,3 +1136,23 @@ def test_missing_username_and_user_id():
         expire_password_command(client, args)
     except Exception as e:
         assert "You must supply either 'Username' or 'userId" in str(e)
+
+@patch.object(Client, 'http_request')
+def test_revoke_session(mock_http_request):
+    """
+    Given:
+        - A valid user ID.
+    When:
+        - Calling revoke_session with a user ID.
+    Then:
+        - Ensure http_request is called with the correct method, URL, and parameters.
+    """
+    user_id = "12345"
+    expected_uri = f'/api/v1/users/{user_id}/lifecycle/expire_password_with_temp_password'
+    expected_params = {"revokeSessions": 'true'}
+    client.revoke_session(user_id)
+    mock_http_request.assert_called_once_with(
+        method="POST",
+        url_suffix=expected_uri,
+        params=expected_params
+    )

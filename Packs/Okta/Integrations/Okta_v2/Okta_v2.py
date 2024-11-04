@@ -177,9 +177,9 @@ class Client(OktaClient):
             json_data=body
         )
 
-    def revoke_session(self, user_id, args):
+    def revoke_session(self, user_id):
         uri = f'/api/v1/users/{user_id}/lifecycle/expire_password_with_temp_password'
-        params = {"revokeSessions": args.get('revoke_session', 'false')}
+        params = {"revokeSessions": 'true'}
         return self.http_request(
             method="POST",
             url_suffix=uri,
@@ -839,7 +839,7 @@ def expire_password_command(client, args):
     if not (args.get('username') or user_id):
         raise Exception("You must supply either 'Username' or 'userId")
     if revoke_session is True:
-        raw_response = client.revoke_session(user_id, args)
+        raw_response = client.revoke_session(user_id)
     else:
         raw_response = client.expire_password(user_id, args)
     if 'tempPassword' in raw_response and hide_password:
