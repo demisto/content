@@ -965,6 +965,6 @@ script:
   ismappable: false
   isremotesyncin: true
   isremotesyncout: true
-fromversion: 6.12.0
+fromversion: '6.10.0'
 tests:
 - DSPM
