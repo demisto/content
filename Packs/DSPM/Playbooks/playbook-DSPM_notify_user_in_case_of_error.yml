@@ -133,7 +133,7 @@ tasks:
       incident_list:
         simple: ${lists.INCIDENT_LIST2}
       rerun_time:
-        simple: ${inputs.rerun_time}
+        simple: ${inputs.rerunTime}
     separatecontext: false
     continueonerrortype: ""
     view: |-

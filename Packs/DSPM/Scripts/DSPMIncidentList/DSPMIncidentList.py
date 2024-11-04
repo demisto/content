@@ -53,23 +53,6 @@ def timeDifferenceInHours(incident_time, rerun_time):
     return False
 
 
-def get_slack_lifetime():
-    """
-    Fetches the Slack message lifetime (in hours) from the DSPM integration configuration.
-    If the configuration is not found, defaults to 48 hours.
-
-    Returns:
-        int: The configured Slack message lifetime in hours.
-    """
-    time_duration = 48
-    resp = demisto.executeCommand("dspm-get-integration-config", {})
-    if resp[0].get("Contents"):
-        integration_config = resp[0].get("Contents", {})
-        if integration_config:
-            time_duration = integration_config.get("slackMsgLifetime", 48)
-    return time_duration
-
-
 def get_incident_list(incident_object):
     """
     Retrieves the list of incidents from the external source ("INCIDENT_LIST2").

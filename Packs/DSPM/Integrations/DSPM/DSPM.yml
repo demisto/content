@@ -1,7 +1,11 @@
-category: Network Security
 commonfields:
   id: DSPM
   version: -1
+name: DSPM
+display: Prisma Cloud DSPM
+category: Network Security
+description: |
+  Remediate your data security risks. Integrate with Prisma Cloud DSPM to fetch your data security risks and remediate them with OOTB playbooks.
 configuration:
 - defaultvalue: https://api.dig.security/
   display: Your DSPM server URL
@@ -26,10 +30,6 @@ configuration:
   name: isFetch
   type: 8
   required: false
-description: |
-  Remediate your data security risks. Integrate with Prisma Cloud DSPM to fetch your data security risks and remediate them with OOTB playbooks.
-display: Prisma Cloud DSPM
-name: DSPM
 script:
   commands:
   - arguments:
@@ -302,8 +302,7 @@ script:
       - 'RUNNING'
       - 'STOPPED'
       - 'DELETED'
-    - description: 'Sorting criteria in the format: property,(asc|desc). Default sort
-      order is ascending. Multiple sort criteria are supported.'
+    - description: 'Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
       isArray: false
       name: sort
       required: false
@@ -362,7 +361,7 @@ script:
     - contextPath: DSPM.Asset.serviceType
       description: 'The type of service associated with the asset.'
       type: String
-    - contextPath: DSPM.Asset.tags    
+    - contextPath: DSPM.Asset.tags
       description: 'Tags related to the asset.'
       type: Unknown
   - arguments:
@@ -611,8 +610,7 @@ script:
       - 'RUNNING'
       - 'STOPPED'
       - 'DELETED'
-    - description: 'Sorting criteria in the format: property,(asc|desc). Default sort
-      order is ascending. Multiple sort criteria are supported.'
+    - description: 'Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
       isArray: false
       name: sort
       required: false
@@ -680,15 +678,15 @@ script:
     description: Updates the status of a risk finding.
     name: dspm-update-risk-finding-status
     outputs:
-      - contextPath: DSPM.RiskFindingStatusUpdate.newStatus
-        description: 'Updated risk finding status.'
-        type: String
-      - contextPath: DSPM.RiskFindingStatusUpdate.oldStatus
-        description: 'Old risk finding status.'
-        type: String
-      - contextPath: DSPM.RiskFindingStatusUpdate.riskFindingId
-        description: 'Risk finding ID.'
-        type: String
+    - contextPath: DSPM.RiskFindingStatusUpdate.newStatus
+      description: 'Updated risk finding status.'
+      type: String
+    - contextPath: DSPM.RiskFindingStatusUpdate.oldStatus
+      description: 'Old risk finding status.'
+      type: String
+    - contextPath: DSPM.RiskFindingStatusUpdate.riskFindingId
+      description: 'Risk finding ID.'
+      type: String
   - arguments:
     - description: 'Alert ID.'
       isArray: false
@@ -709,15 +707,15 @@ script:
     description: Updates the status of an alert.
     name: dspm-update-alert-status
     outputs:
-      - contextPath: DSPM.AlertStatusUpdate.newStatus
-        description: 'Updated alert status.'
-        type: String
-      - contextPath: DSPM.AlertStatusUpdate.oldStatus
-        description: 'Old alert status.'
-        type: String
-      - contextPath: DSPM.AlertStatusUpdate.alertId
-        description: 'Alert ID.'
-        type: String
+    - contextPath: DSPM.AlertStatusUpdate.newStatus
+      description: 'Updated alert status.'
+      type: String
+    - contextPath: DSPM.AlertStatusUpdate.oldStatus
+      description: 'Old alert status.'
+      type: String
+    - contextPath: DSPM.AlertStatusUpdate.alertId
+      description: 'Alert ID.'
+      type: String
   - arguments:
     - description: 'Exact detection time (equals). detection time format - YYYY-MM-DDTHH:MM:SSZ.'
       isArray: false
@@ -739,7 +737,7 @@ script:
       name: detection_time_less_than_or_equal
       required: false
       secret: false
-    - description: 'Detection time (less than). detection time format - YYYY-MM-DDTHH:MM:SSZ'
+    - description: 'Detection time (less than). detection time format - YYYY-MM-DDTHH:MM:SSZ.'
       isArray: false
       name: detection_time_less_than
       required: false
@@ -962,11 +960,11 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.113941
   isfetch: false
-  ismappable: true
+  ismappable: false
   isremotesyncin: true
   isremotesyncout: true
-fromversion: '6.12'
+fromversion: 6.12.0
 tests:
-- No tests (auto formatted)
+- DSPM
