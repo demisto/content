@@ -50,3 +50,4 @@ else:
         "ContentsFormat": "line",
         "Contents": {"stats": dataFromCtx["IncidentsCreatedMonthly"], "params": {"timeFrame": "months"}},
     }
+    demisto.results(data)

@@ -80,7 +80,7 @@ def get_extra_data_from_investigations(investigations: dict) -> list:
         incident_id = inv.split("investigations-")[1]
         raw_output = execute_command(
             "getInvPlaybookMetaData",
-            args={"incidentId": incident_id, "minSize": "200"},
+            args={"incidentId": incident_id, "minSize": "1024"},
         )
         inputs_and_outputs = raw_output.get("tasks")
         get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, incident_id)
@@ -105,6 +105,8 @@ def FormatSize(size):
     while size > power:
         size /= power
         n += 1
+        if n == 2:
+            break
     return f"{size:.2f} {power_labels[n]}"
 
 

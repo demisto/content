@@ -1,9 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-ctx = demisto.context()
-dataFromCtx = ctx.get("widgets")
-
 
 def queryWidget(uri):
     stats = demisto.executeCommand(
@@ -27,6 +24,10 @@ def queryWidget(uri):
 
     data = {"Type": 17, "ContentsFormat": "line", "Contents": {"stats": res, "params": {"timeFrame": "weeks"}}}
     return data
+
+
+ctx = demisto.context()
+dataFromCtx = ctx.get("widgets")
 
 if not dataFromCtx:
     # version 8
