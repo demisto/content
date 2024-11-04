@@ -2454,21 +2454,28 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
             last_modification_time = last_modification_time.ewsformat()
 
         for item in last_emails:
-            if item.message_id:
-                current_fetch_ids.add(item.message_id)
-                incident = parse_incident_from_item(item)
-                incidents.append(incident)
+            try:
+                if item.message_id:
+                    current_fetch_ids.add(item.message_id)
+                    incident = parse_incident_from_item(item)
+                    incidents.append(incident)
 
-                if incident_filter == MODIFIED_FILTER:
-                    item_modified_time = item.last_modified_time.ewsformat()
-                    if last_modification_time is None or last_modification_time < item_modified_time:
-                        last_modification_time = item_modified_time
+                    if incident_filter == MODIFIED_FILTER:
+                        item_modified_time = item.last_modified_time.ewsformat()
+                        if last_modification_time is None or last_modification_time < item_modified_time:
+                            last_modification_time = item_modified_time
 
-                if item.id:
-                    emails_ids.append(item.id)
+                    if item.id:
+                        emails_ids.append(item.id)
 
-                if len(incidents) >= client.max_fetch:
-                    break
+                    if len(incidents) >= client.max_fetch:
+                        break
+            except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
+                error_msg = (
+                    "Encountered parsing issue that the integration could not resolve. "
+                    f"Skipping item with message id: {item.message_id if item.message_id else ''}, Error: {str(e)}"
+                )
+                demisto.debug(error_msg)
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 
