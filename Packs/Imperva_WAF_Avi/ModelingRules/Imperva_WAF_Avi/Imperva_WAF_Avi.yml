@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: imperva_waf_avi_ModelingRule
-name: Imperva WAF Avi Modeling Rule
+id: imperva_inc_securesphere_ModelingRule
+name: imperva inc securesphere Modeling Rule
 rules: ''
 schema: ''
 tags: ''

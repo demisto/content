@@ -1,5 +1,5 @@
 {
-    "name": "impreva inc securesphere avi raw",
+    "name": "Imperva_WAF_Avi",
     "description": "new pack for imperva vendor with securesphere product",
     "support": "xsoar",
     "currentVersion": "1.0.0",
