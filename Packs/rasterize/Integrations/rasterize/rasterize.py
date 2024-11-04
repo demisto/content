@@ -238,11 +238,20 @@ class PychromeEventHandler:
 
         request_url = kwargs.get('request', {}).get('url', '')
         request_id = kwargs.get('requestId', '')
-        if "cloudflare" in request_url:
+        if "cloudflare" in request_url.lower():
             self.tab.Fetch.enable()
-            print(f'block request to {request_url}')
-            demisto.info(f'block request to {request_url}')
+            print(f'{request_id=}')
+
+    def handle_request_paused(self, **kwargs):
+        request_id = kwargs.get('requestId', '')
+        request_url = kwargs.get("request").get("url")
+
+        if "cloudflare" in request_url.lower():
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
+            print(f"Request paused: {request_url} request_id: {request_id}")
+            self.tab.Fetch.disable()
+
+
 # endregion
 
 
@@ -584,6 +593,8 @@ def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[Pychr
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
+
+    tab.Fetch.requestPaused = tab_event_handler.handle_request_paused
 
     return tab_event_handler, tab_ready_event
 
