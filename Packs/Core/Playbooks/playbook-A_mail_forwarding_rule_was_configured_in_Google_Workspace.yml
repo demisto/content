@@ -135,6 +135,7 @@ tasks:
                   simple: "2"
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1263,7 +1264,7 @@ tasks:
           "y": 930
         }
       }
-    note: false
+    note: true
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -1535,7 +1536,7 @@ tasks:
     task:
       id: 8f88c80e-c7e1-41f0-8f57-2e0b353172ca
       version: -1
-      name: Notify the user of the response action via email
+      name: Notify User of Forwarding Address Removal
       description: Sends an email.
       script: '|||send-mail'
       type: regular
@@ -1545,7 +1546,7 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      body:
+      htmlBody:
         simple: "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      background-color: #f4f4f9;\n      margin: 0;\n      padding: 0;\n    }\n    .container {\n      width: 80%;\n      max-width: 600px;\n      margin: 50px auto;\n      padding: 20px;\n      background-color: #ffffff;\n      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);\n      border-radius: 8px;\n    }\n    h2 {\n      color: #333;\n    }\n    p {\n      color: #555;\n      line-height: 1.6;\n    }\n    .highlight {\n      color: #d9534f;\n      font-weight: bold;\n    }\n  </style>\n</head>\n<body>\n\n<div class=\"container\">\n  <h2>Dear <span class=\"highlight\">&lt;${Core.OriginalAlert.raw_abioc.event.identity_name}&gt;</span>,</h2>\n  \n  <p>As part of our ongoing security measures, we detected unusual activity associated with your mailbox. A forwarding address and associated rule were automatically removed from your account to protect your data and ensure the security of our systems.</p>\n\n  <p>If you did not set up these rules, we recommend reviewing your recent activity and updating your account password immediately. If you require assistance or further information, please contact our security team.</p>\n\n  <p>Thank you for your understanding and cooperation.</p>\n</div>\n\n</body>\n</html>\n"
       subject:
         simple: Forwarding Rule and Address Removed from Your Mailbox
