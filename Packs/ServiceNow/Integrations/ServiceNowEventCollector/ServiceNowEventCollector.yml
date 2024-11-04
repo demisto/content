@@ -43,15 +43,15 @@ configuration:
   options:
   - Audit
   - Syslog Transactions
-- additionalinfo: Maximum number of audit events per fetch. Recommended 1000. ### DEMO - 1000 was before. design says 10000. whats right?
-  defaultvalue: '1000'
+- additionalinfo: Maximum number of audit events per fetch. Recommended 10000. 
+  defaultvalue: '10000'
   display: Maximum audit events to fetch
   name: max_fetch
   type: 0
   required: false
   section: Collect
-- additionalinfo: Maximum number of syslog transactions events per fetch. Recommended 1000. 
-  defaultvalue: '1000'
+- additionalinfo: Maximum number of syslog transactions events per fetch. Recommended 10000. 
+  defaultvalue: '10000'
   display: Maximum syslog transactions events to fetch
   name: max_fetch_syslog_transactions
   type: 0
