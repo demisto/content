@@ -549,9 +549,16 @@ def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     insight_id = args.get('insight_id')
     reqbody = {}
     reqbody['status'] = args.get('status')
-    if args.get('status') == 'closed' and args.get('resolution'):
+    if args.get('resolution'):
+        resolution = args.get('resolution')
+
+    # if a sub-resolution is specified, overwrite the the primary resolution
+    if args.get('sub_resolution'):
+        resolution = args.get('sub_resolution')
+
+    if args.get('status') == 'closed' and resolution:
         # resolution should only be specified when the status is set to "closed"
-        reqbody['resolution'] = args['resolution']
+        reqbody['resolution'] = resolution
 
     resp_json = client.req('PUT', 'sec/v1/insights/{}/status'.format(insight_id), None, reqbody)
 
