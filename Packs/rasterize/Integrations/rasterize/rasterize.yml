@@ -51,7 +51,7 @@ configuration:
   additionalinfo: Deprecated.
   defaultvalue:
 - name: blocked_urls
-  display: A list of domains to block.
+  display: List of domains to block
   required: false
   defaultvalue: "cloudflare.com"
   type: 0
