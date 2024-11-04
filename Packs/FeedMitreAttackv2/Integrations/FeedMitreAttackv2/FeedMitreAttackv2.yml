@@ -93,7 +93,7 @@ configuration:
   required: false
 - additionalinfo: Default value is Enterprise
   defaultvalue: Enterprise
-  display: ''
+  display: Collection ID
   name: collection_id
   options:
   - Enterprise
