@@ -286,7 +286,7 @@ class TestCommandsFunctions:
         - Calling fetch_events_command()
         Then:
         - Ensure that the events list returned doesn't include the filtered events and that the length of the list is 247.
-        - Ensure that the returned_hash_events list includes the 3 filtered events and that the length of the list is 250.
+        - Ensure that on each iteration, the number of events in the hashed events is 50 (even in intervals where some events were deduped).
         """
         num_of_results = 500
         page_size = 50
@@ -303,7 +303,7 @@ class TestCommandsFunctions:
         total_events_count = 0
         hashed_events = ['{"httpMessage": {"start": 1}, "id": 1}', '{"httpMessage": {"start": 3}, "id": 3}',
                          '{"httpMessage": {"start": 5}, "id": 5}', '{"httpMessage": {"start": 5}, "id": 280}']
-        for events, offset, total_events_count, returned_hash_events in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
+        for events, offset, total_events_count, hashed_events in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       '3 days',
                                                                                       220,
                                                                                       '',
@@ -311,10 +311,8 @@ class TestCommandsFunctions:
                                                                                       5000
                                                                                       ):
             assert offset == f"offset_{events[-1]['id']}" if events else True
+            assert len(hashed_events) == 50
         assert total_events_count == 247
-        assert len(returned_hash_events) == 250
-        for hashed_event in hashed_events[:3]:
-            assert hashed_event in returned_hash_events
         for event_not_in_list in events_not_in_list:
             assert event_not_in_list not in events
 
