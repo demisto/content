@@ -502,8 +502,8 @@ def main():  # pragma: no cover
             for events, offset, total_events_count, hashed_events_from_previous_run in fetch_events_command(  # noqa: B007
                 client,
                 fetch_time=params.get("fetchTime", ""),
-                limit,
-                params.get("configIds"),
+                fetch_limit=limit,
+                config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},
                 page_size=page_size
             ):
