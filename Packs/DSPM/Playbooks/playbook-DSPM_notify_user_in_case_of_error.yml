@@ -84,7 +84,7 @@ tasks:
       id: 83fd1070-9451-48f1-89c2-5a9a88a80300
       version: -1
       name: Remove slack block from XSOAR list
-      description: send HTTP POST request.
+      description: send an HTTP POST request.
       script: '|||core-api-post'
       type: regular
       iscommand: true
@@ -281,7 +281,7 @@ tasks:
     task:
       id: a6961fee-66dd-4300-8605-01b9f67bb78d
       version: -1
-      name: 'Create new XSOAR list for Incident ID : ${incident.id}'
+      name: 'Create a new XSOAR list for Incident ID : ${incident.id}'
       description: Create new list
       script: Builtin|||createList
       type: regular
@@ -319,7 +319,7 @@ tasks:
       id: b88811e9-910c-4856-8913-84433503d14a
       version: -1
       name: 'Modify XSOAR list for Incident ID : ${incident.id} with new slack block.'
-      description: Set data in list
+      description: Set data in a list
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -359,9 +359,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -618,9 +618,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false

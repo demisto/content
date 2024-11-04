@@ -1,11 +1,10 @@
 id: c7f9a77b-18e3-45ca-8307-b39035938abe
 version: 34
 vcShouldKeepItemLegacyProdMachine: false
-name: DSPM Remediation playbook for Sensitive asset open to world.
-description: 'The DSPM Remediation Playbook for Sensitive Asset Open to World is designed
+name: DSPM Remediation playbook for Sensitive asset open to world
+description: 'The DSPM Remediation playbook for Sensitive Asset Open to World is designed
   to handle incidents where sensitive assets are exposed to the public, with specific
-  focus on remediating this vulnerability across different cloud providers (AWS).
-  Below is an overview of the key steps and actions included in this playbook:'
+  focus on remediating this vulnerability across several cloud providers(for example AWS).'
 starttaskid: "0"
 tasks:
   "0":
@@ -349,7 +348,7 @@ tasks:
       name: |-
         Is Azure Storage Container
          Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
+      description: Returns 'yes' if an integration brand is available. Otherwise returns
         'no'.
       scriptName: IsIntegrationAvailable
       type: condition
@@ -387,7 +386,7 @@ tasks:
       id: 8e675a6a-d3c2-42bd-874d-6fa1180c8821
       version: -1
       name: Is Google Cloud Storage Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
+      description: Returns 'yes' if an integration brand is available. Otherwise returns
         'no'.
       scriptName: IsIntegrationAvailable
       type: condition
@@ -843,9 +842,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -885,9 +884,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false

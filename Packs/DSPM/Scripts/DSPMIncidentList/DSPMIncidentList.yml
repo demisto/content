@@ -15,7 +15,7 @@ args:
   type: unknown
 - name: action
   default: true
-  description: Action to perform on incident list i.e :- add or delete list.
+  description: Action to perform on an incident list, such as add or delete a list.
   defaultValue: add
 - name: incident_list
   required: true

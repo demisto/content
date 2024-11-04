@@ -1,19 +1,19 @@
 # Overview
-The Prisma Cloud DSPM(Data Security Posture Management) Integration enhances the management and remediation of DSPM risks. The integration provides users with actionable data, insights and a seamless workflow for addressing potential security threats.
+The Prisma Cloud DSPM(Data Security Posture Management) integration enhances the management and remediation of DSPM risks. The integration provides users with actionable data, insights and a seamless workflow for addressing potential security threats.
 
 # Use Cases
 - Remediation of DSPM out-of-the-box risks based on automated playbooks.
-- Close or update risks by Interacting with DSPM API using a dedicated list of building blocks.
+- Close or update risks by interacting with DSPM API using a dedicated list of building blocks.
 - Distribute DSPM risks to other systems.
 
 # Prerequisites
- 1. An active Prisma Cloud DSPM account. 
- 2. Slack V3 Pack.
- 3. AWS-S3 Pack.
- 4. Core REST APIs pack.
- 5. Atlassian Jira v3 Pack.
- 6. Google Cloud Storage Pack. ( Optional )
- 7. Azure Storage Container Pack. ( Optional )
+ 1. An active Prisma Cloud DSPM account
+ 2. Slack V3 Pack
+ 3. AWS-S3 Pack
+ 4. Core REST APIs pack
+ 5. Atlassian Jira v3 Pack
+ 6. Google Cloud Storage Pack ( Optional )
+ 7. Azure Storage Container Pack ( Optional )
 
 ## Configure Cortex XSOAR on Prisma Cloud DSPM
 
@@ -28,7 +28,7 @@ The Prisma Cloud DSPM(Data Security Posture Management) Integration enhances the
 
 ## Configure Prisma Cloud DSPM on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
 2. Search for Prisma Cloud DSPM.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -61,20 +61,20 @@ Retrieves risk findings matching the input criteria.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name_in | A comma-separated list of rule names. | Optional | 
-| rule_name_equal | Exact rule name. | Optional | 
+| rule_name_equal | The exact rule name. | Optional | 
 | dspm_tag_key_in | A comma-separated list of DSPM tag keys. | Optional | 
 | dspm_tag_key_equal | Exact DSPM tag key. | Optional | 
 | dspm_tag_value_in | A comma-separated list of DSPM tag values. | Optional | 
-| dspm_tag_value_equal | Exact DSPM tag value. | Optional | 
+| dspm_tag_value_equal | The exact DSPM tag value. | Optional | 
 | projectId_in | A comma-separated list of project IDs. | Optional | 
-| projectId_equal | Exact project ID. | Optional | 
+| projectId_equal | The exact project ID. | Optional | 
 | cloud_provider_in | A comma-separated list of cloud providers. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. Default is AWS. | Optional | 
-| cloud_provider_equal | Exact cloud provider. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
+| cloud_provider_equal | The exact cloud provider. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
 | affects_in | A comma-separated list of affects. Possible values are: SECURITY, COMPLIANCE, GOVERNANCE, SECURITY_AND_COMPLIANCE, SECURITY_AND_GOVERNANCE, COMPLIANCE_AND_GOVERNANCE, SECURITY_AND_COMPLIANCE_AND_GOVERNANCE. | Optional | 
-| affects_equal | Exact affect. Possible values are: SECURITY, COMPLIANCE, GOVERNANCE, SECURITY_AND_COMPLIANCE, COMPLIANCE_AND_GOVERNANCE, SECURITY_AND_GOVERNANCE, SECURITY_AND_COMPLIANCE_AND_GOVERNANCE. | Optional | 
+| affects_equal | The exact effect. Possible values are: SECURITY, COMPLIANCE, GOVERNANCE, SECURITY_AND_COMPLIANCE, COMPLIANCE_AND_GOVERNANCE, SECURITY_AND_GOVERNANCE, SECURITY_AND_COMPLIANCE_AND_GOVERNANCE. | Optional | 
 | status_in | A comma-separated list of statuses. Possible values are: OPEN, CLOSED, UNIMPORTANT, WRONG, HANDLED, INVESTIGATING. | Optional | 
-| status_equal | Exact status. Possible values are: OPEN, CLOSED, UNIMPORTANT, WRONG, HANDLED, INVESTIGATING. | Optional | 
-| sort | Sort order. | Optional | 
+| status_equal | The exact status. Possible values are: OPEN, CLOSED, UNIMPORTANT, WRONG, HANDLED, INVESTIGATING. | Optional | 
+| sort | The sort order. | Optional | 
 | limit | The maximum number of risk findings to retrieve. Default is 50. | Optional | 
 
 #### Context Output
@@ -195,15 +195,15 @@ Retrieves a list of assets for the company.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region_in | Comma-separated list of regions. | Optional | 
-| region_equal | Exact region. | Optional | 
-| cloud_provider_in | Comma-separated list of cloud providers. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
-| cloud_provider_equal | Exact cloud provider. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
-| service_type_in | Comma-separated list of service types. | Optional | 
-| service_type_equal | Exact Service Type. | Optional | 
-| lifecycle_in | Comma-separated list of life cycles. Possible values are: RUNNING, STOPPED, DELETED. | Optional | 
-| lifecycle_equal | Exact life cycle. Possible values are: RUNNING, STOPPED, DELETED. | Optional | 
-| sort | Sorting criteria in the format: property,(asc\|desc). Default sort order is ascending. Multiple sort criteria are supported. | Optional | 
+| region_in | A comma-separated list of regions. | Optional | 
+| region_equal | The exact region. | Optional | 
+| cloud_provider_in | A comma-separated list of cloud providers. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
+| cloud_provider_equal | The exact cloud provider. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
+| service_type_in | A comma-separated list of service types. | Optional | 
+| service_type_equal | The exact service type. | Optional | 
+| lifecycle_in | A comma-separated list of life cycles. Possible values are: RUNNING, STOPPED, DELETED. | Optional | 
+| lifecycle_equal | The exact lifecycle. Possible values are: RUNNING, STOPPED, DELETED. | Optional | 
+| sort | The sorting criteria in the format: property,(asc\|desc). Default sort order is ascending. Multiple sort criteria are supported. | Optional | 
 | limit | The maximum number of assets to retrieve. Default is 50. | Optional | 
 
 #### Context Output
@@ -356,9 +356,9 @@ Retrieves file details for the specified asset ID.
 | DSPM.AssetFiles.path | String | Asset file path. | 
 | DSPM.AssetFiles.type | String | Asset file type. | 
 | DSPM.AssetFiles.size | String | Asset file size. | 
-| DSPM.AssetFiles.openToWorld | Boolean | Asset open to world. | 
-| DSPM.AssetFiles.isDeleted | Boolean | Whether asset is deleted. | 
-| DSPM.AssetFiles.isMalicious | Boolean | Whether asset is malicious. | 
+| DSPM.AssetFiles.openToWorld | Boolean | Whether the asset is open to world. | 
+| DSPM.AssetFiles.isDeleted | Boolean | Whether the asset is deleted. | 
+| DSPM.AssetFiles.isMalicious | Boolean | Whether the asset is malicious. | 
 | DSPM.AssetFiles.dataTypes.name | String | Asset file data types name. | 
 | DSPM.AssetFiles.dataTypes.label | String | Asset file data types label. | 
 | DSPM.AssetFiles.dataTypes.count | Number | Asset file data types count. | 
@@ -690,17 +690,17 @@ Retrieves a list of data type findings for the company.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region_in | Comma-separated list of regions. | Optional | 
-| region_equal | Exact region. | Optional | 
+| region_in | A comma-separated list of regions. | Optional | 
+| region_equal | The exact region. | Optional | 
 | cloud_provider_in | A comma-separated list of cloud providers. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
-| cloud_provider_equal | Exact cloud provider. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
-| service_type_in | Comma-separated list of service types. | Optional | 
-| service_type_equal | Exact service type. | Optional | 
-| lifecycle_in | Comma-separated list of life cycles. | Optional | 
+| cloud_provider_equal | The exact cloud provider. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
+| service_type_in | A comma-separated list of service types. | Optional | 
+| service_type_equal | The exact service type. | Optional | 
+| lifecycle_in | A comma-separated list of life cycles. | Optional | 
 | projectId_in | A comma-separated list of project IDs. | Optional | 
-| projectId_equal | Exact project ID. | Optional | 
-| lifecycle_equal | Exact life cycle. | Optional | 
-| sort | Sorting criteria in the format: property,(asc\|desc). Default sort order is ascending. Multiple sort criteria are supported. | Optional | 
+| projectId_equal | The exact project ID. | Optional | 
+| lifecycle_equal | The exact life cycle. | Optional | 
+| sort | The sorting criteria in the format: property,(asc\|desc). Default sort order is ascending. Multiple sort criteria are supported. | Optional | 
 | limit | The maximum number of data types findings to retrieve. Default is 50. | Optional | 
 
 #### Context Output
@@ -857,27 +857,27 @@ Fetch list of alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detection_time_equals | Exact detection time (equals). detection time format - YYYY-MM-DDTHH:MM:SSZ. | Optional | 
+| detection_time_equals | The exact detection time (equals). detection time format - YYYY-MM-DDTHH:MM:SSZ. | Optional | 
 | detection_time_greater_than_or_equal | Detection time (greater than or equal). detection time format - YYYY-MM-DDTHH:MM:SSZ. | Optional | 
 | detection_time_greater_than | Detection time (greater than). detection time format - YYYY-MM-DDTHH:MM:SSZ. | Optional | 
 | detection_time_less_than_or_equal | Detection time (less than or equal). detection time format - YYYY-MM-DDTHH:MM:SSZ. | Optional | 
 | detection_time_less_than | Detection time (less than). detection time format - YYYY-MM-DDTHH:MM:SSZ. | Optional | 
 | policy_name_in | A comma-separated list of policy names. | Optional | 
-| policy_name_equals | Exact policy name. | Optional | 
+| policy_name_equals | The exact policy name. | Optional | 
 | asset_name_in | A comma-separated list of asset names. | Optional | 
-| asset_name_equals | Exact asset name. | Optional | 
+| asset_name_equals | The exact asset name. | Optional | 
 | cloud_provider_in | A comma-separated list of cloud providers. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
-| cloud_provider_equals | Exact cloud provider. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
+| cloud_provider_equals | The exact cloud provider. Possible values are: AWS, AZURE, GCP, SNOWFLAKE, FILE_SHARE, O365. | Optional | 
 | destination_project_vendor_name_in | A comma-separated list of project vendor names. | Optional | 
-| destination_project_vendor_name_equals | Exact destination project vendor name. | Optional | 
+| destination_project_vendor_name_equals | The exact destination project vendor name. | Optional | 
 | cloud_environment_in | A comma-separated list of cloud environments. Possible values are: UNKNOWN, DEVELOPMENT, STAGING, TESTING, PRODUCTION. | Optional | 
-| cloud_environment_equals | Exact cloud environment. Possible values are: UNKNOWN, DEVELOPMENT, STAGING, TESTING, PRODUCTION. | Optional | 
+| cloud_environment_equals | The exact cloud environment. Possible values are: UNKNOWN, DEVELOPMENT, STAGING, TESTING, PRODUCTION. | Optional | 
 | policy_severity_in | A comma-separated list of policy severities. Possible values are: HIGH, MEDIUM, LOW. | Optional | 
-| policy_severity_equals | Exact policy severity. Possible values are: HIGH, MEDIUM, LOW. | Optional | 
+| policy_severity_equals | The exact policy severity. Possible values are: HIGH, MEDIUM, LOW. | Optional | 
 | category_type_in | A comma-separated list of category types. Possible values are: FIRST_MOVE, ATTACK, COMPLIANCE, ASSET_AT_RISK, RECONNAISSANCE. | Optional | 
-| category_type_equals | Exact category type. Possible values are: FIRST_MOVE, ATTACK, COMPLIANCE, ASSET_AT_RISK, RECONNAISSANCE. | Optional | 
+| category_type_equals | The exact category type. Possible values are: FIRST_MOVE, ATTACK, COMPLIANCE, ASSET_AT_RISK, RECONNAISSANCE. | Optional | 
 | status_in | A comma-separated list of statuses. Possible values are: OPEN, CLOSED, UNIMPORTANT, WRONG, HANDLED, INVESTIGATING. | Optional | 
-| status_equals | Exact status. Possible values are: OPEN, CLOSED, UNIMPORTANT, WRONG, HANDLED, INVESTIGATING. | Optional | 
+| status_equals | The exact status. Possible values are: OPEN, CLOSED, UNIMPORTANT, WRONG, HANDLED, INVESTIGATING. | Optional | 
 | sort | Sort order (property,asc\|desc). | Optional | 
 | limit | The maximum number of alerts to retrieve. Default is 50. | Optional | 
 

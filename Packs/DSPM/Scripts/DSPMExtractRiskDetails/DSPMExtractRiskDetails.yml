@@ -5,7 +5,7 @@ name: DSPMExtractRiskDetails
 script: ''
 type: python
 tags: []
-comment: "This script extracts risk details from an incident object, processes asset tags, and sets the user's Slack email for future notifications.\nIt retrieves the incident details, including risk information, asset tags, and configuration details from the DSPM integration. If the asset owner's email is found, it is stored; otherwise, a default email is used.The extracted data is stored in the XSOAR context and displayed in a readable markdown format."
+comment: "This script extracts risk details from an incident object, processes asset tags, and sets the user's Slack email for future notifications.\nIt retrieves the incident details, including risk information, asset tags, and configuration details from the DSPM integration. If the asset owner's email is found, it is stored; otherwise, a default email is used. The extracted data is stored in the XSOAR context and displayed in a readable markdown format."
 enabled: true
 args:
 - name: incident_object

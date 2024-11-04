@@ -881,9 +881,9 @@ tasks:
       id: 29ed342a-8e51-4b16-87d0-2799f1738668
       version: -1
       name: Send slack notificaton to user
-      description: '"Send Slack Notification to User" playbook is designed to notify
+      description: 'The "Send Slack Notification to User" playbook is designed to notify
         a user via Slack and handle their response. It begins by sending a Slack notification
-        to a specified email using the SlackBlockBuilder script. Afterward, it waits
+        to a specified email using the SlackBlockBuilder script. Afterwards, it waits
         for the user''s response until a predefined time, as configured in Prisma
         Cloud DSPM. Once the response is received, it is inserted into the incident''s
         context. If there is an error in generating the Slack block, the incident
@@ -1410,9 +1410,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1450,9 +1450,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1490,9 +1490,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false

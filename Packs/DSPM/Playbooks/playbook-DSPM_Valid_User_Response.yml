@@ -715,7 +715,7 @@ tasks:
       id: ec22cd28-8fef-4c86-85fd-92a5cf6a0494
       version: -1
       name: Is Jira Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
+      description: Returns 'yes' if an integration brand is available. Otherwise returns
         'no'.
       scriptName: IsIntegrationAvailable
       type: condition
@@ -838,9 +838,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -878,9 +878,9 @@ tasks:
       description: |-
         Delete field from context.
 
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
       scriptName: DeleteContext
       type: regular
       iscommand: false
