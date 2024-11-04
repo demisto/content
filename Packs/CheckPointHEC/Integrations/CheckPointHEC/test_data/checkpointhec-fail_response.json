@@ -1,0 +1,11 @@
+{
+    "responseEnvelope": {
+        "requestId": "00000000-0000-0000-0000-000000000000",
+        "responseCode": 422,
+        "responseText": "",
+        "additionalText": "",
+        "recordsNumber": 0,
+        "scrollId": ""
+    },
+    "responseData": []
+}
