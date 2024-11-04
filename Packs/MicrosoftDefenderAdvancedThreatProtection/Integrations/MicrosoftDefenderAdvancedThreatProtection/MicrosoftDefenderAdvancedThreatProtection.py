@@ -3400,6 +3400,7 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
         'Statistics': file_stat
     }
     file_indicator = get_file_statistics_indicator(response)
+    demisto.debug(f'Got file indicator: {file_indicator.to_context()}')
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.FileStatistics',

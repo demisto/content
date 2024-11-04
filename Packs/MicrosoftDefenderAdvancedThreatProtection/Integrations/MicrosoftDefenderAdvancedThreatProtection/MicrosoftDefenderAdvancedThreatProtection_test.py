@@ -383,6 +383,18 @@ ALERT_RELATED_USER_API_RESPONSE = {
     "isOnlyNetworkUser": "false"
 }
 
+FILE_STATISTICS_API_RESPONSE = {
+    '@odata.context': 'https://api.security.microsoft.com/api/$metadata#microsoft.windowsDefenderATP.api.InOrgFileStats',
+    'sha1': '0991a395da64e1c5fbe8732ed11e6be064081d9f',
+    'organizationPrevalence': 14850,
+    'orgFirstSeen': '2019-12-07T13:44:16Z',
+    'orgLastSeen': '2020-01-06T13:39:36Z',
+    'globallyPrevalence': 705012,
+    'globalFirstObserved': '2015-03-19T12:20:07.3432441Z',
+    'globalLastObserved': '2020-01-06T13:39:36Z',
+    'topFileNames': ['MREC.exe']
+}
+
 USER_DATA = {
     'ID': "test/user1",
     'AccountName': "user1",
@@ -2924,3 +2936,38 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftDefenderAdvancedThreatProtection.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+def test_get_file_statistics_command(mocker):
+    """
+    Given:
+    - SHA1 File hash
+
+    When:
+    - Calling the get_file_statistics_command function
+
+    Then:
+    - Assert correct indicator field values, context output, and raw response
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_file_statistics_command
+
+    # Set
+    mocker.patch.object(client_mocker, 'get_file_statistics', return_value=FILE_STATISTICS_API_RESPONSE)
+
+    # Arrange
+    results = get_file_statistics_command(client_mocker, {'file_hash': '0991a395da64e1c5fbe8732ed11e6be064081d9f'})
+    indicator_values = list(results.indicator.to_context().values())[0]
+    context_output = results.outputs
+
+    # Assert
+    # Check for correct indicator field values
+    assert indicator_values['GlobalPrevalence'] == FILE_STATISTICS_API_RESPONSE['globallyPrevalence']
+    assert indicator_values['OrganizationPrevalence'] == FILE_STATISTICS_API_RESPONSE['organizationPrevalence']
+
+    # Check for correct context
+    assert context_output is not None
+    assert context_output['Statistics']['GlobalPrevalence'] == FILE_STATISTICS_API_RESPONSE['globallyPrevalence']
+    assert context_output['Statistics']['OrgPrevalence'] == FILE_STATISTICS_API_RESPONSE['organizationPrevalence']
+
+    # Check for correct raw response
+    assert results.raw_response == FILE_STATISTICS_API_RESPONSE
