@@ -386,11 +386,11 @@ def reset_offset_command(client: Client):
 @logger
 def fetch_events_command(
     client: Client,
-    page_size: int,
+    fetch_time: str,
     fetch_limit: int,
     config_ids: str,
     ctx: dict,
-    fetch_time: str,
+    page_size: int,
 ) -> Iterator[Any]:
     """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
 
@@ -400,6 +400,7 @@ def fetch_events_command(
         fetch_limit: limit of events in a fetch
         config_ids: security configuration ids to fetch, e.g. `51000;56080`
         ctx: The integration context
+        page_size: The number of events to limit for every request.
 
     Yields:
         (list[dict], str, int, str): events, new offset, total number of events fetched, and new last_run time to set.
@@ -499,11 +500,11 @@ def main():  # pragma: no cover
             limit = int(params.get("fetchLimit", 300000))
             for events, offset, total_events_count, hashed_events_from_previous_run in fetch_events_command(  # noqa: B007
                 client,
-                page_size,
+                fetch_time=params.get("fetchTime", ""),
                 limit,
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
-                fetch_time=params.get("fetchTime", "")
+                page_size,
             ):
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
