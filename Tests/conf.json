@@ -5964,6 +5964,8 @@
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Elasticsearch_v2_test-v8": "CRTX-61980",
+        "Elasticsearch_Fetch_Custom_Indicators_Test": "CRTX-134283",
+        "Elasticsearch_Fetch_Demisto_Indicators_Test": "CRTX-134283", 
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
@@ -6013,7 +6015,8 @@
         "Test_XFE_v2": "CRTX-112127",
         "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
         "Generic Webhook - Test": "CIAC-11234",
-        "Netskope_V2_Test": "No instance - developed by Qmasters"
+        "Netskope_V2_Test": "No instance - developed by Qmasters",
+        "IAMInitOktaUser - Test": "CIAC-12093"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
