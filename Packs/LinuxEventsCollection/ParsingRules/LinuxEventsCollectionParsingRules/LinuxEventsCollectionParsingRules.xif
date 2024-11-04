@@ -4,7 +4,7 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-
 | alter tmp_timestamp = arrayindex(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z))"), 0)
 | alter _time = if(
     tmp_timestamp ~= "\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[+-]\d{4}", parse_timestamp("%F %H:%M:%E*S %z", tmp_timestamp), // ISO 8601 compatible, with spaces & timezone offset, e.g., 2024-11-04 09:46:36.885 +1100
-    tmp_timestamp ~= "\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}(?:\.\d+)?\sZ", parse_timestamp("%F %H:%M:%E*S", tmp_timestamp), // ISO 8601 compatible, with spaces in zulu time notation, e.g., 2024-11-04 09:46:36.885 Z
+    tmp_timestamp ~= "\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}(?:\.\d+)?\sZ", parse_timestamp("%F %H:%M:%E*S Z", tmp_timestamp), // ISO 8601 compatible, with spaces in zulu time notation, e.g., 2024-11-04 09:46:36.885 Z
     tmp_timestamp ~= "[+-]\d{4}", parse_timestamp("%FT%H:%M:%E*S%z", tmp_timestamp), // timezone offset without a separating colon, e.g., 2024-10-28T14:30:55+0300
     tmp_timestamp ~= "[+-]\d{2}:\d{2}", parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_timestamp), // RFC 3339 compatible timestamp offset, e.g., 2024-10-28T14:30:55+03:00
     parse_timestamp("%FT%H:%M:%E*SZ", tmp_timestamp)) // RFC 3339 compatible timestamp with zulu time notation, e.g., 2024-10-28T14:30:55Z
