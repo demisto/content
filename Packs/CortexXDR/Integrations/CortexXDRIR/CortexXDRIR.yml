@@ -199,7 +199,7 @@ configuration:
   advanced: true
   type: 8
   section: Collect
-- display: Seconds to wait before fetching incident
+- display: Fetch delay in seconds
   name: incident_wait
   type: 0
   section: Collect
