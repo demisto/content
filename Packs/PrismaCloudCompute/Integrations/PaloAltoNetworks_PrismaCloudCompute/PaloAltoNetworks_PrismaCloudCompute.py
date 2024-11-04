@@ -1281,15 +1281,26 @@ def remove_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Comm
     Returns:
         CommandResults: command-results object.
     """
-    # Command flow is identical to add_custom_ip_feeds with the combining being removal instead of addition.
-    current_ip_feeds = (client.get_custom_ip_feeds() or {}).get('feed') or []
-    ips_to_remove = argToList(arg=args.pop('ip'))
+    # Cast to sets for faster operations and to remove duplicates
+    current_ip_feeds = set((client.get_custom_ip_feeds() or {}).get('feed') or [])
+    ips = set(argToList(arg=args.pop('ip')))
+    ips_to_remove = ips & current_ip_feeds
+    ignored_ips = ips - ips_to_remove
 
-    filtered_feeds = list({ip for ip in current_ip_feeds if ip not in ips_to_remove})
+    if not ips_to_remove:
+        return CommandResults(readable_output='IPs to remove are not currently in the custom IP feeds.')
+
+    filtered_feeds = list(current_ip_feeds - ips_to_remove)
 
     client.add_custom_ip_feeds(feeds=filtered_feeds)
 
-    return CommandResults(readable_output=f'Custom IP feed {ips_to_remove} was successfully removed')
+    if ignored_ips:
+        hr = f'''Successfully removed {ips_to_remove} from the custom IP feeds.
+        {ignored_ips} already not in the custom IP feeds.'''
+    else:
+        hr = f'Successfully removed {ips_to_remove} from the custom IP feeds'
+
+    return CommandResults(readable_output=hr)
 
 
 def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
