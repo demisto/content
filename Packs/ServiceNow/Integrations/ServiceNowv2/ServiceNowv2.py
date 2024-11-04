@@ -2717,11 +2717,13 @@ def is_new_incident(ticket_id: str) -> bool:
     Returns:
         bool: Whether its a new incident in XSOAR.
     """
-    last_fetched_ids = get_integration_context().get("last_fetched_incident_ids") or []
+    int_context = get_integration_context()
+    last_fetched_ids = int_context.get("last_fetched_incident_ids") or []
     demisto.debug(f"ServiceNowV2 - Last fetched incident ids are: {last_fetched_ids}")
     if ticket_id_in_last_fetch := ticket_id in last_fetched_ids:
         last_fetched_ids.remove(ticket_id)
-        set_integration_context({"last_fetched_incident_ids": last_fetched_ids})
+        int_context["last_fetched_incident_ids"] = last_fetched_ids
+        set_integration_context(int_context)
     return ticket_id_in_last_fetch
 
 
