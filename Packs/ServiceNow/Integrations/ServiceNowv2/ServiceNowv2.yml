@@ -1630,6 +1630,12 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
+  - arguments:
+    - description: sys_id of the ticket containing the attachment.
+      name: sys_id
+      required: true
+    description: Retrieves attachments from a ticket.
+    name: servicenow-get-ticket-attachments
   dockerimage: demisto/python3:3.11.10.113941
   isfetch: true
   ismappable: true
