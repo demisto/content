@@ -36,9 +36,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* Cortex - Core - IR
-* Gmail
-* Google Workspace Admin
+* Cortex Core - IR
 
 ### Scripts
 
@@ -54,6 +52,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * gmail-forwarding-address-get
 * gmail-forwarding-address-remove
 * gmail-list-filters
+* gsuite-user-get
 * gsuite-user-signout
 * gsuite-user-update
 * send-mail
@@ -61,7 +60,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Inputs
 
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| SendNotification | If set to "true," the playbook will send an email notification to the user informing them that the forwarding address was deleted. If "false," no notification will be sent. | true | Optional |
 
 ## Playbook Outputs
 

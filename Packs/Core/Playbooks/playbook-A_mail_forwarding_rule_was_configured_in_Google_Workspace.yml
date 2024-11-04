@@ -31,10 +31,7 @@ description: |-
   - Google Workspace Admin access to sign out and suspend the user account.
 tags:
 - TA0009 - Collection
-- TA0010 - Exfiltration
-- T1114.003 - Email Forwarding Rule
 - T1114 - Email Collection
-- T1020 - Automated Exfiltration
 starttaskid: "0"
 tasks:
   "0":
@@ -74,7 +71,7 @@ tasks:
     task:
       id: 586f11c0-89b5-4c58-86df-36aa1af4305d
       version: -1
-      name: Fetch caller IP and forwarding mail address
+      name: Get caller IP and forwarding mail address
       description: Returns information about each alert ID.
       script: '|||core-get-cloud-original-alerts'
       type: regular
@@ -169,7 +166,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "14"
+      - "48"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -181,15 +178,6 @@ tasks:
                 root: DBotScore
                 filters:
                 - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: domain
-                    ignorecase: true
-                  - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Type
@@ -210,6 +198,31 @@ tasks:
             iscontext: true
           right:
             value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: Indicator
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -334,7 +347,7 @@ tasks:
     task:
       id: f636844f-1e17-47eb-8b12-e862f2863b85
       version: -1
-      name: Get forwarding email address
+      name: Gmail - Get forwarding email address
       description: Gets the specified forwarding address or a list of the forwarding addresses for the specified account.
       script: '|||gmail-forwarding-address-get'
       type: regular
@@ -389,6 +402,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -425,7 +439,7 @@ tasks:
       {
         "position": {
           "x": -580,
-          "y": 620
+          "y": 810
         }
       }
     note: false
@@ -462,26 +476,10 @@ tasks:
     scriptarguments:
       MaliciousIPs:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
+          root: Core.OriginalAlert.raw_abioc.event
+          accessor: caller_ip
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -493,7 +491,7 @@ tasks:
       {
         "position": {
           "x": -580,
-          "y": 765
+          "y": 945
         }
       }
     note: false
@@ -520,6 +518,34 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      closeReason:
+        complex:
+          root: ${
+          accessor: '}'
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs != rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: Resolved as FALSE_POSITIVE - Handled by the playbook "A mail forwarding rule was configured in Google Workspace"
+              equals: {}
+              lhs:
+                value:
+                  simple: Evidences
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: Resolved as TRUE_POSITIVE - Handled by the playbook "A mail forwarding rule was configured in Google Workspace"
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -528,7 +554,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2220
+          "y": 2420
         }
       }
     note: false
@@ -599,7 +625,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2370
+          "y": 2580
         }
       }
     note: false
@@ -712,7 +738,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "47"
+      - "52"
     scriptarguments:
       forwarding_email:
         simple: ${Gmail.ForwardingAddress.forwardingEmail}
@@ -749,7 +775,7 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
-      - "30"
+      - "49"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -804,7 +830,7 @@ tasks:
     task:
       id: 10a29f38-0fc1-4df2-82bc-e7afb761788b
       version: -1
-      name: Decide to suspend the user account
+      name: Decide Whether to Suspend User Account
       type: collection
       iscommand: false
       brand: ""
@@ -891,8 +917,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 2050
+          "x": 1130,
+          "y": 2250
         }
       }
     note: false
@@ -1005,7 +1031,7 @@ tasks:
       {
         "position": {
           "x": -580,
-          "y": 1815
+          "y": 2280
         }
       }
     note: false
@@ -1022,7 +1048,7 @@ tasks:
     task:
       id: fdc9701c-599a-4494-8a76-9b500a2bf90e
       version: -1
-      name: Soft response is required?
+      name: Is Suspicious Evidence Detected?
       type: condition
       iscommand: false
       brand: ""
@@ -1178,7 +1204,7 @@ tasks:
     task:
       id: 9b154689-28ab-4f05-8ba4-e3cc23859851
       version: -1
-      name: Set abnormal geolocation to aggregated evidences
+      name: Save abnormal geolocation to evidences
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1251,7 +1277,7 @@ tasks:
     task:
       id: 47ef82fb-1c7d-4c4b-8f3b-40c46d3c5bac
       version: -1
-      name: Set suspicious keywords to aggregated evidences
+      name: Save suspicious keywords to evidences
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1306,7 +1332,7 @@ tasks:
           "y": 930
         }
       }
-    note: false
+    note: true
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -1320,7 +1346,7 @@ tasks:
     task:
       id: 80b45a10-5b09-4f0f-89af-c4aced6131cd
       version: -1
-      name: Set abnormal working hours to aggregated evidences
+      name: Save abnormal working hours to evidences
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1388,7 +1414,7 @@ tasks:
           "y": 930
         }
       }
-    note: false
+    note: true
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -1402,7 +1428,7 @@ tasks:
     task:
       id: 652eb822-a99d-4d31-8777-3d912ffd8e29
       version: -1
-      name: Hard response is required?
+      name: Are Multiple Suspicious Evidence Detected?
       type: condition
       iscommand: false
       brand: ""
@@ -1462,6 +1488,31 @@ tasks:
                         simple: "3"
                 accessor: Indicator
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GSuiteAdmin
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1495,20 +1546,181 @@ tasks:
       - "17"
     scriptarguments:
       body:
-        simple: |+
-          Dear ${Core.OriginalAlert.raw_abioc.event.identity_name}
-
-          As part of our ongoing security measures, we detected unusual activity associated with your mailbox. A forwarding address and associated rule were automatically removed from your account to protect your data and ensure the security of our systems.
-
-          If you did not set up these rules, we recommend reviewing your recent activity and updating your account password immediately. If you require assistance or further information, please contact our security team.
-
-          Thank you for your understanding and cooperation.
-
+        simple: "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      background-color: #f4f4f9;\n      margin: 0;\n      padding: 0;\n    }\n    .container {\n      width: 80%;\n      max-width: 600px;\n      margin: 50px auto;\n      padding: 20px;\n      background-color: #ffffff;\n      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);\n      border-radius: 8px;\n    }\n    h2 {\n      color: #333;\n    }\n    p {\n      color: #555;\n      line-height: 1.6;\n    }\n    .highlight {\n      color: #d9534f;\n      font-weight: bold;\n    }\n  </style>\n</head>\n<body>\n\n<div class=\"container\">\n  <h2>Dear <span class=\"highlight\">&lt;${Core.OriginalAlert.raw_abioc.event.identity_name}&gt;</span>,</h2>\n  \n  <p>As part of our ongoing security measures, we detected unusual activity associated with your mailbox. A forwarding address and associated rule were automatically removed from your account to protect your data and ensure the security of our systems.</p>\n\n  <p>If you did not set up these rules, we recommend reviewing your recent activity and updating your account password immediately. If you require assistance or further information, please contact our security team.</p>\n\n  <p>Thank you for your understanding and cooperation.</p>\n</div>\n\n</body>\n</html>\n"
       subject:
         simple: Forwarding Rule and Address Removed from Your Mailbox
       to:
         simple: ${Core.OriginalAlert.raw_abioc.event.identity_name}
+      using:
+        simple: Built-in Mail Sender
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: f747c163-e58c-4da6-883b-a245234aed44
+    type: regular
+    task:
+      id: f747c163-e58c-4da6-883b-a245234aed44
+      version: -1
+      name: Save known malicious indicators detected to evidences
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidences
+      stringify:
+        simple: "true"
+      value:
+        simple: Known malicious indicators detected
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 620
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 89920c84-f44d-45ce-8bc5-0577831df61f
+    type: regular
+    task:
+      id: 89920c84-f44d-45ce-8bc5-0577831df61f
+      version: -1
+      name: Google Workspace - Get the user account
+      description: Retrieve a user's details given a user key.
+      script: '|||gsuite-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      user:
+        simple: ${Core.OriginalAlert.raw_abioc.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 212fa2bf-f6ce-458e-846d-0536d50ed840
+    type: condition
+    task:
+      id: 212fa2bf-f6ce-458e-846d-0536d50ed840
+      version: -1
+      name: Is user account found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: d87cf812-ca8d-4017-85a4-aedb561018e7
+    type: condition
+    task:
+      id: d87cf812-ca8d-4017-85a4-aedb561018e7
+      version: -1
+      name: Notify User of Forwarding Address Removal?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SendNotification
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1527,24 +1739,42 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "18_17_#default#": 0.42,
+      "18_17_#default#": 0.31,
       "18_25_yes": 0.55,
-      "33_17_#default#": 0.41,
-      "37_17_#default#": 0.23,
-      "3_14_yes": 0.25,
+      "33_17_#default#": 0.32,
+      "37_17_#default#": 0.19,
       "3_5_#default#": 0.37,
-      "46_17_#default#": 0.25
+      "46_17_#default#": 0.19,
+      "50_17_#default#": 0.19,
+      "50_30_yes": 0.76,
+      "52_17_#default#": 0.5,
+      "52_47_yes": 0.81
     },
     "paper": {
       "dimensions": {
-        "height": 2455,
-        "width": 2070,
+        "height": 2665,
+        "width": 2090,
         "x": -580,
         "y": -20
       }
     }
   }
-inputs: []
+inputs:
+- key: SendNotification
+  value:
+    simple: "true"
+  required: false
+  description: If set to "true," the playbook will send an email notification to the user informing them that the forwarding address was deleted. If "false," no notification will be sent.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - SendNotification
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)
