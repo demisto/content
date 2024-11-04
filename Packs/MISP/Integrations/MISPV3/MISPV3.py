@@ -814,8 +814,6 @@ def get_indicator_results(
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
-        if not indicator:
-            raise DemistoException(f'The indicator type {dbot_type} is unknown!')
         all_attributes = outputs.get('Attribute')
         events_to_human_readable = get_events_related_to_scored_tag(all_attributes, found_tag)
         attribute_highlights = reputation_command_to_human_readable(all_attributes, score, events_to_human_readable)
@@ -875,8 +873,6 @@ def get_indicator_results(
                                 score=Common.DBotScore.NONE, reliability=reliability,
                                 malicious_description="No results were found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
-        if not indicator:
-            raise DemistoException(f'The indicator type {dbot_type} is unknown!')
         return CommandResults(indicator=indicator,
                               readable_output=f"No attributes found in MISP for value: {value}")
 
