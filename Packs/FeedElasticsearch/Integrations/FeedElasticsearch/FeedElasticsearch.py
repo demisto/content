@@ -228,7 +228,6 @@ def get_generic_indicators_elastic_v7(es, search, src_val, src_type, default_typ
     ioc_lst: list = []
     scan_res = scan(es, query=search.to_dict(), index=search._index, **search._params)
     for hit in scan_res:
-        hit = search._get_result(cast(AttrDict[Any], hit))  # type: ignore
         hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags, tlp_color, enrichment_excluded)
         ioc_lst.extend(hit_lst)
         if len(ioc_lst) >= limit:
@@ -258,7 +257,6 @@ def get_demisto_indicators_elastic_v7(es, search, tags, tlp_color, enrichment_ex
     ioc_enrch_lst: list = []
     scan_res = scan(es, query=search.to_dict(), index=search._index, **search._params)
     for hit in scan_res:
-        hit = search._get_result(cast(AttrDict[Any], hit))  # type: ignore
         hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit, tags=tags, tlp_color=tlp_color,
                                                                      enrichment_excluded=enrichment_excluded)
         ioc_lst.extend(hit_lst)
@@ -347,7 +345,6 @@ def fetch_indicators_elastic_v7(client, last_fetch_timestamp, feed_type, fetch_l
         else:  # if time field isn't set we have to scan for all indicators (in every cycle)
             scan_res = scan(client.es, query=search.to_dict(), index=search._index, **search._params)
             for hit in scan_res:
-                hit = search._get_result(cast(AttrDict[Any], hit))  # type: ignore
                 indicators_list.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, client.tags,
                                                                            client.tlp_color, client.enrichment_excluded))
 
