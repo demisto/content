@@ -671,8 +671,8 @@ def main():
     tags = argToList(params.get('feedTags', []))
     tlp_color = params.get('tlp_color')
     global COLLECTION_ID
-    COLLECTION_ID = COLLECTION_ID_MAP.get(params.get('collection_id')) or '95ecc380-afe9-11e4-9b6c-751b66dd541e'
-    collection_name = params.get('collection_id')
+    collection_name = params.get('collection_id') or 'Enterprise'
+    COLLECTION_ID = COLLECTION_ID_MAP.get(collection_name)
     create_relationships = argToBoolean(params.get('create_relationships'))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
