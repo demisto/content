@@ -1296,7 +1296,7 @@ def remove_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Comm
 
     if ignored_ips:
         hr = f'''Successfully removed {ips_to_remove} from the custom IP feeds.
-        {ignored_ips} already not in the custom IP feeds.'''
+        Could not find {ignored_ips} in the custom IP feeds.'''
     else:
         hr = f'Successfully removed {ips_to_remove} from the custom IP feeds'
 
