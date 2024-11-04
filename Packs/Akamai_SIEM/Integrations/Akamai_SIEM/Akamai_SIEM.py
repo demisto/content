@@ -433,7 +433,8 @@ def fetch_events_command(
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         demisto.info("Preparing to deduplicate events, currently got {len(events)} events.")
-        deduped_events = [event for event, hashed_event_from_current_run in zip(events, hashed_events_from_current_run) if hashed_event_from_current_run not in hashed_events_from_previous_run]
+        deduped_events = [event for event, hashed_event_from_current_run in zip(
+            events, hashed_events_from_current_run) if hashed_event_from_current_run not in hashed_events_from_previous_run]
         total_events_count += len(deduped_events)
         demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
         hashed_events_from_previous_run = hashed_events_from_current_run
@@ -504,7 +505,7 @@ def main():  # pragma: no cover
                 limit,
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
-                page_size,
+                page_size=page_size
             ):
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
