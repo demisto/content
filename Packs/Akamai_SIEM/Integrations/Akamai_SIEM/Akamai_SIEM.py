@@ -407,13 +407,16 @@ def fetch_events_command(
     total_events_count = 0
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
+    hashed_events_from_previous_run = ctx.get("hashed_events_from_previous_run", [])
     while total_events_count < int(fetch_limit):
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
+        hashed_events_from_current_run = []
         for event in events:
+            hashed_events_from_current_run.append(json.dumps(event, sort_keys=True))
             try:
                 event["_time"] = event["httpMessage"]["start"]
                 if "attackData" in event:
@@ -428,10 +431,13 @@ def fetch_events_command(
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        total_events_count += len(events)
-        demisto.info(f"Got {len(events)} events, and {offset=}")
-        yield events, offset, total_events_count
-    yield [], offset, total_events_count
+        demisto.info("Preparing to deduplicate events, currently got {len(events)} events.")
+        deduped_events = [event for event, hashed_event_from_current_run in zip(events, hashed_events_from_current_run) if hashed_event_from_current_run not in hashed_events_from_previous_run]
+        total_events_count += len(deduped_events)
+        demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
+        hashed_events_from_previous_run = hashed_events_from_current_run
+        yield deduped_events, offset, total_events_count, hashed_events_from_current_run
+    yield [], offset, total_events_count, hashed_events_from_previous_run
 
 
 def decode_url(headers: str) -> dict:
@@ -491,7 +497,7 @@ def main():  # pragma: no cover
         elif command == "fetch-events":
             page_size = int(params.get("page_size", FETCH_EVENTS_PAGE_SIZE))
             limit = int(params.get("fetchLimit", 300000))
-            for events, offset, total_events_count in fetch_events_command(  # noqa: B007
+            for events, offset, total_events_count, hashed_events_from_previous_run in fetch_events_command(  # noqa: B007
                 client,
                 page_size,
                 limit,
@@ -502,7 +508,7 @@ def main():  # pragma: no cover
                 if events:
                     demisto.info(f"Sending events to xsiam with latest event time is: {events[-1]['_time']}")
                     send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
-                set_integration_context({"offset": offset})
+                set_integration_context({"offset": offset, "hashed_events_from_previous_run": hashed_events_from_previous_run})
             demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
             next_run = {}
             if total_events_count >= limit:
