@@ -10,8 +10,10 @@ enabled: true
 args:
 - name: message
   required: true
+  description: "Slack Notification message."
 outputs:
 - contextPath: CustomSlackBlock
+  description: ""
 scripttarget: 0
 subtype: python3
 timeout: 100800h0m0s

@@ -1,6 +1,6 @@
-id: DSPM Remediation playbook for Sensitive asset open to world
+id: DSPM Remediation for Sensitive asset open to world
 version: -1
-name: DSPM Remediation playbook for Sensitive asset open to world
+name: DSPM Remediation for Sensitive asset open to world
 description: "The DSPM Remediation playbook for Sensitive Asset Open to World is designed to handle incidents where sensitive assets are exposed to the public, with specific focus on remediating this vulnerability across several cloud providers(for example AWS)."
 starttaskid: "0"
 tasks:
@@ -270,6 +270,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "Add incident for re-run."
     nexttasks:
       '#none#':
       - "22"
@@ -933,6 +934,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "36"

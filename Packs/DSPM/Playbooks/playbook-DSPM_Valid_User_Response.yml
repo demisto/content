@@ -45,6 +45,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       Jira action:
       - "72"
@@ -287,6 +288,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "Add incident for re-run"
     nexttasks:
       '#none#':
       - "64"
@@ -364,6 +366,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "34"

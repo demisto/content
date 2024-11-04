@@ -16,8 +16,11 @@ args:
   description: The state of the response from the user will be stored under this context path.
 outputs:
 - contextPath: User.Action
+  description: ""
 - contextPath: User.JiraProjectName
+  description: ""
 - contextPath: User.JiraTicketType
+  description: ""
 scripttarget: 0
 subtype: python3
 runonce: false

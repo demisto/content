@@ -83,6 +83,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "This script extracts risk details from an incident object"
     nexttasks:
       '#none#':
       - "35"
@@ -352,6 +353,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "Delete incident from INCIDENT LIST"
     nexttasks:
       '#none#':
       - "9"
@@ -391,6 +393,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Check if the user action is invalid?"
     nexttasks:
       Invalid response:
       - "80"
@@ -538,6 +541,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       Invalid response:
       - "70"
@@ -1221,6 +1225,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "89"
@@ -1298,6 +1303,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Check incident list status?"
     nexttasks:
       add:
       - "90"

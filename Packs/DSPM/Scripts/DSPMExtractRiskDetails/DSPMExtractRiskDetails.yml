@@ -16,6 +16,7 @@ args:
   required: true
 outputs:
 - contextPath: incident_object
+  description: incident object.
 scripttarget: 0
 subtype: python3
 runonce: false

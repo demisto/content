@@ -3,6 +3,7 @@ version: -1
 name: DSPM notify user in case of error
 description: The DSPM Notify User in Case of Error playbook is designed to handle errors in DSPM incidents by notifying users and managing Slack notifications.
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
@@ -120,6 +121,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "Add incident for re-run."
     nexttasks:
       '#none#':
       - "12"
@@ -270,7 +272,7 @@ tasks:
       id: a6961fee-66dd-4300-8605-01b9f67bb78d
       version: -1
       name: 'Create a new XSOAR list for Incident ID : ${incident.id}'
-      description: Create new list
+      description: Create a new list
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -425,6 +427,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "3"

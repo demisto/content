@@ -155,6 +155,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "This script processes user responses from a Slack block interaction"
     nexttasks:
       '#none#':
       - "15"
@@ -372,6 +373,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       Invalid Response:
       - "27"
@@ -426,6 +428,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "Add incident for re-run."
     nexttasks:
       '#none#':
       - "20"
@@ -503,6 +506,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       add:
       - "21"

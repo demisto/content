@@ -9,6 +9,7 @@ comment: This XSOAR automation script generates a Slack message block to notify 
 enabled: true
 args:
 - name: dspmIncident
+  description: ""
 outputs:
 - contextPath: slackBlock
   description: Custom Slack for risk details notification.
