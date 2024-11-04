@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+id: DSPM Remediation playbook for Sensitive asset open to world.
+version: -1
+name: DSPM Remediation playbook for Sensitive asset open to world.
+description: 'The DSPM Remediation Playbook for Sensitive Asset Open to World is designed to handle incidents where sensitive assets are exposed to the public, with specific focus on remediating this vulnerability across different cloud providers (AWS). Below is an overview of the key steps and actions included in this playbook:.'
+=======
 id: c7f9a77b-18e3-45ca-8307-b39035938abe
 version: 34
 vcShouldKeepItemLegacyProdMachine: false
@@ -5,6 +11,7 @@ name: DSPM Remediation playbook for Sensitive asset open to world
 description: 'The DSPM Remediation playbook for Sensitive Asset Open to World is designed
   to handle incidents where sensitive assets are exposed to the public, with specific
   focus on remediating this vulnerability across several cloud providers(for example AWS).'
+>>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
 starttaskid: "0"
 tasks:
   "0":
@@ -17,6 +24,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -44,8 +52,7 @@ tasks:
       id: 0b52f3fb-b14b-4bb6-8327-77013630036a
       version: -1
       name: aws-s3-put-public-access-block
-      description: Creates or modifies the PublicAccessBlock configuration for an
-        Amazon S3 bucket.
+      description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
       script: AWS - S3|||aws-s3-put-public-access-block
       type: regular
       iscommand: true
@@ -89,8 +96,7 @@ tasks:
       id: 1d9ad7bc-13f5-4db1-8ea7-2aa80d71b6d0
       version: -1
       name: Check the Cloud Provider of asset
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -156,9 +162,7 @@ tasks:
       id: 0340a84f-f267-4199-8252-0fbf8656bc58
       version: -1
       name: Have you encountered any errors with mitigating asset risk?
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -235,9 +239,7 @@ tasks:
       id: 266bf836-a3af-40ea-85dd-77d7c970cc2e
       version: -1
       name: Have encountered any errors while updating risk status on DSPM portal?
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -308,8 +310,7 @@ tasks:
       id: f6156b41-f920-4d47-8770-e93f81909515
       version: -1
       name: Is AWS - S3 Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -348,8 +349,12 @@ tasks:
       name: |-
         Is Azure Storage Container
          Integration Available?
+<<<<<<< HEAD
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+=======
       description: Returns 'yes' if an integration brand is available. Otherwise returns
         'no'.
+>>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -386,8 +391,12 @@ tasks:
       id: 8e675a6a-d3c2-42bd-874d-6fa1180c8821
       version: -1
       name: Is Google Cloud Storage Integration Available?
+<<<<<<< HEAD
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+=======
       description: Returns 'yes' if an integration brand is available. Otherwise returns
         'no'.
+>>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -465,6 +474,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -495,6 +505,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -525,6 +536,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -555,6 +567,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -579,11 +592,7 @@ tasks:
       id: 0bd1f70e-13b1-4682-88b4-38bf073221d6
       version: -1
       name: Create Slack block for sending success message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -599,9 +608,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: "For XSOAR incident ID : ${incident.id} successfully applied public
-          access block to the ${incident_object.assetName} bucket. Also updated risk:
-          ${incident.riskfindingid} status to 'INVESTIGATION'.\nThanks. "
+        simple: "For XSOAR incident ID : ${incident.id} successfully applied public access block to the ${incident_object.assetName} bucket. Also updated risk: ${incident.riskfindingid} status to 'INVESTIGATION'.\nThanks. "
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -663,11 +670,7 @@ tasks:
       id: 195f27cc-07aa-4110-815e-aecb4d24faaa
       version: -1
       name: Create Slack block for sending error message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -683,9 +686,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: "For XSOAR incident ID : ${incident.id} successfully applied public
-          access block to the ${incident_object.assetName} bucket. \nBut while updating
-          risk: ${incident.riskfindingid} status to 'INVESTIGATION' got error.\nThanks. "
+        simple: "For XSOAR incident ID : ${incident.id} successfully applied public access block to the ${incident_object.assetName} bucket. \nBut while updating risk: ${incident.riskfindingid} status to 'INVESTIGATION' got error.\nThanks. "
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -710,11 +711,7 @@ tasks:
       id: f3545f09-9731-4ac2-8a83-7e5e9bec6b78
       version: -1
       name: Create Slack block for sending error message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -730,8 +727,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: 'For XSOAR incident ID : ${incident.id} got error while applying public
-          access block to the ${incident_object.assetName} bucket.'
+        simple: 'For XSOAR incident ID : ${incident.id} got error while applying public access block to the ${incident_object.assetName} bucket.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -793,11 +789,7 @@ tasks:
       id: 8573fda4-07bc-4e67-813a-427371e16ada
       version: -1
       name: Create Slack block for sending error message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -813,8 +805,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: To remediate the ${incident.assetname} asset risk on ${incident.cloud}
-          pack/integration is not configured on XSOAR instance.
+        simple: To remediate the ${incident.assetname} asset risk on ${incident.cloud} pack/integration is not configured on XSOAR instance.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1033,3 +1024,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

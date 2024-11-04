@@ -10,7 +10,9 @@ enabled: true
 args:
 - name: incident_object
   required: true
+  description: Incident data of a specific asset.
 - name: defaultSlackUser
+  description: Default slack user provided by user.
   required: true
 outputs:
 - contextPath: incident_object

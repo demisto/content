@@ -1,11 +1,7 @@
-id: 44096456-af98-45b0-8e48-531f647f426f
-version: 22
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM Jira Ticket Creation
+version: -1
 name: DSPM Jira Ticket Creation
-description: This playbook automates the process of creating and managing Jira issues
-  for DSPM-related risks detected in XSOAR incidents. It creates a Jira ticket with
-  risk details, checks for errors, updates incident details, and sends a Slack notification
-  with ticket information. This streamlines risk tracking and notification.
+description: This playbook automates the process of creating and managing Jira issues for DSPM-related risks detected in XSOAR incidents. It creates a Jira ticket with risk details, checks for errors, updates incident details, and sends a Slack notification with ticket information. This streamlines risk tracking and notification.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -44,8 +41,7 @@ tasks:
     task:
       id: 4f9bcc91-ad98-4d76-8973-979922d5b0e0
       version: -1
-      name: 'Create Jira Issue for XSOAR incident Id: ${incident.id} of DSPM risk
-        : ${incident.riskfindingid}.'
+      name: 'Create Jira Issue for XSOAR incident Id: ${incident.id} of DSPM risk : ${incident.riskfindingid}.'
       description: Creates a new issue in Jira.
       script: '|||jira-create-issue'
       type: regular
@@ -75,8 +71,7 @@ tasks:
       project_name:
         simple: ${User.JiraProjectName}
       summary:
-        simple: 'The issue created for XSOAR incident Id: ${incident.id} of DSPM risk
-          : ${incident.riskfindingid}. Rule Name: ${incident.riskname}'
+        simple: 'The issue created for XSOAR incident Id: ${incident.id} of DSPM risk : ${incident.riskfindingid}. Rule Name: ${incident.riskname}'
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -112,10 +107,7 @@ tasks:
       - "57"
     scriptarguments:
       details:
-        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} and Key: ${Ticket.Key}.
-          Associated Remediation ID: ${riskFindingId}. The ticket is not assigned
-          to anybody because an error occurred when retrieving the assignee ID for
-          ${User.Email} from Jira.'
+        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} and Key: ${Ticket.Key}. Associated Remediation ID: ${riskFindingId}. The ticket is not assigned to anybody because an error occurred when retrieving the assignee ID for ${User.Email} from Jira.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -140,9 +132,7 @@ tasks:
       id: 6f0b05ed-e4e7-4f09-8201-263531e8ea3c
       version: -1
       name: Is there an error when creating a Jira ticket?
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -183,6 +173,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "60"
@@ -215,11 +206,7 @@ tasks:
       id: 317ebc42-821b-43aa-8962-d259be4f9c59
       version: -1
       name: Create Slack block for sending Jira ticket details to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -235,8 +222,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} on Project
-          Key: ${Ticket.Key}. Associated XSOAR incident ID: ${incident.id}.'
+        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} on Project Key: ${Ticket.Key}. Associated XSOAR incident ID: ${incident.id}.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -301,6 +287,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -379,5 +366,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-dirtyInputs: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

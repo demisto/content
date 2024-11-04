@@ -1,11 +1,7 @@
-id: 92eb37ab-8999-4a46-8a88-17bff8fe9731
-version: 155
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM Multi-Cloud Risk Remediation
+version: -1
 name: DSPM Multi-Cloud Risk Remediation
-description: The playbook ensures efficient incident resolution and compliance with
-  security policies by guiding the user through decision points based on incident
-  type, such as empty storage assets or assets open to the world. It concludes by
-  updating the incident status and closing the playbook upon resolution.
+description: The playbook ensures efficient incident resolution and compliance with security policies by guiding the user through decision points based on incident type, such as empty storage assets or assets open to the world. It concludes by updating the incident status and closing the playbook upon resolution.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "91"
@@ -121,11 +118,7 @@ tasks:
       id: 58e1b935-b074-468b-894c-7e6e67c78d5d
       version: -1
       name: Create a Slackblock list to send a user notification displaying risk information.
-      description: This XSOAR automation script generates a Slack message block to
-        notify users of risks detected by a Data Security Posture Management (DSPM)
-        tool. The Slack block is dynamically constructed based on the details of the
-        security incident and includes options for users to take specific actions,
-        such as creating a Jira ticket or remediating the risk.
+      description: This XSOAR automation script generates a Slack message block to notify users of risks detected by a Data Security Posture Management (DSPM) tool. The Slack block is dynamically constructed based on the details of the security incident and includes options for users to take specific actions, such as creating a Jira ticket or remediating the risk.
       scriptName: DSPMCreateRiskSlackBlocks
       type: regular
       iscommand: false
@@ -204,9 +197,7 @@ tasks:
       id: a3fa951e-294b-4dd2-8186-eb09df490d17
       version: -1
       name: Error while retrieving DSPM risk details?
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -242,11 +233,8 @@ tasks:
     task:
       id: 3aa32a75-bc46-4852-8f17-df11598270d5
       version: -1
-      name: 'Errors occurred when developing the Slack block list for the incident
-        ID : ${incident.id}'
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      name: 'Errors occurred when developing the Slack block list for the incident ID : ${incident.id}'
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -320,8 +308,7 @@ tasks:
       id: e2fe1e30-6db6-49a0-8968-c199fd25a849
       version: -1
       name: DSPM notify user in case of error
-      description: The DSPM Notify User in Case of Error playbook is designed to handle
-        errors in DSPM incidents by notifying users and managing Slack notifications.
+      description: The DSPM Notify User in Case of Error playbook is designed to handle errors in DSPM incidents by notifying users and managing Slack notifications.
       playbookName: DSPM notify user in case of error
       type: playbook
       iscommand: false
@@ -470,9 +457,7 @@ tasks:
       id: 88493bf0-afee-4721-8ace-a08465534d89
       version: -1
       name: Is there any error occurred in DSPM Invalid Response playbook?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -509,11 +494,7 @@ tasks:
       id: e82596dc-9e18-43e5-884f-70d56c62425d
       version: -1
       name: Create Slack block sending notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -529,9 +510,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: "You have provided invalid response to ${incident_object.incidentId}
-          \n Incident notification. We will resend the notification for Incident ${incident_object.incidentId}
-          respond with valid details when slack message lifetime expires.\nRegards."
+        simple: "You have provided invalid response to ${incident_object.incidentId} \n Incident notification. We will resend the notification for Incident ${incident_object.incidentId} respond with valid details when slack message lifetime expires.\nRegards."
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -629,6 +608,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -664,11 +644,7 @@ tasks:
       id: f4a07585-b29b-433c-8c6d-9960361c67f8
       version: -1
       name: Sending notification to ${userSlackEmail}
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -708,6 +684,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -881,6 +858,9 @@ tasks:
       id: 29ed342a-8e51-4b16-87d0-2799f1738668
       version: -1
       name: Send slack notificaton to user
+<<<<<<< HEAD
+      description: '"Send Slack Notification to User" playbook is designed to notify a user via Slack and handle their response. It begins by sending a Slack notification to a specified email using the SlackBlockBuilder script. Afterward, it waits for the user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once the response is received, it is inserted into the incident''s context. If there is an error in generating the Slack block, the incident is added for a re-run. Finally, the playbook extracts the user''s response from the Slack block state for further processing.'
+=======
       description: 'The "Send Slack Notification to User" playbook is designed to notify
         a user via Slack and handle their response. It begins by sending a Slack notification
         to a specified email using the SlackBlockBuilder script. Afterwards, it waits
@@ -889,6 +869,7 @@ tasks:
         context. If there is an error in generating the Slack block, the incident
         is added for a re-run. Finally, the playbook extracts the user''s response
         from the Slack block state for further processing.'
+>>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
       playbookName: DSPM Send Slack Notification to User
       type: playbook
       iscommand: false
@@ -936,14 +917,7 @@ tasks:
       id: d7fcd3f0-c218-42b8-8a75-9b362fe64e02
       version: -1
       name: Invalid response sending notification to user again
-      description: '"Send Slack Notification to User" playbook is designed to notify
-        a user via Slack and handle their response. It begins by sending a Slack notification
-        to a specified email using the SlackBlockBuilder script. Afterward, it waits
-        for the user''s response until a predefined time, as configured in Prisma
-        Cloud DSPM. Once the response is received, it is inserted into the incident''s
-        context. If there is an error in generating the Slack block, the incident
-        is added for a re-run. Finally, the playbook extracts the user''s response
-        from the Slack block state for further processing.'
+      description: '"Send Slack Notification to User" playbook is designed to notify a user via Slack and handle their response. It begins by sending a Slack notification to a specified email using the SlackBlockBuilder script. Afterward, it waits for the user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once the response is received, it is inserted into the incident''s context. If there is an error in generating the Slack block, the incident is added for a re-run. Finally, the playbook extracts the user''s response from the Slack block state for further processing.'
       playbookName: DSPM Send Slack Notification to User
       type: playbook
       iscommand: false
@@ -990,6 +964,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "51"
@@ -1020,6 +995,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -1050,6 +1026,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "74"
@@ -1080,6 +1057,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "67"
@@ -1106,11 +1084,11 @@ tasks:
     task:
       id: e3a47e3c-b10c-4ce1-8796-9a21c8db208a
       version: -1
-      name: Send an invalid response notification to the user and resend the remediation
-        notification form to the user
+      name: Send an invalid response notification to the user and resend the remediation notification form to the user
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -1138,8 +1116,7 @@ tasks:
       id: ce05f4a4-1133-4f7e-8146-833311d11a37
       version: -1
       name: Is Slack Integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1536,21 +1513,20 @@ inputs:
   value:
     simple: sachin.indoriya@metronlabs.com
   required: true
-  description: In the event that the risk asset tag is absent, the risk notice will
-    be sent to this Slack user email address.
-  playbookInputQuery: null
+  description: In the event that the risk asset tag is absent, the risk notice will be sent to this Slack user email address.
+  playbookInputQuery:
 - key: slackMessageLifetime
   value:
     simple: "300"
   required: false
   description: Lifetime for slack notification (in seconds)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: rerunTime
   value:
     simple: "24"
   required: false
   description: Incident re-run time (in hours)
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - defaultSlackUserName
@@ -1563,5 +1539,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-dirtyInputs: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

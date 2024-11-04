@@ -1,12 +1,7 @@
 id: DSPM Re-run incident
 version: -1
 name: DSPM Re-run incident
-description: The "DSPM Re-run Incident" playbook is designed to automatically re-run
-  DSPM incidents. It starts by executing the RerunDSPMIncidents task, which reinitiates
-  the incidents for further investigation or processing. After completing this task,
-  the playbook proceeds to close the current incident using the closeInvestigation
-  script. This playbook ensures that DSPM incidents can be efficiently retried and
-  closed upon completion.
+description: The "DSPM Re-run Incident" playbook is designed to automatically re-run DSPM incidents. It starts by executing the RerunDSPMIncidents task, which reinitiates the incidents for further investigation or processing. After completing this task, the playbook proceeds to close the current incident using the closeInvestigation script. This playbook ensures that DSPM incidents can be efficiently retried and closed upon completion.
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -117,6 +113,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -151,7 +148,7 @@ inputs:
     simple: "24"
   required: false
   description: Incident re-run time (in hours)
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - rerunTime
@@ -162,4 +159,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-dirtyInputs: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

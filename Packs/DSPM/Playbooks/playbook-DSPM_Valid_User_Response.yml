@@ -1,13 +1,7 @@
-id: 08655808-4525-45cd-8540-48e7d75e6610
-version: 36
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM Valid User Response
+version: -1
 name: DSPM Valid User Response
-description: The DSPM Valid User Response playbook is designed to assess and manage
-  user responses to DSPM-identified risks. It checks the user’s selected action (e.g.,
-  creating a Jira ticket or remediating specific risk types) and initiates the appropriate
-  remediation or notification workflows. If no user response is received, the playbook
-  logs the incident for future action, ensuring comprehensive tracking and response
-  handling for DSPM incidents.
+description: The DSPM Valid User Response playbook is designed to assess and manage user responses to DSPM-identified risks. It checks the user’s selected action (e.g., creating a Jira ticket or remediating specific risk types) and initiates the appropriate remediation or notification workflows. If no user response is received, the playbook logs the incident for future action, ensuring comprehensive tracking and response handling for DSPM incidents.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -140,11 +135,7 @@ tasks:
       id: 685c33f1-7d4d-4a78-8224-b681e9bd60d5
       version: -1
       name: Send slack notification to ${userSlackEmail}
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -185,6 +176,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -221,6 +213,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -257,6 +250,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -487,6 +481,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -511,11 +506,7 @@ tasks:
       id: cf3b20bb-6049-4052-8f60-ee1340394f88
       version: -1
       name: Create Slack block sending notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -598,6 +589,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -628,6 +620,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
@@ -658,6 +651,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "74"
@@ -688,6 +682,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "68"
@@ -715,8 +710,12 @@ tasks:
       id: ec22cd28-8fef-4c86-85fd-92a5cf6a0494
       version: -1
       name: Is Jira Integration Available?
+<<<<<<< HEAD
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+=======
       description: Returns 'yes' if an integration brand is available. Otherwise returns
         'no'.
+>>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -753,11 +752,7 @@ tasks:
       id: ef6c25cc-93bd-4dbd-846b-31376eb2154f
       version: -1
       name: Create Slack block for sending error message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -924,7 +919,7 @@ inputs:
   value: {}
   required: false
   description: Incident re-run time (in hours)
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - rerunTime
@@ -935,5 +930,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-dirtyInputs: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

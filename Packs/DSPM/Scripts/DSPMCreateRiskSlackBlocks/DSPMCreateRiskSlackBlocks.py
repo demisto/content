@@ -124,7 +124,7 @@ def create_slack_block(incident: dict, rule_names_list: list, incidentLink: str)
             elements.insert(0, {
                 "text": {
                     "type": "plain_text",
-                    "text": "Remediate a Risk",
+                    "text": f"Remediate a Risk - {rule_names_list.get(rule_name)}",
                     "emoji": True
                 },
                 "value": "Remediate a Risk"
@@ -150,10 +150,10 @@ def main():  # pragma: no cover
     Returns:
         None: Results are returned via demisto.results() and CommandResults().
     """
-    rule_names_list = [
-        "Sensitive asset open to world",
-        "Empty storage asset"
-    ]
+    rule_names_list = {
+        "Sensitive asset open to world": "This action will block the public access of the bucket or container",
+        "Empty storage asset": "This action will delete the bucket or storage account in case of Azure"
+    }
     try:
         incident = demisto.args().get("dspmIncident")
         incidentLink = demisto.args().get("incidentLink")

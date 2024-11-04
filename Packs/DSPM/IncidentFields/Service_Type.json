@@ -14,7 +14,7 @@
     "vcShouldKeepItemLegacyProdMachine": false,
     "commitMessage": "Field edited",
     "shouldCommit": true,
-    "name": "serviceType",
+    "name": "Service Type",
     "prevName": "",
     "ownerOnly": false,
     "placeholder": "",

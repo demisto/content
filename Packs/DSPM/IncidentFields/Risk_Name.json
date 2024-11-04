@@ -14,7 +14,7 @@
     "vcShouldKeepItemLegacyProdMachine": false,
     "commitMessage": "Field edited",
     "shouldCommit": true,
-    "name": "riskName",
+    "name": "Risk Name",
     "prevName": "",
     "ownerOnly": false,
     "placeholder": "",

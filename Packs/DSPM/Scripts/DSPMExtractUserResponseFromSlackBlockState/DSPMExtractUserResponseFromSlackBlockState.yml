@@ -10,8 +10,10 @@ enabled: true
 args:
 - name: incident_data
   required: true
+  description: Incident data of a specific asset.
   isArray: true
 - name: SlackBlockState
+  description: The state of the response from the user will be stored under this context path.
 outputs:
 - contextPath: User.Action
 - contextPath: User.JiraProjectName

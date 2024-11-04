@@ -1,9 +1,7 @@
-id: 69a93ff8-cb41-4514-8c2e-53fe46eadf40
-version: 51
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM notify user in case of error
+version: -1
 name: DSPM notify user in case of error
-description: The DSPM Notify User in Case of Error playbook is designed to handle
-  errors in DSPM incidents by notifying users and managing Slack notifications.
+description: The DSPM Notify User in Case of Error playbook is designed to handle errors in DSPM incidents by notifying users and managing Slack notifications.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -43,11 +42,7 @@ tasks:
       id: 59a386e5-91d5-440e-8b80-77b27d0b122a
       version: -1
       name: Sending slack notification to ${userSlackEmail}.
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -161,8 +156,7 @@ tasks:
       id: 55328e01-0ad8-4cb1-8a58-e7094f15181a
       version: -1
       name: Check Error message is set or not?
-      description: Checks an object for an empty value and returns a pre-set default
-        value.
+      description: Checks an object for an empty value and returns a pre-set default value.
       scriptName: SetIfEmpty
       type: regular
       iscommand: false
@@ -174,8 +168,7 @@ tasks:
       applyIfEmpty:
         simple: "true"
       defaultValue:
-        simple: It will re-run again as per the time you have provided in lifetime
-          for slack notification.
+        simple: It will re-run again as per the time you have provided in lifetime for slack notification.
       value:
         simple: ${OnError.Message}
     separatecontext: false
@@ -202,11 +195,7 @@ tasks:
       id: 5ca3a01d-86c4-4a41-8e2c-b060e5d5e709
       version: -1
       name: Create a slack block to send error notification to user
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -218,8 +207,7 @@ tasks:
       incidentLink:
         simple: ${demistoUrls.investigation}
       message:
-        simple: 'There is an error while running playbook for incident ${incident.id}
-          . Error message: ${OnError.Message}.'
+        simple: 'There is an error while running playbook for incident ${incident.id} . Error message: ${OnError.Message}.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -554,6 +542,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -666,7 +655,7 @@ inputs:
   value: {}
   required: false
   description: Incident re-run time (in hours)
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - rerunTime
@@ -678,4 +667,5 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 quiet: true
-dirtyInputs: true
+tests:
+- No tests (auto formatted)

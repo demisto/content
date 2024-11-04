@@ -14,7 +14,7 @@
     "vcShouldKeepItemLegacyProdMachine": false,
     "commitMessage": "Field edited",
     "shouldCommit": true,
-    "name": "remediateSteps",
+    "name": "Remediation Steps",
     "prevName": "",
     "ownerOnly": false,
     "placeholder": "",

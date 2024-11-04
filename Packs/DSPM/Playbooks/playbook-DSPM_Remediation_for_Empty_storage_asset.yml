@@ -1,12 +1,7 @@
-id: e0f37ddb-21de-40f7-89cf-58d51ac7f00f
-version: 27
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM Remediation playbook for Empty storage asset
+version: -1
 name: DSPM Remediation playbook for Empty storage asset
-description: This playbook is designed to remediate risks associated with empty storage
-  assets across AWS, Azure, and GCP environments. It identifies the cloud provider
-  for the asset and proceeds to delete the storage container or bucket accordingly.
-  Additionally, it sends notifications via Slack to inform stakeholders about the
-  status of the remediation process.
+description: This playbook is designed to remediate risks associated with empty storage assets across AWS, Azure, and GCP environments. It identifies the cloud provider for the asset and proceeds to delete the storage container or bucket accordingly. Additionally, it sends notifications via Slack to inform stakeholders about the status of the remediation process.
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -118,8 +114,7 @@ tasks:
       id: a1eb5f6f-ebee-4ea1-81a5-c7ec67da1c93
       version: -1
       name: Check the Cloud Provider of asset
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -185,8 +180,7 @@ tasks:
       id: 2c9ea910-890d-4186-80b9-0c853a6e1e0f
       version: -1
       name: Is AWS - S3 Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -223,8 +217,7 @@ tasks:
       id: c7fd530d-4233-4e22-8947-a9bcebf16aad
       version: -1
       name: Is Google Cloud Storage Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -264,6 +257,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -294,6 +288,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -324,6 +319,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -351,9 +347,7 @@ tasks:
       id: 7e515977-87dc-4ff8-8580-6b61b6e802cd
       version: -1
       name: Have you encountered any errors with mitigating asset risk?
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -430,9 +424,7 @@ tasks:
       id: 92f42624-1d64-47a0-8ad1-fdf547e4a6b7
       version: -1
       name: Have encountered any errors while updating risk status on DSPM portal?
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -506,6 +498,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -530,11 +523,7 @@ tasks:
       id: 11e31632-707b-40a9-8c7d-db93b0d4a20e
       version: -1
       name: Create Slack block for sending success message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -550,9 +539,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: "For XSOAR incident ID : ${incident.id} successfully deleted the bucket:
-          ${incident_object.assetName} . Also updated risk: ${incident.riskfindingid}
-          status to 'INVESTIGATION'.\nThanks. "
+        simple: "For XSOAR incident ID : ${incident.id} successfully deleted the bucket: ${incident_object.assetName} . Also updated risk: ${incident.riskfindingid} status to 'INVESTIGATION'.\nThanks. "
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -614,11 +601,7 @@ tasks:
       id: 44952f07-1ad8-4397-8bb7-b0c8db7129ba
       version: -1
       name: Create Slack block for sending error message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -634,9 +617,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: "For XSOAR incident ID : ${incident.id} successfully deleted the bucket:
-          ${incident_object.assetName}. \nBut while updating risk: ${incident.riskfindingid}
-          status to 'INVESTIGATION' got error.\nThanks. "
+        simple: "For XSOAR incident ID : ${incident.id} successfully deleted the bucket: ${incident_object.assetName}. \nBut while updating risk: ${incident.riskfindingid} status to 'INVESTIGATION' got error.\nThanks. "
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -661,11 +642,7 @@ tasks:
       id: 8d07c51f-1039-4a0f-8553-699f0a08ae5c
       version: -1
       name: Create Slack block for sending error message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -681,8 +658,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: 'For XSOAR incident ID : ${incident.id} got error while deleting the
-          bucket: ${incident_object.assetName}.'
+        simple: 'For XSOAR incident ID : ${incident.id} got error while deleting the bucket: ${incident_object.assetName}.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -744,11 +720,7 @@ tasks:
       id: c6ac12fa-ce93-40a1-892f-deb00bc42b7d
       version: -1
       name: Create Slack block for sending error message notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -764,8 +736,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: To remediate the ${incident.assetname} asset risk on ${incident.cloud}
-          pack/integration is not configured on XSOAR instance.
+        simple: To remediate the ${incident.assetname} asset risk on ${incident.cloud} pack/integration is not configured on XSOAR instance.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -874,11 +845,7 @@ tasks:
       id: 926aac14-f5ca-41d7-8509-9e0f8dd599fa
       version: -1
       name: Create Slack block for Azure Empty Storage notification
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -894,8 +861,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: 'For XSOAR incident ID : ${incident.id} You need to delete the storage
-          account -  ${incident.assetname} in order to remediate the risk. Thanks.'
+        simple: 'For XSOAR incident ID : ${incident.id} You need to delete the storage account -  ${incident.assetname} in order to remediate the risk. Thanks.'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -926,4 +892,6 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: c7f9a77b-18e3-45ca-8307-b39035938abe
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

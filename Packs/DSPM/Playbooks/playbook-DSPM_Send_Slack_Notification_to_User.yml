@@ -1,15 +1,7 @@
-id: 6a3fa6e0-3a7d-49d7-8f9a-ca5843674e13
-version: 60
-vcShouldKeepItemLegacyProdMachine: false
+id: DSPM Send Slack Notification to User
+version: -1
 name: DSPM Send Slack Notification to User
-description: '"Send Slack Notification to User" playbook is designed to notify a user
-  via Slack and handle their response. It begins by sending a Slack notification to
-  a specified email using the SlackBlockBuilder script. Afterward, it waits for the
-  user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once
-  the response is received, it is inserted into the incident''s context. If there
-  is an error in generating the Slack block, the incident is added for a re-run. Finally,
-  the playbook extracts the user''s response from the Slack block state for further
-  processing.'
+description: '"Send Slack Notification to User" playbook is designed to notify a user via Slack and handle their response. It begins by sending a Slack notification to a specified email using the SlackBlockBuilder script. Afterward, it waits for the user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once the response is received, it is inserted into the incident''s context. If there is an error in generating the Slack block, the incident is added for a re-run. Finally, the playbook extracts the user''s response from the Slack block state for further processing.'
 starttaskid: "0"
 tasks:
   "0":
@@ -22,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -49,11 +42,7 @@ tasks:
       id: 1dbc2248-59af-4438-8c5d-c879f7417ff1
       version: -1
       name: Send slack notification to ${userSlackEmail}
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -92,8 +81,7 @@ tasks:
       id: 539591aa-46fd-4790-84f3-a7f9afea2480
       version: -1
       name: ' Get SlackBlockBuilder response and insert it into an incident''s context.'
-      description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response
-        and insert it into an incident's context.
+      description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response and insert it into an incident's context.
       scriptName: GetSlackBlockBuilderResponse
       type: regular
       iscommand: false
@@ -125,11 +113,8 @@ tasks:
     task:
       id: a6d0526e-0da1-4296-8879-2531e894d744
       version: -1
-      name: 'Are errors occurred when generating the Slack block list for the incident
-        ID : ${incident_object.id}'
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      name: 'Are errors occurred when generating the Slack block list for the incident ID : ${incident_object.id}'
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -202,11 +187,7 @@ tasks:
       id: 64feb165-fa4b-4923-84e0-022b4882fbc8
       version: -1
       name: Create a Slackblock list to send a user notification displaying risk information.
-      description: This XSOAR automation script generates a Slack message block to
-        notify users of risks detected by a Data Security Posture Management (DSPM)
-        tool. The Slack block is dynamically constructed based on the details of the
-        security incident and includes options for users to take specific actions,
-        such as creating a Jira ticket or remediating the risk.
+      description: This XSOAR automation script generates a Slack message block to notify users of risks detected by a Data Security Posture Management (DSPM) tool. The Slack block is dynamically constructed based on the details of the security incident and includes options for users to take specific actions, such as creating a Jira ticket or remediating the risk.
       scriptName: DSPMCreateRiskSlackBlocks
       type: regular
       iscommand: false
@@ -245,9 +226,7 @@ tasks:
       id: a37d93da-381c-48b8-8db0-c258b7b637d6
       version: -1
       name: DSPMCheckAndSetErrorEntries
-      description: This script checks for error entries based on provided entry IDs
-        and returns "yes" if any errors are found or "no" if no errors are present.
-        If errors are detected, it sets the error messages in the XSOAR context.
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
       scriptName: DSPMCheckAndSetErrorEntries
       type: condition
       iscommand: false
@@ -285,11 +264,7 @@ tasks:
       id: fd7c9d0b-548b-4926-8d3c-c8f30a2d9a54
       version: -1
       name: sending notification to ${userSlackEmail}
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -326,8 +301,7 @@ tasks:
       id: 35dbf5f1-b398-4548-8881-7baf66a6ac46
       version: -1
       name: DSPM notify user in case of error
-      description: The DSPM Notify User in Case of Error playbook is designed to handle
-        errors in DSPM incidents by notifying users and managing Slack notifications.
+      description: The DSPM Notify User in Case of Error playbook is designed to handle errors in DSPM incidents by notifying users and managing Slack notifications.
       playbookName: DSPM notify user in case of error
       type: playbook
       iscommand: false
@@ -370,6 +344,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -640,11 +615,7 @@ tasks:
       id: b3fac38b-c75f-4944-8d95-96114190d24d
       version: -1
       name: Create Slack block sending notification to user.
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
       scriptName: DSPMCreateSimpleSlackMessageBlock
       type: regular
       iscommand: false
@@ -660,9 +631,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       message:
-        simple: "You have provided invalid response to ${incident_object.incidentId}
-          \n Incident notification. Resending the notification for Incident ${incident_object.incidentId}
-          respond with valid details.\nRegards."
+        simple: "You have provided invalid response to ${incident_object.incidentId} \n Incident notification. Resending the notification for Incident ${incident_object.incidentId} respond with valid details.\nRegards."
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -760,8 +729,7 @@ tasks:
     task:
       id: 81b393a6-f760-4046-80e6-3943fd1233f9
       version: -1
-      name: Waiting for user replay till the set time in Prisma Cloud DSPM instance
-        configuration.
+      name: Waiting for user replay till the set time in Prisma Cloud DSPM instance configuration.
       description: Sleep for X seconds.
       scriptName: Sleep
       type: regular
@@ -800,6 +768,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -830,6 +799,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -948,17 +918,17 @@ inputs:
     simple: slack
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: rerunTime
   value: {}
   required: false
   description: Incident re-run time (in hours)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: slackMessageLifetime
   value: {}
   required: false
   description: Lifetime for slack notification (in seconds)
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - flowPath
@@ -972,4 +942,6 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 quiet: true
-dirtyInputs: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
