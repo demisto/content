@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-id: DSPM Remediation playbook for Sensitive asset open to world.
+id: DSPM Remediation playbook for Sensitive asset open to world
 version: -1
-name: DSPM Remediation playbook for Sensitive asset open to world.
-description: 'The DSPM Remediation Playbook for Sensitive Asset Open to World is designed to handle incidents where sensitive assets are exposed to the public, with specific focus on remediating this vulnerability across different cloud providers (AWS). Below is an overview of the key steps and actions included in this playbook:.'
-=======
-id: c7f9a77b-18e3-45ca-8307-b39035938abe
-version: 34
-vcShouldKeepItemLegacyProdMachine: false
 name: DSPM Remediation playbook for Sensitive asset open to world
-description: 'The DSPM Remediation playbook for Sensitive Asset Open to World is designed
-  to handle incidents where sensitive assets are exposed to the public, with specific
-  focus on remediating this vulnerability across several cloud providers(for example AWS).'
->>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
+description: "The DSPM Remediation playbook for Sensitive Asset Open to World is designed to handle incidents where sensitive assets are exposed to the public, with specific focus on remediating this vulnerability across several cloud providers(for example AWS)."
 starttaskid: "0"
 tasks:
   "0":
@@ -349,12 +339,7 @@ tasks:
       name: |-
         Is Azure Storage Container
          Integration Available?
-<<<<<<< HEAD
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
-=======
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
->>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
+      description: Returns 'yes' if an integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -391,12 +376,7 @@ tasks:
       id: 8e675a6a-d3c2-42bd-874d-6fa1180c8821
       version: -1
       name: Is Google Cloud Storage Integration Available?
-<<<<<<< HEAD
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
-=======
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
->>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
+      description: Returns 'yes' if an integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false

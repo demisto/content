@@ -710,12 +710,7 @@ tasks:
       id: ec22cd28-8fef-4c86-85fd-92a5cf6a0494
       version: -1
       name: Is Jira Integration Available?
-<<<<<<< HEAD
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
-=======
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
->>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
+      description: Returns 'yes' if an integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false

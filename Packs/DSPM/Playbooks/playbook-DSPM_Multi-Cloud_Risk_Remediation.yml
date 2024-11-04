@@ -857,19 +857,8 @@ tasks:
     task:
       id: 29ed342a-8e51-4b16-87d0-2799f1738668
       version: -1
-      name: Send slack notificaton to user
-<<<<<<< HEAD
-      description: '"Send Slack Notification to User" playbook is designed to notify a user via Slack and handle their response. It begins by sending a Slack notification to a specified email using the SlackBlockBuilder script. Afterward, it waits for the user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once the response is received, it is inserted into the incident''s context. If there is an error in generating the Slack block, the incident is added for a re-run. Finally, the playbook extracts the user''s response from the Slack block state for further processing.'
-=======
-      description: 'The "Send Slack Notification to User" playbook is designed to notify
-        a user via Slack and handle their response. It begins by sending a Slack notification
-        to a specified email using the SlackBlockBuilder script. Afterwards, it waits
-        for the user''s response until a predefined time, as configured in Prisma
-        Cloud DSPM. Once the response is received, it is inserted into the incident''s
-        context. If there is an error in generating the Slack block, the incident
-        is added for a re-run. Finally, the playbook extracts the user''s response
-        from the Slack block state for further processing.'
->>>>>>> 596a5c36519ccccbde1726e9cc0b1db07d268ec6
+      name: DSPM Send Slack Notification to User
+      description: "The 'Send Slack Notification to User' playbook is designed to notify a user via Slack and handle their response. It begins by sending a Slack notification to a specified email using the SlackBlockBuilder script. Afterwards, it waits for the user's response until a predefined time, as configured in Prisma Cloud DSPM. Once the response is received, it is inserted into the incident's context. If there is an error in generating the Slack block, the incident is added for a re-run. Finally, the playbook extracts the user's response from the Slack block state for further processing."
       playbookName: DSPM Send Slack Notification to User
       type: playbook
       iscommand: false
@@ -916,7 +905,7 @@ tasks:
     task:
       id: d7fcd3f0-c218-42b8-8a75-9b362fe64e02
       version: -1
-      name: Invalid response sending notification to user again
+      name: DSPM Send Slack Notification to User
       description: '"Send Slack Notification to User" playbook is designed to notify a user via Slack and handle their response. It begins by sending a Slack notification to a specified email using the SlackBlockBuilder script. Afterward, it waits for the user''s response until a predefined time, as configured in Prisma Cloud DSPM. Once the response is received, it is inserted into the incident''s context. If there is an error in generating the Slack block, the incident is added for a re-run. Finally, the playbook extracts the user''s response from the Slack block state for further processing.'
       playbookName: DSPM Send Slack Notification to User
       type: playbook
