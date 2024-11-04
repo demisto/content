@@ -50,6 +50,11 @@ configuration:
   type: 0
   additionalinfo: Deprecated.
   defaultvalue:
+- name: blocked_urls
+  display: A list of domains to block.
+  required: false
+  defaultvalue: "cloudflare.com"
+  type: 0
 - name: proxy
   display: Use system proxy settings
   required: false

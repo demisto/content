@@ -67,6 +67,7 @@ INSTANCE_ID = "instance_id"
 CHROME_INSTANCE_OPTIONS = "chrome_options"
 RASTERIZETION_COUNT = "rasteriztion_count"
 
+BLOCKED_URLS = argToList(demisto.params().get('blocked_urls','').lower())
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
@@ -237,19 +238,22 @@ class PychromeEventHandler:
         self.is_mailto = documentURL.lower().startswith('mailto:')
 
         request_url = kwargs.get('request', {}).get('url', '')
-        request_id = kwargs.get('requestId', '')
-        if "cloudflare" in request_url.lower():
+
+        if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.enable()
-            print(f'{request_id=}')
+            demisto.info('Issuing of requestPaused events enabled.')
+
+
 
     def handle_request_paused(self, **kwargs):
-        request_id = kwargs.get('requestId', '')
+        request_id = kwargs.get("requestId")
         request_url = kwargs.get("request").get("url")
 
-        if "cloudflare" in request_url.lower():
+        if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            print(f"Request paused: {request_url} request_id: {request_id}")
+            demisto.info(f"Request paused: {request_url=} , {request_id=}")
             self.tab.Fetch.disable()
+            demisto.info('Issuing of requestPaused events disabled.')
 
 
 # endregion
