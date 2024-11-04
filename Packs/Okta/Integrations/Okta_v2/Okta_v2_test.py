@@ -1137,6 +1137,7 @@ def test_missing_username_and_user_id():
     except Exception as e:
         assert "You must supply either 'Username' or 'userId" in str(e)
 
+
 @patch.object(Client, 'http_request')
 def test_revoke_session(mock_http_request):
     """
