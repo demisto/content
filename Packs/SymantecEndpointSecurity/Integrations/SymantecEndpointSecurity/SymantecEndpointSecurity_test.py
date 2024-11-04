@@ -237,7 +237,7 @@ def test_perform_long_running_loop_unauthorized_token(mocker: MockerFixture):
     )
     mock_get_token = mocker.patch.object(Client, "_update_access_token")
     mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
-    with pytest.raises(Exception, match="Failed to fetch logs from API"):
+    with pytest.raises(DemistoException, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
     assert mock_get_token.call_count == 2
 
@@ -262,7 +262,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
         return_value=mock_integration_context,
     )
     mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
-    with pytest.raises(Exception, match="Failed to fetch logs from API"):
+    with pytest.raises(DemistoException, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
     assert mock_integration_context == {}
 
@@ -357,7 +357,7 @@ def test_get_events_command_with_raises(
 def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
     """
     Given:
-        - The `sleep_if_necessary` function is called
+        - Mocked time passed duration
     When:
         - The function is called
     Then:

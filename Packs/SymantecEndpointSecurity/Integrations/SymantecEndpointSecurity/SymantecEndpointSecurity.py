@@ -15,6 +15,7 @@ VENDOR = "symantec"
 PRODUCT = "endpoint_security"
 DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 class UnauthorizedToken(Exception):
@@ -91,11 +92,11 @@ class Client(BaseClient):
             "Accept-Encoding": "gzip",
         }
 
-    def get_events(self, payload: dict[str, str]) -> str:
+    def get_events(self, payload: dict[str, str]) -> dict:
         """
         API call in streaming to fetch events
         """
-        return self._http_request(
+        res = self._http_request(
             method="POST",
             url_suffix=f"/v1/event-export/stream/{self.stream_id}/{self.channel_id}",
             json_data=payload,
@@ -103,6 +104,11 @@ class Client(BaseClient):
             resp_type="text",
             headers=self.headers,
         )
+        # Formats a string into a valid JSON array
+        res = res.replace("}\n{", ",")
+        if not res.startswith("["):
+            res = f"[{res}]"
+        return json.loads(res)
 
 
 def sleep_if_necessary(client, start_run: float, end_run: float) -> None:
@@ -121,7 +127,11 @@ def sleep_if_necessary(client, start_run: float, end_run: float) -> None:
     """
     fetch_sleep = client.fetch_interval - (end_run - start_run)
     if fetch_sleep > 0:
+        demisto.debug(f"Sleeping for {fetch_sleep} seconds")
         time.sleep(fetch_sleep)
+        return
+
+    demisto.debug("Not sleeping, next fetch will take place immediately")
 
 
 def normalize_date_format(date_str: str) -> str:
@@ -135,13 +145,11 @@ def normalize_date_format(date_str: str) -> str:
         str: The normalized date string without milliseconds.
     """
     # Parse the original date string with milliseconds
-    original_date = dateparser.parse(date_str)
-    if not original_date:
+    if not (timestamp := dateparser.parse(date_str)):
         raise DemistoException(f"Failed to parse date string: {date_str}")
-    # Convert back to the desired format without milliseconds
-    new_date_str = original_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    return new_date_str
+    # Convert back to the desired format without milliseconds
+    return timestamp.strftime(DATE_FORMAT)
 
 
 def calculate_next_fetch(
@@ -149,7 +157,7 @@ def calculate_next_fetch(
     next_hash: str,
     include_last_fetch_events: bool,
     last_integration_context: dict[str, str],
-):
+) -> None:
     """
     Calculate and update the integration context for the next fetch operation.
 
@@ -186,7 +194,8 @@ def calculate_next_fetch(
         # extend the suspected duplicates list with events from the previous context,
         # to control deduplication across multiple fetches.
         demisto.debug(
-            "The latest event time equals the latest event time from the previous fetch"
+            "The latest event time equals the latest event time from the previous fetch,"
+            " adding the suspect duplicates from last time"
         )
         events_suspected_duplicates.extend(
             last_integration_context.get("events_suspected_duplicates", [])
@@ -199,7 +208,7 @@ def calculate_next_fetch(
         "last_fetch_events": filtered_events if include_last_fetch_events else [],
     }
 
-    demisto.info(f"Updating integration context with new data: {integration_context}")
+    demisto.debug(f"Updating integration context with new data: {integration_context}")
     set_integration_context(integration_context)
 
 
@@ -217,7 +226,7 @@ def parse_event_time(event) -> datetime:
     Parse the event time from the given event dict to datetime object.
     """
     return datetime.strptime(
-        normalize_date_format(event["log_time"]), "%Y-%m-%dT%H:%M:%SZ"
+        normalize_date_format(event["log_time"]), DATE_FORMAT
     )
 
 
@@ -291,11 +300,11 @@ def filter_duplicate_events(
         integration_context.get("events_suspected_duplicates", [])
     )
     latest_event_time = integration_context.get(
-        "latest_event_time", datetime.min.strftime("%Y-%m-%dT%H:%M:%SZ")
-    ) or datetime.min.strftime("%Y-%m-%dT%H:%M:%SZ")
+        "latest_event_time"
+    ) or datetime.min.strftime(DATE_FORMAT)
 
     latest_event_time = datetime.strptime(
-        normalize_date_format(latest_event_time), "%Y-%m-%dT%H:%M:%SZ"
+        normalize_date_format(latest_event_time), DATE_FORMAT
     )
 
     filtered_events: list[dict[str, str]] = []
@@ -304,7 +313,7 @@ def filter_duplicate_events(
         if not is_duplicate(
             event["uuid"],
             datetime.strptime(
-                normalize_date_format(event["log_time"]), "%Y-%m-%dT%H:%M:%SZ"
+                normalize_date_format(event["log_time"]), DATE_FORMAT
             ),
             latest_event_time,
             events_suspected_duplicates,
@@ -315,19 +324,11 @@ def filter_duplicate_events(
     return filtered_events
 
 
-def parse_raw_event_response(raw_res: str) -> dict:
-    raw_res = raw_res.replace("}\n{", ",")
-    if not raw_res.startswith("["):
-        raw_res = f"[{raw_res}]"
-    return json.loads(raw_res)
-
-
-def get_events_command(client: Client, integration_context: dict):
+def get_events_command(client: Client, integration_context: dict) -> None:
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
 
     try:
-        raw_res = client.get_events(payload=next_fetch)
-        json_res = parse_raw_event_response(raw_res)
+        json_res = client.get_events(payload=next_fetch)
     except DemistoException as e:
         if e.res is not None:
             if e.res.status_code == 401:
@@ -422,8 +423,7 @@ def test_module(client: Client) -> str:
             raise DemistoException(
                 "Authorization Error: make sure the Token is correctly set"
             ) from e
-        else:
-            raise DemistoException("Failure in test_module function") from e
+        raise DemistoException("Failure in test_module function") from e
 
     return "ok"
 
