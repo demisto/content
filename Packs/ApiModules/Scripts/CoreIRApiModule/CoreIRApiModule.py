@@ -3726,12 +3726,11 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     alert_id_list = argToList(args.get('alert_ids', []))
     for alert_id in alert_id_list:
         if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
-            raise DemistoException(f"Error: Alert ID {alert_id} is invalid. This issue arises because the playbook is running "
-                                   f"in debug mode, which replaces the original alert ID with a debug alert ID, causing this "
-                                   f"task to fail. To run this"
-                                   f"playbook in debug mode, please update the 'alert_ids' input to the correct real alert ID. "
-                                   f"Alternatively,"
-                                   f"run the playbook on the actual alert (not in debug mode) to ensure task success.")
+            raise DemistoException(f"Error: Alert ID {alert_id} is invalid.This issue arises because the playbook is running in"
+                                   f" debug mode, which replaces the original alert ID with a debug alert ID, causing the task to"
+                                   f" fail. To run this playbook in debug mode, please update the 'alert_ids' value to the real "
+                                   f"alert ID in the relevant task. Alternatively, run the playbook on the actual alert "
+                                   f"(not in debug mode) to ensure task success.")
     events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
