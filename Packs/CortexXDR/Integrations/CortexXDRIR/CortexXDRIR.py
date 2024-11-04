@@ -1017,7 +1017,6 @@ def update_remote_system_command(client, args):
             xsoar_to_xdr_delta = get_update_args(command_args)
             demisto.debug(f"get_update_args after {xsoar_to_xdr_delta=}")
             xsoar_to_xdr_delta['incident_id'] = command_args.remote_incident_id
-            demisto.debug(f'Sending incident with remote ID [{command_args.remote_incident_id}]\n')
 
             # demisto.debug(f"Before checking status {update_args=}")
             ### THIS LINE I DIDNT HANDLED YET
@@ -1026,16 +1025,17 @@ def update_remote_system_command(client, args):
             ###
 
             should_close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
-            demisto.debug(f"update_remote_system_command {should_close_xdr_incident=}")
+            demisto.debug(f"update_remote_system_command: {should_close_xdr_incident=}") # itamar
             if not should_close_xdr_incident:
                 # need to handle this if - cuz update_args not correct now
                 demisto.debug(f"Reverting to previous status {command_args.data.get('status')} , {xsoar_to_xdr_delta=}")
                 xsoar_to_xdr_delta['status'] = command_args.data.get('status')
 
+            demisto.debug(f"before update_incident_command: {xsoar_to_xdr_delta=}")  # itamar
             update_incident_command(client, xsoar_to_xdr_delta)  # updating xdr with the delta
 
             should_close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-            demisto.debug(f"update_remote_system_command {should_close_alerts_in_xdr=}")
+            demisto.debug(f"update_remote_system_command {should_close_alerts_in_xdr=}")  # itamar
 
             # Check all relevant fields for an incident being closed in XSOAR UI
             # demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {should_close_alerts_in_xdr=}")

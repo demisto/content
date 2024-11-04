@@ -3045,28 +3045,23 @@ def reformat_sublist_fields(sublist):
 
 
 def handle_outgoing_incident_owner_sync(update_args):
-    # demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync {update_args=}, sync_owner: {demisto.params().get('sync_owners')}")  # itamar
     if 'owner' in update_args and demisto.params().get('sync_owners'):
         if update_args.get('owner'):
             user_info = demisto.findUser(username=update_args.get('owner'))
-      #      demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync {user_info=}")  # itamar
             if user_info:
                 update_args['assigned_user_mail'] = user_info.get('email')
         else:
-       #      demisto.debug(f"itamar - in handle_outgoing_incident_owner_sync assigned_user_mail = None")  # itamar
             # handle synced unassignment
             update_args['assigned_user_mail'] = None
 
 
 def handle_user_unassignment(update_args):
-    # demisto.debug(f"itamar - in handle_user_unassignment {update_args=}")  # itamar
     if ('assigned_user_mail' in update_args and update_args.get('assigned_user_mail') in ['None', 'null', '', None]) \
         or ('assigned_user_pretty_name' in update_args
             and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
         update_args['unassign_user'] = 'true'
         update_args['assigned_user_mail'] = None
         update_args['assigned_user_pretty_name'] = None
-      #   demisto.debug(f"itamar - in handle_user_unassignment inside if{update_args=}")  # itamar
 
 
 def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
@@ -3101,34 +3096,24 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
 
 
 def handle_outgoing_issue_closure(command_args):
-    demisto.debug(f"handle_outgoing_issue_closure {command_args.remote_incident_id=} data:{command_args.data}, entries: {command_args.entries}, incident_changed: {command_args.incident_changed}, remote_incident_id: {command_args.remote_incident_id}, inc_status: {command_args.inc_status}, delta: {command_args.delta}")
+    demisto.debug(f"handle_outgoing_issue_closure {command_args.remote_incident_id=} data:{command_args.data}, entries: {command_args.entries}, incident_changed: {command_args.incident_changed}, remote_incident_id: {command_args.remote_incident_id}, inc_status: {command_args.inc_status}, delta: {command_args.delta}") # should be removed
     xsoar_to_xdr_delta = command_args.delta
-    # current_xdr_status = command_args.data.get('status') if command_args.data else None
-    # is_xdr_status_is_closed = current_xdr_status in XDR_RESOLVED_STATUS_TO_XSOAR
-    # demisto.debug(f"handle_outgoing_issue_closure - {current_xdr_status=}, {is_xdr_status_is_closed=}")
-    xdr_closed_reason = xsoar_to_xdr_delta.get('close_reason') or xsoar_to_xdr_delta.get('closeReason') or xsoar_to_xdr_delta.get('closeNotes') or xsoar_to_xdr_delta.get('resolve_comment') or xsoar_to_xdr_delta.get('closingUserId')
-    xsoar_closed_reason = command_args.data.get('closeReason') or command_args.data.get('close_reason') or command_args.data.get('closeNotes')
-    is_incident_closed = xdr_closed_reason or xsoar_closed_reason
-    demisto.debug(f"handle_outgoing_issue_closure - {xdr_closed_reason=}, {xsoar_closed_reason=}, {is_incident_closed=}")
-
-    # if is_xdr_closed and not is_xdr_status_is_closed: # not sure that this if is needed
-    #     xsoar_to_xdr_delta['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
-    #     # maybe needed xdr_atgs['status'] = ...
-    #     demisto.debug(f"handle_outgoing_issue_closure inside if, updating status {xsoar_to_xdr_delta['status']=}")  # itamar
-
-
-    # force closing remote incident only if:
-    #   The XSOAR incident is closed
-    #   and the remote incident isn't already closed
-    if command_args.inc_status == 2 and xsoar_closed_reason and not xdr_closed_reason:
+    closed_reason = xsoar_to_xdr_delta.get('close_reason') or xsoar_to_xdr_delta.get('closeReason') or xsoar_to_xdr_delta.get(
+        'closeNotes') or xsoar_to_xdr_delta.get('resolve_comment') or xsoar_to_xdr_delta.get(
+        'closingUserId') or command_args.data.get('closeReason') or command_args.data.get(
+        'close_reason') or command_args.data.get('closeNotes')
+    demisto.debug(f"handle_outgoing_issue_closure: {command_args.remote_incident_id=}  {closed_reason=}")
+    current_xdr_status = command_args.data.get('status') if command_args.data else None
+    #   Closing remote incident if the XSOAR incident is closed and the remote incident isn't already closed
+    if command_args.inc_status == 2 and closed_reason and current_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
         demisto.debug(f"itamar - in handle_outgoing_issue_closure inside first if")  # itamar
         if close_notes := xsoar_to_xdr_delta.get('closeNotes'):
             demisto.debug(f"itamar - in handle_outgoing_issue_closure inside second if")  # itamar
             demisto.debug(f"handle_outgoing_issue_closure {command_args.remote_incident_id=} {close_notes=}")
             xsoar_to_xdr_delta['resolve_comment'] = close_notes
 
-        demisto.debug(f"itamar - calling resolve_xdr_close_reason {xdr_closed_reason=}")  # itamar
-        xsoar_to_xdr_delta['status'] = resolve_xdr_close_reason(xdr_closed_reason) # must check if what i pass as argument is right!!!
+        demisto.debug(f"itamar - calling resolve_xdr_close_reason {xsoar_to_xdr_delta=}, {closed_reason=}")  # itamar
+        xsoar_to_xdr_delta['status'] = resolve_xdr_close_reason(closed_reason) # must check if what i pass as argument is right!!!
         demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident ID: {command_args.remote_incident_id} with status {xsoar_to_xdr_delta['status']}")
 
 
