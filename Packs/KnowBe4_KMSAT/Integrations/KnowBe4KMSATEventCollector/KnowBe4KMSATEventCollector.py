@@ -105,27 +105,34 @@ def fetch_events(client: Client, first_fetch_time: Optional[datetime] = datetime
     """
     Fetches events from the KnowBe4_KMSAT queue.
     """
+    demisto.debug(f"starting fetch, lastrun is {last_run}")
     query_params = {'page': 1, 'per_page': 100}
     events: List[Dict] = []
     if not last_run and first_fetch_time:
+        demisto.debug(f"setting start time to be: {first_fetch_time}")
         last_run['latest_event_time'] = first_fetch_time
     elif type(last_run.get('latest_event_time')) == str:
         last_run['latest_event_time'] = parse_date_string(last_run.get('latest_event_time'))
     while True:
         response = client.get_events_request(params=query_params).json()
         fetched_events = response.get('data') or []
+        fetched_events = []
         if not fetched_events:
+            demisto.debug("no events fetched at all")
             break
         demisto.info(f'fetched events length: ({len(fetched_events)})')
         demisto.debug(f'fetched events: ({fetched_events})')
         is_last_run_reached = check_if_last_run_reached(last_run, fetched_events[-1])
         if not response.get('meta', {}).get('next_page') or is_last_run_reached:
             events.extend(eliminate_duplicated_events(fetched_events, last_run))
+            demisto.debug(f"after removing duplicates, we have {len(events)} events.")
             break
         else:
+            demisto.debug(f"still bringing more data because: next page is: {response.get('meta', {}).get('next_page')} "
+                          f"or last run reached is: {is_last_run_reached}")
             events.extend(fetched_events)
             query_params['page'] = response.get('meta', {}).get('next_page', 1)
-    new_last_run_obj: dict = {'latest_event_time': events[0].get('occurred_date') if events else datetime.now()}
+    new_last_run_obj: dict = {'latest_event_time': events[0].get('occurred_date') if events else timestamp_to_datestring(datetime.now(), is_utc=True)}
     demisto.info(f'Done fetching {len(events)} events, Setting new_last_run = {new_last_run_obj}.')
     return events, new_last_run_obj
 
@@ -159,8 +166,11 @@ def get_events_command(client: Client, args: Dict, vendor: str, product: str) ->
     response = client.get_events_request(params)
     events: List[Dict] = response.json().get('data') or []
     if events:
+        events = []
         if should_push_events:
+            print("will send to xsiam")
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
+            print("done sending to xsiam")
         return CommandResults(
             readable_output=tableToMarkdown(
                 'KnowBe4 KMSAT Logs',
@@ -209,12 +219,15 @@ def main() -> None:  # pragma: no cover
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
             events, last_run = fetch_events(client=client, first_fetch_time=first_fetch_time, last_run=last_run)
+            demisto.debug("fetch send to xsiam")
             send_events_to_xsiam(
                 events,
                 vendor=vendor,
                 product=product
             )
+            demisto.debug(f"fetch done sending to xsiam with lastrun: {last_run}")
             demisto.setLastRun(last_run)
+            demisto.debug("done setting lastrun")
         elif command == 'kms-get-events':
             return_results(get_events_command(
                 client=client, args=args, vendor=vendor, product=product)
