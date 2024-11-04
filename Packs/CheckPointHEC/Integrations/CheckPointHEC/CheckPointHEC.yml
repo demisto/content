@@ -139,12 +139,6 @@ configuration:
   defaultvalue: "1"
   type: 19
   required: false
-- display: Incident type
-  name: incidentType
-  type: 13
-- display: Fetch incidents
-  name: isFetch
-  type: 8
 description: The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
 display: 'Check Point Harmony Email and Collaboration (HEC)'
 name: CheckPointHEC
