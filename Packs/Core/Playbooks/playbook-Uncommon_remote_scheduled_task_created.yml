@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Uncommon remote scheduled task created
-description: "This playbook is designed to handle the alert \"Uncommon remote scheduled task created\".\n\nPlaybook Stages:\n\nAnalysis:\n\n- The playbook checks if the remote IP is external or has a bad reputation.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n\n- Searches for related XDR alerts to the endpoint using the following MITRE techniques to identify any malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.\n- Searches for related XSIAM agent alerts on the remote endpoint to determine if the creation of the scheduled task is part of an attack pattern.\n- Searches for suspicious command-line parameters indicating a malicious scheduled task.\n\nRemediation:\n\n- Remediation actions will disable the scheduled task and block the malicious IP, and close the alert.\n\nRequirements:\n\nFor response actions, the following integrations are required: \n\n- PAN-OS."
+description: "This playbook handles \"Uncommon remote scheduled task created\" alerts.\n\nPlaybook Stages:\n\nAnalysis:\n\n- The playbook checks if the remote IP is external or has a bad reputation.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n\n- Searches for related XSIAM alerts on the endpoint that use the following MITRE techniques to identify malicious activity: T1202 - Indirect Command Execution, T1021 - Remote Services.\n- Searches for related XSIAM agent alerts on the remote endpoint, to determine if the creation of the scheduled task is part of an attack pattern.\n- Searches for suspicious command-line parameters indicating a malicious scheduled task.\n\nRemediation:\n\n- Remediation actions will disable the scheduled task, block the malicious IP, and close the alert.\n\nRequirements:\n\nFor response actions, the following integrations are required: \n\n- PAN-OS."
 tags:
 - TA0002 - Execution
 - T1053 - Scheduled Task/Job
@@ -499,7 +499,7 @@ tasks:
       id: 25929bfd-f6cd-43f9-87cd-8d0c0caf677d
       version: -1
       name: Disable the malicious scheduled task manually
-      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook failed to disable the scheduled task: ${Core.OriginalAlert.event.scheduled_task_path}\n\nPlease take manual action to disable the scheduled task. "
+      description: "Dear Analyst,\n\nDuring the remediation process the playbook failed to disable the scheduled task: ${Core.OriginalAlert.event.scheduled_task_path}\n\nPlease manually disable this scheduled task."
       type: regular
       iscommand: false
       brand: ""
@@ -922,7 +922,7 @@ tasks:
       id: 951c96f5-d9b9-4a75-802a-da1d01d66810
       version: -1
       name: Analyst decision for suspicious cmd parameters
-      description: Analyst review is required to determine, based on suspicious command-line parameters, whether to take remediation actions  such as disabling the scheduled task and blocking the IP if malicious or to close the alert as a false positive.
+      description: Based on suspicious command line parameters, analyst review is required to determine whether to take remediation actions such as disabling the scheduled task and blocking the IP if malicious, or to close the alert as a false positive.
       type: condition
       iscommand: false
       brand: ""
@@ -1105,7 +1105,7 @@ tasks:
       version: -1
       name: Search for related alerts by name and MITRE Technique
       description: |+
-        This task searches for suspicious alerts related to alert by MITRE techniques that may indicate a compromised endpoint.
+        This task searches by MITRE technique for suspicious related alerts that may indicate a compromised endpoint.
         Focus on identifying alerts associated with the following MITRE techniques from the last 3 hours:
         - T1202 - Indirect Command Execution
         - T1021 - Remote Services
@@ -1267,7 +1267,7 @@ tasks:
       - "23"
     scriptarguments:
       value:
-        simple: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook executed a shell command to disable the following scheduled task: \n${Core.OriginalAlert.event.scheduled_task_path}\n\n"
+        simple: "Dear Analyst,\n\nDuring the remediation process the playbook executed a shell command to disable the following scheduled task: \n${Core.OriginalAlert.event.scheduled_task_path}\n\n"
     separatecontext: false
     continueonerrortype: ""
     view: |-
