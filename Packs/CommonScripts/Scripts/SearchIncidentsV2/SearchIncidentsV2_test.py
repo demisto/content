@@ -304,7 +304,6 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
         assert execute_mock.call_args[0][1] == expected_filtered_args
 
 
-
 @pytest.mark.parametrize('platform, version, link_type, expected_result', [
     ('x2', '', 'alertLink', 'alerts?action:openAlertDetails='),
     ('xsoar', '6.10.0', 'incidentLink', '#/Details/'),
