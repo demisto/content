@@ -105,7 +105,7 @@ tasks:
                   simple: image.png
           accessor: EntryID
       execution-timeout:
-        simple: "3600"
+        simple: "6000"
       incID:
         complex:
           root: CreatedIncidentID
