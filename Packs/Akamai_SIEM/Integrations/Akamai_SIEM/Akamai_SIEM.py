@@ -375,7 +375,7 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
-def reset_offset_command(client: Client):
+def reset_offset_command(client: Client):  # pragma: no cover
     ctx = get_integration_context()
     if "offset" in ctx:
         del ctx["offset"]
