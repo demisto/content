@@ -1,4 +1,3 @@
-###COMMENT TO DELETE!!!!!!!!!!!!!!
 category: Endpoint
 sectionorder:
 - Connect
@@ -3609,4 +3608,4 @@ tests:
 - Test XDR Playbook retrieve file command
 defaultmapperin: Cortex XDR - IR-mapper
 defaultmapperout: Cortex XDR - IR-out-mapper
-fromversion: 5.0.0
+# fromversion: 5.0.0
