@@ -29,10 +29,12 @@ configuration:
   display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - section: Collect
   display: Incident type
   name: incidentType
   type: 13
+  required: false
 - section: Connect
   display: ""
   name: client_id
