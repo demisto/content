@@ -852,7 +852,8 @@ def parse_xsoar_field_name_and_link(xsoar_comment_field: list[str]) -> tuple[str
     Args:
         xsoar_comment_field: list of fields.
     Returns:
-        xsoar field name and bool flag if add a link as a comment.
+        str: xsoar comment field name.
+        bool: whether to append an incident link to the comments.
     """
     if len(xsoar_comment_field) == 1:
         if xsoar_comment_field[0] == "indicator_link":
