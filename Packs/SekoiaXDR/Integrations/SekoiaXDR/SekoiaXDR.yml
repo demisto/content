@@ -955,6 +955,9 @@ script:
       description: ISO format date with timezone, e.g., 2023-03-01T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
       defaultValue: "0"
     description: available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update.
+  - name: get-mapping-fields
+    arguments: []
+    description: This command pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
   - name: sekoia-xdr-list-assets
     arguments:
     - name: limit
@@ -1181,7 +1184,6 @@ script:
   subtype: python3
   ismappable: true
   isremotesyncin: true
-  isremotesyncout: true
   defaultmapperin: Sekoia XDR - Incoming Mapper
   defaultclassifier: Sekoia XDR - Classifier
   isFetchSamples: true

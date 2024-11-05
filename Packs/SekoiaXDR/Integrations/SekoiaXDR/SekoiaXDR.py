@@ -35,8 +35,8 @@ STATUS_TRANSITIONS = {
 MIRROR_DIRECTION = {
     "None": None,
     "Incoming": "In",
-    "Outgoing": "Out",
-    "Incoming and Outgoing": "Both",
+    "Outgoing": None,
+    "Incoming and Outgoing": "In",
 }
 
 
@@ -613,15 +613,10 @@ def fetch_incidents(
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
         alert["mirror_instance"] = demisto.integrationInstance()
-        alert["alert_status"] = alert["status"]["name"]
-        alert["id"] = alert["short_id"]
-        alert["mirrored_id"] = alert["short_id"]
-        alert["mirror_direction"] = MIRROR_DIRECTION.get(str(mirror_direction))
-        demisto.debug(f"Incident field : {alert['alert_status']}")
+        alert["mirrorOut"] = str(mirror_direction) in ["Outgoing", "Incoming and Outgoing"]
         incident["rawJSON"] = json.dumps(alert)
         incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
         incident["dbotMirrorId"] = alert["short_id"]
-        demisto.debug(f"Incident added : {incident}")
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
@@ -665,7 +660,6 @@ def get_remote_data_command(
 
     parsed_args = GetRemoteDataArgs(args)
     alert = client.get_alert(alert_uuid=parsed_args.remote_incident_id)
-    alert["mirrored_id"] = alert["short_id"]
     alert_short_id, alert_status = alert["short_id"], alert["status"]["name"]
     last_update = arg_to_timestamp(
         arg=parsed_args.last_update, arg_name="lastUpdate", required=True
@@ -809,7 +803,19 @@ def update_remote_system_command(client: Client, args):
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
-    pass
+    """
+     this command pulls the remote schema for the different incident types, and their associated incident fields,
+     from the remote system.
+    :return: A list of keys you want to map
+    """
+    sekoia_incident_type_scheme = SchemeTypeMapping(type_name=INCIDENT_TYPE_NAME)
+    for argument, description in SEKOIA_INCIDENT_FIELDS.items():
+        sekoia_incident_type_scheme.add_field(name=argument, description=description)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(sekoia_incident_type_scheme)
+
+    return mapping_response
 
 
 # =========== Mirroring Mechanism ===========
@@ -1456,6 +1462,8 @@ def main() -> None:
             )
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
+        elif command == "get-mapping-fields":
+            return_results(get_mapping_fields_command())
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
