@@ -48,7 +48,7 @@ def test_parse_slack_block_builder_res_remediate_risk():
         mock_set_context.assert_any_call("User.Action", "remediate")
 
 
-def test_parse_slack_block_builder_res_missing_values_key():
+def test_parse_slack_block_builder_res_missing_values_key(capfd):
     SlackBlockState = {
         "values": {
             "radio_buttons_0": {
@@ -58,7 +58,8 @@ def test_parse_slack_block_builder_res_missing_values_key():
     }
 
     with patch("DSPMExtractUserResponseFromSlackBlockState.demisto.setContext") as mock_set_context, \
-            patch("DSPMExtractUserResponseFromSlackBlockState.return_error") as mock_return_error:
+            patch("DSPMExtractUserResponseFromSlackBlockState.return_error") as mock_return_error, \
+            capfd.disabled():
 
         # Run the function with an input that causes an Exception
         parse_slack_block_builder_res(SlackBlockState)
@@ -68,7 +69,8 @@ def test_parse_slack_block_builder_res_missing_values_key():
 
     SlackBlockState = {}
     with patch("DSPMExtractUserResponseFromSlackBlockState.demisto.setContext") as mock_set_context, \
-            patch("DSPMExtractUserResponseFromSlackBlockState.return_error") as mock_return_error:
+            patch("DSPMExtractUserResponseFromSlackBlockState.return_error") as mock_return_error, \
+            capfd.disabled():
 
         # Run the function with an input that causes an Exception
         parse_slack_block_builder_res(SlackBlockState)
