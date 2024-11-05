@@ -116,7 +116,7 @@ def main(args):
     incidentsbiggerthan1mb = []
     incidentswithmorethan500entries = []
 
-    for incident in res.get("data",[]):
+    for incident in res.get("data", []):
         formatted_incident = format_dict_keys(incident)
         if incident["AmountOfEntries"] >= 200:
             incidentswithmorethan500entries.append(formatted_incident)
