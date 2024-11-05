@@ -91,6 +91,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Run as a separate process (protects against memory depletion) |  | False |
 | Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
 | Incidents Fetch Interval |  | False |
+| Skip unparsable emails during fetch incidents | Whether to skip unparsable emails during incident fetching. | False |
 | What time field should we filter incidents by? | Default is to filter by received-time, which works well if the folder is an "Inbox". But for a folder emails are dragged into for attention, if we filter by received-time, out-of-order processing of emails means some are ignored. Filtering by modified-time works better for such a scenario. This works best if any modifications \(such as tagging\) happens before moving the email into the folder, such that the move into the folder is the last modification, and triggers Cortex XSOAR to fetch it as an incident. | False |
 
 ## Fetch Incidents
@@ -1629,13 +1630,25 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> Fetch command </h3></summary>
 
 * If incidents are not being fetched, verify that no `pre-process` rule is configured that might filter some incidents out.
-* "address parts cannot contain CR or LF" error message in the logs means a corrupted email might have failed the process. In order to resolve this, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
+* "address parts cannot contain CR or LF" error message in the logs means a corrupted email might have failed the process. In order to resolve this, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted.
 
 </details>
 
-<details><summary><h3 style={{display: 'inline'}}> General </h3></summary> 
+<details><summary><h3 style={{display: 'inline'}}> Fetching Incidents crash due to unparsable emails </h3></summary>
+If you find that your fetch incidents command is unable to parse a specific invalid email due to various parsing issues, you can follow these steps:
 
-* ews-get-searchable-mailboxes:   
+1. In the instance configuration, navigate to the *Collect* section and click on *Advanced Settings*.
+2. Check the box labeled *Skip unparsable emails during fetch incidents*.
+
+By enabling this option, the integration can catch and skip unparsable emails without causing the fetch incidents command to crash.
+When this parameter is active, a message will appear in the "Fetch History" panel of the instance whenever an unparsable email is recognized and skipped.
+This allows customers to be informed that a specific email was skipped and gives them the opportunity to open a support ticket if necessary.
+
+</details>
+
+<details><summary><h3 style={{display: 'inline'}}> General </h3></summary>
+
+* ews-get-searchable-mailboxes:
 When using the UPN parameter, the command ews-get-searchable-mailboxes runs correctly after assigning RBAC roles requested in the management role header as explained in the [Microsoft Documentation](https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019).
 
 </details>
