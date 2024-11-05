@@ -1423,13 +1423,24 @@ function Remove-EmptyItems {
     param (
         [PSObject]$inputObject
     )
+
     $newDict = @{}
+
     foreach ($property in $inputObject.PSObject.Properties) {
         $value = $property.Value
-        if (-not [string]::IsNullOrWhiteSpace($value) -and -not ($value -is [System.Collections.IEnumerable] -and $value.Count -eq 0)) {
+
+        # Check if the value is not null, whitespace, or an empty collection
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            # Check if it's an IEnumerable (like array or list) and if the collection is not empty
+            if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and $value.Count -eq 0) {
+                continue
+            }
+
+            # If it's not an empty collection, add it to the new dictionary
             $newDict[$property.Name] = $value
         }
     }
+
     return $newDict
 }
 
@@ -1698,10 +1709,10 @@ function EXOGetQuarantineMessageCommand {
     $newResults = @()
 
     if ($raw_response -is [System.Collections.IEnumerable]) {
-    # If raw_response is a list, process each dictionary
-    foreach ($item in $raw_response) {
-        $newResults += Remove-EmptyItems $item
-    }
+        # If raw_response is a list, process each dictionary
+        foreach ($item in $raw_response) {
+            $newResults += Remove-EmptyItems $item
+        }
     } elseif ($raw_response -Is [Hashtable]) {
         # If input is a single dictionary, process it directly
         $newResults = Remove-EmptyItems $raw_response
