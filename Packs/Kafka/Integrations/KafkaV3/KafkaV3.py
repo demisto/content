@@ -37,7 +37,8 @@ class KafkaCommunicator:
 
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
-    POLL_TIMEOUT: float = 5.0
+    POLL_TIMEOUT: float = 10.0  # Increased from 1.0 to prevent frequent 'No results' responses in the splunk-consume-msg command,
+                                # which caused test playbook failures in builds.
     MAX_POLLS_FOR_LOG: int = 100
 
     def __init__(self, brokers: str, use_ssl: bool, plain_password: Optional[str] = None, plain_username: Optional[str] = None,
@@ -102,20 +103,19 @@ class KafkaCommunicator:
             if self.ca_path:
                 client_dict.update({'ssl.ca.location': self.ca_path, 'ssl.certificate.location': self.client_cert_path,
                                     'ssl.key.location': self.client_key_path, 'security.protocol': 'ssl'})
-            else:
-                # ca_cert
+                # temporary creating ca certification file
                 with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
                     self.ca_path = ca_descriptor.name
                     ca_descriptor.write(ca_cert)
                 client_dict.update({'ssl.ca.location': self.ca_path})
 
-                # client_cert
+                # temporary creating client certification file
                 with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_cert_descriptor:
                     self.client_cert_path = client_cert_descriptor.name
                     client_cert_descriptor.write(client_cert)
                 client_dict.update({'ssl.certificate.location': self.client_cert_path})
 
-                # client_cert_key
+               # temporary creating client certification's key file
                 with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
                     self.client_key_path = client_key_descriptor.name
                     client_key_descriptor.write(client_cert_key)
@@ -370,7 +370,7 @@ class KafkaCommunicator:
 ''' HELPER FUNCTIONS '''
 
 
-def validate_params(params: dict):
+def validate_params(use_ssl, use_sasl, plain_username, plain_password, brokers, ca_cert, client_cert, client_cert_key):
     """
         The function validates parameters for SSL and SASL_SSL authentication methods and raises an error if any invalid
         configurations are detected.
@@ -382,45 +382,41 @@ def validate_params(params: dict):
 
         The brokers parameter is mandatory for both authentication methods.
     """
-    use_ssl = params.get('use_ssl')
-    use_sasl = params.get('use_sasl')
-    plain_username = params.get('credentials', {}).get('identifier')
-    plain_password = params.get('credentials', {}).get('password')
-    brokers = params.get('brokers')
-    ca_cert = params.get('ca_cert')
-    client_cert = params.get('client_cert')
-    client_cert_key = params.get('client_cert_key')
+    
     # Check if brokers are provided
     if not brokers:
         raise DemistoException('Please specify a CSV list of Kafka brokers to connect to.')
 
+
+    # Helper function to check for missing parameters
+    def check_missing_params(params, missing):
+        for param, param_name in params:
+            if not param:
+                missing.append(param_name)
+
+
+    missing = []
+
+
     # Check SSL requirements
     if use_ssl and not use_sasl:
-        missing = []
-        if not ca_cert:
-            missing.append('CA certificate of Kafka server (.cer)')
-        if not client_cert:
-            missing.append('Client certificate (.cer)')
-        if not client_cert_key:
-            missing.append('Client certificate key (.key)')
-        if missing:
-            missing_items = ', '.join(missing)
-            raise DemistoException(
-                f"When using SSL, the following are required: {missing_items}. Please provide them.")
+        ssl_params = [(ca_cert, 'CA certificate of Kafka server (.cer)'),
+                      (client_cert, 'Client certificate (.cer)'),
+                      (client_cert_key, 'Client certificate key (.key)')]
+        check_missing_params(ssl_params, missing)
 
-    # Check SASL_SSL requirements
+
+    # Check SASL_PLAIN requirements
     elif use_sasl:
-        missing = []
-        if not plain_username:
-            missing.append('SASL PLAIN Username')
-        if not plain_password:
-            missing.append('SASL PLAIN Password')
-        if not ca_cert:
-            missing.append('CA certificate of Kafka server (.cer)')
-        if missing:
-            missing_items = ', '.join(missing)
-            raise DemistoException(
-                f"When using SASL PLAIN with SSL, the following are required: {missing_items}. Please provide them.")
+        sasl_params = [(plain_username, 'SASL PLAIN Username'),
+                       (plain_password, 'SASL PLAIN Password'),
+                       (ca_cert, 'CA certificate of Kafka server (.cer)')]
+        check_missing_params(sasl_params, missing)
+
+
+    if missing:
+        missing_items = ', '.join(missing)
+        raise DemistoException(f"Missing required parameters: {missing_items}. Please provide them.")
 
 
 def capture_logs(func: Callable):
@@ -891,7 +887,6 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
 def main():  # pragma: no cover
     demisto_command = demisto.command()
     demisto_params = demisto.params()
-    validate_params(demisto_params)
     demisto_args = demisto.args()
     demisto.debug(f'Command being called is {demisto_command}')
     brokers = demisto_params.get('brokers')
@@ -910,6 +905,8 @@ def main():  # pragma: no cover
     ssl_password = demisto_params.get('additional_password', None)
     plain_username = demisto_params.get('credentials', {}).get('identifier')
     plain_password = demisto_params.get('credentials', {}).get('password')
+    validate_params(use_ssl=use_ssl, use_sasl=use_sasl, plain_username=plain_username, plain_password=plain_password,
+                    brokers=brokers, ca_cert=ca_cert, client_cert=client_cert, client_cert_key=client_cert_key)
 
     kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
                     'use_sasl': use_sasl, 'group_id': group_id,
