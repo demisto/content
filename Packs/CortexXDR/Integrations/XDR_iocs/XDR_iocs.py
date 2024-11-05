@@ -324,7 +324,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
 
     comments = []
     # a regular comment for the given field name, "comments" as a default
-    comment = parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
+    comment = parse_demisto_single_comment(ioc, comment_field_name, comments_as_tags)
     if comment:
         comments.extend(comment)
 
@@ -338,7 +338,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
     return [', '.join(comments)]
 
 
-def parse_demisto_single_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
+def parse_demisto_single_comment(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
     """"
     Parsing xsoar field to xdr from a single value.
     Args:
