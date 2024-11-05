@@ -1,7 +1,12 @@
 import demistomock as demisto
 import SekoiaXDRCloseAlert  # type: ignore
-from SekoiaXDRCloseAlert import get_status_name, get_username, \
-    post_closure_comment, close_alert, main  # type: ignore
+from SekoiaXDRCloseAlert import (
+    get_status_name,
+    get_username,
+    post_closure_comment,
+    close_alert,
+    main,
+)  # type: ignore
 
 
 def test_get_status_name(mocker):
@@ -34,13 +39,13 @@ def test_close_alert(mocker):
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 has been closed. ****"
     )
-    
+
     close_alert("1", "false", "reason", "notes", "admin", None, True)
     assert (
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 has been closed. ****"
     )
-    
+
     close_alert("1", "false", "reason", "notes", "admin", None, False)
     assert (
         demisto.results.call_args[0][0]["Contents"]
@@ -52,13 +57,13 @@ def test_close_alert(mocker):
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 has been rejected. ****"
     )
-    
+
     close_alert("1", "true", "reason", "notes", "admin", None, True)
     assert (
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 has been rejected. ****"
     )
-    
+
     close_alert("1", "true", "reason", "notes", "admin", None, False)
     assert (
         demisto.results.call_args[0][0]["Contents"]

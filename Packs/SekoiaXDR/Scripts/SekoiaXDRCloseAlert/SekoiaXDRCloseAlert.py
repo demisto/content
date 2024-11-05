@@ -42,26 +42,38 @@ def close_alert(
     close_notes: Optional[str],
     username: str,
     mirror_status: str,
-    is_mirror_out: bool
+    is_mirror_out: bool,
 ):
     readable_output = ""
     alert_status = get_status_name(alert_id)
     if alert_status not in ["Closed", "Rejected"]:
         if reject == "false":
             if mirror_status == "In" and is_mirror_out:
-                execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": "Closed"})
+                execute_command(
+                    "sekoia-xdr-update-status-alert",
+                    {"id": alert_id, "status": "Closed"},
+                )
             elif mirror_status is None and is_mirror_out:
                 execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
-                execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": "Closed"})
+                execute_command(
+                    "sekoia-xdr-update-status-alert",
+                    {"id": alert_id, "status": "Closed"},
+                )
             else:
                 execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
             readable_output = f"**** The alert {alert_id} has been closed. ****"
         if reject == "true":
             if mirror_status == "In" and is_mirror_out:
-                execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": "Rejected"})
+                execute_command(
+                    "sekoia-xdr-update-status-alert",
+                    {"id": alert_id, "status": "Rejected"},
+                )
             elif mirror_status is None and is_mirror_out:
                 execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
-                execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": "Rejected"})
+                execute_command(
+                    "sekoia-xdr-update-status-alert",
+                    {"id": alert_id, "status": "Rejected"},
+                )
             else:
                 execute_command("setIncident", {"sekoiaxdralertstatus": "Rejected"})
             readable_output = f"**** The alert {alert_id} has been rejected. ****"
@@ -92,7 +104,7 @@ def main():
     close_notes = demisto.getArg("closeNotes")
     username = demisto.getArg("closingUserId")  # type: ignore
     close_alert(
-        alert_short_id, reject, close_reason, close_notes, username, mirror_direction, is_mirror_out   # type: ignore
+        alert_short_id, reject, close_reason, close_notes, username, mirror_direction, is_mirror_out  # type: ignore
     )
 
 
