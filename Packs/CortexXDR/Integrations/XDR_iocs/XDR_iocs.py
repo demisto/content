@@ -679,10 +679,10 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
         "fields": {
-                      "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
-                      "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-                      Client.xsoar_severity_field: severity,
-                  } | tag_comment_fields,
+            "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
+            "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
+            Client.xsoar_severity_field: severity,
+        } | tag_comment_fields,
         "rawJSON": ioc
     }
     if Client.tlp_color:
@@ -734,7 +734,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     last_run = get_integration_context()
     demisto.debug(f"The integration context inside fetch_indicators is {last_run=}")
     if (((not last_run) or (last_run.get('is_first_sync_phase', False)))
-        and auto_sync):
+            and auto_sync):
         if not last_run:
             sync_time = datetime.now(UTC)
             update_integration_context_override(update_sync_time_with_datetime=sync_time, update_is_first_sync_phase='true')
