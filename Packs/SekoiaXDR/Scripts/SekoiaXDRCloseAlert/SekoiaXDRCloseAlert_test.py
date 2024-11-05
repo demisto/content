@@ -32,13 +32,13 @@ def test_close_alert(mocker):
     close_alert("1", "false", "reason", "notes", "admin", "In", True)
     assert (
         demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 with Both mirror direction has been closed. ****"
+        == "**** The alert 1 has been closed. ****"
     )
 
     close_alert("1", "true", "reason", "notes", "admin", "In", False)
     assert (
         demisto.results.call_args[0][0]["Contents"]
-        == "**** The alert 1 with Incoming mirror direction has been rejected. ****"
+        == "**** The alert 1 has been rejected. ****"
     )
 
 
