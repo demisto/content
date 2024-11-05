@@ -3,9 +3,6 @@ import json
 from datetime import datetime
 from DSPMExtractRiskDetails import set_user_slack_email, get_incident_details_command
 
-# Assuming the functions are imported from the module, like:
-# from your_module import set_user_slack_email, get_incident_details_command
-
 
 def test_set_user_slack_email_with_empty_owner_list():
     # Test case where 'Owner' is an empty list, so default email should be used
@@ -42,6 +39,7 @@ def test_set_user_slack_email_missing_asset_dig_tags():
 
     with patch("demistomock.setContext") as mock_setContext:
         set_user_slack_email(incident_details, defaultSlackUser)
+
         # Expect the default email to be set since 'asset Dig Tags' is missing
         mock_setContext.assert_called_once_with("userSlackEmail", defaultSlackUser)
 
@@ -149,7 +147,6 @@ def test_get_incident_details_command_with_missing_fields():
     assert incident_object["incidentId"] == "12345"
     assert incident_object["riskFindingId"] == "r123"
     assert incident_object["ruleName"] == "High Risk"
-    # Additional assertions can check for handling of missing fields gracefully.
 
 
 def test_get_incident_details_command_with_incorrect_date_format():
@@ -168,4 +165,54 @@ def test_get_incident_details_command_with_incorrect_date_format():
     assert incident_object["incidentId"] == "12345"
     assert incident_object["riskFindingId"] == "r123"
     assert incident_object["ruleName"] == "High Risk"
-    # Optionally, check if an empty or default value is used for 'firstDetectedOn'
+
+
+def test_get_incident_details_command_with_empty_date():
+    # Test with 'firstdetectedon' as an empty string
+    incident_data = {
+        "id": "12345",
+        "riskfindingid": "r123",
+        "riskname": "High Risk",
+        "firstdetectedon": ""
+    }
+
+    args = {"incident_object": incident_data}
+    incident_object = get_incident_details_command(args)
+
+    # Ensure that empty date string is handled gracefully
+    assert incident_object["incidentId"] == "12345"
+    assert incident_object["riskFindingId"] == "r123"
+    assert incident_object["ruleName"] == "High Risk"
+
+
+def test_get_incident_details_command_with_minimal_fields():
+    # Test with only the minimal required fields
+    incident_data = {
+        "id": "12345",
+    }
+
+    args = {"incident_object": incident_data}
+    incident_object = get_incident_details_command(args)
+
+    # Validate presence of defaults or empty values for missing fields
+    assert incident_object["incidentId"] == "12345"
+    assert incident_object.get("riskFindingId") == "N/A"
+    assert incident_object.get("severity") == "N/A"
+    assert incident_object.get("Status") == "N/A"
+
+
+def test_get_incident_details_command_with_unexpected_data_types():
+    # Test with an integer for 'riskname' instead of a string
+    incident_data = {
+        "id": "12345",
+        "riskfindingid": "r123",
+        "riskname": 123  # Unexpected integer type
+    }
+
+    args = {"incident_object": incident_data}
+    incident_object = get_incident_details_command(args)
+
+    # Ensure it handles unexpected types without breaking
+    assert incident_object["incidentId"] == "12345"
+    assert incident_object["riskFindingId"] == "r123"
+    assert isinstance(incident_object["ruleName"], str)

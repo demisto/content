@@ -4,7 +4,7 @@
     "modified": "2024-09-04T11:10:59.700697028Z",
     "name": "DSPM Risk Finding Id",
     "ownerOnly": false,
-    "cliName": "dspmriskfindingid",
+    "cliName": "riskfindingid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

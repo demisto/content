@@ -4,7 +4,7 @@
     "modified": "2024-09-06T13:43:52.173023833Z",
     "name": "DSPM Remediation Description",
     "ownerOnly": false,
-    "cliName": "dspmremediationdescription",
+    "cliName": "remediationdescription",
     "type": "longText",
     "closeForm": false,
     "editForm": true,

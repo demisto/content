@@ -4,7 +4,7 @@
     "modified": "2024-09-10T05:40:33.393918323Z",
     "name": "DSPM Affects",
     "ownerOnly": false,
-    "cliName": "dspmaffects",
+    "cliName": "affects",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

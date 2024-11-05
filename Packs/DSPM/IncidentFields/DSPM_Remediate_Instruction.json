@@ -4,7 +4,7 @@
     "modified": "2024-09-10T05:48:11.743243696Z",
     "name": "DSPM Remediate Instruction",
     "ownerOnly": false,
-    "cliName": "dspmremediateinstruction",
+    "cliName": "remediateinstruction",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

@@ -4,7 +4,7 @@
     "modified": "2024-09-06T14:05:51.932683502Z",
     "name": "DSPM Remediation Steps",
     "ownerOnly": false,
-    "cliName": "dspmremediatesteps",
+    "cliName": "remediatesteps",
     "type": "longText",
     "closeForm": false,
     "editForm": true,

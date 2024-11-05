@@ -4,7 +4,7 @@
     "modified": "2024-09-10T05:42:18.375460266Z",
     "name": "DSPM Investigation Link",
     "ownerOnly": false,
-    "cliName": "dspminvestigationlink",
+    "cliName": "investigationlink",
     "type": "url",
     "closeForm": false,
     "editForm": true,
