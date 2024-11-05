@@ -1,0 +1,1 @@
+TargetObject="*\\CLSID\\{fdb00e52-a214-4aa1-8fba-4357bb0072ec}\\InProcServer32\\(Default)" NOT Details="%windir%\\system32\\amsi.dll"

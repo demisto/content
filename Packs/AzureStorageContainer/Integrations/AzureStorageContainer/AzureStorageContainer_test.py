@@ -7,6 +7,7 @@ ACCOUNT_NAME = "test"
 BASE_URL = f'https://{ACCOUNT_NAME}.blob.core.windows.net/'
 SAS_TOKEN = "XXXX"
 API_VERSION = "2020-10-02"
+SHARED_KEY = "XXXX"
 
 
 def load_mock_response(file_name: str, file_type: str = "json"):
@@ -281,6 +282,55 @@ def test_azure_storage_get_blob_tags_command(requests_mock):
     assert result.outputs_prefix == 'AzureStorageContainer.Container'
     assert result.outputs.get('Blob').get('Tag')[0].get('Key') == 'Name'
     assert result.outputs.get('Blob').get('Tag')[0].get('Value') == 'Azure'
+
+
+def test_azure_storage_block_public_access_command(mocker, requests_mock):
+    """
+    Scenario: Block public access for the specified container.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - azure-storage-container-block-public-access called.
+    Then:
+     - Ensure readable output message content.
+    """
+    from AzureStorageContainer import Client, block_public_access_command
+    params = {
+        'shared_key': {'password': SHARED_KEY},
+        'credentials': {'identifier': ACCOUNT_NAME}
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    container_name = "test"
+    url = f"https://{ACCOUNT_NAME}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
+    requests_mock.put(url, status_code=200, text="")
+    client = Client(server_url=BASE_URL, verify=False, proxy=False,
+                    account_sas_token=SAS_TOKEN,
+                    storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
+    result = block_public_access_command(client, {
+        'container_name': container_name
+    })
+
+    expected_response = f"Public access to container '{container_name}' has been successfully blocked"
+    assert result.readable_output == expected_response
+
+    # Test for invalid shared key
+    with pytest.raises(ValueError, match="Incorrect shared key provided"):
+        # Here we need to set params to have an invalid key
+        invalid_shared_key_params = {
+            'shared_key': {'password': "invalid-key"},
+            'credentials': {'identifier': ACCOUNT_NAME}
+        }
+        mocker.patch.object(demisto, 'params', return_value=invalid_shared_key_params)
+        block_public_access_command(client, {'container_name': container_name})
+
+    # Test for missing shared key
+    with pytest.raises(KeyError, match="The 'shared_key' parameter must be provided."):
+        missing_shared_key_params = {
+            'shared_key': {'password': ""},
+            'credentials': {'identifier': ACCOUNT_NAME}
+        }
+        mocker.patch.object(demisto, 'params', return_value=missing_shared_key_params)
+        block_public_access_command(client, {'container_name': container_name})
 
 
 def test_azure_storage_set_blob_tags_command(requests_mock):

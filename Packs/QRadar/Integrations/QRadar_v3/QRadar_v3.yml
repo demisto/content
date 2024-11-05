@@ -1199,6 +1199,13 @@ script:
       isArray: true
     - name: task_id
       description: The ID of the task that is created to add or update the element in the reference set. The task ID can be used to poll the status of the task by using the 'qradar-tasks-get' command.
+    - name: quiet_mode
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large.
     polling: true
   - name: qradar-geolocations-for-ip
     description: Retrieves the MaxMind GeoIP data for the specified IP address.

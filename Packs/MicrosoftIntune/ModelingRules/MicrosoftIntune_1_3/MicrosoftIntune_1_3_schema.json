@@ -1,5 +1,5 @@
 {
-    "msft_azure_raw": {
+    "msft_intune_raw": {
       "properties": {
           "type": "string",
           "is_array": false

@@ -8,6 +8,7 @@ configuration:
   name: feed
   required: false
   type: 8
+  section: Collect
 - defaultvalue: https://api.github.com
   display: Base URL
   name: url
@@ -31,6 +32,8 @@ configuration:
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: ""
   display: Owner
   name: owner
@@ -66,8 +69,7 @@ configuration:
   required: true
   defaultvalue: main
   additionalinfo: The name of the main branch to which to compare.
-  section: Collect
-  advanced: true
+  section: Connect
 - display: Files extensions to fetch
   name: extensions_to_fetch
   type: 16
@@ -79,7 +81,6 @@ configuration:
   - json
   additionalinfo: The extension of the file names to target.
   section: Collect
-  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -93,6 +94,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -103,27 +105,35 @@ configuration:
   - WHITE
   required: false
   type: 15
+  section: Collect
 - display: First fetch time
   additionalinfo: First commit date of first published indicators to bring. e.g., "1 min ago","2 weeks ago","3 months ago".
   name: fetch_since
   type: 0
   defaultvalue: '90 days ago'
   required: false
+  section: Collect
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   defaultvalue: '240'
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: ''
   name: feedExpirationPolicy
   type: 17
@@ -132,15 +142,40 @@ configuration:
   - never
   - interval
   - indicatorType
+  section: Collect
+  advanced: true
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
+  advanced: true
 - display: Tags
   name: feedTags
   type: 0
   additionalinfo: Supports CSV values.
   required: false
+  section: Collect
+  advanced: true
+- display: Enrichment Excluded
+  name: enrichmentExcluded
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  hidden:
+  - xsoar_on_prem
+  section: Collect
+- name: feedReputation
+  display: Indicator Reputation
+  type: 18
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  section: Collect
 display: Github Feed
 name: Github Feed
 script:
@@ -156,7 +191,7 @@ script:
       name: limit
     description: Gets indicators from the feed within a specified date range and up to a maximum limit..
     name: github-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.107875
+  dockerimage: demisto/taxii2:1.0.0.112358
   feed: true
   isfetch: false
   longRunning: false
@@ -172,3 +207,6 @@ marketplaces:
 - marketplacev2
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect
