@@ -26,7 +26,7 @@ class Handler:
 class ErrorHandler:
     @staticmethod
     def write(msg: str):
-        demisto.error(f'wsgi error: {msg}')
+        demisto.error(f'wsgi error is: {msg}')
 
 
 DEMISTO_LOGGER: Handler = Handler()

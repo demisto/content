@@ -6,7 +6,7 @@ description: This is a generic playbook to be executed for the Splunk Notable Ge
   incident type. The playbook performs all the common parts of the investigation,
   including notifying the SOC, enriching the data for indicators and users, calculating
   the severity, assigning the incident, notifying the SIEM admin for false positives
-  and more.
+  and more...
 id: Splunk Generic
 inputs:
 - description: Determines whether to enrich all indicators in the incident. Default
