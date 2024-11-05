@@ -48,6 +48,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * closeInvestigation
 * core-get-cloud-original-alerts
+* core-get-script-execution-results
 * core-run-script-execute-commands
 * ip
 

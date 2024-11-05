@@ -311,7 +311,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3390
+          "y": 3730
         }
       }
     note: false
@@ -338,7 +338,7 @@ tasks:
       '#error#':
       - "22"
       '#none#':
-      - "67"
+      - "69"
     scriptarguments:
       commands:
         simple: powershell.exe schtasks /change /tn "${Core.OriginalAlert.event.scheduled_task_path}" /disable
@@ -411,7 +411,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3040
+          "y": 3380
         }
       }
     note: false
@@ -481,7 +481,7 @@ tasks:
       {
         "position": {
           "x": -10,
-          "y": 3210
+          "y": 3550
         }
       }
     note: false
@@ -511,8 +511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2720
+          "x": 0,
+          "y": 3070
         }
       }
     note: false
@@ -543,7 +543,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 2900
+          "y": 3240
         }
       }
     note: false
@@ -571,7 +571,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3550
+          "y": 3890
         }
       }
     note: false
@@ -1274,7 +1274,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 2720
+          "y": 3070
         }
       }
     note: false
@@ -1319,6 +1319,86 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: ba4fa808-bf46-4d09-8491-24e0aa59c3ee
+    type: regular
+    task:
+      id: ba4fa808-bf46-4d09-8491-24e0aa59c3ee
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 1666967d-c2af-4352-82f0-0d17d99b391f
+    type: condition
+    task:
+      id: 1666967d-c2af-4352-82f0-0d17d99b391f
+      version: -1
+      name: Has the script disabled the task successfully?
+      description: Verify if the script successfully disabled the task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: AnyMatch
+          left:
+            value:
+              simple: Core.ScriptResult.results.standard_output
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1331,12 +1411,13 @@ view: |-
       "42_43_False Positive": 0.67,
       "66_3_Malicious Cmd parameters": 0.36,
       "66_41_Suspicious Cmd parameters": 0.57,
+      "70_67_yes": 0.52,
       "8_30_#default#": 0.55,
       "8_3_yes": 0.13
     },
     "paper": {
       "dimensions": {
-        "height": 4055,
+        "height": 4395,
         "width": 2060,
         "x": -10,
         "y": -440
