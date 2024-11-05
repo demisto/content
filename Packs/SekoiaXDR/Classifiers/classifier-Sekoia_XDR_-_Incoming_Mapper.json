@@ -43,6 +43,9 @@
 						"transformers": []
 					}
 				},
+                "SekoiaXDR mirrorOut": {
+					"simple": "mirrorOut"
+				},
 				"Source Create time": {
 					"complex": {
 						"filters": [],
