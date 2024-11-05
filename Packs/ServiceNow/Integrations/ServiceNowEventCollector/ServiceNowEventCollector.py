@@ -176,7 +176,7 @@ def process_and_filter_events(events: list, previous_run_ids: set, from_date: st
 """ COMMAND METHODS """
 
 
-def get_events_command(client: Client, args: dict, log_types: list) -> tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict, log_type: str) -> tuple[list, CommandResults]:
     """
 
     Args:
@@ -190,18 +190,15 @@ def get_events_command(client: Client, args: dict, log_types: list) -> tuple[lis
     """
     types_to_titles = {AUDIT: 'Audit', SYSLOG_TRANSACTIONS: 'Syslog Transactions'}
     all_events = []
-    hr = ""
     from_date = args.get("from_date", "")
     offset = args.get("offset", 0)
-    for log_type in log_types:
-        limit = get_limit(args, client, log_type)
-        logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
-        add_time_field(logs, log_type)  # Add the _time field to the events
-
-        demisto.debug(f"Got a total of {len(logs)} events created after {from_date}")
-        hr += tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=logs, removeNull=True,
-                              headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
-        all_events.extend(logs)
+    limit = get_limit(args, client, log_type)
+    logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
+    add_time_field(logs, log_type)
+    demisto.debug(f"Got a total of {len(logs)} events created after {from_date}")
+    hr = tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=logs, removeNull=True,
+                            headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
+    all_events.extend(logs)
 
     return all_events, CommandResults(readable_output=hr)
 
@@ -311,11 +308,18 @@ def main() -> None:  # pragma: no cover
             return_results(module_of_testing(client, log_types))
 
         elif command == "service-now-get-audit-logs":
-            audit_logs, results = get_events_command(client=client, args=args, log_types=log_types)
+            audit_logs, results = get_events_command(client=client, args=args, log_type=AUDIT)
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", "true")):
                 send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+                
+        elif command == "service-now-get-syslog-transactions":
+            syslog_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS)
+            return_results(results)
+
+            if argToBoolean(args.get("should_push_events", "true")):
+                send_events_to_xsiam(syslog_logs, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
@@ -325,7 +329,6 @@ def main() -> None:  # pragma: no cover
             demisto.debug("Done fetching events, sending to XSIAM.")
 
             if events:
-                # add_time_field(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 if next_run:
                     # saves next_run for the time fetch-events is invoked

@@ -95,6 +95,27 @@ script:
     - description: Maximum audit events to fetch. Default is 1000.
       name: limit
       defaultValue: 1000
+    - name: from_date
+      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: offset
+      description: Starting record index from which to begin retrieving records.
+      required: false
+      isArray: false
+      defaultValue: ""
+  - name: service-now-get-syslog-transactions
+    description: Returns syslog transactions events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - "True"
+      - "False"
+      required: true
     - description: Maximum syslog transactions events to fetch. Default is 1000.
       name: max_fetch_syslog_transactions
       defaultValue: 1000

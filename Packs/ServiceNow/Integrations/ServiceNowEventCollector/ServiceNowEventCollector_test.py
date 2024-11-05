@@ -80,7 +80,7 @@ class TestFetchActivity:
         """
 
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 10}
-        log_types = ["audit", "syslog transactions"]
+        log_type = AUDIT
         mock_logs = [{"event_id": 1, "timestamp": "2023-01-01 01:00:00"}]
         http_responses = mocker.patch.object(
             Client,
@@ -89,14 +89,14 @@ class TestFetchActivity:
         )
 
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
-        all_events, command_results = get_events_command(self.client, args, log_types)
+        all_events, command_results = get_events_command(self.client, args, log_type)
 
         assert http_responses.call_args[1] == {"from_time": "2023-01-01T00:00:00Z",
-                                               "log_type": "syslog transactions", "limit": 10, "offset": 0, }
-        assert len(all_events) == 2
+                                               "log_type": "audit", "limit": 10, "offset": 0, }
+        assert len(all_events) == 1
         assert isinstance(command_results.readable_output, str)
         assert "Audit Events" in command_results.readable_output
-        assert "Syslog Transactions Events" in command_results.readable_output
+        assert "Syslog Transactions Events" not in command_results.readable_output
 
     def test_get_events_command_empty_response(self, mocker):
         """
@@ -110,11 +110,11 @@ class TestFetchActivity:
             - Validates that the function returns an empty list and an appropriate human-readable output.
         """
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 10}
-        log_types = ["audit"]
+        log_type = AUDIT
         http_responses = mocker.patch.object(Client, "search_events", return_value=[])
 
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
-        all_events, command_results = get_events_command(self.client, args, log_types)
+        all_events, command_results = get_events_command(self.client, args, log_type)
 
         assert len(all_events) == 0
         assert http_responses.call_count == 1
@@ -134,12 +134,12 @@ class TestFetchActivity:
         from ServiceNowEventCollector import get_events_command
 
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 1000}
-        log_types = ["audit"]
+        log_type = AUDIT
         mock_logs = [{"event_id": i, "timestamp": "2023-01-01 01:00:00"} for i in range(1000)]
         http_responses = mocker.patch.object(Client, "search_events", return_value=mock_logs)
 
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
-        all_events, command_results = get_events_command(self.client, args, log_types)
+        all_events, command_results = get_events_command(self.client, args, log_type)
 
         assert len(all_events) == 1000
         assert "Audit Events" in command_results.readable_output
