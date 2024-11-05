@@ -7,6 +7,7 @@ from XDR_iocs import *
 import pytest
 from freezegun import freeze_time
 
+
 Client.severity = 'INFO'
 client = Client({'url': 'https://example.com'})
 
@@ -111,7 +112,6 @@ class TestGetRequestsKwargs:
             Then:
                 - Verify output format.
         """
-
         def override_open(open_path, *_other):
             return open_path
 
@@ -131,7 +131,7 @@ class TestGetRequestsKwargs:
         _json = {'test': 'test'}
         output = get_requests_kwargs(_json=_json)
         expected_output = {'data': '{"request_data": {"test": "test"}}'}
-        assert output == expected_output, f'get_requests_kwargs(_json={_json})\n\treturns: {output}\n\t instead: {expected_output}'  # noqa: E501
+        assert output == expected_output, f'get_requests_kwargs(_json={_json})\n\treturns: {output}\n\t instead: {expected_output}'     # noqa: E501
 
 
 class TestPrepareCommands:
@@ -147,7 +147,7 @@ class TestPrepareCommands:
 
         ts = int(datetime.now(timezone.utc).timestamp() * 1000)
         url_suffix, _json = prepare_get_changes(ts)
-        assert url_suffix == 'get_changes', f'prepare_get_changes\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: get_changes'  # noqa: E501
+        assert url_suffix == 'get_changes', f'prepare_get_changes\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: get_changes'   # noqa: E501
         assert _json == {'last_update_ts': ts}
 
     def test_prepare_enable_iocs(self):
@@ -158,7 +158,7 @@ class TestPrepareCommands:
                 - Verify url and json format.
         """
         url_suffix, iocs = prepare_enable_iocs('8.8.8.8,domain.com')
-        assert url_suffix == 'enable_iocs', f'prepare_enable_iocs\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: enable_iocs'  # noqa: E501
+        assert url_suffix == 'enable_iocs', f'prepare_enable_iocs\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: enable_iocs'   # noqa: E501
         assert iocs == ['8.8.8.8', 'domain.com']
 
     def test_prepare_disable_iocs(self):
@@ -169,7 +169,7 @@ class TestPrepareCommands:
                 - Verify url and json format.
         """
         url_suffix, iocs = prepare_disable_iocs('8.8.8.8,domain.com')
-        assert url_suffix == 'disable_iocs', f'prepare_disable_iocs\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: disable_iocs'  # noqa: E501
+        assert url_suffix == 'disable_iocs', f'prepare_disable_iocs\n\treturns url_suffix: {url_suffix}\n\tinstead url_suffix: disable_iocs'    # noqa: E501
         assert iocs == ['8.8.8.8', 'domain.com']
 
 
@@ -232,8 +232,7 @@ class TestCreateFile:
             Then:
                 - Verify sync file data.
         """
-        mocker.patch.object(demisto, 'searchIndicators',
-                            return_value=json.loads(self.get_file(f'test_data/{in_iocs}.json')))  # noqa: E501
+        mocker.patch.object(demisto, 'searchIndicators', return_value=json.loads(self.get_file(f'test_data/{in_iocs}.json')))  # noqa: E501
         with tempfile.NamedTemporaryFile(mode='w') as temp_file:
             create_file_sync(temp_file.name)
             data = self.get_file(temp_file.name)
@@ -314,7 +313,7 @@ class TestCreateFile:
             create_file_iocs_to_keep(temp_file.name)
             data = self.get_file(temp_file.name)
         expected_data = self.get_file(f'test_data/{out_iocs}.txt')
-        assert data == expected_data, f'create_file_iocs_to_keep with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'  # noqa: E501
+        assert data == expected_data, f'create_file_iocs_to_keep with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'    # noqa: E501
 
     def test_create_file_iocs_to_keep_all_types(self, mocker):
         """
@@ -334,6 +333,7 @@ class TestCreateFile:
 
 
 class TestDemistoIOCToXDR:
+
     data_test_demisto_expiration_to_xdr = [
         (None, -1),
         ('', -1),
@@ -351,7 +351,7 @@ class TestDemistoIOCToXDR:
         """
 
         output = demisto_expiration_to_xdr(demisto_expiration)
-        assert xdr_expiration == output, f'demisto_expiration_to_xdr({demisto_expiration})\n\treturns: {output}\n\tinstead: {xdr_expiration}'  # noqa: E501
+        assert xdr_expiration == output, f'demisto_expiration_to_xdr({demisto_expiration})\n\treturns: {output}\n\tinstead: {xdr_expiration}'   # noqa: E501
 
     data_test_demisto_reliability_to_xdr = [
         (None, 'F'),
@@ -373,7 +373,7 @@ class TestDemistoIOCToXDR:
         """
 
         output = demisto_reliability_to_xdr(demisto_reliability)
-        assert output == xdr_reliability, f'demisto_reliability_to_xdr({demisto_reliability})\n\treturns: {output}\n\tinstead: {xdr_reliability}'  # noqa: E501
+        assert output == xdr_reliability, f'demisto_reliability_to_xdr({demisto_reliability})\n\treturns: {output}\n\tinstead: {xdr_reliability}'   # noqa: E501
 
     data_test_demisto_types_to_xdr = [
         ('File', 'HASH'),
@@ -494,7 +494,7 @@ class TestDemistoIOCToXDR:
         """
 
         output = demisto_ioc_to_xdr(demisto_ioc)
-        assert output == xdr_ioc, f'demisto_ioc_to_xdr({demisto_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(xdr_ioc)}'  # noqa: E501
+        assert output == xdr_ioc, f'demisto_ioc_to_xdr({demisto_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(xdr_ioc)}'    # noqa: E501
 
     def test_empty_demisto_ioc_to_xdr(self, mocker):
         warnings = mocker.patch.object(demisto, 'debug')
@@ -504,6 +504,7 @@ class TestDemistoIOCToXDR:
 
 
 class TestXDRIOCToDemisto:
+
     data_test_xdr_expiration_to_demisto = [
         (-1, 'Never'),
         (1591142400000, '2020-06-03T00:00:00Z'),
@@ -519,7 +520,7 @@ class TestXDRIOCToDemisto:
                 - expiration in demisto format.
         """
         output = xdr_expiration_to_demisto(xdr_expiration)
-        assert output == demisto_expiration, f'xdr_expiration_to_demisto({xdr_expiration})\n\treturns: {output}\n\tinstead: {demisto_expiration}'  # noqa: E501
+        assert output == demisto_expiration, f'xdr_expiration_to_demisto({xdr_expiration})\n\treturns: {output}\n\tinstead: {demisto_expiration}'    # noqa: E501
 
     data_test_xdr_ioc_to_demisto = [
         (
@@ -528,8 +529,7 @@ class TestXDRIOCToDemisto:
                 'RULE_SEVERITY': 'SEV_010_INFO', 'NUMBER_OF_HITS': 0, 'RULE_SOURCE': 'XSOAR TIM', 'RULE_COMMENT': '',
                 'RULE_STATUS': 'DISABLED', 'BS_STATUS': 'DONE', 'BS_TS': 1591165801230, 'BS_RETRIES': 1,
                 'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'HASH',
-                'RULE_INDICATOR': 'fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e', 'REPUTATION': 'GOOD',
-                # noqa: E501
+                'RULE_INDICATOR': 'fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e', 'REPUTATION': 'GOOD',    # noqa: E501
                 'RELIABILITY': None, 'VENDORS': None, 'KLASS': None, 'IS_DEFAULT_TTL': False, 'RULE_TTL': -1,
                 'MARKED_DELETED': 0
             },
@@ -550,8 +550,7 @@ class TestXDRIOCToDemisto:
                 'RULE_ID': 861, 'RULE_INSERT_TIME': 1591165763753, 'RULE_MODIFY_TIME': 1591166095668,
                 'RULE_SEVERITY': 'SEV_010_INFO', 'NUMBER_OF_HITS': 0, 'RULE_SOURCE': 'XSOAR TIM', 'RULE_COMMENT': '',
                 'RULE_STATUS': 'DISABLED', 'BS_STATUS': 'DONE', 'BS_TS': 1591165801784, 'BS_RETRIES': 1,
-                'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'DOMAIN_NAME', 'RULE_INDICATOR': 'test.com', 'REPUTATION': 'GOOD',
-                # noqa: E501
+                'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'DOMAIN_NAME', 'RULE_INDICATOR': 'test.com', 'REPUTATION': 'GOOD',    # noqa: E501
                 'RELIABILITY': None, 'VENDORS': None, 'KLASS': None, 'IS_DEFAULT_TTL': False, 'RULE_TTL': -1,
                 'MARKED_DELETED': 0
             },
@@ -603,7 +602,7 @@ class TestXDRIOCToDemisto:
         mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         output = xdr_ioc_to_demisto(xdr_ioc)
         del output['rawJSON']
-        assert output == demisto_ioc, f'xdr_ioc_to_demisto({xdr_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'  # noqa: E501
+        assert output == demisto_ioc, f'xdr_ioc_to_demisto({xdr_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'    # noqa: E501
 
 
 class TestCommands:
@@ -623,7 +622,7 @@ class TestCommands:
             enable_ioc = mocker.patch('XDR_iocs.prepare_enable_iocs', side_effect=prepare_enable_iocs)
             iocs_command(client)
             output = outputs.call_args.args[0]
-            assert output == "IOCs command: enabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: enabled indicators='11.11.11.11'."  # noqa: E501
+            assert output == "IOCs command: enabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: enabled indicators='11.11.11.11'."    # noqa: E501
             assert enable_ioc.call_count == 1, 'enable command not called'
 
         def test_iocs_command_with_disable(self, mocker):
@@ -641,7 +640,7 @@ class TestCommands:
             disable_ioc = mocker.patch('XDR_iocs.prepare_disable_iocs', side_effect=prepare_disable_iocs)
             iocs_command(client)
             output = outputs.call_args.args[0]
-            assert output == "IOCs command: disabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: disabled indicators='11.11.11.11'."  # noqa: E501
+            assert output == "IOCs command: disabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: disabled indicators='11.11.11.11'."    # noqa: E501
             assert disable_ioc.call_count == 1, 'disable command not called'
 
     def test_sync(self, mocker):
@@ -678,8 +677,7 @@ class TestCommands:
         xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
-        xdr_ioc_to_timeline(
-            [str(x[0].get('RULE_INDICATOR')) for x in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto])  # noqa: E501
+        xdr_ioc_to_timeline([str(x[0].get('RULE_INDICATOR')) for x in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto])    # noqa: E501
 
 
 class TestParams:
@@ -912,7 +910,7 @@ def test_parse_demisto_comments__default_as_tag():
             comment_field_name=Client.xsoar_comments_field,
             comments_as_tags=True
         )
-    assert exc.value.message == "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)." \
+    assert exc.value.message == "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."\
                                 "Set a different value."
 
 
