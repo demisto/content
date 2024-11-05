@@ -303,7 +303,7 @@ class TestCommandsFunctions:
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
         total_events_count = 0
         hashed = ['{"httpMessage": {"start": 1}, "id": 1}', '{"httpMessage": {"start": 3}, "id": 3}',
-                         '{"httpMessage": {"start": 5}, "id": 5}', '{"httpMessage": {"start": 5}, "id": 280}']
+                  '{"httpMessage": {"start": 5}, "id": 5}', '{"httpMessage": {"start": 5}, "id": 280}']
         for events, offset, total_events_count, hashed in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       '3 days',
                                                                                       220,
