@@ -20,10 +20,10 @@ def post_comment(alert_short_id: str, comment: Optional[str], author: str):
         )
 
 
-def update_status(new_status: str, mirror_status: str, short_id: str):
-    if mirror_status == "Both":
+def update_status(new_status: str, mirror_status:str, is_mirror_out:bool, short_id: str):
+    if mirror_status == "In" and is_mirror_out:
         execute_command("sekoia-xdr-update-status-alert", {"id": short_id, "status": new_status})
-    elif mirror_status == "Outgoing":
+    elif mirror_status is None and is_mirror_out:
         execute_command("setIncident", {"sekoiaxdralertstatus": new_status})
         execute_command("sekoia-xdr-update-status-alert", {"id": short_id, "status": new_status})
     else:
@@ -32,14 +32,15 @@ def update_status(new_status: str, mirror_status: str, short_id: str):
 
 def main():
     incident = demisto.incidents()[0]  # type: ignore
-    isMirrorEnable = incident.get("dbotMirrorDirection")
+    mirror_direction = incident.get("dbotMirrorDirection")
+    is_mirror_out = incident.get("CustomFields").get("sekoiaxdrmirrorout")
     alert_short_id = demisto.args()["short_id"]
     new_status = demisto.args()["status"]
     comment = demisto.args().get("comment")
 
     if new_status in ["Ongoing", "Acknowledged"]:
-        update_status(new_status, isMirrorEnable, alert_short_id)
-        if comment and isMirrorEnable in ["Both", "Outgoing"]:
+        update_status(new_status, mirror_direction, is_mirror_out, alert_short_id)
+        if comment and is_mirror_out and ( mirror_direction is None or mirror_direction == "In" ):
             post_comment(alert_short_id, comment, get_username())
         readable_output = f"### Status of the alert changed to:\n {new_status}"
         return_results(
