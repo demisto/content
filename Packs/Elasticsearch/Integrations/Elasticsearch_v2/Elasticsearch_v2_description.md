@@ -14,24 +14,23 @@ For more info about API Key management see: [here](https://www.elastic.co/guide/
 
 #### Instance Configuration
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200. | True |
-    | Username for server login | Provide Username \+ Passoword instead of API key \+ API ID | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Client type | For Elasticsearch version 7 and below, select **Elasticsearch**. For Elasticsearch server version 8, select **Elasticsearch_v8**. In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, consider using the **OpenSearch** client type. | False |
-    | Index from which to fetch incidents (CSV) |  | False |
-    | Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
-    | Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation. | False |
-    | Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered. | False |
-    | Time field type |  | False |
-    | Map JSON fields into labels |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | The maximum number of results to return per fetch. |  | False |
-    | Request timeout (in seconds). |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+* __Server URL__: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200
+* __Username foe server login__: Provide Username \+ Passoword instead of API key \+ API ID
+* __Trust any certificate (not secure)__: Ignore HTTPS certificates.
+* __Use system proxy settings__: Enable/Disable
+* __Client type__: For Elasticsearch version 7 and below, select **Elasticsearch**. For Elasticsearch server version 8, select **Elasticsearch_v8**. In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, consider using the **OpenSearch** client type.
+* __Index from which to fetch incidents (CSV)|__
+* __Query String__: The query will be used when fetching incidents. Index time field will be used as a filter in the query
+* __Index Time Field__: The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
+* __Raw Query__: Will override the 'Query String' Lucene syntax string. Results will not be filtered.
+* __Time Field Type__: Time field type used in the database.
+* __Map JSON fields into labels__
+* __First Fetch Time__: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)
+* __The maximum number of results to return per fetch__
+* __Request timeout (in seconds)__
+* __Incident type__
+* __fetch incidents__: Enable/Disable
+
 
 Query string is queried using the Lucene syntax. For more information about the Lucene syntax, see: [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax)
 
