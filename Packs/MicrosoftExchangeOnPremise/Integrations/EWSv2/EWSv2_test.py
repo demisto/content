@@ -431,7 +431,7 @@ def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_
     When:
         - Running fetch command.
     Then:
-        - If skip_unparsable_emails parameter is True, and the Exception is a specific type we allow to file due to parsing error:
+        - If skip_unparsable_emails parameter is True, and the Exception is a specific type we allow to fail due to parsing error:
             log the exception message and continue processing the next email (ignore unparsable email).
         - If skip_unparsable_emails parameter is False, raise the exception (crash the fetch command).
     """

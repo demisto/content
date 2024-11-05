@@ -86,6 +86,7 @@ class TestNormalCommands:
             self.account = self.MockAccount()
             self.protocol = ""
             self.mark_as_read = False
+            self.folder_name = ""
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account
@@ -286,6 +287,50 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
 
+@pytest.mark.parametrize(
+    "skip_unparsable_emails_param, exception_type, expected",
+    [
+        (True, IndexError("Unparsable email ignored"), "Unparsable email ignored"),
+        (True, UnicodeError("Unparsable email ignored"), "Unparsable email ignored"),
+        (True, Exception("Unparsable email not ignored"), "Unparsable email not ignored"),
+        (False, Exception("Unparsable email not ignored"), "Unparsable email not ignored"),
+        (False, IndexError("Unparsable email not ignored"), "Unparsable email not ignored"),
+    ],
+)
+def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_type, expected):
+    """Check the fetch command in skip_unparsable_emails parameter use-cases.
+    Given:
+        - An exception has occurred while processing an email message.
+    When:
+        - Running fetch command.
+    Then:
+        - If skip_unparsable_emails parameter is True, and the Exception is a specific type we allow to fail due to parsing error:
+            log the exception message and continue processing the next email (ignore unparsable email).
+        - If skip_unparsable_emails parameter is False, raise the exception (crash the fetch command).
+    """
+    import EWSO365
+
+    import demistomock as demisto
+
+    class MockEmailObject:
+        def __init__(self):
+            self.message_id = "Value"
+
+    last_run = {"lastRunTime": "2021-07-14T12:59:17Z", "folderName": "Inbox", "ids": ["message1"]}
+
+    client = TestNormalCommands.MockClient()
+    mocker.patch.object(
+        demisto, "getLastRun", return_value={"lastRunTime": "2021-07-14T12:59:17Z", "folderName": "Inbox", "ids": []}
+    )
+    mocker.patch.object(EWSO365, "parse_incident_from_item", side_effect=exception_type)
+    mocker.patch.object(EWSO365, "fetch_last_emails", return_value=[MockEmailObject()])
+    mocker.patch.object(EWSO365, "get_last_run", return_value=last_run)
+
+    # mocker.patch.object(EWSO365, "get_account", return_value=[{}])
+    try:
+        fetch_emails_as_incidents(client, last_run, "received-time", skip_unparsable_emails_param)
+    except Exception as e:
+        assert expected == str(e)
 
 def test_fetch_and_mark_as_read(mocker):
     """
