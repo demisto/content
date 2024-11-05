@@ -56,6 +56,12 @@ configuration:
   - ES384
   - ES512
   defaultvalue: RS256
+- display: Key ID
+  name: key_id
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: Required and used if more than one key is used for signing JWT tokens.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1446,6 +1452,20 @@ script:
       defaultValue: 'false'
       description: When true, you'll need to change the password in the next login.
       name: temporary_password
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Revokes the user's existing sessions and returns a temporary password, regardless of the temporary_password value. When true, you'll need to change the password in the next login.
+      name: revoke_session
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Prevents the password from being saved in the War Room.
+      name: hide_password
       predefined:
       - 'true'
       - 'false'
