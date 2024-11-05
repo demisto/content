@@ -114,7 +114,7 @@ Get security events from Akamai WAF.
 | limit | Defines the maximum number of security events returned per fetch. | Optional | 
 | from_epoch | The start of a specified time range, expressed in Unix epoch seconds. | Optional | 
 | to_epoch | The end of a specified time range, expressed in Unix epoch seconds. | Optional | 
-| time_stamp | Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days. | Optional | 
+| time_stamp | Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days). | Optional | 
 
 #### Context Output
 
@@ -145,3 +145,13 @@ Get security events from Akamai WAF.
 | IP.Address | String | IP address. | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
+
+### Troubleshooting
+
+## receiving 416 error code / aggregated delay when fetching events:
+This may be due to not querying for enough events per interval / request.
+The proposed solution in that case is to use the two parameters **Fetch limit** and **Page size**.
+**Fetch limit** is the number of total events we want to retrieve each fetch interval.
+**Page size** is the number of events we want to retrieve each request. Note that the suggested maximum for Page size is 200k.
+Meaning that an interval may execute multiple requests and therefore you should configure **Page size** < **Fetch limit**
+You should work to find the balance between them in a way that both the command, and the request won't get any timeout.
