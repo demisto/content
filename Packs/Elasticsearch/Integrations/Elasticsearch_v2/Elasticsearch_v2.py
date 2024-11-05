@@ -532,10 +532,35 @@ def test_connectivity_auth(proxies):
                 else:
                     # if it is unknown error - get the message from the error itself
                     return_error(f"Failed to connect. The following error occurred: {e}")
-
+        
+        elif res.status_code == 200:
+            verify_es_server_version(res.json())
+                
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
-
+        
+def verify_es_server_version(res):
+    """
+    Gets the requests.get raw response, extracts the elasticsearch server version,
+    and verifies that the client type parameter is configured accordingly.
+    Raises exceptions for server version miss configuration issues.
+    
+    Args:
+        res(dict): requests.models.Response object including information regarding the elasticsearch server.
+    """
+    es_server_version = res.get('version', {}).get('number', '')
+    demisto.debug(f"Elasticsearch server version is: {es_server_version}")
+    if es_server_version:
+        major_version = es_server_version.split('.')[0]
+        if major_version:
+            if int(major_version) >= 8 and ELASTIC_SEARCH_CLIENT not in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+                raise ValueError(f'Configuration Error: Your Elasticsearch server is version {es_server_version}. '
+                                    f'Please ensure that the client type is set to {ELASTICSEARCH_V8} or {OPEN_SEARCH}. '
+                                    f'For more information please see the integration documentation.')
+            elif int(major_version) <= 7 and ELASTIC_SEARCH_CLIENT not in [OPEN_SEARCH, 'Elasticsearch']:
+                raise ValueError(f'Configuration Error: Your Elasticsearch server is version {es_server_version}. '
+                                    f'Please ensure that the client type is set to Elasticsearch or {OPEN_SEARCH}. '
+                                    f'For more information please see the integration documentation.')
 
 def test_func(proxies):
     test_connectivity_auth(proxies)
