@@ -1340,7 +1340,6 @@ def test_parse_xsoar_field_name_and_link_exceptions(xsoar_comment_field: list[st
         - verify the function throws a DemistoException with informative message
     """
     import XDR_iocs
-    try:
+    with pytest.raises(DemistoException) as de:
         XDR_iocs.parse_xsoar_field_name_and_link(xsoar_comment_field)
-    except DemistoException as e:
-        assert e.message == informative_message
+        assert de.message == informative_message
