@@ -1897,11 +1897,11 @@ def validate_args_scan_commands(args):
               'To scan/abort scan some of the endpoints, please use the filter arguments.'
     if all_:
         if (endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen
-            or ip_list or group_name or platform or alias or hostname):
+                or ip_list or group_name or platform or alias or hostname):
             raise Exception(err_msg)
     elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-        and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-        and not alias and not hostname:
+            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+            and not alias and not hostname:
         raise Exception(err_msg)
 
 
@@ -4603,6 +4603,6 @@ def terminate_causality_command(client, args) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)':
-                     replies},
+                 replies},
         raw_response=replies
     )

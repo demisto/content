@@ -163,7 +163,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -2902,7 +2902,6 @@ def test_get_original_alerts_command_raises_exception_playbook_debugger_input(al
         get_original_alerts_command(client, args)
 
 
-
 def test_get_dynamic_analysis(requests_mock):
     """
     Given:
@@ -4375,7 +4374,7 @@ def test_terminate_process_command(mocker):
          'status': 200,
          'data': json.dumps({'reply': {'group_action_id': 2}})}
     ]
-                        )
+    )
 
     result = terminate_process_command(client=client, args={'agent_id': '1', 'instance_id': ['instance_id_1', 'instance_id_2']})
     assert result.readable_output == ('### Action terminate process created on instance ids:'
@@ -4408,7 +4407,7 @@ def test_terminate_causality_command(mocker):
          'status': 200,
          'data': json.dumps({'reply': {'group_action_id': 2}})}
     ]
-                        )
+    )
 
     result = terminate_causality_command(client=client, args={'agent_id': '1', 'causality_id': [
         'causality_id_1', 'causality_id_2']})
