@@ -219,6 +219,7 @@ view: |-
   }
 inputs: []
 outputs: []
+is_silent: true
 tests:
 - T1036 - Masquerading - Test
 fromversion: 6.10.0
