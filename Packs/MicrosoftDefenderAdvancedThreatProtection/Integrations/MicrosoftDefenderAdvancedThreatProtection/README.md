@@ -2515,10 +2515,10 @@ File.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash. | 
-| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The prevalence of the file in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | Number | The prevalence of the file in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The global prevalence of the file. | 
+| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | Number | The global prevalence of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. | 
@@ -2532,16 +2532,30 @@ File.Read.All
 
 ```json
 {
-    "MicrosoftATP.FileStatistics": {
-        "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
-        "Statistics": {
-            "TopFileNames": [
-                "lsass.exe"
-            ], 
-            "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
-            "GlobalPrevalence": "1355899", 
-            "OrgPrevalence": "0", 
-            "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
+    "File": {
+        "GlobalFirstSeen": "2019-04-03T04:10:18.1001071Z",
+        "GlobalLastSeen": "2020-03-23T09:24:54.169574Z",
+        "GlobalPrevalence": 1355899,
+        "Hashes":[
+            {
+                "type" :"SHA1",
+                "value": "9fe3ba25e5660c23dfe478d577cfacde5795870c"
+            }
+        ],
+        "OrganizationPrevalence": 0
+    },
+    "MicrosoftATP": {
+        "FileStatistics": {
+            "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
+            "Statistics": {
+                "TopFileNames": [
+                    "lsass.exe"
+                ], 
+                "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
+                "GlobalPrevalence": 1355899, 
+                "OrgPrevalence": 0, 
+                "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
+            }
         }
     }
 }
@@ -2555,6 +2569,14 @@ File.Read.All
 |---|---|---|---|---|
 | 2019-04-03T04:10:18.1001071Z | 2020-03-23T09:24:54.169574Z | 1355899 | 0 | lsass.exe |
 
+
+##### File Indicator Example
+
+The basic indicator fields from the command are shown below without auto extraction and enrichment.
+
+| Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | Global First Seen | Global Last Seen | Organization First Seen | Organization Last Seen |
+|---|---|---|---|---|---|---|---|---|---|---|
+| File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Unknown | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
 
 ### 27. microsoft-atp-get-file-alerts
 
