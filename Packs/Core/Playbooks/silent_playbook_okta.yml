@@ -1,0 +1,224 @@
+id: silent playbook okta
+version: -1
+name: silent playbook okta
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b1cbcd74-f8a2-4f25-871d-421ded76ed76
+    type: start
+    task:
+      id: b1cbcd74-f8a2-4f25-871d-421ded76ed76
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d000c636-1a67-4750-8bf6-dc8d008ccaba
+    type: regular
+    task:
+      id: d000c636-1a67-4750-8bf6-dc8d008ccaba
+      version: -1
+      name: List users
+      description: Lists users in your organization.
+      script: '|||okta-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1c9cb7eb-b511-4831-8075-44b2d8322fdb
+    type: condition
+    task:
+      id: 1c9cb7eb-b511-4831-8075-44b2d8322fdb
+      version: -1
+      name: users found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f8971b33-75ce-447a-818e-525dde9ffbf1
+    type: regular
+    task:
+      id: f8971b33-75ce-447a-818e-525dde9ffbf1
+      version: -1
+      name: print users
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${Account.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 680524a7-98bf-44ba-818d-77abc8db52a6
+    type: regular
+    task:
+      id: 680524a7-98bf-44ba-818d-77abc8db52a6
+      version: -1
+      name: Check out
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: dd6cc5aa-bab1-4e5c-8f68-ecbab3d0c7bf
+    type: title
+    task:
+      id: dd6cc5aa-bab1-4e5c-8f68-ecbab3d0c7bf
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 875,
+        "width": 680,
+        "x": 150,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+is_silent: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: silent playbook with okta commands
