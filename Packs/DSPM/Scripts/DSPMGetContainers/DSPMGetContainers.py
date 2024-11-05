@@ -1,10 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
-def get_containers(args: Dict[str, Any]) -> CommandResults:
+def get_containers(args: dict[str, Any]) -> CommandResults:
     """
     Function takes asset file data as argument and
     returns a list of all containers.

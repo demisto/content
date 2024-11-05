@@ -172,8 +172,8 @@ tasks:
     task:
       id: d3792edc-ef0c-4b03-8ed2-9b8b80bfd174
       version: -1
-      name: DSPM Remediation for Sensitive asset open to world.
-      playbookName: DSPM Remediation for Sensitive asset open to world.
+      name: DSPM Remediation for Sensitive asset open to world
+      playbookName: DSPM Remediation for Sensitive asset open to world
       type: playbook
       iscommand: false
       brand: ""
