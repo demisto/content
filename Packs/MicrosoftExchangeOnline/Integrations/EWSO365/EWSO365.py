@@ -2477,7 +2477,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                         f"Skipping item with message id: {item.message_id if item.message_id else ''}"
                     )
                     demisto.debug(error_msg + f", Error: {str(e)}")
-                    demisto.updateModuleHealth(error_msg, is_error=True)
+                    demisto.updateModuleHealth(error_msg, is_error=False)
                 else:
                     raise e
 
