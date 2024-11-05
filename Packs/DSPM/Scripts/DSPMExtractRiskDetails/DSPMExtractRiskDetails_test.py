@@ -109,7 +109,7 @@ def test_get_incident_details_command_with_invalid_assetdigtags_format():
 
     args = {"incident_object": incident_data}
     incident_object = get_incident_details_command(args)
-    
+
     assert incident_object["incidentId"] == "12345"
     assert incident_object.get("asset Dig Tags") == "{}"
 
@@ -135,9 +135,9 @@ def test_main_success_case():
     }
 
     with patch("demistomock.args", return_value=args), \
-         patch("demistomock.setContext") as mock_setContext, \
-         patch("DSPMExtractRiskDetails.return_results") as mock_return_results:
-        
+            patch("demistomock.setContext") as mock_setContext, \
+            patch("DSPMExtractRiskDetails.return_results") as mock_return_results:
+
         main()
 
         mock_setContext.assert_called_once_with("userSlackEmail", "owner@example.com")
