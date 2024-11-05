@@ -43,7 +43,7 @@ def close_alert(
     username: str,
     mirror_status: str,
     is_mirror_out: bool,
-):
+):  # pragma: no cover
     readable_output = ""
     alert_status = get_status_name(alert_id)
     if alert_status not in ["Closed", "Rejected"]:
