@@ -1,0 +1,78 @@
+{
+    "adminChanges": {
+        "count": 3,
+        "pageNumber": 1,
+        "pageSize": 3,
+        "adminChange": [
+            {
+                "updateDate": 1730209172000,
+                "performedBy": "",
+                "operationType": "CHANGE",
+                "ipAddress": "1.1.1.1",
+                "administrator": {
+                    "email": "",
+                    "username": "",
+                    "firstName": "",
+                    "middleName": "",
+                    "lastName": "",
+                    "address": "",
+                    "phone": "",
+                    "jobTitle": "",
+                    "watchSubscription": "Y",
+                    "accountStatus": "Active",
+                    "managedUserGroups": "All groups",
+                    "lastLoginTime": "",
+                    "rolesAdded": "",
+                    "rolesDeleted": "",
+                    "previousState": ""
+                }
+            },
+            {
+                "updateDate": 1730209172000,
+                "performedBy": "",
+                "operationType": "CHANGE",
+                "ipAddress": "1.1.1.1",
+                "administrator": {
+                    "email": "",
+                    "username": "",
+                    "firstName": "",
+                    "middleName": "",
+                    "lastName": "",
+                    "address": "",
+                    "phone": "",
+                    "jobTitle": "",
+                    "watchSubscription": "Y",
+                    "accountStatus": "Active",
+                    "managedUserGroups": "All groups",
+                    "lastLoginTime": "",
+                    "rolesAdded": "Help Desk",
+                    "rolesDeleted": "",
+                    "previousState": ""
+                }
+            },
+            {
+                "updateDate": 1730206429000,
+                "performedBy": "",
+                "operationType": "CHANGE",
+                "ipAddress": "1.1.1.1",
+                "administrator": {
+                    "email": "",
+                    "username": "",
+                    "firstName": "",
+                    "middleName": "",
+                    "lastName": "",
+                    "address": "",
+                    "phone": "",
+                    "jobTitle": "",
+                    "watchSubscription": "Y",
+                    "accountStatus": "Active",
+                    "managedUserGroups": "All groups",
+                    "lastLoginTime": "",
+                    "rolesAdded": "",
+                    "rolesDeleted": "",
+                    "previousState": ""
+                }
+            }
+        ]
+    }
+}
