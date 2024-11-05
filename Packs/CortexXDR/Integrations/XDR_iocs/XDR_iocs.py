@@ -324,9 +324,9 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
 
     comments = []
     # a regular comment for the given field name, "comments" as a default
-    single_comment_for_field_name = parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
-    if single_comment_for_field_name:
-        comments.extend(single_comment_for_field_name)
+    comment = parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
+    if comment:
+        comments.extend(comment)
 
     # if the flag is True, add a link as a comment
     if Client.add_link_as_a_comment:
