@@ -12,7 +12,7 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
     | --- | --- | --- |
     | API key |  | True |
     | API Key |  | True |
-    | Server URL (i.e. https://api.sekoia.io) |  | True |
+    | Server URL (i.e. <https://api.sekoia.io>) |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
@@ -549,6 +549,7 @@ This command gets new information about the incidents in the remote system and u
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
@@ -796,7 +797,7 @@ Command that performs a HTTP request to Sekoia using the integration authenticat
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | method | Method to use with the http request (GET,POST,etc). Default is GET. | Required | 
-| url_sufix | The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/. | Required | 
+| url_sufix | The URL suffix after <https://api.sekoia.io>, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/. | Required | 
 | parameters | Query parameters, i.e. limit -&gt; 10 , match['status_name'] -&gt; Ongoing. | Optional | 
 
 #### Context Output
@@ -807,6 +808,7 @@ There is no context output for this command.
 
 You can enable incident mirroring between Cortex XSOAR incidents and Sekoia XDR corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -827,19 +829,19 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 To troubleshoot possible issues with the SEKOIA XDR integration, consider the following steps:
 
 - **Debug Mode**: 
-    - In your integration instance, enable the Debug option.
-    - Navigate to `Settings > About > Troubleshooting > Download logs` to download the logs. Analyzing these logs can provide valuable insights into any issues.
+  - In your integration instance, enable the Debug option.
+  - Navigate to `Settings > About > Troubleshooting > Download logs` to download the logs. Analyzing these logs can provide valuable insights into any issues.
 
 - **Mirror Values**: 
-    - To diagnose mirroring issues beyond what debug mode offers, you can inspect specific fields in the context data. Check if the following dbot fields are set:
-        - **dbotMirrorInstance**: Indicates the instance managing the mirroring.
-        - **dbotMirrorDirection**: Shows the direction of mirroring.
-        - **dbotMirrorId**: The unique identifier for the mirroring process.
-    - If these fields are not set, review the mappers to ensure that they are configured correctly.
+  - To diagnose mirroring issues beyond what debug mode offers, you can inspect specific fields in the context data. Check if the following dbot fields are set:
+    - **dbotMirrorInstance**: Indicates the instance managing the mirroring.
+    - **dbotMirrorDirection**: Shows the direction of mirroring.
+    - **dbotMirrorId**: The unique identifier for the mirroring process.
+  - If these fields are not set, review the mappers to ensure that they are configured correctly.
 
 - **dbotMirrorLastSync Field**:
-    - The `dbotMirrorLastSync` field in the context data will update when the mirroring process updates an incident. 
-    - You can observe these updates in the **War Room** as well, which will provide a log of the mirroring activity.
+  - The `dbotMirrorLastSync` field in the context data will update when the mirroring process updates an incident. 
+  - You can observe these updates in the **War Room** as well, which will provide a log of the mirroring activity.
 
 By following these troubleshooting steps, you can effectively diagnose and resolve issues within the SEKOIA XDR integration.
 
@@ -850,8 +852,8 @@ To make the most out of your SEKOIA XDR integration, consider the following best
 - **Mirroring Changes**: When mirroring is enabled, please allow at least 1 minute for changes to be reflected. The mirroring process runs every 1 minute, ensuring that data between SEKOIA and Cortex is kept in sync.
 
 - **Handling Reopened Incidents**: If you have enabled the reopening option, the Cortex incident will be reopened under two specific conditions:
-    - **Reopened Alert in SEKOIA**: If an alert is reopened in SEKOIA, the corresponding incident in Cortex will also be reopened. This ensures that the incident tracking is consistent across both platforms.
-    - **Reopened Incident in Cortex**: If you reopen an incident directly in Cortex, you need to be cautious. After reopening the incident in Cortex, you should promptly change the status of the SEKOIA alert. Failing to do so might lead to the incident being automatically closed by the mirroring process.
+  - **Reopened Alert in SEKOIA**: If an alert is reopened in SEKOIA, the corresponding incident in Cortex will also be reopened. This ensures that the incident tracking is consistent across both platforms.
+  - **Reopened Incident in Cortex**: If you reopen an incident directly in Cortex, you need to be cautious. After reopening the incident in Cortex, you should promptly change the status of the SEKOIA alert. Failing to do so might lead to the incident being automatically closed by the mirroring process.
 
 By adhering to these best practices, you can ensure a smoother and more effective synchronization between SEKOIA and your incident management platform.
 

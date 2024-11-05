@@ -204,12 +204,12 @@ configuration:
   defaultvalue: None
   type: 15
   required: true
+  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR).'
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming and Outgoing
-  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR).'
 - section: Collect
   advanced: true
   display: Include events in the mirroring of the alerts.
@@ -961,10 +961,11 @@ script:
   - name: sekoia-xdr-list-assets
     arguments:
     - name: limit
-      description: Limit a number of items.
+      description: 'Limit a number of items.'
       defaultValue: "10"
     - name: assets_type
       description: Type of assets to list (computer, network, etc).
+    description: Command to retrieve a list of Assets from Sekoia XDR.
     outputs:
     - contextPath: SekoiaXDR.Assets.total
       description: The total number of items in the response.
@@ -1016,7 +1017,6 @@ script:
       description: The name of the asset.
     - contextPath: SekoiaXDR.Assets.items.0.uuid
       description: The UUID of the asset.
-    description: Command to retrieve a list of Assets from Sekoia XDR.
   - name: sekoia-xdr-get-user
     arguments:
     - name: user_uuid
@@ -1111,11 +1111,11 @@ script:
       description: 'UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a".'
     - name: name
       required: true
-      description: The name of attributes.
+      description: "The name of attributes."
     - name: value
       required: true
       description: The value of attributes.
-    description: Command to add attributes to an asset in Sekoia XDR.
+    description: "Command to add attributes to an asset in Sekoia XDR."
   - name: sekoia-xdr-add-keys-asset
     arguments:
     - name: asset_uuid
@@ -1123,16 +1123,17 @@ script:
       description: 'UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a".'
     - name: name
       required: true
-      description: The name of the key to be added.
+      description: "The name of the key to be added."
     - name: value
       required: true
       description: The value of the key to be added.
-    description: Command to add keys to an asset in Sekoia XDR.
+    description: "Command to add keys to an asset in Sekoia XDR."
   - name: sekoia-xdr-get-kill-chain
     arguments:
     - name: kill_chain_uuid
       required: true
       description: UUID or short_id of the kill chain the UUID should appear with "sekoia-xdr-list-alerts".
+    description: Command to retrieve the definition of a Cyber Kill Chain Step.
     outputs:
     - contextPath: SekoiaXDR.KillChain.stix_name
       description: The name of the STIX object.
@@ -1146,7 +1147,6 @@ script:
       description: The short identifier of the STIX object.
     - contextPath: SekoiaXDR.KillChain.order_id
       description: The order identifier of the STIX object.
-    description: Command to retrieve the definition of a Cyber Kill Chain Step.
   - name: sekoia-xdr-remove-attribute-asset
     arguments:
     - name: asset_uuid
@@ -1182,11 +1182,11 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
+  isFetchSamples: true
   ismappable: true
   isremotesyncin: true
   defaultmapperin: Sekoia XDR - Incoming Mapper
   defaultclassifier: Sekoia XDR - Classifier
-  isFetchSamples: true
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
