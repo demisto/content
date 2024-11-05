@@ -99,7 +99,7 @@ def test_get_incident_details_command_with_missing_fields():
     assert incident_object.get("severity") == "N/A"
 
 
-def test_get_incident_details_command_with_invalid_assetdigtags_format():
+def test_get_incident_details_command_with_invalid_assetdigtags_format(capfd):
     incident_data = {
         "id": "12345",
         "riskfindingid": "r123",
@@ -108,6 +108,10 @@ def test_get_incident_details_command_with_invalid_assetdigtags_format():
     }
 
     args = {"incident_object": incident_data}
+    # Disable capfd temporarily to avoid failure on expected error output
+    with capfd.disabled():
+        incident_object = get_incident_details_command(args)
+
     incident_object = get_incident_details_command(args)
 
     assert incident_object["incidentId"] == "12345"
