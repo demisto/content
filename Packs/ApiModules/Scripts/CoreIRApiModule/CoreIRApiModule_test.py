@@ -163,7 +163,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -2867,6 +2867,35 @@ def test_get_original_alerts_command__without_filtering(requests_mock):
     assert len(event) == 41  # make sure fields were not filtered
 
 
+@pytest.mark.parametrize("alert_ids",
+    ["59cf36bbdedb8f05deabf00d9ae77ee5$&$A Successful login from TOR",
+    "b0e754480d79eb14cc9308613960b84b$&$A successful SSO sign-in from TOR",
+    "9d657d2dfd14e63d0b98c9dfc3647b4f$&$A successful SSO sign-in from TOR",
+    "561675a86f68413b6e7a3b12e48c6072$&$External Login Password Spray",
+    "fe925817cddbd11e6efe5a108cf4d4c5$&$SSO Password Spray",
+    "e2d2a0dd589e8ca97d468cdb0468e94d$&$SSO Brute Force",
+    "e2d2a0dd589e8ca97d468cdb0468e94d$&$SSO Brute Force",
+    "3978e33b76cc5b2503ba60efd4445603$&$A successful SSO sign-in from TOR"])
+def test_get_original_alerts_command_raises_exception_playbook_debugger_input(alert_ids):
+    """
+    Given:
+        - A list of alert IDs with invalid formats for the alert ID of the form <GUID>$&$<Playbook name>
+    When:
+        - Running get_original_alerts_command command
+    Then:
+        - Verify that DemistoException is raised
+    """
+    from CoreIRApiModule import get_original_alerts_command, CoreClient
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {'alert_ids': alert_ids}
+
+    with pytest.raises(DemistoException):
+        get_original_alerts_command(client, args)
+
+
 def test_get_dynamic_analysis(requests_mock):
     """
     Given:
@@ -4339,7 +4368,7 @@ def test_terminate_process_command(mocker):
          'status': 200,
          'data': json.dumps({'reply': {'group_action_id': 2}})}
     ]
-    )
+                        )
 
     result = terminate_process_command(client=client, args={'agent_id': '1', 'instance_id': ['instance_id_1', 'instance_id_2']})
     assert result.readable_output == ('### Action terminate process created on instance ids:'
@@ -4372,10 +4401,10 @@ def test_terminate_causality_command(mocker):
          'status': 200,
          'data': json.dumps({'reply': {'group_action_id': 2}})}
     ]
-    )
+                        )
 
     result = terminate_causality_command(client=client, args={'agent_id': '1', 'causality_id': [
-                                         'causality_id_1', 'causality_id_2']})
+        'causality_id_1', 'causality_id_2']})
     assert result.readable_output == ('### Action terminate causality created on causality_id_1,'
                                       'causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n')
     assert result.raw_response == [{'action_id': 1}, {'action_id': 2}]
