@@ -1288,7 +1288,7 @@ def remove_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Comm
     ignored_ips = ips - ips_to_remove
 
     if not ips_to_remove:
-        return CommandResults(readable_output='IPs to remove are not currently in the custom IP feeds.')
+        return CommandResults(readable_output=f'Could not find {ignored_ips} in the custom IP feeds.')
 
     filtered_feeds = list(current_ip_feeds - ips_to_remove)
 
