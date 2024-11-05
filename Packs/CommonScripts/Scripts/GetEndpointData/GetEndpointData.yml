@@ -1,0 +1,21 @@
+args:
+- description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+  name: dummy
+  required: true
+comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
+commonfields:
+  id: GetEndpointData
+  version: -1
+name: GetEndpointData
+outputs:
+- contextPath: BaseScript.Output
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
+script: '-'
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.14.100715
+fromversion: 5.5.0
