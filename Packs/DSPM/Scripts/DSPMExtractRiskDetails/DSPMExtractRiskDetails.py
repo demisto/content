@@ -70,7 +70,7 @@ def get_incident_details_command(args):
     incident_object = {
         "incidentId": incident_data.get("id", "N/A"),
         "riskFindingId": incident_data.get("riskfindingid", "N/A"),
-        "ruleName": incident_data.get("riskname", "N/A"),
+        "ruleName": str(incident_data.get("riskname", "N/A")),
         "severity": incident_data.get("severity", "N/A"),
         "assetName": incident_data.get("assetname", "N/A"),
         "assetId": incident_data.get("assetid", "N/A"),
