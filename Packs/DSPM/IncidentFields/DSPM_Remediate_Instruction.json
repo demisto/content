@@ -4,7 +4,7 @@
     "modified": "2024-09-10T05:48:11.743243696Z",
     "name": "DSPM Remediate Instruction",
     "ownerOnly": false,
-    "cliName": "remediateinstruction",
+    "cliName": "dspmremediateinstruction",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "DSPM Risk Findings"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,

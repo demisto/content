@@ -4,7 +4,7 @@
     "modified": "2024-09-10T05:42:18.375460266Z",
     "name": "DSPM Investigation Link",
     "ownerOnly": false,
-    "cliName": "investigationlink",
+    "cliName": "dspminvestigationlink",
     "type": "url",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "DSPM Risk Findings"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,

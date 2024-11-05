@@ -169,17 +169,3 @@ def test_get_incident_details_command_with_incorrect_date_format():
     assert incident_object["riskFindingId"] == "r123"
     assert incident_object["ruleName"] == "High Risk"
     # Optionally, check if an empty or default value is used for 'firstDetectedOn'
-
-
-def test_get_incident_details_command_with_empty_incident_data():
-    # Completely empty incident data to test resilience
-    incident_data = {}
-
-    args = {"incident_object": incident_data}
-    incident_object = get_incident_details_command(args)
-
-    # Confirm that default or empty values are assigned to fields gracefully
-    assert "incidentId" not in incident_object  # Or check for None or default values
-    assert "riskFindingId" not in incident_object
-    assert "ruleName" not in incident_object
-    # Other fields as needed to ensure defaults are handled

@@ -4,7 +4,7 @@
     "modified": "2024-09-06T13:43:52.173023833Z",
     "name": "DSPM Remediation Description",
     "ownerOnly": false,
-    "cliName": "remediationdescription",
+    "cliName": "dspmremediationdescription",
     "type": "longText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "DSPM Risk Findings"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,

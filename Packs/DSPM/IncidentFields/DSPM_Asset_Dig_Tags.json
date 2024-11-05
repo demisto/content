@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": true,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "DSPM Risk Findings"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
