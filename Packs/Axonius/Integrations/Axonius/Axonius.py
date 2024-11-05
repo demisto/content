@@ -382,7 +382,8 @@ def main():
     secret: str = params.get('credentials', {}).get('password')
     certverify: bool = not params.get("insecure", False)
 
-    handle_proxy()  # noqa: F821, F405
+    proxies: dict = handle_proxy()  # noqa: F821, F405
+    demisto.debug(f"Attempting to connect via proxy with: {proxies}")
 
     demisto.debug(f"Command being called is {command}")
     args: dict = demisto.args()
@@ -394,6 +395,7 @@ def main():
             secret=secret,
             certverify=certverify,
             certwarn=False,
+            proxy=proxies.get("https") or proxies.get("http"),
         )
         return_results(run_command(client, args, command))  # noqa: F821, F405
 
