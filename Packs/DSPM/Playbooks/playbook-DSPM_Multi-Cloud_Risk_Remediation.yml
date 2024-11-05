@@ -1506,7 +1506,7 @@ view: |-
 inputs:
 - key: defaultSlackUserName
   value:
-    simple: sachin.indoriya@metronlabs.com
+    simple: dummy@mail.com
   required: true
   description: In the event that the risk asset tag is absent, the risk notice will be sent to this Slack user email address.
   playbookInputQuery:

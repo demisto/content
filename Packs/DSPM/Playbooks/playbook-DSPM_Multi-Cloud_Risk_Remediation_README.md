@@ -42,7 +42,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| defaultSlackUserName | In the event that the risk asset tag is absent, the risk notice will be sent to this Slack user email address. | sachin.indoriya@metronlabs.com | Required |
+| defaultSlackUserName | In the event that the risk asset tag is absent, the risk notice will be sent to this Slack user email address. | dummy@mail.com | Required |
 | slackMessageLifetime | Lifetime for slack notification \(in seconds\) | 300 | Optional |
 | rerunTime | Incident re-run time \(in hours\) | 24 | Optional |
 

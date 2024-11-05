@@ -6,6 +6,30 @@ from DSPMExtractRiskDetails import set_user_slack_email, get_incident_details_co
 # Assuming the functions are imported from the module, like:
 # from your_module import set_user_slack_email, get_incident_details_command
 
+def test_set_user_slack_email_missing_asset_dig_tags():
+    # Test case where 'asset Dig Tags' is missing
+    incident_details = {}
+    defaultSlackUser = "default@example.com"
+
+    with patch("demistomock.setContext") as mock_setContext:
+        set_user_slack_email(incident_details, defaultSlackUser)
+        
+        # Expect the default email to be set since 'asset Dig Tags' is missing
+        mock_setContext.assert_called_once_with("userSlackEmail", defaultSlackUser)
+
+def test_set_user_slack_email_with_null_asset_dig_tags():
+    # Test case where 'asset Dig Tags' is None
+    incident_details = {
+        "asset Dig Tags": None
+    }
+    defaultSlackUser = "default@example.com"
+
+    with patch("demistomock.setContext") as mock_setContext:
+        set_user_slack_email(incident_details, defaultSlackUser)
+        
+        # Expect the default email to be used since 'asset Dig Tags' is None
+        mock_setContext.assert_called_once_with("userSlackEmail", defaultSlackUser)
+
 def test_set_user_slack_email_with_owner_email():
     # Test case where 'Owner' field contains an email
     incident_details = {
