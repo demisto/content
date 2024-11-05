@@ -920,22 +920,23 @@ def test_sasl_ssl_configuration():
 valid_params_cases = [
     # Valid case with SSL only
     {
-        'use_ssl': True, 'use_sasl': False, 'brokers': 'broker1,broker2',
+        'use_ssl': True, 'use_sasl': False, 'brokers': 'broker1,broker2', 'plain_username': None, 'plain_password': None,
         'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key'
     },
     # Valid case with SSL and SASL
     {
         'use_ssl': True, 'use_sasl': True, 'brokers': 'broker1,broker2',
-        'ca_cert': 'cert', 'credentials': {'identifier': 'user', 'password': 'pass'}
+        'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None, 'plain_username': 'user', 'plain_password': 'pass'
     },
     # Valid case with SASL
     {
         'use_ssl': False, 'use_sasl': True, 'brokers': 'broker1,broker2',
-        'ca_cert': 'cert', 'credentials': {'identifier': 'user', 'password': 'pass'}
+        'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None, 'plain_username': 'user', 'plain_password': 'pass'
     },
     # Valid case trust_any_cert
     {
-        'use_ssl': False, 'use_sasl': False, 'brokers': 'broker1,broker2', 'insecure': True
+        'use_ssl': False, 'use_sasl': False, 'brokers': 'broker1,broker2', 'plain_username': None,
+        'plain_password': None, 'ca_cert': None, 'client_cert': None, 'client_cert_key': None
     }
 ]
 
@@ -944,7 +945,7 @@ valid_params_cases = [
 def test_validate_params__valid(params):
     from KafkaV3 import validate_params
     # This test should not raise any exceptions
-    validate_params(params)
+    validate_params(**params)
 
 # use_ssl, use_sasl, plain_username, plain_password, brokers, ca_cert, client_cert, client_cert_key
 invalid_params_cases = [
