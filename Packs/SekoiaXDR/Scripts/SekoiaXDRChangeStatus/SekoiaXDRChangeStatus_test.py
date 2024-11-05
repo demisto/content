@@ -13,14 +13,15 @@ def test_get_username(mocker):
 def test_update_status(mocker):
     output_data = [{"Type": 3, "Contents": {}}]
     mocker.patch.object(demisto, "executeCommand", return_value=output_data)
-    assert update_status("Ongoing", "Both", "1") is None
-    assert update_status("Ongoing", "Outgoing", "1") is None
-    assert update_status("Ongoing", None, "1") is None
+    assert update_status("Ongoing", "In", False, "1") is None
+    assert update_status("Ongoing", "In", True, "1") is None
+    assert update_status("Ongoing", None, True, "1") is None
+    assert update_status("Ongoing", None, False, "1") is None
 
 
 def test_main(mocker):
     mocker.patch.object(
-        demisto, "incidents", return_value=[{"dbotMirrorDirection": "Outgoing"}]
+        demisto, "incidents", return_value=[{"dbotMirrorDirection": "In", "CustomFields": {"sekoiaxdrmirrorout": True}}]
     )
     mocker.patch.object(
         demisto,

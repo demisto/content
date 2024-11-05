@@ -50,7 +50,7 @@ def close_alert(
         if reject == "false":
             if mirror_status == "In" and is_mirror_out:
                 execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": "Closed"})
-            elif mirror_status == None and is_mirror_out:
+            elif mirror_status is None and is_mirror_out:
                 execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
                 execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": "Closed"})
             else:
@@ -59,7 +59,7 @@ def close_alert(
         if reject == "true":
             if mirror_status == "In" and is_mirror_out:
                 execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": "Rejected"})
-            elif mirror_status == None and is_mirror_out:
+            elif mirror_status is None and is_mirror_out:
                 execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
                 execute_command("sekoia-xdr-update-status-alert", {"id": alert_id, "status": "Rejected"})
             else:
@@ -98,4 +98,3 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-    

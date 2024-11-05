@@ -1,6 +1,7 @@
 import demistomock as demisto
 import SekoiaXDRCloseAlert  # type: ignore
-from SekoiaXDRCloseAlert import get_status_name, get_username, post_closure_comment, alert_closure_status, close_alert, main  # type: ignore
+from SekoiaXDRCloseAlert import get_status_name, get_username, \
+    post_closure_comment, close_alert, main  # type: ignore
 
 
 def test_get_status_name(mocker):
@@ -22,38 +23,23 @@ def test_post_closure_comment(mocker):
     assert post_closure_comment("1", "reason", "notes", "admin") is None
 
 
-def test_alert_closure_status(mocker):
-    output_data = [{"Type": 3, "Contents": {}}]
-    mocker.patch.object(demisto, "executeCommand", return_value=output_data)
-    assert alert_closure_status("Both", "1", "Closed") is None
-    assert alert_closure_status("Outgoing", "1", "Closed") is None
-    assert alert_closure_status("Incoming", "1", "Rejected") is None
-    assert alert_closure_status(None, "1", "Rejected") is None
-
-
 def test_close_alert(mocker):
     mocker.patch.object(SekoiaXDRCloseAlert, "get_status_name", return_value="Ongoing")
     output_data = [{"Type": 3, "Contents": {}}]
     mocker.patch.object(demisto, "executeCommand", return_value=output_data)
     mocker.patch.object(SekoiaXDRCloseAlert, "post_closure_comment", return_value=None)
     mocker.patch.object(demisto, "results")
-    close_alert("1", "false", "reason", "notes", "admin", "Both")
+    close_alert("1", "false", "reason", "notes", "admin", "In", True)
     assert (
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 with Both mirror direction has been closed. ****"
     )
 
-    close_alert("1", "true", "reason", "notes", "admin", "Incoming")
+    close_alert("1", "true", "reason", "notes", "admin", "In", False)
     assert (
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 with Incoming mirror direction has been rejected. ****"
     )
-
-    mocker.patch.object(SekoiaXDRCloseAlert, "get_status_name", return_value="Closed")
-    try:
-        close_alert("1", "false", "reason", "notes", "admin", "Both")
-    except Exception as e:
-        assert str(e) == "**** The alert 1 has been closed ****"
 
 
 def test_main(mocker):
@@ -62,7 +48,7 @@ def test_main(mocker):
         "incidents",
         return_value=[
             {
-                "dbotMirrorDirection": "Out",
+                "dbotMirrorDirection": "In",
                 "CustomFields": {"alertid": "1"},
                 "owner": "admin",
             }

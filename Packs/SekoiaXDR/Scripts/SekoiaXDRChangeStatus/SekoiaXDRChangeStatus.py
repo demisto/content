@@ -20,7 +20,7 @@ def post_comment(alert_short_id: str, comment: Optional[str], author: str):
         )
 
 
-def update_status(new_status: str, mirror_status:str, is_mirror_out:bool, short_id: str):
+def update_status(new_status: str, mirror_status: str, is_mirror_out: bool, short_id: str):
     if mirror_status == "In" and is_mirror_out:
         execute_command("sekoia-xdr-update-status-alert", {"id": short_id, "status": new_status})
     elif mirror_status is None and is_mirror_out:
@@ -40,7 +40,7 @@ def main():
 
     if new_status in ["Ongoing", "Acknowledged"]:
         update_status(new_status, mirror_direction, is_mirror_out, alert_short_id)
-        if comment and is_mirror_out and ( mirror_direction is None or mirror_direction == "In" ):
+        if comment and is_mirror_out and (mirror_direction is None or mirror_direction == "In"):
             post_comment(alert_short_id, comment, get_username())
         readable_output = f"### Status of the alert changed to:\n {new_status}"
         return_results(
