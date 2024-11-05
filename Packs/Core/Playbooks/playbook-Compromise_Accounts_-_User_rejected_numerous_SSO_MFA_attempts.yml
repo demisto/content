@@ -1655,4 +1655,6 @@ tests:
 - Test Playbook - Impossible Traveler - Enrichment
 - Test Playbook - IOC Alert
 - Test Playbook - Identity Analytics - Alert Handling
-fromversion: 6.10.0
+fromversion: 8.8.0
+marketplaces:
+- marketplacev2
