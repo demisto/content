@@ -85,7 +85,7 @@ def main() -> None:
 
         parse_slack_block_builder_res(SlackBlockState)
     except Exception as excep:
-        demisto.setContext("User.Action", "no_response 1")
+        demisto.setContext("User.Action", "no_response")
         return_error(f"Failed to execute DSPMExtractUserResponseFromSlackBlockState. Error: {str(excep)}")
 
 
