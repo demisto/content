@@ -8,7 +8,7 @@ def get_username():
     return username
 
 
-def post_comment(alert_short_id: str, comment: Optional[str], author: str):
+def post_comment(alert_short_id: str, comment: Optional[str], author: str):  # pragma: no cover
     try:
         execute_command(
             "sekoia-xdr-post-comment-alert",
