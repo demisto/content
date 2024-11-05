@@ -48,7 +48,7 @@ elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch7.helpers import scan
-    from elasticsearch_dsl import Search, AttrDict
+    from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
 
