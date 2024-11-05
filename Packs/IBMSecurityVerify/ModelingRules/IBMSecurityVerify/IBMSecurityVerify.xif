@@ -13,8 +13,8 @@ alter
     xdm.source.asn.as_number = to_integer(geoip -> asn),
     xdm.event.type = if(event_type in ("sso", "authentication"), "authentication", event_type),
     xdm.event.id = id,
-    xdm.source.ipv4 = if(incidr(data -> origin, "0.0.0.0/0"), data -> origin),
-    xdm.source.ipv6 = src_ipv6,
+    xdm.source.ipv4 = if(incidr(data -> origin, "0.0.0.0/0"), data -> origin, ""),
+    xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, ""),
     xdm.source.user_agent = data -> devicetype,
     xdm.observer.name = if(tenantname != null AND servicename != null, concat(tenantname, " - ", servicename), tenantname),
     xdm.observer.unique_identifier = tenantid;
