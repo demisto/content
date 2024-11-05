@@ -31,7 +31,7 @@ class TestGetHeaders:
             # noqa: E501
         }
         headers = {
-            'Authorization': 'e9a63fb06148bd3a73ce93c8b44c083a147cafb0fe607e706abcac25759b3c43',
+            'Authorization': 'e9a63fb06148bd3a73ce93c8b44c083a147cafb0fe607e706abcac25759b3c43',  # it's a dummy Authorization
             'x-iocs-source': 'xsoar',
             'x-xdr-auth-id': '7',
             'x-xdr-nonce': '1111111111111111111111111111111111111111111111111111111111111111',
