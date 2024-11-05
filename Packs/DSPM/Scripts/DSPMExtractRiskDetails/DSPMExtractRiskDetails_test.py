@@ -1,5 +1,4 @@
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import json
 from datetime import datetime
 from DSPMExtractRiskDetails import set_user_slack_email, get_incident_details_command

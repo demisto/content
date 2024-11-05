@@ -67,7 +67,7 @@ def test_main_with_explicitly_passed_argument_as_list(mocker, is_xsiam_or_xsoar_
     error_status = "yes" if expected_error_msgs else "no"
     if expected_error_msgs:
         mocker.patch.object(demisto, 'setContext', return_value={'OnError.Message': expected_error_msgs})
-    
+
     demisto_results.assert_called_once_with(error_status)
 
 

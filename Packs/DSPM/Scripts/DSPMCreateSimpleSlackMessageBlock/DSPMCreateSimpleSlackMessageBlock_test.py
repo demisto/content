@@ -32,10 +32,19 @@ def test_main(mock_demisto, mock_demisto_args):
     mock_demisto.args.return_value = mock_demisto_args
     expected_output = CommandResults(
         outputs_prefix="slackBlock",
-        outputs={
+        outputs = {
             "blocks": [
-                {"type": "section", "text": {"type": "mrkdwn", "text": mock_demisto_args["message"]}},
-                {"type": "section", "text": {"type": "mrkdwn", "text": f"*XSOAR Incident Link:* {mock_demisto_args['incidentLink']}"}},
+                {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": mock_demisto_args["message"]},
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"*XSOAR Incident Link:* {mock_demisto_args['incidentLink']}",
+                    },
+                },
             ]
         },
     )

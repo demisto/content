@@ -1,5 +1,4 @@
 from DSPMCreateRiskSlackBlocks import create_slack_block
-import pytest
 
 # Assuming `create_slack_block` is imported from the original script
 
