@@ -257,7 +257,6 @@ configuration:
   required: true
   additionalinfo: This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc.
 script:
-  script: "-"
   type: python
   commands:
   - name: sekoia-xdr-list-alerts
@@ -1185,8 +1184,6 @@ script:
   isFetchSamples: true
   ismappable: true
   isremotesyncin: true
-  defaultmapperin: Sekoia XDR - Incoming Mapper
-  defaultclassifier: Sekoia XDR - Classifier
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
