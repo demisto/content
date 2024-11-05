@@ -287,6 +287,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
 
+
 @pytest.mark.parametrize(
     "skip_unparsable_emails_param, exception_type, expected",
     [
@@ -331,6 +332,7 @@ def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_
         fetch_emails_as_incidents(client, last_run, "received-time", skip_unparsable_emails_param)
     except Exception as e:
         assert expected == str(e)
+
 
 def test_fetch_and_mark_as_read(mocker):
     """
