@@ -17,13 +17,17 @@
     "mergeContext": false,
     "manualMapping": {
         "description": {
-            "simple": "tactic.description"
+            "simple": "Tactic.Description"
         },
         "tags": {
-            "simple": "tactic.id"
+            "simple": "Tactic.Tags"
         },
         "mitreid": {
-            "simple": "tactic.id"
+            "simple": "Tactic.MITREID"
+        },
+        "stixid": {
+            "simple": "Tactic.STIXID",
+            "complex": null
         }
     },
     "expiration": 0,
