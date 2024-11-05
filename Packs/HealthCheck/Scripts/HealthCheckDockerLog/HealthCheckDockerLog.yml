@@ -3,7 +3,7 @@ args:
   description: War room entryID of the file to read.
   name: entryID
   required: true
-comment: Read docker log file.
+comment: Read Docker log file.
 commonfields:
   id: HealthCheckDockerLog
   version: -1

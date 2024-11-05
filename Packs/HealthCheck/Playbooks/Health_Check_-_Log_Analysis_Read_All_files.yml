@@ -10,7 +10,7 @@ inputs:
 name: Health Check - Log Analysis Read All files
 outputs:
 - contextPath: HealthCheck.ActionableItems
-  description: Data read from war room file.
+  description: Data read from the War Room file.
 starttaskid: "0"
 tasks:
   "0":

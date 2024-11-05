@@ -1327,7 +1327,7 @@ tasks:
       id: 456a3919-a7f6-49b1-89e1-89069529f723
       version: -1
       name: Types settings
-      description: "Identify custom and detached system incidents type  \nChecking if 'Auto Extraction' is turned on for:\nExtract from all\nExtract from specific indicators doesn't have any settings"
+      description: "Identify custom and detached system incidents type.  \nChecking if 'Auto Extraction' is turned on for:\nExtract from all\nExtract from specific indicators doesn't have any settings."
       type: regular
       iscommand: false
       brand: ""
