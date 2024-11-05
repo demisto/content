@@ -276,6 +276,8 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             return browser
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
+            text = read_json_file()
+            demisto.debug(f'get_chrome_broser exceptio {text}')
             connection_refused = 'connection refused'
             if connection_refused in exp_str:
                 demisto.debug(f"Failed to connect to Chrome on port {port} on iteration {i + 1}. {connection_refused}")
