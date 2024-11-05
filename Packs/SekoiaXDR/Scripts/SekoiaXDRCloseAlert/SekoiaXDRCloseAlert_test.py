@@ -34,11 +34,47 @@ def test_close_alert(mocker):
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 has been closed. ****"
     )
+    
+    close_alert("1", "false", "reason", "notes", "admin", None, True)
+    assert (
+        demisto.results.call_args[0][0]["Contents"]
+        == "**** The alert 1 has been closed. ****"
+    )
+    
+    close_alert("1", "false", "reason", "notes", "admin", None, False)
+    assert (
+        demisto.results.call_args[0][0]["Contents"]
+        == "**** The alert 1 has been closed. ****"
+    )
 
     close_alert("1", "true", "reason", "notes", "admin", "In", False)
     assert (
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 has been rejected. ****"
+    )
+    
+    close_alert("1", "true", "reason", "notes", "admin", None, True)
+    assert (
+        demisto.results.call_args[0][0]["Contents"]
+        == "**** The alert 1 has been rejected. ****"
+    )
+    
+    close_alert("1", "true", "reason", "notes", "admin", None, False)
+    assert (
+        demisto.results.call_args[0][0]["Contents"]
+        == "**** The alert 1 has been rejected. ****"
+    )
+
+
+def test_close_alert_closed_cond(mocker):
+    mocker.patch.object(SekoiaXDRCloseAlert, "get_status_name", return_value="Closed")
+    output_data = [{"Type": 3, "Contents": {}}]
+    mocker.patch.object(demisto, "executeCommand", return_value=output_data)
+    mocker.patch.object(demisto, "results")
+    close_alert("1", "true", "reason", "notes", "admin", None, True)
+    assert (
+        demisto.results.call_args[0][0]["Contents"]
+        == "**** The alert 1 has been closed. ****"
     )
 
 
