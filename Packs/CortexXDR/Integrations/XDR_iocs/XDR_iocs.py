@@ -861,8 +861,7 @@ def parse_xsoar_field_name_and_link(xsoar_comment_field: list[str]) -> tuple[str
 
     if len(xsoar_comment_field) == 2:
         if "indicator_link" not in xsoar_comment_field:
-            raise DemistoException(f"The parameter {xsoar_comment_field=} cannot contain two fields without indicator_link."
-                                   f"If it contains two fields, one of them should be indicator_link.")
+            raise DemistoException(f"The parameter {xsoar_comment_field=} should only contain the field name, or the field name with the phrase indicator_link, separated by a comma.")
 
         return xsoar_comment_field[0] if xsoar_comment_field[0] != "indicator_link" else xsoar_comment_field[1], True
 
@@ -890,8 +889,7 @@ def main():  # pragma: no cover
 
     # in case of xsoar_comment_field is an empty list -> the Client.xsoar_comments_field is defined to "comments" by default
     if xsoar_comment_field := argToList(params.get('xsoar_comments_field')):
-        xsoar_comment_field, add_link_as_a_comment = parse_xsoar_field_name_and_link(xsoar_comment_field)
-        Client.xsoar_comments_field, Client.add_link_as_a_comment = xsoar_comment_field, add_link_as_a_comment
+        Client.xsoar_comments_field, Client.add_link_as_a_comment = parse_xsoar_field_name_and_link(xsoar_comment_field)
 
     client = Client(params)
     commands = {
