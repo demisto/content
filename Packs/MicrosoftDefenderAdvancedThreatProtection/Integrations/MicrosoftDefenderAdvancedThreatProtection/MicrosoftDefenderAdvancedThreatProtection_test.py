@@ -2947,27 +2947,60 @@ def test_get_file_statistics_command(mocker):
     - Calling the get_file_statistics_command function
 
     Then:
-    - Assert correct indicator field values, context output, and raw response
+    - Assert correct context output and raw response
     """
     from MicrosoftDefenderAdvancedThreatProtection import get_file_statistics_command
 
     # Set
     mocker.patch.object(client_mocker, 'get_file_statistics', return_value=FILE_STATISTICS_API_RESPONSE)
+    context_to_response_key_mapping: dict = {
+        'GlobalPrevalence': 'globallyPrevalence',
+        'OrgPrevalence': 'organizationPrevalence',
+        'OrgFirstSeen': 'orgFirstSeen',
+        'OrgLastSeen': 'orgLastSeen',
+        'GlobalFirstObserved': 'globalFirstObserved',
+        'GlobalLastObserved': 'globalLastObserved',
+        'TopFileNames': 'topFileNames',
+    }
 
     # Arrange
     results = get_file_statistics_command(client_mocker, {'file_hash': '0991a395da64e1c5fbe8732ed11e6be064081d9f'})
-    indicator_values = list(results.indicator.to_context().values())[0]
-    context_output = results.outputs
+    statistics_context_output = results.outputs['Statistics']
 
     # Assert
-    # Check for correct indicator field values
-    assert indicator_values['GlobalPrevalence'] == FILE_STATISTICS_API_RESPONSE['globallyPrevalence']
-    assert indicator_values['OrganizationPrevalence'] == FILE_STATISTICS_API_RESPONSE['organizationPrevalence']
+    for context_key, response_key in context_to_response_key_mapping.items():
+        assert statistics_context_output[context_key] == FILE_STATISTICS_API_RESPONSE[response_key]
 
-    # Check for correct context
-    assert context_output is not None
-    assert context_output['Statistics']['GlobalPrevalence'] == FILE_STATISTICS_API_RESPONSE['globallyPrevalence']
-    assert context_output['Statistics']['OrgPrevalence'] == FILE_STATISTICS_API_RESPONSE['organizationPrevalence']
-
-    # Check for correct raw response
     assert results.raw_response == FILE_STATISTICS_API_RESPONSE
+
+
+def test_get_file_statistics_indicator():
+    """
+    Given:
+    - SHA1 File hash and Defender for Endpoint file statistics API response
+
+    When:
+    - Calling the get_file_statistics_indicator function
+
+    Then:
+    - Assert correct indicator field values
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_file_statistics_indicator
+
+    # Set
+    indicator_to_response_key_mapping: dict = {
+        'GlobalPrevalence': 'globallyPrevalence',
+        'OrganizationPrevalence': 'organizationPrevalence',
+        'OrganizationFirstSeen': 'orgFirstSeen',
+        'OrganizationLastSeen': 'orgLastSeen',
+        'GlobalFirstSeen': 'globalFirstObserved',
+        'GlobalLastSeen': 'globalLastObserved',
+    }
+
+    # Arrange
+    file_indicator = get_file_statistics_indicator('0991a395da64e1c5fbe8732ed11e6be064081d9f', FILE_STATISTICS_API_RESPONSE)
+    indicator_data: dict = next(iter(file_indicator.to_context().values()))
+
+    # Assert
+    for indicator_key, response_key in indicator_to_response_key_mapping.items():
+        assert indicator_data[indicator_key] == FILE_STATISTICS_API_RESPONSE[response_key]

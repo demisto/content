@@ -3878,6 +3878,18 @@ class Common(object):
         :type global_prevalence: ``int``
         :param global_prevalence: The frequency of detection across all organizations.
 
+        :type organization_first_seen: ``str``
+        :param organization_first_seen: ISO 8601 date time string; the first time a specific organization encountered an indicator.
+
+        :type organization_last_seen: ``str``
+        :param organization_last_seen: ISO 8601 date time string; the last time a specific organization encountered an indicator.
+
+        :type global_first_seen: ``str``
+        :param global_first_seen: ISO 8601 date time string; the first time an indicator was detected globally across all organizations.
+
+        :type global_last_seen: ``str``
+        :param global_last_seen: ISO 8601 date time string; the last time an indicator was detected globally across all organizations.
+
         :rtype: ``None``
         :return: None
         """
@@ -3893,7 +3905,8 @@ class Common(object):
                      associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
                      publications=None, threat_types=None, behaviors=None, relationships=None,
                      creation_date=None, description=None, hashes=None, stix_id=None, organization_prevalence=None,
-                     global_prevalence=None):
+                     global_prevalence=None, organization_first_seen=None, organization_last_seen=None,
+                     global_first_seen=None, global_last_seen=None):
 
             # Main value of a file (Hashes)
             self.md5 = md5
@@ -3936,6 +3949,10 @@ class Common(object):
             self.behaviors = behaviors
             self.organization_prevalence = organization_prevalence
             self.global_prevalence = global_prevalence
+            self.organization_first_seen = organization_first_seen
+            self.organization_last_seen = organization_last_seen
+            self.global_first_seen = global_first_seen
+            self.global_last_seen = global_last_seen
 
             # XSOAR Fields
             self.relationships = relationships
@@ -4056,6 +4073,18 @@ class Common(object):
 
             if self.global_prevalence is not None:  # cases where value is 0 should be written to file_context
                 file_context['GlobalPrevalence'] = self.global_prevalence
+
+            if self.organization_first_seen:
+                file_context['OrganizationFirstSeen'] = self.organization_first_seen
+
+            if self.organization_last_seen:
+                file_context['OrganizationLastSeen'] = self.organization_last_seen
+
+            if self.global_first_seen:
+                file_context['GlobalFirstSeen'] = self.global_first_seen
+
+            if self.global_last_seen:
+                file_context['GlobalLastSeen'] = self.global_last_seen
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {

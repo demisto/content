@@ -3391,7 +3391,7 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    file_sha1 = args.get('file_hash')
+    file_sha1 = args.get('file_hash', '')
     response = client.get_file_statistics(file_sha1)
     file_stat = get_file_statistics_context(response)
     human_readable = tableToMarkdown(f'Statistics on {file_sha1} file:', file_stat, removeNull=True)
@@ -3399,7 +3399,7 @@ def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
         'Sha1': file_sha1,
         'Statistics': file_stat
     }
-    file_indicator = get_file_statistics_indicator(response)
+    file_indicator = get_file_statistics_indicator(file_sha1, response)
     demisto.debug(f'Got file indicator: {file_indicator.to_context()}')
 
     return CommandResults(
@@ -3432,7 +3432,7 @@ def get_file_statistics_context(file_stat_response: dict) -> dict:
     )
 
 
-def get_file_statistics_indicator(file_stat_response: dict) -> Common.File:
+def get_file_statistics_indicator(file_hash: str, file_stat_response: dict) -> Common.File:
     """Creates File indicator from the file statistics response
 
     Args:
@@ -3441,17 +3441,33 @@ def get_file_statistics_indicator(file_stat_response: dict) -> Common.File:
     Returns:
         Common.File: File indicator
     """
-    return Common.File(
-        Common.DBotScore.NONE,
+    indicator_data: dict = assign_params(
         sha1=file_stat_response.get('sha1'),
-        path="dummy/path/",  # will remove before merge
         organization_prevalence=file_stat_response.get('organizationPrevalence'),
         global_prevalence=file_stat_response.get('globallyPrevalence'),
-        # organization_first_seen=file_stat_response.get('orgFirstSeen'),
-        # organization_last_seen=file_stat_response.get('orgLastSeen'),
-        # global_first_seen=file_stat_response.get('globalFirstObserved'),
-        # global_last_seen=file_stat_response.get('globalLastObserved'),
+        organization_first_seen=file_stat_response.get('orgFirstSeen'),
+        organization_last_seen=file_stat_response.get('orgLastSeen'),
+        global_first_seen=file_stat_response.get('globalFirstObserved'),
+        global_last_seen=file_stat_response.get('globalLastObserved'),
     )
+
+    demisto.createIndicators(
+        [
+            {
+                'value': file_hash,
+                'type': 'File',
+                'score': Common.DBotScore.NONE,
+                'fields': {
+                    # CLI name needs to be lowercase connected
+                    field_name.replace('_', '').lower(): field_value
+                    for field_name, field_value in indicator_data.items()
+                },
+                'rawJSON': file_stat_response,
+            }
+        ]
+    )
+
+    return Common.File(Common.DBotScore.NONE, **indicator_data)
 
 
 def get_file_alerts_command(client: MsClient, args: dict):

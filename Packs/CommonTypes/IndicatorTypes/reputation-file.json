@@ -463,24 +463,6 @@
               ]
           }
       },
-      "organizationprevalence": {
-        "simple": "",
-        "complex": {
-            "root": "File",
-            "filters": [],
-            "accessor": "OrganizationPrevalence",
-            "transformers": []
-        }
-      },
-      "globalprevalence": {
-        "simple": "",
-        "complex": {
-            "root": "File",
-            "filters": [],
-            "accessor": "GlobalPrevalence",
-            "transformers": []
-        }
-      },
       "tags": {
         "simple": "",
         "complex": {
@@ -494,6 +476,30 @@
             }
           ]
         }
+      },
+      "organizationprevalence": {
+        "simple": "File.OrganizationPrevalence",
+        "complex": null
+      },
+      "globalprevalence": {
+        "simple": "File.GlobalPrevalence",
+        "complex": null
+      },
+      "organizationfirstseen": {
+        "simple": "File.OrganizationFirstSeen",
+        "complex": null
+      },
+      "organizationlastseen": {
+        "simple": "File.OrganizationLastSeen",
+        "complex": null
+      },
+      "globalfirstseen": {
+        "simple": "File.GlobalFirstSeen",
+        "complex": null
+      },
+      "globallastseen": {
+        "simple": "File.GlobalLastSeen",
+        "complex": null
       }
     },
     "manualMapping": null,
