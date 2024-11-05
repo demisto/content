@@ -861,8 +861,7 @@ def parse_xsoar_field_name_and_link(xsoar_comment_field: list[str]) -> tuple[str
 
     if len(xsoar_comment_field) == 2:
         if "indicator_link" not in xsoar_comment_field:
-            raise DemistoException(f"The parameter {xsoar_comment_field=} cannot contain two fields without indicator_link."
-                                   f"If it contains two fields, one of them should be indicator_link.")
+            raise DemistoException(f"The parameter {xsoar_comment_field=} should only contain the field name, or the field name with the phrase indicator_link, separated by a comma.")
 
         return xsoar_comment_field[0] if xsoar_comment_field[0] != "indicator_link" else xsoar_comment_field[1], True
 
