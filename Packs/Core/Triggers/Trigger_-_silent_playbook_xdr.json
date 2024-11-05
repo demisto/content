@@ -1,0 +1,19 @@
+{
+  "trigger_id": "d9c61acf11629e2cc6a85d45fca1939c",
+  "playbook_id": "silent playbook xdr",
+  "suggestion_reason": "Recommended for 'xdr alert' alert",
+  "description": "This trigger is responsible for handling the 'xdr alert' alert",
+  "trigger_name": "silent playbook xdr",
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+          {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "xdr alert"
+          }
+        ]
+      }
+  }
+}
+
