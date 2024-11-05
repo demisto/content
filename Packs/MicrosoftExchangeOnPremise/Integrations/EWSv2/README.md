@@ -66,6 +66,8 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
     | Timeout (in seconds) for HTTP requests to Exchange Server                                                                                     | False        |
     | Max incidents per fetch                                                                                                                       | False        |
     | Run as a separate process (protects against memory depletion)                                                                                 | False        |
+    | Skip unparsable emails during fetch incidents                                                                                                 | False        |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
