@@ -1,7 +1,7 @@
 import json
 import unittest
-from unittest.mock import MagicMock, patch
 import uuid
+from unittest.mock import MagicMock, patch
 
 import pytest
 from EWSO365 import (
@@ -10,24 +10,24 @@ from EWSO365 import (
     ExpandGroup,
     GetSearchableMailboxes,
     add_additional_headers,
+    cast_mime_item_to_message,
     create_message,
+    decode_email_data,
     email,
     fetch_emails_as_incidents,
     fetch_last_emails,
     find_folders,
+    get_attachment_name,
     get_expanded_group,
     get_item_as_eml,
     get_searchable_mailboxes,
+    handle_attached_email_with_incorrect_from_header,
     handle_attached_email_with_incorrect_message_id,
     handle_html,
     handle_incorrect_message_id,
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
-    cast_mime_item_to_message,
-    decode_email_data,
-    get_attachment_name,
-    handle_attached_email_with_incorrect_from_header,
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
@@ -282,7 +282,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     client.get_folder_by_path = mock_get_folder_by_path
     client.folder_name = 'Inbox'
     last_run = mocker.patch.object(demisto, 'setLastRun')
-    fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER)
+    fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER, False)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
 
@@ -325,11 +325,11 @@ def test_fetch_and_mark_as_read(mocker):
     client.folder_name = 'Inbox'
     mark_item_as_read = mocker.patch('EWSO365.mark_item_as_read')
 
-    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER)
+    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER, False)
     assert mark_item_as_read.called is False
 
     client.mark_as_read = True
-    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER)
+    fetch_emails_as_incidents(client, {}, RECEIVED_FILTER, False)
     assert mark_item_as_read.called is True
 
 

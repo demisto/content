@@ -408,7 +408,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     EWSv2.MAX_FETCH = 1
     last_run = mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'getLastRun', return_value=current_last_run)
-    fetch_emails_as_incidents(client, 'Inbox')
+    fetch_emails_as_incidents(client, 'Inbox', False)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
 
