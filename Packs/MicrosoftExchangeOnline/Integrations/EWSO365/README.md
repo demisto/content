@@ -6,22 +6,22 @@ The EWS O365 integration implants EWS leading services. The integration allows g
 
 The EWS integration can be used for the following use cases.
 
-* Monitor a specific email account and create incidents from incoming emails to the defined folder.
+* Monitor a specific email account and create incidents from incoming emails to the defined folder.  
     Follow the instructions in the [Fetched Incidents Data section](https://xsoar.pan.dev/docs/reference/integrations/ewso365#fetched-incidents-data).
 
-* Search for an email message across mailboxes and folders.
+* Search for an email message across mailboxes and folders.  
 
-    Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.
+    Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
      Use the query argument to narrow the search for emails sent from a specific account and more.
     This command retrieves the _ItemID_ field for each email item listed in the results. The `ItemID` value can be used in the `ews-get-items` command in order to get more information about the email item itself.
 
-* Get email attachment information.
+* Get email attachment information.  
     Use the `ews-get-attachment` command to retrieve information on one attachment or all attachments of a message at once. It supports both file attachments and item attachments (e.g., email messages).
 
-* Delete email items from a mailbox.
-    First, make sure you obtain the email item ID. The item ID can be obtained with one of the integration’s search commands.
-    Use the `ews-delete-items`<span> command </span>to delete one or more items from the target mailbox in a single action.
-    A less common use case is to remove emails that were marked as malicious from a user’s mailbox.
+* Delete email items from a mailbox.  
+    First, make sure you obtain the email item ID. The item ID can be obtained with one of the integration’s search commands.  
+    Use the `ews-delete-items`<span> command </span>to delete one or more items from the target mailbox in a single action.  
+    A less common use case is to remove emails that were marked as malicious from a user’s mailbox.  
     You can delete the items permanently (hard delete) or delete the items (soft delete), so they can be recovered by running the `ews-recover-messages` command.
 
 ## Architecture
@@ -50,7 +50,7 @@ For more details about the authentication used in this integration, see [Microso
 In order to function as expected, the service account should have:
 
 **Impersonation rights** - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and instructions on how to set up the permission, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
-Most commands require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
+Most commands require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
 
 **eDiscovery** permissions to the Exchange Server. For users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information, see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
 The need for this permission is specified in each relevant command's Permission section.
@@ -61,7 +61,7 @@ To set this permission follow these steps:
 1. Navigate to **Home** > **App registrations**.
 2. Search for your app under *all applications*.
 3. Click **API permissions** > **Add permission**.
-4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission.
+4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission. 
 
 For more information on this permission, see [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
 
@@ -91,7 +91,6 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Run as a separate process (protects against memory depletion) |  | False |
 | Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
 | Incidents Fetch Interval |  | False |
-| Skip unparsable emails during fetch incidents | Whether to skip unparsable emails during incident fetching. | False |
 | What time field should we filter incidents by? | Default is to filter by received-time, which works well if the folder is an "Inbox". But for a folder emails are dragged into for attention, if we filter by received-time, out-of-order processing of emails means some are ignored. Filtering by modified-time works better for such a scenario. This works best if any modifications \(such as tagging\) happens before moving the email into the folder, such that the move into the folder is the last modification, and triggers Cortex XSOAR to fetch it as an incident. | False |
 
 ## Fetch Incidents
@@ -100,13 +99,13 @@ The integration imports email messages from the destination folder in the target
 
 To use Fetch incidents, configure a new instance and select the `Fetches incidents` option in the instance settings.
 
-**IMPORTANT**:
+**IMPORTANT**:  
 `First fetch timestamp` field is used to determine how much time back to fetch incidents from. The default value is the previous 10 minutes, Meaning, if this is the first time emails are fetched from the destination folder, all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched.
 When set to get a long period of time, the `Timeout` field might need to be set to a higher value.
 
 Pay special attention to the following fields in the instance settings:
 
-- `Email Address` – mailbox to fetch incidents from.
+- `Email Address` – mailbox to fetch incidents from.  
 - `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
 
 #### Permissions
@@ -179,38 +178,38 @@ No known limitations.
     "EWS": {
         "Items": {
             "ItemAttachments": {
-                "originalItemId": "BBFDShfdafFSDF3FADR3434DFASDFADAFDADFADFCJebinpkUAAAfxuiVAAA=",
-                "attachmentSize": 2956,
-                "receivedBy": "test@demistodev.onmicrosoft.com",
-                "size": 28852,
-                "author": "test2@demistodev.onmicrosoft.com",
-                "attachmentLastModifiedTime": "2019-08-11T15:01:30+00:00",
-                "subject": "Moving Email between mailboxes",
-                "body": "Some text inside",
-                "datetimeCreated": "2019-08-11T15:01:47Z",
-                "importance": "Normal",
-                "attachmentType": "ItemAttachment",
+                "originalItemId": "BBFDShfdafFSDF3FADR3434DFASDFADAFDADFADFCJebinpkUAAAfxuiVAAA=", 
+                "attachmentSize": 2956, 
+                "receivedBy": "test@demistodev.onmicrosoft.com", 
+                "size": 28852, 
+                "author": "test2@demistodev.onmicrosoft.com", 
+                "attachmentLastModifiedTime": "2019-08-11T15:01:30+00:00", 
+                "subject": "Moving Email between mailboxes", 
+                "body": "Some text inside", 
+                "datetimeCreated": "2019-08-11T15:01:47Z", 
+                "importance": "Normal", 
+                "attachmentType": "ItemAttachment", 
                 "toRecipients": [
                     "test@demistodev.onmicrosoft.com"
-                ],
-                "mailbox": "test@demistodev.onmicrosoft.com",
-                "isRead": false,
-                "attachmentIsInline": false,
-                "datetimeSent": "2019-08-07T12:50:19Z",
-                "lastModifiedTime": "2019-08-11T15:01:30Z",
-                "sender": "test2@demistodev.onmicrosoft.com",
-                "attachmentName": "Moving Email between mailboxes",
-                "datetimeReceived": "2019-08-07T12:50:20Z",
-                "attachmentSHA256": "119e27b28dc81bdfd4f498d44bd7a6d553a74ee03bdc83e6255a53",
-                "hasAttachments": false,
+                ], 
+                "mailbox": "test@demistodev.onmicrosoft.com", 
+                "isRead": false, 
+                "attachmentIsInline": false, 
+                "datetimeSent": "2019-08-07T12:50:19Z", 
+                "lastModifiedTime": "2019-08-11T15:01:30Z", 
+                "sender": "test2@demistodev.onmicrosoft.com", 
+                "attachmentName": "Moving Email between mailboxes", 
+                "datetimeReceived": "2019-08-07T12:50:20Z", 
+                "attachmentSHA256": "119e27b28dc81bdfd4f498d44bd7a6d553a74ee03bdc83e6255a53", 
+                "hasAttachments": false, 
                 "headers": [
                     {
-                        "name": "Subject",
+                        "name": "Subject", 
                         "value": "Moving Email between mailboxes"
                     }
                 ...
-                ],
-                "attachmentId": "BBFDShfdafFSDF3FADR3434DFASDFADAFDADFADFCJebinpkUAAAfxuiVAAABEgAQAOpEfpzDB4dFkZ+/K4XSj44=",
+                ], 
+                "attachmentId": "BBFDShfdafFSDF3FADR3434DFASDFADAFDADFADFCJebinpkUAAAfxuiVAAABEgAQAOpEfpzDB4dFkZ+/K4XSj44=", 
                 "messageId": "message_id"
             }
         }
@@ -329,9 +328,9 @@ There are no input arguments for this command.
     "EWS": {
         "Mailboxes": [
             {
-                "mailbox": "test@demistodev.onmicrosoft.com",
-                "displayName": "test",
-                "mailboxId": "/o=Exchange***/ou=Exchange Administrative Group ()/cn=**/cn=**-**",
+                "mailbox": "test@demistodev.onmicrosoft.com", 
+                "displayName": "test", 
+                "mailboxId": "/o=Exchange***/ou=Exchange Administrative Group ()/cn=**/cn=**-**", 
                 "isExternal": "false"
             }
             ...
@@ -396,9 +395,9 @@ No known limitations.
     {
         "EWS": {
             "Items": {
-                "action": "moved",
-                "itemId": "VDAFNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU34cSCSSSfBJebinpkUAAAAAAEMAACyyVyFtlsUQZfBJebinpkUAAAfxuiRAAA",
-                "newItemId": "AAVAAAVN2NkLThmZjdmNTZjNTMxFFFFJTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAAa2bUBAACyyVfafainpkUAAAfxxd+AAA=",
+                "action": "moved", 
+                "itemId": "VDAFNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU34cSCSSSfBJebinpkUAAAAAAEMAACyyVyFtlsUQZfBJebinpkUAAAfxuiRAAA", 
+                "newItemId": "AAVAAAVN2NkLThmZjdmNTZjNTMxFFFFJTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAAa2bUBAACyyVfafainpkUAAAfxxd+AAA=", 
                 "messageId": "<message_id>"
             }
         }
@@ -457,8 +456,8 @@ No known limitations.
 {
     "EWS": {
         "Items": {
-            "action": "soft-deleted",
-            "itemId": "VWAFA3hmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMGAACyw+kAAA=",
+            "action": "soft-deleted", 
+            "itemId": "VWAFA3hmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMGAACyw+kAAA=", 
             "messageId": "messaage_id"
         }
     }
@@ -535,47 +534,47 @@ No known limitations.
 {
     "EWS": {
         "Items": {
-            "body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<style type=\"text/css\" style=\"display:none;\"><!-- P {margin-top:0;margin-bottom:0;} --></style>\r\n</head>\r\n<body dir=\"ltr\">\r\n<div id=\"divtagrapper\" style=\"font-size:12pt;color:#000000;font-family:Calibri,Helvetica,sans-serif;\" dir=\"ltr\">\r\n<p style=\"margin-top:0;margin-bottom:0\">Some text inside email</p>\r\n</div>\r\n</body>\r\n</html>\r\n",
-            "itemId": "AAMkADQ0NmFFijer3FFmNTZjNTMxNwBGAAAAAAFSAAfxw+jAAA=",
+            "body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<style type=\"text/css\" style=\"display:none;\"><!-- P {margin-top:0;margin-bottom:0;} --></style>\r\n</head>\r\n<body dir=\"ltr\">\r\n<div id=\"divtagrapper\" style=\"font-size:12pt;color:#000000;font-family:Calibri,Helvetica,sans-serif;\" dir=\"ltr\">\r\n<p style=\"margin-top:0;margin-bottom:0\">Some text inside email</p>\r\n</div>\r\n</body>\r\n</html>\r\n", 
+            "itemId": "AAMkADQ0NmFFijer3FFmNTZjNTMxNwBGAAAAAAFSAAfxw+jAAA=", 
             "toRecipients": [
                 "test@demistodev.onmicrosoft.com"
-            ],
-            "datetimeCreated": "2019-08-11T10:57:37Z",
-            "datetimeReceived": "2019-08-11T10:57:37Z",
-            "author": "test2@demistodev.onmicrosoft.com",
-            "hasAttachments": true,
-            "size": 30455,
-            "subject": "Get Attachment Email",
+            ], 
+            "datetimeCreated": "2019-08-11T10:57:37Z", 
+            "datetimeReceived": "2019-08-11T10:57:37Z", 
+            "author": "test2@demistodev.onmicrosoft.com", 
+            "hasAttachments": true, 
+            "size": 30455, 
+            "subject": "Get Attachment Email", 
             "FileAttachments": [
                 {
-                    "attachmentName": "atta1.rtf",
-                    "attachmentSHA256": "csfd81097bc049fbcff6e637ade0407a00308bfdfa339e31a44a1c4e98f28ce36e4f",
-                    "attachmentType": "FileAttachment",
-                    "attachmentSize": 555,
-                    "attachmentId": "AAMkADQ0NmFkODFkLWQ4MDEtNDE4Mi1hN2NkLThmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAfxw+jAAABEgAQAEyq1TB2nKBLpKUiFUJ5Geg=",
-                    "attachmentIsInline": false,
-                    "attachmentLastModifiedTime": "2019-08-11T11:06:02+00:00",
-                    "attachmentContentLocation": null,
-                    "attachmentContentType": "text/rtf",
-                    "originalItemId": "AAMkADQ0NmFFijer3FFmNTZjNTMxNwBGAAAAAAFSAAfxw+jAAA=",
+                    "attachmentName": "atta1.rtf", 
+                    "attachmentSHA256": "csfd81097bc049fbcff6e637ade0407a00308bfdfa339e31a44a1c4e98f28ce36e4f", 
+                    "attachmentType": "FileAttachment", 
+                    "attachmentSize": 555, 
+                    "attachmentId": "AAMkADQ0NmFkODFkLWQ4MDEtNDE4Mi1hN2NkLThmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAfxw+jAAABEgAQAEyq1TB2nKBLpKUiFUJ5Geg=", 
+                    "attachmentIsInline": false, 
+                    "attachmentLastModifiedTime": "2019-08-11T11:06:02+00:00", 
+                    "attachmentContentLocation": null, 
+                    "attachmentContentType": "text/rtf", 
+                    "originalItemId": "AAMkADQ0NmFFijer3FFmNTZjNTMxNwBGAAAAAAFSAAfxw+jAAA=", 
                     "attachmentContentId": null
                 }
-            ],
+            ], 
             "headers": [
                 {
-                    "name": "Subject",
+                    "name": "Subject", 
                     "value": "Get Attachment Email"
-                },
+                }, 
                 ...
-            ],
-            "isRead": true,
-            "messageId": "<mesage_id>",
-            "receivedBy": "test@demistodev.onmicrosoft.com",
-            "datetimeSent": "2019-08-11T10:57:36Z",
-            "lastModifiedTime": "2019-08-11T11:13:59Z",
-            "mailbox": "test@demistodev.onmicrosoft.com",
-            "importance": "Normal",
-            "textBody": "Some text inside email\r\n",
+            ], 
+            "isRead": true, 
+            "messageId": "<mesage_id>", 
+            "receivedBy": "test@demistodev.onmicrosoft.com", 
+            "datetimeSent": "2019-08-11T10:57:36Z", 
+            "lastModifiedTime": "2019-08-11T11:13:59Z", 
+            "mailbox": "test@demistodev.onmicrosoft.com", 
+            "importance": "Normal", 
+            "textBody": "Some text inside email\r\n", 
             "sender": "test2@demistodev.onmicrosoft.com"
         }
     }
@@ -637,27 +636,27 @@ No known limitations.
 {
     "Account.Email": [
         {
-            "itemClass": "IPM.Contact",
-            "lastModifiedName": "John Smith",
-            "displayName": "Contact Name",
-            "datetimeCreated": "2019-08-05T12:35:36Z",
-            "datetimeReceived": "2019-08-05T12:35:36Z",
-            "fileAsMapping": "LastCommaFirst",
-            "importance": "Normal",
-            "sensitivity": "Normal",
-            "postalAddressIndex": "None",
-            "webClientReadFormQueryString": "https://outlook.office365.com/owa/?ItemID=***",
-            "uniqueBody": "<html><body></body></html>",
-            "fileAs": "Contact Name",
-            "culture": "en-US",
-            "changekey": "EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N",
-            "lastModifiedTime": "2019-08-05T12:35:36Z",
-            "datetimeSent": "2019-08-05T12:35:36Z",
+            "itemClass": "IPM.Contact", 
+            "lastModifiedName": "John Smith", 
+            "displayName": "Contact Name", 
+            "datetimeCreated": "2019-08-05T12:35:36Z", 
+            "datetimeReceived": "2019-08-05T12:35:36Z", 
+            "fileAsMapping": "LastCommaFirst", 
+            "importance": "Normal", 
+            "sensitivity": "Normal", 
+            "postalAddressIndex": "None", 
+            "webClientReadFormQueryString": "https://outlook.office365.com/owa/?ItemID=***", 
+            "uniqueBody": "<html><body></body></html>", 
+            "fileAs": "Contact Name", 
+            "culture": "en-US", 
+            "changekey": "EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N", 
+            "lastModifiedTime": "2019-08-05T12:35:36Z", 
+            "datetimeSent": "2019-08-05T12:35:36Z", 
             "emailAddresses": [
                 "some@dev.microsoft.com"
-            ],
-            "givenName": "Contact Name",
-            "id": "AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=",
+            ], 
+            "givenName": "Contact Name", 
+            "id": "AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=", 
             "subject": "Contact Name"
         }
     ]
@@ -722,10 +721,10 @@ No known limitations.
     "Account": {
         "Email": {
             "OutOfOffice": {
-                "start": "2019-08-11T13:00:00Z",
-                "state": "Disabled",
-                "mailbox": "test@demistodev.onmicrosoft.com",
-                "end": "2019-08-12T13:00:00Z",
+                "start": "2019-08-11T13:00:00Z", 
+                "state": "Disabled", 
+                "mailbox": "test@demistodev.onmicrosoft.com", 
+                "end": "2019-08-12T13:00:00Z", 
                 "externalAudience": "All"
             }
         }
@@ -788,8 +787,8 @@ No known limitations.
 {
     "EWS": {
         "Items": {
-            "action": "recovered",
-            "itemId": "AAVCSVS1hN2NkLThmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed33wX3aBwCyyVyFtlsUQZfBJebinpkUAAAa2bUBAACyyVyFtlscfxxd/AAA=",
+            "action": "recovered", 
+            "itemId": "AAVCSVS1hN2NkLThmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed33wX3aBwCyyVyFtlsUQZfBJebinpkUAAAa2bUBAACyyVyFtlscfxxd/AAA=", 
             "messageId": "<DFVDFmvsCSCS.com>"
         }
     }
@@ -887,7 +886,7 @@ There is no context output for this command.
 {
     "EWS": {
         "Items": {
-            "action": "marked-as-junk",
+            "action": "marked-as-junk", 
             "itemId": "AAMkcSQ0NmFkOhmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUcsBJebinpkUAAAAAAEMASFDkUAAAfxuiSAAA="
         }
     }
@@ -986,13 +985,13 @@ root
 ```
 {
     "EWS": {
-        "Folders": [
+        "Folders": [    
             {
-                "unreadCount": 1,
-                "name": "Inbox",
-                "childrenFolderCount": 1,
-                "totalCount": 44,
-                "changeKey": "**********fefsduQi0",
+                "unreadCount": 1, 
+                "name": "Inbox", 
+                "childrenFolderCount": 1, 
+                "totalCount": 44, 
+                "changeKey": "**********fefsduQi0", 
                 "id": "*******VyFtlFDSAFDSFDAAA="
             }
             ...
@@ -1053,7 +1052,7 @@ No known limitations.
 |EWS.Items.FileAttachments.attachmentName|unknown|Attachment name of the file attachment.|
 |EWS.Items.ItemAttachments.attachmentName|unknown|Attachment name of the item attachment.|
 |EWS.Items.isRead|String|The read status of the email.|
-|EWS.Items.categories|String|Categories of the email.|
+|EWS.Items.categories|String|Categories of the email.| 
 
 #### Examples
 
@@ -1073,47 +1072,47 @@ No known limitations.
 {
     "EWS": {
         "Items": {
-            "body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<style type=\"text/css\" style=\"display:none;\"><!-- P {margin-top:0;margin-bottom:0;} --></style>\r\n</head>\r\n<body dir=\"ltr\">\r\n<div id=\"divtagdefaultwrapper\" style=\"font-size:12pt;color:#000000;font-family:Calibri,Helvetica,sans-serif;\" dir=\"ltr\">\r\n<p style=\"margin-top:0;margin-bottom:0\">Some text inside email</p>\r\n</div>\r\n</body>\r\n</html>\r\n",
-            "itemId": "AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=",
+            "body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<style type=\"text/css\" style=\"display:none;\"><!-- P {margin-top:0;margin-bottom:0;} --></style>\r\n</head>\r\n<body dir=\"ltr\">\r\n<div id=\"divtagdefaultwrapper\" style=\"font-size:12pt;color:#000000;font-family:Calibri,Helvetica,sans-serif;\" dir=\"ltr\">\r\n<p style=\"margin-top:0;margin-bottom:0\">Some text inside email</p>\r\n</div>\r\n</body>\r\n</html>\r\n", 
+            "itemId": "AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=", 
             "toRecipients": [
                 "test@demistodev.onmicrosoft.com"
-            ],
-            "datetimeCreated": "2019-08-11T10:57:37Z",
-            "datetimeReceived": "2019-08-11T10:57:37Z",
-            "author": "test2@demistodev.onmicrosoft.com",
-            "hasAttachments": true,
-            "size": 21435,
-            "subject": "Get Attachment Email",
+            ], 
+            "datetimeCreated": "2019-08-11T10:57:37Z", 
+            "datetimeReceived": "2019-08-11T10:57:37Z", 
+            "author": "test2@demistodev.onmicrosoft.com", 
+            "hasAttachments": true, 
+            "size": 21435, 
+            "subject": "Get Attachment Email", 
             "FileAttachments": [
                 {
-                    "attachmentName": "atta1.rtf",
-                    "attachmentSHA256": "cd81097bcvdiojf3407a00308b48039e31a44a1c4fdnfkdknce36e4f",
-                    "attachmentType": "FileAttachment",
-                    "attachmentSize": 535,
-                    "attachmentId": "AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAABEgAQAEyq1TB2nKBLpKUiFUJ5Geg=",
-                    "attachmentIsInline": false,
-                    "attachmentLastModifiedTime": "2019-08-11T11:06:02+00:00",
-                    "attachmentContentLocation": null,
-                    "attachmentContentType": "text/rtf",
-                    "originalItemId": "AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=",
+                    "attachmentName": "atta1.rtf", 
+                    "attachmentSHA256": "cd81097bcvdiojf3407a00308b48039e31a44a1c4fdnfkdknce36e4f", 
+                    "attachmentType": "FileAttachment", 
+                    "attachmentSize": 535, 
+                    "attachmentId": "AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAABEgAQAEyq1TB2nKBLpKUiFUJ5Geg=", 
+                    "attachmentIsInline": false, 
+                    "attachmentLastModifiedTime": "2019-08-11T11:06:02+00:00", 
+                    "attachmentContentLocation": null, 
+                    "attachmentContentType": "text/rtf", 
+                    "originalItemId": "AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=", 
                     "attachmentContentId": null
                 }
-            ],
+            ], 
             "headers": [
                 {
-                    "name": "Subject",
+                    "name": "Subject", 
                     "value": "Get Attachment Email"
                 },
                 ...
-                            ],
-            "isRead": true,
-            "messageId": "<message_id>",
-            "receivedBy": "test@demistodev.onmicrosoft.com",
-            "datetimeSent": "2019-08-11T10:57:36Z",
-            "lastModifiedTime": "2019-08-11T11:13:59Z",
-            "mailbox": "test@demistodev.onmicrosoft.com",
-            "importance": "Normal",
-            "textBody": "Some text inside email\r\n",
+                            ], 
+            "isRead": true, 
+            "messageId": "<message_id>", 
+            "receivedBy": "test@demistodev.onmicrosoft.com", 
+            "datetimeSent": "2019-08-11T10:57:36Z", 
+            "lastModifiedTime": "2019-08-11T11:13:59Z", 
+            "mailbox": "test@demistodev.onmicrosoft.com", 
+            "importance": "Normal", 
+            "textBody": "Some text inside email\r\n", 
             "sender": "test2@demistodev.onmicrosoft.com"
         }
     }
@@ -1169,7 +1168,7 @@ No known limitations.
 |EWS.Items.FileAttachments.attachmentName|unknown|Attachment name of the file attachment.|
 |EWS.Items.ItemAttachments.attachmentName|unknown|Attachment name of the item attachment.|
 |EWS.Items.isRead|String|The read status of the email.|
-|EWS.Items.categories|String|Categories of the email.|
+|EWS.Items.categories|String|Categories of the email.| 
 |Email.CC|String|Email addresses CC'ed to the email.|
 |Email.BCC|String|Email addresses BCC'ed to the email.|
 |Email.To|String|The recipient of the email.|
@@ -1243,7 +1242,7 @@ No known limitations.
 {
     "EWS": {
         "Items": {
-            "movedToMailbox": "test@demistodev.onmicrosoft.com",
+            "movedToMailbox": "test@demistodev.onmicrosoft.com", 
             "movedToFolder": "Moving"
         }
     }
@@ -1306,11 +1305,11 @@ If Exchange is configured with an international flavor, `Inbox` will be named ac
 {
     "EWS": {
         "Folders": {
-            "unreadCount": 0,
-            "name": "demistoEmail",
-            "childrenFolderCount": 0,
-            "totalCount": 1,
-            "changeKey": "***yFtCdJSH",
+            "unreadCount": 0, 
+            "name": "demistoEmail", 
+            "childrenFolderCount": 0, 
+            "totalCount": 1, 
+            "changeKey": "***yFtCdJSH", 
             "id": "AAMkADQ0NmFkODFkLWQ4MDEtNDE4Mi1hN2NlsjflsjfSF="
         }
     }
@@ -1364,11 +1363,11 @@ There is no context output for this command.
 ```
 {
     "EWS.ExpandGroup": {
-        "name": "TestPublic",
+        "name": "TestPublic", 
         "members": [
             {
-                "mailboxType": "Mailbox",
-                "displayName": "John Wick",
+                "mailboxType": "Mailbox", 
+                "displayName": "John Wick", 
                 "mailbox": "john@wick.com"
             }
         ]
@@ -1429,8 +1428,8 @@ No known limitations.
 {
     "EWS": {
         "Items": {
-            "action": "marked-as-read",
-            "itemId": "AAMkADQ0NFSffU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMnpkUAAAfxw+jAAA= ",
+            "action": "marked-as-read", 
+            "itemId": "AAMkADQ0NFSffU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMnpkUAAAfxw+jAAA= ", 
             "messageId": "message_id"
         }
     }
@@ -1460,21 +1459,21 @@ When sending the email to an Outlook account, Outlook UI fails to display custom
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | Email addresses for the 'To' field. Supports comma-separated values | Optional |
-| cc | Email addresses for the 'Cc' field. Supports comma-separated values | Optional |
-| bcc | Email addresses for the 'Bcc' field. Supports comma-separated values | Optional |
-| subject | Subject for the email to be sent | Optional |
-| body | The contents (body) of the email to be sent in plain text | Optional |
-| htmlBody | The contents (body) of the email to be sent in HTML format | Optional |
-| attachIDs | A comma-separated list of IDs of war room entries that contains the files that should be attached to the email | Optional |
-| attachNames | A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3) | Optional |
-| attachCIDs | A comma-separated list of CIDs to embed attachments inside the email itself | Optional |
-| transientFile | Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional |
-| transientFileContent | Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional |
-| transientFileCID | CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional |
-| templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not. | Optional |
-| additionalHeader | A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional |
-| raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional |
+| to | Email addresses for the 'To' field. Supports comma-separated values | Optional | 
+| cc | Email addresses for the 'Cc' field. Supports comma-separated values | Optional | 
+| bcc | Email addresses for the 'Bcc' field. Supports comma-separated values | Optional | 
+| subject | Subject for the email to be sent | Optional | 
+| body | The contents (body) of the email to be sent in plain text | Optional | 
+| htmlBody | The contents (body) of the email to be sent in HTML format | Optional | 
+| attachIDs | A comma-separated list of IDs of war room entries that contains the files that should be attached to the email | Optional | 
+| attachNames | A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3) | Optional | 
+| attachCIDs | A comma-separated list of CIDs to embed attachments inside the email itself | Optional | 
+| transientFile | Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| transientFileContent | Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| transientFileCID | CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not. | Optional | 
+| additionalHeader | A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
+| raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
 | from_address | The email address from which to reply. | Optional |
 | replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
 | importance | Sets the importance/Priority of the email. Default value is Normal. | Optional |
@@ -1516,24 +1515,24 @@ No known limitations.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item-id | The item ID of item to upload as and EML file. | Required |
-| target-mailbox | The mailbox in which this email was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox. | Optional |
+| item-id | The item ID of item to upload as and EML file. | Required | 
+| target-mailbox | The mailbox in which this email was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox. | Optional | 
 
 #### Outputs
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Size | String | The size of the file. |
-| File.SHA1 | String | The SHA1 hash of the file. |
-| File.SHA256 | String | The SHA256 hash of the file. |
-| File.SHA512 | String | The SHA512 hash of the file. |
-| File.Name | String | The name of the file. |
-| File.SSDeep | String | The SSDeep hash of the file. |
-| File.EntryID | String | EntryID of the file |
-| File.Info | String | Information about the file. |
-| File.Type | String | The file type. |
-| File.MD5 | String | The MD5 hash of the file. |
-| File.Extension | String | The extension of the file. |
+| File.Size | String | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | EntryID of the file | 
+| File.Info | String | Information about the file. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The extension of the file. | 
 
 #### Examples
 >
@@ -1561,16 +1560,16 @@ No known limitations.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| inReplyTo | ID of the item to reply to. | Required |
-| to | A comma-separated list of email addresses for the 'to' field. | Required |
-| cc | A comma-separated list of email addresses for the 'cc' field. | Optional |
-| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional |
-| subject | Subject for the email to be sent. | Optional |
-| body | The contents (body) of the email to send. | Optional |
-| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional |
-| attachIDs | A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
-| attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
-| attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional |
+| inReplyTo | ID of the item to reply to. | Required | 
+| to | A comma-separated list of email addresses for the 'to' field. | Required | 
+| cc | A comma-separated list of email addresses for the 'cc' field. | Optional | 
+| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional | 
+| subject | Subject for the email to be sent. | Optional | 
+| body | The contents (body) of the email to send. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| attachIDs | A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional | 
 
 
 #### Outputs
@@ -1630,26 +1629,13 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> Fetch command </h3></summary>
 
 * If incidents are not being fetched, verify that no `pre-process` rule is configured that might filter some incidents out.
-* "address parts cannot contain CR or LF" error message in the logs means a corrupted email might have failed the process. In order to resolve this, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted.
+* "address parts cannot contain CR or LF" error message in the logs means a corrupted email might have failed the process. In order to resolve this, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
 
 </details>
 
-<details><summary><h3 style={{display: 'inline'}}> Fetching Incidents crash due to unparsable emails </h3></summary>
-If you find that your fetch incidents command is unable to parse a specific invalid email due to various parsing issues, you can follow these steps:
+<details><summary><h3 style={{display: 'inline'}}> General </h3></summary> 
 
-1. In the instance configuration, navigate to the *Collect* section and click on *Advanced Settings*.
-2. Check the box labeled *Skip unparsable emails during fetch incidents*.
-
-By enabling this option, the integration can catch and skip unparsable emails without causing the fetch incidents command to crash.
-When this parameter is active, a message will appear in the "Fetch History" panel of the instance whenever an unparsable email is recognized and skipped.
-This allows customers to be informed that a specific email was skipped and gives them the opportunity to open a support ticket if necessary.
-
-
-</details>
-
-<details><summary><h3 style={{display: 'inline'}}> General </h3></summary>
-
-* ews-get-searchable-mailboxes:
+* ews-get-searchable-mailboxes:   
 When using the UPN parameter, the command ews-get-searchable-mailboxes runs correctly after assigning RBAC roles requested in the management role header as explained in the [Microsoft Documentation](https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019).
 
 </details>
