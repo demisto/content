@@ -1329,7 +1329,7 @@ def test_parse_xsoar_field_name_and_link(xsoar_comment_field: list[str], expecte
                            "should only contain the field name,"
                            " or the field name with the phrase indicator_link, separated by a comma."),
                           (["a", "b", "c"], ("The parameter xsoar_comment_field=['a', 'b', 'c'] cannot contain more than "
-                                             'two fields'))))
+                                             'two values'))))
 def test_parse_xsoar_field_name_and_link_exceptions(xsoar_comment_field: list[str], informative_message: str):
     """
     Given:
