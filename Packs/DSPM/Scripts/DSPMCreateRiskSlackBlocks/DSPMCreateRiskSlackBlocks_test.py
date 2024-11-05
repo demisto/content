@@ -2,6 +2,7 @@ from DSPMCreateRiskSlackBlocks import create_slack_block
 
 # Assuming `create_slack_block` is imported from the original script
 
+
 def test_create_slack_block():
     incident = {
         "incidentId": "12345",
@@ -46,6 +47,7 @@ def test_create_slack_block():
     options = actions_block["elements"][0]["options"]
     assert any(option["value"] == "Remediate a Risk" for option in options)
     assert options[0]["text"]["text"].startswith("Remediate a Risk")
+
 
 def test_create_slack_block_without_remediate_option():
     incident = {

@@ -3,6 +3,7 @@ from CommonServerPython import CommandResults
 from DSPMCreateSimpleSlackMessageBlock import create_slack_notification_block, main
 from unittest.mock import patch
 
+
 def test_create_slack_notification_block():
     # Arrange
     message = "Incident response timeout notification"
@@ -32,7 +33,7 @@ def test_main(mock_demisto, mock_demisto_args):
     mock_demisto.args.return_value = mock_demisto_args
     expected_output = CommandResults(
         outputs_prefix="slackBlock",
-        outputs = {
+        outputs={
             "blocks": [
                 {
                     "type": "section",

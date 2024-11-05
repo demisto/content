@@ -16,7 +16,7 @@ def test_set_user_slack_email_with_empty_owner_list():
 
     with patch("demistomock.setContext") as mock_setContext:
         set_user_slack_email(incident_details, defaultSlackUser)
-        
+
         # Check that the default email is used when 'Owner' is empty
         mock_setContext.assert_called_once_with("userSlackEmail", defaultSlackUser)
 
@@ -30,7 +30,7 @@ def test_set_user_slack_email_with_non_list_owner():
 
     with patch("demistomock.setContext") as mock_setContext:
         set_user_slack_email(incident_details, defaultSlackUser)
-        
+
         # Expect the default email to be set since 'Owner' format is incorrect
         mock_setContext.assert_called_once_with("userSlackEmail", defaultSlackUser)
 
@@ -55,7 +55,7 @@ def test_set_user_slack_email_with_null_asset_dig_tags():
 
     with patch("demistomock.setContext") as mock_setContext:
         set_user_slack_email(incident_details, defaultSlackUser)
-        
+
         # Expect the default email to be used since 'asset Dig Tags' is None
         mock_setContext.assert_called_once_with("userSlackEmail", defaultSlackUser)
 
@@ -69,7 +69,7 @@ def test_set_user_slack_email_with_owner_email():
 
     with patch("demistomock.setContext") as mock_setContext:
         set_user_slack_email(incident_details, defaultSlackUser)
-        
+
         # Check that the correct email was set in context
         mock_setContext.assert_called_once_with("userSlackEmail", "owner@example.com")
 
@@ -83,7 +83,7 @@ def test_set_user_slack_email_with_no_owner_email():
 
     with patch("demistomock.setContext") as mock_setContext:
         set_user_slack_email(incident_details, defaultSlackUser)
-        
+
         # Check that the default email was set in context
         mock_setContext.assert_called_once_with("userSlackEmail", defaultSlackUser)
 
@@ -105,7 +105,7 @@ def test_get_incident_details_command():
         "assetdigtags": json.dumps({"Owner": ["owner@example.com"]}),
         "remediateinstruction": "Follow the steps to remediate."
     }
-    
+
     args = {"incident_object": incident_data}
     expected_output = {
         "incidentId": "12345",
@@ -126,7 +126,7 @@ def test_get_incident_details_command():
 
     # Using a tolerance for the "incidentCreated" field since it's time-dependent
     incident_object = get_incident_details_command(args)
-    
+
     # Check if the fields other than "incidentCreated" match expected output
     for key, value in expected_output.items():
         if key != "incidentCreated":
@@ -141,10 +141,10 @@ def test_get_incident_details_command_with_missing_fields():
         "riskname": "High Risk"
         # Missing 'severity', 'assetname', 'assetid', etc.
     }
-    
+
     args = {"incident_object": incident_data}
     incident_object = get_incident_details_command(args)
-    
+
     # Only the available fields should match, others might be None or default values
     assert incident_object["incidentId"] == "12345"
     assert incident_object["riskFindingId"] == "r123"
@@ -163,7 +163,7 @@ def test_get_incident_details_command_with_incorrect_date_format():
 
     args = {"incident_object": incident_data}
     incident_object = get_incident_details_command(args)
-    
+
     # Ensure that incorrect date format is handled without error
     assert incident_object["incidentId"] == "12345"
     assert incident_object["riskFindingId"] == "r123"
@@ -174,10 +174,10 @@ def test_get_incident_details_command_with_incorrect_date_format():
 def test_get_incident_details_command_with_empty_incident_data():
     # Completely empty incident data to test resilience
     incident_data = {}
-    
+
     args = {"incident_object": incident_data}
     incident_object = get_incident_details_command(args)
-    
+
     # Confirm that default or empty values are assigned to fields gracefully
     assert "incidentId" not in incident_object  # Or check for None or default values
     assert "riskFindingId" not in incident_object
