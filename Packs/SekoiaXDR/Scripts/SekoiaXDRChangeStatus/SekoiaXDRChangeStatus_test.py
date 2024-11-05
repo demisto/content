@@ -1,5 +1,5 @@
 import demistomock as demisto
-from SekoiaXDRChangeStatus import get_username, main, update_status  # type: ignore
+from SekoiaXDRChangeStatus import get_username, main, update_status, post_comment  # type: ignore
 
 
 def test_get_username(mocker):
@@ -8,6 +8,12 @@ def test_get_username(mocker):
     ]
     mocker.patch.object(demisto, "executeCommand", return_value=output_data)
     assert get_username() == "admin"
+
+
+def test_post_comment(mocker):
+    output_data = [{"Type": 3, "Contents": {}}]
+    mocker.patch.object(demisto, "executeCommand", return_value=output_data)
+    assert post_comment("1", "test", "admin") is None
 
 
 def test_update_status(mocker):
