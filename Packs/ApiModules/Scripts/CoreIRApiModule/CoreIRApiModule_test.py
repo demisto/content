@@ -2867,16 +2867,17 @@ def test_get_original_alerts_command__without_filtering(requests_mock):
     assert len(event) == 41  # make sure fields were not filtered
 
 
-@pytest.mark.parametrize("alert_ids",
-    ["59cf36bbdedb8f05deabf00d9ae77ee5$&$A Successful login from TOR",
-    "b0e754480d79eb14cc9308613960b84b$&$A successful SSO sign-in from TOR",
-    "9d657d2dfd14e63d0b98c9dfc3647b4f$&$A successful SSO sign-in from TOR",
-    "561675a86f68413b6e7a3b12e48c6072$&$External Login Password Spray",
-    "fe925817cddbd11e6efe5a108cf4d4c5$&$SSO Password Spray",
-    "e2d2a0dd589e8ca97d468cdb0468e94d$&$SSO Brute Force",
-    "e2d2a0dd589e8ca97d468cdb0468e94d$&$SSO Brute Force",
-    "3978e33b76cc5b2503ba60efd4445603$&$A successful SSO sign-in from TOR"])
-def test_get_original_alerts_command_raises_exception_playbook_debugger_input(alert_ids):
+@pytest.mark.parametrize("alert_ids, raises_demisto_exception",
+                         [("59cf36bbdedb8f05deabf00d9ae77ee5$&$A Successful login from TOR", True),
+                          ("b0e754480d79eb14cc9308613960b84b$&$A successful SSO sign-in from TOR", True),
+                          ("9d657d2dfd14e63d0b98c9dfc3647b4f$&$A successful SSO sign-in from TOR", True),
+                          ("561675a86f68413b6e7a3b12e48c6072$&$External Login Password Spray", True),
+                          ("fe925817cddbd11e6efe5a108cf4d4c5$&$SSO Password Spray", True),
+                          ("e2d2a0dd589e8ca97d468cdb0468e94d$&$SSO Brute Force", True),
+                          ("3978e33b76cc5b2503ba60efd4445603$&$A successful SSO sign-in from TOR", True),
+                          ("79", False)])
+def test_get_original_alerts_command_raises_exception_playbook_debugger_input(alert_ids, raises_demisto_exception,
+                                                                              requests_mock):
     """
     Given:
         - A list of alert IDs with invalid formats for the alert ID of the form <GUID>$&$<Playbook name>
@@ -2892,8 +2893,14 @@ def test_get_original_alerts_command_raises_exception_playbook_debugger_input(al
     )
     args = {'alert_ids': alert_ids}
 
-    with pytest.raises(DemistoException):
+    if raises_demisto_exception:
+        with pytest.raises(DemistoException):
+            get_original_alerts_command(client, args)
+    else:
+        api_response = load_test_data('./test_data/get_original_alerts_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
         get_original_alerts_command(client, args)
+
 
 
 def test_get_dynamic_analysis(requests_mock):
