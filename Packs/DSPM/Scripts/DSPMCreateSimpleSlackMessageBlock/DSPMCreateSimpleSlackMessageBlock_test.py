@@ -45,4 +45,6 @@ def test_main(mock_demisto, mock_demisto_args):
         main()
 
         # Assert
-        mock_return_results.assert_called_once_with(expected_output)
+        actual_output = mock_return_results.call_args[0][0]
+        assert actual_output.outputs_prefix == expected_output.outputs_prefix
+        assert actual_output.outputs == expected_output.outputs

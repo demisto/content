@@ -2,7 +2,7 @@
     "id": "incident_remediatesteps",
     "version": -1,
     "modified": "2024-09-06T14:05:51.932683502Z",
-    "name": "Remediation Steps",
+    "name": "DSPM Remediation Steps",
     "ownerOnly": false,
     "cliName": "remediatesteps",
     "type": "longText",
