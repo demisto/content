@@ -303,9 +303,9 @@ def create_an_indicator_link(ioc: dict) -> list[str]:
     Returns:
         A list which contains a string of indicator's link.
     """
-    if is_xsoar_saas():
-        return [f'{demisto.demistoUrls().get("server")}/indicator/{ioc.get("id")}']
-    return [f'{demisto.demistoUrls().get("server")}/#/indicator/{ioc.get("id")}']
+    base_url = f'{demisto.demistoUrls().get("server")}'
+    path = 'indicator' if is_xsoar_saas() else '#/indicator'
+    return [f'{base_url}/{path}/{ioc.get("id")}']
 
 
 def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[Any] | None:
