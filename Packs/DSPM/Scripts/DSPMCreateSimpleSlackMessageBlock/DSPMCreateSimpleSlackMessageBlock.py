@@ -5,7 +5,7 @@ import traceback
 
 """ DSPM OVERWRITE LIST AND NOTIFY """
 """
-Script Name: DSPMOverwriteListAndNotify
+Script Name: DSPMCreateSimpleSlackMessageBlock
 
 Description:
 This automation script overwrites the value of a specified list and sends a Slack notification
