@@ -2447,7 +2447,7 @@ script:
       name: add_tag
     - description: Remove a tag from the incidents.
       name: remove_tag
-    - description: Add a comment to the incident.
+    - description: Add a comment to the incident. Comment is limited to 1024 characters.
       name: add_comment
     description: Resolve and update incidents using the specified settings.
     name: cs-falcon-resolve-incident
