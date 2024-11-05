@@ -868,7 +868,7 @@ def parse_xsoar_field_name_and_link(xsoar_comment_field: list[str]) -> tuple[str
         xsoar_comment_field.remove("indicator_link")
         return xsoar_comment_field[0], True
 
-    raise DemistoException(f"The parameter {xsoar_comment_field=} cannot contain more than two fields")
+    raise DemistoException(f"The parameter {xsoar_comment_field=} cannot contain more than two values")
 
 
 def main():  # pragma: no cover
