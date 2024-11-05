@@ -143,7 +143,8 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
         converted_date = datetime.utcfromtimestamp(int(date_before)).strftime(readable_format)
     elif from_format == 'readable':
         date_before += 'UTC'
-        converted_date = int(datetime.strptime(date_before, readable_format).replace(tzinfo=timezone.utc).timestamp())  # noqa: UP017
+        converted_date = int(datetime.strptime(date_before,
+                                               readable_format).replace(tzinfo=timezone.utc).timestamp())  # noqa: UP017
 
     return str(converted_date)
 
