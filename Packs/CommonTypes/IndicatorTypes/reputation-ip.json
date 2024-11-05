@@ -446,6 +446,30 @@
                     }
                 ]
             }
+        },
+        "organizationprevalence": {
+            "simple": "IP.OrganizationPrevalence",
+            "complex": null
+        },
+        "globalprevalence": {
+            "simple": "IP.GlobalPrevalence",
+            "complex": null
+        },
+        "organizationfirstseen": {
+            "simple": "IP.OrganizationFirstSeen",
+            "complex": null
+        },
+        "organizationlastseen": {
+            "simple": "IP.OrganizationLastSeen",
+            "complex": null
+        },
+        "globalfirstseen": {
+            "simple": "IP.GlobalFirstSeen",
+            "complex": null
+        },
+        "globallastseen": {
+            "simple": "IP.GlobalLastSeen",
+            "complex": null
         }
     },
     "manualMapping": null,

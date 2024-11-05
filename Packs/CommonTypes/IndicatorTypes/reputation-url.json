@@ -255,16 +255,40 @@
         }
     },
     "tags": {
-      "simple": "",
-      "complex": {
+        "simple": "",
+        "complex": {
         "root": "URL",
         "filters": [],
         "accessor": "Tags",
         "transformers": [{
-          "operator": "uniq",
-          "args": {}
+            "operator": "uniq",
+            "args": {}
         }]
-      }
+        }
+    },
+    "organizationprevalence": {
+        "simple": "URL.OrganizationPrevalence",
+        "complex": null
+    },
+    "globalprevalence": {
+        "simple": "URL.GlobalPrevalence",
+        "complex": null
+    },
+    "organizationfirstseen": {
+        "simple": "URL.OrganizationFirstSeen",
+        "complex": null
+    },
+    "organizationlastseen": {
+        "simple": "URL.OrganizationLastSeen",
+        "complex": null
+    },
+    "globalfirstseen": {
+        "simple": "URL.GlobalFirstSeen",
+        "complex": null
+    },
+    "globallastseen": {
+        "simple": "URL.GlobalLastSeen",
+        "complex": null
     }
   },
   "manualMapping": null,
