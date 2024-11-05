@@ -871,3 +871,40 @@ def test_fetch_generic_indicators_elastic_v7_without_time_field(mocker):
     assert ioc_lst[1]['date'] == '2020-01-12T15:29:01.270228+02:00'
     assert ioc_lst[1]['indicatorType'] == 'URL'
     assert ioc_lst[1]['value'] == 'https://www.test.com/'
+
+
+@pytest.mark.parametrize('server_details, server_version, client_version',
+                         [
+                             ({'name': 'test1',
+                               'cluster_name': 'elasticsearch',
+                               'cluster_uuid': 'test_id',
+                               'version': {'number': '7.3.0', }},
+                              '7.3.0', 'Elasticsearch_v8'),
+                             ({'name': 'test2',
+                               'cluster_name': 'elasticsearch',
+                               'cluster_uuid': 'test_id',
+                               'version': {'number': '8.4.1', }},
+                              '8.4.1', 'Elasticsearch')],
+                         ids=[
+                             "Test miss configuration error - server version is 7 while client version is 8",
+                             "Test miss configuration error - server version is 8 while client version is 7"]
+                         )
+def test_verify_es_server_version_errors(mocker, server_details, server_version, client_version):
+    """
+    Tests the 'verify_es_server_version' function's logic.
+
+    Given
+      1. Elastic search server details (response json of the requests.get) - server version is 7.3.0.
+         Integration parameter - client type - is set to 'Elasticsearch_v8.
+      2. Elastic search server details (response json of the requests.get) - server version is 8.4.1.
+         Integration parameter - client type - is set to 'Elasticsearch. (v7 and below)
+    When
+    - Running the verify_es_server_version function.
+    Then
+     - Make sure that the expected error message is raised.
+    """
+    import FeedElasticsearch as esf
+    mocker.patch('FeedElasticsearch.ELASTIC_SEARCH_CLIENT', new=client_version)
+    with pytest.raises(ValueError) as e:
+        esf.verify_es_server_version(server_details)
+    assert server_version in str(e.value)
