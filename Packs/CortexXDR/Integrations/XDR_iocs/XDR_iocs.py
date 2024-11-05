@@ -894,9 +894,9 @@ def main():  # pragma: no cover
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
 
-    if xsoar_comment_field := argToList(params.get('xsoar_comments_field')):
-        # in case of xsoar_comment_field is an empty list -> the Client.xsoar_comments_field is defined to "comments" by default
-        Client.xsoar_comments_field, Client.add_link_as_a_comment = parse_xsoar_field_name_and_link(xsoar_comment_field)
+    if xsoar_comment_param := argToList(params.get('xsoar_comments_field')):
+        # in case of xsoar_comment_param is an empty list -> the Client.xsoar_comments_field is defined to "comments" by default
+        Client.xsoar_comments_field, Client.add_link_as_a_comment = parse_xsoar_field_name_and_link(xsoar_comment_param)
 
     client = Client(params)
     commands = {
