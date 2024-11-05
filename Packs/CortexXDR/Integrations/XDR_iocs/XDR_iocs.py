@@ -676,10 +676,10 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
         "fields": {
-            "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
-            "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-            Client.xsoar_severity_field: severity,
-        } | tag_comment_fields,
+                      "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
+                      "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
+                      Client.xsoar_severity_field: severity,
+                  } | tag_comment_fields,
         "rawJSON": ioc
     }
     if Client.tlp_color:
@@ -731,7 +731,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     last_run = get_integration_context()
     demisto.debug(f"The integration context inside fetch_indicators is {last_run=}")
     if (((not last_run) or (last_run.get('is_first_sync_phase', False)))
-            and auto_sync):
+        and auto_sync):
         if not last_run:
             sync_time = datetime.now(UTC)
             update_integration_context_override(update_sync_time_with_datetime=sync_time, update_is_first_sync_phase='true')
@@ -861,7 +861,8 @@ def parse_xsoar_field_name_and_link(xsoar_comment_field: list[str]) -> tuple[str
 
     if len(xsoar_comment_field) == 2:
         if "indicator_link" not in xsoar_comment_field:
-            raise DemistoException(f"The parameter {xsoar_comment_field=} should only contain the field name, or the field name with the phrase indicator_link, separated by a comma.")
+            raise DemistoException(
+                f"The parameter {xsoar_comment_field=} should only contain the field name, or the field name with the phrase indicator_link, separated by a comma.")
 
         return xsoar_comment_field[0] if xsoar_comment_field[0] != "indicator_link" else xsoar_comment_field[1], True
 
@@ -887,8 +888,8 @@ def main():  # pragma: no cover
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
 
-    # in case of xsoar_comment_field is an empty list -> the Client.xsoar_comments_field is defined to "comments" by default
     if xsoar_comment_field := argToList(params.get('xsoar_comments_field')):
+        # in case of xsoar_comment_field is an empty list -> the Client.xsoar_comments_field is defined to "comments" by default
         Client.xsoar_comments_field, Client.add_link_as_a_comment = parse_xsoar_field_name_and_link(xsoar_comment_field)
 
     client = Client(params)
