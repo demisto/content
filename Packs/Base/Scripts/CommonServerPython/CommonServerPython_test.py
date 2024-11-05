@@ -5819,6 +5819,7 @@ class TestCommonTypes:
             dns='dns.somedomain',
             detection_engines=10,
             positive_detections=5,
+            global_first_seen='2024-11-04T14:48:23.456Z',
             organization='Some Organization',
             admin_phone='18000000',
             admin_email='admin@test.com',
@@ -5896,6 +5897,7 @@ class TestCommonTypes:
                         'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com', 'AbusePhone': None},
                         'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
                         'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                        'GlobalFirstSeen': '2024-11-04T14:48:23.456Z',
                         'Organization': 'Some Organization',
                         'Subdomains': ['sub-domain1.somedomain.com', 'sub-domain2.somedomain.com',
                                        'sub-domain3.somedomain.com'], 'DomainStatus': 'ACTIVE',
@@ -5994,6 +5996,7 @@ class TestCommonTypes:
             certificates=None,
             description='description test',
             stix_id='stix_id',
+            organization_first_seen='2024-11-04T14:48:23.456Z',
         )
 
         results = CommandResults(
@@ -6033,6 +6036,7 @@ class TestCommonTypes:
                         'ASOwner': 'test_as_owner',
                         'Geo': {'Country': 'test_geo_country'},
                         'Organization': 'test_organization',
+                        'OrganizationFirstSeen': '2024-11-04T14:48:23.456Z',
                         'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
                         'Publications': [
                             {'source': 'source',
@@ -6118,7 +6122,8 @@ class TestCommonTypes:
             creation_date='test_creation_date',
             description='test_description',
             hashes=None,
-            stix_id='test_stix_id'
+            stix_id='test_stix_id',
+            organization_prevalence=0,
         )
 
         results = CommandResults(
@@ -6164,6 +6169,7 @@ class TestCommonTypes:
                                       'threatcategoryconfidence': 'threat_category_confidence'}],
                      'Imphash': 'test_imphash',
                      'Organization': 'test_organization',
+                     'OrganizationPrevalence': 0,
                      'Malicious': {'Vendor': 'Test', 'Description': 'malicious!'}
                      }
                 ],
