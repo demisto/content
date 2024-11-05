@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 # Std imports
-from datetime import datetime, timezone, UTC
+from datetime import datetime, timezone
 from base64 import b64decode
 
 # 3-rd party imports
@@ -143,7 +143,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
         converted_date = datetime.utcfromtimestamp(int(date_before)).strftime(readable_format)
     elif from_format == 'readable':
         date_before += 'UTC'
-        converted_date = int(datetime.strptime(date_before, readable_format).replace(tzinfo=UTC).timestamp())
+        converted_date = int(datetime.strptime(date_before, readable_format).replace(tzinfo=timezone.utc).timestamp())  # noqa: UP017
 
     return str(converted_date)
 
