@@ -2421,7 +2421,7 @@ def parse_incident_from_item(item):  # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
+def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip_unparsable_emails: bool):
     """
     Fetch incidents
     :param client: EWS Client
@@ -2471,11 +2471,15 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
                     if len(incidents) >= client.max_fetch:
                         break
             except (UnicodeEncodeError, UnicodeDecodeError, IndexError) as e:
-                error_msg = (
-                    "Encountered parsing issue that the integration could not resolve. "
-                    f"Skipping item with message id: {item.message_id if item.message_id else ''}, Error: {str(e)}"
-                )
-                demisto.debug(error_msg)
+                if skip_unparsable_emails:
+                    error_msg = (
+                        "Encountered email parsing issue while fetching. "
+                        f"Skipping item with message id: {item.message_id if item.message_id else ''}"
+                    )
+                    demisto.debug(error_msg + f", Error: {str(e)}")
+                    demisto.updateModuleHealth(error_msg, is_error=True)
+                else:
+                    raise e
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 
@@ -2664,9 +2668,11 @@ def sub_main():  # pragma: no cover
             if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
                 incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
             demisto.debug(f"{incident_filter=}")
-            incidents = fetch_emails_as_incidents(client, last_run, incident_filter)
+            skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
+            incidents = fetch_emails_as_incidents(client, last_run, incident_filter, skip_unparsable_emails)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
             demisto.incidents(incidents)
+
         elif command == "send-mail":
             commands_res = send_email(client, **args)
             return_results(commands_res)

@@ -122,6 +122,12 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+- display: Skip unparsable emails during fetch incidents
+  name: skip_unparsable_emails
+  section: Collect
+  type: 8
+  advanced: true
+  required: false
 description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
