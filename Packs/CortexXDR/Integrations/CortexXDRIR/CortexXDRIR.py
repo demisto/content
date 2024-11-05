@@ -883,34 +883,30 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
+def get_modified_remote_data_command(client, args, mirroring_last_update: str = '', xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update: str = get_last_mirror_run().get("last_update") or remote_args.last_update
+    last_update: str = mirroring_last_update or remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
-    gte_modification_time_milliseconds = last_update_utc
-    lte_modification_time_milliseconds = datetime.utcnow() - timedelta(minutes=xdr_delay)
+    if last_update_utc:
+        gte_modification_time_milliseconds = last_update_utc
+        lte_modification_time_milliseconds = datetime.utcnow() - timedelta(minutes=xdr_delay)
     demisto.debug(
-        f'Performing get-modified-remote-data command {last_update=} | '
-        f'{gte_modification_time_milliseconds=} | {lte_modification_time_milliseconds=}'
+        f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
+        f'{lte_modification_time_milliseconds=}'
     )
     raw_incidents = client.get_incidents(
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_milliseconds,
-        limit=100
-    )
-
+        limit=100)
+    last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
+    last_run_mirroring_str = last_run_mirroring.strftime('%Y-%m-%d %H:%M:%S.%f')
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
-
-    last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
-    last_run_mirroring_str = last_run_mirroring.strftime('%Y-%m-%d %H:%M:%S.%f')
-
-    set_last_mirror_run({"last_update": last_run_mirroring_str})
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
+    return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring_str
 
 
 def get_remote_data_command(client, args):
@@ -1584,11 +1580,16 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
+            last_run_mirroring: Dict[str, Any] = get_last_mirror_run()
+
             modified_incidents, next_mirroring_time = get_modified_remote_data_command(
                 client=client,
                 args=demisto.args(),
+                mirroring_last_update=last_run_mirroring.get('mirroring_last_update', ''),
                 xdr_delay=xdr_delay,
             )
+            last_run_mirroring['mirroring_last_update'] = next_mirroring_time
+            set_last_mirror_run(last_run_mirroring)
             return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
