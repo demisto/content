@@ -144,11 +144,12 @@ class TabLifecycleManager:
 
     def __enter__(self):
         try:
-            self.tab = self.browser.new_tab()
+            self.tab = self.browser.new_tab(timeout=10)
         except Exception as ex:
             demisto.info(f'TabLifecycleManager, __enter__, {self.chrome_port=}, failed to create a new tab due to {ex}')
             raise ex
         try:
+            time.sleep(0.5)
             self.tab.start()
         except Exception as ex:
             demisto.info(f'TabLifecycleManager, __enter__, {self.chrome_port=}, failed to start a new tab due to {ex}')
@@ -271,20 +272,27 @@ def count_running_chromes(port):
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
+    res = count_running_chromes(port=port)
+    demisto.debug(f'[test]: get_chrome_browser {res=}')
     demisto.debug(f'[test] get_chrome_browser {DEFAULT_RETRIES_COUNT}')
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
             demisto.debug(f"Trying to connect to {browser_url=}, iteration {i + 1}/{DEFAULT_RETRIES_COUNT}")
+            
             browser = pychrome.Browser(url=browser_url)
 
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab(timeout=10))
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
+            res = count_running_chromes(port=port)
+            demisto.debug(f'[test]: get_chrome_browser {res=}')
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs!")
             return browser
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
+            res = count_running_chromes(port=port)
+            demisto.debug(f'[test]: get_chrome_browser {res=}')
             connection_refused = 'connection refused'
             if connection_refused in exp_str:
                 demisto.debug(f"Failed to connect to Chrome on port {port} on iteration {i + 1}. {connection_refused}")
@@ -535,6 +543,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         }
         for key, value in chrome_instances_contents.items()
     }
+    chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
     demisto.debug(f'[test] chrome_manager {instance_id_dict=}')
     if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
         if instance_id:
@@ -542,15 +551,13 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         demisto.debug(f'[test] chrome_manager: first cond {chrome_instances_contents}')
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    elif chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
+    if chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, '') or count_running_chromes(chrome_port):
         # If the current Chrome options differ from the saved options for this instance ID,
         # it terminates the existing Chrome instance and generates a new one with the new options.
-        chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
         terminate_chrome(chrome_port=chrome_port)
         demisto.debug(f'[test] chrome_manager after_terminate_chrome {chrome_port}')
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
     browser = get_chrome_browser(chrome_port)
     return browser, chrome_port
 
@@ -790,6 +797,7 @@ def rasterize_thread(browser, chrome_port, path: str,
         else:
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
     demisto.debug(f'{chrome_port=} after with TabLifecycleManager')
+    return None
 
 
 def perform_rasterize(path: str | list[str],
@@ -943,11 +951,11 @@ def rasterize_email_command():  # pragma: no cover
 
     path = f'file://{os.path.realpath(f.name)}'
 
-    rasterize_output:List[Any] = perform_rasterize(path=path, rasterize_type=rasterize_type,
-                                                   width=width, height=height,
-                                                   offline_mode=offline,
-                                                   navigation_timeout=navigation_timeout,
-                                                   full_screen=full_screen) or []
+    rasterize_output: List[Any] = perform_rasterize(path=path, rasterize_type=rasterize_type,
+                                                    width=width, height=height,
+                                                    offline_mode=offline,
+                                                    navigation_timeout=navigation_timeout,
+                                                    full_screen=full_screen) or []
     if not rasterize_output:
         demisto.debug('[test] rasterize_email_command: rasterize_output empty')
 
@@ -1015,7 +1023,6 @@ def rasterize_pdf_command():  # pragma: no cover
             demisto.results(results)
     except Exception as e:
         raise DemistoException(f"Failed to open PDF {e=}")
-
 
 
 def rasterize_html_command():
