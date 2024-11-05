@@ -1312,7 +1312,7 @@ def test_create_an_indicator_link(mocker, is_xsoar_saas: bool, expected_link: st
 def test_parse_xsoar_field_name_and_link(xsoar_comment_field: list[str], expected_result: tuple[str, bool]):
     """
     Given:
-        -  xsoar_comment_field and the expected_result
+        -  xsoar_comment_field
     When:
         -  parsing xsoar_comment_field by our logic
     Then:
