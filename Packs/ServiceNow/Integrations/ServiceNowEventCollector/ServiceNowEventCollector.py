@@ -197,7 +197,7 @@ def get_events_command(client: Client, args: dict, log_type: str) -> tuple[list,
     add_time_field(logs, log_type)
     demisto.debug(f"Got a total of {len(logs)} events created after {from_date}")
     hr = tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=logs, removeNull=True,
-                            headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
+                         headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
     all_events.extend(logs)
 
     return all_events, CommandResults(readable_output=hr)
@@ -313,7 +313,7 @@ def main() -> None:  # pragma: no cover
 
             if argToBoolean(args.get("should_push_events", "true")):
                 send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
-                
+
         elif command == "service-now-get-syslog-transactions":
             syslog_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS)
             return_results(results)
