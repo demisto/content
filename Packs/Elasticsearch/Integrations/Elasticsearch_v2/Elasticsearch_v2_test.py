@@ -1185,28 +1185,28 @@ def test_get_indices_statistics_command(mocker, limit, all_results, expected_con
     assert command_result.outputs_prefix == 'Elasticsearch.IndexStatistics'
     assert command_result.raw_response == MOCK_INDICES_STATISTICS_RESPONSE
     assert command_result.outputs_key_field == 'UUID'
-    
-    
+
+
 @pytest.mark.parametrize('server_details, server_version, client_version',
                          [
                              ({'name': 'test1',
                                'cluster_name': 'elasticsearch',
                                'cluster_uuid': 'test_id',
-                               'version': {'number': '7.3.0',}},
+                               'version': {'number': '7.3.0', }},
                               '7.3.0', 'Elasticsearch_v8'),
                              ({'name': 'test2',
                                'cluster_name': 'elasticsearch',
                                'cluster_uuid': 'test_id',
-                               'version': {'number': '8.4.1',}},
+                               'version': {'number': '8.4.1', }},
                               '8.4.1', 'Elasticsearch')],
                          ids=[
                              "Test miss configuration error - server version is 7 while client version is 8",
                              "Test miss configuration error - server version is 8 while client version is 7"]
-)
+                         )
 def test_verify_es_server_version_errors(mocker, server_details, server_version, client_version):
     """
     Tests the 'verify_es_server_version' function's logic.
-    
+
     Given
       1. Elastic search server details (response json of the requests.get) - server version is 7.3.0.
          Integration parameter - client type - is set to 'Elasticsearch_v8.
@@ -1224,4 +1224,3 @@ def test_verify_es_server_version_errors(mocker, server_details, server_version,
     with pytest.raises(ValueError) as e:
         Elasticsearch_v2.verify_es_server_version(server_details)
     assert server_version in str(e.value)
-        
