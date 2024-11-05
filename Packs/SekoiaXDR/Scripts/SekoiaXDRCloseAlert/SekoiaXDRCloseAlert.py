@@ -17,7 +17,7 @@ def post_closure_comment(
     close_reason: Optional[str],
     close_notes: Optional[str],
     username: Optional[str],
-):
+):  # pragma: no cover
     try:
         execute_command(
             "sekoia-xdr-post-comment-alert",
@@ -94,7 +94,7 @@ def close_alert(
     )
 
 
-def main():
+def main():  # pragma: no cover
     incident = demisto.incidents()[0]  # type: ignore
     mirror_direction = incident.get("dbotMirrorDirection")
     is_mirror_out = incident.get("CustomFields", {}).get("sekoiaxdrmirrorout")
