@@ -502,7 +502,7 @@ def main():  # pragma: no cover
             limit = int(params.get("fetchLimit", 300000))
             for events, offset, total_events_count, hashed_events_from_previous_run in fetch_events_command(  # noqa: B007
                 client,
-                fetch_time=params.get("fetchTime", ""),
+                "5 minutes",
                 fetch_limit=limit,
                 config_ids=params.get("configIds", ""),
                 ctx=get_integration_context() or {},
