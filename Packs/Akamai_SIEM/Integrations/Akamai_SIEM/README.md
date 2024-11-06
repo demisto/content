@@ -118,8 +118,6 @@ Get security events from Akamai WAF.
 
 #### Context Output
 
-#### Context Output
-
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Akamai.SIEM.AttackData.clientIP | String | IP address involved in the attack. | 
@@ -145,6 +143,119 @@ Get security events from Akamai WAF.
 | IP.Address | String | IP address. | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
+
+##### Context Example
+
+```json
+{
+  "Akamai": {
+    "SIEM": [
+        {
+            "AttackData": {
+                "ClientIP": "8.8.8.8",
+                "ConfigID": "50170",
+                "PolicyID": "1234_89452",
+                "RuleActions": [
+                    "alert",
+                    "deny"
+                ],
+                "RuleMessages": [
+                    "Custom_RegEX_Rule",
+                    "No Accept Header AND No User Agent Header"
+                ],
+                "RuleTags": [
+                    "example",
+                    "No-AH-UA"
+                ],
+                "Rules": [
+                    "642118",
+                    "642119"
+                ]
+            },
+            "Geo": {
+                "Asn": "16509",
+                "City": "FRANKFURT",
+                "Continent": "EU",
+                "Country": "DE",
+                "RegionCode": "HE"
+            },
+            "HttpMessage": {
+                "Bytes": "296",
+                "Host": "wordpress.demisto.ninja",
+                "Method": "POST",
+                "Path": "/wp-cron.php",
+                "Port": "80",
+                "Protocol": "HTTP/1.1",
+                "RequestHeaders": "Host",
+                "RequestId": "87bb604",
+                "ResponseHeaders": "Server",
+                "Start": "1576746102",
+                "Status": "403"
+            }
+        },
+        {
+            "AttackData": {
+                "ClientIP": "8.8.8.8",
+                "ConfigID": "50170",
+                "PolicyID": "1234_89452",
+                "RuleActions": [
+                    "alert",
+                    "deny"
+                ],
+                "RuleMessages": [
+                    "Custom_RegEX_Rule",
+                    "No Accept Header AND No User Agent Header"
+                ],
+                "RuleTags": [
+                    "example",
+                    "No-AH-UA"
+                ],
+                "Rules": [
+                    "642118",
+                    "642119"
+                ]
+            },
+            "Geo": {
+                "Asn": "16509",
+                "City": "FRANKFURT",
+                "Continent": "EU",
+                "Country": "DE",
+                "RegionCode": "HE"
+            },
+            "HttpMessage": {
+                "Bytes": "296",
+                "Host": "wordpress.demisto.ninja",
+                "Method": "POST",
+                "Path": "/wp-cron.php",
+                "Port": "80",
+                "Protocol": "HTTP/1.1",
+                "RequestHeaders": "Header",
+                "RequestId": "32e63ee2",
+                "ResponseHeaders": "Server",
+                "Start": "1576746179",
+                "Status": "403"
+            }
+        }
+    ]
+  },
+  "IP": [
+    {
+      "ASN": "5650",
+      "Address": "8.8.8.8",
+      "Geo": {
+        "Country": "US"
+      }
+    },
+    {
+      "ASN": "5650",
+      "Address": "8.8.8.8",
+      "Geo": {
+        "Country": "US"
+      }
+    }
+  ]
+}
+```
 
 ### Troubleshooting
 

@@ -384,6 +384,23 @@ def reset_offset_command(client: Client):  # pragma: no cover
     return 'Offset was reset successfully.', {}, {}
 
 
+def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_previous_run: set[str]) -> tuple[List[dict], set[str]]:
+    """Implement the dedup logic and mapping between the hashes and the related events.
+
+    Args:
+        hashed_events_mapping (dict[str, dict]): A mapping between the event's httpMessage hash and the event itself.
+        hashed_events_from_previous_run (set[str]): The set of httpMessage hashes from previous run.
+
+    Returns:
+        tuple[List[dict], set[str]]: The list of deduped event and the set of hashes from the current run to save to context.
+    """
+    hashed_events_from_current_run = set(hashed_events_mapping.keys())
+    filtered_hashed_events = hashed_events_from_current_run - hashed_events_from_previous_run
+    deduped_events: List[dict] = [event for hashed_event,
+                        event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
+    return deduped_events, hashed_events_from_current_run
+
+
 @logger
 def fetch_events_command(
     client: Client,
@@ -435,10 +452,7 @@ def fetch_events_command(
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         demisto.info("Preparing to deduplicate events, currently got {len(events)} events.")
-        hashed_events_from_current_run = set(hashed_events_mapping.keys())
-        filtered_hashed_events = hashed_events_from_current_run - hashed_events_from_previous_run
-        deduped_events = [event for hashed_event,
-                          event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
+        deduped_events, hashed_events_from_current_run = dedup_events(hashed_events_mapping, hashed_events_from_previous_run)
         total_events_count += len(deduped_events)
         demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
         hashed_events_from_previous_run = hashed_events_from_current_run

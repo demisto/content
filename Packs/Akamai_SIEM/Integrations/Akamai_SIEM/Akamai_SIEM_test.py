@@ -356,3 +356,34 @@ def test_decode_url(header):
                              'Connection': 'keep-alive', 'Server_Timing': 'intid;desc=dd',
                              'Strict_Transport_Security': 'max-age=31536000 ; includeSubDomains ; preload'}
     assert Akamai_SIEM.decode_url(header) == expected_decoded_dict
+
+
+@pytest.mark.parametrize(
+    "hashed_events_mapping, hashed_events_from_previous_run, expected_deduped_list",
+    [
+        ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, {"a", "b", "c"}, []),
+        ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, {"d", "e", "f"}, [{"id": 1}, {"id": 2}, {"id": 3}]),
+        ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, set(), [{"id": 1}, {"id": 2}, {"id": 3}]),
+        ({"a": {"id": 1}, "b": {"id": 2}, "c": {"id": 3}}, {"a", "d", "e"}, [{"id": 2}, {"id": 3}]),
+    ],
+)
+def test_dedup_events(hashed_events_mapping, hashed_events_from_previous_run, expected_deduped_list):
+    """
+    Given: hashed_events_mapping dict, and hashed_events_from_previous_run set
+        - Case 1: dictionary with 3 events with all 3 events hashes appears in the hashed_events_from_previous_run set.
+        - Case 2: dictionary with 3 events with none of the 3 events hashes appears in the hashed_events_from_previous_run set.
+        - Case 3: dictionary with 3 events with an empty hashed_events_from_previous_run set.
+        - Case 4: dictionary with 3 events with only 1 event hash appears in the hashed_events_from_previous_run set,
+                  along with 2 hashes that doesn't appear in the dict.
+    When: Running dedup_events on them.
+    Then: Ensure that the whole set of keys was returned as hashed_events_from_current_run for the next interval,
+          and that the right events were filtered out.
+          - Case 1: should filter all events.
+          - Case 2: shouldn't filter any events.
+          - Case 3: shouldn't filter any events.
+          - Case 4: should filter only the one event that appears in the hashed_events_from_previous_run set.
+    """
+    deduped_events, hashed_events_from_current_run = Akamai_SIEM.dedup_events(hashed_events_mapping,
+                                                                              hashed_events_from_previous_run)
+    assert hashed_events_from_current_run == set(hashed_events_mapping.keys())
+    assert deduped_events == expected_deduped_list
