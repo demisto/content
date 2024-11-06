@@ -1,0 +1,1233 @@
+id: 5a625de2-6be6-4850-86db-2bedae394075
+version: 70
+vcShouldKeepItemLegacyProdMachine: false
+name: Suspicious Hidden User Created
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6327954b-08af-4580-86fb-10b6cc36af72
+    type: start
+    task:
+      id: 6327954b-08af-4580-86fb-10b6cc36af72
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 18b1f052-0d8b-49f4-8e3b-a6fcddb6dc72
+    type: regular
+    task:
+      id: 18b1f052-0d8b-49f4-8e3b-a6fcddb6dc72
+      version: -1
+      name: Get event information about the created user
+      description: Gets extra information about the alert - such as the information
+        from the event itself, the name of the user that was created, and additional
+        computed fields.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 757b8308-33fa-4fd7-86fb-218c8a2585ab
+    type: title
+    task:
+      id: 757b8308-33fa-4fd7-86fb-218c8a2585ab
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2b3c8409-3f00-4764-83c9-80c0fc630ade
+    type: regular
+    task:
+      id: 2b3c8409-3f00-4764-83c9-80c0fc630ade
+      version: -1
+      name: Get risk level for the affected host
+      description: Gets the risk level of the host on which the user was created.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      host_id:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9fb3e5f4-526a-41c9-86ee-641ec25179b9
+    type: regular
+    task:
+      id: 9fb3e5f4-526a-41c9-86ee-641ec25179b9
+      version: -1
+      name: Search for related alerts in the incident
+      description: Searches for Script Engine Activity alerts in the current incident,
+        which could indicate malicious script activity related to the creation of
+        the user.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix:
+                value:
+                  simple: ' and name:"Script Engine Activity*"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 512d76d2-719a-47e0-8387-02697e31076e
+    type: title
+    task:
+      id: 512d76d2-719a-47e0-8387-02697e31076e
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "9"
+      - "16"
+      - "18"
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 64dc81fa-5077-44e1-8a7d-ff36b2af1a8d
+    type: condition
+    task:
+      id: 64dc81fa-5077-44e1-8a7d-ff36b2af1a8d
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks if the Active Directory Query v2 integration is enabled.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bb8f47d3-3b6f-459a-8575-fb13d07a8cc0
+    type: regular
+    task:
+      id: bb8f47d3-3b6f-459a-8575-fb13d07a8cc0
+      version: -1
+      name: Get AD attributes for created user
+      description: Retrieves information about the domain user, and specifically the
+        DONT_EXPIRE_PASSWORD attribute of the user, in order to understand if the
+        user's password was set to never expire.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      username:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: evtlog_target_username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 72ea091b-5542-4cc3-89a9-e1747096a368
+    type: condition
+    task:
+      id: 72ea091b-5542-4cc3-89a9-e1747096a368
+      version: -1
+      name: Local / domain user?
+      description: Checks if the user is a domain user or a local user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Domain:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Domain
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: Core.OriginalAlert.event.account_creation_is_local
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ee07333d-6200-4175-8c32-8a543ed2dab5
+    type: title
+    task:
+      id: ee07333d-6200-4175-8c32-8a543ed2dab5
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e33f7450-96c7-4726-84f5-0f809e62774d
+    type: regular
+    task:
+      id: e33f7450-96c7-4726-84f5-0f809e62774d
+      version: -1
+      name: Save password expiration attribute
+      description: Saves the value of the AD attribute DONT_EXPIRE_PASSWORD for the
+        domain user that was created.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: PasswordNeverExpires
+      value:
+        complex:
+          root: ActiveDirectory.Users.userAccountControlFields
+          accessor: DONT_EXPIRE_PASSWORD
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "false"
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 7fdca823-2aa1-41d0-8674-2a5ceca1ce4b
+    type: regular
+    task:
+      id: 7fdca823-2aa1-41d0-8674-2a5ceca1ce4b
+      version: -1
+      name: Run command to get "Password Expires" attribute of local user
+      description: Runs a Powershell code snipper on the endpoint where the user was
+        created, in order to retrieve the PASSWORDEXPIRES attribute of the local user.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      commands:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: evtlog_target_username
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'powershell -Command "NET USER '
+              suffix:
+                value:
+                  simple: '"'
+      endpoint_ids:
+        complex:
+          root: alert
+          accessor: agentid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 907ac067-6c41-4cbf-81eb-7358712f2fbf
+    type: condition
+    task:
+      id: 907ac067-6c41-4cbf-81eb-7358712f2fbf
+      version: -1
+      name: Was a malicious process involved?
+      description: Checks whether a malicious process was detected in a related alert
+        in this incident, by checking the previously saved CIDToTerminate key which
+        holds the Causality IDs used to terminate the main process.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "Yes":
+      - "22"
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CIDToTerminate
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7fd41810-cc95-4bf5-86f0-58891eec8437
+    type: title
+    task:
+      id: 7fd41810-cc95-4bf5-86f0-58891eec8437
+      version: -1
+      name: User Checks
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 5ffbc163-0d81-493a-89f1-56bfcdfa6019
+    type: title
+    task:
+      id: 5ffbc163-0d81-493a-89f1-56bfcdfa6019
+      version: -1
+      name: Related Alert Checks
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 0d965292-d2df-42aa-8987-0227357cdc36
+    type: title
+    task:
+      id: 0d965292-d2df-42aa-8987-0227357cdc36
+      version: -1
+      name: Remediation - Kill Causality
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 9457ee55-9539-45df-8ad2-e40a79080e8b
+    type: title
+    task:
+      id: 9457ee55-9539-45df-8ad2-e40a79080e8b
+      version: -1
+      name: Remediation - Disable User
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 409ddefb-be6c-4bc1-8711-766fd39ebc3f
+    type: condition
+    task:
+      id: 409ddefb-be6c-4bc1-8711-766fd39ebc3f
+      version: -1
+      name: User's password never expires & host risky?
+      description: Checks if the local/domain user's password never expires, and if
+        the risk level of the host where the alert occurred is HIGH.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.RiskyHost.risk_level
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.RiskyHost.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PasswordNeverExpires
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: LocalUserPasswordStatus
+            iscontext: true
+          right:
+            value:
+              simple: never
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b74eb7e6-f518-487a-8c6d-2dcc6b212d06
+    type: regular
+    task:
+      id: b74eb7e6-f518-487a-8c6d-2dcc6b212d06
+      version: -1
+      name: Close Investigation
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 35664005-5e37-444d-8cca-b173819ab40e
+    type: condition
+    task:
+      id: 35664005-5e37-444d-8cca-b173819ab40e
+      version: -1
+      name: Local / domain user?
+      description: Checks if the user is a domain user or a local user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      Domain:
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: Domain
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: Core.OriginalAlert.event.account_creation_is_local
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: cad56c70-2a13-4d13-8cd8-e7418afafb3a
+    type: regular
+    task:
+      id: cad56c70-2a13-4d13-8cd8-e7418afafb3a
+      version: -1
+      name: Get execution results
+      description: Gets the execution results for the Powershell code that was run.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: debbbea1-ba6b-4627-8d3b-a22bcc475682
+    type: regular
+    task:
+      id: debbbea1-ba6b-4627-8d3b-a22bcc475682
+      version: -1
+      name: Extract password expiration flag
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created
+        user from the results of the Powershell script execution.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: LocalUserPasswordStatus
+      value:
+        complex:
+          root: Core.ScriptResult.results.[0].command_output
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.[0].command_output
+                iscontext: true
+              right:
+                value:
+                  simple: Password expires
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 687fb3b9-6db4-4151-8e27-bc28a21f84a6
+    type: condition
+    task:
+      id: 687fb3b9-6db4-4151-8e27-bc28a21f84a6
+      version: -1
+      name: Analyst review - disable suspicious user?
+      description: Manual - please review the findings and make a decision regarding
+        the remediation of the suspicious user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "Yes":
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: evtlog_target_username
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |
+                    Would you like to disable the following user?
+              suffix: {}
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 3b615f1a-aba2-45db-8b12-26e38399944b
+    type: regular
+    task:
+      id: 3b615f1a-aba2-45db-8b12-26e38399944b
+      version: -1
+      name: Disable user account in AD
+      description: Disables the suspicious user in Active Directory.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      username:
+        simple: ${Core.OriginalAlert.event.evtlog_target_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 040c833c-b457-462c-817b-66b06e05c1ea
+    type: regular
+    task:
+      id: 040c833c-b457-462c-817b-66b06e05c1ea
+      version: -1
+      name: Disable local user
+      description: Runs Powershell code on the affected host to disable the local
+        user on the machine.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      commands:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: evtlog_target_username
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: powershell -Command Disable-LocalUser -Name "
+              suffix:
+                value:
+                  simple: '"'
+      endpoint_ids:
+        complex:
+          root: alert
+          accessor: agentid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 5965689a-e162-4d09-8926-1ea24dc99e0b
+    type: regular
+    task:
+      id: 5965689a-e162-4d09-8926-1ea24dc99e0b
+      version: -1
+      name: Kill CGO process
+      description: Kills the Causality Group Owner (CGO) of the process that created
+        the suspicious user.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "36"
+      '#none#':
+      - "25"
+    scriptarguments:
+      agent_id:
+        complex:
+          root: foundIncidents
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.cid
+                iscontext: true
+              right:
+                value:
+                  simple: CIDToTerminate
+                iscontext: true
+          accessor: agentid
+      causality_id:
+        complex:
+          root: CIDToTerminate
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: e0cfb28f-d84e-4d1e-8f16-96569d4a321a
+    type: regular
+    task:
+      id: e0cfb28f-d84e-4d1e-8f16-96569d4a321a
+      version: -1
+      name: Save causality ID
+      description: Saves the ID of the Causality Group Owner (CGO) if it exists in
+        the related alerts, in order to terminate it at the remediation stage.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: CIDToTerminate
+      value:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.cid
+                iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.severity
+                iscontext: true
+              right:
+                value:
+                  simple: LOW
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.action
+                iscontext: true
+              right:
+                value:
+                  simple: BLOCKED
+              ignorecase: true
+          accessor: cid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: e8cda6f4-6d4e-46fb-8ada-1b794d7caa27
+    type: title
+    task:
+      id: e8cda6f4-6d4e-46fb-8ada-1b794d7caa27
+      version: -1
+      name: Host Checks
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 62717d04-21bc-49a0-8b57-2283edd514cf
+    type: regular
+    task:
+      id: 62717d04-21bc-49a0-8b57-2283edd514cf
+      version: -1
+      name: Terminate causality process manually
+      description: Please investigate the alerts related to this incident, and terminate
+        the CGO (Causality Group Owner) process that caused the suspicious hidden
+        user to be created.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_22_Yes": 0.3,
+      "12_23_Yes": 0.4,
+      "24_23_yes": 0.54,
+      "24_25_#default#": 0.13,
+      "30_25_#default#": 0.24,
+      "6_9_#default#": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2695,
+        "width": 1760,
+        "x": -230,
+        "y": 60
+      }
+    }
+  }
+inputs: []
+outputs: []
