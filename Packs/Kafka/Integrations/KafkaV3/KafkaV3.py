@@ -103,6 +103,7 @@ class KafkaCommunicator:
             if self.ca_path:
                 client_dict.update({'ssl.ca.location': self.ca_path, 'ssl.certificate.location': self.client_cert_path,
                                     'ssl.key.location': self.client_key_path, 'security.protocol': 'ssl'})
+            else:
                 # temporary creating ca certification file
                 with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
                     self.ca_path = ca_descriptor.name
