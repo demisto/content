@@ -384,7 +384,8 @@ def reset_offset_command(client: Client):  # pragma: no cover
     return 'Offset was reset successfully.', {}, {}
 
 
-def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_previous_run: set[str]) -> tuple[List[dict], set[str]]:
+def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_previous_run: set[str]) -> tuple[List[dict],
+                                                                                                             set[str]]:
     """Implement the dedup logic and mapping between the hashes and the related events.
 
     Args:
