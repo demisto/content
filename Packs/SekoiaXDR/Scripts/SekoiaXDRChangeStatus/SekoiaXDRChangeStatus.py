@@ -40,7 +40,7 @@ def main():
 
     if new_status in ["Ongoing", "Acknowledged"]:
         update_status(new_status, mirror_direction, is_mirror_out, alert_short_id)
-        if comment and is_mirror_out and (mirror_direction is None or mirror_direction == "In"):
+        if comment and is_mirror_out:
             post_comment(alert_short_id, comment, get_username())
         readable_output = f"### Status of the alert changed to:\n {new_status}"
         return_results(
