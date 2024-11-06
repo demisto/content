@@ -249,7 +249,8 @@ class PychromeEventHandler:
         request_id = kwargs.get("requestId")
         request_url = kwargs.get("request").get("url")
 
-        if any(value in request_url for value in BLOCKED_URLS):
+        # abort the request if the url inside blocked_urls param and its redirect request
+        if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
             demisto.debug(f"Request paused: {request_url=} , {request_id=}")
             self.tab.Fetch.disable()
