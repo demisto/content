@@ -111,7 +111,7 @@ configuration:
   - file
   - url
   - x509-certificate
-  additionalinfo: Choose which STIX Cyber Observable Object provides as STIX Domain Object of 'indicator'
+  additionalinfo: The selected types will be outputted as a "STIX Indicator type" with a STIX pattern instead of an SCO. This may be necessary based on the tool you use to ingest data.
   section: Collect
   advanced: true
   required: false
@@ -150,7 +150,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description.
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.94079
+  dockerimage: demisto/flask-nginx:1.0.0.110620
   longRunning: true
   longRunningPort: true
   script: '-'

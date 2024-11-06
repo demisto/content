@@ -1,3 +1,4 @@
+from CommonServerPython import DemistoException
 import pytest
 from FeedRSS import *
 from requests.models import Response
@@ -12,7 +13,7 @@ def side_effect_feed_url(mocker, client):
     client.feed_response = feed_content_res
 
 
-def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45) -> Client:
+def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45, enrichment_excluded: bool = False) -> Client:
     """ Create a mock client"""
 
     client = Client(server_url='test.com',
@@ -21,7 +22,8 @@ def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45) -> Clie
                     reliability='F - Reliability cannot be judged',
                     feed_tags=[],
                     tlp_color=None,
-                    content_max_size=content_max_size)
+                    content_max_size=content_max_size,
+                    enrichment_excluded=enrichment_excluded)
 
     mocker.patch.object(feedparser, 'parse', return_value=feedparser.util.FeedParserDict(dict_to_parse))
     mocker.patch.object(Client, 'request_feed_url', side_effect=side_effect_feed_url(mocker=mocker, client=client))
@@ -49,6 +51,31 @@ def test_parsed_indicators_from_response(mocker, parse_response, expected_output
     assert indicators == expected_output
 
 
+@pytest.mark.parametrize('parse_response,expected_output', FEED_DATA)
+def test_parsed_indicators_enrichment_excluded(mocker, parse_response, expected_output):
+    """
+    Given:
+    - RSS feed url
+    - Enrichment excluded is set
+
+    When:
+    - Calling fetch_indicators
+
+    Then:
+    - Ensure all indicator fields extracted properly, with enrichmentExcluded set to True
+    """
+
+    client = mock_client(mocker, parse_response, enrichment_excluded=True)
+
+    mocker.patch.object(Client, 'get_url_content', return_value='test description')
+    indicators = fetch_indicators(client)
+
+    for ind in expected_output:
+        ind['enrichmentExcluded'] = True
+
+    assert indicators == expected_output
+
+
 def test_get_url_content(mocker):
     """
     Given:
@@ -68,6 +95,24 @@ def test_get_url_content(mocker):
     assert client.get_url_content('test-link.com') == \
         "This is a dumped content of the article. Use the link under Publications field to read the full article. " \
         "\n\n p in div p li inside ul li inside ul Coffee Tea Milk Month Savings January $100 This is h1"
+
+
+def test_get_url_content_invalid_link(mocker):
+    """
+    Given:
+    - Invalid URL link to get the content from
+
+    When:
+    - when creating Report indicators from each item on the rss feed, we want to extract the article content.
+
+    Then:
+    - Ensure it returns an empty value
+    """
+    client = mock_client(mocker=mocker, dict_to_parse={})
+    article_content_res = Response()
+    article_content_res.status_code = 403
+    mocker.patch.object(Client, '_http_request', side_effect=DemistoException(article_content_res))
+    assert client.get_url_content('test-link.com') == ""
 
 
 @pytest.mark.parametrize("article_content, expected_output", TEST_DATA_MAX_SIZE)

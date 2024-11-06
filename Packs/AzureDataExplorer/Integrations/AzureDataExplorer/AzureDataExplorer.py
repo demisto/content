@@ -1,5 +1,3 @@
-# type: ignore
-# Disable insecure warnings
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -257,12 +255,18 @@ def search_queries_list_command(client: DataExplorerClient, args: dict[str, Any]
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     client_activity_id = str(args.get('client_activity_id', ''))
-    validate_list_command_arguments(page, page_size, limit)
+    validate_list_command_arguments(page, page_size, limit)   # type: ignore[arg-type]
     response = client.search_queries_list_request(
         database_name, client_activity_id)
 
-    return retrieve_command_results_of_list_commands(response, 'List of Completed Search Queries',
-                                                     page, page_size, limit, 'AzureDataExplorer.SearchQuery')
+    return retrieve_command_results_of_list_commands(
+        response,
+        'List of Completed Search Queries',
+        page,  # type: ignore[arg-type]
+        page_size,  # type: ignore[arg-type]
+        limit,  # type: ignore[arg-type]
+        'AzureDataExplorer.SearchQuery'
+    )
 
 
 def running_search_queries_list_command(client: DataExplorerClient, args: dict[str, Any]) -> CommandResults:
@@ -281,12 +285,18 @@ def running_search_queries_list_command(client: DataExplorerClient, args: dict[s
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     client_activity_id = str(args.get('client_activity_id', ''))
 
-    validate_list_command_arguments(page, page_size, limit)
+    validate_list_command_arguments(page, page_size, limit)  # type: ignore[arg-type]
     response = client.running_search_queries_list_request(
         database_name, client_activity_id)
 
-    return retrieve_command_results_of_list_commands(response, 'List of Currently running Search Queries',
-                                                     page, page_size, limit, 'AzureDataExplorer.RunningSearchQuery')
+    return retrieve_command_results_of_list_commands(
+        response,
+        'List of Currently running Search Queries',
+        page,  # type: ignore[arg-type]
+        page_size,  # type: ignore[arg-type]
+        limit,  # type: ignore[arg-type]
+        'AzureDataExplorer.RunningSearchQuery'
+    )
 
 
 def running_search_query_cancel_command(client: DataExplorerClient, args: dict[str, Any]) -> \
@@ -461,7 +471,7 @@ def retrieve_common_request_body(database_name: str, query: str,
         "csl": query
     }
     if properties:
-        data['properties'] = properties
+        data['properties'] = properties  # type: ignore[assignment]
     return data
 
 
@@ -587,8 +597,8 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
-        client: DataExplorerClient = DataExplorerClient(cluster_url, client_id, client_activity_prefix,
+        requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
+        client: DataExplorerClient = DataExplorerClient(cluster_url, client_id, client_activity_prefix,  # type: ignore[arg-type]
                                                         verify_certificate, proxy, connection_type,
                                                         tenant_id, enc_key, auth_code, redirect_uri)
 

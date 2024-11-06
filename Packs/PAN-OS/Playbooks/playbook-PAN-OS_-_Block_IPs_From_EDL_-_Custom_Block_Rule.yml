@@ -1,0 +1,510 @@
+id: PAN-OS - Block IPs From EDL - Custom Block Rule
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: PAN-OS - Block IPs From EDL - Custom Block Rule
+description: This playbook blocks IP addresses from External Dynamic List using Custom Block Rules in Palo Alto Networks Panorama or Firewall. The playbook receives EDL name as input, creates a custom "from" directional rule to block, and commits the configuration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 49a9b9d3-a97b-4473-8119-70300c0c01ed
+    type: start
+    task:
+      id: 49a9b9d3-a97b-4473-8119-70300c0c01ed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 957428b9-9a0c-4ae3-8917-83ae0a83de43
+    type: condition
+    task:
+      id: 957428b9-9a0c-4ae3-8917-83ae0a83de43
+      version: -1
+      name: Palo Alto Networks PAN-OS enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: da771405-12fa-4cf0-8e22-1ecfd2393812
+    type: title
+    task:
+      id: da771405-12fa-4cf0-8e22-1ecfd2393812
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: da2ce369-e215-4db1-8f1f-11536c6efa55
+    type: condition
+    task:
+      id: da2ce369-e215-4db1-8f1f-11536c6efa55
+      version: -1
+      name: Is there an application to block?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.EDLName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4d41a27f-1818-4f90-8bba-39b3881a4af3
+    type: condition
+    task:
+      id: 4d41a27f-1818-4f90-8bba-39b3881a4af3
+      version: -1
+      name: AutoCommit defined?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5df6d93f-8c45-4a3b-840f-cd0a24cc7ae6
+    type: regular
+    task:
+      id: 5df6d93f-8c45-4a3b-840f-cd0a24cc7ae6
+      version: -1
+      name: Commit PAN-OS Instance manually
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c5477379-0810-48e6-8f22-da3846c883a0
+    type: regular
+    task:
+      id: c5477379-0810-48e6-8f22-da3846c883a0
+      version: -1
+      name: Panorama - Create custom block rule to block application
+      description: Creates a custom block policy rule in Panorama.
+      script: '|||pan-os-custom-block-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      direction:
+        simple: from
+      log_forwarding:
+        complex:
+          root: inputs.LogForwarding
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.LogForwarding
+                iscontext: true
+      object_type:
+        simple: edl
+      object_value:
+        simple: ${inputs.EDLName}
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: ${inputs.RuleName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a1caf43e-5771-4591-8b0f-1653b0fd201a
+    type: regular
+    task:
+      id: a1caf43e-5771-4591-8b0f-1653b0fd201a
+      version: -1
+      name: Commit PAN-OS Instance manually
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0e68fb02-4cab-4666-836e-34501e1cfee2
+    type: regular
+    task:
+      id: 0e68fb02-4cab-4666-836e-34501e1cfee2
+      version: -1
+      name: PAN-OS Commit Changes
+      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      script: '|||pan-os-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      description:
+        simple: Commit from XSIAM
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 23e130d0-142b-4c27-8d95-d22d572f1a0d
+    type: regular
+    task:
+      id: 23e130d0-142b-4c27-8d95-d22d572f1a0d
+      version: -1
+      name: Panorama - Create custom block rule to block application
+      description: Creates a custom block policy rule in Panorama.
+      script: '|||pan-os-custom-block-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      direction:
+        simple: from
+      log_forwarding:
+        complex:
+          root: inputs.LogForwarding
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.LogForwarding
+                iscontext: true
+      object_type:
+        simple: edl
+      object_value:
+        simple: ${inputs.EDLName}
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: ${inputs.RuleName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: cbf06593-932d-44ec-854b-e2128255f3bb
+    type: regular
+    task:
+      id: cbf06593-932d-44ec-854b-e2128255f3bb
+      version: -1
+      name: PAN-OS Commit Changes
+      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      script: '|||pan-os-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      description:
+        simple: Commit from XSIAM
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_4_#default#": 0.15,
+      "5_4_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1305,
+        "width": 1140,
+        "x": 60,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: RuleName
+  value: {}
+  required: false
+  description: Panorama rule name
+  playbookInputQuery:
+- key: EDLName
+  value: {}
+  required: false
+  description: EDL IPs to block
+  playbookInputQuery:
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+  playbookInputQuery:
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Panorama log forwarding object name
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - RuleName
+  - EDLName
+  - AutoCommit
+  - LogForwarding
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

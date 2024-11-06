@@ -1,5 +1,5 @@
-id: Cisco_ISE
-name: Cisco ISE
+id: Cisco_ISE_ParsingRule
+name: Cisco ISE Parsing Rule
 fromversion: 8.2.0
 tags: []
 rules: ''

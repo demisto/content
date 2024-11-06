@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -116,7 +116,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -165,7 +165,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -206,7 +206,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -231,7 +231,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "3"
     scriptarguments:
       action:
         simple: ModifiedDomainForLogo
@@ -245,7 +245,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -270,19 +270,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "1"
     scriptarguments:
       action:
         simple: RemoveLogo
       logoName:
         simple: dbot
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 370
         }
       }
     note: false

@@ -44,6 +44,7 @@ SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
 DISABLE_SSL = demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
+LEGACY_NAME = argToBoolean(demisto.params().get('legacy_name', False))
 
 SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
 DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
@@ -183,16 +184,20 @@ def parse_mail_parts(parts):
                 body += text
 
         else:
-            if part['body'].get('attachmentId') is not None and part.get('headers'):
-                identifier_id = ""
-                for header in part['headers']:
+            if part['body'].get('attachmentId') is not None:
+                attachmentName = part['filename']
+                content_id = ""
+                is_inline = False
+                for header in part.get('headers', []):
                     if header.get('name') == 'Content-ID':
-                        identifier_id = header.get('value').strip("<>")
-                    if not identifier_id or identifier_id == "None":
-                        identifier_id = part['body'].get('attachmentId').strip("<>")
+                        content_id = header.get('value').strip("<>")
+                    if header.get('name') == 'Content-Disposition':
+                        is_inline = 'inline' in header.get('value').strip('<>')
+                if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
+                    attachmentName = f"{content_id}-attachmentName-{attachmentName}"
                 attachments.append({
                     'ID': part['body']['attachmentId'],
-                    'Name': f"{identifier_id}-attachmentName-{part['filename']}",
+                    'Name': attachmentName,
                 })
 
     return body, html, attachments
@@ -1526,14 +1531,13 @@ def get_attachments_command():
     args = demisto.args()
     user_id = args.get('user-id')
     _id = args.get('message-id')
-    identifiers_filter = args.get('identifiers-filter', "")
 
-    attachments = get_attachments(user_id, _id, identifiers_filter)
+    attachments = get_attachments(user_id, _id)
 
     return [fileResult(name, data) for name, data in attachments]
 
 
-def get_attachments(user_id, _id, identifiers_filter=""):
+def get_attachments(user_id, _id):
     mail_args = {
         'userId': user_id,
         'id': _id,
@@ -1553,14 +1557,10 @@ def get_attachments(user_id, _id, identifiers_filter=""):
     }
     files = []
     for attachment in result.get('Attachments', []):
-        identifiers_filter_array = argToList(identifiers_filter)
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
-        if (not identifiers_filter_array
-                or ('-attachmentName-' in attachment['Name']
-                    and attachment['Name'].split('-attachmentName-')[0] in identifiers_filter_array)):
-            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-            files.append((attachment['Name'], file_data))
+        file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+        files.append((attachment['Name'], file_data))
     return files
 
 
@@ -2108,9 +2108,9 @@ def attachment_handler(message, attachments):
             message.attach(msg_base)
 
 
-def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
-              transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
-              templateParams, inReplyTo=None, references=None, force_handle_htmlBody=False):
+def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names,
+              attach_cid, transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
+              templateParams, sender_display_name, inReplyTo=None, references=None, force_handle_htmlBody=False):
     if templateParams:
         templateParams = template_params(templateParams)
         if body:
@@ -2143,9 +2143,12 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
     message['bcc'] = header(','.join(bcc))
-    message['from'] = header(emailfrom)
     message['subject'] = header(subject)
     message['reply-to'] = header(replyTo)
+    if sender_display_name:
+        message['from'] = header(sender_display_name + f' <{emailfrom}>')
+    else:
+        message['from'] = header(emailfrom)
 
     # The following headers are being used for the reply-mail command.
     if inReplyTo:
@@ -2223,10 +2226,11 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     template_param = args.get('templateParams')
     render_body = argToBoolean(args.get('renderBody', False))
     body_type = args.get('bodyType', 'Text').lower()
+    sender_display_name = args.get('senderDisplayName')
 
-    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
-                       attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
-                       additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
+    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to,
+                       attach_names, attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
+                       additional_headers, template_param, sender_display_name, in_reply_to, references, force_handle_htmlBody)
     rendering_body = html_body if body_type == "html" else body
 
     send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
@@ -2243,7 +2247,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
 
 def reply_mail_command():
     args = demisto.args()
-    in_reply_to = argToList(args.get('in_reply_to'))
+    in_reply_to = argToList(args.get('inReplyTo'))
     references = argToList(args.get('references'))
 
     return mail_command(args, 'Re: ', in_reply_to, references)

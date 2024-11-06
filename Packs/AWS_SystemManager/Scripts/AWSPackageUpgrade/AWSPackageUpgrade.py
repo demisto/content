@@ -37,9 +37,9 @@ def upgrade_package_on_instance(
             "Linux Ubuntu": r"set -e; apt-get update -y;\
 NEEDRESTART_MODE=a apt install tar wget libssl-dev gcc g++ gdb cpp make \
 cmake libtool libc6 autoconf automake pkg-config build-essential gettext libz-dev -y;\
-wget -c https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-9.7p1.tar.gz;\
-tar -xvf openssh-9.7p1.tar.gz; cd openssh-9.7p1; ./configure; make; make install;\
-cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
+wget -c https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-9.8p1.tar.gz;\
+tar -xvf openssh-9.8p1.tar.gz; cd openssh-9.8p1; ./configure; make; make install;\
+cd ..; rm openssh-9.8p1.tar.gz; rm -r openssh-9.8p1"
         }
     }
 

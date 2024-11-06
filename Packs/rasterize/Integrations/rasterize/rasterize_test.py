@@ -3,12 +3,15 @@ from rasterize import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
+from pytest_mock import MockerFixture
 import os
 import logging
 import http.server
 import time
 import threading
 import pytest
+import requests
+import json
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -16,15 +19,15 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
-def util_read_tsv(filename):
-    with open(filename) as file:
+def util_read_tsv(file_path):
+    with open(file_path) as file:
         ret_value = file.read()
         return ret_value
 
 
-def util_generate_mock_info_file(info):
-    from rasterize import write_file
-    write_file("test_data/info.tsv", info, overwrite=True)
+def util_load_json(path):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_rasterize_email_image(caplog, capfd, mocker):
@@ -150,9 +153,9 @@ def http_wait_server():
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
+def test_rasterize_url_long_load(mocker: MockerFixture, http_wait_server, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    time.sleep(1)  # give time to the servrer to start
+    time.sleep(1)  # give time to the server to start
     with capfd.disabled():
         mocker.patch.object(rasterize, 'support_multithreading')
         perform_rasterize('http://localhost:10888', width=250, height=250,
@@ -400,8 +403,7 @@ def test_chrome_manager_case_chrome_instances_file_is_empty(mocker):
 
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(rasterize, 'read_file', return_value=None)
-    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries', return_value=[{}, {}, {}, {}])
+    mocker.patch.object(rasterize, 'read_json_file', return_value={})
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
@@ -420,11 +422,10 @@ def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mo
     When    chrome instances file is not empty and instance id is not linked to the chrome options
     Then    make sure code running into case 2 and calling generate_new_chrome_instance which return browser and chrome port.
     """
-    from rasterize import chrome_manager
-    from rasterize import get_chrome_instances_contents_dictionaries
+    from rasterize import chrome_manager, read_json_file
 
     instance_id = "instance_id_that_does_not_exist"
-    chrome_options = "chrome_options2"  # exist
+    chrome_options = "chrome_options2"
 
     mock_context = {
         'context': {
@@ -436,15 +437,10 @@ def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mo
         'chrome_options': chrome_options
     }
 
-    mock_file_content = util_read_tsv("test_data/info.tsv")
-    mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
+    mock_file_content = read_json_file("test_data/chrome_instances.json")
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
-    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
-                        return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
+    mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
@@ -463,7 +459,7 @@ def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
     When    chrome instances file is not empty
     Then    make sure code running into case 3 and calling generate_new_chrome_instance which return browser and chrome port.
     """
-    from rasterize import chrome_manager
+    from rasterize import chrome_manager, read_json_file
 
     instance_id = "instance_id_that_does_not_exist"
     chrome_options = "chrome_options_that_does_not_exist"
@@ -478,15 +474,11 @@ def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
         'chrome_options': chrome_options
     }
 
-    mock_file_content = util_read_tsv("test_data/info.tsv")
-    mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
+    mock_file_content = read_json_file("test_data/chrome_instances.json")
+
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
-    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
-                        return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
+    mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
@@ -506,7 +498,7 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
     Then    make sure code running into case 4, terminating old chrome port, generating new one,
             and update the chrome instances file.
     """
-    from rasterize import chrome_manager
+    from rasterize import chrome_manager, read_json_file
 
     instance_id = "22222222-2222-2222-2222-222222222222"  # exist
     chrome_options = "chrome_options_that_does_not_exist"
@@ -521,18 +513,14 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
         'chrome_options': chrome_options
     }
 
-    mock_file_content = util_read_tsv("test_data/info.tsv")
-    mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
+    mock_file_content = read_json_file("test_data/chrome_instances.json")
+
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
-    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
-                        return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
+    mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
+
     mocker.patch.object(rasterize, 'get_chrome_browser', return_value=None)
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
-    mocker.patch.object(rasterize, 'delete_row_with_old_chrome_configurations_from_chrome_instances_file', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
     browser, chrome_port = chrome_manager()
@@ -550,7 +538,7 @@ def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(moc
     When    chrome instances file is not empty, and instance id and chrome options linked.
     Then    make sure code running into case 5 and using the browser that already in used.
     """
-    from rasterize import chrome_manager
+    from rasterize import chrome_manager, read_json_file
 
     instance_id = "22222222-2222-2222-2222-222222222222"  # exist
     chrome_options = "chrome_options2"
@@ -565,21 +553,17 @@ def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(moc
         'chrome_options': chrome_options
     }
 
-    mock_file_content = util_read_tsv("test_data/info.tsv")
-    mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
+    mock_file_content = read_json_file("test_data/chrome_instances.json")
+
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
-    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
-                        return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
+    mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
+
     mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
     browser, chrome_port = chrome_manager()
-
     assert terminate_chrome_mocker.call_count == 0
     assert generate_new_chrome_instance_mocker.call_count == 0
     assert browser == "browser_object"
@@ -612,61 +596,189 @@ def test_generate_chrome_port_no_port_available(mocker):
     assert not port
 
 
-def test_get_chrome_instances_contents_dictionaries():
+def test_get_chrome_browser_error(mocker: MockerFixture):
     """
-    Given   chrome instances file with content
-    When    extract the data from it and parse it for 2 dictionaries and 2 lists:
-                - instance_id_to_chrome_options (dict): A dictionary mapping instance ID to Chrome options.
-                - instance_id_to_port (dict): A dictionary mapping instance ID to Chrome port.
-                - instances_id (list): A list of instances ID extracted from instance_id_to_port keys.
-                - chromes_options (list): A list of Chrome options extracted from instance_id_to_chrome_options values.
-    Then    make sure the data are extracted correctly according the mock data file content.
+    Given   A connection error.
+    When    Launching a pychrome browser.
+    Then    Make sure the error is caught and debugged properly.
     """
-    from rasterize import get_chrome_instances_contents_dictionaries
-    mock_file_content = util_read_tsv("test_data/info.tsv")
-    mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        (get_chrome_instances_contents_dictionaries(mock_file_content_edited))
-    assert instance_id_to_chrome_options == {'22222222-2222-2222-2222-222222222222': 'chrome_options2',
-                                             '33333333-3333-3333-3333-333333333333': 'chrome_options3',
-                                             '44444444-4444-4444-4444-444444444444': 'chrome_options4'}
-    assert instance_id_to_port == {'22222222-2222-2222-2222-222222222222': '2222', '33333333-3333-3333-3333-333333333333': '3333',
-                                   '44444444-4444-4444-4444-444444444444': '4444'}
-    assert instances_id
-    assert instances_id == ['22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333',
-                            '44444444-4444-4444-4444-444444444444']
-    assert chromes_options
-    assert chromes_options == ['chrome_options2', 'chrome_options3', 'chrome_options4']
+    from rasterize import get_chrome_browser
+
+    def raise_connection_error(url):
+        raise requests.exceptions.ConnectionError('connection error')
+
+    mocker.patch('pychrome.Browser', side_effect=raise_connection_error)
+    mocker.patch('time.sleep')
+    debug = mocker.patch.object(demisto, 'debug')
+
+    res = get_chrome_browser('port')
+
+    assert res is None
+    debug.assert_called_with(
+        "Failed to connect to Chrome on port port on iteration 3. ConnectionError,"
+        " exp_str='connection error', exp=ConnectionError('connection error')")
 
 
-def test_delete_row_with_old_chrome_configurations_from_info_file():
+def test_backoff(mocker):
     """
-    Given   chrome instances file with content
-    When    need to delete row with old chrome configurations from the file
-    Then    make sure it delete the specific row should be deleted
+    Given   Waiting for a process to complete.
+    When    Launching a pychrome browser.
+    Then    Make sure to wait the required amount.
     """
-    from rasterize import delete_row_with_old_chrome_configurations_from_chrome_instances_file
+    from rasterize import backoff
 
-    rasterize.CHROME_INSTANCES_FILE_PATH = "test_data/info.tsv"
+    sleep_mock = mocker.patch('time.sleep')
 
-    mock_info = """2222\t22222222-2222-2222-2222-222222222222\tchrome_options2
-    3333\t33333333-3333-3333-3333-333333333333\tchrome_options3
-    test\ttesttest-test-test-test-testtesttest\tchrome_options0
-    4444\t44444444-4444-4444-4444-444444444444\tchrome_options4
+    res = backoff(None, 2, 1)
+
+    assert res == (None, 2)
+    sleep_mock.assert_called_with(1)
+
+
+def test_is_mailto_urls(mocker: MockerFixture):
     """
-    util_generate_mock_info_file(mock_info)
-    chrome_port_to_delete = "test"
-    instance_id_to_delete = "testtest-test-test-test-testtesttest"
+    Given   A mailto URL is called.
+    When    Attempting to make a screenshot.
+    Then    Make sure the correct output is returned.
+    """
+    from rasterize import screenshot_image
 
-    delete_row_with_old_chrome_configurations_from_chrome_instances_file(
-        mock_info, instance_id_to_delete, chrome_port_to_delete)
+    mocker.patch(
+        'rasterize.navigate_to_path',
+        return_results=type('PychromeEventHandler', (), {'is_mailto': True})
+    )
 
-    mock_file_content = util_read_tsv("test_data/info.tsv")
-    mock_file_content_edited = mock_file_content.replace('\\t', '\t')
+    res = screenshot_image(None, None, 'url', None, None)
 
-    expected_mock_file_content = """2222\t22222222-2222-2222-2222-222222222222\tchrome_options2
-    3333\t33333333-3333-3333-3333-333333333333\tchrome_options3
-    4444\t44444444-4444-4444-4444-444444444444\tchrome_options4
-    """.strip()
+    assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
-    assert expected_mock_file_content == mock_file_content_edited
+
+def test_increase_counter_chrome_instances_file(mocker):
+    """
+    Given:
+        - A new Chrome instance content
+        - A valid Chrome port
+        - An increase counter
+        - A terminate port
+    When:
+        - Executing the increase_counter_chrome_instances_file function
+    Then:
+        - The function writes to the correct file and increase the "rasteriztion_count" by 1
+    """
+    from rasterize import increase_counter_chrome_instances_file, RASTERIZETION_COUNT
+    from unittest.mock import mock_open
+    mocker.patch("os.path.exists", return_value=True)
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    expected_rasterizetion_count = mock_file_content['2222'][RASTERIZETION_COUNT] + 1
+    mock_file = mock_open()
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch.object(json, 'load', return_value=mock_file_content)
+    mocker_json = mocker.patch("json.dump")
+    increase_counter_chrome_instances_file(chrome_port="2222")
+    assert mocker_json.called
+    assert expected_rasterizetion_count == mocker_json.call_args[0][0]['2222'][RASTERIZETION_COUNT]
+
+
+def test_add_new_chrome_instance(mocker):
+    """
+    Given:
+        - A new Chrome instance content
+    When:
+        - Executing the add_new_chrome_instance function
+    Then:
+        - The function writes to the correct file the new chrome instance.
+    """
+    from rasterize import add_new_chrome_instance
+    from unittest.mock import mock_open
+    mocker.patch("os.path.exists", return_value=True)
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    mock_file = mock_open()
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch.object(json, 'load', return_value=mock_file_content)
+    mocker_json = mocker.patch("json.dump")
+    add_new_chrome_instance(new_chrome_instance_content={"9345": {
+        "instance_id": "44444444-4444-4444-4444-444444444444",
+        "chrome_options": "chrome_options4",
+        "rasterize_count": 1
+    }})
+    assert mocker_json.called
+    assert '9345' in mocker_json.call_args[0][0]
+
+
+def test_terminate_port_chrome_instances_file(mocker):
+    """
+    Given:
+        - A port to terminate.
+    When:
+        - Executing the terminate_port_chrome_instances_file function
+    Then:
+        - The function writes to the correct file the data without the port to terminate.
+    """
+    from rasterize import terminate_port_chrome_instances_file
+    from unittest.mock import mock_open
+    mocker.patch("os.path.exists", return_value=True)
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    mock_file = mock_open()
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch.object(json, 'load', return_value=mock_file_content)
+    mocker_json = mocker.patch("json.dump")
+    terminate_port_chrome_instances_file(chrome_port="2222")
+    assert mocker_json.called
+    assert '2222' not in mocker_json.call_args[0][0]
+
+
+def test_write_chrome_instances_empty(mocker):
+    """
+    Given:
+        - A new Chrome instance content(first chrome instance).
+    When:
+        - Executing the write_chrome_instances_file function
+    Then:
+        - The function creates and writes to the correct file, calls json.dump with the expected arguments.
+    """
+    from rasterize import write_chrome_instances_file
+    from unittest.mock import mock_open
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    mock_file = mock_open()
+    mocker.patch("builtins.open", mock_file)
+    mocker_json = mocker.patch.object(json, 'dump', return_value=mock_file_content)
+    write_chrome_instances_file(new_chrome_content=mock_file_content)
+
+    assert mocker_json.call_count == 1
+
+
+def test_read_json_file(mocker):
+    """
+    Given:
+        - A JSON file at 'test_data/chrome_instances.json'
+    When:
+        - Executing the read_json_file function
+    Then:
+        - The function reads the JSON file and returns the correct content.
+    """
+    from rasterize import read_json_file
+    mocker.patch("os.path.exists", return_value=True)
+    mock_file_content = util_load_json("test_data/chrome_instances.json")
+    file_result = read_json_file("test_data/chrome_instances.json")
+    assert file_result == mock_file_content
+
+
+def test_rasterize_mailto(capfd, mocker):
+    """
+        Given:
+            - mailto argument as path.
+        When:
+            - Running the 'rasterize' function.
+        Then:
+            - Verify that perform_rasterize exit with the expected error message.
+    """
+    mocker_output = mocker.patch('rasterize.return_results')
+
+    with pytest.raises(SystemExit) as excinfo:
+        with capfd.disabled():
+            perform_rasterize(path='mailto:some.person@gmail.com', width=250, height=250, rasterize_type=RasterizeType.PNG)
+
+    assert mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.' \
+                                                              '\nURL: [\'mailto:some.person@gmail.com\']'
+    assert excinfo.type == SystemExit
+    assert excinfo.value.code == 0

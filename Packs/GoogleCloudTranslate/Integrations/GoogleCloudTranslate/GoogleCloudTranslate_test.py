@@ -2,16 +2,16 @@ from GoogleCloudTranslate import supported_languages, translate_text  # noqa
 
 
 MOCK_GET_SUPPORTED_LANGUAGES = [
-    dict(
-        language_code='aa',
-        support_source=True,
-        support_target=False
-    ),
-    dict(
-        language_code='bb',
-        support_source=False,
-        support_target=True
-    )
+    {
+        'language_code': 'aa',
+        'support_source': True,
+        'support_target': False
+    },
+    {
+        'language_code': 'bb',
+        'support_source': False,
+        'support_target': True
+    }
 ]
 
 
@@ -43,7 +43,7 @@ def test_supported_languages(mocker):
     readable, outputs, result = supported_languages(mclient)
 
     assert isinstance(readable, str)
-    assert outputs == dict(GoogleCloudTranslate=dict(SupportedLanguages=MOCK_GET_SUPPORTED_LANGUAGES))
+    assert outputs == {'GoogleCloudTranslate': {'SupportedLanguages': MOCK_GET_SUPPORTED_LANGUAGES}}
     assert result == MOCK_GET_SUPPORTED_LANGUAGES
 
 
@@ -52,7 +52,7 @@ def test_translate_text_1(mocker):
 
     readable, outputs, result = translate_text(
         mclient,
-        dict(text='bar')
+        {'text': 'bar'}
     )
 
     mock_result = {
@@ -76,7 +76,7 @@ def test_translate_text_2(mocker):
 
     readable, outputs, result = translate_text(
         mclient,
-        dict(text='bar', target='it')
+        {'text': 'bar', 'target': 'it'}
     )
 
     mock_result = {
@@ -100,7 +100,7 @@ def test_translate_text_3(mocker):
 
     readable, outputs, result = translate_text(
         mclient,
-        dict(text='bar', target='it', source='hr')
+        {'text': 'bar', 'target': 'it', 'source': 'hr'}
     )
 
     mock_result = {

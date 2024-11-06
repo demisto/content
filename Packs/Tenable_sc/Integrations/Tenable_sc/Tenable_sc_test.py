@@ -7,15 +7,14 @@ from Tenable_sc import update_asset_command, list_zones_command, list_queries, c
     get_scan_status_command, get_device_command, list_policies_command, list_credentials_command, create_asset_command, \
     create_scan_command, get_scan_report_command, get_system_information_command, get_system_licensing_command, \
     get_all_scan_results_command, list_alerts_command, list_repositories_command, list_assets_command, get_asset_command, \
-    get_alert_command
-import io
+    get_alert_command, get_organization_command
 
 client_mocker = Client(verify_ssl=False, proxy=True, access_key="access_key", secret_key="secret_key",
                        url="www.tenable_sc_url_mock.com")
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
 
@@ -525,7 +524,7 @@ def test_delete_asset_command(mocker):
     args = {"asset_id": "test_id"}
     mocker.patch.object(client_mocker, 'send_request', return_value={"code": 200})
     command_results = delete_asset_command(client_mocker, args)
-    assert "Asset test_id was deleted successfully." == command_results.readable_output
+    assert command_results.readable_output == "Asset test_id was deleted successfully."
 
 
 def test_delete_scan_command(mocker):
@@ -542,7 +541,7 @@ def test_delete_scan_command(mocker):
     args = {"scan_id": "test_id"}
     mocker.patch.object(client_mocker, 'send_request', return_value={"code": 200})
     command_results = delete_scan_command(client_mocker, args)
-    assert "Scan test_id was deleted successfully." == command_results.readable_output
+    assert command_results.readable_output == "Scan test_id was deleted successfully."
 
 
 def test_delete_user_command(mocker):
@@ -559,7 +558,7 @@ def test_delete_user_command(mocker):
     args = {"user_id": "test_id"}
     mocker.patch.object(client_mocker, 'send_request', return_value={"code": 200})
     command_results = delete_user_command(client_mocker, args)
-    assert "User test_id was deleted successfully." == command_results.readable_output
+    assert command_results.readable_output == "User test_id was deleted successfully."
 
 
 @pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
@@ -934,5 +933,28 @@ def test_get_alert_command(mocker, test_case):
     mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
     args = test_data.get("args")
     command_results = get_alert_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_get_organization_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with fields vulnScoreMedium, repositories, restrictedIPs and a mock response.
+
+        When:
+        - Running get_organization_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return all tables with parsed response.
+    """
+    test_data = load_json("./test_data/test_get_organization_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    args = test_data.get("args")
+    command_results = get_organization_command(client_mocker, args)
     assert test_data.get('expected_hr') == command_results.readable_output
     assert test_data.get('expected_ec') == command_results.outputs

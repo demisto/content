@@ -22,8 +22,10 @@ if INSECURE and not USE_SSL:
     raise DemistoException('"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
 if not INSECURE and not USE_SSL:
     # Connect to MongoDB - Need to add credentials and lock down MongoDB (add auth)
-    CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',
-                         ssl=USE_SSL, socketTimeoutMS=TIMEOUT)
+    CLIENT = MongoClient(  # type: ignore[var-annotated]
+        URI, username=USERNAME, password=PASSWORD,
+        authSource=DATABASE, authMechanism='SCRAM-SHA-1',
+        ssl=USE_SSL, socketTimeoutMS=TIMEOUT)
 else:
     CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',
                          ssl=USE_SSL, tlsAllowInvalidCertificates=INSECURE, socketTimeoutMS=TIMEOUT)

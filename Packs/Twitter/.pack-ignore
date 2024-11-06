@@ -1,3 +1,6 @@
 [file:Twitter_image.png]
 ignore=IM111
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Remove_Excluded_Accounts.yml]
+ignore=GR103

@@ -1,15 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-import dateparser
 import json
 import traceback
+from datetime import datetime, timedelta
+
+import dateparser
 import urllib3
-from datetime import timedelta, datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -302,7 +302,7 @@ class Client(BaseClient):
             data=data
         )
 
-    def get_search_id(self, query, time_range, limit=100, repos=[]):
+    def get_search_id(self, query, time_range, limit=100, repos=[], timeout=60):
         """
         :param query: LogPoint search query
 
@@ -311,6 +311,8 @@ class Client(BaseClient):
         :param limit: Number of search results to fetch
 
         :param repos: LogPoint repos from where logs should be fetched
+
+        :param timeout: LogPoint search timeout
 
         :return: dict containing response from API call
         """
@@ -321,7 +323,8 @@ class Client(BaseClient):
                 "query": query,
                 "time_range": time_range,
                 "limit": limit,
-                "repos": repos
+                "repos": repos,
+                "timeout": timeout
             })
         }
         return self._http_request(
@@ -701,12 +704,13 @@ def get_searchid_command(client, args):
     time_range = args.get('time_range', 'Last 5 minutes')
     limit = args.get('limit', '100')
     repos = argToList(args.get('repos'))
+    timeout = args.get('timeout', '60')
     if limit:
         try:
             limit = int(limit)
         except ValueError:
             raise DemistoException(f"The provided argument '{limit}' for limit is not a valid integer.")
-    result = client.get_search_id(query, time_range, limit, repos)
+    result = client.get_search_id(query, time_range, limit, repos, timeout)
     if not result.get('success'):
         raise DemistoException(result.get('message'))
     search_id = result.get('search_id')
@@ -729,10 +733,14 @@ def get_searchid_command(client, args):
 
 def search_logs_command(client, args):
     search_id = args.get('search_id')
-    search_result = client.get_search_results(search_id)
-    if not search_result.get('success'):
-        raise DemistoException(search_result.get('message'))
-    rows = search_result.get('rows', [])
+    rows = []
+    while True:
+        search_result = client.get_search_results(search_id)
+        if not search_result.get('success'):
+            raise DemistoException(search_result.get('message'))
+        rows += search_result.get('rows', [])
+        if search_result.get('final'):
+            break
     if rows and len(rows) > 0:
         display_title = f"Found {len(rows)} logs"
         markdown = tableToMarkdown(display_title, rows, headers=None,

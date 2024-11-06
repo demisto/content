@@ -1,0 +1,4 @@
+!scout-api-usage
+!ip ip=0.0.0.1
+!scout-indicator-search query="0.0.0.1" size=1 start_date="30 days" end_date="now"
+!scout-ip-list ip_addresses=0.0.0.1

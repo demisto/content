@@ -1,0 +1,31 @@
+[
+    {
+        "name": "My AP",
+        "lat": 37.555,
+        "lng": -122.435,
+        "address": "1600 Pennsylvania Ave",
+        "notes": "My AP's note",
+        "tags": [
+            "recently-added"
+        ],
+        "networkId": "N_24329156",
+        "serial": "0000-0000-0000",
+        "model": "MR34",
+        "imei": "123456789000000",
+        "mac": "00:00:00:00:00:00",
+        "lanIp": "0.0.0.0",
+        "firmware": "wireless-25-14",
+        "productType": "wireless",
+        "details": [
+            {
+                "name": "Catalyst serial",
+                "value": "123ABC"
+            }
+        ],
+        "beaconIdParams": {
+            "uuid": "00000000-0000-0000-0000-000000000000",
+            "major": 5,
+            "minor": 3
+        }
+    }
+]

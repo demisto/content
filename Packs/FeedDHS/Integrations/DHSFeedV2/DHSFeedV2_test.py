@@ -3,11 +3,11 @@ from freezegun import freeze_time
 
 from DHSFeedV2 import *
 
-with open('test_data/results.json', 'r') as f:
+with open('test_data/results.json') as f:
     RESULTS_JSON = json.load(f)
-with open('test_data/cortex_indicators_1.json', 'r') as f:
+with open('test_data/cortex_indicators_1.json') as f:
     CORTEX_IOCS_1 = json.load(f)
-with open('test_data/cortex_indicators_1.json', 'r') as f:
+with open('test_data/cortex_indicators_1.json') as f:
     CORTEX_IOCS_2 = json.load(f)
 
 
@@ -257,7 +257,7 @@ human_to_datetime = ('24 hours', datetime(2022, 11, 22, 11, 00, 00, tzinfo=utc))
 timestamp_to_datetime = ('2022-11-30T00:28:24Z', datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
 datetime_to_datetime = (datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc), datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
 none_or_human_to_datetime = (None or MAX_FETCH_INTERVAL, datetime(2022, 11, 21, 11, 00, 00, tzinfo=utc))
-timestamp_or_none_to_datetime = ('2022-11-30T00:28:24Z' or None, datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+timestamp_or_none_to_datetime = ('2022-11-30T00:28:24Z', datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
 datetime_or_human_to_datetime = (datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc) or '24 hours',
                                  datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
 

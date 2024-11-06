@@ -22,6 +22,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
+        },
+        {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR alert-workflow-update Test"
+        },
+        {
             "integrations": "CipherTrust",
             "playbookID": "Thales CipherTrust Test Playbook - Access Management",
             "fromversion": "6.10.0"
@@ -511,12 +519,6 @@
             "timeout": 800
         },
         {
-            "integrations": "Microsoft Advanced Threat Analytics",
-            "playbookID": "Microsoft Advanced Threat Analytics - Test",
-            "fromversion": "5.0.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Zimperium",
             "playbookID": "Zimperium_Test",
             "fromversion": "5.0.0"
@@ -968,7 +970,8 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook general commands",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 2500,
+            "memory_threshold": 90
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -1327,6 +1330,19 @@
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "PAN-OS URL Filtering enrichment - Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.1",
+            "playbookID": "test_playbook_pan_os_firewall_exceptions_commands",
+            "memory_threshold": 120
+
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama_9.0",
+            "playbookID": "test_playbook_pan_os_firewall_exceptions_commands",
+            "memory_threshold": 120
         },
         {
             "integrations": "Panorama",
@@ -1707,6 +1723,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Onion address extraction test",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "Domain extraction test",
             "fromversion": "5.5.0"
         },
@@ -1818,6 +1838,17 @@
                 "SMIME Messaging"
             ],
             "playbookID": "EWS V2 Send Mail Test 3"
+        },
+        {
+            "integrations": [
+                "SMIME Messaging",
+                "EWS v2"
+            ],
+            "instance_names": [
+                "SMIME Messaging",
+                "ews_mail_sender_labdemisto"
+            ],
+            "playbookID": "SMIME_Messaging-Test"
         },
         {
             "playbookID": "decodemimeheader_-_test"
@@ -2202,7 +2233,7 @@
         },
         {
             "integrations": "Cisco Meraki",
-            "playbookID": "Cisco-Meraki-Test"
+            "playbookID": "CiscoMerakiv2"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2933,7 +2964,6 @@
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
             "integrations": [
                 "Cylance Protect v2",
-                "carbonblack-v2",
                 "McAfee ePO v2",
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
@@ -4154,7 +4184,7 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "ServiceNow Fetch Incidents Test",
+            "playbookID": "ServiceNow_Fetch_Incidents_Test",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.8.0",
             "is_mockable": false,
@@ -4400,13 +4430,6 @@
             "fromversion": "6.0.0",
             "integrations": [
                 "AnsibleAlibabaCloud"
-            ]
-        },
-        {
-            "playbookID": "Carbon Black Enterprise EDR Process Search Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Carbon Black Enterprise EDR"
             ]
         },
         {
@@ -4861,12 +4884,14 @@
             "timeout": 7000,
             "integrations": [
                 "EWSO365",
+                "EWS v2",
                 "Core REST API",
                 "CreateIncidents",
                 "Rasterize"
             ],
             "instance_names": [
                 "ewso365_dev_team",
+                "ewv2_regular",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
@@ -5776,7 +5801,28 @@
             "scripts": [
                 "MattermostAskUser"
             ]
+        },
+        {
+            "playbookID": "DBotTrainClustering-test"
+        },
+        {
+            "integrations": "Proofpoint Threat Protection",
+            "playbookID": "test-ProofpointThreatProtectionIntegration-Playbook"
+        },
+        {
+            "integrations": "XQL Query Engine",
+            "playbookID": "XQL Query Engine - Test",
+            "timeout": 500
+        },
+        {
+            "integrations": "IBM Resilient Systems",
+            "playbookID": "IBM Resilient Systems Test"
+        },
+        {
+            "integrations": "netskope_api_v2",
+            "playbookID": "Netskope_V2_Test"
         }
+
     ],
     "skipped_tests": {
         "ThreatCrowd - Test": "The pack is deprecated",
@@ -5852,7 +5898,6 @@
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "GmailTest": "Issue 27057",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
-        "Carbon Black Enterprise EDR Test": "Issue 29775",
         "Carbon Black Enterprise EDR Process Search Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
@@ -5910,7 +5955,6 @@
         "FormattedDateToEpochTest": "Issue 26724",
         "CrowdstrikeFalconSandbox2 Test": "Issue 46845",
         "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543",
-        "CarbonBlackLiveResponseCloud-Test": "Issue 39282",
         "Panorama Best Practise - Test": "Issue 43826",
         "JsonToTable - Test Playbook": "Issue 44302",
         "Recorded Future Test": "Issue 26741",
@@ -5920,6 +5964,8 @@
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Elasticsearch_v2_test-v8": "CRTX-61980",
+        "Elasticsearch_Fetch_Custom_Indicators_Test": "CRTX-134283",
+        "Elasticsearch_Fetch_Demisto_Indicators_Test": "CRTX-134283", 
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
@@ -5964,7 +6010,13 @@
         "AWS SNS Listener - Test": "CIAC-10426",
         "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
         "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant",
-        "CloudConvert-test": "CRTX-122593"
+        "CloudConvert-test": "CRTX-122593",
+        "CiscoMerakiv2": "CIAC-11322",
+        "Test_XFE_v2": "CRTX-112127",
+        "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
+        "Generic Webhook - Test": "CIAC-11234",
+        "Netskope_V2_Test": "No instance - developed by Qmasters",
+        "IAMInitOktaUser - Test": "CIAC-12093"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
@@ -6102,10 +6154,18 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated."
     },
+    "native_nightly_packs":[
+        "Palo_Alto_Networks_WildFire",
+        "ipinfo",
+        "Slack",
+        "CortexXDR",
+        "MailSenderNew",
+        "CommonScripts",
+        "FiltersAndTransformers"
+    ],
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
-        "CIRCL",
         "rasterize",
         "Phishing",
         "Base",
@@ -6132,7 +6192,6 @@
         "AlienVault_OTX",
         "MicrosoftGraphMail",
         "MISP",
-        "Threat_Crowd",
         "Slack",
         "CrowdStrikeFalconX",
         "FeedMitreAttackv2",
@@ -6142,17 +6201,17 @@
         "Shodan",
         "MailListener",
         "FeedOffice365",
-        "GenericSQL",
         "PANWComprehensiveInvestigation",
         "CortexDataLake",
         "PrismaCloud",
-        "FeedAWS",
         "AzureSecurityCenter",
         "PrismaCloudCompute",
-        "ExpanseV2",
+        "CortexXpanse",
         "PrismaSaasSecurity",
         "PaloAltoNetworks_IoT",
-        "PaloAltoNetworksAIOps"
+        "PaloAltoNetworksAIOps",
+        "Jira",
+        "Campaign"
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
@@ -6373,6 +6432,9 @@
             },
             "demisto/python3:3.10.4.29342": {
                 "memory_threshold": 85
+            },
+            "demisto/pan-os-python:1.0.0.108041": {
+                "memory_threshold": 120
             }
         }
     },
@@ -6390,6 +6452,7 @@
         "IPv4 extraction test",
         "IPv4 CIDR extraction test",
         "IPv6 CIDR extraction test",
-        "IPv6 extraction test"
+        "IPv6 extraction test",
+        "Onion address extraction test"
     ]
 }

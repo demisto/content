@@ -4,10 +4,7 @@ from typing import Any
 
 def time_check(last_check: str) -> bool:
     time_diff = datetime.now() - datetime.strptime(last_check, '%Y-%m-%d')
-    if time_diff.days >= 1:
-        return True
-    else:
-        return False
+    return time_diff.days >= 1
 
 
 def check_last_enrichment(args: dict[str, Any]) -> CommandResults:

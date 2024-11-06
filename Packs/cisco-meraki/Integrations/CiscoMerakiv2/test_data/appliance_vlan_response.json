@@ -1,0 +1,63 @@
+[
+    {
+        "id": "1234",
+        "interfaceId": "1284392014819",
+        "name": "My VLAN",
+        "subnet": "0.0.0.0/24",
+        "applianceIp": "0.0.0.0",
+        "groupPolicyId": "101",
+        "templateVlanType": "same",
+        "cidr": "0.0.0.0/24",
+        "mask": 28,
+        "dhcpRelayServerIps": [
+            "0.0.0.0/24",
+            "0.0.0.0/24"
+        ],
+        "dhcpHandling": "Run a DHCP server",
+        "dhcpLeaseTime": "1 day",
+        "dhcpBootOptionsEnabled": false,
+        "dhcpBootNextServer": "0.0.0.0",
+        "dhcpBootFilename": "sample.file",
+        "fixedIpAssignments": {
+            "00:00:00:00:00:00": {
+                "ip": "0.0.0.0",
+                "name": "My favorite IP"
+            }
+        },
+        "reservedIpRanges": [
+            {
+                "start": "0.0.0.0",
+                "end": "0.0.0.0",
+                "comment": "A reserved IP range"
+            }
+        ],
+        "dnsNameservers": "google_dns",
+        "dhcpOptions": [
+            {
+                "code": "5",
+                "type": "text",
+                "value": "five"
+            }
+        ],
+        "vpnNatSubnet": "0.0.0.0/24",
+        "mandatoryDhcp": {
+            "enabled": true
+        },
+        "ipv6": {
+            "enabled": true,
+            "prefixAssignments": [
+                {
+                    "autonomous": false,
+                    "staticPrefix": "0000:000:0000:00::/64",
+                    "staticApplianceIp6": "0000:000:0000:00::1",
+                    "origin": {
+                        "type": "internet",
+                        "interfaces": [
+                            "wan0"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+]

@@ -1161,6 +1161,10 @@ script:
       description: The task ticket summary.
       required: true
       defaultValue: ""
+    - name: customer_company
+      description: The name of the customer company.
+      required: false
+      defaultValue: ""
     - name: details
       description: The task ticket detailed description.
       required: true
@@ -1281,6 +1285,10 @@ script:
     - name: ticket_request_id
       description: The ID of the task ticket to update.
       required: true
+      defaultValue: ""
+    - name: customer_company
+      description: The name of the customer company.
+      required: false
       defaultValue: ""
     - name: summary
       description: The task ticket summary.

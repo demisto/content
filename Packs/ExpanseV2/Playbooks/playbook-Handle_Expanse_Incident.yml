@@ -3,9 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Handle Expanse Incident
+deprecated: true
 description: |-
+  Deprecated. No available replacement.
   Main Playbook to Handle Expanse Incidents.
-
   There are several phases:
   1. Enrichment: all the related information from the incident is extracted, and related indicators (IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
   2. Validation: the found IP and FQDN are correlated with the information available in other products:

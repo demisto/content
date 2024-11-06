@@ -1,0 +1,37 @@
+[
+    {
+        "Attribute": {
+            "Event": {
+                "RelatedEvent": [],
+                "Tags": [
+                    "sample_tags"
+                ],
+                "attack_ids": [
+                    "T1010",
+                    "T1016",
+                    "T1027",
+                    "T1036",
+                    "T1049",
+                    "T1053",
+                    "T1055"
+                ],
+                "event_uuid": "sample_uuid",
+                "fpid": "sample_fpid",
+                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/sample_fpid",
+                "info": "Observation: test_info [\"00000000000000000000000000000001\"]",
+                "reports": [],
+                "timestamp": "0000000001"
+            },
+            "category": "sample category",
+            "fpid": "sample_fpid",
+            "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/sample_fpid",
+            "timestamp": "0000000001",
+            "type": "md5",
+            "uuid": "sample_uuid",
+            "value": {
+                "comment": "",
+                "md5": "00000000000000000000000000000001"
+            }
+        }
+    }
+]
