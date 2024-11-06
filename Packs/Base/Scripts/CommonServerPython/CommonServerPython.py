@@ -11627,7 +11627,7 @@ def xsiam_api_call_with_retries(
             resp_type='response'
         )
         status_code = response.status_code
-        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        demisto.debug('Sent {data_type} into xsiam: got status code: {status_code}'.format(status_code=status_code, data_type=data_type))
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
