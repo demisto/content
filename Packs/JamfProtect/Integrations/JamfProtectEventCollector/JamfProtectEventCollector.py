@@ -70,8 +70,13 @@ class Client(BaseClient):
         integration_context = get_integration_context()
         if token := integration_context.get('token'):
             expires_date = integration_context.get('expires')
-            if expires_date and not self._is_token_expired(expires_date):
-                return token
+            if expires_date:
+                demisto.debug(f"token is valid until {expires_date}")
+                if self._is_token_expired(expires_date):
+                    demisto.debug("token is expired")
+                else:
+                    demisto.debug("token is still valid, will reuse")
+                    return token
         return self._create_new_token(client_id, client_password)
 
     def _is_token_expired(self, expires_date: str) -> bool:
@@ -105,8 +110,17 @@ class Client(BaseClient):
             if "Unauthorized" in str(e):
                 raise DemistoException("Failed to generate a token. Either the Client ID or the Client Password is incorrect.")
             raise e
-        new_token = res.get("access_token", "")
-        expire_in = arg_to_number(res.get("expires_in")) or 1
+
+        if not (new_token := res.get("access_token")):
+            raise DemistoException(f"Token response didn't include a valid `access_token`, Response keys: {res.keys()}")
+
+        if not (expire_in := res.get("expires_in")):
+            demisto.debug(
+                "Token response didn't include a valid `expires_in`, defaulting to 1 minute."
+                f"This may result in frequent log-ins, and is OK. Response keys: {res.keys()}"
+            )
+            expire_in = 1
+
         self._store_token_in_context(new_token, expire_in)
         return new_token
 
@@ -122,6 +136,7 @@ class Client(BaseClient):
             None
         """
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
+        demisto.debug(f"storing token in context with {expire_date=}")
         set_integration_context({"token": token, "expire_date": str(expire_date)})
 
     def _generate_token(self, client_id: str, client_password: str) -> dict:
@@ -139,6 +154,7 @@ class Client(BaseClient):
             "client_id": client_id,
             "password": client_password,
         }
+        demisto.debug("generating a new token")
         return self._http_request(
             method="POST",
             url_suffix="/token",
@@ -432,14 +448,15 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     client_event_type_func = client.get_alerts
     next_page = last_run.get("alert", {}).get("next_page", "")
 
-    demisto.debug(f"Jamf Protect- Fetching alerts from {created}")
+    demisto.debug(f"Fetching alerts from {created}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "alert"
     if next_page:
         demisto.debug(
-            f"Jamf Protect- Fetched {len(events)} which is the maximum number of alerts."
-            f" Will keep the fetching in the next fetch.")
+            f"Fetched {len(events)} which is the maximum number of alerts. "
+            "Will keep the fetching in the next fetch."
+        )
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
         return events, new_last_run_with_next_page
     # If there is no next page, the last fetch date will be the max end date of the fetched events.
@@ -447,7 +464,7 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else current_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} alerts")
+    demisto.debug(f"Fetched {len(events)} alerts")
     return events, new_last_run_without_next_page
 
 
@@ -483,7 +500,8 @@ def get_events_computer_type(client: Client, start_date: str, max_fetch: int, la
     if next_page:
         demisto.debug(
             f"Fetched the maximal number of computers ({len(events)} events). "
-            f"Fetching will continue using {next_page=} and last_fetch={created}, in the next iteration")
+            f"Fetching will continue using {next_page=} and last_fetch={created}, in the next iteration"
+        )
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
         return events, new_last_run_with_next_page
 
@@ -521,14 +539,15 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
     client_event_type_func = client.get_audits
     next_page = last_run.get("audit", {}).get("next_page", "")
 
-    demisto.debug(f"Jamf Protect- Fetching audits from {start_date} to {end_date}")
+    demisto.debug(f"Fetching audits from {start_date} to {end_date}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     for event in events:
         event["source_log_type"] = "audit"
     if next_page:
         demisto.debug(
-            f" Jamf Protect - Fetched {len(events)}"
-            f" which is the maximum number of audits. Will keep the fetching in the next fetch.")
+            f"Fetched {len(events)} audits, which is the maximum number of audits."
+            " Will keep the fetching in the next fetch."
+        )
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": start_date}
         return events, new_last_run_with_next_page
 
@@ -537,7 +556,7 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else end_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f"Jamf Protect- Fetched {len(events)} audits")
+    demisto.debug(f"Fetched {len(events)} audits")
     return events, new_last_run_without_next_page
 
 
@@ -603,6 +622,7 @@ def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, en
         (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     # argument > current time
     end_date = end_date or now_utc_time.strftime(DATE_FORMAT)
+    demisto.debug(f"{now_utc_time=}, {start_date=}, {end_date=}")
     return start_date, end_date
 
 
@@ -620,7 +640,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
     Returns:
         EventResult: A NamedTuple containing four elements
     """
-    last_run = demisto.getLastRun()
+    last_run: dict[str, Any] = demisto.getLastRun()
     alert_events, alert_next_run = [], {}
     audit_events, audit_next_run = [], {}
     computer_events: list = []
@@ -642,7 +662,7 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, m
         computer_events, computer_next_run = get_events_computer_type(client, start_date_arg, max_fetch_computer, last_run)
     next_run: dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run, 'computer': computer_next_run}
     if "next_page" in (alert_next_run | audit_next_run | computer_next_run):
-        # Will instantly re-trigger the fetch command.
+        demisto.debug("found `next_page`, setting next_run['nextTrigger'] = 0 to instantly retrigger fetching")
         next_run["nextTrigger"] = "0"
     return EventResult(alert_events, audit_events, computer_events, next_run)
 
@@ -668,7 +688,7 @@ def validate_start_and_end_dates(args):
     """
     start_date_str = ""
     end_date_str = ""
-    if start_date := arg_to_datetime(args.get('start_date')):
+    if start_date := arg_to_datetime(args.get("start_date")):
         start_date_str = start_date.strftime(DATE_FORMAT)
     if end_date := arg_to_datetime(args.get("end_date")):
         end_date_str = end_date.strftime(DATE_FORMAT)
