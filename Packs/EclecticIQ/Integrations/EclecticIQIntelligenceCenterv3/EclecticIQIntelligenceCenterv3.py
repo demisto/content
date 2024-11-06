@@ -292,6 +292,16 @@ class EclecticIQ_api:
                     proxies=self.proxies,
                     timeout=30,
                 )
+            elif method == "patch":
+                r = requests.patch(
+                    url,
+                    headers=self.headers,
+                    params=params,
+                    data=json.dumps(data),
+                    verify=self.verify_ssl,
+                    proxies=self.proxies,
+                    timeout=30,
+                )
             else:
                 self.eiq_logging.error("Unknown method: " + str(method))
                 raise Exception
@@ -2549,6 +2559,50 @@ def request_post(eiq_api):
         outputs_key_field="URI")
 
 
+def request_put(eiq_api):
+    uri = demisto.args().get("uri", "")
+    body = json.loads(demisto.args().get("body", "{}"))
+
+    raw_response = eiq_api.send_api_request("put", uri, data=body)
+    entry_context = {
+        "URI": uri,
+        "ReplyStatus": str(raw_response.status_code),
+        "ReplyBody": raw_response.json(),
+    }
+
+    human_readable_title = f"### EclecticIQ PUT action to endpoint {uri} exectued. Reply status: {raw_response.status_code}"
+
+    return CommandResults(
+        readable_output=human_readable_title,
+        raw_response=raw_response.json(),
+        outputs_prefix="EclecticIQ.PUT",
+        outputs=entry_context,
+        outputs_key_field="URI"
+    )
+
+
+def request_patch(eiq_api):
+    uri = demisto.args().get("uri", "")
+    body = json.loads(demisto.args().get("body", "{}"))
+
+    raw_response = eiq_api.send_api_request("patch", uri, data=body)
+    entry_context = {
+        "URI": uri,
+        "ReplyStatus": str(raw_response.status_code),
+        "ReplyBody": raw_response.json(),
+    }
+
+    human_readable_title = f"### EclecticIQ PATCH action to endpoint {uri} exectued. Reply status: {raw_response.status_code}"
+
+    return CommandResults(
+        readable_output=human_readable_title,
+        raw_response=raw_response.json(),
+        outputs_prefix="EclecticIQ.PATCH",
+        outputs=entry_context,
+        outputs_key_field="URI"
+    )
+
+
 def request_delete(eiq_api):
     uri = demisto.args().get("uri", "")
 
@@ -2587,6 +2641,8 @@ def main():
         "eclecticiq-request-get": request_get,
         "eclecticiq-request-post": request_post,
         "eclecticiq-request-delete": request_delete,
+        "eclecticiq-request-put": request_put,
+        "eclecticiq-request-patch": request_patch,
     }
 
     if not demisto.params().get('proxy', False):
