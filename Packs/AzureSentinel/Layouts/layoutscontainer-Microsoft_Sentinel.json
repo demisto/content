@@ -11,7 +11,31 @@
                     {
                         "fieldId": "incident_closenotes",
                         "isVisible": true
-                    }
+                    },
+					{
+						"fieldId": "incident_microsoftsentinelclassificationreason",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "closeReason"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"simple": "False Positive"
+										}
+									},
+									"type": "singleSelect"
+								}
+							]
+						],
+						"isVisible": true
+					}
                 ],
                 "isVisible": true,
                 "name": "Basic Information",
@@ -202,6 +226,38 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "microsoftsentinelclassificationreason",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "closeReason"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "False Positive"
+												}
+											},
+											"type": "singleSelect"
+										}
+									]
+								],
+								"height": 22,
+								"id": "1363f890-9c45-11ef-936c-a197ce0ad8d7",
+								"index": 3,
+								"listId": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
                             {
                                 "endCol": 2,
                                 "fieldId": "closenotes",
