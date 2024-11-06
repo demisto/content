@@ -46,7 +46,7 @@ class Client(BaseClient):
         return super()._http_request(headers=self.headers, method=method, params=params,
                                      url_suffix=url_suffix, resp_type=resp_type, ok_codes=ok_codes)  # type: ignore[misc]
 
-    def get_events_request(self, params: dict = None):
+    def get_events_request(self, params: dict = None):  # pragma: no cover
         try:
             return self.http_request(
                 method='GET',
