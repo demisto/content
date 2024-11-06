@@ -154,7 +154,7 @@ def get_api_key_header_val(api_key):
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
 
-    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str]]] = {
+    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection]] = {
         "hosts": [SERVER],
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
@@ -164,8 +164,8 @@ def elasticsearch_builder(proxies):
         connection_args["connection_class"] = RequestsHttpConnection
         connection_args["proxies"] = proxies
     else:
-        # Adding the proxy related parameter to the Elasticsearch client v8 (reference for that
-        # - https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214)
+        # Adding the proxy related parameter to the Elasticsearch client v8
+        # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
         class CustomHttpNode(RequestsHttpNode):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
