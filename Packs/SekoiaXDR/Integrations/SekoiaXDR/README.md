@@ -821,6 +821,8 @@ To set up the mirroring:
 
 3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Sekoia XDR.
 
+4. Optional: Check the Reopen Mirrored Cortex XSOAR Incidents integration parameter to reopen the Cortex XSOAR incident when the matching Sekoia XDR alert is reopened.
+
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Sekoia XDR.
 
