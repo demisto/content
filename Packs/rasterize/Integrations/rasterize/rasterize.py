@@ -271,9 +271,14 @@ def count_running_chromes(port):
 
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
+    counter_running_chrome = count_running_chromes(port=port)
+    demisto.debug(f' get_chrome_browser {counter_running_chrome=}')
+    if not counter_running_chrome:
+        update_counter_chrome_instances_file(port, increase_counter=False)
+        process = start_chrome_process(chrome_port=port)
+        if not process:
+            demisto.debug('fail starting chrome process..')
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
-    res = count_running_chromes(port=port)
-    demisto.debug(f'[test]: get_chrome_browser {res=}')
     demisto.debug(f'[test] get_chrome_browser {DEFAULT_RETRIES_COUNT}')
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
@@ -285,14 +290,10 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             tabs_count = len(browser.list_tab(timeout=10))
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
-            res = count_running_chromes(port=port)
-            demisto.debug(f'[test]: get_chrome_browser {res=}')
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs!")
             return browser
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
-            res = count_running_chromes(port=port)
-            demisto.debug(f'[test]: get_chrome_browser {res=}')
             connection_refused = 'connection refused'
             if connection_refused in exp_str:
                 demisto.debug(f"Failed to connect to Chrome on port {port} on iteration {i + 1}. {connection_refused}")
@@ -302,7 +303,6 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
 
         # Mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
-
     return None
 
 
@@ -325,7 +325,7 @@ def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict[str
         return {}
 
 
-def increase_counter_chrome_instances_file(chrome_port: str = ''):
+def update_counter_chrome_instances_file(chrome_port: str = '', increase_counter: bool = True, new_value:int = 0):
     """
     he function will increase the counter of the port "chrome_port"ץ
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
@@ -333,9 +333,9 @@ def increase_counter_chrome_instances_file(chrome_port: str = ''):
     :param chrome_port: Port for Chrome instance.
     """
     existing_data = read_json_file()
-    demisto.debug(f"[test] increase_counter_chrome_instances_file {existing_data}")
+    demisto.debug(f"[test] update_counter_chrome_instances_file {existing_data}")
     if chrome_port in existing_data:
-        existing_data[chrome_port][RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1
+        existing_data[chrome_port][RASTERIZETION_COUNT] = existing_data[chrome_port].get(RASTERIZETION_COUNT, 0) + 1 if increase_counter else 0
         write_chrome_instances_file(existing_data)
     else:
         demisto.info(f"Chrome port '{chrome_port}' not found.")
@@ -418,8 +418,7 @@ def get_chrome_options(default_options, user_options):
     options.extend([x for x in default_options if (opt_name(x) not in remove_opts and opt_name(x) not in option_names)])
     return options
 
-
-def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binary=CHROME_EXE):
+def start_chrome_process(chrome_port, chrome_binary=CHROME_EXE):
     try:
         logfile = open(CHROME_LOG_FILE_PATH, 'ab')
 
@@ -428,11 +427,19 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
         subprocess_options = [chrome_binary]
         user_chrome_options = demisto.params().get(CHROME_INSTANCE_OPTIONS, "")
         subprocess_options.extend(get_chrome_options(default_chrome_options, user_chrome_options))
-        demisto.debug(f"Starting Chrome with {subprocess_options=}")
+        demisto.debug(f"start_chrome_process: Starting Chrome with {subprocess_options=}")
 
         process = subprocess.Popen(subprocess_options, stdout=logfile, stderr=subprocess.STDOUT)
-        demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
+        demisto.debug(f'start_chrome_process: Chrome started on port {chrome_port}, pid: {process.pid},'
+                      f'returncode: {process.returncode}')
+        return process
+    except Exception as exc:
+        demisto.debug(exc)
 
+
+def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binary=CHROME_EXE):
+    try:
+        process= start_chrome_process(chrome_port=chrome_port,chrome_binary=chrome_binary)
         if process:
             demisto.debug(f'New Chrome session active on {chrome_port=}: {chrome_options=} {chrome_options=}')
             # Allow Chrome to initialize
@@ -545,13 +552,18 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     }
     chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
     demisto.debug(f'[test] chrome_manager {instance_id_dict=}')
+    if instance_id_dict.get('None'):
+       bla= instance_id_dict.get('None')
+       demisto.debug(f'what {bla=}')
+       terminate_chrome(chrome_port=instance_id_dict['None']['chrome_port'])
+       instance_id_dict.pop('None')
     if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
         if instance_id:
             demisto.debug(f'[test] chrome_manager: first cond {instance_id_dict.keys()=}')
         demisto.debug(f'[test] chrome_manager: first cond {chrome_instances_contents}')
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    if chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, '') or count_running_chromes(chrome_port):
+    if chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
         # If the current Chrome options differ from the saved options for this instance ID,
         # it terminates the existing Chrome instance and generates a new one with the new options.
         terminate_chrome(chrome_port=chrome_port)
@@ -884,7 +896,7 @@ def perform_rasterize(path: str | list[str],
                 demisto.info(f"perform_rasterize: terminating Chrome after {rasterizations_count=} rasterizations")
                 terminate_chrome(chrome_port=chrome_port)
             else:
-                increase_counter_chrome_instances_file(chrome_port=chrome_port)
+                update_counter_chrome_instances_file(chrome_port=chrome_port)
 
             # Get the results
             for current_thread in rasterization_threads:
