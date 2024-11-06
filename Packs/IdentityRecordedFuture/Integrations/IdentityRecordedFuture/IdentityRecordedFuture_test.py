@@ -1,11 +1,8 @@
-import json
-import os
 from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
 import vcr as vcrpy
-
 from IdentityRecordedFuture import Client
 
 CASSETTES = Path(__file__).parent / "test_data"
@@ -13,6 +10,8 @@ DATETIME_STR_VALUE = "2021-12-08T12:10:21.837Z"
 
 
 def filter_out_whoami(response):
+    import json
+
     body = response["body"]["string"]
     try:
         body.decode("utf-8")
@@ -34,12 +33,16 @@ vcr = vcrpy.VCR(
 
 
 def util_load_json(path):
+    import json
+
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def create_client() -> Client:
-    base_url = "https://api.recordedfuture.com/gw/xsoar/"
+    import os
+
+    base_url = "https://api.recordedfuture.com/gw/xsoar-identity/"
     verify_ssl = True
     token = os.environ.get("RF_TOKEN")
     headers = {
@@ -205,6 +208,8 @@ def test_call_return_error(mock_http_request: Mock, return_error_mock: Mock):
 @patch("IdentityRecordedFuture.BaseClient._http_request")
 def test_call_return_error_not_json(mock_http_request: Mock):
     """Test _call() when error message was returned and it is not json serializable."""
+    import json
+
     from CommonServerPython import DemistoException
 
     client = create_client()
@@ -452,6 +457,7 @@ def test_call_response_processing_404(mocker):
 def test_call_DemistoException_res_json_error(mocker):
     """Test _call when err.res.json() raises an exception (e.g., JSONDecodeError)."""
     import json
+
     import demistomock as demisto
     from CommonServerPython import DemistoException
 
@@ -480,8 +486,8 @@ def test_call_DemistoException_res_json_error(mocker):
 def test_call_DemistoException_res_None(mocker):
     """Test _call when DemistoException has no response (err.res is None)."""
 
-    from CommonServerPython import DemistoException
     import demistomock as demisto
+    from CommonServerPython import DemistoException
 
     client = create_client()
 
@@ -801,8 +807,8 @@ def test_process_result_actions_no_key_value() -> None:
 
 def test_process_result_actions() -> None:
     """Test result processing function with the case when we received good data."""
-    from IdentityRecordedFuture import Actions
     from CommonServerPython import CommandResults
+    from IdentityRecordedFuture import Actions
 
     client = Mock()
     actions = Actions(client)
@@ -912,8 +918,8 @@ def test_process_result_actions_command_results_only(mocker):
 
 def test_process_result_actions_with_invalid_actions(mocker):
     """Test processing result actions with invalid keys."""
-    from IdentityRecordedFuture import Actions
     from CommonServerPython import CommandResults
+    from IdentityRecordedFuture import Actions
 
     actions = Actions(rf_client=None)
 
@@ -1013,8 +1019,9 @@ def test_fetch_incidents_with_attachment(mocker):
 
 def test_transform_incidents_attachments_without_screenshots(mocker):
     """Test transforming incidents without screenshots."""
-    from IdentityRecordedFuture import Actions
     import json
+
+    from IdentityRecordedFuture import Actions
 
     incidents = [{"rawJSON": json.dumps({"panel_evidence_summary": {}})}]
 
@@ -1210,7 +1217,7 @@ def test_test_module(mocker):
         demisto, "demistoVersion", return_value={"version": "mock_version"}
     )
     mocker.patch.object(
-        demisto, "params", return_value={"token": {"password": "mocktoken"}}
+        demisto, "params", return_value={"credential": {"password": "example"}}
     )
     mocker.patch.object(platform, "platform", return_value="mock_platform")
     mocker.patch.object(IdentityRecordedFuture.Client, "whoami")
@@ -1233,7 +1240,7 @@ def test_test_module_with_boom(mocker):
         demisto, "demistoVersion", return_value={"version": "mock_version"}
     )
     mocker.patch.object(
-        demisto, "params", return_value={"token": {"password": "mocktoken"}}
+        demisto, "params", return_value={"credential": {"password": "example"}}
     )
     mocker.patch.object(platform, "platform", return_value="mock_platform")
     mock_whoami = mocker.patch.object(IdentityRecordedFuture.Client, "whoami")
@@ -1266,7 +1273,7 @@ def test_main_general(
     mocked_demisto.command.return_value = "test-module"
     mocked_demisto.params.return_value = {
         "server_url": "https://example.com",
-        "token": "mocktoken",
+        "credential": {"password": "example"},
     }
 
     IdentityRecordedFuture.main()
@@ -1279,8 +1286,8 @@ def test_main_general(
 
 def test_main_with_unknown_command(mocker):
     """Test main function with an unknown command."""
-    import IdentityRecordedFuture
     import demistomock as demisto
+    import IdentityRecordedFuture
 
     mocker.patch.object(demisto, "command", return_value="unknown-command")
     mock_return_error = mocker.patch("IdentityRecordedFuture.return_error")
@@ -1296,8 +1303,8 @@ def test_main_with_unknown_command(mocker):
 
 def test_main_exception_handling(mocker):
     """Test main function's exception handling."""
-    import IdentityRecordedFuture
     import demistomock as demisto
+    import IdentityRecordedFuture
 
     mocker.patch.object(demisto, "command", return_value="test-module")
     mock_get_client = mocker.patch("IdentityRecordedFuture.get_client")
@@ -1318,11 +1325,11 @@ def test_main_exception_handling(mocker):
 
 def test_get_client_no_api_token(mocker):
     """Test get_client when no API token is provided."""
-    import IdentityRecordedFuture
     import demistomock as demisto
+    import IdentityRecordedFuture
 
     mock_params = {
-        "server_url": "https://api.recordedfuture.com/gw/xsoar/",
+        "server_url": "https://api.recordedfuture.com/gw/xsoar-identity/",
         "unsecure": False,
         "credential": {"password": None},
         "token": None,
@@ -1330,8 +1337,98 @@ def test_get_client_no_api_token(mocker):
     mocker.patch.object(demisto, "params", return_value=mock_params)
     mock_return_error = mocker.patch("IdentityRecordedFuture.return_error")
 
-    IdentityRecordedFuture.get_client()
+    proxies = {}
+    IdentityRecordedFuture.get_client(proxies=proxies)
 
     mock_return_error.assert_called_once_with(
         message="Please provide a valid API token"
     )
+
+
+@patch("IdentityRecordedFuture.Client")
+def test_get_client_with_proxy(client_mock, mocker):
+    """Test get_client when proxy is used."""
+    import demistomock as demisto
+    import IdentityRecordedFuture
+
+    server_url = "https://api.recordedfuture.com/gw/xsoar-identity/"
+
+    unsecure = False
+    verify_ssl = not unsecure
+
+    mock_params = {
+        "server_url": server_url,
+        "unsecure": unsecure,
+        "credential": {"password": "example"},
+        "proxy": True,
+    }
+    mocker.patch.object(demisto, "params", return_value=mock_params)
+
+    proxies = {"http": "example.com", "https": "example.com"}
+    IdentityRecordedFuture.get_client(proxies=proxies)
+
+    client_mock.assert_called_once_with(
+        base_url=server_url.rstrip("/"),
+        verify=verify_ssl,
+        headers=mocker.ANY,
+        proxy=bool(proxies),
+    )
+
+
+@patch("IdentityRecordedFuture.Client")
+def test_get_client_without_proxy(client_mock, mocker):
+    """Test get_client when proxy is not used."""
+    import demistomock as demisto
+    import IdentityRecordedFuture
+
+    server_url = "https://api.recordedfuture.com/gw/xsoar-identity/"
+
+    unsecure = False
+    verify_ssl = not unsecure
+
+    mock_params = {
+        "server_url": server_url,
+        "unsecure": unsecure,
+        "credential": {"password": "example"},
+        "proxy": False,
+    }
+    mocker.patch.object(demisto, "params", return_value=mock_params)
+
+    proxies = {}
+    IdentityRecordedFuture.get_client(proxies=proxies)
+
+    client_mock.assert_called_once_with(
+        base_url=server_url.rstrip("/"),
+        verify=verify_ssl,
+        headers=mocker.ANY,
+        proxy=bool(proxies),
+    )
+
+
+def test_main_calls_handle_proxy(mocker):
+    """
+    Test main function to ensure it calls handle_proxy() and provides proxies to the get_client.
+    """
+    import demistomock as demisto
+    import IdentityRecordedFuture
+
+    mock_proxies = {"http": "example.com", "https": "example.com"}
+    mock_handle_proxy = mocker.patch(
+        "IdentityRecordedFuture.handle_proxy", return_value=mock_proxies
+    )
+
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto, "params", return_value={"credential": {"password": "example"}}
+    )
+    mock_get_client = mocker.patch("IdentityRecordedFuture.get_client")
+    mocker.patch("IdentityRecordedFuture.Client.whoami")
+    mock_return_results = mocker.patch("IdentityRecordedFuture.return_results")
+
+    IdentityRecordedFuture.main()
+
+    mock_handle_proxy.assert_called_once()
+
+    mock_get_client.assert_called_once_with(proxies=mock_proxies)
+
+    mock_return_results.assert_called_once_with("ok")

@@ -1657,9 +1657,9 @@ def search_domain_command(client, domain, reliability, create_relationships):
     return command_results
 
 
-def search_url_command(client, url, reliability, create_relationships):
+def search_url_command(client, url, reliability, create_relationships, separator=','):
     indicator_type = 'URL'
-    url_list = argToList(url)
+    url_list = argToList(url, separator)
 
     command_results = []
     relationships = []
