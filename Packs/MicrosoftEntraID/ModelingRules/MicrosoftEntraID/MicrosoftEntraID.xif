@@ -23,7 +23,7 @@ alter
         xdm.source.ipv6 = if(callerIpAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", arrayindex(regextract(callerIpAddress, "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}"), 0)),
 	xdm.session_context_id = correlationId,
 	xdm.source.user.username = to_string(identity),
-	xdm.event.log_level = if(level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, level = "Error", XDM_CONST.LOG_LEVEL_ERROR, level = "Critical", XDM_CONST.LOG_LEVEL_CRITICAL level = null, null, to_string(level)),
+	xdm.event.log_level = if(level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, level = "Error", XDM_CONST.LOG_LEVEL_ERROR, level = "Critical", XDM_CONST.LOG_LEVEL_CRITICAL, level = null, null, to_string(level)),
 	xdm.source.cloud.region = location,
 	xdm.source.cloud.provider = if(1=1, XDM_CONST.CLOUD_PROVIDER_AZURE);
 
