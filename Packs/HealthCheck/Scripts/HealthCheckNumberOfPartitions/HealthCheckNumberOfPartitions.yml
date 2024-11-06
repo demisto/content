@@ -1,8 +1,8 @@
-comment: Widget Script to present the number of BoltDB partitions
+comment: Widget Script to present the number of BoltDB partitions.
 commonfields:
   id: HealthCheckNumberOfPartitions
   version: -1
-dockerimage: demisto/python3:3.10.14.100715
+dockerimage: demisto/python3:3.11.10.113941
 enabled: true
 name: HealthCheckNumberOfPartitions
 runas: DBotWeakRole
