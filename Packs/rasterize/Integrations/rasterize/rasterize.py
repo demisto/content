@@ -241,7 +241,7 @@ class PychromeEventHandler:
 
         if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.enable()
-            demisto.info('Issuing of requestPaused events enabled.')
+            demisto.debug('Fetch events enabled.')
 
 
 
@@ -251,9 +251,9 @@ class PychromeEventHandler:
 
         if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            demisto.info(f"Request paused: {request_url=} , {request_id=}")
+            demisto.debug(f"Request paused: {request_url=} , {request_id=}")
             self.tab.Fetch.disable()
-            demisto.info('Issuing of requestPaused events disabled.')
+            demisto.debug('Fetch events disabled.')
 
 
 # endregion
