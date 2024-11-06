@@ -409,16 +409,15 @@ def fetch_events_command(
     total_events_count = 0
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
-    hashed_events_from_previous_run = ctx.get("hashed_events_from_previous_run", [])
+    hashed_events_from_previous_run = ctx.get("hashed_events_from_previous_run", set())
     while total_events_count < int(fetch_limit):
         demisto.info(f"Preparing to get events with {offset=}, {page_size=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
-        hashed_events_from_current_run = []
+        hashed_events_mapping = {}
         for event in events:
-            hashed_events_from_current_run.append(json.dumps(event, sort_keys=True))
             try:
                 event["_time"] = event["httpMessage"]["start"]
                 if "attackData" in event:
@@ -427,6 +426,7 @@ def fetch_events_command(
                         event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
                                                                                                               ""))
                 if "httpMessage" in event:
+                    hashed_events_mapping[json.dumps(event['httpMessage'], sort_keys=True)] = event
                     event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
                     event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
             except Exception as e:
@@ -434,8 +434,9 @@ def fetch_events_command(
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         demisto.info("Preparing to deduplicate events, currently got {len(events)} events.")
-        deduped_events = [event for event, hashed_event_from_current_run in zip(
-            events, hashed_events_from_current_run) if hashed_event_from_current_run not in hashed_events_from_previous_run]
+        hashed_events_from_current_run = set(hashed_events_mapping.keys())
+        filtered_hashed_events = hashed_events_from_current_run - hashed_events_from_previous_run
+        deduped_events = [event for hashed_event, event in hashed_events_mapping if hashed_event in filtered_hashed_events]
         total_events_count += len(deduped_events)
         demisto.info(f"After deduplicate events, Got {len(deduped_events)} events, and {offset=}")
         hashed_events_from_previous_run = hashed_events_from_current_run
