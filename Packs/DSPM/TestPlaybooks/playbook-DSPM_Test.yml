@@ -1,5 +1,5 @@
-id: DSPM
-name: DSPM
+id: DSPM Test
+name: DSPM Test
 version: -1
 fromversion: 4.5.0
 starttaskid: '0'
