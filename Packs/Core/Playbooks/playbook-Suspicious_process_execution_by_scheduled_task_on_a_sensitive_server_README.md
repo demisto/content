@@ -7,7 +7,7 @@ Investigation:
 During the alert investigation, the playbook will perform the following:
 
 - Checks the suspicious process reputation.
-- Search for related XDR agent alerts to identify any malicious activity on the server.
+- Searches for Cortex XSIAM agent alerts related to any malicious activity on the server.
 
 Remediation:
 
