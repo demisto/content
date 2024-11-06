@@ -397,7 +397,7 @@ def dedup_events(hashed_events_mapping: dict[str, dict], hashed_events_from_prev
     hashed_events_from_current_run = set(hashed_events_mapping.keys())
     filtered_hashed_events = hashed_events_from_current_run - hashed_events_from_previous_run
     deduped_events: List[dict] = [event for hashed_event,
-                        event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
+                                  event in hashed_events_mapping.items() if hashed_event in filtered_hashed_events]
     return deduped_events, hashed_events_from_current_run
 
 
