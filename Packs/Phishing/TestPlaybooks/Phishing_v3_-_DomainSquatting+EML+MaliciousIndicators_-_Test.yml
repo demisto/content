@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 description: |-
-  Checks the domain-squatting flow, with an attached EML file. The EML file should contain some indicators. some of which should be detected as at least suspicious. The email authenticity should get a score of "Fail". Those results together with the domain-squatting, should eventually cause the incident to get a severity of 3.
+  Checks the test test domain-squatting flow, with an attached EML file. The EML file should contain some indicators. some of which should be detected as at least suspicious. The email authenticity should get a score of "Fail". Those results together with the domain-squatting, should eventually cause the incident to get a severity of 3.
 
   Keep in mind when running Phishing tests:
   - Never send an email from the phishing mailbox to the same phishing mailbox, as this can cause an infinite loop situation where an email is received, an acknowledgement email is sent to the sender, and then the acknowledgement email is received in the phishing mailbox, which causes a new incident to fetch, thus triggering another acknowledgement email, etc.
@@ -902,7 +902,7 @@ tasks:
       interval_between_tries:
         simple: "15"
       max_timeout:
-        simple: "1100"
+        simple: "2000"
       task_name:
         simple: Manually search & delete emails
       task_states:
