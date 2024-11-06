@@ -1,0 +1,25 @@
+{
+    "name": "Cortex Exposure Management",
+    "description": "Content for working with Cortex Exposure Management (EM).",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Exposure Management",
+        "EM",
+        "Cortex",
+        "Palo Alto Networks"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
