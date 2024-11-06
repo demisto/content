@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -222,6 +224,23 @@ def enrich_event(event, event_type):
         add_entry_status_field(event)
 
 
+def get_previous_page(links):
+    for link in links:
+        if link.get("rel") == "previous":
+            return link.get("href")
+    return None
+
+
+def get_last_page_of_events(results: list):
+    get_events
+    #call the api for the first page
+    #go to next
+    #keep going until there it no next page anymore
+    #return self
+
+
+
+
 def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
     """
     Fetches events or alerts until fetch_limit is reached, or no more events are available.
@@ -237,18 +256,17 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_typ
     """
     min_time = last_run.get('min_time')
     if min_time:
-        results = self._http_request(
+        results = client._http_request(
             method="GET",
             url_suffix=f"/api/atlas/v2/groups/{client.group_id}/events?minDate={min_time}",
         )
     else:
         results = client.first_time_fetch_events(event_type)
         
-    response = go_to_the_last_page(results)
+    response = get_last_page_of_events(results)
     links = response.get('links')
     events = response.get('results')
     
-    demisto.debug(f'Those are the events ids from the last run {last_page_events_ids}')
     current_fetched_events_amount = 0
     output = []
     new_min_time = min_time
@@ -268,18 +286,18 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_typ
                 return output, new_min_time
 
         previous_page = get_previous_page(links)
-        if next_url:
+        if previous_page:
             # change to the next page and start again
             response = client.get_response_from_page_link(previous_page)
             events = response.get('results')
             links = response.get('links')
         else:
             # no more pages left, exit the loop
-            new_min_time = max(new_min_time, event.get('create')) + 1
             break
 
     demisto.debug(f'No more events are left to fetch. Amount of fetched events from type {event_type} is {len(output)}')
     return output, new_min_time
+
 
 def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
     """
