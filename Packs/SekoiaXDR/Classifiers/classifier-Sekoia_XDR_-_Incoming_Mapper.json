@@ -86,9 +86,6 @@
 				"Alert Type ID": {
 					"simple": "alert_type.value"
 				},
-				"Changed": {
-					"simple": "alert_status"
-				},
 				"Description": {
 					"simple": "details"
 				},
