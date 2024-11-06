@@ -2,9 +2,13 @@ This playbook is designed to handle the 'Unprivileged process opened a registry 
 
 Playbook Stages:
 
-Investigation:
+  Investigation:
 
-- The playbook examines the unprivileged process that triggered the alert, the command line, and searches for additional suspicious Cortex XSIAM alerts within the same incident in order to determine whether a remediation measure is required.
+  During the alert investigation, the playbook will perform the following:
+
+  - Checks the prevalence of the unprivileged process that triggered the alert.
+  - Checks the prevalence of the command line used by the unprivileged process.
+  - Searches for additional suspicious Cortex XSIAM alerts within the same incident in order to determine whether a remediation measure is required.
 
 Remediation:
 
