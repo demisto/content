@@ -18,8 +18,21 @@ def add_new_comment(context_results: dict):
     incident_id = dict_safe_get(
         context_results, ["CustomFields", "sourceid"], ""
     ) or args.get("incident_id")
+    mirror_dir = next(
+        (
+            tag["value"]
+            for tag in context_results.get("labels", [])
+            if tag.get("type") == "mirror_direction"
+        ),
+        context_results.get("dbotMirrorDirection"),
+    )
     instance_name = context_results.get("sourceInstance") or args.get("using")
     new_comment = args.get("new_comment")
+    if mirror_dir in ["null", "Out"]:
+        return CommandResults(
+            readable_output="""The comment has not been added.
+            Comments can only be added when the Mirroring Direction is set to 'Incoming' or 'Incoming and Outgoing'."""
+        )
     if not incident_id:
         return_error(
             "Incident ID not found. Please provide the remote 'incident_id' either as an argument when running the script from the War Room."  # noqa: E501

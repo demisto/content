@@ -15,11 +15,24 @@ def set_owner(context_results: dict):
                          and the updated owner information.
     """
     args = demisto.args()
+    mirror_dir = next(
+        (
+            tag["value"]
+            for tag in context_results.get("labels", [])
+            if tag.get("type") == "mirror_direction"
+        ),
+        context_results.get("dbotMirrorDirection"),
+    )
     incident_id = dict_safe_get(
         context_results, ["CustomFields", "sourceid"], ""
     ) or args.get("incident_id")
     instance_name = context_results.get("sourceInstance") or args.get("using")
-    user_principal_email = args.get("owner_email")
+    user_principal_email = args.get("user_principal_name")
+    if mirror_dir in ["null", "Out"]:
+        return CommandResults(
+            readable_output="""The 'Owner' field has not been changed.
+            The 'Owner' field can only be modified when the Mirroring Direction is set to 'Incoming' or 'Incoming and Outgoing'."""  # noqa: E501
+        )
 
     if not incident_id:
         return_error(

@@ -5,6 +5,7 @@ import CommonServerPython
 def test_add_new_comment(mocker):
     context_results = {
         "CustomFields": {"sourceid": "incident-123"},
+        "dbotMirrorDirection": "In",
         "sourceInstance": None,
     }
     demisto_args = {"new_comment": "This is a new comment"}

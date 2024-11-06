@@ -1,5 +1,5 @@
 args:
-  - name: owner_email
+  - name: user_principal_name
     required: true
     description: The owner email to set as user principal name. If there is a user in Microsoft Sentinel for this email, they will be represented by their name in the remote and will be mirrored with all their details. Otherwise, only the email will be displayed on the remote, and only the email will be mirrored, with the rest of the details null.
   - name: incident_id
