@@ -331,6 +331,7 @@ def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_
         fetch_emails_as_incidents(client, last_run, "received-time", skip_unparsable_emails_param)
         assert expected == str(e)
 
+
 def test_fetch_and_mark_as_read(mocker):
     """
     Given:

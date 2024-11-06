@@ -453,6 +453,8 @@ def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_
     with pytest.raises((Exception, UnicodeError, IndexError)) as e:
         fetch_emails_as_incidents(client, "Inbox", skip_unparsable_emails_param)
         assert expected == str(e)
+
+
 class MockItem:
     def __init__(self, item_id):
         self.id = item_id
