@@ -1,8 +1,9 @@
 import pytest
 from freezegun import freeze_time
 from IBMMaaS360SecurityEventCollector import Client, AuditEventType, DATE_FORMAT
-from datetime import datetime, timedelta, timezone
-from CommonServerPython import set_integration_context
+from datetime import datetime, timedelta
+from dateutil import tz
+from CommonServerPython import set_integration_context, date_to_timestamp
 import json
 
 PAGE_SIZE = 3
@@ -20,6 +21,10 @@ TEST_TIME = datetime(2024, 10, 30, 12, 0, 0)
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+admin_changes = util_load_json('test_data/mock_admin_changes.json')
+login_reports = util_load_json('test_data/mock_login_events.json')
 
 
 @pytest.fixture(autouse=True)
@@ -40,6 +45,51 @@ def client() -> Client:
         access_key='testkey',
         billing_id=BILLING_ID,
     )
+
+
+@pytest.fixture
+def admin_changes_request(requests_mock):
+    def mock_admin_changes_resp(request, context):
+        if request.headers.get('Authorization') != f'MaaS token="{AUTH_TOKEN}"':
+            context.status_code = 401
+            return {'adminChanges': {
+                "errorCode": 1009,
+                "errorDesc": "Token invalid"
+            }}
+        page_number = int(request.qs.get('pagenumber', [0])[0])
+        if page_number - 1 < len(admin_changes):
+            return admin_changes[page_number - 1]
+        else:
+            return {'adminChanges': {
+                'count': 0,
+                'pageNumber': page_number,
+                'pageSize': PAGE_SIZE,
+            }}
+
+    return requests_mock.get(f'{BASE_URL}{AUDIT_CHANGES_SUFFIX}',
+                             json=mock_admin_changes_resp)
+
+
+@pytest.fixture
+def login_reports_request(requests_mock):
+    def mock_login_reports_resp(request, context):
+        if request.headers.get('Authorization') != f'MaaS token="{AUTH_TOKEN}"':
+            return {'adminChanges': {
+                "errorCode": 1009,
+                "errorDesc": "Token invalid"
+            }}
+        page_number = int(request.qs.get('pagenumber', [0])[0])
+        if page_number - 1 < len(login_reports):
+            return login_reports[page_number - 1]
+        else:
+            return {'loginEvents': {
+                'count': 0,
+                'pageNumber': page_number,
+                'pageSize': PAGE_SIZE,
+            }}
+
+    return requests_mock.get(f'{BASE_URL}{AUDIT_LOGIN_REPORTS_SUFFIX}',
+                             json=mock_login_reports_resp)
 
 
 @pytest.mark.parametrize('error_code', [0, 401, 1008])
@@ -244,7 +294,7 @@ def test_http_request(mocker, requests_mock, client):
     - An authorization header with a valid auth token will be included in the request.
     """
     mocker.patch.object(client, 'get_auth_token', return_value=AUTH_TOKEN)
-    admin_changes = util_load_json('test_data/mock_admin_changes.json')
+    admin_changes = util_load_json('test_data/mock_admin_changes.json')[0]
     audit_changes_mock = requests_mock.get(f'{BASE_URL}{AUDIT_CHANGES_SUFFIX}',
                                            json=admin_changes)
 
@@ -257,7 +307,8 @@ def test_http_request(mocker, requests_mock, client):
     assert audit_changes_mock.last_request.headers['Authorization'] == f'MaaS token="{AUTH_TOKEN}"'
 
 
-def test_fetch_admin_audit_events(mocker, requests_mock, client):
+@pytest.mark.parametrize('pages_to_fetch', [1, 2, 3])
+def test_fetch_admin_audit_events(mocker, client, admin_changes_request, pages_to_fetch):
     """
     Given:
     - IBM MaaS360 Security client.
@@ -270,8 +321,6 @@ def test_fetch_admin_audit_events(mocker, requests_mock, client):
     - Events are fetched correctly until there are no more or we reach the max_events_per_fetch.
     - The page_offset and pages_remaining parameters are returned correctly.
     """
-    admin_changes = util_load_json('test_data/mock_admin_changes.json')
-    audit_changes_mock = requests_mock.get(f'{BASE_URL}{AUDIT_CHANGES_SUFFIX}', json=admin_changes)
     mocker.patch.object(client, 'get_auth_token', return_value=AUTH_TOKEN)
     from_date = TEST_TIME - timedelta(days=7)
     to_date = TEST_TIME
@@ -281,60 +330,153 @@ def test_fetch_admin_audit_events(mocker, requests_mock, client):
         from_date=from_date,
         to_date=to_date,
         page_offset=0,
-        max_fetch_amount=PAGE_SIZE,
+        max_fetch_amount=pages_to_fetch * PAGE_SIZE,
     )
 
-    assert page_offset == 1  # fetched first page
-    assert pages_remaining
-    assert audit_changes_mock.called_once
-    assert audit_changes_mock.last_request.qs == {
+    assert page_offset == pages_to_fetch
+    assert pages_remaining if pages_to_fetch < len(admin_changes) else not pages_remaining
+    assert admin_changes_request.call_count == pages_to_fetch
+    assert admin_changes_request.last_request.qs == {
         'fromdate': [str(from_date)],
         'todate': [str(to_date)],
         'pagesize': [str(PAGE_SIZE)],
-        'pagenumber': [str(1)],
+        'pagenumber': [str(pages_to_fetch)],
     }
 
     for event in events:
         event_ts = event[AuditEventType.ChangesAudit.ts_field] / 1000
-        expected_time = datetime.fromtimestamp(event_ts, tz=timezone.utc).strftime(DATE_FORMAT)
+        expected_time = datetime.fromtimestamp(event_ts, tz=tz.UTC).strftime(DATE_FORMAT)
         assert event.pop('_time') == expected_time
         assert event.pop('source_log_type') == AuditEventType.ChangesAudit.source_log_type
 
-    assert events == admin_changes['adminChanges']['adminChange']
+    expected_events = [event for page in admin_changes[:pages_to_fetch] for event in page['adminChanges']['adminChange']]
+    assert events == expected_events
 
 
-def test_fetch_events(mocker, requests_mock, client):
+@pytest.mark.parametrize('max_pages_to_fetch', [1, 2, 3])
+def test_fetch_events(mocker, client, admin_changes_request, login_reports_request, max_pages_to_fetch):
     """
     Given:
     - IBM MaaS360 Security client.
     - Last run object.
 
     When:
-    - fetch-events is called.
+    - fetch-events is called multiple times.
 
     Then:
-    - Events are fetched correctly until there are no more or we reach the max_events_per_fetch.
-    - Fetches continue from the last run's stopping point.
-    - Next run is returned as expected.
+    - Events are fetched correctly until there are no more or we reach the max_pages_to_fetch.
+    - Fetches continue from the previous fetch stopping point.
+    - Pagination is done correctly, fetching consecutive pages as expected.
     """
-    return
+    from IBMMaaS360SecurityEventCollector import fetch_events
+
+    mocker.patch.object(client, 'get_auth_token', return_value=AUTH_TOKEN)
+
+    last_run = {}
+    first_fetch_time = date_to_timestamp(TEST_TIME - timedelta(days=7))
+    max_events_per_fetch = {
+        AuditEventType.ChangesAudit: PAGE_SIZE,
+        AuditEventType.LoginReports: PAGE_SIZE,
+    }
+
+    for i in range(max_pages_to_fetch):
+        last_run, events = fetch_events(
+            client=client,
+            last_run=last_run,
+            first_fetch_time=first_fetch_time,
+            max_events_per_fetch=max_events_per_fetch,
+        )
+
+        expected_admin_changes = []
+        expected_login_reports = []
+        if i < len(admin_changes):
+            assert admin_changes_request.call_count == i + 1
+            expected_admin_changes = admin_changes[i]['adminChanges']['adminChange']
+
+        if i < len(login_reports):
+            assert login_reports_request.call_count == i + 1
+            expected_login_reports = login_reports[i]['loginEvents']['loginEvent']
+
+        assert len(events) == len(expected_admin_changes) + len(expected_login_reports)
+
+        for event in events:
+            event_time = event.pop('_time')
+            log_type = event.pop('source_log_type')
+            if log_type == AuditEventType.ChangesAudit.source_log_type:
+                assert event in expected_admin_changes
+                event_ts = event[AuditEventType.ChangesAudit.ts_field] / 1000
+            else:
+                assert event in expected_login_reports
+                event_ts = event[AuditEventType.LoginReports.ts_field] / 1000
+
+            expected_time = datetime.fromtimestamp(event_ts, tz=tz.UTC).strftime(DATE_FORMAT)
+            assert event_time == expected_time
 
 
-def test_test_module_command(mocker, requests_mock, client):
+def test_test_module_command_success(requests_mock, client, admin_changes_request, login_reports_request):
     """
     Given:
     - IBM MaaS360 Security client.
+    - Valid credentials.
 
     When:
     - Pressing test button
 
     Then:
-    - Test module ensures the client is able to authenticate and fetch events correctly.
+    - The test module succeeds in authenticating and fetching data and returns 'ok'.
     """
-    return
+    from IBMMaaS360SecurityEventCollector import test_module
+
+    first_fetch_time = date_to_timestamp(TEST_TIME - timedelta(days=7))
+    auth_request_mock = requests_mock.post(
+        f'{BASE_URL}{AUTH_SUFFIX}',
+        json={
+            'authResponse': {
+                'authToken': AUTH_TOKEN,
+                'errorCode': 0,
+                'refreshToken': REFRESH_TOKEN,
+            }
+        })
+
+    res = test_module(client, {}, first_fetch_time)
+
+    assert auth_request_mock.called_once
+    assert admin_changes_request.called_once
+    assert login_reports_request.called_once
+    assert res == 'ok'
 
 
-def test_get_events_command(mocker, requests_mock, client):
+def test_test_module_command_failure(requests_mock, client):
+    """
+    Given:
+    - IBM MaaS360 Security client.
+    - Bad credentials.
+
+    When:
+    - Pressing test button
+
+    Then:
+    - The test module fails with some error message.
+    """
+    from IBMMaaS360SecurityEventCollector import test_module
+
+    first_fetch_time = date_to_timestamp(TEST_TIME - timedelta(days=7))
+    auth_request_mock = requests_mock.post(
+        f'{BASE_URL}{AUTH_SUFFIX}',
+        json={
+            'authResponse': {
+                'errorCode': 1002,
+                'errorDesc': 'Invalid Credentials',
+            }
+        })
+
+    res = test_module(client, {}, first_fetch_time)
+
+    assert auth_request_mock.called_once
+    assert res != 'ok'
+
+
+def test_get_events_command(mocker, client, admin_changes_request, login_reports_request):
     """
     Given:
     - IBM MaaS360 Security client.
@@ -343,7 +485,35 @@ def test_get_events_command(mocker, requests_mock, client):
     - get-events is called.
 
     Then:
-    - fetch-events is called with the correct arguments.
-    - Events and CommandResults are returned as expected.
+    - Events are returned as expected.
     """
-    return
+    from IBMMaaS360SecurityEventCollector import get_events
+
+    mocker.patch.object(client, 'get_auth_token', return_value=AUTH_TOKEN)
+
+    args = {'limit': PAGE_SIZE}
+
+    events, _results = get_events(
+        client=client,
+        args=args,
+    )
+
+    assert admin_changes_request.call_count == 1
+    assert login_reports_request.call_count == 1
+    expected_admin_changes = admin_changes[0]['adminChanges']['adminChange']
+    expected_login_reports = login_reports[0]['loginEvents']['loginEvent']
+
+    assert len(events) == len(expected_admin_changes) + len(expected_login_reports)
+
+    for event in events:
+        event_time = event.pop('_time')
+        log_type = event.pop('source_log_type')
+        if log_type == AuditEventType.ChangesAudit.source_log_type:
+            assert event in expected_admin_changes
+            event_ts = event[AuditEventType.ChangesAudit.ts_field] / 1000
+        else:
+            assert event in expected_login_reports
+            event_ts = event[AuditEventType.LoginReports.ts_field] / 1000
+
+        expected_time = datetime.fromtimestamp(event_ts, tz=tz.UTC).strftime(DATE_FORMAT)
+        assert event_time == expected_time
