@@ -158,12 +158,18 @@ filter category not in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePr
 
 [MODEL:dataset = "msft_azure_ad_raw"]
 alter
+  get_riskLevelAggregated = if(riskLevelAggregated = "none", null, riskLevelAggregated),
+  get_riskLevelDuringSignIn = if(riskLevelDuringSignIn = "none", null, riskLevelDuringSignIn)
+| alter
   check_ipAddress_v4 = if(ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddress),
   check_ipAddress_v6 = if(ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddress),
   check_ipAddressFromResourceProvider_v4 = if(ipAddressFromResourceProvider ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddressFromResourceProvider),
   check_ipAddressFromResourceProvider_v6 = if(ipAddressFromResourceProvider ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddressFromResourceProvider),
-  check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem))
+  check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem)),
+  check_risk_level = coalesce(get_riskLevelDuringSignIn, get_riskLevelAggregated)
 | alter
+  xdm.alert.risks = if(array_length(to_integer(riskEventTypes_v2)) > 0, riskEventTypes_v2),
+  xdm.event.duration = to_integer(ProcessingTimeInMilliseconds),
   xdm.source.host.ipv4_addresses = arraycreate(check_ipAddress_v4, check_ipAddressFromResourceProvider_v4),
   xdm.source.host.ipv6_addresses = arraycreate(check_ipAddress_v6, check_ipAddressFromResourceProvider_v6),
   xdm.source.host.ipv4_public_addresses = arrayfilter(arraycreate(check_ipAddress_v4, check_ipAddressFromResourceProvider_v4), 
@@ -174,7 +180,7 @@ alter
                                             and not incidr("@element", "169.254.0.0/16") 
                                             and not incidr("@element", "100.64.0.0/10")),
   xdm.event.outcome = if(conditionalAccessStatus = "success", XDM_CONST.OUTCOME_SUCCESS, conditionalAccessStatus = "failure", XDM_CONST.OUTCOME_FAILED, conditionalAccessStatus = "notApplied", XDM_CONST.OUTCOME_UNKNOWN),
-  xdm.event.id = id,
+  xdm.event.id = coalesce(id, originalRequestId),
   xdm.source.user.username = userDisplayName,
   xdm.source.user.upn = userPrincipalName,
   xdm.source.user.identifier = userId,
@@ -184,14 +190,13 @@ alter
   xdm.session_context_id = correlationId,
   xdm.auth.service = if(tokenIssuerType = "UnknownFutureValue", authenticationProtocol, tokenIssuerType),
   xdm.auth.auth_method = clientCredentialType,
-  xdm.alert.original_threat_id = riskDetail,
-  xdm.alert.severity = riskLevelAggregated,
+  xdm.alert.name = riskDetail,
+  xdm.alert.severity = check_risk_level,
   xdm.observer.action = riskState,
-  xdm.alert.original_threat_name = riskEventTypes_v2,
   xdm.target.resource.name = resourceDisplayName,
   xdm.target.resource.id = resourceId,
-  xdm.target.host.device_id = resourceTenantId,
-  xdm.source.host.device_id = coalesce(homeTenantId, deviceDetail -> deviceId),
+  xdm.source.cloud.project_id = coalesce(homeTenantId, resourceTenantId),
+  xdm.source.host.device_id = deviceDetail -> deviceId,
   xdm.source.host.hostname = coalesce(homeTenantName, deviceDetail -> displayName),
   xdm.auth.mfa.method = authenticationMethodsUsed,
   xdm.auth.mfa.client_details = authenticationRequirement,
@@ -248,12 +253,12 @@ alter
   xdm.event.outcome = if(result = "success", XDM_CONST.OUTCOME_SUCCESS, result = "failure", XDM_CONST.OUTCOME_FAILED, result = "unknownFutureValue", XDM_CONST.OUTCOME_UNKNOWN, result = "timeout", XDM_CONST.OUTCOME_PARTIAL),
   xdm.event.original_event_type = category,
   xdm.source.user.username = initiatedBy -> user,
-  xdm.source.application.name = initiatedBy -> app.displayName,
+  xdm.source.application.name = coalesce(initiatedBy -> app.displayName, initiatedBy -> app.servicePrincipalName),
   xdm.source.user.upn = initiatedBy -> userPrincipalName,
   xdm.event.outcome_reason = resultReason,
   xdm.session_context_id = correlationId,
   xdm.observer.action = operationType,
-  xdm.observer.name = loggedByService,
+  xdm.observer.type = loggedByService,
   xdm.event.description = to_string(targetResources),
   xdm.alert.description = parsed_fields -> Details,
   xdm.alert.subcategory = parsed_fields -> ErrorCode,
