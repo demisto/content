@@ -11,7 +11,7 @@ from collections.abc import Iterator, Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
-
+import hashlib
 # Local imports
 from CommonServerUserPython import *
 
@@ -426,7 +426,8 @@ def fetch_events_command(
                         event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
                                                                                                               ""))
                 if "httpMessage" in event:
-                    hashed_events_mapping[json.dumps(event['httpMessage'], sort_keys=True)] = event
+                    hashed_events_mapping[(hashlib.sha256(json.dumps(event['httpMessage'],
+                                                                     sort_keys=True).encode('utf-8'))).hexdigest()] = event
                     event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
                     event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
             except Exception as e:

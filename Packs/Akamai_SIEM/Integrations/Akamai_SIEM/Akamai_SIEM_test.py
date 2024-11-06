@@ -299,11 +299,13 @@ class TestCommandsFunctions:
             )
             for j in range(num_of_pages)
         ]
-        events_not_in_list = [events[1], events[3], events[5]]
+        events_not_in_list = [events[0][0][0], events[0][0][2], events[0][0][4]]
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
         total_events_count = 0
-        hashed = ['{"httpMessage": {"start": 1}, "id": 1}', '{"httpMessage": {"start": 3}, "id": 3}',
-                  '{"httpMessage": {"start": 5}, "id": 5}', '{"httpMessage": {"start": 5}, "id": 280}']
+        hashed = {"506353d42f4aaac34493bdfff026ea0c4463a3bc510fb7aa038df8cea7aabbd1",
+                  "fce8004cc56a8fb1131f30d2715412d4dcc90be0564c375d1c6b9aee2103b360",
+                  "5075434ef4e7e1d0b6c1922e180653e18481aee76674966ae5de876faefc62d3",
+                  "fce8004cc56a8fb1131f30d2715412d4dcc90be0564c375d1c6b9aee2103b3ds"}
         for events, offset, total_events_count, hashed in Akamai_SIEM.fetch_events_command(client,  # noqa: B007
                                                                                       '3 days',
                                                                                       220,
