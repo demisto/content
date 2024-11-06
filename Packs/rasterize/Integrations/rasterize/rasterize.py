@@ -67,7 +67,7 @@ INSTANCE_ID = "instance_id"
 CHROME_INSTANCE_OPTIONS = "chrome_options"
 RASTERIZETION_COUNT = "rasteriztion_count"
 
-BLOCKED_URLS = argToList(demisto.params().get('blocked_urls','').lower())
+BLOCKED_URLS = argToList(demisto.params().get('blocked_urls', '').lower())
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
@@ -242,8 +242,6 @@ class PychromeEventHandler:
         if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.enable()
             demisto.debug('Fetch events enabled.')
-
-
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")

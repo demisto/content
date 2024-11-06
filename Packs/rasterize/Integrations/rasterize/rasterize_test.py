@@ -774,9 +774,8 @@ def test_rasterize_mailto(capfd, mocker):
     """
     mocker_output = mocker.patch('rasterize.return_results')
 
-    with pytest.raises(SystemExit) as excinfo:
-        with capfd.disabled():
-            perform_rasterize(path='mailto:some.person@gmail.com', width=250, height=250, rasterize_type=RasterizeType.PNG)
+    with pytest.raises(SystemExit) as excinfo, capfd.disabled():
+        perform_rasterize(path='mailto:some.person@gmail.com', width=250, height=250, rasterize_type=RasterizeType.PNG)
 
     assert mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.' \
                                                               '\nURL: [\'mailto:some.person@gmail.com\']'
