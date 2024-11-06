@@ -1,2 +1,5 @@
 [file:EclecticIQ.yml]
 ignore=IN144
+
+[file:EclecticIQIntelligenceCenterv3.yml]
+ignore=IN144

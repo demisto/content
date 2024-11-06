@@ -1,9 +1,11 @@
+from typing import Final
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import urllib.parse
-from typing import Callable, Dict, Tuple, List
 
+from collections.abc import Callable
 from CommonServerUserPython import *  # noqa
 
 import requests
@@ -28,8 +30,12 @@ URL_SUFFIX = {
     "CONTENT": "/wiki/rest/api/content",
     "USER": "/wiki/rest/api/search/user?cql=type=user",
     "SPACE": "/wiki/rest/api/space",
-    "PRIVATE_SPACE": "/wiki/rest/api/space/_private"
+    "PRIVATE_SPACE": "/wiki/rest/api/space/_private",
+    "EVENTS": "/wiki/rest/api/audit/",
+    "BASE": "/wiki",
+    "NEXT_LINK_TEMPLATE": "/rest/api/audit/?end_date={}&next=true&limit={}&start={}&startDate={}"
 }
+
 MESSAGES = {
     "REQUIRED_URL_FIELD": "Site Name can not be empty.",
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
@@ -71,7 +77,8 @@ OUTPUT_PREFIX = {
     "CONTENT": "ConfluenceCloud.Content",
     "COMMENT": "ConfluenceCloud.Comment",
     "SPACE": "ConfluenceCloud.Space",
-    "PAGETOKEN": "ConfluenceCloud.PageToken.Content"
+    "PAGETOKEN": "ConfluenceCloud.PageToken.Content",
+    "EVENT": "ConfluenceCloud.Event"
 }
 DEFAULT_LIMIT = "50"
 DEFAULT_START = "0"
@@ -88,6 +95,13 @@ LEGAL_DELETION_TYPES = {
     "permanent delete": "trashed",
     "permanent delete draft": "draft"
 }
+VENDOR = "Atlassian"
+PRODUCT = "Confluence"
+AUDIT_FETCH_PAGE_SIZE = 1000
+DEFAULT_GET_EVENTS_LIMIT = "50"
+ONE_MINUTE_IN_MILL_SECONDS = 60000
+ONE_WEEK_IN_MILL_SECONDS = 604800000
+_last_run_cache = None
 ''' CLIENT CLASS '''
 
 
@@ -139,12 +153,63 @@ class Client(BaseClient):
                 else:
                     err_msg = error_entry.get('message', '')
             except ValueError:
-                err_msg = '{}'.format(response.text)
+                err_msg = f'{response.text}'
 
         raise DemistoException(err_msg)
 
+    def search_events(self, limit: int, start_date: str = None, end_date: str = None, next_link: str = None) -> dict:
+        return super()._http_request(
+            method='GET',
+            url_suffix=URL_SUFFIX['BASE'] + next_link if next_link else URL_SUFFIX['EVENTS'],
+            params=None if next_link else {'limit': limit, 'startDate': start_date, 'end_date': end_date}
+        )
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def run_fetch_mechanism(client: Client, fetch_limit: int, next_link: str, start_date: int, end_date: int):
+    all_events: List[Dict[str, Any]] = []
+    started_new_query = False
+    while len(all_events) < fetch_limit and (next_link or not started_new_query):
+        page_size = min(AUDIT_FETCH_PAGE_SIZE, fetch_limit - len(all_events))
+
+        started_new_query = started_new_query or not next_link
+        response = run_get_events_query(client, next_link, start_date, end_date, page_size)
+
+        events = response['results']
+        next_link = response['_links'].get('next', None)
+        demisto.debug(f'Fetched {len(events)} events, total_length: {len(all_events)}, next_link: {next_link}')
+
+        all_events.extend(events)
+    return all_events, started_new_query, next_link
+
+
+def run_get_events_query(client: Client, next_link, start_date, end_date, page_size: int) -> dict[str, Any]:
+    if not next_link:
+        demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
+        response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
+        demisto.debug(f'Found {response["size"]} events between {start_date} and {end_date}')
+
+    else:
+        demisto.debug(f'searching events with next_link: {next_link} and page size: {AUDIT_FETCH_PAGE_SIZE}')
+        response = client.search_events(limit=page_size, next_link=next_link)
+        demisto.debug(f'Found {response["size"]} events in the current page')
+
+    return response
+
+
+def add_time_to_events(events: list[dict]):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: List[Dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    for event in events:
+        create_time = arg_to_datetime(arg=event.get('creationDate'))
+        event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def get_error_message(errors):
@@ -194,7 +259,7 @@ def remove_empty_elements_for_context(src):
     def empty(x):
         return x is None or x == '' or x == {} or x == []
 
-    if not isinstance(src, (dict, list)):
+    if not isinstance(src, dict | list):
         return src
     elif isinstance(src, list):
         return [v for v in (remove_empty_elements_for_context(v) for v in src) if not empty(v)]
@@ -225,7 +290,7 @@ def validated_required_args_for_permission(permission_account_id, permission_gro
         raise ValueError(MESSAGES["INVALID_PERMISSIONS_OPERATION"])
 
 
-def prepare_permission_object(permission_account_id: str, permission_group_name: str, attr: List) -> Dict:
+def prepare_permission_object(permission_account_id: str, permission_group_name: str, attr: list) -> dict:
     """
     Prepare permission object from the user provided values
 
@@ -268,7 +333,7 @@ def prepare_permission_object(permission_account_id: str, permission_group_name:
     return permission_object
 
 
-def validate_permissions(args: Dict[str, Any]) -> List:
+def validate_permissions(args: dict[str, Any]) -> list:
     """
          Validates the permission argument provided by user and prepare permission object accordingly
 
@@ -301,7 +366,7 @@ def validate_permissions(args: Dict[str, Any]) -> List:
     return space_permission
 
 
-def validate_list_command_args(args: Dict[str, str]) -> Tuple[Optional[int], Optional[int]]:
+def validate_list_command_args(args: dict[str, str]) -> tuple[Optional[int], Optional[int]]:
     """
     Validate arguments for all list commands, raise ValueError on invalid arguments.
 
@@ -323,7 +388,7 @@ def validate_list_command_args(args: Dict[str, str]) -> Tuple[Optional[int], Opt
     return limit, offset
 
 
-def validate_list_group_args(args: Dict[str, str]):
+def validate_list_group_args(args: dict[str, str]):
     """
     Validate arguments for confluence-cloud-group-list command, raise ValueError on invalid arguments.
 
@@ -338,7 +403,7 @@ def validate_list_group_args(args: Dict[str, str]):
     return access_type
 
 
-def prepare_group_args(args: Dict[str, str]) -> Dict[str, str]:
+def prepare_group_args(args: dict[str, str]) -> dict[str, str]:
     """
     Prepare params for list group command
 
@@ -350,9 +415,9 @@ def prepare_group_args(args: Dict[str, str]) -> Dict[str, str]:
     return assign_params(limit=limit, start=offset, accessType=access_type)
 
 
-def prepare_hr_for_groups(groups: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_groups(groups: list[dict[str, Any]]) -> str:
     """
-       Prepare human readable for list groups command.
+       Prepare human-readable for list groups command.
 
        :type groups: ``List[Dict[str, Any]]``
        :param groups:The group data.
@@ -373,7 +438,7 @@ def prepare_hr_for_groups(groups: List[Dict[str, Any]]) -> str:
                            removeNull=True)
 
 
-def prepare_content_create_params(args) -> Dict[str, Any]:
+def prepare_content_create_params(args) -> dict[str, Any]:
     """
     Prepare json object for content create command
 
@@ -407,7 +472,7 @@ def prepare_content_create_params(args) -> Dict[str, Any]:
     return remove_empty_elements_for_context(params)
 
 
-def validate_create_content_args(args: Dict[str, str], is_update: bool = False):
+def validate_create_content_args(args: dict[str, str], is_update: bool = False):
     """
     Validate arguments for confluence-cloud-content-create command, raise ValueError on invalid arguments.
 
@@ -449,9 +514,9 @@ def validate_create_content_args(args: Dict[str, str], is_update: bool = False):
             raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("'body_value' and 'body_representation'"))
 
 
-def prepare_hr_for_content_create(content: Dict[str, Any], content_type: str) -> str:
+def prepare_hr_for_content_create(content: dict[str, Any], content_type: str) -> str:
     """
-       Prepare human readable for content create, comment create and content update command.
+       Prepare human-readable for content create, comment create and content update command.
 
        :type content: ``Dict[str, Any]``
        :param content:The content data.
@@ -481,7 +546,7 @@ def prepare_hr_for_content_create(content: Dict[str, Any], content_type: str) ->
 
 def prepare_hr_for_content_search(contents: list, url_prefix: str) -> str:
     """
-    Prepare human readable for content search and content list command.
+    Prepare human-readable for content search and content list command.
 
     :type contents: ``list``
     :param contents: List of content.
@@ -515,7 +580,7 @@ def prepare_hr_for_content_search(contents: list, url_prefix: str) -> str:
     return hr
 
 
-def validate_delete_content_args(args: Dict[str, str]):
+def validate_delete_content_args(args: dict[str, str]):
     """
     Validate arguments for confluence-cloud-content-delete command, raise ValueError on invalid arguments.
 
@@ -529,12 +594,11 @@ def validate_delete_content_args(args: Dict[str, str]):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("content_id"))
 
     status = args.get("deletion_type", "").lower()
-    if status:
-        if status not in LEGAL_DELETION_TYPES.keys():
-            raise ValueError(MESSAGES["INVALID_DELETION_TYPE"])
+    if status and status not in LEGAL_DELETION_TYPES.keys():
+        raise ValueError(MESSAGES["INVALID_DELETION_TYPE"])
 
 
-def prepare_comment_create_params(args) -> Dict[str, Any]:
+def prepare_comment_create_params(args) -> dict[str, Any]:
     """
     Prepare json object for comment create command
 
@@ -570,7 +634,7 @@ def prepare_comment_create_params(args) -> Dict[str, Any]:
     return params
 
 
-def validate_comment_args(args: Dict[str, str]):
+def validate_comment_args(args: dict[str, str]):
     """
     Validate arguments for confluence-cloud-comment-create command, raise ValueError on invalid arguments.
 
@@ -595,9 +659,9 @@ def validate_comment_args(args: Dict[str, str]):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("container_id"))
 
 
-def prepare_hr_for_users(users: List[Dict[str, Any]]) -> str:
+def prepare_hr_for_users(users: list[dict[str, Any]]) -> str:
     """
-    Prepare human readable for list users command.
+    Prepare human-readable for list users command.
 
     :type users: ``List[Dict[str, Any]]``
     :param users: The user data.
@@ -646,7 +710,7 @@ def prepare_expand_argument(expand: str, default_fields: str) -> str:
     return default_fields + expand_fields
 
 
-def validate_query_argument(args: Dict[str, str]):
+def validate_query_argument(args: dict[str, str]):
     """
     Validate query argument of content search command
 
@@ -660,7 +724,7 @@ def validate_query_argument(args: Dict[str, str]):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("query"))
 
 
-def prepare_search_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_search_content_argument(args: dict[str, str]) -> dict[str, Any]:
     """
     Prepare params for confluence-cloud-content-search command.
 
@@ -689,7 +753,7 @@ def prepare_search_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
     return assign_params(**params)
 
 
-def prepare_cursor_for_content(response_json: Dict[str, str]) -> str:
+def prepare_cursor_for_content(response_json: dict[str, str]) -> str:
     """
     Split query string parameters from a link and extract value of parameter 'cursor'.
 
@@ -732,7 +796,7 @@ def validate_list_content_args(args):
         raise ValueError(MESSAGES['INVALID_STATUS_SEARCH'])
 
 
-def prepare_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_list_content_argument(args: dict[str, str]) -> dict[str, Any]:
     """
     Prepare params for confluence_cloud_content_list command.
 
@@ -772,7 +836,7 @@ def prepare_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
     return assign_params(**params)
 
 
-def validate_create_space_args(args: Dict[str, str]):
+def validate_create_space_args(args: dict[str, str]):
     """
     Validate arguments for confluence-cloud-space-create command, raise ValueError on invalid arguments.
 
@@ -794,9 +858,8 @@ def validate_create_space_args(args: Dict[str, str]):
         raise ValueError(MESSAGES["INVALID_SPACE_NAME_LENGTH"])
 
     is_private_space = argToBoolean(args.get('is_private_space', False))
-    if is_private_space:
-        if args.get('advanced_permissions') or args.get('permission_operations'):
-            raise ValueError(MESSAGES["PRIVATE_SPACE_PERMISSION"])
+    if is_private_space and (args.get('advanced_permissions') or args.get('permission_operations')):
+        raise ValueError(MESSAGES["PRIVATE_SPACE_PERMISSION"])
 
     if args.get('advanced_permissions'):
         try:
@@ -805,7 +868,7 @@ def validate_create_space_args(args: Dict[str, str]):
             raise ValueError(MESSAGES["ADVANCE_PERMISSION_FORMAT"])
 
 
-def prepare_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, str]]:
+def prepare_create_space_args(args: dict[str, str]) -> tuple[dict, Union[bool, str]]:
     """
     Prepare json object for confluence-cloud-space-create command.
 
@@ -839,9 +902,9 @@ def prepare_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, s
     return params, is_private_space
 
 
-def prepare_hr_for_space_create(space: Dict[str, Any]) -> str:
+def prepare_hr_for_space_create(space: dict[str, Any]) -> str:
     """
-    Prepare human readable for create space command.
+    Prepare human-readable for create space command.
 
     :type space: ``List[Dict[str, Any]]``
     :param space: The space data.
@@ -862,7 +925,7 @@ def prepare_hr_for_space_create(space: Dict[str, Any]) -> str:
                            removeNull=True)
 
 
-def validate_status_argument(args: Dict[str, str]):
+def validate_status_argument(args: dict[str, str]):
     """
     Validates the status argument of confluence-cloud-space-list command, raise ValueError on invalid arguments.
     :type args: ``Dict[str, str]``
@@ -875,7 +938,7 @@ def validate_status_argument(args: Dict[str, str]):
         raise ValueError(MESSAGES["INVALID_SPACE_STATUS"])
 
 
-def prepare_list_space_args(args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_list_space_args(args: dict[str, str]) -> dict[str, Any]:
     """
     Prepare params for confluence-cloud-space-list command.
 
@@ -907,9 +970,9 @@ def prepare_list_space_args(args: Dict[str, str]) -> Dict[str, Any]:
     return assign_params(**params)
 
 
-def prepare_hr_for_space_list(spaces: List[Dict[str, Any]], url_prefix: str) -> str:
+def prepare_hr_for_space_list(spaces: list[dict[str, Any]], url_prefix: str) -> str:
     """
-    Prepare human readable for list space command.
+    Prepare human-readable for list space command.
 
     :param url_prefix:
     :type spaces: ``List[Dict[str, Any]]``
@@ -938,7 +1001,7 @@ def prepare_hr_for_space_list(spaces: List[Dict[str, Any]], url_prefix: str) -> 
     return hr
 
 
-def validate_update_content_args(args: Dict[str, str]):
+def validate_update_content_args(args: dict[str, str]):
     """
     Validate arguments for confluence-cloud-content-update command, raise ValueError on invalid arguments.
 
@@ -974,7 +1037,7 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    params: Dict = {
+    params: dict = {
         "cql": "type=page",
         "limit": 1
     }
@@ -982,7 +1045,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def confluence_cloud_user_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_user_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Returns a list of users.
 
@@ -1019,7 +1082,7 @@ def confluence_cloud_user_list_command(client: Client, args: Dict[str, str]) -> 
         raw_response=response_json)
 
 
-def confluence_cloud_content_search_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_content_search_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Returns the list of content that matches a Confluence Query Language (CQL) query.
     The type of content can be a page, blogpost, or comment.
@@ -1067,7 +1130,7 @@ def confluence_cloud_content_search_command(client: Client, args: Dict[str, str]
         raw_response=response_json)
 
 
-def confluence_cloud_content_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_content_update_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Update the existing content with new content.
 
@@ -1087,7 +1150,7 @@ def confluence_cloud_content_update_command(client: Client, args: Dict[str, str]
     params["version"] = {
         "number": args["version"]
     }
-    request_url = URL_SUFFIX["CONTENT"] + "/{}".format(content_id)
+    request_url = URL_SUFFIX["CONTENT"] + f"/{content_id}"
 
     response = client.http_request(method="PUT", url_suffix=request_url, json_data=params)
     response_json = response.json()
@@ -1103,7 +1166,7 @@ def confluence_cloud_content_update_command(client: Client, args: Dict[str, str]
         raw_response=response_json)
 
 
-def confluence_cloud_content_delete_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_content_delete_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     This command moves a piece of content to the space's trash or purges it from the trash,
     depending on the content's type and status.
@@ -1124,14 +1187,14 @@ def confluence_cloud_content_delete_command(client: Client, args: Dict[str, str]
     status = args.get("deletion_type", "").lower()
     params = assign_params(status=LEGAL_DELETION_TYPES.get(status))
 
-    request_url = URL_SUFFIX["CONTENT"] + "/{}".format(content_id)
+    request_url = URL_SUFFIX["CONTENT"] + f"/{content_id}"
 
     client.http_request(method="DELETE", url_suffix=request_url, params=params)
 
     return CommandResults(readable_output=MESSAGES["HR_DELETE_CONTENT"].format(content_id))
 
 
-def confluence_cloud_content_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_content_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
         Returns the list of contents of confluence.
 
@@ -1167,7 +1230,7 @@ def confluence_cloud_content_list_command(client: Client, args: Dict[str, str]) 
         raw_response=response_json)
 
 
-def confluence_cloud_space_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_space_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
       Returns a list of all Confluence spaces.
 
@@ -1203,7 +1266,7 @@ def confluence_cloud_space_list_command(client: Client, args: Dict[str, str]) ->
         raw_response=response_json)
 
 
-def confluence_cloud_comment_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_comment_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
        Creates a comment for a given content.
 
@@ -1230,7 +1293,7 @@ def confluence_cloud_comment_create_command(client: Client, args: Dict[str, str]
         raw_response=response_json)
 
 
-def confluence_cloud_content_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_content_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
        Create a page or blogpost for a specified space .
 
@@ -1257,7 +1320,7 @@ def confluence_cloud_content_create_command(client: Client, args: Dict[str, str]
         raw_response=response_json)
 
 
-def confluence_cloud_space_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_space_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
        Creates a new space in confluence cloud.
 
@@ -1278,7 +1341,7 @@ def confluence_cloud_space_create_command(client: Client, args: Dict[str, str]) 
     if is_private_space:
 
         url_suffix = URL_SUFFIX["PRIVATE_SPACE"]
-        if 'permissions' in params.keys():
+        if 'permissions' in params:
             del params['permissions']
 
     response = client.http_request(method="POST", url_suffix=url_suffix, json_data=params)
@@ -1300,7 +1363,7 @@ def confluence_cloud_space_create_command(client: Client, args: Dict[str, str]) 
     )
 
 
-def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def confluence_cloud_group_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
        Retrieves the list of groups.
 
@@ -1333,19 +1396,49 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
         raw_response=response_json)
 
 
+def fetch_events(client: Client, fetch_limit: int, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    # constants for this run
+    last_end_date: Final[int] = last_run.get('end_date', 0)
+    end_date: Final[int] = int((time.time() - 5) * 1000)
+    start_date: Final[int] = last_end_date + 1 if last_end_date else end_date - ONE_MINUTE_IN_MILL_SECONDS
+
+    # updated in loop
+    next_link = last_run.get('next_link', '')
+
+    demisto.debug(f'Starting fetch_events with {last_run=} and {fetch_limit=}')
+    all_events, started_new_query, next_link = run_fetch_mechanism(client, fetch_limit, next_link, start_date, end_date)
+
+    if not all_events:
+        demisto.debug('No events found')
+        return [], {'next_link': None, 'end_date': last_end_date}
+
+    return all_events, {'next_link': next_link, 'end_date': end_date if started_new_query else last_end_date}
+
+
+def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
+    end_date = args.get('end_date', int((time.time() - 5) * 1000))
+    start_date = int(args.get('start_date', end_date - ONE_MINUTE_IN_MILL_SECONDS))
+    fetch_limit = int(args.get('limit', DEFAULT_GET_EVENTS_LIMIT))
+    events, _, _ = run_fetch_mechanism(client, fetch_limit, '', start_date, end_date)
+
+    return events, CommandResults(outputs=events,
+                                  outputs_prefix=OUTPUT_PREFIX['EVENT'],
+                                  readable_output=tableToMarkdown('Events', t=events, removeNull=True)
+                                  )
+
+
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
-
     params = demisto.params()
 
     # get the service API url
     url = params['url'].strip()
-    base_url = "https://{}.atlassian.net".format(url)
+    base_url = f"https://{url}.atlassian.net"
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -1356,7 +1449,7 @@ def main() -> None:
     demisto.debug(f'{LOGGING_INTEGRATION_NAME} Command being called is {demisto.command()}')
     try:
         validate_url(url)
-        headers: Dict = {
+        headers: dict = {
             "Accept": "application/json"
         }
 
@@ -1369,7 +1462,7 @@ def main() -> None:
         )
 
         # Commands dictionary
-        commands: Dict[str, Callable] = {
+        commands: dict[str, Callable] = {
             'confluence-cloud-group-list': confluence_cloud_group_list_command,
             'confluence-cloud-user-list': confluence_cloud_user_list_command,
             'confluence-cloud-content-search': confluence_cloud_content_search_command,
@@ -1379,18 +1472,40 @@ def main() -> None:
             'confluence-cloud-space-list': confluence_cloud_space_list_command,
             'confluence-cloud-comment-create': confluence_cloud_comment_create_command,
             'confluence-cloud-content-create': confluence_cloud_content_create_command,
-            'confluence-cloud-space-create': confluence_cloud_space_create_command
+            'confluence-cloud-space-create': confluence_cloud_space_create_command,
         }
         command = demisto.command()
         args = demisto.args()
         strip_args(args)
         remove_nulls_from_dictionary(args)
+        limit = int(arg_to_number(params.get('max_events_per_fetch', 10000)))   # type:ignore
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
+
+        elif command == 'fetch-events':
+
+            events, last_run_object = fetch_events(client, limit, demisto.getLastRun())
+            if events:
+                add_time_to_events(events)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.setLastRun(last_run_object)
+
+            # demisto.updateModuleHealth({'eventsPulled': len(events)})
+        elif command == 'confluence-cloud-get-events':
+            demisto.debug(f'Fetching Confluence Cloud events with the following parameters: {args}')
+            should_push_events = argToBoolean(args.get('should_push_events', False))
+            events, command_results = get_events(client, args)
+            return_results(command_results)
+            if should_push_events:
+                send_events_to_xsiam(
+                    events,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

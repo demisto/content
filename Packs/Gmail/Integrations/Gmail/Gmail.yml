@@ -1293,6 +1293,8 @@ script:
       required: true
     - description: The email address of the sender.
       name: from
+    - description: The sender Name that appears on the receiver side.
+      name: senderDisplayName
     - description: The content (body) of the email to be sent in plain text.
       name: body
     - description: The subject for the email to be sent.
@@ -1733,7 +1735,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.98645
+  dockerimage: demisto/google-api-py3:1.0.0.114199
   isfetch: true
   runonce: false
   script: '-'

@@ -1,0 +1,72 @@
+{
+    "id": "Sigma Rule",
+    "version": -1,
+    "modified": "2024-08-13T13:16:52.008444667Z",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Sigma Rule",
+    "prevDetails": "Sigma Rule",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "contextPath": "Sigma(val.Data \u0026\u0026 val.Data === obj.Data)",
+    "contextValue": "Data",
+    "manualMapping": {
+        "author": {
+            "simple": "Sigma.Author"
+        },
+        "category": {
+            "simple": "Sigma.LogSources.Category"
+        },
+        "definition": {
+            "simple": "Sigma.LogSources.Definition"
+        },
+        "product": {
+            "simple": "Sigma.LogSources.Product"
+        },
+        "service": {
+            "simple": "Sigma.LogSources.Service"
+        },
+        "sigmacondition": {
+            "simple": "Sigma.Detections.Condition"
+        },
+        "sigmadetection": {
+            "complex": {
+                "root": "Sigma.Detections",
+                "filters": [],
+                "accessor": "Detection",
+                "transformers": []
+            }
+        },
+        "sigmafalsepositives": {
+            "simple": "Sigma.FalsePositives"
+        },
+        "sigmaruleid": {
+            "simple": "Sigma.RuleID"
+        },
+        "sigmarulelevel": {
+            "simple": "Sigma.RuleLevel"
+        },
+        "sigmarulelicense": {
+            "simple": "Sigma.RuleLicense"
+        },
+        "sigmaruleraw": {
+            "simple": "Sigma.RuleRaw"
+        },
+        "sigmarulestatus": {
+            "simple": "Sigma.RuleStatus"
+        },
+        "tags": {
+            "simple": "Sigma.Tags"
+        },
+        "trafficlightprotocol": {
+            "simple": "Sigma.TrafficLightProtocol"
+        }
+    },
+    "expiration": 0,
+    "layout": "Sigma Rule Layout",
+    "fromVersion": "6.10.0"
+}

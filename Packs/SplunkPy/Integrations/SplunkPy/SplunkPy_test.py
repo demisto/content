@@ -217,6 +217,7 @@ class Jobs:
     def create(self, query, **kwargs):
         job = client.Job(sid='123456', service=self.service, **kwargs)
         job.resultCount = 0
+        job._state = self.state
         return job
 
 
@@ -259,6 +260,10 @@ def test_raw_to_dict():
 
     assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {
         'drilldown_search': 'key IN (test1,test2)'}
+    assert splunk.rawToDict('123456, sample_account="sample1", '
+                            'sample_account="sample2", sample_account="sample3",'
+                            ' distinct_count_ac="5"') == {'sample_account': 'sample1, sample2, sample3',
+                                                          'distinct_count_ac': '5'}
 
 
 @pytest.mark.parametrize('text, output', [
@@ -1108,12 +1113,15 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
      'View all wineventlogs involving user="test"'),
     ({}, 'Test query name', {}, True, 'Test query name'),
     ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
-     'index="test" | where user = "test\\\\crusher"'),
+     'index="test" | where user="test\\\\crusher"'),
     ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
-     'index="test" | where user = "test\\\\crusher"'),
+     'index="test" | where user="test\\\\crusher"'),
     ({'countryNameA': '"test\country"', 'countryNameB': '""'},
      'search countryA="$countryNameA|s$" countryB=$countryNameB|s$', {}, False,
      'search countryA="test\country" countryB=""'),
+    ({'test': 'test_user'},
+     'search countryA=\$this is a test\$', {}, False,
+     'search countryA=\$this is a test\$'),
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
@@ -1123,7 +1131,8 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     "query name without fields to replace",
     "search query with a user field that contains a backslash",
     "search query with a user field that is surrounded by quotation marks and contains a backslash",
-    "search query fields in notable data more than one value, with one empty value"
+    "search query fields in notable data more than one value, with one empty value",
+    "search query with $ as part of the search - no need to replace"
 
 ])
 def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
@@ -1149,6 +1158,7 @@ def test_build_drilldown_search(notable_data, search, raw, is_query_name, expect
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'params', return_value={})
     parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
     assert parsed_query == expected_search
 
@@ -1532,7 +1542,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = "\'test_user\'"')]),
+       'search index="test"\n| where user="\'test_user\'"')]),
     ({'event_id': 'test_id3', 'drilldown_searches':
         ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
          "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
@@ -1542,7 +1552,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = "\'test_user\'"')]),
+       'search index="test"\n| where user="\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
     "A notable data with two drilldown searches which contained the earlies in 'earliest' key ",
@@ -2310,6 +2320,34 @@ def test_splunk_search_command(mocker, polling, status):
                                                 'sid: 123456\n**No entries.**\n'
 
 
+@pytest.mark.parametrize('messages,expected_msg', [
+    ({'fatal': ['fatal msg']}, 'fatal msg'),
+    ({'error': ['error msg']}, 'error msg')
+])
+def test_err_in_splunk_search(mocker, messages, expected_msg):
+    """
+    Given:
+        A wrong search query.
+
+    When:
+        Running the splunk_search_command.
+
+    Then:
+        Ensure the result as expected in polling and in regular search.
+    """
+    mock_args = {
+        "query": "wrong search query",
+        "earliest_time": "2021-11-23T10:10:10",
+        "latest_time": "2020-10-20T10:10:20",
+        "fast_mode": "false",
+    }
+    service = Service(status="FAILED")
+    service.jobs.state.content['messages'] = messages
+    with pytest.raises(DemistoException) as e:
+        splunk.splunk_search_command(service, mock_args)
+    assert f'Failed to run the search in Splunk: {expected_msg}' in str(e)
+
+
 @pytest.mark.parametrize(
     argnames='credentials',
     argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
@@ -2750,15 +2788,3 @@ def test_get_drilldown_searches(drilldown_data, expected):
     """
 
     assert splunk.get_drilldown_searches(drilldown_data) == expected
-
-
-def test_remove_double_quotes():
-    """
-        Given: string with double quotes
-        When: replacing a var in a query
-        Then: make sure no double double quotes are returned.
-    """
-    from SplunkPy import remove_double_quotes
-
-    assert remove_double_quotes('this is a ""test""') == 'this is a "test"'
-    assert remove_double_quotes('no ""double quotes"" here, and here: ""') == 'no "double quotes" here, and here: ""'

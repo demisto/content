@@ -2,7 +2,7 @@
 // Support only date time of format: dd/MMM/yyyy:hh:mm:ss [+|-]nnnn or format: yyyy/MM/dd hh:mm:ss. For example: "18/Jul/2021:10:00:00 +0000" or "2020/01/19 10:00:00".
 filter _raw_log ~= "\[\d+\/\w+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]" or _raw_log ~= "\d{4,}\/\d{2}\/\d{2}\s*\d{2}:\d{2}:\d{2}"
 | alter
-    tmp_get_timestamp = arrayindex(regextract(_raw_log, "(?:\d{1,4})[\W\s]?(?:[Jj]an|[Ff]eb|[Mm]ar|[Aa]pr|[Mm]ay|[Jj]un|[Jj]ul|[Aa]ug|[Ss]ep|[Oo]ct|[Nn]ov|[Dd]ec|\d{1,4})[\W\s]?(?:\d{1,4}|\s?)[A-Z\W\s]{1}\d{1,2}:\d{2}:\d{2}[\.\d]*\s?(?:\d{4}|\s?)\s*(?:[+-]\d{4}|\s?)"), 0)
+    tmp_get_timestamp = arrayindex(regextract(_raw_log, "(?:\:\s|\[)(\d+(?:[^>]|\s)?(?:[Jj]an|[Ff]eb|[Mm]ar|[Aa]pr|[Mm]ay|[Jj]un|[Jj]ul|[Aa]ug|[Ss]ep|[Oo]ct|[Nn]ov|[Dd]ec|\d{1,4})[\W\s]?(?:\d{1,4}|\s?)[A-Z\W\s]{1}\d{1,2}:\d{2}:\d{2}[\.\d]*\s?(?:\d{4}|\s?)\s*(?:[+-]\d{4}|\s?))"), 0)
 | alter
     // Error logs - Change the time zone according to your needs.
     tmp_timestamp1 = if(tmp_get_timestamp ~= "[+-]", null, parse_timestamp("%Y/%m/%d %H:%M:%S", tmp_get_timestamp, "+00:00")),

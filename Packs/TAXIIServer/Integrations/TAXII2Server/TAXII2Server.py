@@ -63,7 +63,7 @@ class TAXII2Server:
             types_for_indicator_sdo: The list of stix types to provide indicator stix domain objects.
         """
         self._url_scheme = url_scheme
-        self._host = host
+        self._host = host.replace('.xdr', '.crtx')
         self._port = port
         self._certificate = certificate
         self._private_key = private_key
@@ -167,10 +167,16 @@ class TAXII2Server:
             calling_context = get_calling_context()
             instance_name = calling_context.get('IntegrationInstance', '')
             endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
-            service_address = f'{self._url_scheme}://{self._host}{endpoint}'
+            if is_xsiam_or_xsoar_saas() and not instance_execute:
+                service_address = f'{self._url_scheme}://ext-{self._host}/xsoar{endpoint}'
+            else:
+                service_address = f'{self._url_scheme}://{self._host}{endpoint}'
         else:
             endpoint = f':{self._port}'
-            service_address = f'{self._url_scheme}://{self._host}{endpoint}'
+            if is_xsiam_or_xsoar_saas() and not instance_execute:
+                service_address = f'{self._url_scheme}://ext-{self._host}/xsoar{endpoint}'
+            else:
+                service_address = f'{self._url_scheme}://{self._host}{endpoint}'
 
         default = urljoin(service_address, API_ROOT)
         default = urljoin(default, '/')
@@ -638,7 +644,8 @@ def parse_manifest_and_object_args() -> tuple:
             datetime.strptime(added_after, UTC_DATE_FORMAT)
     except ValueError:
         try:
-            datetime.strptime(added_after, STIX_DATE_FORMAT)
+            if added_after:
+                datetime.strptime(added_after, STIX_DATE_FORMAT)
         except Exception as e:
             raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 

@@ -1,8 +1,8 @@
 {
     "name": "Team Cymru",
-    "description": "Team Cymru integration provides comprehensive insights on the IP addresses and domains for threat investigations.",
+    "description": "Team Cymru's Scout integration provides comprehensive insights on IP addresses and domains for threat investigations.",
     "support": "partner",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.1",
     "author": "Team Cymru",
     "url": "",
     "email": "support@cymru.com",
@@ -33,6 +33,7 @@
         "Ransomware"
     ],
     "keywords": [
+        "Team Cymru",
         "Cymru",
         "Scout",
         "IOC",
@@ -41,7 +42,8 @@
         "Intelligence",
         "Enrichment",
         "whois",
-        "Threat Intelligence"
+        "Threat Intelligence",
+        "Pure Signal"
     ],
     "marketplaces": [
         "xsoar",

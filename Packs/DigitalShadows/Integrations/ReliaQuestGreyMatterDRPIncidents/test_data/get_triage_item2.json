@@ -1,0 +1,18 @@
+{
+  "id": "dc99f4b2-fb26-4d89-a645-bbf650d2e64b",
+  "risk-type": "phishing-webpage",
+  "classification": "phishing-attempt-incident",
+  "state": "rejected",
+  "portal-shortcode": "BBCBF5",
+  "portal-id": "7002205",
+  "title": "Phishing Webpage on teßt-ünther.de",
+  "risk-level": "very-high",
+  "raised": "2020-10-14T08:07:34.629Z",
+  "updated": "2023-01-19T14:22:00.097640Z",
+  "source-updated": "2020-10-14T08:07:34.629Z",
+  "source": {
+    "alert-id": null,
+    "incident-id": 7002205
+  },
+  "assignee": null
+}

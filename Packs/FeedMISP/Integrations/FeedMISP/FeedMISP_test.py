@@ -297,7 +297,10 @@ def test_search_query_indicators_pagination(mocker):
                     authorization="auth",
                     verify=False,
                     proxy=False,
-                    timeout=60)
+                    timeout=60,
+                    performance=False,
+                    max_indicator_to_fetch=2000
+                    )
     returned_result_1 = {'response':
                          {'Attribute': [{'id': '1', 'event_id': '1', 'object_id': '0',
                                          'object_relation': None, 'category': 'Payload delivery',
@@ -340,7 +343,10 @@ def test_search_query_indicators_pagination_bad_case(mocker):
                     authorization="auth",
                     verify=False,
                     proxy=False,
-                    timeout=60)
+                    timeout=60,
+                    performance=False,
+                    max_indicator_to_fetch=2000
+                    )
     returned_result = {'Error': 'failed api call'}
     expected_result = "Error in API call - check the input parameters and the API Key. Error: failed api call"
     mocker.patch.object(Client, '_http_request', return_value=returned_result)

@@ -50,7 +50,7 @@ XSOAR endpoint URL-
 3. Enter the **App Name**.
 4. Click **Create**.
 
-![enter image description here](../../doc_files/create-team-chat-app.gif)
+![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/create-team-chat-app.gif)
 ### Configure App Settings
 Enter your Cortex XSOAR endpoint URL in all Redirect URLS.
 
@@ -61,7 +61,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
    - For Cortex XSOAR 8.x / XSAIM you need to run using extrnal engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
 
 
-![enter image description here](../../doc_files/bot_endpoint_url.gif)
+![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/bot_endpoint_url.gif)
 
 1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
 
@@ -74,7 +74,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
 ![enter image description here](../../doc_files/scope-premissions.png)
 
 1. Click **Local Test** >**Add** to test your app and authorize your Cortex XSOAR app.
- ![enter image description here](../../doc_files/test-zoom-app.gif)
+ ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/test-zoom-app.gif)
 
  1. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
 **Endpoint URL Requirements-**
@@ -100,7 +100,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
          - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
          - Validate the URL: Just after setting up/configuration of the Cortex XSOAR side you can validate the URL.
          - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
-![enter image description here](../../doc_files/add-event.gif)
+![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/add-event.gif)
 
 
 ## Commands
@@ -1919,6 +1919,36 @@ Searches chat messages or shared files between a user and an individual contact 
 >| 2023-05-22T08:24:14Z | None | a62636c8-b6c1-4135-9352-88ac61eafc31 | <example@example.com> | message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 >| 2023-05-22T08:20:22Z | None | 4a59df4a-9668-46bd-bff2-3e1f3462ecc3 | <example@example.com> | my message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 
+### zoom-delete-user-token
+
+***
+Revoke a user's Zoom SSO session.
+To list all available users use the `zoom-list-users` command.
+
+
+#### Base Command
+
+`zoom-delete-user-token`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                         | **Required** |
+|-------------------|-----------------------------------------------------------------------------------------| --- |
+| user_id           | The user ID or email to be revoked.                                                     | Required | 
+
+#### Command example
+
+```!zoom-delete-user-token user_id=useremail@myself.com```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>### Message
+>User SSO token for user usetobe@myself.com is deleted
+
 ### send-notification
 
 ***
@@ -1935,8 +1965,7 @@ Sends messages from your Marketplace Chatbot app on Zoom to either an individual
 | to |  The email address or user ID or member ID of the person to send a message.  | Required | 
 | channel_id |  The channel ID of the channel to send a message. | Optional | 
 | message | The message to be sent. Maximum of 1024 characters. | Required | 
-| visible_to_user | The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message. | Optional | 
-| zoom_ask | Whether to send the message as a JSON. | Optional | 
+| visible_to_user | The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message. | Optional |
 
 #### Context Output
 

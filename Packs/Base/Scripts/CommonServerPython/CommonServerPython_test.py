@@ -68,7 +68,7 @@ Parameters used:
         "instance-name": "test_integration_instance",
         "final-reporting-device": "www.test_url.com",
         "collector-type": "assets",
-        "snapshot-id": "test_integration_instance123000",
+        "snapshot-id": "123000test_integration_instance",
         "total-items-count": "2"
 }}
 
@@ -4751,6 +4751,41 @@ def test_integration_return_results_execution_metrics_command_results(mocker):
     assert demisto_results_mock.call_count == 3
 
 
+def test_dynamic_section_script_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains execution metrics entries
+      - The command currently running is a dynamic-section script
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 2 times (without the 2 execution metrics entries)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ScriptName': 'some_script_name'}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        # CommandResults metrics entry: Should not be returned.
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        # CommandResults regular entry: Should be returned.
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        # Dict metrics entry: Should not be returned.
+        {'MockContext': 1, "Type": 19},
+        # Dict regular entry: Should be returned.
+        {'MockContext': 1, "Type": 1},
+    ]
+    return_results(mock_command_results)
+    for call_args in demisto_results_mock.call_args_list:
+        for args in call_args.args:
+            if isinstance(args, list):
+                for arg in args:
+                    assert arg["Type"] != 19
+            else:
+                assert args["Type"] != 19
+
+    assert demisto_results_mock.call_count == 2
+
+
 def test_return_results_multiple_command_results(mocker):
     """
     Given:
@@ -6264,7 +6299,10 @@ class TestCommonTypes:
             stix_id='test_stix_id',
             tags=['tag1', 'tag2'],
             traffic_light_protocol='traffic_light_protocol',
-            user_id='test_user_id'
+            user_id='test_user_id',
+            manager_email='test_manager_email@test.com',
+            manager_display_name='test_manager_display_name',
+            risk_level='test_risk_level'
         )
 
         results = CommandResults(
@@ -6281,7 +6319,7 @@ class TestCommonTypes:
             'HumanReadable': None,
             'EntryContext': {
                 'Account(val.id && val.id == obj.id)': [
-                    {'Id': 'test_account_id',
+                    {'ID': 'test_account_id',
                      'Type': 'test_account_type',
                      'Blocked': True,
                      'CreationDate': 'test_creation_date',
@@ -6302,7 +6340,12 @@ class TestCommonTypes:
                      'Tags': ['tag1', 'tag2'],
                      'TrafficLightProtocol': 'traffic_light_protocol',
                      'UserId': 'test_user_id',
-                     'Username': 'test_username'
+                     'Username': 'test_username',
+                     'Manager': {
+                         'Email': 'test_manager_email@test.com',
+                         'DisplayName': 'test_manager_display_name'
+                     },
+                     'RiskLevel': 'test_risk_level'
                      }
                 ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'

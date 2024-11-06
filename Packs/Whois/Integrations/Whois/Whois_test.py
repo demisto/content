@@ -61,7 +61,13 @@ def test_test_command(mocker: MockerFixture):
     'query,expected',
     [("app.paloaltonetwork.com", "paloaltonetwork.com"),
      ("test.this.google.co.il", "google.co.il"),
-     ("app.XSOAR.test", "app.XSOAR.test")
+     ("app.XSOAR.test", "app.XSOAR.test"),
+     ("https://hello.world.io/", "world.io"),
+     ("https://hello.world.io?", "world.io"),
+     ("https://hello.world.io#", "world.io"),
+     ("https://hello.world.io/a?b=c&d", "world.io"),
+     ("https://hello.world.io#a?b=c&d", "world.io"),
+     ("https://hello.world.io?a=b&c=d", "world.io"),
      ]
 )
 def test_get_domain_from_query(query, expected):
@@ -895,6 +901,19 @@ def test_new_test_command(mocker: MockerFixture):
 
 
 def test_whois_and_domain_command(mocker: MockerFixture):
+    """
+    Test the new whois/domain command.
+
+    Given:
+    - Mock response for WHOIS call.
+
+    When:
+    - 2 results are returned.
+
+    Then:
+    - The first result raw response is JSON.
+    """
+
     from Whois import whois_and_domain_command
     import whois
 
@@ -910,6 +929,7 @@ def test_whois_and_domain_command(mocker: MockerFixture):
     )
     res = whois_and_domain_command("domain", DBotScoreReliability.B)
     assert len(res) == 2
+    assert isinstance(res[0].raw_response, dict)
 
 
 @pytest.mark.parametrize(

@@ -143,14 +143,14 @@ class Client:
                    host=self.host,
                    port=arg_to_number(self.port),
                    database=self.dbname,
-                   query=self.connect_parameters)
+                   query=self.connect_parameters)  # type: ignore[arg-type]
 
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
         Creating and engine according to the instance preferences and connecting
         :return: a connection object that will be used in order to execute SQL queries
         """
-        ssl_connection = {}
+        ssl_connection: dict = {}
         module = self._convert_dialect_to_module(self.dialect)
         db_url = self._generate_db_url(module)
 
@@ -158,7 +158,7 @@ class Client:
             if self.dialect == POSTGRES_SQL:
                 ssl_connection = {'sslmode': 'require'}
             else:
-                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
+                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
 
         if self.use_pool:
             if 'expiringdict' not in sys.modules:
@@ -194,9 +194,9 @@ class Client:
         :return: results of query, table headers
         """
         if type(bind_vars) is dict:
-            sql_query = text(sql_query)
+            sql_query = text(sql_query)  # type: ignore[assignment]
 
-        result = self.connection.execute(sql_query, bind_vars)
+        result = self.connection.execute(sql_query, bind_vars)  # type: ignore[call-overload]
 
         # for MSSQL autocommit is True, so no need to commit again here
         if self.dialect not in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
