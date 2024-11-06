@@ -4,12 +4,15 @@ from CommonServerUserPython import *  # noqa
 # IMPORTS
 
 import json
+import urllib3
 import requests
 import dateparser
 import uuid
 
 from MicrosoftApiModule import *  # noqa: E402
 
+# Disable insecure warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' CONSTANTS '''
 
@@ -65,20 +68,14 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'Status', 'owner', 'tags', 'FirstActivityTimeUTC',
                                   'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC', 'IncidentNumber', 'AlertsCount',
                                   'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
-                                  'classificationReason', 'classificationComment', 'alerts', 'entities', 'comments', 'relations']
+                                  'classificationComment', 'alerts', 'entities', 'comments', 'relations']
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
                             'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
 LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
-CLASSIFICATION_REASON = {
-    "FalsePositive": {
-        "Inaccurate Data": "InaccurateData",
-        "Incorrect Alert Logic": "IncorrectAlertLogic",
-    },
-    "TruePositive": "SuspiciousActivity",
-    "BenignPositive": "SuspiciousButExpected",
-}
+CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'SuspiciousActivity',
+                         'BenignPositive': 'SuspiciousButExpected'}
 
 
 class AzureSentinelClient:
@@ -560,9 +557,7 @@ def get_remote_incident_data(client: AzureSentinelClient, incident_id: str):
         updated_object: The updated object to set in the XSOAR incident.
     """
     mirrored_data = client.http_request('GET', f'incidents/{incident_id}')
-    demisto.debug(f"\nincident remote data\n{mirrored_data}")
     incident_mirrored_data = incident_data_to_xsoar_format(mirrored_data, is_fetch_incidents=True)
-    demisto.debug(f"\n to xsoar incident remote data\n{incident_mirrored_data}")
     fetch_incidents_additional_info(client, incident_mirrored_data)
     updated_object: Dict[str, Any] = {}
 
@@ -583,7 +578,6 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, re
     Returns:
         None.
     """
-    demisto.debug(f"\n{updated_object=}\n{entries=}\n")
     if demisto.params().get('close_incident'):
         if updated_object.get('Status') == 'Closed':
             close_reason = updated_object.get('classification', '')
@@ -675,39 +669,6 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     return demisto.params().get('close_ticket') and bool(closing_reason)
 
 
-def extract_classification_reason(delta, data, fetched_incident_data):
-    """
-    Extracts the classification reason from `delta` or `data`,
-    If the reason is a 'FalsePositive' returns the specific reason defaults to "InaccurateData".
-    Else returns the corresponding reason
-    
-    Args:
-        delta: Dictionary potentially containing classification data.
-        data: Fallback dictionary for classification data.
-
-    Returns:
-        The classification reason as a string or dict, or `None` if not found.
-    """
-    classification = delta.get("classification", data.get("classification", ""))
-    classification_reason = delta.get("classificationReason")
-    if isinstance(classification_reason, dict):
-        a = classification_reason.get(
-            dict_safe_get(
-                demisto.callingContext,
-                [
-                    "context",
-                    "Inv",
-                    "reason",
-                    "Microsoft Sentinel Classification Reason",
-                ],
-                "InaccurateData",
-            ),""
-        )
-        demisto.debug(f"\n{a=}\n")
-        return a
-    return classification_reason
-
-
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
                             close_ticket: bool = False) -> Dict[str, Any]:
     """
@@ -745,9 +706,8 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
             'status': 'Closed',
             'classification': delta.get('classification') or data.get('classification'),
             'classificationComment': delta.get('classificationComment') or data.get('classificationComment'),
-            'classificationReason': delta.get("classificationReason") or data.get('classificationReason')
+            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', data.get('classification', '')))
         }
-    demisto.debug(f"{properties}\n")
     remove_nulls_from_dictionary(properties)
     data = {
         'etag': fetched_incident_data.get('etag') or delta.get('etag') or data.get('etag'),
@@ -2015,7 +1975,6 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    demisto.debug(f"\n{command=}\n{params=}\n{args=}")
 
     demisto.debug(f'Command being called is {command}')
     try:

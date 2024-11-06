@@ -78,30 +78,8 @@
                     "simple": "closeNotes"
                 },
                 "classificationReason": {
-					"complex": {
-						"filters": [],
-						"root": "microsoftsentinelclassificationreason",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "Incorrect Alert Logic,Inaccurate Data"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "IncorrectAlertLogic,InaccurateData"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
+                    "simple": "closingreason"
+                },
                 "description": {
                     "simple": "description"
                 },

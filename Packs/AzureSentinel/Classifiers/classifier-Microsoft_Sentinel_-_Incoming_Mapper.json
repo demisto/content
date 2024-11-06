@@ -98,31 +98,6 @@
                 "Microsoft Sentinel Classification Comment": {
                     "simple": "classificationComment"
                 },
-				"Microsoft Sentinel Classification Reason": {
-					"complex": {
-						"filters": [],
-						"root": "classificationReason",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "IncorrectAlertLogic,InaccurateData"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "Incorrect Alert Logic,Inaccurate Data"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
                 "Microsoft Sentinel Comments": {
                     "simple": "comments"
                 },

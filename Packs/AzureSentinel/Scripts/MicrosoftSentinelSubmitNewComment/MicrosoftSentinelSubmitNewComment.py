@@ -14,8 +14,7 @@ def add_new_comment(context_results: dict):
         CommandResults: Includes a markdown-formatted string confirming the new comment and the comment details.
     """
     args = demisto.args()
-    mirror_dir = demisto.params().get("mirror_direction")
-        
+
     incident_id = dict_safe_get(
         context_results, ["CustomFields", "sourceid"], ""
     ) or args.get("incident_id")
@@ -27,13 +26,10 @@ def add_new_comment(context_results: dict):
         )
 
     demisto.debug(f"update remote incident with new XSOAR comments: {new_comment}")
-    if mirror_dir in ["None", "Incoming"]:
-        pass
-    else:
-        execute_command(
-            "azure-sentinel-incident-add-comment",
-            {"using": instance_name, "incident_id": incident_id, "message": new_comment},
-        )
+    execute_command(
+        "azure-sentinel-incident-add-comment",
+        {"using": instance_name, "incident_id": incident_id, "message": new_comment},
+    )
     readable_output = tableToMarkdown(
         "The new comment has been recorded and will appear in your comments field in a minute \n(Only if you have A 'Mirror In')",  # noqa: E501
         {"Instance Name": instance_name, "New Comment": new_comment},

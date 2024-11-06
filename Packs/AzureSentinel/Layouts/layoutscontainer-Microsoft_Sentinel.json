@@ -11,31 +11,7 @@
                     {
                         "fieldId": "incident_closenotes",
                         "isVisible": true
-                    },
-                    {
-						"fieldId": "incident_microsoftsentinelclassificationreason",
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "closeReason"
-										}
-									},
-									"operator": "isEqualString",
-									"right": {
-										"isContext": false,
-										"value": {
-											"simple": "False Positive"
-										}
-									},
-									"type": "singleSelect"
-								}
-							]
-						],
-						"isVisible": true
-					}
+                    }
                 ],
                 "isVisible": true,
                 "name": "Basic Information",
@@ -219,15 +195,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "closenotes",
-                                "height": 44,
-                                "id": "incident-closeNotes-field",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "closereason",
                                 "height": 22,
                                 "id": "incident-closeReason-field",
@@ -236,37 +203,14 @@
                                 "startCol": 0
                             },
                             {
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "microsoftsentinelclassificationreason",
-								"filters": [
-									[
-										{
-											"ignoreCase": false,
-											"left": {
-												"isContext": true,
-												"value": {
-													"simple": "closeReason"
-												}
-											},
-											"operator": "isEqualString",
-											"right": {
-												"isContext": false,
-												"value": {
-													"simple": "False Positive"
-												}
-											},
-											"type": "singleSelect"
-										}
-									]
-								],
-								"height": 22,
-								"id": "8210b420-5877-11ef-b3b4-cb0cbb4da5f9",
-								"index": 3,
-								"listId": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 0
-							}
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
                         ],
                         "maxW": 3,
                         "moved": false,
