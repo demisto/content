@@ -6,6 +6,7 @@
 !prisma-cloud-compute-console-version-info
 !prisma-cloud-compute-custom-feeds-ip-list
 !prisma-cloud-compute-custom-feeds-ip-add ip=1.1.1.1,2.2.2.2
+!prisma-cloud-compute-custom-feeds-ip-remove ip=2.2.2.2,5.6.7.8
 !prisma-cloud-compute-custom-feeds-malware-list limit=2
 !prisma-cloud-compute-custom-feeds-malware-add name=test md5=md5_hash1,md5_hash2,md5_hash3
 !cve cve_id=cve-2016-223,cve-2020-3546
