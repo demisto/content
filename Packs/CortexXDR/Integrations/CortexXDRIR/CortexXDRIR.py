@@ -5,7 +5,6 @@ import secrets
 import string
 from itertools import zip_longest
 from datetime import datetime, timedelta
-import pytz
 
 from CoreIRApiModule import *
 
