@@ -89,7 +89,7 @@ class Client(BaseClient):
 
     def first_time_fetch_events(self, event_type: str):
         if event_type == 'alerts':
-            return self.get_alerts(page_num=1, items_per_page=100)
+            return self.get_alerts(page_num=1, items_per_page=10)
         elif event_type == 'events':
             return self.get_events(page_num=1, items_per_page=100)
         return None
@@ -231,14 +231,45 @@ def get_previous_page(links):
     return None
 
 
-def get_last_page_of_events(results: list):
-    get_events
-    #call the api for the first page
-    #go to next
-    #keep going until there it no next page anymore
-    #return self
+def get_latest_date(date1: str, date2: str) -> str:
+    """
+    Compares two dates and returns the latest one.
+
+    Args:
+        date1 (str): The first date in string format.
+        date2 (str): The second date in string format.
+
+    Returns:
+        str: The latest date in string format.
+    """
+    if not date1:
+        return date2
+    if not date2:
+        return date1
+    
+    dt1 = datetime.strptime(date1, DATE_FORMAT)
+    dt2 = datetime.strptime(date2, DATE_FORMAT)
+    
+    return date1 if dt1 >= dt2 else date2
 
 
+def add_second_to_date(date: str):
+    date_plus_one_second = datetime.strptime(date, DATE_FORMAT) + timedelta(seconds=1)
+    return date_plus_one_second.strftime(DATE_FORMAT)
+
+
+def get_last_page_of_events(client: Client, results: list):
+    links = results.get('links')
+    next_url = get_next_url(links)
+    self_url = get_self_url(links)
+    while next_url:
+        response = client.get_response_from_page_link(next_url)
+        links = response.get('links')
+        next_url = get_next_url(links)
+        self_url = get_self_url(links)
+    
+    response = client.get_response_from_page_link(self_url)
+    return response
 
 
 def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
@@ -263,7 +294,7 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_typ
     else:
         results = client.first_time_fetch_events(event_type)
         
-    response = get_last_page_of_events(results)
+    response = get_last_page_of_events(client, results)
     links = response.get('links')
     events = response.get('results')
     
@@ -278,11 +309,12 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_typ
             output.append(event)
             demisto.debug(f'Appending event with id {event.get("id")} from type {event_type}')
             current_fetched_events_amount += 1
-            new_min_time = max(new_min_time, event.get('create')) + 1
+            new_min_time = get_latest_date(new_min_time, event.get('created'))
 
             if current_fetched_events_amount == fetch_limit:
                 # the limit is reached, save the last created time.
-                demisto.debug(f'The limit is reached. Amount of fetched events from type {event_type} is {len(output)}')
+                demisto.debug(f'The limit is reached. Amount of fetched events is {len(output)}')
+                add_second_to_date(new_min_time)
                 return output, new_min_time
 
         previous_page = get_previous_page(links)
@@ -295,7 +327,8 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_typ
             # no more pages left, exit the loop
             break
 
-    demisto.debug(f'No more events are left to fetch. Amount of fetched events from type {event_type} is {len(output)}')
+    demisto.debug(f'No events are left to fetch. Amount of fetched events is {len(output)}')
+    add_second_to_date(new_min_time)
     return output, new_min_time
 
 
@@ -336,7 +369,7 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict, event_typ
             if current_fetched_events_amount == fetch_limit:
                 # the limit is reached, save the current page and the ids.
                 last_run_new_dict = update_last_run_with_self_url(links, last_page_events_ids)
-                demisto.debug(f'The limit is reached. Amount of fetched events from type {event_type} is {len(output)}')
+                demisto.debug(f'The limit is reached. Amount of fetched alerts is {len(output)}')
                 return output, last_run_new_dict
 
         next_url = get_next_url(links)
@@ -350,7 +383,7 @@ def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict, event_typ
             # no more pages left, exit the loop
             break
 
-    demisto.debug(f'No more events are left to fetch. Amount of fetched events from type {event_type} is {len(output)}')
+    demisto.debug(f'No alerts are left to fetch. Amount of fetched alerts is {len(output)}')
     last_run_new_dict = update_last_run_with_self_url(links, last_page_events_ids)
     return output, last_run_new_dict
 
@@ -387,10 +420,10 @@ def fetch_events(client: Client, fetch_limit: int):
     last_run_alerts = last_run.get('alerts', {})
     last_run_events = last_run.get('events', {})
 
-    alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run_alerts, 'alerts')
-    # events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run_events, 'events')
-    last_run_events = {}
-    events_output = []
+    # alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run_alerts, 'alerts')
+    events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run_events, 'events')
+    last_run_alerts = {}
+    alerts_output = []
     
     last_run_new_obj = ({'alerts': last_run_alerts,
                         'events': last_run_events
