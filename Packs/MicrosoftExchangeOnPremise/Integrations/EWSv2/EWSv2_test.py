@@ -450,12 +450,9 @@ def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_
     mocker.patch.object(EWSv2, "parse_incident_from_item", side_effect=exception_type)
     mocker.patch.object(EWSv2, "fetch_last_emails", return_value=[MockEmailObject()])
     mocker.patch.object(EWSv2, "get_account", return_value=[{}])
-    try:
+    with pytest.raises((Exception, UnicodeError, IndexError)) as e:
         fetch_emails_as_incidents(client, "Inbox", skip_unparsable_emails_param)
-    except Exception as e:
         assert expected == str(e)
-
-
 class MockItem:
     def __init__(self, item_id):
         self.id = item_id

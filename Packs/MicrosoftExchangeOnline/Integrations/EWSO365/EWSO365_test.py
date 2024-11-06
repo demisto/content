@@ -327,12 +327,9 @@ def test_skip_unparsable_emails(mocker, skip_unparsable_emails_param, exception_
     mocker.patch.object(EWSO365, "fetch_last_emails", return_value=[MockEmailObject()])
     mocker.patch.object(EWSO365, "get_last_run", return_value=last_run)
 
-    # mocker.patch.object(EWSO365, "get_account", return_value=[{}])
-    try:
+    with pytest.raises((Exception, UnicodeError, IndexError)) as e:
         fetch_emails_as_incidents(client, last_run, "received-time", skip_unparsable_emails_param)
-    except Exception as e:
         assert expected == str(e)
-
 
 def test_fetch_and_mark_as_read(mocker):
     """
