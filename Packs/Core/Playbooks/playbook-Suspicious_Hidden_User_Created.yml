@@ -1,7 +1,40 @@
 id: 5a625de2-6be6-4850-86db-2bedae394075
-version: 70
+version: 71
 vcShouldKeepItemLegacyProdMachine: false
 name: Suspicious Hidden User Created
+description: |
+  This playbook addresses the following alerts:
+
+  - Suspicious hidden user created
+
+  Playbook Stages:
+
+  Triage:
+
+  - Retrieve event information about the created user
+
+  Investigation:
+
+  - Check if the user is local or domain
+  - For domain users: Retrieve AD attributes, including password expiration
+  - For local users: run a Powershell command to get "Password Expires" attribute of the local user
+  - Get risk level for the affected host
+  - Search for related Script Engine Activity alerts in the incident
+
+  Containment:
+
+  - Disable the suspicious user account (domain or local).
+  - If a related alert about malicious activity exists, kill the Causality Group Owner (CGO) process that created the suspicious user.
+
+  Requirements:
+
+  For response actions, you need the following integrations:
+
+  - Cortex Core - Investigation and Response
+  - Active Directory Query v2 (for domain user actions)
+tags:
+- T1136 - Create Account
+- 'T1564.002 - Hide Artifacts: Hidden Users'
 starttaskid: "0"
 tasks:
   "0":
@@ -1231,3 +1264,4 @@ view: |-
   }
 inputs: []
 outputs: []
+marketplaces: ["marketplacev2"]
