@@ -2,7 +2,7 @@ comment: Parsing custom fields to detect indexed fields for risky field types.
 commonfields:
   id: HealthCheckFields
   version: -1
-dockerimage: demisto/python3:3.11.9.107902
+dockerimage: demisto/python3:3.11.10.111526
 enabled: true
 name: HealthCheckFields
 runas: DBotWeakRole
