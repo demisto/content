@@ -3,12 +3,12 @@ args:
   name: Thresholds
 - auto: PREDEFINED
   defaultValue: 'False'
-  description: 'Append to existing data in grid field , Default: False'
+  description: 'Append to existing data in grid field , Default: False.'
   name: Append
   predefined:
   - 'True'
   - 'False'
-comment: Deprecated. No available replacement.
+comment: Analyze large incidents.
 commonfields:
   id: HealthCheckAnalyzeLargeInvestigations
   version: -1
@@ -17,13 +17,13 @@ name: HealthCheckAnalyzeLargeInvestigations
 script: ''
 subtype: python3
 type: python
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.11.10.113941
 runas: DBotWeakRole
 tests:
-- No tests (deprecated)
+- No tests (auto formatted)
 fromversion: 6.0.0
 scripttarget: 0
 tags: []
 marketplaces:
 - xsoar
-deprecated: true
+
