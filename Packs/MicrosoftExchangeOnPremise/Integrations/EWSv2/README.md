@@ -394,7 +394,7 @@ Move an item to different folder in the mailbox.
 ### ews-delete-items
 
 ***
-Delete items from mailbox.
+Delete items from mailbox. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
 
 
 #### Base Command
