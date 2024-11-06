@@ -116,7 +116,7 @@ class Client(BaseClient):
 
         if not (expire_in := res.get("expires_in")):
             demisto.debug(
-                "Token response didn't include a valid `expires_in`, defaulting to 1 minute."
+                "Token response didn't include a valid `expires_in`, defaulting to 1 second."
                 f"This may result in frequent log-ins, and is OK. Response keys: {res.keys()}"
             )
             expire_in = 1
@@ -688,7 +688,7 @@ def validate_start_and_end_dates(args):
     """
     start_date_str = ""
     end_date_str = ""
-    if start_date := arg_to_datetime(args.get("start_date")):
+    if start_date := arg_to_datetime(args.get('start_date')):
         start_date_str = start_date.strftime(DATE_FORMAT)
     if end_date := arg_to_datetime(args.get("end_date")):
         end_date_str = end_date.strftime(DATE_FORMAT)
