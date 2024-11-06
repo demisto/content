@@ -1307,7 +1307,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(account_email, folder_name, skip_unparsable_emails: bool):
+def fetch_emails_as_incidents(account_email, folder_name, skip_unparsable_emails: bool = False):
     last_run = get_last_run()
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
 

@@ -2421,7 +2421,7 @@ def parse_incident_from_item(item):  # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip_unparsable_emails: bool):
+def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip_unparsable_emails: bool = False):
     """
     Fetch incidents
     :param client: EWS Client
