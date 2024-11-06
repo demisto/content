@@ -247,7 +247,7 @@ class PychromeEventHandler:
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
-        request_url = kwargs.get("request").get("url")
+        request_url = kwargs.get("request", {}).get("url")
 
         # abort the request if the url inside blocked_urls param and its redirect request
         if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
