@@ -20,7 +20,7 @@ configuration:
   defaultvalue: 'Cortex XDR - Lite'
 - name: url
   type: 0
-  display: 'Server URL (copy URL from XDR)'
+  display: 'Server URL (copy URL from XDR) test'
   section: Connect
   required: true
 - displaypassword: API Key ID
