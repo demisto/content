@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
+  id: SplunkPy dev
   version: -1
 sectionOrder:
 - Connect
@@ -304,8 +304,8 @@ configuration:
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
 description: Runs queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+display: SplunkPy dev
+name: SplunkPy dev
 script:
   commands:
   - arguments:
@@ -454,7 +454,7 @@ script:
         Event payload key-value pair.
         String example: "event": "Access log test message".
       name: event
-      required: true
+      required: false
     - description: Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields.
       name: fields
     - description: The index name.

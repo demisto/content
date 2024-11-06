@@ -2616,6 +2616,7 @@ def validate_indexes(indexes, service):
     real_indexes_names_set = set()
     for real_index in real_indexes:
         real_indexes_names_set.add(real_index.name)
+    real_indexes_names_set.add(None)
     indexes_set = set(indexes)
     return indexes_set.issubset(real_indexes_names_set)
 
@@ -2669,8 +2670,15 @@ def splunk_submit_event_hec(
             time=time_
         )
         
-    # indexes = read from events
-
+    events_str = str(events)
+    
+    events_str = events_str.replace("'", '"')
+    rgx = re.compile(r"}[\s]*{")
+    valid_json_events = rgx.sub("},{", events_str)
+    valid_json_events = json.loads(f"[{valid_json_events}]")
+    
+    indexes = [d.get('index') for d in valid_json_events]
+    
     if not validate_indexes(indexes, service):
         raise DemistoException('Index name does not exist in your splunk instance')
 
@@ -2678,9 +2686,9 @@ def splunk_submit_event_hec(
         'Authorization': f'Splunk {hec_token}',
         'Content-Type': 'application/json',
     }
-    if request_channel:  # Check this
+    if request_channel:
         headers['X-Splunk-Request-Channel'] = request_channel
-
+        
     return requests.post(
         f'{baseurl}/services/collector/event',
         data=json.dumps(events),
@@ -2704,7 +2712,7 @@ def splunk_submit_event_hec_command(params: dict, service, args: dict):
     time_ = args.get('time')
     request_channel = args.get('request_channel')
     batch_event_data = args.get('batch_event_data')
-    entry_id = arg_to_number(args.get('entry_id'))
+    entry_id = args.get('entry_id')
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
                                             request_channel, batch_event_data, entry_id, service)
