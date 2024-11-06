@@ -2,7 +2,7 @@ Total number of incidents per OOTB feed.
 
 This automation runs using the default Limited User role, unless you explicitly change the permissions.
 For more information, see the section about permissions here:
-https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+For XSOAR 6, see the https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations. For XSOAR 8, see the https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script.
 
 ## Script Data
 
