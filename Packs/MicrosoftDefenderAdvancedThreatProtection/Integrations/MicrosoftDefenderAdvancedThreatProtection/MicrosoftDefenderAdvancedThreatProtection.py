@@ -12,7 +12,7 @@ from MicrosoftApiModule import *  # noqa: E402
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBAL VARS '''
+''' GLOBAL VARS test'''
 APP_NAME = 'ms-defender-atp'
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
