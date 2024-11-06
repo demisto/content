@@ -1256,7 +1256,7 @@ tasks:
     task:
       id: e7cb4db3-f70e-4474-8ae5-1ad159731138
       version: -1
-      name: War room notification - Scheduled Task Disabled
+      name: Notify to War Room - Scheduled Task Disabled
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
