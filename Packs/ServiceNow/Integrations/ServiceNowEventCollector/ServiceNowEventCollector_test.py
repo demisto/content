@@ -104,7 +104,6 @@ class TestFetchActivity:
         assert "Audit Events" in command_results.readable_output
         assert "Syslog Transactions Events" not in command_results.readable_output
 
-
     def test_get_events_command_empty_response(self, mocker):
         """
         Test get_events_command when no logs are returned.
@@ -128,7 +127,6 @@ class TestFetchActivity:
         assert http_responses.call_count == 1
         assert "No entries." in command_results.readable_output
 
-
     def test_get_events_command_large_limit(self, mocker):
         """
         Test get_events_command with a large limit value.
@@ -144,7 +142,7 @@ class TestFetchActivity:
         last_run = {}  # Assuming no previous run data for this test case
         log_type = AUDIT
         mock_logs = [{"event_id": i, "timestamp": "2023-01-01 01:00:00"} for i in range(1000)]
-        
+
         http_responses = mocker.patch.object(Client, "search_events", return_value=mock_logs)
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
         all_events, command_results = get_events_command(self.client, args, log_type, last_run)
@@ -152,7 +150,7 @@ class TestFetchActivity:
         assert len(all_events) == 1000
         assert "Audit Events" in command_results.readable_output
         assert http_responses.call_count == 1
-        
+
     def test_get_events_command_with_last_run(self, mocker):
         """
         Test get_events_command when a last_run parameter is provided and 'from_date' is missing in args.
@@ -193,7 +191,6 @@ class TestFetchActivity:
         assert len(all_events) == 1
         assert isinstance(command_results.readable_output, str)
         assert "Audit Events" in command_results.readable_output
-
 
     def test_fetch_events_command_standard(self, mocker):
         """

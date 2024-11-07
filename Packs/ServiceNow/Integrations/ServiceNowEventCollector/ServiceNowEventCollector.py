@@ -178,13 +178,12 @@ def process_and_filter_events(events: list, previous_run_ids: set, from_date: st
 
 def get_events_command(client: Client, args: dict, log_type: str, last_run: dict) -> tuple[list, CommandResults]:
     """
-
     Args:
         limit: The maximum number of logs to return.
         to_date: date to fetch events from.
         from_date: date to fetch events to.
         client: Client object.
-
+        last_run: Dictionary containing the last fetch timestamps for different log types.
     Returns:
         Sign on logs from Workday.
     """
@@ -194,7 +193,7 @@ def get_events_command(client: Client, args: dict, log_type: str, last_run: dict
         from_date = arg_from
     else:
         from_date = initialize_from_date(last_run, log_type)
-        
+
     offset = args.get("offset", 0)
     limit = get_limit(args, client, log_type)
     logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)

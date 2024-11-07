@@ -12,7 +12,7 @@ This integration was integrated and tested with Vancouver version of ServiceNow 
 | Client Secret |  | False |
 | ServiceNow API Version (e.g., 'v1') |  | False |
 | Use OAuth Login | Select this checkbox to use OAuth 2.0 authentication. | False |
-| Event Types To Fetch | Event types to fetch. Default is Audit. | False |
+| Event Types To Fetch | Event types to fetch. defaults to 'Audit' if no type is specified. | False |
 | Maximum audit events to fetch | Maximum number of audit events per fetch. Recommended 10000. | False |
 | Maximum syslog transactions events to fetch | Maximum number of syslog transactions events per fetch. Recommended 10000. | False |
 | Events Fetch Interval |  | False |
