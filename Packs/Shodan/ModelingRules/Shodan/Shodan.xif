@@ -1,0 +1,15 @@
+[MODEL:dataset = "shodan_banner_raw"]
+  alter
+    exclude_triggers = if(json_extract(to_json_string(triggers), "$.any") != null and json_extract(to_json_string(triggers), "$.any.ignore")!=null,
+    json_extract_array(triggers, "$.any.ignore"),
+    arraycreate(to_json_string(null))),
+    internal_ipv4 = arrayindex(regextract(json_extract(filters,"$.ip"),"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+| alter
+    xdm.alert.name = name,
+    xdm.event.is_completed = has_triggers,
+    xdm.event.description = if(has_triggers=false, "missing triggers to complete the configuration of alert", "alert activate"),
+    xdm.observer.vendor = _vendor,
+    xdm.observer.product = _product,
+    xdm.target.host.ipv4_addresses = arraycreate(internal_ipv4),
+    xdm.target.user.groups = arraycreate(replex(object_create("exclude",exclude_triggers),"[\\\"\[\]]","")),
+    xdm.event.type = "NETWORK";
