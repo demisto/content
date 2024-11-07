@@ -420,10 +420,9 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     if ((!file_name) && (!entryID)) {
         throw 'Either file_name or entry_id argument must be provided.';
     }
-    var fileId = '';
     if ((!entryID)) {
-        fileId = saveFile(file_content);
-        response = uploadFile(incident_id, fileId);
+        entryID = saveFile(file_content);
+        response = uploadFile(incident_id, entryID);
     } else {
         if (file_name === undefined) {
             file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
@@ -435,14 +434,12 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
                 file_name = undefined;
             }
         }
-        response_multi= sendMultipart(`/incident/upload/${incident_id}`,entryID,'{}');
-        return `The file ${entryID} uploaded successfully to incident ${incident_id}. `;
-        }
+        response_multi = sendMultipart(`/incident/upload/${incident_id}`,entryID,'{}');
+    }
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
-    fileId = file_name ? fileId : entryID;
     return {
         Type: entryTypes.file,
-        FileID: fileId,
+        FileID: entryID,
         File: file_name,
         Contents: file_content,
         HumanReadable: md
