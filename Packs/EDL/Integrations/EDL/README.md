@@ -40,7 +40,7 @@ For Cortex XSOAR SAAS -
 `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
 
 
-For Cortex XSOAR On Prem - 
+For Cortex XSOAR On-prem - 
 `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
 
 
@@ -193,7 +193,7 @@ For Cortex XSOAR 8 On-prem, you need to add the following DNS records:
 - ext-FQDN - The Cortex XSOAR DNS name mapped to the external IP address. For example, `ext-xsoar.mycompany.com`.
 - API-FQDN - The Cortex XSOAR DNS name mapped to the API IP address. For example, `api-xsoar.mycompany.com`.
   
-For Cortex XSOAR 8 and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
+For Cortex XSOAR 8 SAAS and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
 - On a tenant, use https://ext-<cortex-xsoar-address\>/xsoar/instance/execute/\<instance-name\>
    
   For example: curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01\?q\=type:ip
