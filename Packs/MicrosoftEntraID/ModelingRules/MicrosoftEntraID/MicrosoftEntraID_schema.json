@@ -1,5 +1,9 @@
 {
   "msft_azure_raw": {
+    "identity": {
+        "type": "string",
+        "is_array": false
+    },
     "resourceId": {
         "type": "string",
         "is_array": false
