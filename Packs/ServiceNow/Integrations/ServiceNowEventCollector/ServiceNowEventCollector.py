@@ -274,7 +274,7 @@ def main() -> None:  # pragma: no cover
     password = credentials.get("password")
     max_fetch_audit = arg_to_number(params.get("max_fetch")) or 1000
     max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 1000
-    event_types_to_fetch = argToList(params.get('event_types_to_fetch', ['Audit']))
+    event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
     log_types = handle_log_types(event_types_to_fetch)
 
     version = params.get("api_version")
