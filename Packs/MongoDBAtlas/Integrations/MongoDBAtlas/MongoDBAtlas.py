@@ -32,7 +32,7 @@ class Client(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify, headers=headers, auth=auth)
 
-    def get_alerts(self, page_num, items_per_page):
+    def get_alerts_with_page_num(self, page_num, items_per_page):
         """
         Fetch a paginated list of alerts from the service API.
 
@@ -43,19 +43,13 @@ class Client(BaseClient):
         Returns:
             dict: A dictionary containing the paginated list of alerts and metadata such as total count.
         """
-        try:
-            results = self._http_request(
-                method="GET",
-                url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts?pageNum={page_num}&itemsPerPage={items_per_page}",
-                # url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts"
-            )
-        except Exception as e:
-            demisto.debug(f'This is the error from get_alerts client function {e}')
-            raise e
-
+        results = self._http_request(
+            method="GET",
+            url_suffix=f"/api/atlas/v2/groups/{self.group_id}/alerts?pageNum={page_num}&itemsPerPage={items_per_page}",
+        )
         return results
 
-    def get_events(self, page_num, items_per_page):
+    def get_events_with_page_num(self, page_num, items_per_page):
         """
         Fetch a paginated list of events from the service API.
 
@@ -66,37 +60,38 @@ class Client(BaseClient):
         Returns:
             dict: A dictionary containing the paginated list of events and metadata such as total count.
         """
-        try:
-            results = self._http_request(
-                method="GET",
-                url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events?pageNum={page_num}&itemsPerPage={items_per_page}",
-            )
-            return results
-        except Exception as e:
-            demisto.debug(f'This is the error from get_events client function {e}')
-            raise e
+        results = self._http_request(
+            method="GET",
+            url_suffix=f"/api/atlas/v2/groups/{self.group_id}/events?pageNum={page_num}&itemsPerPage={items_per_page}",
+        )
+        return results
 
     def get_response_from_page_link(self, page_link: str):
-        try:
-            results = self._http_request(
-                method="GET",
-                full_url=page_link
-            )
-            return results
-        except Exception as e:
-            demisto.debug(f'This is the error from get_response_from_page_link client function {e}')
-            raise e
+        results = self._http_request(
+            method="GET",
+            full_url=page_link
+        )
+        return results
 
+    def get_events_with_min_time(self, min_time: str):
+        results = self._http_request(
+            method="GET",
+            url_suffix=f"/api/atlas/v2/groups/{client.group_id}/events?minDate={min_time}",
+        )
+        return results
+    
     def first_time_fetch_events(self, event_type: str):
+        #TODO to change items_per_page=500
         if event_type == 'alerts':
-            return self.get_alerts(page_num=1, items_per_page=10)
+            return self.get_alerts_with_page_num(page_num=1, items_per_page=10)
         elif event_type == 'events':
-            return self.get_events(page_num=1, items_per_page=100)
+            return self.get_events_with_page_num(page_num=1, items_per_page=100)
         return None
 
-
+    
 ''' HELPER FUNCTIONS '''
 
+################ ALERTS AND EVENTS FUNCTIONS ################
 
 def add_entry_status_field(event: dict):
     """
@@ -111,20 +106,6 @@ def add_entry_status_field(event: dict):
         event['_entry_status'] = 'new'
     elif updated > created:
         event['_entry_status'] = 'updated'
-
-
-def remove_events_by_ids(events: list, ids: list):
-    """
-    Removes events from a list based on specified IDs.
-
-    Args:
-        events (list): A list of event dictionaries, each containing an "id" key.
-        ids (list): A list of IDs to be removed from the events list.
-
-    Returns:
-        list: A filtered list of events excluding any events with IDs in the provided ids list.
-    """
-    return [event for event in events if event["id"] not in ids]
 
 
 def get_next_url(links: list):
@@ -159,44 +140,6 @@ def get_self_url(links: list):
     return None
 
 
-def get_page_from_last_run(client: Client, page_link: str, event_type: str):
-    """
-    Retrieves events based on the last fetched page link or performs an initial fetch.
-
-    Args:
-        client (Client): MongoDB Atlas client.
-        page_link (str): The URL of the last fetched page, if available.
-        event_type (str): The type of events to fetch if starting from the first page.
-
-    Returns:
-        dict: The API response containing events data.
-    """
-    if page_link:
-        demisto.debug(f'Getting a response from the saved page {page_link}')
-        response = client.get_response_from_page_link(page_link)
-    else:
-        demisto.debug('Initialize the first page')
-        response = client.first_time_fetch_events(event_type)
-    return response
-
-
-def update_last_run_with_self_url(links, last_page_events_ids):
-    """
-    Updates the last_run dictionary with the current page's self URL and event IDs.
-
-    Args:
-        links (list): Current page links for pagination.
-        last_page_events_ids (list): IDs of events on the last processed page.
-
-    Returns:
-        dict: Updated last_run dictionary.
-    """
-    return {
-        'page_link': get_self_url(links),
-        'last_page_events_ids': last_page_events_ids
-    }
-
-
 def add_time_field(event: dict):
     """
     Adds a `_time` field to an event based on its updated or created time.
@@ -222,6 +165,120 @@ def enrich_event(event, event_type):
     add_time_field(event)
     if event_type == 'alerts':
         add_entry_status_field(event)
+        
+
+################ ALERTS FUNCTIONS ################
+
+
+def remove_alerts_by_ids(alerts: list, ids: list):
+    """
+    Removes alerts from a list based on specified IDs.
+
+    Args:
+        alerts (list): A list of alert dictionaries, each containing an "id" key.
+        ids (list): A list of IDs to be removed from the alerts list.
+
+    Returns:
+        list: A filtered list of alerts excluding any alerts with IDs in the provided ids list.
+    """
+    return [alert for alert in alerts if alerts["id"] not in ids]
+
+
+def get_page_from_last_run_for_alerts(client: Client, page_link: str):
+    """
+    Retrieves alerts based on the last fetched page link or performs an initial fetch.
+
+    Args:
+        client (Client): MongoDB Atlas client.
+        page_link (str): The URL of the last fetched page, if available.
+
+    Returns:
+        dict: The API response containing alerts data.
+    """
+    if page_link:
+        demisto.debug(f'Getting a response from the saved page {page_link}')
+        response = client.get_response_from_page_link(page_link)
+    else:
+        demisto.debug('Initialize the first page')
+        response = client.first_time_fetch_events('alerts')
+    return response
+
+
+def create_last_run_dict_for_alerts(links, last_page_alerts_ids):
+    """
+    Updates the last_run dictionary with the current page's self URL and event IDs.
+
+    Args:
+        links (list): Current page links for pagination.
+        last_page_alerts_ids (list): IDs of alerts on the last processed page.
+
+    Returns:
+        dict: Updated last_run dictionary.
+    """
+    return {
+        'page_link': get_self_url(links),
+        'last_page_alerts_ids': last_page_alerts_ids
+    }
+
+
+def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict):
+    """
+    Fetches events or alerts until fetch_limit is reached, or no more events are available.
+
+    Args:
+        client (Client): MongoDBAtlas client.
+        fetch_limit: The maximum number of events to fetch.
+        last_run (dict): Dictionary containing data from the previous run.
+        event_type: The event type, can be 'alerts' or 'events'.
+
+    Returns:
+        A list containing all fetched events or alerts.
+    """
+
+    demisto.debug('Start to fetch alerts')
+    response = get_page_from_last_run_for_alerts(client, last_run.get('page_link'))  # get the last page or get the first page
+    links = response.get('links')
+    results = response.get('results')
+
+    last_page_alerts_ids = last_run.get('last_page_alerts_ids', [])
+    
+    events = remove_alerts_by_ids(results, last_page_alerts_ids)
+    demisto.debug(f'Those are the events ids from the last run {last_page_alerts_ids}')
+    current_fetched_events_amount = 0
+    output = []
+
+    while current_fetched_events_amount <= fetch_limit:
+        for event in events:
+            # running on the current page
+            enrich_event(event, 'alerts')
+            output.append(event)
+            demisto.debug(f'Appending event with id {event.get("id")} from type alerts')
+            last_page_alerts_ids.append(event.get('id'))
+            current_fetched_events_amount += 1
+
+            if current_fetched_events_amount == fetch_limit:
+                # the limit is reached, save the current page and the ids.
+                last_run_new_dict = create_last_run_dict_for_alerts(links, last_page_alerts_ids)
+                demisto.debug(f'The limit is reached. Amount of fetched alerts is {len(output)}')
+                return output, last_run_new_dict
+
+        next_url = get_next_url(links)
+        if next_url:
+            # change to the next page and start again
+            response = client.get_response_from_page_link(next_url)
+            events = response.get('results')
+            links = response.get('links')
+            last_page_alerts_ids.clear()
+        else:
+            # no more pages left, exit the loop
+            break
+
+    demisto.debug(f'No alerts are left to fetch. Amount of fetched alerts is {len(output)}')
+    last_run_new_dict = create_last_run_dict_for_alerts(links, last_page_alerts_ids)
+    return output, last_run_new_dict
+
+
+################ EVENTS FUNCTIONS ################
 
 
 def get_previous_page(links):
@@ -253,26 +310,49 @@ def get_latest_date(date1: str, date2: str) -> str:
     return date1 if dt1 >= dt2 else date2
 
 
-def add_second_to_date(date: str):
+def add_second_to_date(date: str) -> str:
+    #TODO if not used - to delete
     date_plus_one_second = datetime.strptime(date, DATE_FORMAT) + timedelta(seconds=1)
     return date_plus_one_second.strftime(DATE_FORMAT)
 
 
-def get_last_page_of_events(client: Client, results: list):
+def get_last_page_of_events(client: Client, results):
     links = results.get('links')
     next_url = get_next_url(links)
-    self_url = get_self_url(links)
+    last_response = results
+
     while next_url:
-        response = client.get_response_from_page_link(next_url)
-        links = response.get('links')
+        last_response = client.get_response_from_page_link(next_url)
+        links = last_response.get('links')
         next_url = get_next_url(links)
-        self_url = get_self_url(links)
+
+    return last_response
+
+
+def save_events_ids_with_specific_created_date(events: list, created_date: str) -> list:
+    results = []
+    for event in events:
+        if event.get('created') == created_date:
+            results.append(event.get('id'))
+    return results
+
+
+def get_page_with_min_time_for_events(client, min_time):
+    if min_time:
+        results = client.get_events_with_min_time(min_time)
+    else:
+        results = client.first_time_fetch_events('events')
+    return results
+
+
+def create_last_run_dict_for_events(output, new_min_time):
+    events_with_created_min_time = save_events_ids_with_specific_created_date(output, new_min_time)
+    return {'min_time': new_min_time,
+            'events_with_created_min_time': events_with_created_min_time
+            }
     
-    response = client.get_response_from_page_link(self_url)
-    return response
-
-
-def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
+    
+def fetch_event_type(client: Client, fetch_limit: int, last_run: dict):
     """
     Fetches events or alerts until fetch_limit is reached, or no more events are available.
 
@@ -280,20 +360,16 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_typ
         client (Client): MongoDBAtlas client.
         fetch_limit: The maximum number of events to fetch.
         last_run (dict): Dictionary containing data from the previous run.
-        event_type: The event type, can be 'alerts' or 'events'.
 
     Returns:
         A list containing all fetched events or alerts.
     """
+    
     min_time = last_run.get('min_time')
-    if min_time:
-        results = client._http_request(
-            method="GET",
-            url_suffix=f"/api/atlas/v2/groups/{client.group_id}/events?minDate={min_time}",
-        )
-    else:
-        results = client.first_time_fetch_events(event_type)
-        
+    events_with_created_min_time = last_run.get('events_with_created_min_time', [])
+    demisto.debug(f'Start to fetch events with {min_time}')
+
+    results = get_page_with_min_time_for_events(client, min_time)
     response = get_last_page_of_events(client, results)
     links = response.get('links')
     events = response.get('results')
@@ -303,23 +379,25 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_typ
     new_min_time = min_time
 
     while current_fetched_events_amount <= fetch_limit:
-        for event in events:
+        for event in reversed(events):
+            if event.get('id') in events_with_created_min_time:
+                continue
             # running on the current page
-            enrich_event(event, event_type)
+            enrich_event(event, 'events')
             output.append(event)
-            demisto.debug(f'Appending event with id {event.get("id")} from type {event_type}')
+            demisto.debug(f'Appending event with id {event.get("id")} from type events')
             current_fetched_events_amount += 1
             new_min_time = get_latest_date(new_min_time, event.get('created'))
 
             if current_fetched_events_amount == fetch_limit:
                 # the limit is reached, save the last created time.
                 demisto.debug(f'The limit is reached. Amount of fetched events is {len(output)}')
-                add_second_to_date(new_min_time)
-                return output, new_min_time
+                new_last_run_obj = create_last_run_dict_for_events(output, new_min_time)
+                return output, new_last_run_obj
 
         previous_page = get_previous_page(links)
         if previous_page:
-            # change to the next page and start again
+            # change to the previous page and start again
             response = client.get_response_from_page_link(previous_page)
             events = response.get('results')
             links = response.get('links')
@@ -328,64 +406,8 @@ def fetch_event_type(client: Client, fetch_limit: int, last_run: dict, event_typ
             break
 
     demisto.debug(f'No events are left to fetch. Amount of fetched events is {len(output)}')
-    add_second_to_date(new_min_time)
-    return output, new_min_time
-
-
-def fetch_alert_type(client: Client, fetch_limit: int, last_run: dict, event_type: str):
-    """
-    Fetches events or alerts until fetch_limit is reached, or no more events are available.
-
-    Args:
-        client (Client): MongoDBAtlas client.
-        fetch_limit: The maximum number of events to fetch.
-        last_run (dict): Dictionary containing data from the previous run.
-        event_type: The event type, can be 'alerts' or 'events'.
-
-    Returns:
-        A list containing all fetched events or alerts.
-    """
-
-    response = get_page_from_last_run(client, last_run.get('page_link'), event_type)  # get the last page or get the first page
-    links = response.get('links')
-    results = response.get('results')
-
-    last_page_events_ids = last_run.get('last_page_events_ids', [])
-    
-    events = remove_events_by_ids(results, last_page_events_ids)
-    demisto.debug(f'Those are the events ids from the last run {last_page_events_ids}')
-    current_fetched_events_amount = 0
-    output = []
-
-    while current_fetched_events_amount <= fetch_limit:
-        for event in events:
-            # running on the current page
-            enrich_event(event, event_type)
-            output.append(event)
-            demisto.debug(f'Appending event with id {event.get("id")} from type {event_type}')
-            last_page_events_ids.append(event.get('id'))
-            current_fetched_events_amount += 1
-
-            if current_fetched_events_amount == fetch_limit:
-                # the limit is reached, save the current page and the ids.
-                last_run_new_dict = update_last_run_with_self_url(links, last_page_events_ids)
-                demisto.debug(f'The limit is reached. Amount of fetched alerts is {len(output)}')
-                return output, last_run_new_dict
-
-        next_url = get_next_url(links)
-        if next_url:
-            # change to the next page and start again
-            response = client.get_response_from_page_link(next_url)
-            events = response.get('results')
-            links = response.get('links')
-            last_page_events_ids.clear()
-        else:
-            # no more pages left, exit the loop
-            break
-
-    demisto.debug(f'No alerts are left to fetch. Amount of fetched alerts is {len(output)}')
-    last_run_new_dict = update_last_run_with_self_url(links, last_page_events_ids)
-    return output, last_run_new_dict
+    new_last_run_obj = create_last_run_dict_for_events(output, new_min_time)
+    return output, new_last_run_obj
 
 
 ''' COMMAND FUNCTIONS '''
@@ -420,8 +442,8 @@ def fetch_events(client: Client, fetch_limit: int):
     last_run_alerts = last_run.get('alerts', {})
     last_run_events = last_run.get('events', {})
 
-    # alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run_alerts, 'alerts')
-    events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run_events, 'events')
+    # alerts_output, last_run_alerts = fetch_alert_type(client, fetch_limit, last_run_alerts)
+    events_output, last_run_events = fetch_event_type(client, fetch_limit, last_run_events)
     last_run_alerts = {}
     alerts_output = []
     
