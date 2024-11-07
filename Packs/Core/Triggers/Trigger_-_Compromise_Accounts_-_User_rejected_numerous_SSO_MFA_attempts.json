@@ -1,9 +1,9 @@
 {
-    "trigger_id": "c149f533c479df50eef90a4e414c6f21",
+    "trigger_id": "06204982132beae5cc9b8fb800eb3804",
     "playbook_id": "Compromise Accounts - User rejected numerous SSO MFA attempts",
     "suggestion_reason": "Recommended for Compromise Accounts alerts triggered by multiple MFA rejections.",
     "description": "This trigger is responsible for handling Compromise Accounts alerts where user rejected MFA attempts.",
-    "trigger_name": "Compromise Accounts - User rejected numerous SSO MFA attempts",
+    "trigger_name": "Compromise Accounts - User rejected numerous SSO MFA attempts ",
     "fromVersion": "8.8.0",
     "alerts_filter":
     {
