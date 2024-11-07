@@ -29,6 +29,11 @@ configuration:
   - EU
   - AP
   - UK
+  - CA 
+  - FR
+  - AU
+  - IN 
+  - JP
   required: false
 - display: Data profiles to allow exemption
   name: dlp_exemptible_list

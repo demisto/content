@@ -18,3 +18,4 @@
 !zoom-send-message user_id=userid message="message" to_contact=example@example.com
 !zoom-update-message user_id=userid message="message2" to_contact=example@example.com message_id=messageid
 !zoom-delete-message user_id=userid to_contact=example@example.com message_id=messageid
+!zoom-delete-user-token user_id=userid

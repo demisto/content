@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-from google.cloud import storage
+from google.cloud import storage  # type: ignore[attr-defined]
 from typing import Any
 import requests
 import traceback
@@ -445,6 +445,24 @@ def gcs_delete_bucket_policy(client, default_bucket, args):
     })
 
 
+def gcs_block_public_access_bucket(client, default_bucket, args):
+    public_access_prevention = args.get('public_access_prevention', 'enforced')
+
+    if public_access_prevention not in ['enforced', 'inherited']:
+        raise ValueError('Invalid value for public_access_prevention. Accepted values are "enforced" and "inherited".')
+
+    bucket_name = get_bucket_name(args, default_bucket)
+    bucket = client.get_bucket(bucket_name)
+    bucket.iam_configuration.public_access_prevention = public_access_prevention
+    bucket.patch()
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': f'Public access prevention is set to {public_access_prevention} for {bucket_name}.'
+    })
+
+
 ''' Object policy (ACL) '''
 
 
@@ -594,6 +612,9 @@ def main():
 
         elif command == 'gcs-delete-bucket-policy':
             gcs_delete_bucket_policy(client, default_bucket, args)
+
+        elif command == 'gcs-block-public-access-bucket':
+            gcs_block_public_access_bucket(client, default_bucket, args)
 
         #
         # Object policy (ACL)

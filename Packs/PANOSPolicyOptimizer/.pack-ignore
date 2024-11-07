@@ -1,2 +1,11 @@
 [known_words]
 deprecated
+
+[file:playbook-Policy_Optimizer_-_Manage_Rules_with_Unused_Applications.yml]
+ignore=GR107
+
+[file:playbook-Policy_Optimizer_-_Manage_Port_Based_Rules.yml]
+ignore=GR107
+
+[file:playbook-Policy_Optimizer_-_Manage_Unused_Rules.yml]
+ignore=GR107

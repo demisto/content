@@ -1,8 +1,10 @@
 [file:PaloAlto_TrapsESM_Beta.yml]
 ignore=IN110,IN109,BA108,BA109,BA124
 
+# GR103 is temporary, see CIAC-11705
 [file:layoutscontainer-Traps.json]
-ignore=BA101
+ignore=BA101,GR103
+
 
 [file:PaloAltoNetworks_Traps.yml]
 ignore=BA108,BA109
@@ -10,3 +12,5 @@ ignore=BA108,BA109
 [file:README.md]
 ignore=RM104
 
+[file:incidenttype-Traps.json]
+ignore=GR107

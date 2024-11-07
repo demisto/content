@@ -906,10 +906,10 @@ script:
     - description: "The unique ID of the cluster.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_id
       required: true
-    - description: "The snapshot ID.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
+    - description: "The CDM snapshot ID.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command.\nUse the \"rubrik-radar-suspicious-file-list\" command to retrieve the actual CDM ID from the Anomaly ID.\nExample format to get the snapshot CDM ID from Anomaly ID: \"<Cluster-ID>:::VirtualMachine:::<Snappable-ID>:::<CDM-ID>\"."
       name: snapshot_id
       required: true
-    - description: "The VM object ID.\n\nNote: Users can retrieve the list of object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
+    - description: "The VM object ID (Snappable ID).\n\nNote: Users can retrieve the list of Snappable IDs by executing the \"rubrik-polaris-vm-objects-list\" command.\nExample format to get the Snappable ID: \"VirtualMachine:::<Snappable-ID>\"."
       name: object_id
       required: true
     description: Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
@@ -3060,7 +3060,7 @@ script:
     - contextPath: RubrikPolaris.SuspiciousFile.__typename
       description: 'The type name of the suspicious file response.'
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.92981
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.108068
   isfetch: true
   runonce: false
   script: '-'

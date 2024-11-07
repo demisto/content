@@ -44,6 +44,7 @@ configuration:
   - Sharepoint
   - Skype
   - All
+  - MEM
   section: Connect
 - defaultvalue: 'false'
   display: Allow Germany
@@ -170,7 +171,7 @@ script:
       - Both
     description: Gets indicators from the feed.
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.11.9.107902
+  dockerimage: demisto/python3:3.11.10.111039
   feed: true
   runonce: false
   script: '-'

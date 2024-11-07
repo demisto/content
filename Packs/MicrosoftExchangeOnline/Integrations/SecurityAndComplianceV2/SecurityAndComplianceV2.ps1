@@ -640,7 +640,7 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
-                        [string[]]$exchange_location_exclusion, [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
+                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
 
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearch")
@@ -652,7 +652,6 @@ class SecurityAndComplianceClient {
             "Description" = $description
             "AllowNotFoundExchangeLocationsEnabled" = $allow_not_found_exchange_locations
             "ExchangeLocation" = $exchange_location
-            "ExchangeLocationExclusion" = $exchange_location_exclusion
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
@@ -683,9 +682,6 @@ class SecurityAndComplianceClient {
 
             .PARAMETER exchange_location
             Mailboxes to include.
-
-            .PARAMETER exchange_location_exclusion
-            Mailboxes to exclude when you use the value "All" for the exchange_location parameter.
 
             .PARAMETER public_folder_location
             Whether to include all public folders in the search.
@@ -1526,7 +1522,6 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     # Command arguemnts parsing
     $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
     $exchange_location = ArgToList $kwargs.exchange_location
-    $exchange_location_exclusion = ArgToList $kwargs.exchange_location_exclusion
     $public_folder_location = ArgToList $kwargs.public_folder_location
     $share_point_location = ArgToList $kwargs.share_point_location
     $share_point_location_exclusion = ArgToList $kwargs.share_point_location_exclusion
@@ -1535,7 +1530,7 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     }
     # Raw response
     $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
-                                      $exchange_location, $exchange_location_exclusion, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"

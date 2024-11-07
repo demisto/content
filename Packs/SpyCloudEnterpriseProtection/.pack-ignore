@@ -1,2 +1,6 @@
 [file:SpyCloudEnterpriseProtectionFeed.yml]
 ignore=IN126
+
+# GR103 is temporary, see CIAC-11656
+[file:playbook-SpyCloudEnterpriseProtectionEnrichment_Test.yml]
+ignore=GR103

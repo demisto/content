@@ -44,27 +44,31 @@ def mock_client() -> Client:
 
 
 @pytest.mark.parametrize(
-    ("args", "settings", "jsonpath"),
+    ("args", "settings", "jsonpath", "query"),
     (
         (
             {"page": "0", "limit": 10, "query": "impact contains High"},
-            SEARCH_CONFIGURATIONS[SearchTypes.DEVICE],
+            SEARCH_CONFIGURATIONS[SearchTypes.DEVICE.value],
             "search_device.json",
+            "impact+contains+High",
         ),
         (
             {"page": "0", "limit": 10, "hostname": "test"},
-            SEARCH_CONFIGURATIONS[SearchTypes.DEVICE],
+            SEARCH_CONFIGURATIONS[SearchTypes.DEVICE.value],
             "search_device.json",
+            "hostname+contains+test",
         ),
         (
             {"page": "0", "limit": 10, "query": "test"},
-            SEARCH_CONFIGURATIONS[SearchTypes.DEVICE],
+            SEARCH_CONFIGURATIONS[SearchTypes.DEVICE.value],
             "search_device.json",
+            "test",
         ),
         (
             {"page": "0", "limit": 10, "query": "test"},
-            SEARCH_CONFIGURATIONS[SearchTypes.FINDING],
+            SEARCH_CONFIGURATIONS[SearchTypes.FINDING.value],
             "search_finding.json",
+            "test",
         ),
     ),
 )
@@ -74,6 +78,7 @@ def test_search_command(
     args: dict[str, Any],
     settings: SearchConfiguration,
     jsonpath: str,
+    query: str,
 ):
     """
     Scenario: Search for DataBee tables.
@@ -93,7 +98,7 @@ def test_search_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(
         mock_client._base_url,
-        f"/search/{settings.type}",
+        f"/search/{settings.type.value}?query={query}&offset=0&limit=10",
     )
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = search_command(mock_client, args, settings, [])
@@ -174,9 +179,9 @@ def test_parse_response():
 
     json_data = load_mock_response("search_device.json")
     result = parse_response(
-        type=SearchTypes.DEVICE,
+        type=SearchTypes.DEVICE.value,
         data=json_data["results"],
-        keys=SEARCH_CONFIGURATIONS[SearchTypes.DEVICE].output_keys,
+        keys=SEARCH_CONFIGURATIONS[SearchTypes.DEVICE.value].output_keys,
         additional_context=[],
     )
     assert "name" in list(result[0].keys())
@@ -254,17 +259,17 @@ def test_create_query(
     ("search_type", "args", "expected"),
     (
         (
-            SearchTypes.USER,
+            SearchTypes.USER.value,
             {"query": "I'm using query"},
             "I'm using query",
         ),
         (
-            SearchTypes.USER,
+            SearchTypes.USER.value,
             {"start_time": "2024-03-26T11:03:18Z", "end_time": "2024-03-27T11:03:18Z"},
             "start_time between 03/26/2024 11:03,03/27/2024 11:03",
         ),
         (
-            SearchTypes.USER,
+            SearchTypes.USER.value,
             {
                 "email_address": "test",
                 "full_name": "test",
@@ -283,7 +288,7 @@ def test_create_query(
             "email_addr contains test and full_name contains test and name contains test",
         ),
         (
-            SearchTypes.DEVICE,
+            SearchTypes.DEVICE.value,
             {
                 "email_address": "test",
                 "full_name": "test",
@@ -302,7 +307,7 @@ def test_create_query(
             "hostname contains test and mac contains test and name contains test and ip contains test",
         ),
         (
-            SearchTypes.FINDING,
+            SearchTypes.FINDING.value,
             {
                 "email_address": "test",
                 "full_name": "test",
@@ -386,8 +391,8 @@ def test_get_pagination_args(page: str, limit: str, page_size: str, excepted: tu
                 "severity": "high",
                 "impact": "low",
             },
-            "?query=start_time+between+03%2F19%2F2023+06%3A06%2C01%2F01%2F2024+00%3A00+and+metadata.product.name+in+databee+"
-            + "and+severity+contains+high+and+impact+contains+low",
+            "?query=start_time+between+03%2F19%2F2023+06%3A06%2C01%2F01%2F2024+00%3A00+and+metadata.product.name+in+databee+and"
+            + "+severity+contains+high+and+impact+contains+low",
         ),
     ),
 )
@@ -412,18 +417,18 @@ def test_fetch_incidents(
     json_response = load_mock_response("search_finding.json")
     url = urljoin(
         mock_client._base_url,
-        f"/search/{SearchTypes.FINDING}{query}&offset=0&limit=2",
+        f"/search/{SearchTypes.FINDING.value}{query}&offset=0&limit=2",
     )
     second_url = urljoin(
         mock_client._base_url,
-        f"/search/{SearchTypes.FINDING}{query}&offset=2&limit=2",
+        f"/search/{SearchTypes.FINDING.value}{query}&offset=2&limit=2",
     )
     second_json_response = load_mock_response("search_finding_empty.json")
 
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     requests_mock.get(second_url, json=second_json_response, status_code=HTTPStatus.OK)
 
-    incidents, last_run = fetch_incidents(
+    _, last_run = fetch_incidents(
         client=mock_client,
         args={},
         params=params,
