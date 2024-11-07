@@ -185,7 +185,7 @@ Get security events from Akamai WAF.
             },
             "HttpMessage": {
                 "Bytes": "296",
-                "Host": "wordpress.demisto.ninja",
+                "Host": "wordpress.panw.ninja",
                 "Method": "POST",
                 "Path": "/wp-cron.php",
                 "Port": "80",
@@ -228,7 +228,7 @@ Get security events from Akamai WAF.
             },
             "HttpMessage": {
                 "Bytes": "296",
-                "Host": "wordpress.demisto.ninja",
+                "Host": "wordpress.panw.ninja",
                 "Method": "POST",
                 "Path": "/wp-cron.php",
                 "Port": "80",
