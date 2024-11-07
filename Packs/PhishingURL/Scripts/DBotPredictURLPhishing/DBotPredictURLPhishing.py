@@ -682,7 +682,8 @@ def get_urls_to_run(
     urls = [item for item in urls if item not in mailto_urls]
 
     if mailto_urls:
-        return_results(CommandResults(readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_urls}'))
+        return_results(CommandResults(
+            readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_urls}'))
 
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
