@@ -543,7 +543,7 @@ def parse_query_args(args):
     if args.get('body'):
         query_xml = query_xml.replace('<text></text>', '<text>(body: ' + args.get('body') + ')</text>')
     if args.get('subject'):
-        query_xml = query_xml.replace('<text></text>', '<text>(subject: ' + args.get('subject') + ')</text>')
+        query_xml = query_xml.replace('<text></text>', '<text>subject: ' + args.get('subject') + '</text>')
     if args.get('text'):
         query_xml = query_xml.replace('<text></text>', '<text>' + args.get('text') + '</text>')
     if args.get('date'):
@@ -569,11 +569,21 @@ def parse_query_args(args):
         query_xml = query_xml.replace('<date select=\"last_year\"/>',
                                       '<date select=\"between\" to=\"' + date_to + '\" />')
 
+    sent_from = ""
+    sent_to = ""
     if args.get('sentFrom'):
-        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"from\" >' + args.get('sentFrom') + '</sent>')
+        sent_from = args.get('sentFrom')
     if args.get('sentTo'):
-        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"to\" >' + args.get('sentTo') + '</sent>')
+        sent_to = args.get('sentTo')
+    if sent_from and sent_to:
+        query_xml = query_xml.replace('<sent></sent>', f'<sent select=\"from\" >{sent_from}</sent>'
+                                                       f'<sent select=\"to\" >{sent_to}</sent>')
+    elif sent_from:
+        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"from\" >' + sent_from + '</sent>')
+    elif sent_to:
+        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"to\" >' + sent_to + '</sent>')
     query_xml = query_xml.replace('<sent></sent>', '')  # no empty tag
+
     if args.get('attachmentText'):
         query_xml = query_xml.replace('</docs>', args.get('attachmentText') + '</docs>')
     if args.get('attachmentType'):
