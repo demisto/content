@@ -381,7 +381,7 @@ def enrich_incidents(
 
     for field in fields_to_display:
         if field not in [CREATED_FIELD, STATUS_FIELD]:
-            incidents[field] = [incidents_map[inc_id][field] or "" for inc_id in incident_ids]
+            incidents[field] = [incidents_map[inc_id].get(field) or "" for inc_id in incident_ids]
     return incidents
 
 
