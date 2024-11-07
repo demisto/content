@@ -1,9 +1,4 @@
-
-#### Playbooks
-
-##### New: Compromise Accounts - User rejected numerous SSO MFA attempts
-
-- New: This playbook addresses the following alerts:
+This playbook addresses the following alerts:
 
 - User rejected numerous SSO MFA attempts
 - Multiple SSO MFA attempts were rejected by a user with suspicious characteristics
@@ -35,11 +30,50 @@ For any response actions, the following integrations is required:
 - Okta v2
 
 For early containment actions, the following integration is required:
-- Palo Alto Networks PAN-OS.<~XSIAM> (Available from Cortex XSIAM 2.4).</~XSIAM>
+- Palo Alto Networks PAN-OS.
 
+## Dependencies
 
-#### Triggers Recommendations
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-##### New: Compromise Accounts - User has rejected numerous SSO MFA attempts
+### Sub-playbooks
 
-- New: This trigger is responsible for handling Compromise Accounts alerts where user rejected MFA attempts.<~XSIAM> (Available from Cortex XSIAM 2.4).</~XSIAM>
+* Containment Plan - Clear User Sessions
+* PAN-OS - Block IP
+
+### Integrations
+
+* CoreIOCs
+* CortexCoreIR
+* CortexCoreXQLQueryEngine
+
+### Scripts
+
+* GetTime
+* SetAndHandleEmpty
+
+### Commands
+
+* closeInvestigation
+* core-get-cloud-original-alerts
+* core-list-risky-users
+* ip
+* okta-expire-password
+* okta-get-failed-logins
+* okta-suspend-user
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Compromise Accounts - User rejected numerous SSO MFA attempts](../doc_files/Compromise_Accounts_-_User_rejected_numerous_SSO_MFA_attempts.png)
