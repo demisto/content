@@ -36,17 +36,17 @@ Append `expirationStatus:active` to the end of the query.
 
 To view logs concerning the creation of the indicator list and its current status add the `/log` suffix to the list URL.
 
-<~XSOAR_SAAS>
+For Cortex XSOAR SAAS - 
 `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
-</~XSOAR_SAAS>
 
-<~XSOAR_ON_PREM>
+
+For Cortex XSOAR On Prem - 
 `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
-</~XSOAR_ON_PREM>
 
-<~XSIAM>
+
+For Cortex XSIAM - 
 `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
-</~XSIAM>
+
 
 ## Use Cases
 

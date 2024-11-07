@@ -1,6 +1,6 @@
-fromversion: 6.10.0
-id: SaasSecurityModelingRules
-name: SaasSecurityModelingRules
+name: Prisma SAAS Security Parsing Rule
+id: Prisma_SAAS_Security_ParsingRule
+fromversion: 8.4.0
+tags: []
 rules: ''
 samples: ''
-tags: []

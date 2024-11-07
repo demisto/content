@@ -5845,8 +5845,11 @@
         {
             "integrations": "netskope_api_v2",
             "playbookID": "Netskope_V2_Test"
+        },
+        {
+            "integrations": "DSPM",
+            "playbookID": "DSPM Test"
         }
-
     ],
     "skipped_tests": {
         "ThreatCrowd - Test": "The pack is deprecated",
@@ -6037,7 +6040,8 @@
         "Test_XFE_v2": "CRTX-112127",
         "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
         "Generic Webhook - Test": "CIAC-11234",
-        "Netskope_V2_Test": "No instance - developed by Qmasters"
+        "Netskope_V2_Test": "No instance - developed by Qmasters",
+        "IAMInitOktaUser - Test": "CIAC-12093"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
@@ -6173,7 +6177,8 @@
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
         "Aha": "No instance",
-        "SlackV2": "Integration slackV2 is deprecated."
+        "SlackV2": "Integration slackV2 is deprecated.",
+        "DSPM": "No instance"
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",
