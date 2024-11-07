@@ -4,6 +4,7 @@ If the port value is empty, a default port will be selected according to the dat
 - PostgreSQL: 5432
 - Microsoft SQL Server: 1433
 - Oracle: 1521
+- Teradata: 1025
 
 
 ## Connection Arguments

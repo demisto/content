@@ -771,7 +771,7 @@ def main():
             case 'aws-lambda-list-aliases':
                 list_aliases(args, aws_client)
             case 'aws-lambda-invoke':
-                invoke(args, aws_client)
+                return_results(invoke(args, aws_client))
             case 'aws-lambda-remove-permission':
                 remove_permission(args, aws_client)
             case 'aws-lambda-get-account-settings':

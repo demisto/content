@@ -168,6 +168,7 @@ def login():
                 f"Zscaler encountered an authentication error.\nError: {str(e)}"
             )
     ts, key = obfuscateApiKey(API_KEY)
+    add_sensitive_log_strs(key)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
     result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
@@ -892,7 +893,7 @@ def logout_command():
         )
     try:
         DEFAULT_HEADERS["cookie"] = session_id
-        raw_res = logout().json()
+        raw_res = logout()
     except AuthorizationError:
         return CommandResults(
             readable_output="API session is not authenticated. No action was performed."
@@ -904,7 +905,7 @@ def logout_command():
 
 
 def activate_command():
-    raw_res = activate_changes().json()
+    raw_res = activate_changes()
     return CommandResults(
         readable_output="Changes have been activated successfully.",
         raw_response=raw_res,
@@ -1304,6 +1305,9 @@ def delete_ip_destination_groups(args: dict):
 
 def main():  # pragma: no cover
     command = demisto.command()
+
+    add_sensitive_log_strs(USERNAME)
+    add_sensitive_log_strs(PASSWORD)
 
     demisto.debug(f"command is {command}")
     args = demisto.args()

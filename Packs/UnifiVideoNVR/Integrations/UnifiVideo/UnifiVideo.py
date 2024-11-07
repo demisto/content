@@ -37,7 +37,7 @@ if demisto.command() == 'unifivideo-get-camera-list':
 
 if demisto.command() == 'unifivideo-get-snapshot':
     camera_name = args.get('camera_name')
-    output = bytes()
+    output = b''
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     uva.get_camera(camera_name).snapshot("/tmp/snapshot.png")
     f = open("/tmp/snapshot.png", "rb")
@@ -140,7 +140,7 @@ if demisto.command() == 'unifivideo-get-snapshot-at-frame':
     try:
         file_result = demisto.getFilePath(entry_id)
     except Exception as ex:
-        return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex))
+        return_error(f"Failed to load file entry with entryid: {entry_id}. Error: {ex}")
 
     video_path = file_result.get("path")  # pylint: disable=E1101
     vc = cv2.VideoCapture(video_path)  # pylint: disable=E1101
