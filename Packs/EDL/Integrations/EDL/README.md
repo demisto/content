@@ -185,7 +185,7 @@ To access the Export Indicators service by instance name, make sure ***Instance 
  
 
 ### Access EDLs on Cortex XSOAR 8 and Cortex XSIAM
-EDLs running on a tenant in Cortex XSOAR 8 require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
+EDLs running on tenants in Cortex XSOAR 8 require basic authentication. EDLs running on engines do not require basic authentication, but it is recommended.  
 For more information on using certificates for authentication with EDLs in Cortex XSOAR 8 OPP, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate).  
 
 **Note:**  
