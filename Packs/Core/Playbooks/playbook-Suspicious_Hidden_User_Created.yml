@@ -1,8 +1,7 @@
-id: 5a625de2-6be6-4850-86db-2bedae394075
-version: 77
-vcShouldKeepItemLegacyProdMachine: false
+id: Suspicious Hidden User Created
+version: -1
 name: Suspicious Hidden User Created
-description: |
+description: |-
   This playbook addresses the following alerts:
 
   - Suspicious Hidden User Created
@@ -31,7 +30,7 @@ description: |
   For response actions, you need the following integrations:
 
   - Cortex Core - Investigation and Response
-  - Active Directory Query v2 (for domain user actions)
+  - Active Directory Query v2 (for domain user actions).
 tags:
 - T1136 - Create Account
 - 'T1564.002 - Hide Artifacts: Hidden Users'
@@ -47,6 +46,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -74,9 +74,7 @@ tasks:
       id: ff60deb2-4aef-459e-8866-d41eef9ec252
       version: -1
       name: Get event information for created user
-      description: Gets extra information about the alert - such as the information
-        from the event itself, the name of the user that was created, and additional
-        computed fields.
+      description: Gets extra information about the alert - such as the information from the event itself, the name of the user that was created, and additional computed fields.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
@@ -116,6 +114,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -178,9 +177,7 @@ tasks:
       id: 3e1146e5-c836-447b-8dd6-4a53c1e33a24
       version: -1
       name: Search related Script Engine Activity alerts
-      description: Searches for Script Engine Activity alerts in the current incident,
-        which could indicate malicious script activity related to the creation of
-        the user.
+      description: Searches for Script Engine Activity alerts in the current incident, which could indicate malicious script activity related to the creation of the user.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -237,6 +234,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -305,9 +303,7 @@ tasks:
       id: f4ffe67d-09b9-427e-83e6-3ea30cfda4ed
       version: -1
       name: Get AD user attributes
-      description: Retrieves information about the domain user, and specifically the
-        DONT_EXPIRE_PASSWORD attribute of the user, in order to understand if the
-        user's password was set to never expire.
+      description: Retrieves information about the domain user, and specifically the DONT_EXPIRE_PASSWORD attribute of the user, in order to understand if the user's password was set to never expire.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -392,6 +388,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -419,8 +416,7 @@ tasks:
       id: 6987961f-d243-48be-840a-fb263ed5d37c
       version: -1
       name: Save password expiration status
-      description: Saves the value of the AD attribute DONT_EXPIRE_PASSWORD for the
-        domain user that was created.
+      description: Saves the value of the AD attribute DONT_EXPIRE_PASSWORD for the domain user that was created.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -467,8 +463,7 @@ tasks:
       id: b4c6cb09-eaf2-4bcb-857d-cef36dc0c35d
       version: -1
       name: Retrieve local user password expiration status
-      description: Runs a Powershell code snipper on the endpoint where the user was
-        created, in order to retrieve the PASSWORDEXPIRES attribute of the local user.
+      description: Runs a Powershell code snipper on the endpoint where the user was created, in order to retrieve the PASSWORDEXPIRES attribute of the local user.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -520,9 +515,7 @@ tasks:
       id: 135ba6b9-09ce-4b11-889c-4d48c2beec81
       version: -1
       name: Evaluate suspicious process involvement
-      description: Checks whether a malicious process was detected in a related alert
-        in this incident, by checking the previously saved CIDToTerminate key which
-        holds the Causality IDs used to terminate the main process.
+      description: Checks whether a malicious process was detected in a related alert in this incident, by checking the previously saved CIDToTerminate key which holds the Causality IDs used to terminate the main process.
       type: condition
       iscommand: false
       brand: ""
@@ -569,6 +562,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -599,6 +593,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -629,6 +624,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -659,6 +655,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -686,8 +683,7 @@ tasks:
       id: 409ddefb-be6c-4bc1-8711-766fd39ebc3f
       version: -1
       name: User's password never expires & host risky?
-      description: Checks if the local/domain user's password never expires, and if
-        the risk level of the host where the alert occurred is HIGH.
+      description: Checks if the local/domain user's password never expires, and if the risk level of the host where the alert occurred is HIGH.
       type: condition
       iscommand: false
       brand: ""
@@ -868,8 +864,7 @@ tasks:
       id: debbbea1-ba6b-4627-8d3b-a22bcc475682
       version: -1
       name: Extract password expiration flag
-      description: Extracts and saves the PASSWORDEXPIRES value of the locally created
-        user from the results of the Powershell script execution.
+      description: Extracts and saves the PASSWORDEXPIRES value of the locally created user from the results of the Powershell script execution.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -916,8 +911,7 @@ tasks:
       id: 687fb3b9-6db4-4151-8e27-bc28a21f84a6
       version: -1
       name: Analyst review - disable suspicious user?
-      description: Manual - please review the findings and make a decision regarding
-        the remediation of the suspicious user.
+      description: Manual - please review the findings and make a decision regarding the remediation of the suspicious user.
       type: condition
       iscommand: false
       brand: ""
@@ -939,8 +933,8 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         complex:
           root: Core.OriginalAlert.event
@@ -955,8 +949,8 @@ tasks:
               suffix: {}
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1013,8 +1007,7 @@ tasks:
       id: 040c833c-b457-462c-817b-66b06e05c1ea
       version: -1
       name: Disable local user
-      description: Runs Powershell code on the affected host to disable the local
-        user on the machine.
+      description: Runs Powershell code on the affected host to disable the local user on the machine.
       script: '|||core-run-script-execute-commands'
       type: regular
       iscommand: true
@@ -1066,8 +1059,7 @@ tasks:
       id: 26ac1bd8-c555-4fe2-85f7-f93e90676d74
       version: -1
       name: Terminate process group
-      description: Kills the Causality Group Owner (CGO) of the process that created
-        the suspicious user.
+      description: Kills the Causality Group Owner (CGO) of the process that created the suspicious user.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -1122,8 +1114,7 @@ tasks:
       id: 1a940847-23dc-4a7c-82b8-248f4594e9f5
       version: -1
       name: Save causality ID
-      description: Saves the ID of the Causality Group Owner (CGO) if it exists in
-        the related alerts, in order to terminate it at the remediation stage.
+      description: Saves the ID of the Causality Group Owner (CGO) if it exists in the related alerts, in order to terminate it at the remediation stage.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1191,6 +1182,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -1218,9 +1210,7 @@ tasks:
       id: 5d9c74e6-5058-410a-827a-324c9144abfe
       version: -1
       name: Terminate process manually
-      description: Please investigate the alerts related to this incident, and terminate
-        the CGO (Causality Group Owner) process that caused the suspicious hidden
-        user to be created.
+      description: Please investigate the alerts related to this incident, and terminate the CGO (Causality Group Owner) process that caused the suspicious hidden user to be created.
       type: regular
       iscommand: false
       brand: ""
@@ -1268,3 +1258,6 @@ view: |-
 inputs: []
 outputs: []
 marketplaces: ["marketplacev2"]
+tests:
+- no tests
+fromversion: 6.10.0
