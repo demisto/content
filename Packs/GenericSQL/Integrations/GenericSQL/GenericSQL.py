@@ -675,18 +675,7 @@ def main():
             'sql-command': sql_query_execute
         }
         if command in commands:
-            command_results: list[CommandResults] = []
-            human_readable, outputs, raw = commands[command](client, demisto.args(), command)
-            result = CommandResults(readable_output=human_readable,
-                                    entry_type=entryTypes["note"],
-                                    outputs=outputs,
-                                    raw_response=raw,
-                                    ignore_auto_extract=False,
-                                    content_format=formats["text"] if isinstance(raw, STRING_TYPES) else formats['json']
-                                    )
-
-            command_results.append(result)
-            return_results(command_results)
+            return_outputs(*commands[command](client, demisto.args(), command))
 
         elif command == 'fetch-incidents':
             incidents, last_run = fetch_incidents(client, params)
