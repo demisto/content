@@ -1036,7 +1036,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.4.3.112114
+  dockerimage: demisto/py-ews:5.5.0.115394
   isfetch: true
   runonce: false
   script: '-'
