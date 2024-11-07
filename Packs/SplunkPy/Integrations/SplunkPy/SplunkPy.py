@@ -2688,10 +2688,15 @@ def splunk_submit_event_hec(
     }
     if request_channel:
         headers['X-Splunk-Request-Channel'] = request_channel
+    
+    if entry_id or batch_event_data:
+        data = events
+    else:
+        data = json.dumps(events)
         
     return requests.post(
         f'{baseurl}/services/collector/event',
-        data=json.dumps(events),
+        data=data,
         headers=headers,
         verify=VERIFY_CERTIFICATE,
     )
