@@ -176,7 +176,7 @@ def process_and_filter_events(events: list, previous_run_ids: set, from_date: st
 """ COMMAND METHODS """
 
 
-def get_events_command(client: Client, args: dict, log_type: str) -> tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict, log_type: str, last_run: dict) -> tuple[list, CommandResults]:
     """
 
     Args:
@@ -190,7 +190,11 @@ def get_events_command(client: Client, args: dict, log_type: str) -> tuple[list,
     """
     types_to_titles = {AUDIT: 'Audit', SYSLOG_TRANSACTIONS: 'Syslog Transactions'}
     all_events = []
-    from_date = args.get("from_date", "")
+    if arg_from := args.get("from_date"):
+        from_date = arg_from
+    else:
+        from_date = initialize_from_date(last_run, log_type)
+        
     offset = args.get("offset", 0)
     limit = get_limit(args, client, log_type)
     logs = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
@@ -274,7 +278,7 @@ def main() -> None:  # pragma: no cover
     password = credentials.get("password")
     max_fetch_audit = arg_to_number(params.get("max_fetch")) or 1000
     max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 1000
-    event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
+    event_types_to_fetch = argToList(params.get('event_types_to_fetch', ['Audit']))
     log_types = handle_log_types(event_types_to_fetch)
 
     version = params.get("api_version")
@@ -308,14 +312,16 @@ def main() -> None:  # pragma: no cover
             return_results(module_of_testing(client, log_types))
 
         elif command == "service-now-get-audit-logs":
-            audit_logs, results = get_events_command(client=client, args=args, log_type=AUDIT)
+            last_run = demisto.getLastRun()
+            audit_logs, results = get_events_command(client=client, args=args, log_type=AUDIT, last_run=last_run)
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", "true")):
                 send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
 
         elif command == "service-now-get-syslog-transactions":
-            syslog_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS)
+            last_run = demisto.getLastRun()
+            syslog_logs, results = get_events_command(client=client, args=args, log_type=SYSLOG_TRANSACTIONS, last_run=last_run)
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", "true")):

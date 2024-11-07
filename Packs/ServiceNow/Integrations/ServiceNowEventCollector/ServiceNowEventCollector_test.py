@@ -80,8 +80,10 @@ class TestFetchActivity:
         """
 
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 10}
+        last_run = {}  # Assuming no previous run data for this test case
         log_type = AUDIT
         mock_logs = [{"event_id": 1, "timestamp": "2023-01-01 01:00:00"}]
+
         http_responses = mocker.patch.object(
             Client,
             "search_events",
@@ -89,14 +91,19 @@ class TestFetchActivity:
         )
 
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
-        all_events, command_results = get_events_command(self.client, args, log_type)
+        all_events, command_results = get_events_command(self.client, args, log_type, last_run)
 
-        assert http_responses.call_args[1] == {"from_time": "2023-01-01T00:00:00Z",
-                                               "log_type": "audit", "limit": 10, "offset": 0, }
+        assert http_responses.call_args[1] == {
+            "from_time": "2023-01-01T00:00:00Z",
+            "log_type": "audit",
+            "limit": 10,
+            "offset": 0,
+        }
         assert len(all_events) == 1
         assert isinstance(command_results.readable_output, str)
         assert "Audit Events" in command_results.readable_output
         assert "Syslog Transactions Events" not in command_results.readable_output
+
 
     def test_get_events_command_empty_response(self, mocker):
         """
@@ -110,15 +117,17 @@ class TestFetchActivity:
             - Validates that the function returns an empty list and an appropriate human-readable output.
         """
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 10}
+        last_run = {}  # Assuming no previous run data for this test case
         log_type = AUDIT
         http_responses = mocker.patch.object(Client, "search_events", return_value=[])
 
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
-        all_events, command_results = get_events_command(self.client, args, log_type)
+        all_events, command_results = get_events_command(self.client, args, log_type, last_run)
 
         assert len(all_events) == 0
         assert http_responses.call_count == 1
         assert "No entries." in command_results.readable_output
+
 
     def test_get_events_command_large_limit(self, mocker):
         """
@@ -131,19 +140,60 @@ class TestFetchActivity:
         Then:
             - Validates that the function handles large limits without errors.
         """
-        from ServiceNowEventCollector import get_events_command
-
         args = {"from_date": "2023-01-01T00:00:00Z", "offset": 0, "limit": 1000}
+        last_run = {}  # Assuming no previous run data for this test case
         log_type = AUDIT
         mock_logs = [{"event_id": i, "timestamp": "2023-01-01 01:00:00"} for i in range(1000)]
+        
         http_responses = mocker.patch.object(Client, "search_events", return_value=mock_logs)
-
         mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
-        all_events, command_results = get_events_command(self.client, args, log_type)
+        all_events, command_results = get_events_command(self.client, args, log_type, last_run)
 
         assert len(all_events) == 1000
         assert "Audit Events" in command_results.readable_output
         assert http_responses.call_count == 1
+        
+    def test_get_events_command_with_last_run(self, mocker):
+        """
+        Test get_events_command when a last_run parameter is provided and 'from_date' is missing in args.
+
+        Given:
+            - A last_run dictionary with a previous 'from_date' value and arguments without 'from_date'.
+        When:
+            - Running the 'get_events_command' function to retrieve events.
+        Then:
+            - Validates that the function uses last_run's 'from_date' to initialize the search.
+        """
+        args = {"offset": 0, "limit": 10}
+        last_run = {"last_fetch_time": "2023-01-01T00:00:00Z"}
+        log_type = AUDIT
+        mock_logs = [{"event_id": 2, "timestamp": "2023-01-01 02:00:00"}]
+
+        http_responses = mocker.patch.object(
+            Client,
+            "search_events",
+            return_value=mock_logs
+        )
+
+        mocker.patch("ServiceNowEventCollector.add_time_field", return_value="")
+        mock_initialize_from_date = mocker.patch(
+            "ServiceNowEventCollector.initialize_from_date",
+            return_value="2023-01-01T00:00:00Z"
+        )
+
+        all_events, command_results = get_events_command(self.client, args, log_type, last_run)
+
+        mock_initialize_from_date.assert_called_once_with(last_run, log_type)
+        assert http_responses.call_args[1] == {
+            "from_time": "2023-01-01T00:00:00Z",
+            "log_type": "audit",
+            "limit": 10,
+            "offset": 0,
+        }
+        assert len(all_events) == 1
+        assert isinstance(command_results.readable_output, str)
+        assert "Audit Events" in command_results.readable_output
+
 
     def test_fetch_events_command_standard(self, mocker):
         """

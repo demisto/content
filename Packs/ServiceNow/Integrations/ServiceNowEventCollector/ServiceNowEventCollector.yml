@@ -38,7 +38,7 @@ configuration:
   name: event_types_to_fetch
   type: 16
   required: false
-  additionalinfo: 'Event types to fetch. Default is Audit.'
+  additionalinfo: Event types to fetch. defaults to 'Audit' if no type is specified.
   defaultvalue: 'Audit'
   options:
   - Audit
