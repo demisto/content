@@ -45,7 +45,6 @@ elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
     from elasticsearch.helpers import scan
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
-    from elastic_transport import RequestsHttpNode
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch7.helpers import scan
