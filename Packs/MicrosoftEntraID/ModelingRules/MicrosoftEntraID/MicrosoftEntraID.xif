@@ -168,6 +168,7 @@ alter
   check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem)),
   check_risk_level = coalesce(get_riskLevelDuringSignIn, get_riskLevelAggregated)
 | alter
+  xdm.logon.type = if(signInEventTypes ~= "interactive", XDM_CONST.LOGON_TYPE_INTERACTIVE, signInEventTypes ~= "refreshToken", XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS, signInEventTypes ~= "managedIdentity", XDM_CONST.LOGON_TYPE_BATCH, signInEventTypes ~= "continuousAccessEvaluation", XDM_CONST.LOGON_TYPE_BATCH, signInEventTypes ~= "nonInteractiveUser", XDM_CONST.LOGON_TYPE_NETWORK, signInEventTypes ~= "servicePrincipal", XDM_CONST.LOGON_TYPE_SERVICE, signInEventTypes = null, null, to_string(signInEventTypes)),
   xdm.alert.risks = if(array_length(to_integer(riskEventTypes_v2)) > 0, riskEventTypes_v2),
   xdm.event.duration = to_integer(ProcessingTimeInMilliseconds),
   xdm.source.host.ipv4_addresses = arraycreate(check_ipAddress_v4, check_ipAddressFromResourceProvider_v4),
