@@ -46,6 +46,18 @@
       }
   },
   "msft_azure_ad_raw": {
+    "originalRequestId": {
+        "type": "string",
+        "is_array": false
+    },
+    "ProcessingTimeInMilliseconds": {
+        "type": "string",
+        "is_array": false
+    },
+    "riskLevelDuringSignIn": {
+        "type": "string",
+        "is_array": false
+    },
     "ipAddress": {
         "type": "string",
         "is_array": false
