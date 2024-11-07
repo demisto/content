@@ -436,7 +436,7 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
         }
         response_multi = sendMultipart(`/incident/upload/${incident_id}`,entryID,'{}');
     }
-    var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
+    var md = `File ${file_name || entryID} uploaded successfully to incident ${incident_id}.`;
     return {
         Type: entryTypes.file,
         FileID: entryID,
