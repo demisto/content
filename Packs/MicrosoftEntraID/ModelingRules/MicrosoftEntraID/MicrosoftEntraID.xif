@@ -27,6 +27,7 @@ alter
 	xdm.source.cloud.region = location,
 	xdm.source.cloud.provider = if(1=1, XDM_CONST.CLOUD_PROVIDER_AZURE);
 
+
 [MODEL: dataset = msft_azure_raw]
 // AuditLogs mapping
 filter category = "AuditLogs"
