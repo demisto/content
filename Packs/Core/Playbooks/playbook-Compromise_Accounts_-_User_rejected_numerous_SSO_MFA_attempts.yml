@@ -35,6 +35,9 @@ description: |-
 
   For early containment actions, the following integration is required:
   - Palo Alto Networks PAN-OS.
+tags:
+- T1586 - Compromise Accounts
+- T1621 - Multi-Factor Authentication Request Generation
 starttaskid: "0"
 tasks:
   "0":
