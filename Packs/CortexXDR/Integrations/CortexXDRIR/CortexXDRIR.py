@@ -1012,28 +1012,32 @@ def update_remote_system_command(client, args):
 
     try:
         if parsed_args.incident_changed:
-            demisto.debug(
-                f'For incident ID: {parsed_args.remote_incident_id} got the following delta keys {str(list(parsed_args.delta.keys()))} to update.')
-            xsoar_to_xdr_delta = get_update_args(parsed_args)
-            demisto.debug(f"get_update_args after {xsoar_to_xdr_delta=}")
-            xsoar_to_xdr_delta['incident_id'] = parsed_args.remote_incident_id
+            if not parsed_args.delta:
+                demisto.error(f'update_remote_system_command: Skipping updating remote incident fields. '
+                              f'incident changed but no delta')
+            else:
+                demisto.debug(
+                    f'For incident ID: {parsed_args.remote_incident_id} got the following delta keys {str(list(parsed_args.delta.keys()))} to update.')
+                xsoar_to_xdr_delta = get_update_args(parsed_args)
+                demisto.debug(f"get_update_args after {xsoar_to_xdr_delta=}")
+                xsoar_to_xdr_delta['incident_id'] = parsed_args.remote_incident_id
 
-            should_close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
-            demisto.debug(f"update_remote_system_command: {should_close_xdr_incident=}")  # TODO: remove
-            if not should_close_xdr_incident:
-                demisto.debug(f"Reverting to previous status {parsed_args.data.get('status')} , {xsoar_to_xdr_delta=}")
-                xsoar_to_xdr_delta['status'] = parsed_args.data.get('status')
-            
-            update_incident_command(client, xsoar_to_xdr_delta)  # updating xdr with the delta
-            demisto.debug(f"update_remote_system_command: xdr updated. {xsoar_to_xdr_delta=}")  # TODO: remove {}
+                should_close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
+                demisto.debug(f"update_remote_system_command: {should_close_xdr_incident=}")  # TODO: remove
+                if not should_close_xdr_incident:
+                    demisto.debug(f"Reverting to previous status {parsed_args.data.get('status')} , {xsoar_to_xdr_delta=}")
+                    xsoar_to_xdr_delta['status'] = parsed_args.data.get('status')
 
-            should_close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-            demisto.debug(f"update_remote_system_command {should_close_alerts_in_xdr=}")  # TODO: remove
+                update_incident_command(client, xsoar_to_xdr_delta)  # updating xdr with the delta
+                demisto.debug(f"update_remote_system_command: xdr updated. {xsoar_to_xdr_delta=}")  # TODO: remove {}
 
-            # TODO: check when closing all alerts incident closed or not
-            if should_close_alerts_in_xdr and xsoar_to_xdr_delta.get('close_reason'):
-                update_related_alerts(client, xsoar_to_xdr_delta)
-                demisto.debug(f"update_remote_system_command: closed xdr alerts")
+                should_close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+                demisto.debug(f"update_remote_system_command {should_close_alerts_in_xdr=}")  # TODO: remove
+
+                # TODO: check when closing all alerts incident closed or not
+                if should_close_alerts_in_xdr and xsoar_to_xdr_delta.get('close_reason'):
+                    update_related_alerts(client, xsoar_to_xdr_delta)
+                    demisto.debug(f"update_remote_system_command: closed xdr alerts")
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] '
