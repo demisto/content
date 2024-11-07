@@ -601,7 +601,7 @@
 						"type": "relatedIncidents",
 						"w": 1,
 						"x": 0,
-						"y": 4
+						"y": 6
 					},
 					{
 						"h": 3,
@@ -613,7 +613,7 @@
 						"type": "comments",
 						"w": 1,
 						"x": 0,
-						"y": 6
+						"y": 8
 					},
 					{
 						"displayType": "ROW",
@@ -724,7 +724,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 2
+						"y": 4
 					},
 					{
 						"h": 1,
@@ -740,6 +740,20 @@
 						"w": 1,
 						"x": 0,
 						"y": 1
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-f46163e5-16cc-4663-8121-67a42edac2c1",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Verdict",
+						"static": false,
+						"type": "reputationSources",
+						"w": 1,
+						"x": 0,
+						"y": 2
 					}
 				],
 				"type": "custom"
