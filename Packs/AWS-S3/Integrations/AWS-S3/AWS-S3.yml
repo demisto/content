@@ -397,7 +397,7 @@ script:
       required: true
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     name: aws-s3-put-public-access-block
-  dockerimage: demisto/boto3py3:1.0.0.100496
+  dockerimage: demisto/boto3py3:1.0.0.115129
   runonce: false
   script: ''
   type: python
