@@ -2985,10 +2985,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: d8dce25e-2340-4844-88e3-e2549b4739c1
+    taskid: 28b796cd-2500-497f-898c-d0a69ea1789a
     type: condition
     task:
-      id: d8dce25e-2340-4844-88e3-e2549b4739c1
+      id: 28b796cd-2500-497f-898c-d0a69ea1789a
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the 'large upload HTTPS' Cortex XDR alerts.
@@ -3174,17 +3174,19 @@ tasks:
               complex:
                 root: PaloAltoNetworksXDR.RiskyUser
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: PaloAltoNetworksXDR.RiskyUser.id
                       iscontext: true
                     right:
                       value:
-                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user.username
+                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.user_id
                       iscontext: true
                     ignorecase: true
                 accessor: risk_level
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -3196,7 +3198,7 @@ tasks:
               complex:
                 root: PaloAltoNetworksXDR.RiskyHost
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: PaloAltoNetworksXDR.RiskyHost.id
@@ -3206,17 +3208,19 @@ tasks:
                         simple: PaloAltoNetworksXDR.Incident.alerts.host_name
                       iscontext: true
                     ignorecase: true
-                  - operator: isEqualString
+                  - operator: containsGeneral
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.RiskyHost.id
+                        simple: PaloAltoNetworksXDR.RiskyHost
                       iscontext: true
                     right:
                       value:
                         simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
                       iscontext: true
                     ignorecase: true
-                accessor: 'risk_level '
+                accessor: 'risk_level'
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -3388,20 +3392,16 @@ tasks:
               complex:
                 root: inputs.InternalIPRanges
             iscontext: true
-        - operator: isEqualString
+        - operator: inList
           left:
             value:
               complex:
                 root: PaloAltoNetworksXDR.Incident.alerts
                 filters:
-                - - operator: inList
+                - - operator: isNotEmpty
                     left:
                       value:
                         simple: PaloAltoNetworksXDR.Incident.alerts.host_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Analysis.FTP_Server
                       iscontext: true
                 - - operator: isEqualString
                     left:
@@ -3418,37 +3418,19 @@ tasks:
             iscontext: true
           right:
             value:
-              complex:
-                root: PaloAltoNetworksXDR.Endpoint
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AGENT_TYPE_SERVER
-                    ignorecase: true
-                accessor: endpoint_name
-                transformers:
-                - operator: uniq
+              simple: Analysis.FTP_Server
             iscontext: true
           ignorecase: true
-        - operator: isEqualString
+        - operator: inList
           left:
             value:
               complex:
                 root: PaloAltoNetworksXDR.Incident.alerts
                 filters:
-                - - operator: inList
+                - - operator: isNotEmpty
                     left:
                       value:
                         simple: PaloAltoNetworksXDR.Incident.alerts.host_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Analysis.SMTP_Server
                       iscontext: true
                     ignorecase: true
                 - - operator: isEqualString
@@ -3467,18 +3449,8 @@ tasks:
           right:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Endpoint
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AGENT_TYPE_SERVER
-                    ignorecase: true
-                accessor: endpoint_name
+                root: Analysis
+                accessor: SMTP_Server
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -3877,30 +3849,68 @@ tasks:
     isautoswitchedtoquietmode: false
   "115":
     id: "115"
-    taskid: 4c79791f-f37d-4426-8ad4-92be82ab9ae0
+    taskid: a133c78a-48df-4da8-823e-7bc50fbf50f1
     type: regular
     task:
-      id: 4c79791f-f37d-4426-8ad4-92be82ab9ae0
+      id: a133c78a-48df-4da8-823e-7bc50fbf50f1
       version: -1
       name: Set Indicator Relationships Analysis Results
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
+      scriptName: SetAndHandleEmpty
     nexttasks:
       '#none#':
       - "32"
     scriptarguments:
-      partofcampaign:
+      key:
+        simple: Investigation.IndicatorRelationshipsAnalysis
+      value:
         complex:
-          root: RelatedCampaign
+          root: RelatedAttackPatterns
           transformers:
-          - operator: uniq
-      relatedreport:
-        complex:
-          root: RelatedReport
-          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedCampaign
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedReport
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedFiles
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedDomains
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedIPs
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedURLs
+                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -3915,12 +3925,81 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Command Line
+    - incidentfield: Part of Campaign
       output:
-        simple: ${commandline.original}
-    - incidentfield: Command Line Verdict
+        complex:
+          root: RelatedCampaign
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RelatedCampaign
+                iscontext: true
+          transformers:
+          - operator: uniq
+    - incidentfield: Related Report
       output:
-        simple: Malicious
+        complex:
+          root: RelatedReport
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RelatedReport
+                iscontext: true
+          transformers:
+          - operator: uniq
+    - incidentfield: Additional Indicators
+      output:
+        complex:
+          root: RelatedFiles
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RelatedFiles
+                iscontext: true
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: RelatedDomains
+                iscontext: true
+              raw:
+                value:
+                  simple: "false"
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: RelatedIPs
+                iscontext: true
+              raw:
+                value:
+                  simple: "false"
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: RelatedURLs
+                iscontext: true
+              raw:
+                value:
+                  simple: "false"
+          - operator: uniq
+    - incidentfield: Attack Patterns
+      output:
+        complex:
+          root: RelatedAttackPatterns
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RelatedAttackPatterns
+                iscontext: true
+          transformers:
+          - operator: uniq
     skipunavailable: false
     quietmode: 0
     isoversize: false

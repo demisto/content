@@ -1,8 +1,8 @@
-from urllib.parse import quote
 import binascii
 import uuid
-from MicrosoftApiModule import *  # noqa: E402
+from urllib.parse import quote
 
+from MicrosoftApiModule import *  # noqa: E402
 
 API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -1267,23 +1267,60 @@ class GraphMailUtils:
         return 1
 
     @staticmethod
-    def item_result_creator(raw_attachment, user_id) -> CommandResults:
+    def item_result_creator(raw_attachment, user_id, args, client) -> dict[str, Any] | CommandResults:
+        """
+        Create a result object for an attachment item.
+        This method processes raw attachment data and returns either an XSOAR file result or a command result
+        based on the attachment type and provided arguments.
+
+        Args:
+            raw_attachment (dict): The raw attachment data from the API response.
+            user_id (str): The ID of the user associated with the attachment.
+            args (dict): Additional arguments for processing the attachment.
+            client (MsGraphMailBaseClient, optional): The client instance for making additional API calls.
+
+        Returns:
+            dict[str, Any] | CommandResults:
+                - If the attachment is a message and should be downloaded, returns a dict containing file result.
+                - If the attachment is a message but should not be downloaded, returns a CommandResults with message details.
+                - If the attachment is of an unsupported type, returns a CommandResults with an error message.
+
+        Note:
+            - The method handles different types of attachments, particularly focusing on message attachments.
+              It can either return the attachment as a downloadable file or as structured data in the command results.
+            - 'client' function argument is only relevant when 'should_download_message_attachment' command argument is True.
+        """
         item = raw_attachment.get('item', {})
         item_type = item.get('@odata.type', '')
         if 'message' in item_type:
-            message_id = raw_attachment.get('id')
-            item['id'] = message_id
-            mail_context = GraphMailUtils.build_mail_object(item, user_id=user_id, get_body=True)
-            human_readable = tableToMarkdown(
-                f'Attachment ID {message_id} \n **message details:**',
-                mail_context,
-                headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
-            )
-            return CommandResults(outputs_prefix='MSGraphMail',
-                                  outputs_key_field='ID',
-                                  outputs=mail_context,
-                                  readable_output=human_readable,
-                                  raw_response=raw_attachment)
+            return_message_attachment_as_downloadable_file: bool = client and argToBoolean(
+                args.get('should_download_message_attachment', False))
+            if return_message_attachment_as_downloadable_file:
+                # return the message attachment as a file result
+                attachment_content = client._get_attachment_mime(
+                    args.get('message_id'),
+                    args.get('attachment_id'),
+                    user_id, False)
+                attachment_name: str = (item.get("name") or item.get('subject')
+                                        or "untitled_attachment").replace(' ', '_') + '.eml'
+                demisto.debug(f'Email attachment of type "microsoft.graph.message" acquired successfully, {attachment_name=}')
+                return fileResult(attachment_name, attachment_content)
+            else:
+                # return the message attachment as a command result
+                message_id = raw_attachment.get('id')
+                item['id'] = message_id
+                mail_context = GraphMailUtils.build_mail_object(item, user_id=user_id, get_body=True)
+                human_readable = tableToMarkdown(
+                    f'Attachment ID {message_id} \n **message details:**',
+                    mail_context,
+                    headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+                )
+
+                return CommandResults(outputs_prefix='MSGraphMail',
+                                      outputs_key_field='ID',
+                                      outputs=mail_context,
+                                      readable_output=human_readable,
+                                      raw_response=raw_attachment)
         else:
             human_readable = f'Integration does not support attachments from type {item_type}'
             return CommandResults(readable_output=human_readable, raw_response=raw_attachment)
@@ -1314,13 +1351,12 @@ class GraphMailUtils:
             raise DemistoException('Attachment could not be decoded')
 
     @staticmethod
-    def create_attachment(raw_attachment, user_id, legacy_name=False) -> CommandResults | dict:
-
+    def create_attachment(raw_attachment, user_id, args, client, legacy_name=False) -> CommandResults | dict:
         attachment_type = raw_attachment.get('@odata.type', '')
         # Documentation about the different attachment types
         # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
         if 'itemAttachment' in attachment_type:
-            return GraphMailUtils.item_result_creator(raw_attachment, user_id)
+            return GraphMailUtils.item_result_creator(raw_attachment, user_id, args, client)
         elif 'fileAttachment' in attachment_type:
             return GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
         else:
@@ -1831,8 +1867,8 @@ def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandR
     kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'folder_id', 'attachment_id']}
     kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
     raw_response = client.get_attachment(**kwargs)
-    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id'], legacy_name=client.legacy_name)
-            for attachment in raw_response]
+    return [GraphMailUtils.create_attachment(raw_attachment=attachment, user_id=kwargs['user_id'], args=args, client=client,
+                                             legacy_name=client.legacy_name) for attachment in raw_response]
 
 
 def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:
