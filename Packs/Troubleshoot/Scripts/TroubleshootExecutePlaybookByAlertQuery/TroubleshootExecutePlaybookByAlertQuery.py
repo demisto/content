@@ -314,11 +314,13 @@ def split_by_playbooks(incidents: list[dict], limit: int, reopen_closed_inv: boo
 def main():
     try:
         args = demisto.args()
-        incidents = get_incidents_by_query(args)
+        incidents: list[dict] = get_incidents_by_query(args)
         if not incidents:
             return return_results("No alerts were found for the provided query and filter arguments.")
-
+        
         limit = int(args.get("limit", "500"))
+        incidents_ids = [incident.get("id") for incident in incidents]
+        demisto.debug(f"Found the following incidents: {incidents_ids}")
         reopen_closed_inv = argToBoolean(args.get("reopen_closed_inv"))
         playbook_id = args.get("playbook_id", "")
         playbook_name = args.get("playbook_name", "")
