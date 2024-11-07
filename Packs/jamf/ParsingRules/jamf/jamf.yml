@@ -1,7 +1,6 @@
-fromversion: 6.10.0
-id: jamf_modeling_rule
-name: Jamf Modeling Rule
+name: jamf Parsing Rule
+id: jamf_ParsingRule
+fromversion: 8.4.0
+tags: [jamf]
 rules: ''
-tags:
- - jamf
 samples: ''
