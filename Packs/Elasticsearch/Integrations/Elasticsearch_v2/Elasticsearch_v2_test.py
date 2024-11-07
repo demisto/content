@@ -592,6 +592,31 @@ MOCK_INDEX_RESPONSE = {
     '_primary_term': 1
 }
 
+MOCK_INDICES_STATISTICS_RESPONSE = {
+    'index_name1': {
+        'uuid': '1111',
+        'health': 'yellow',
+        'status': 'open',
+        'total': {
+            'docs': {
+                'count': 2,
+                'deleted': 0
+            }
+        }
+    },
+    'index_name2': {
+        'uuid': '2222',
+        'health': 'green',
+        'status': 'closed',
+        'total': {
+            'docs': {
+                'count': 40,
+                'deleted': 2
+            }
+        }
+    }
+}
+
 MOCK_PARAMS = [
     {
         'client_type': 'Elasticsearch',
@@ -1103,3 +1128,99 @@ def test_key_not_found():
     result = Elasticsearch_v2.get_value_by_dot_notation(dictionary, key)
 
     assert result is None
+
+
+@pytest.mark.parametrize('limit, all_results, expected_context',
+                         [
+                             (1, True, [{'Name': 'index_name1',
+                                         'Status': 'open',
+                                         'Health': 'yellow',
+                                         'UUID': '1111',
+                                         'Documents Count': 2,
+                                         'Documents Deleted': 0},
+                                        {'Name': 'index_name2',
+                                         'Status': 'closed',
+                                         'Health': 'green',
+                                         'UUID': '2222',
+                                         'Documents Count': 40,
+                                         'Documents Deleted': 2
+                                         }
+                                        ]
+                              ),
+                             (1, False, [{'Name': 'index_name1',
+                                         'Status': 'open',
+                                          'Health': 'yellow',
+                                          'UUID': '1111',
+                                          'Documents Count': 2,
+                                          'Documents Deleted': 0}
+                                         ]
+                              )],
+                         ids=[
+                             "Test get indices statistics with a limit and all_results=True",
+                             "Test get indices statistics with a limit and all_results=False"]
+                         )
+def test_get_indices_statistics_command(mocker, limit, all_results, expected_context):
+    """
+    Tests the 'get_indices_statistics' integration command.
+    Given
+      1. Elastic search client, a limit of 1, all_results arg set to True.
+      2. Elastic search client, a limit of 1, all_results arg set to False.
+
+    When
+    - Running the get_indices_statistics_command function.
+
+    Then
+     - Make sure that the returned function response includes the indices mocked data as expected:
+        1. All results were returned (2 indices).
+        2. Only the first index's data was returned.
+    """
+    import Elasticsearch_v2
+    mocker.patch.object(Elasticsearch_v2, 'get_indices_statistics', return_value=MOCK_INDICES_STATISTICS_RESPONSE
+                        )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    command_result = Elasticsearch_v2.get_indices_statistics_command({'limit': limit, 'all_results': all_results}, '')
+
+    assert command_result.outputs == expected_context
+    assert 'Indices Statistics:' in command_result.readable_output
+    assert command_result.outputs_prefix == 'Elasticsearch.IndexStatistics'
+    assert command_result.raw_response == MOCK_INDICES_STATISTICS_RESPONSE
+    assert command_result.outputs_key_field == 'UUID'
+
+
+@pytest.mark.parametrize('server_details, server_version, client_version',
+                         [
+                             ({'name': 'test1',
+                               'cluster_name': 'elasticsearch',
+                               'cluster_uuid': 'test_id',
+                               'version': {'number': '7.3.0', }},
+                              '7.3.0', 'Elasticsearch_v8'),
+                             ({'name': 'test2',
+                               'cluster_name': 'elasticsearch',
+                               'cluster_uuid': 'test_id',
+                               'version': {'number': '8.4.1', }},
+                              '8.4.1', 'Elasticsearch')],
+                         ids=[
+                             "Test miss configuration error - server version is 7 while client version is 8",
+                             "Test miss configuration error - server version is 8 while client version is 7"]
+                         )
+def test_verify_es_server_version_errors(mocker, server_details, server_version, client_version):
+    """
+    Tests the 'verify_es_server_version' function's logic.
+
+    Given
+      1. Elastic search server details (response json of the requests.get) - server version is 7.3.0.
+         Integration parameter - client type - is set to 'Elasticsearch_v8.
+      2. Elastic search server details (response json of the requests.get) - server version is 8.4.1.
+         Integration parameter - client type - is set to 'Elasticsearch. (v7 and below)
+
+    When
+    - Running the verify_es_server_version function.
+
+    Then
+     - Make sure that the expected error message is raised.
+    """
+    import Elasticsearch_v2
+    mocker.patch('Elasticsearch_v2.ELASTIC_SEARCH_CLIENT', new=client_version)
+    with pytest.raises(ValueError) as e:
+        Elasticsearch_v2.verify_es_server_version(server_details)
+    assert server_version in str(e.value)
