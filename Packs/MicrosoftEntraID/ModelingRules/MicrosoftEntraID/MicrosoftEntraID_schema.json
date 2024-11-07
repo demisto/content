@@ -1,5 +1,9 @@
 {
   "msft_azure_raw": {
+    "level": {
+        "type": "string",
+        "is_array": false
+    },
     "identity": {
         "type": "string",
         "is_array": false
