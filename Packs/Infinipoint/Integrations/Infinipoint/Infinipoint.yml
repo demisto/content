@@ -995,7 +995,7 @@ script:
       description: success.
       type: Number
 
-  dockerimage: demisto/auth-utils:1.0.0.115527
+  dockerimage: demisto/auth-utils:1.0.0.76157
   isfetch: true
   script: '-'
   subtype: python3
