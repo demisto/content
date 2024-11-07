@@ -3097,15 +3097,14 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
 
 def handle_outgoing_issue_closure(parsed_args):
     xsoar_to_xdr_delta = parsed_args.delta
-    # closed_reason = xsoar_to_xdr_delta.get('close_reason') or xsoar_to_xdr_delta.get('closeReason') or xsoar_to_xdr_delta.get(
-    #     'closeNotes') or xsoar_to_xdr_delta.get('resolve_comment') or xsoar_to_xdr_delta.get(
-    #     'closingUserId') or parsed_args.data.get('closeReason') or parsed_args.data.get(
-    #     'close_reason') or parsed_args.data.get('closeNotes')  # TODO: check it out if needed these check data and also all these close reason verions
     closed_reason = xsoar_to_xdr_delta.get('close_reason') or xsoar_to_xdr_delta.get('closeReason') or xsoar_to_xdr_delta.get(
-        'closeNotes') or xsoar_to_xdr_delta.get('resolve_comment') or xsoar_to_xdr_delta.get('closingUserId')
+        'closeNotes') or xsoar_to_xdr_delta.get('resolve_comment') or xsoar_to_xdr_delta.get(
+        'closingUserId') or parsed_args.data.get('closeReason') or parsed_args.data.get(
+        'close_reason') or parsed_args.data.get('closeNotes')
     demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
     current_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
     #   Closing remote incident if the XSOAR incident is closed and the remote incident isn't already closed
+    demisto.debug(f"handle_outgoing_issue_closure {current_xdr_status=}")  # TODO: remove
     if parsed_args.inc_status == 2 and closed_reason and current_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
         demisto.debug(f"itamar - in handle_outgoing_issue_closure inside first if")  # TODO: remove
         if close_notes := xsoar_to_xdr_delta.get('closeNotes'):
