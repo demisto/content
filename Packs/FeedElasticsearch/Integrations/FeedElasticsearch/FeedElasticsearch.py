@@ -81,17 +81,17 @@ class ElasticsearchClient:
         if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
             # Adding the proxy related parameter to the Elasticsearch client v8
             # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
-            proxy = self._proxy
+            outer_self = self
             class CustomHttpNode(RequestsHttpNode):
                 def __init__(self, proxy, *args, **kwargs):
                     super().__init__(*args, **kwargs)
-                    self.session.proxies = proxy
+                    self.session.proxies = outer_self._proxy
             if self._api_key:
                 es = Elasticsearch(hosts=[self._server], verify_certs=self._insecure, api_key=self._api_key,
-                                   node_class=CustomHttpNode(proxy=proxy))
+                                   node_class=CustomHttpNode)
             else:
                 es = Elasticsearch(hosts=[self._server], basic_auth=self._http_auth, verify_certs=self._insecure,
-                                   node_class=CustomHttpNode(proxy=proxy))
+                                   node_class=CustomHttpNode)
 
         else:  # Elasticsearch v7 and below or OpenSearch
             if self._api_key:
