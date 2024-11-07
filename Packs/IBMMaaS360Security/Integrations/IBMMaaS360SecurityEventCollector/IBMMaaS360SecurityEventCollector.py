@@ -1,4 +1,5 @@
 from enum import Enum
+from math import ceil
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
@@ -241,14 +242,14 @@ class Client(BaseClient):
             page_offset (int): Number of pages already fetched from the given timeframe.
 
         Returns:
-            events (list[dict]): List of admin audit events.
+            events (list): List of admin audit events.
             page_offset (int): New total number of pages already fetched from the given timeframe.
             pages_remaining (bool): Whether there might be more pages to fetch from the given timeframe.
         """
         url_suffix = event_type.url_suffix.format(billingId=self.billing_id)
         events = []
         pages_remaining = True
-        fetches_left = max(1, max_fetch_amount // PAGE_SIZE)
+        fetches_left = ceil(max_fetch_amount / PAGE_SIZE)
 
         while pages_remaining and fetches_left:
             page_number = 1 + page_offset
@@ -288,7 +289,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: int) -
 
     Args:
         client (Client): client to use.
-        params (Dict): Integration parameters.
+        params (dict): Integration parameters.
         first_fetch_time(str): The first fetch time as configured in the integration params.
 
     Returns:
@@ -315,7 +316,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: int) -
     return 'ok'
 
 
-def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
     """
     Get events from the IBM MaaS360 Security API.
 
@@ -324,26 +325,34 @@ def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
         args (dict): Command arguments.
 
     Returns:
-        events (list[dict]): List of fetched events.
+        events (list): List of fetched events.
         results (CommandResults): CommandResults object to be returned to the war-room.
     """
-    limit = arg_to_number(args.get('limit'), required=True)
+    limit = arg_to_number(args.get('limit'), required=True) or 0
     if 'from_date' in args:
         first_fetch_time = int(date_to_timestamp(arg_to_datetime(args.get('from_date'))))
     else:
         first_fetch_time = int(time.time()) - timedelta(hours=3).seconds
 
-    max_events_per_fetch = {
-        AuditEventType.ChangesAudit: limit,
-        AuditEventType.LoginReports: limit,
-    }
+    events: list[dict] = []
+    # Fetch one event type at a time until we reach the limit or get them all
+    for event_type in AuditEventType:
+        if (limit_left := limit - len(events)) <= 0:
+            break
+        max_events_per_fetch = {
+            event_type: limit_left,
+        }
 
-    _next_run, events = fetch_events(
-        client=client,
-        last_run={},
-        first_fetch_time=first_fetch_time,
-        max_events_per_fetch=max_events_per_fetch,
-    )
+        _next_run, fetched_events = fetch_events(
+            client=client,
+            last_run={},
+            first_fetch_time=first_fetch_time,
+            max_events_per_fetch=max_events_per_fetch,
+        )
+        events.extend(fetched_events)
+
+    # Trim any excess events
+    events = events[:limit]
 
     # Create a table with time and log type as the first headers, followed by the rest
     headers = ['_time', 'source_log_type']
@@ -355,7 +364,7 @@ def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
 
 
 def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: int, max_events_per_fetch: dict = {}
-                 ) -> tuple[Dict, List[Dict]]:
+                 ) -> tuple[dict, list[dict]]:
     """
     Fetches events from the IBM MaaS360 Security API.
 
@@ -375,7 +384,7 @@ def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: int
 
     for event_type in AuditEventType:
         last_run_params = json.loads(last_run.get(event_type.name, '{}')) or {}
-        max_fetch_amount = max_events_per_fetch.get(event_type, DEFAULT_MAX_FETCH)
+        max_fetch_amount = max_events_per_fetch.get(event_type, 0)
         from_date = last_run_params.get('from_date', first_fetch_time)
         to_date = last_run_params.get('to_date', int(time.time() * 1000))
         page_offset = last_run_params.get('page_offset', 0)

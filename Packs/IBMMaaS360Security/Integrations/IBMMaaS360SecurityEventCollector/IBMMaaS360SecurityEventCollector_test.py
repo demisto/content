@@ -1,3 +1,4 @@
+from math import ceil
 import pytest
 from freezegun import freeze_time
 from IBMMaaS360SecurityEventCollector import Client, AuditEventType, DATE_FORMAT
@@ -476,7 +477,8 @@ def test_test_module_command_failure(requests_mock, client):
     assert res != 'ok'
 
 
-def test_get_events_command(mocker, client, admin_changes_request, login_reports_request):
+@pytest.mark.parametrize('limit', [1, 2, 3, 6, 11])
+def test_get_events_command(mocker, client, admin_changes_request, login_reports_request, limit):
     """
     Given:
     - IBM MaaS360 Security client.
@@ -491,19 +493,20 @@ def test_get_events_command(mocker, client, admin_changes_request, login_reports
 
     mocker.patch.object(client, 'get_auth_token', return_value=AUTH_TOKEN)
 
-    args = {'limit': PAGE_SIZE}
+    args = {'limit': limit}
 
     events, _results = get_events(
         client=client,
         args=args,
     )
 
-    assert admin_changes_request.call_count == 1
-    assert login_reports_request.call_count == 1
-    expected_admin_changes = admin_changes[0]['adminChanges']['adminChange']
-    expected_login_reports = login_reports[0]['loginEvents']['loginEvent']
+    expected_admin_changes = [event for page in admin_changes for event in page['adminChanges']['adminChange']][:limit]
+    expected_login_len = limit - len(expected_admin_changes)
+    expected_login_reports = [event for page in login_reports for event in page['loginEvents']['loginEvent']][:expected_login_len]
 
-    assert len(events) == len(expected_admin_changes) + len(expected_login_reports)
+    assert admin_changes_request.call_count == ceil(len(expected_admin_changes) / PAGE_SIZE)
+    assert login_reports_request.call_count == ceil(len(expected_login_reports) / PAGE_SIZE)
+    assert len(events) == len(expected_admin_changes) + len(expected_login_reports) == limit
 
     for event in events:
         event_time = event.pop('_time')
