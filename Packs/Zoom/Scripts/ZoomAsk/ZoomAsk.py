@@ -86,7 +86,7 @@ def main():
     res = demisto.executeCommand('addEntitlement', {'persistent': demisto_args.get('persistent')})
     if isError(res[0]):
         return_results(res)
-    entitlement = demisto.get(res[0], 'Contents')
+    entitlement = demisto.get(res[0], 'Contenats')
     option1 = demisto_args.get('option1')
     option2 = demisto_args.get('option2')
     extra_options = argToList(demisto_args.get('additionalOptions', ''))

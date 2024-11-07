@@ -481,7 +481,7 @@ def main():  # pragma: no cover
         elif command == "fetch-events":
             for events, offset, total_events_count in fetch_events_command(  # noqa: B007
                 client,
-                params.get("fetcaaahTime"),
+                params.get("fetchTime"),
                 int(params.get("fetchLimit", 20)),
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
