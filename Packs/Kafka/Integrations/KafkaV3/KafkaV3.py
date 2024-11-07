@@ -38,7 +38,7 @@ class KafkaCommunicator:
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
     POLL_TIMEOUT: float = 10.0  # Increased from 1.0 to prevent frequent 'No results' responses in the splunk-consume-msg command,
-                                # which caused test playbook failures in builds.
+    # which caused test playbook failures in builds.
     MAX_POLLS_FOR_LOG: int = 100
 
     def __init__(self, brokers: str, use_ssl: bool, plain_password: Optional[str] = None, plain_username: Optional[str] = None,
@@ -86,7 +86,6 @@ class KafkaCommunicator:
         demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
         demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
 
-    
     def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password,
                            use_sasl, plain_username, plain_password, brokers):
         """
@@ -384,18 +383,17 @@ def validate_params(use_ssl, use_sasl, plain_username, plain_password, brokers, 
 
         The brokers parameter is mandatory for both authentication methods.
     """
-    
+
     # Check if brokers are provided
     if not brokers:
         raise DemistoException('Please specify a CSV list of Kafka brokers to connect to.')
 
-
     # Helper function to check for missing parameters
+
     def check_missing_params(params, missing):
         for param, param_name in params:
             if not param:
                 missing.append(param_name)
-
 
     missing: List[str] = []
 
@@ -406,14 +404,12 @@ def validate_params(use_ssl, use_sasl, plain_username, plain_password, brokers, 
                       (client_cert_key, 'Client certificate key (.key)')]
         check_missing_params(ssl_params, missing)
 
-
     # Check SASL_PLAIN requirements
     elif use_sasl:
         sasl_params = [(plain_username, 'SASL PLAIN Username'),
                        (plain_password, 'SASL PLAIN Password'),
                        (ca_cert, 'CA certificate of Kafka server (.cer)')]
         check_missing_params(sasl_params, missing)
-
 
     if missing:
         missing_items = ', '.join(missing)

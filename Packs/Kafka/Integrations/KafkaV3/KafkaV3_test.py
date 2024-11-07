@@ -947,52 +947,53 @@ def test_validate_params__valid(params):
     # This test should not raise any exceptions
     validate_params(**params)
 
+
 # use_ssl, use_sasl, plain_username, plain_password, brokers, ca_cert, client_cert, client_cert_key
 invalid_params_cases = [
     # Missing brokers
     (
         {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': None, 'ca_cert': 'cert',
-        'client_cert': 'client_cert', 'client_cert_key': 'client_key'},
+         'client_cert': 'client_cert', 'client_cert_key': 'client_key'},
         'Please specify a CSV list of Kafka brokers to connect to.'
     ),
     # SSL enabled but missing certificates
     (
         {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1,broker2',
-        'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
+         'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
         'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer), \
 Client certificate key (.key). Please provide them.'),
     (
         {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
-        'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
+         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
         'Missing required parameters: Client certificate (.cer), Client certificate key (.key). \
 Please provide them.'
     ),
     (
         {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
-        'ca_cert': None, 'client_cert': 'client_cert', 'client_cert_key': None},
+         'ca_cert': None, 'client_cert': 'client_cert', 'client_cert_key': None},
         'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate key (.key). \
 Please provide them.'
     ),
     (
         {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
-        'ca_cert': None, 'client_cert': None, 'client_cert_key': 'client_key'},
+         'ca_cert': None, 'client_cert': None, 'client_cert_key': 'client_key'},
         'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer). \
 Please provide them.'
     ),
     # SASL_SSL missing username/password/ca_cert
     (
         {'use_ssl': True, 'use_sasl': True, 'plain_username': None, 'plain_password': 'pass', 'brokers': 'broker1, broker2',
-        'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
+         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
         'Missing required parameters: SASL PLAIN Username. Please provide them.'
     ),
     (
         {'use_ssl': True, 'use_sasl': True, 'plain_username': 'user', 'plain_password': None, 'brokers': 'broker1, broker2',
-        'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
+         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
         'Missing required parameters: SASL PLAIN Password. Please provide them.'
     ),
     (
         {'use_ssl': True, 'use_sasl': True, 'plain_username': 'user', 'plain_password': 'pass', 'brokers': 'broker1, broker2',
-        'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
+         'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
         'Missing required parameters: CA certificate of Kafka server (.cer). Please provide them.'
     ),
 ]
