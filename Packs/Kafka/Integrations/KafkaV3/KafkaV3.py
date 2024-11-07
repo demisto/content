@@ -86,6 +86,7 @@ class KafkaCommunicator:
         demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
         demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
 
+    
     def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password,
                            use_sasl, plain_username, plain_password, brokers):
         """
@@ -396,8 +397,7 @@ def validate_params(use_ssl, use_sasl, plain_username, plain_password, brokers, 
                 missing.append(param_name)
 
 
-    missing = []
-
+    missing: List[str] = []
 
     # Check SSL requirements
     if use_ssl and not use_sasl:
