@@ -5841,8 +5841,11 @@
         {
             "integrations": "netskope_api_v2",
             "playbookID": "Netskope_V2_Test"
+        },
+        {
+            "integrations": "DSPM",
+            "playbookID": "DSPM Test"
         }
-
     ],
     "skipped_tests": {
         "ThreatCrowd - Test": "The pack is deprecated",
@@ -6171,7 +6174,8 @@
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
         "Aha": "No instance",
-        "SlackV2": "Integration slackV2 is deprecated."
+        "SlackV2": "Integration slackV2 is deprecated.",
+        "DSPM": "No instance"
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",
