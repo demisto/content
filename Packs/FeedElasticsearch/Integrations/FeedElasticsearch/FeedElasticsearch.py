@@ -79,19 +79,20 @@ class ElasticsearchClient:
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
         if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-            # Adding the proxy related parameter to the Elasticsearch client v8
+            # The input of proxy configuration is currently missing on client v8 - in this case we are dependent on the client
+            # using the proxy environment variables.
+            # To add the proxy parameter to the Elasticsearch client v8 - uncomment the following section and add
+            # node_class=CustomHttpNode(proxy=proxy) to the Elasticsearch() constructor:
             # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
-            outer_self = self
-            class CustomHttpNode(RequestsHttpNode):
-                def __init__(self, proxy, *args, **kwargs):
-                    super().__init__(*args, **kwargs)
-                    self.session.proxies = outer_self._proxy
+            # proxy = self._proxy
+            # class CustomHttpNode(RequestsHttpNode):
+            #     def __init__(self, proxy, *args, **kwargs):
+            #         super().__init__(*args, **kwargs)
+            #         self.session.proxies = proxy
             if self._api_key:
-                es = Elasticsearch(hosts=[self._server], verify_certs=self._insecure, api_key=self._api_key,
-                                   node_class=CustomHttpNode)
+                es = Elasticsearch(hosts=[self._server], verify_certs=self._insecure, api_key=self._api_key)
             else:
-                es = Elasticsearch(hosts=[self._server], basic_auth=self._http_auth, verify_certs=self._insecure,
-                                   node_class=CustomHttpNode)
+                es = Elasticsearch(hosts=[self._server], basic_auth=self._http_auth, verify_certs=self._insecure)
 
         else:  # Elasticsearch v7 and below or OpenSearch
             if self._api_key:
