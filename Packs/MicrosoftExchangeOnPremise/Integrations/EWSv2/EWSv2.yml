@@ -324,7 +324,7 @@ script:
       required: true
     - description: The mailbox on which to run the command.
       name: target-mailbox
-    description: Delete items from mailbox.
+    description: Delete items from mailbox. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
     name: ews-delete-items
     outputs:
     - contextPath: EWS.Items.itemId
