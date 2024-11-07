@@ -45,6 +45,7 @@ elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
     from elasticsearch.helpers import scan
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
+    from elastic_transport import RequestsHttpNode
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch7.helpers import scan
@@ -78,11 +79,19 @@ class ElasticsearchClient:
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
         if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-            # TODO: need to understand what could replace the proxies parameter of the client in v8
+            # Adding the proxy related parameter to the Elasticsearch client v8
+            # Reference- https://github.com/elastic/elastic-transport-python/issues/53#issuecomment-1447903214
+            proxy = self._proxy
+            class CustomHttpNode(RequestsHttpNode):
+                def __init__(self, proxy, *args, **kwargs):
+                    super().__init__(*args, **kwargs)
+                    self.session.proxies = proxy
             if self._api_key:
-                es = Elasticsearch(hosts=[self._server], verify_certs=self._insecure, api_key=self._api_key)
+                es = Elasticsearch(hosts=[self._server], verify_certs=self._insecure, api_key=self._api_key,
+                                   node_class=CustomHttpNode(proxy=proxy))
             else:
-                es = Elasticsearch(hosts=[self._server], basic_auth=self._http_auth, verify_certs=self._insecure)
+                es = Elasticsearch(hosts=[self._server], basic_auth=self._http_auth, verify_certs=self._insecure,
+                                   node_class=CustomHttpNode(proxy=proxy))
 
         else:  # Elasticsearch v7 and below or OpenSearch
             if self._api_key:
